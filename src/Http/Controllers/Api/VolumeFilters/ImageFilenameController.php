@@ -1,11 +1,11 @@
 <?php
 
-namespace Biigle\Modules\Volumes\Http\Controllers\Api;
+namespace Biigle\Modules\Volumes\Http\Controllers\Api\VolumeFilters;
 
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;
 
-class VolumeImageFilenameController extends Controller
+class ImageFilenameController extends Controller
 {
     /**
      * List the IDs of images with a filename matching the given pattern.

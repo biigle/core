@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api\VolumeFilters;
 
 use ApiTestCase;
 use Carbon\Carbon;
@@ -10,7 +10,7 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class VolumeImageAnnotationLabelControllerTest extends ApiTestCase
+class ImageAnnotationLabelControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

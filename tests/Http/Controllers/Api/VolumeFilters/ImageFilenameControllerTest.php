@@ -1,11 +1,11 @@
 <?php
 
-namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api\VolumeFilters;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
 
-class VolumeImageFilenameControllerTest extends ApiTestCase
+class ImageFilenameControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

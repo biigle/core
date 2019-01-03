@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Modules\Volumes\Http\Controllers\Api;
+namespace Biigle\Modules\Volumes\Http\Controllers\Api\VolumeFilters;
 
 use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
-class VolumeImageAnnotationLabelController extends Controller
+class ImageAnnotationLabelController extends Controller
 {
     /**
      * List the IDs of images having one or more annotations with the specified label.

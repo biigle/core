@@ -86,7 +86,6 @@ class VolumeController extends Controller
         return view('volumes::edit', [
             'projects' => $projects,
             'volume' => $volume,
-            'images' => $volume->orderedImages()->pluck('filename', 'id'),
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),

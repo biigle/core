@@ -36,31 +36,35 @@ $router->group([
         'namespace' => 'Api',
     ], function ($router) {
         $router->get('{id}/images/order-by/filename', [
-            'uses' => 'VolumeImageController@indexOrderByFilename',
+            'uses' => 'VolumeSorters\ImageFilenameController@index',
         ]);
 
         $router->get('{id}/images/filter/labels', [
-            'uses' => 'VolumeImageController@hasLabel',
+            'uses' => 'VolumeFilters\AnyImageLabelController@index',
         ]);
 
         $router->get('{id}/images/filter/image-label-user/{id2}', [
-            'uses' => 'VolumeImageController@hasImageLabelUser',
+            'uses' => 'VolumeFilters\ImageLabelUserController@index',
         ]);
 
         $router->get('{id}/images/filter/image-label/{id2}', [
-            'uses' => 'VolumeImageController@hasImageLabel',
+            'uses' => 'VolumeFilters\ImageLabelController@index',
         ]);
 
         $router->get('{id}/images/filter/annotation-label/{id2}', [
-            'uses' => 'VolumeImageAnnotationLabelController@index',
+            'uses' => 'VolumeFilters\ImageAnnotationLabelController@index',
         ]);
 
         $router->get('{id}/images/filter/filename/{pattern}', [
-            'uses' => 'VolumeImageFilenameController@index',
+            'uses' => 'VolumeFilters\ImageFilenameController@index',
         ]);
 
         $router->get('{id}/image-labels', [
             'uses' => 'VolumeImageLabelController@index',
+        ]);
+
+        $router->get('{id}/filenames', [
+            'uses' => 'VolumeImageFilenamesController@index',
         ]);
 
         $router->get('{id}/users', [
