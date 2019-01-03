@@ -1,4 +1,4 @@
-<filter-tab v-cloak :volume-id="volumeId" :image-ids="imageIds" v-on:loading="toggleLoading" v-on:update="updateFilterSequence" inline-template>
+<filter-tab v-cloak :volume-id="volumeId" :image-ids="imageIds" :show-filenames="showFilenames" :loading-filenames="loadingFilenames" v-on:loading="toggleLoading" v-on:update="updateFilterSequence" v-on:enable-filenames="enableFilenames" v-on:disable-filenames="disableFilenames" inline-template>
     <div class="filter-tab">
         <div class="filter-tab__buttons">
             <div class="btn-group" role="group">
@@ -40,5 +40,7 @@
             </li>
             <li v-if="!hasRules" class="list-group-item text-muted">No filter rules</li>
         </ul>
+
+        <power-toggle :active="showFilenames" title="Show the filename of each image" v-on:on="enableFilenames" v-on:off="disableFilenames">Show filenames</power-toggle> <loader :active="loadingFilenames"></loader>
     </div>
 </filter-tab>

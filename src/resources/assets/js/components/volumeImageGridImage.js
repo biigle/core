@@ -13,6 +13,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             '<img :src="url || emptyUrl" @error="showEmptyImage">' +
         '</a>' +
         '<img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">' +
+        '<span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>' +
         '<div class="image-buttons">' +
             '<a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">' +
                 '<span class="fa fa-info-circle" aria-hidden="true"></span>' +
@@ -43,6 +44,10 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         selectedLabel: {
             type: Object,
             default: null,
+        },
+        showFilename: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {

@@ -3,6 +3,9 @@
  */
 biigle.$component('volumes.components.filterTab', {
     mixins: [biigle.$require('core.mixins.loader')],
+    components: {
+        powerToggle: biigle.$require('core.components.powerToggle'),
+    },
     props: {
         volumeId: {
             type: Number,
@@ -11,7 +14,15 @@ biigle.$component('volumes.components.filterTab', {
         imageIds: {
             type: Array,
             required: true,
-        }
+        },
+        showFilenames: {
+            type: Boolean,
+            default: false,
+        },
+        loadingFilenames: {
+            type: Boolean,
+            default: false,
+        },
     },
     data: function () {
         return {
@@ -206,6 +217,12 @@ biigle.$component('volumes.components.filterTab', {
                     return this.filters[i].listComponent;
                 }
             }
+        },
+        enableFilenames: function () {
+            this.$emit('enable-filenames');
+        },
+        disableFilenames: function () {
+            this.$emit('disable-filenames');
         },
     },
     watch: {

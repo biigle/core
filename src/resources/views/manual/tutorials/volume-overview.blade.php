@@ -75,6 +75,12 @@
             As an alternative to the image filter mode (<button class="btn btn-default btn-xs"><i class="fa fa-filter"></i></button>), where only images are shown that match the image filter, there is the image flagging mode (<button class="btn btn-default btn-xs"><i class="fa fa-flag"></i></button>). In this mode all images are shown but those matching the image filter will get flagged with a blue dot.
         </p>
 
+        <h4>Show image filenames</h4>
+
+        <p>
+            In addition to the "filename" filter you can enable the display of image filenames in the volume overview. Simply activate the "Show filenames" switch in the filter tab <i class="fa fa-filter"></i>. This may be useful if you are browsing lots of very similar looking images. If a filename is too long to be displayed whole, it is cut off. Hover the cursor over the filename for a tooltip with the complete filename.
+        </p>
+
         <h3>Sort the images</h3>
 
         <p>

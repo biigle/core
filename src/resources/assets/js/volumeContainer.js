@@ -8,6 +8,7 @@ biigle.$viewModel('volume-container', function (element) {
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
     var urlParams = biigle.$require('volumes.urlParams');
+    var volumesApi = biigle.$require('api.volumes');
 
     /*
      * ABOUT PERFORMANCE
@@ -38,6 +39,9 @@ biigle.$viewModel('volume-container', function (element) {
             volumeId: biigle.$require('volumes.volumeId'),
             imageLabelMode: false,
             selectedLabel: null,
+            loadingFilenames: false,
+            showFilenames: false,
+            filenamesPromise: null,
         },
         computed: {
             // Map from image ID to index of sorted array to compute sortedImages fast.
@@ -150,6 +154,30 @@ biigle.$viewModel('volume-container', function (element) {
             transformUuid: function (uuid) {
                 return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
             },
+            enableFilenames: function () {
+                if (!this.filenamesPromise) {
+                    this.loadingFilenames = true;
+                    this.filenamesPromise = volumesApi
+                        .queryFilenames({id: this.volumeId})
+                        .then(this.setFilenames)
+                        .bind(this)
+                        .finally(function () {
+                            this.loadingFilenames = false;
+                        });
+                }
+
+                this.filenamesPromise.bind(this).then(function () {
+                    this.showFilenames = true;
+                });
+            },
+            disableFilenames: function () {
+                this.showFilenames = false;
+            },
+            setFilenames: function (response) {
+                this.images.forEach(function (image) {
+                    image.filename = response.body[image.id];
+                });
+            },
         },
         watch: {
             imageIdsToShow: function (imageIdsToShow) {
@@ -190,6 +218,7 @@ biigle.$viewModel('volume-container', function (element) {
                     annotateUrl: annotateUri.replace('{id}', id),
                     imageUrl: imageUri.replace('{id}', id),
                     flagged: false,
+                    filename: null,
                 };
             });
 
