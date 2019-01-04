@@ -117,17 +117,24 @@ biigle.$component('annotations.components.screenshotButton', {
             }, 100);
         },
         capture: function () {
-            var self = this;
-            var map = this.$parent.map;
-            map.once('postcompose', function (e) {
-                self.makeBlob(e.context.canvas)
-                    .then(self.download)
-                    .catch(self.handleError);
-            });
-            map.renderSync();
+            if (this.map) {
+                var self = this;
+                this.map.once('postcompose', function (e) {
+                    self.makeBlob(e.context.canvas)
+                        .then(self.download)
+                        .catch(self.handleError);
+                });
+                this.map.renderSync();
+            }
         },
         handleError: function (message) {
             this.messages.danger(message);
         },
+        setMap: function (map) {
+            this.map = map;
+        },
+    },
+    created: function () {
+        biigle.$require('events').$on('annotations.map.init', this.setMap);
     },
 });
