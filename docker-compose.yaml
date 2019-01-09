@@ -1,0 +1,81 @@
+version: '2.2'
+
+services:
+  # The application
+  app:
+    image: vigle/app
+    user: ${USER_ID}:${GROUP_ID}
+    depends_on:
+      - cache
+    build:
+      dockerfile: docker/app.dockerfile
+      context: ./
+      args:
+        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "REDIS_HOST=cache"
+
+  worker:
+    image: vigle/worker
+    user: ${USER_ID}:${GROUP_ID}
+    depends_on:
+      - app
+      - database_testing
+    build:
+      context: ./
+      dockerfile: docker/worker.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "REDIS_HOST=cache"
+    command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
+
+  # The web server
+  web:
+    image: vigle/web
+    depends_on:
+      - app
+    build:
+      context: ./
+      dockerfile: docker/web.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - 8000:80
+    command: nginx -g 'daemon off;' -c /etc/nginx/nginx-no-ssl.conf
+
+  # The database
+  database:
+    image: postgres:10-alpine
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./:/data
+    environment:
+      - "POSTGRES_DB=vigle"
+      - "POSTGRES_USER=vigle"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - "54320:5432"
+
+  database_testing:
+    image: postgres:10-alpine
+    tmpfs:
+      - /var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB=vigle"
+      - "POSTGRES_USER=vigle"
+      - "POSTGRES_PASSWORD=secret"
+
+  cache:
+    image: redis:3.0-alpine
+
+volumes:
+  dbdata:
+

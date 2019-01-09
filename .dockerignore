@@ -1,0 +1,13 @@
+.git
+.env
+certificate
+node_modules
+public/thumbs/**
+public/vendor/**
+storage
+tmp
+vendor
+
+*.phar
+*.php_cs.cache
+*.sh
