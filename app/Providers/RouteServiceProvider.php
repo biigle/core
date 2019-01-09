@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -23,7 +24,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Route::pattern('uuid', Uuid::VALID_PATTERN);
 
         parent::boot();
     }
@@ -67,7 +68,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('api')
              ->middleware('api')
-             ->namespace($this->namespace)
+             ->namespace("{$this->namespace}\Api")
+             ->prefix('api/v1')
              ->group(base_path('routes/api.php'));
     }
 }

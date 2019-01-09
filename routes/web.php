@@ -12,5 +12,10 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+
+Route::group(['namespace' => 'Views'], function ($route) {
+    $route->get('{uuid}', 'VideoController@show')->name('video');
+});
+
