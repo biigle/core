@@ -21,10 +21,10 @@ class MediaTypeControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::$timeSeriesId);
+        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
 
         $this->beUser();
-        $response = $this->get('/api/v1/media-types/'.MediaType::$timeSeriesId);
+        $response = $this->get('/api/v1/media-types/'.MediaType::timeSeriesId());
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

@@ -22,6 +22,13 @@ biigle.$component('core.components.sidebarButton', {
         },
     },
     computed: {
+        highlightClass: function () {
+            if (typeof this.tab.highlight === 'string') {
+                return 'btn-' + this.tab.highlight;
+            }
+
+            return 'btn-info';
+        },
         iconClass: function () {
             return 'fa fa-' + this.tab.icon;
         },
@@ -29,10 +36,15 @@ biigle.$component('core.components.sidebarButton', {
             return 'fa fa-chevron-' + this.direction;
         },
         classObject: function () {
-            return {
+            var obj = {
                 active: this.open,
-                'btn-info': this.tab.highlight,
             };
+
+            if (this.tab.highlight !== false) {
+                obj[this.highlightClass] = true;
+            }
+
+            return obj;
         },
         disabled: function () {
             return this.tab.disabled;

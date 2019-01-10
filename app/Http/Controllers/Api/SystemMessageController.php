@@ -48,7 +48,7 @@ class SystemMessageController extends Controller
         $message = SystemMessage::create([
             'title' => $request->input('title'),
             'body' => $request->input('body'),
-            'type_id' => $request->input('type_id', SystemMessageType::$info->id),
+            'type_id' => $request->input('type_id', SystemMessageType::typeInfoId()),
         ]);
 
         if ($request->input('publish')) {

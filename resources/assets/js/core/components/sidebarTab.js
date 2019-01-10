@@ -30,7 +30,6 @@ biigle.$component('core.components.sidebarTab', {
             default: false,
         },
         highlight: {
-            type: Boolean,
             default: false,
         },
     },

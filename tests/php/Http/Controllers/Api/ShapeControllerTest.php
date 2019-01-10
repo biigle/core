@@ -21,10 +21,10 @@ class ShapeControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::$circleId);
+        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
 
         $this->beUser();
-        $response = $this->get('/api/v1/shapes/'.Shape::$circleId);
+        $response = $this->get('/api/v1/shapes/'.Shape::circleId());
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

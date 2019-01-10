@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Requests;
 
-
 class UpdateOwnUser extends UpdateUser
 {
     /**

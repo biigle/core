@@ -36,7 +36,7 @@ class ShapeController extends Controller
     /**
      * Displays the specified shape.
      *
-     * @api {get} shapes/:id Get a user role
+     * @api {get} shapes/:id Get a shape
      * @apiGroup Shapes
      * @apiName ShowShapes
      * @apiPermission user

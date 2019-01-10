@@ -32,7 +32,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $member = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($member->id, Role::$guest->id);
+        $project->addUserId($member->id, Role::guestId());
 
         // count the project creator, too
         $this->assertEquals(2, $project->users()->count());

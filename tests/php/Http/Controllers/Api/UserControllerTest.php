@@ -45,7 +45,7 @@ class UserControllerTest extends ApiTestCase
             ]]);
 
         // Global admins also see the email address of the users.
-        $user->role_id = Role::$admin->id;
+        $user->role_id = Role::adminId();
         $user->save();
         $this->get('/api/v1/users')->assertJsonFragment(['email' => $user->email]);
     }
@@ -94,6 +94,11 @@ class UserControllerTest extends ApiTestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * @slowThreshold 750
+     *
+     * This test runs slower because of all the password hashing and checking going on.
+     */
     public function testUpdate()
     {
         $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
@@ -198,27 +203,27 @@ class UserControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::$admin->id,
+            'role_id' => Role::adminId(),
         ]);
         // changing the role requires the admin password
         $response->assertStatus(422);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::$admin->id,
+            'role_id' => Role::adminId(),
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
         $response->assertStatus(422);
 
-        $this->assertEquals(Role::$editor->id, $this->guest()->fresh()->role_id);
+        $this->assertEquals(Role::editorId(), $this->guest()->fresh()->role_id);
 
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::$admin->id,
+            'role_id' => Role::adminId(),
             'auth_password' => 'adminpassword',
             '_redirect' => 'settings/profile',
         ]);
         $response->assertRedirect('settings/profile');
-        $this->assertEquals(Role::$admin->id, $this->guest()->fresh()->role_id);
+        $this->assertEquals(Role::adminId(), $this->guest()->fresh()->role_id);
 
         $this->get('/');
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
@@ -281,27 +286,27 @@ class UserControllerTest extends ApiTestCase
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
         $this->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::$guest->id,
+                'role_id' => Role::guestId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
         $this->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::$editor->id,
+                'role_id' => Role::editorId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertEquals(Role::$editor->id, $user->fresh()->role_id);
+        $this->assertEquals(Role::editorId(), $user->fresh()->role_id);
         $this->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::$expert->id,
+                'role_id' => Role::expertId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(422);
         $this->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::$admin->id,
+                'role_id' => Role::adminId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertEquals(Role::$admin->id, $user->fresh()->role_id);
+        $this->assertEquals(Role::adminId(), $user->fresh()->role_id);
     }
 
     public function testUpdateOwnWithToken()
@@ -462,7 +467,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('jackson', $newUser->lastname);
         $this->assertEquals('new@email.me', $newUser->email);
         $this->assertEquals('My Company', $newUser->affiliation);
-        $this->assertEquals(Role::$editor->id, $newUser->role_id);
+        $this->assertEquals(Role::editorId(), $newUser->role_id);
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',

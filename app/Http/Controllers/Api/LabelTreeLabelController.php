@@ -60,16 +60,10 @@ class LabelTreeLabelController extends Controller
             $labels = [$label];
         }
 
-        if (static::isAutomatedRequest($request)) {
+        if ($this->isAutomatedRequest()) {
             return $labels;
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
+        return $this->fuzzyRedirect()->with('saved', true);
     }
 }

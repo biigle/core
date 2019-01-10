@@ -7,9 +7,9 @@ $factory->define(Biigle\SystemMessage::class, function (Faker $faker) {
         'body' => $faker->text(),
         'title' => $faker->sentence(),
         'type_id' => $faker->randomElement([
-            Biigle\SystemMessageType::$important->id,
-            Biigle\SystemMessageType::$update->id,
-            Biigle\SystemMessageType::$info->id,
+            Biigle\SystemMessageType::typeImportantId(),
+            Biigle\SystemMessageType::typeUpdateId(),
+            Biigle\SystemMessageType::typeInfoId(),
         ]),
     ];
 });

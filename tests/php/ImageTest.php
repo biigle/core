@@ -32,6 +32,11 @@ class ImageTest extends ModelTestCase
         $this->assertNull($this->model->updated_at);
     }
 
+    public function testGetUrl()
+    {
+        $this->assertEquals($this->model->url, $this->model->getUrl());
+    }
+
     public function testThumbPath()
     {
         $path = $this->model->thumbPath;

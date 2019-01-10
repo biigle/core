@@ -35,9 +35,9 @@ class UpdateUser extends FormRequest
     {
         $this->user = $this->getUpdateUser();
         $roles = implode(',', [
-            Role::$guest->id,
-            Role::$editor->id,
-            Role::$admin->id,
+            Role::guestId(),
+            Role::editorId(),
+            Role::adminId(),
         ]);
 
         return [

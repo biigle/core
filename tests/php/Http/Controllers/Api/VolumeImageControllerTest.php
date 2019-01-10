@@ -81,4 +81,14 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
         $this->assertEquals(1, $images->where('filename', '2.jpg')->count());
     }
+
+    public function testStoreExists()
+    {
+        $id = $this->volume()->id;
+        ImageTest::create(['filename' => '1.jpg', 'volume_id' => $id]);
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/images", ['images' => '1.jpg'])
+            // Image already exists.
+            ->assertStatus(422);
+    }
 }

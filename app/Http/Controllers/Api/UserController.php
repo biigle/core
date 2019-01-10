@@ -221,12 +221,8 @@ class UserController extends Controller
         $user->affiliation = $request->input('affiliation', $user->affiliation);
         $user->save();
 
-        if (!static::isAutomatedRequest($request)) {
-            if ($request->has('_redirect')) {
-                return redirect($request->input('_redirect'))->with('saved', true);
-            }
-
-            return redirect()->back()->with('saved', true);
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', true);
         }
     }
 
@@ -278,8 +274,8 @@ class UserController extends Controller
         $wasDirty = $user->isDirty();
         $user->save();
 
-        if (!static::isAutomatedRequest($request)) {
-            return redirect()->back()->with('saved', $wasDirty);
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', $wasDirty);
         }
     }
 
@@ -350,17 +346,11 @@ class UserController extends Controller
 
         $user->save();
 
-        if (static::isAutomatedRequest($request)) {
+        if ($this->isAutomatedRequest()) {
             return $user;
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newUser', $user);
-        }
-
-        return redirect()->back()
-            ->with('newUser', $user);
+        return $this->fuzzyRedirect()->with('newUser', $user);
     }
 
     /**
@@ -389,17 +379,9 @@ class UserController extends Controller
 
         $user->delete();
 
-        if (static::isAutomatedRequest($request)) {
-            return response('Deleted.', 200);
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('deleted', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 
     /**
@@ -422,10 +404,8 @@ class UserController extends Controller
         // them again
         $request->user->delete();
 
-        if (static::isAutomatedRequest($request)) {
-            return response('Deleted.', 200);
+        if (!$this->isAutomatedRequest()) {
+            return redirect('login');
         }
-
-        return redirect('login');
     }
 }

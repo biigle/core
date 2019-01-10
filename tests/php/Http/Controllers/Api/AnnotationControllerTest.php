@@ -108,7 +108,7 @@ class AnnotationControllerTest extends ApiTestCase
     public function testUpdateValidatePoints()
     {
         $id = $this->annotation->id;
-        $this->annotation->shape_id = Shape::$pointId;
+        $this->annotation->shape_id = Shape::pointId();
         $this->annotation->save();
 
         $this->beAdmin();

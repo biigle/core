@@ -19,7 +19,7 @@ class CachedPolicyTest extends TestCase
         $tree = LabelTreeTest::create();
 
         $this->assertFalse($policy->createLabel($user, $tree));
-        $tree->addMember($user, Role::$editor);
+        $tree->addMember($user, Role::editor());
         // STILL false because cache is used
         $this->assertFalse($policy->createLabel($user, $tree));
         Cache::store('array')->flush();

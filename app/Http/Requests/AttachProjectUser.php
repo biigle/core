@@ -44,18 +44,18 @@ class AttachProjectUser extends FormRequest
     {
         $this->user = User::findOrFail($this->route('id2'));
 
-        if ($this->user->role_id === Role::$guest->id) {
+        if ($this->user->role_id === Role::guestId()) {
             $roles = [
-                Role::$guest->id,
-                Role::$editor->id,
-                Role::$expert->id
+                Role::guestId(),
+                Role::editorId(),
+                Role::expertId(),
             ];
         } else {
             $roles = [
-                Role::$guest->id,
-                Role::$editor->id,
-                Role::$expert->id,
-                Role::$admin->id
+                Role::guestId(),
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
             ];
         }
 
@@ -88,7 +88,7 @@ class AttachProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role_id === Role::$guest->id) {
+        if ($this->user->role_id === Role::guestId()) {
             return [
                 'project_role_id.in' => 'Guest users may not become project admins.',
             ];

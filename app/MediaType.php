@@ -2,8 +2,8 @@
 
 namespace Biigle;
 
+use Biigle\Traits\HasConstantInstances;
 use Illuminate\Database\Eloquent\Model;
-use Cache;
 
 /**
  * Volumes can contain different types of image-series. One type would
@@ -12,32 +12,22 @@ use Cache;
  */
 class MediaType extends Model
 {
+    use HasConstantInstances;
+
+    /**
+     * The constant instances of this model.
+     *
+     * @var array
+     */
+    const INSTANCES = [
+        'timeSeries' => 'time-series',
+        'locationSeries' => 'location-series',
+    ];
+
     /**
      * Don't maintain timestamps for this model.
      *
      * @var bool
      */
     public $timestamps = false;
-
-    /**
-     * The time series media type ID.
-     *
-     * @var int
-     */
-    public static $timeSeriesId;
-
-    /**
-     * The location series media type ID.
-     *
-     * @var int
-     */
-    public static $locationSeriesId;
 }
-
-MediaType::$timeSeriesId = Cache::rememberForever('media-type-time-series', function () {
-    return MediaType::whereName('time-series')->first()->id;
-});
-
-MediaType::$locationSeriesId = Cache::rememberForever('media-type-location-series', function () {
-    return MediaType::whereName('location-series')->first()->id;
-});

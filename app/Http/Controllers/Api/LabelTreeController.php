@@ -134,31 +134,18 @@ class LabelTreeController extends Controller
         $tree->description = $request->input('description');
         $tree->uuid = Uuid::uuid4();
         $tree->save();
-        $tree->addMember($request->user(), Role::$admin);
+        $tree->addMember($request->user(), Role::admin());
 
         if (isset($request->project)) {
             $tree->projects()->attach($request->project);
             $tree->authorizedProjects()->attach($request->project);
         }
 
-        if (static::isAutomatedRequest($request)) {
+        if ($this->isAutomatedRequest()) {
             return $tree;
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newTree', $tree)
-                ->with('message', 'Label tree created.')
-                ->with('messageType', 'success');
-        }
-
-        if (Route::has('label-trees')) {
-            return redirect()->route('label-trees', $tree->id)
-                ->with('message', 'Label tree created.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
+        return $this->fuzzyRedirect('label-trees', $tree->id)
             ->with('newTree', $tree)
             ->with('message', 'Label tree created.')
             ->with('messageType', 'success');
@@ -192,27 +179,18 @@ class LabelTreeController extends Controller
 
         // Compare the ID of the label tree attribute because it is cast to an int.
         // The request value is a string and can't be used for strict comparison.
-        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::$private->id) {
+        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::privateId()) {
             $tree->detachUnauthorizedProjects();
         }
 
         $tree->save();
 
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
                 ->with('saved', true)
                 ->with('message', 'Label tree updated.')
                 ->with('messageType', 'success');
         }
-
-        return redirect()->back()
-            ->with('saved', true)
-            ->with('message', 'Label tree updated.')
-            ->with('messageType', 'success');
     }
 
     /**
@@ -233,20 +211,11 @@ class LabelTreeController extends Controller
     {
         $request->tree->delete();
 
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
                 ->with('deleted', true)
                 ->with('message', 'Label tree deleted.')
                 ->with('messageType', 'success');
         }
-
-        return redirect()->back()
-            ->with('deleted', true)
-            ->with('message', 'Label tree deleted.')
-                ->with('messageType', 'success');
     }
 }

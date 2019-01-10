@@ -1,9 +1,32 @@
 /**
  * Keyboard event handler.
+ *
+ * Usage:
+ *
+ * var kb = biigle.$require('keyboard');
+ *
+ * kb.on('Delete', function (event) {
+ *     console.log('Something should be deleted but I never get called.');
+ * });
+ *
+ * kb.on('Delete', function (event) {
+ *     console.log('I am executed first and cancel event handling.');
+ * return false;
+ * }, 1);
+ *
+ * kb.on('Delete', function (event) {
+ *     console.log('I belong to another listener set and am not active by default.')
+ * }, 0, 'other-set');
+ *
+ * // Now only the last event listener is active.
+ * kb.setActiveSet('other-set');
  */
 biigle.$declare('keyboard', new Vue({
     data: {
-        listeners: {},
+        activeListenerSetName: 'default',
+        listenerSets: {
+            'default': {},
+        },
         // Some browsers fire non-standard keys. This map maps standard keys to
         // non-standard keys so their event listeners are also added.
         // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
@@ -30,6 +53,11 @@ biigle.$declare('keyboard', new Vue({
             'select'
         ],
     },
+    computed: {
+        activeListenerSet: function () {
+            return this.listenerSets[this.activeListenerSetName] || {};
+        },
+    },
     methods: {
         isKeyIdentifier: function (key) {
             return typeof key === 'string' || key instanceof String;
@@ -43,8 +71,8 @@ biigle.$declare('keyboard', new Vue({
                 return;
             }
 
-            if (this.listeners.hasOwnProperty(e.key)) {
-                this.executeCallbacks(this.listeners[e.key], e);
+            if (this.activeListenerSet.hasOwnProperty(e.key)) {
+                this.executeCallbacks(this.activeListenerSet[e.key], e);
             }
         },
         executeCallbacks: function (list, e) {
@@ -54,7 +82,7 @@ biigle.$declare('keyboard', new Vue({
                 if (list[i].callback(e) === false) return;
             }
         },
-        on: function (key, callback, priority) {
+        on: function (key, callback, priority, set) {
             if (!this.isKeyIdentifier(key)) {
                 console.error(key + ' is not a valid key.');
                 return;
@@ -62,7 +90,7 @@ biigle.$declare('keyboard', new Vue({
 
             // Also register the listener for the keys of the compatibility map.
             if (this.compatibilityMap.hasOwnProperty(key)) {
-                this.on(this.compatibilityMap[key], callback, priority);
+                this.on(this.compatibilityMap[key], callback, priority, set);
             }
 
             priority = priority || 0;
@@ -71,8 +99,16 @@ biigle.$declare('keyboard', new Vue({
                 priority: priority
             };
 
-            if (this.listeners.hasOwnProperty(key)) {
-                var list = this.listeners[key];
+            set = set || 'default';
+
+            if (!this.listenerSets.hasOwnProperty(set)) {
+                this.listenerSets[set] = {};
+            }
+
+            var listeners = this.listenerSets[set];
+
+            if (listeners.hasOwnProperty(key)) {
+                var list = listeners[key];
                 var i;
 
                 for (i = 0; i < list.length; i++) {
@@ -86,12 +122,14 @@ biigle.$declare('keyboard', new Vue({
                 }
 
             } else {
-                this.listeners[key] = [listener];
+                listeners[key] = [listener];
             }
         },
-        off: function (key, callback) {
-            if (this.listeners.hasOwnProperty(key)) {
-                var list = this.listeners[key];
+        off: function (key, callback, set) {
+            set = set || 'default';
+            var listeners = this.listenerSets[set];
+            if (listeners && listeners.hasOwnProperty(key)) {
+                var list = listeners[key];
                 for (var i = list.length - 1; i >= 0; i--) {
                     if (list[i].callback === callback) {
                         list.splice(i, 1);
@@ -99,6 +137,9 @@ biigle.$declare('keyboard', new Vue({
                     }
                 }
             }
+        },
+        setActiveSet: function (set) {
+            this.activeListenerSetName = set;
         },
     },
     created: function () {

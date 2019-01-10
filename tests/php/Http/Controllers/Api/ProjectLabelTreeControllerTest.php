@@ -41,10 +41,10 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testAvailable()
     {
         $p = $this->project();
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
         $authorized->authorizedProjects()->attach($p->id);
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
 
         $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available");
 
@@ -75,10 +75,10 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testStore()
     {
         $p = $this->project();
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
         $authorized->authorizedProjects()->attach($p->id);
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
 
         $this->doTestApiRoute('POST', "/api/v1/projects/{$p->id}/label-trees");
 
@@ -131,7 +131,7 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testStoreFormRequest()
     {
         $p = $this->project();
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
 
         $this->beAdmin();
         $this->get('/');

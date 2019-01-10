@@ -120,14 +120,8 @@ class VolumeController extends Controller
             $volume->handleNewImages();
         }
 
-        if (!static::isAutomatedRequest($request)) {
-            if ($request->has('_redirect')) {
-                return redirect($request->input('_redirect'))
-                    ->with('saved', $isDirty);
-            }
-
-            return redirect()->back()
-                ->with('saved', $isDirty);
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', $isDirty);
         }
     }
 }

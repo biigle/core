@@ -56,20 +56,20 @@ class SystemMessageControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $message = SystemMessage::first();
-        $this->assertEquals(SystemMessageType::$info->id, $message->type_id);
+        $this->assertEquals(SystemMessageType::typeInfoId(), $message->type_id);
         $this->assertNull($message->published_at);
         $message->delete();
 
         $response = $this->json('POST', '/api/v1/system-messages', [
                 'title' => 'my title',
                 'body' => 'my body',
-                'type_id' => SystemMessageType::$important->id,
+                'type_id' => SystemMessageType::typeImportantId(),
                 'publish' => true,
             ])
             ->assertStatus(200);
 
         $message = SystemMessage::first();
-        $this->assertEquals(SystemMessageType::$important->id, $message->type_id);
+        $this->assertEquals(SystemMessageType::typeImportantId(), $message->type_id);
         $this->assertNotNull($message->published_at);
     }
 
@@ -79,7 +79,7 @@ class SystemMessageControllerTest extends ApiTestCase
             'title' => 'abc',
             'body' => 'def',
             'published_at' => null,
-            'type_id' => SystemMessageType::$info->id,
+            'type_id' => SystemMessageType::typeInfoId(),
         ]);
 
         $this->doTestApiRoute('PUT', '/api/v1/system-messages/'.$message->id);
@@ -105,7 +105,7 @@ class SystemMessageControllerTest extends ApiTestCase
         $response = $this->json('PUT', '/api/v1/system-messages/'.$message->id, [
                 'title' => 'my title',
                 'body' => 'my body',
-                'type_id' => SystemMessageType::$important->id,
+                'type_id' => SystemMessageType::typeImportantId(),
                 'publish' => 1,
             ])
             ->assertStatus(200);
@@ -113,7 +113,7 @@ class SystemMessageControllerTest extends ApiTestCase
         $message = $message->fresh();
         $this->assertEquals('my title', $message->title);
         $this->assertEquals('my body', $message->body);
-        $this->assertEquals(SystemMessageType::$important->id, $message->type_id);
+        $this->assertEquals(SystemMessageType::typeImportantId(), $message->type_id);
         $this->assertNotNull($message->published_at);
     }
 

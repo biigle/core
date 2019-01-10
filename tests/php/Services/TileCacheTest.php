@@ -6,6 +6,7 @@ use File;
 use Storage;
 use TestCase;
 use TileCache;
+use Exception;
 use ZipArchive;
 use Biigle\Tests\ImageTest;
 
@@ -31,6 +32,18 @@ class TileCacheTest extends TestCase
         } finally {
             File::deleteDirectory(File::dirname(File::dirname($path)));
         }
+    }
+
+    public function testGetError()
+    {
+        $image = ImageTest::create();
+        $fragment = fragment_uuid_path($image->uuid);
+        Storage::fake('local-tiles');
+        $disk = Storage::disk('local-tiles');
+        // Create an invalid ZIP file.
+        $disk->put("{$fragment}", 'a');
+        $this->expectException(Exception::class);
+        $path = TileCache::get($image);
     }
 
     public function testGetNotFound()

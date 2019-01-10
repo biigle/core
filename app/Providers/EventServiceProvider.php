@@ -20,7 +20,6 @@ class EventServiceProvider extends ServiceProvider
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
         'cache:clearing' => [
-            \Biigle\Listeners\ClearImageCache::class,
             \Biigle\Listeners\ClearTileCache::class,
         ],
     ];

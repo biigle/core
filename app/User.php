@@ -96,7 +96,7 @@ class User extends Authenticatable
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role_id === Role::$admin->id;
+        return $this->role_id === Role::adminId();
     }
 
     /**

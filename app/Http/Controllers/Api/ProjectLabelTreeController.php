@@ -124,17 +124,9 @@ class ProjectLabelTreeController extends Controller
     {
         $request->project->labelTrees()->syncWithoutDetaching([$request->input('id')]);
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
     }
 
     /**
@@ -159,16 +151,8 @@ class ProjectLabelTreeController extends Controller
         $this->authorize('update', $project);
         $count = $project->labelTrees()->detach($lid);
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('deleted', $count > 0);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', $count > 0);
-        }
-
-        return redirect()->back()
-            ->with('deleted', $count > 0);
     }
 }
