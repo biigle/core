@@ -13,7 +13,7 @@
         </div>
     </div>
     <p>
-        In previous tutorials on package development you've always used assets provided by the core application, like Bootstrap for styling. In this tutorial we'll talk about what assets are provided by default and how you can add to them with your own. If you haven't done the previous tutorialy yet, <a href="{{ route('manual-documentation').'/package-development' }}">start there</a> and come back later.
+        In previous tutorials on package development you've always used assets provided by the core application, like Bootstrap for styling. In this tutorial we'll talk about what assets are provided by default and how you can add to them with your own. If you haven't done the previous tutorialy yet, <a href="{{ route('manual-documentation', 'package-development') }}">start there</a> and come back later.
     </p>
 
     <h3><a name="whats-already-there"></a>What's already there</h3>

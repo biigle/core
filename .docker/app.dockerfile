@@ -24,7 +24,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && rm composer-setup.php \
     && COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"${GITHUB_OAUTH_TOKEN}\"}}" \
-        php composer.phar install --no-dev --no-scripts --ignore-platform-reqs
+        php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
+    && rm -r ~/.composer
 
 COPY . /var/www
 

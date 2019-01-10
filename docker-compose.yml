@@ -5,6 +5,8 @@ services:
   app:
     image: biigle/app:arm64v8
     user: ${USER_ID}:${GROUP_ID}
+    depends_on:
+      - cache
     build:
       dockerfile: .docker/app.dockerfile
       context: ./

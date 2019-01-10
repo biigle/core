@@ -43,9 +43,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('modules', function () {
+        $this->app->singleton('modules', function () {
             return new \Biigle\Services\Modules;
         });
+        // Use the singleton in any instances where the modules service should be used
+        // via dependency injection.
+        $this->app->alias('modules', \Biigle\Services\Modules::class);
 
         $this->app->bind('vips-image', function () {
             return new \Jcupitt\Vips\Image(null);

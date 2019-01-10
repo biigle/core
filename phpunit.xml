@@ -30,4 +30,7 @@
         <env name="DB_USERNAME" value="biigle"/>
         <env name="DB_PASSWORD" value="secret"/>
     </php>
+    <listeners>
+        <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
+    </listeners>
 </phpunit>
