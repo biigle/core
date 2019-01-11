@@ -29,7 +29,7 @@ class StoreVideo extends FormRequest
                 'required',
                 'file',
                 'max:10000000',
-                'mimetypes:video/avi,video/mpeg,video/mp4,video/webm',
+                'mimetypes:video/mpeg,video/mp4,video/webm',
             ],
         ];
     }

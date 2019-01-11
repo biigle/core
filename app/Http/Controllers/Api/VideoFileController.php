@@ -35,9 +35,17 @@ class VideoFileController extends Controller
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
 
+            // This overrides the default streamed response callback.
             $response->setCallback(function () use ($uuid, $offset, $length) {
                 $stream = Storage::disk('videos')->readStream($uuid);
+                $chunkSize = 1024;
                 fseek($stream, $offset);
+                // Read the file in chunks because the whole requested range may not fit
+                // in memory.
+                while ($length > $chunkSize) {
+                    echo fread($stream, $chunkSize);
+                    $length -= $chunkSize;
+                }
                 echo fread($stream, $length);
                 fclose($stream);
             });
