@@ -4,17 +4,17 @@
 
 @section('content')
 <div id="video-container" class="video-container">
-    <video-screen ref="videoScreen" src="{{url('api/v1/videos/'.$video->uuid.'/file')}}"></video-screen>
+    <video-screen :video=video></video-screen>
     {{-- <video controls muted="true"></video> --}}
-    <div class="video-timeline">
-        <button class="btn btn-default" v-on:click="play">Play</button>
-        <button class="btn btn-default" v-on:click="pause">Pause</button>
-    </div>
+    <video-timeline :video=video v-on:seek="seek"></video-timeline>
 </div>
 @endsection
 
 @push('scripts')
 <script src="{{ cachebust_asset('assets/scripts/ol.js') }}"></script>
+<script type="text/javascript">
+    biigle.$declare('videoSrc', '{{url('api/v1/videos/'.$video->uuid.'/file')}}');
+</script>
 @endpush
 
 @push('styles')

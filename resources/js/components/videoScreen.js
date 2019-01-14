@@ -1,10 +1,19 @@
 biigle.$component('components.videoScreen', {
     template: '<div class="video-screen">' +
         // '<video :src="src" controls></video>' +
+        '<div class="controls">' +
+            '<div class="btn-group">' +
+                '<control-button v-if="playing" icon="fa-pause" title="Pause" v-on:click="pause"></control-button>' +
+                '<control-button v-else icon="fa-play" title="Play" v-on:click="play"></control-button>' +
+            '</div>' +
+        '</div>' +
     '</div>',
+    components: {
+        controlButton: biigle.$require('components.controlButton'),
+    },
     props: {
-        src: {
-            type: String,
+        video: {
+            type: HTMLVideoElement,
             required: true,
         },
     },
@@ -12,6 +21,9 @@ biigle.$component('components.videoScreen', {
         return {
             playing: false,
             animationFrameId: null,
+            // TODO Count frames in server and put to video metadata. This allows to
+            // calculate the frame time for a "ftep frame forward", "step frame backward"
+            // button.
         };
     },
     computed: {
@@ -98,7 +110,6 @@ biigle.$component('components.videoScreen', {
     },
     watch: {
         playing: function (playing) {
-            console.log('playing', playing);
             if (playing && !this.animationFrameId) {
                 this.startRenderLoop();
             } else if (!playing) {
@@ -110,12 +121,10 @@ biigle.$component('components.videoScreen', {
         this.map = this.createMap();
         this.videoCanvas = document.createElement('canvas');
         this.videoCanvasCtx = this.videoCanvas.getContext('2d');
-        this.video = document.createElement('video');
-        this.video.muted = true;
         this.video.addEventListener('loadedmetadata', this.createVideoLayer);
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
-        this.video.src = this.src;
+        this.video.addEventListener('seeked', this.renderVideo);
     },
     mounted: function () {
         this.map.setTarget(this.$el);

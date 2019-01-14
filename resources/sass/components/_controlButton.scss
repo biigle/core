@@ -1,0 +1,41 @@
+$ol-control-color: rgb(0, 60, 136);
+
+.control-button {
+    position: relative;
+    border-radius: 2px;
+    transition: background-color 0.25s ease;
+    background-color: fade-out($ol-control-color, 0.5);
+
+    &:not(:last-child) {
+        margin-right: 2px;
+    }
+
+    &:hover, &.active {
+        color: white;
+        background-color: fade-out($ol-control-color, 0.3);
+    }
+
+    &:focus {
+        color: white;
+    }
+}
+
+.control-button__sub-controls {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) scale(0);
+    display: flex;
+    flex-wrap: nowrap;
+
+    .btn {
+        padding: 3px 6px;
+    }
+}
+
+.control-button--open {
+    > .control-button__sub-controls {
+        transform: translate(-50%, -100%) scale(1);
+    }
+}
