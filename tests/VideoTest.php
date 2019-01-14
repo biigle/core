@@ -5,7 +5,7 @@ namespace Tests;
 use App\Video;
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class VideoTest extends TestCase
 {
     public function testModel()
     {

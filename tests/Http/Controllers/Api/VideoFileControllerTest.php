@@ -26,7 +26,7 @@ class VideoFileControllerTest extends TestCase
 
         $response = $this->withHeaders(['Range' => 'bytes=3-'])
             ->getJson("api/v1/videos/{$video->uuid}/file")
-            ->assertStatus(200);
+            ->assertStatus(206);
 
         $this->assertEquals(6, $response->headers->get('Content-Length'));
         $this->assertTrue($response->headers->has('Content-Range'));
