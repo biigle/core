@@ -125,6 +125,7 @@ biigle.$component('components.videoScreen', {
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
         this.video.addEventListener('seeked', this.renderVideo);
+        this.video.addEventListener('loadeddata', this.renderVideo);
     },
     mounted: function () {
         this.map.setTarget(this.$el);

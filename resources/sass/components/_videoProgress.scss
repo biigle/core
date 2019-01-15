@@ -1,32 +1,5 @@
 .video-progress {
     position: relative;
     overflow: hidden;
-
-    .time-indicator {
-        position: absolute;
-        top: 0;
-        left: 0px;
-        height: 100%;
-        width: 1px;
-        background-color: red;
-
-        &:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -5px;
-            width: 10px;
-            height: 5px;
-            background-color: red;
-        }
-
-        &:after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: -5px;
-            border: 5px solid transparent;
-            border-top-color: red;
-        }
-    }
+    cursor: pointer;
 }

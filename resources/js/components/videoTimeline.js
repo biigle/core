@@ -2,25 +2,27 @@ biigle.$component('components.videoTimeline', {
     template: '<div class="video-timeline">' +
         '<div class="static-strip">' +
             '<div class="current-time" v-text="currentTimeString"></div>' +
-            '<div class="track-labels">' +
+            '<div class="lane-headers">' +
 
             '</div>' +
         '</div>' +
-        '<div class="scroll-strip">' +
-            '<video-progress' +
-                ' :duration="duration" ' +
-                ' :current-time="currentTime" ' +
-                ' @seek="emitSeek"' +
-                '></video-progress>' +
-            '<div class="annotation-tracks">' +
-
-            '</div>' +
-        '</div>' +
+        '<scroll-strip' +
+            ' :annotations="annotations"' +
+            ' :duration="duration"' +
+            ' :current-time="currentTime"' +
+            ' @seek="emitSeek"' +
+        '></scroll-strip>' +
     '</div>',
     components: {
-        videoProgress: biigle.$require('components.videoProgress'),
+        scrollStrip: biigle.$require('components.scrollStrip'),
     },
     props: {
+        annotations: {
+            type: Array,
+            default: function () {
+                return [];
+            },
+        },
         video: {
             type: HTMLVideoElement,
             required: true,

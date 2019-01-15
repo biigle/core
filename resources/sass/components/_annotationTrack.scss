@@ -1,0 +1,14 @@
+.annotation-track {
+    position: relative;
+    border-bottom: 1px solid $gray-lighter;
+
+    .annotation-lane {
+        position: relative;
+        padding: 5px;
+        height: 30px;
+    }
+
+    .annotation-clip {
+        height: calc(100% - 10px);
+    }
+}

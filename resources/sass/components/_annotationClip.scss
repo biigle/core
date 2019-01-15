@@ -1,0 +1,39 @@
+.annotation-clip {
+    position: absolute;
+    border-radius: $border-radius-small;
+    cursor: pointer;
+    // border: 1px solid $body-bg;
+    height: 100%;
+
+    .annotation-keyframe {
+        position: absolute;
+        height: 100%;
+        width: 10px;
+        border-radius: $border-radius-small;
+        left: 0;
+
+        // The last keyframe be aligned with the end of the annotation clip.
+        &:last-child:not(:only-child) {
+            transform: translateX(-100%);
+        }
+    }
+
+    .annotation-keyframe--selected {
+        border: 2px solid white;
+        background-color: #ff5e00 !important;
+        z-index: 1;
+    }
+}
+
+.annotation-clip--selected {
+    &:after {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        border: 1px solid white;
+        border-radius: $border-radius-small;
+        pointer-events: none;
+        z-index: 0;
+    }
+}

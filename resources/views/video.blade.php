@@ -6,7 +6,11 @@
 <div id="video-container" class="video-container">
     <video-screen :video=video></video-screen>
     {{-- <video controls muted="true"></video> --}}
-    <video-timeline :video=video v-on:seek="seek"></video-timeline>
+    <video-timeline v-cloak
+        :annotations="annotations"
+        :video=video
+        v-on:seek="seek"
+        ></video-timeline>
 </div>
 @endsection
 

@@ -22,16 +22,5 @@
 
     .scroll-strip {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        .video-progress {
-            height: 34px;
-            border-bottom: 1px solid $gray-lighter;
-        }
-
-        .annotation-tracks {
-            flex: 1;
-        }
     }
 }
