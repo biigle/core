@@ -16,18 +16,44 @@ biigle.$component('components.videoScreen', {
             type: HTMLVideoElement,
             required: true,
         },
+        annotations: {
+            type: Array,
+            default: function () {
+                return [];
+            },
+        },
     },
     data: function () {
         return {
             playing: false,
             animationFrameId: null,
+            // Refresh the annotations only every x ms.
+            refreshRate: 100,
+            refreshLastTime: Date.now(),
+            // A map of annotation IDs to OpenLayers feature objects for all currently
+            // rendered annotations.
+            renderedAnnotationMap: {},
             // TODO Count frames in server and put to video metadata. This allows to
             // calculate the frame time for a "ftep frame forward", "step frame backward"
             // button.
         };
     },
     computed: {
-
+        annotationsPreparedToRender: function () {
+            // Extract start and end times of the annotations as well as sort them so
+            // they can be accessed fast during rendering.
+            return this.annotations.map(function (annotation) {
+                    return {
+                        id: annotation.id,
+                        start: annotation.points.frames[0],
+                        end: annotation.points.frames[annotation.points.frames.length - 1],
+                        self: annotation,
+                    };
+                })
+                .sort(function (a, b) {
+                    return a.start - b.start;
+                });
+        },
     },
     methods: {
         createMap: function () {
@@ -82,10 +108,31 @@ biigle.$component('components.videoScreen', {
             }));
 
             this.map.getView().fit(extent);
+            this.annotationLayer.setMap(this.map);
+        },
+        createAnnotationLayer: function () {
+            this.annotationFeatures = new ol.Collection();
+
+            this.annotationSource = new ol.source.Vector({
+                features: this.annotationFeatures,
+            });
+
+            this.annotationLayer = new ol.layer.Vector({
+                source: this.annotationSource,
+                updateWhileAnimating: true,
+                updateWhileInteracting: true,
+                style: biigle.$require('stores.styles').features,
+            });
         },
         renderVideo: function () {
             this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
-            this.map.render();
+            this.videoLayer.changed();
+
+            var now = Date.now();
+            if (now - this.refreshLastTime > this.refreshRate) {
+                this.refreshAnnotations(this.video.currentTime);
+                this.refreshLastTime = now;
+            }
         },
         startRenderLoop: function () {
             this.renderVideo();
@@ -107,6 +154,68 @@ biigle.$component('components.videoScreen', {
         pause: function () {
             this.video.pause();
         },
+        refreshAnnotations: function (time) {
+            var source = this.annotationSource;
+            var annotations = this.annotationsPreparedToRender;
+            var oldRendered = this.renderedAnnotationMap;
+            var newRendered = {};
+            this.renderedAnnotationMap = newRendered;
+            var toUpdate = {};
+            var toCreate = {};
+            var annotation;
+
+            for (var i = 0, length = annotations.length; i < length; i++) {
+                // We can skip ahead and break early because of the sorting in the
+                // annotationsPreparedToRender array.
+                if (annotations[i].end <= time) {
+                    continue;
+                }
+
+                if (annotations[i].start > time) {
+                    break;
+                }
+
+                annotation = annotations[i];
+                if (oldRendered.hasOwnProperty(annotation.id)) {
+                    toUpdate[annotation.id] = oldRendered[annotation.id];
+                    delete oldRendered[annotation.id];
+                } else {
+                    toCreate[annotation.id] = annotation.self;
+                }
+            }
+
+            Object.values(oldRendered).forEach(function (feature) {
+                source.removeFeature(feature);
+            });
+
+            var features = Object.values(toCreate).map(this.createFeature);
+            features.forEach(function (feature) {
+                newRendered[feature.getId()] = feature;
+            });
+
+            if (features.length > 0) {
+                source.addFeatures(features);
+            }
+
+            // TODO update/interpolate features
+            Object.assign(newRendered, toUpdate);
+            // console.log('remove', Object.keys(oldRendered));
+            // console.log('update', Object.keys(toUpdate));
+            // console.log('create', Object.keys(toCreate));
+        },
+        createFeature: function (annotation) {
+            var feature = new ol.Feature(
+                new ol.geom.Point(annotation.points.coordinates[0])
+            );
+
+            feature.setId(annotation.id);
+            feature.set('annotation', annotation);
+            if (annotation.labels && annotation.labels.length > 0) {
+                feature.set('color', annotation.labels[0].color);
+            }
+
+            return feature;
+        },
     },
     watch: {
         playing: function (playing) {
@@ -126,6 +235,7 @@ biigle.$component('components.videoScreen', {
         this.video.addEventListener('pause', this.setPaused);
         this.video.addEventListener('seeked', this.renderVideo);
         this.video.addEventListener('loadeddata', this.renderVideo);
+        this.createAnnotationLayer();
     },
     mounted: function () {
         this.map.setTarget(this.$el);

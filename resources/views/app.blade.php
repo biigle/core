@@ -28,6 +28,7 @@
         Vue.http.options.root = '{{url('/')}}';
         Vue.http.headers.common['X-CSRF-TOKEN'] = '{{csrf_token()}}';
     </script>
+    <script src="{{ cachebust_asset('assets/scripts/ol.js') }}"></script>
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     @stack('scripts')
 </body>

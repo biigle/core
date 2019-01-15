@@ -20,6 +20,7 @@
         width: 1px;
         background-color: #990000;
         box-shadow: 0 0 1px black;
+        will-change: transform;
 
         &:before {
             content: '';

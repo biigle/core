@@ -4,8 +4,10 @@
 
 @section('content')
 <div id="video-container" class="video-container">
-    <video-screen :video=video></video-screen>
-    {{-- <video controls muted="true"></video> --}}
+    <video-screen
+        :annotations="annotations"
+        :video=video
+        ></video-screen>
     <video-timeline v-cloak
         :annotations="annotations"
         :video=video
@@ -17,7 +19,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ cachebust_asset('assets/scripts/ol.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('videoSrc', '{{url('api/v1/videos/'.$video->uuid.'/file')}}');
 </script>

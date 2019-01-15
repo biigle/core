@@ -38,9 +38,9 @@ biigle.$component('components.videoTimeline', {
     data: function () {
         return {
             animationFrameId: null,
-            // Update the current time only every x ms.
-            updateInterval: 100,
-            updateLastTime: Date.now(),
+            // Refresh the current time only every x ms.
+            refreshRate: 100,
+            refreshLastTime: Date.now(),
             currentTime: 0,
             currentTimeDate: new Date(0),
             currentTimeString: '00:00:00.000',
@@ -66,9 +66,9 @@ biigle.$component('components.videoTimeline', {
     methods: {
         startUpdateLoop: function () {
             var now = Date.now();
-            if (now - this.updateLastTime > this.updateInterval) {
+            if (now - this.refreshLastTime > this.refreshRate) {
                 this.updateCurrentTime();
-                this.updateLastTime = now;
+                this.refreshLastTime = now;
             }
             this.animationFrameId = window.requestAnimationFrame(this.startUpdateLoop);
         },
