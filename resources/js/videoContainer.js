@@ -158,6 +158,16 @@ biigle.$viewModel('video-container', function (element) {
             seek: function (time) {
                 this.video.currentTime = time;
             },
+            selectAnnotation: function (annotation, frameIndex) {
+                this.deselectAnnotations();
+                annotation.selected = frameIndex;
+                this.video.currentTime = annotation.points.frames[frameIndex];
+            },
+            deselectAnnotations: function () {
+                this.annotations.forEach(function (annotation) {
+                    annotation.selected = false;
+                });
+            },
         },
         created: function () {
             this.video.muted = true;

@@ -83,4 +83,12 @@ biigle.$component('components.annotationTrack', {
                 range1[0] === range2[0] && range1[1] === range2[1];
         },
     },
+    watch: {
+        lanes: {
+            immediate: true,
+            handler: function (lanes) {
+                this.$emit('update', this.labelId, lanes.length);
+            },
+        },
+    },
 });

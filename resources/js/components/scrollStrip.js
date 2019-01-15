@@ -8,6 +8,10 @@ biigle.$component('components.scrollStrip', {
             ' :annotations="annotations"' +
             ' :duration="duration"' +
             ' :element-width="elementWidth"' +
+            ' @select="emitSelect"' +
+            ' @deselect="emitDeselect"' +
+            ' @update="emitUpdateTracks"' +
+            ' @scroll-y="emitScrollY"' +
             '></annotation-tracks>' +
         '<span class="time-indicator" :style="indicatorStyle"></span>' +
     '</div>',
@@ -54,6 +58,18 @@ biigle.$component('components.scrollStrip', {
         },
         emitSeek: function (offset) {
             this.$emit('seek', offset / this.elementWidth * this.duration);
+        },
+        emitSelect: function (annotation, index) {
+            this.$emit('select', annotation, index);
+        },
+        emitDeselect: function () {
+            this.$emit('deselect');
+        },
+        emitUpdateTracks: function (labelId, laneCount) {
+            this.$emit('update-tracks', labelId, laneCount);
+        },
+        emitScrollY: function (scrollTop) {
+            this.$emit('scroll-y', scrollTop);
         },
     },
     mounted: function () {

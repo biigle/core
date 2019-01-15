@@ -2,18 +2,25 @@ biigle.$component('components.videoTimeline', {
     template: '<div class="video-timeline">' +
         '<div class="static-strip">' +
             '<div class="current-time" v-text="currentTimeString"></div>' +
-            '<div class="lane-headers">' +
-
-            '</div>' +
+            '<track-headers ref="trackheaders"' +
+                ' :labels="labelMap"' +
+                ' :lane-counts="laneCounts"' +
+                ' :scroll-top="scrollTop"' +
+                '></track-headers>' +
         '</div>' +
         '<scroll-strip' +
             ' :annotations="annotations"' +
             ' :duration="duration"' +
             ' :current-time="currentTime"' +
             ' @seek="emitSeek"' +
+            ' @select="emitSelect"' +
+            ' @deselect="emitDeselect"' +
+            ' @update-tracks="handleUpdatedTracks"' +
+            ' @scroll-y="handleScrollY"' +
         '></scroll-strip>' +
     '</div>',
     components: {
+        trackHeaders: biigle.$require('components.trackHeaders'),
         scrollStrip: biigle.$require('components.scrollStrip'),
     },
     props: {
@@ -38,10 +45,23 @@ biigle.$component('components.videoTimeline', {
             currentTimeDate: new Date(0),
             currentTimeString: '00:00:00.000',
             duration: 0,
+            laneCounts: {},
+            scrollTop: 0,
         };
     },
     computed: {
-        //
+        labelMap: function () {
+            var map = {};
+            this.annotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (label) {
+                    if (!map.hasOwnProperty(label.id)) {
+                        map[label.id] = label;
+                    }
+                });
+            });
+
+            return map;
+        },
     },
     methods: {
         startUpdateLoop: function () {
@@ -73,6 +93,18 @@ biigle.$component('components.videoTimeline', {
         },
         emitSeek: function (time) {
             this.$emit('seek', time);
+        },
+        emitSelect: function (annotation, index) {
+            this.$emit('select', annotation, index);
+        },
+        emitDeselect: function () {
+            this.$emit('deselect');
+        },
+        handleUpdatedTracks: function (labelId, laneCount) {
+            Vue.set(this.laneCounts, labelId, laneCount);
+        },
+        handleScrollY: function (scrollTop) {
+            this.scrollTop = scrollTop;
         },
     },
     watch: {

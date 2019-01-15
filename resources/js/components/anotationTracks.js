@@ -1,12 +1,14 @@
 biigle.$component('components.annotationTracks', {
     template: '<div class="annotation-tracks"' +
         ' @click="emitDeselect"' +
+        ' @scroll.stop="handleScroll"' +
         '>' +
             '<annotation-track v-for="(annotations, labelId) in tracks"' +
                 ' :annotations="annotations"' +
                 ' :labelId="labelId"' +
                 ' :duration="duration"' +
                 ' @select="emitSelect"' +
+                ' @update="emitUpdate"' +
                 '></annotation-track>' +
     '</div>',
     components: {
@@ -52,18 +54,16 @@ biigle.$component('components.annotationTracks', {
     methods: {
         emitSelect: function (annotation, index) {
             this.$emit('select', annotation, index);
-            console.log('select', annotation, index);
-            this.annotations.forEach(function (annotation) {
-                annotation.selected = false;
-            });
-            annotation.selected = index;
+
         },
         emitDeselect: function () {
             this.$emit('deselect');
-            console.log('deselect');
-            this.annotations.forEach(function (annotation) {
-                annotation.selected = false;
-            });
+        },
+        emitUpdate: function (labelId, laneCount) {
+            this.$emit('update', labelId, laneCount);
+        },
+        handleScroll: function () {
+            this.$emit('scroll-y', this.$el.scrollTop);
         },
     },
 });

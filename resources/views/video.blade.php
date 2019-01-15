@@ -10,6 +10,8 @@
         :annotations="annotations"
         :video=video
         v-on:seek="seek"
+        v-on:select="selectAnnotation"
+        v-on:deselect="deselectAnnotations"
         ></video-timeline>
 </div>
 @endsection
