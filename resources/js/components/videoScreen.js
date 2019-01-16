@@ -7,7 +7,8 @@ biigle.$component('components.videoScreen', {
             '</div>' +
             '<div class="btn-group">' +
                 '<control-button icon="fa-bookmark" title="Create a bookmark [b]" v-on:click="emitCreateBookmark"></control-button>' +
-                '<control-button icon="fa-dot-circle" title="Create a point annotation" v-on:click="startDrawPoint" disabled></control-button>' +
+                '<control-button v-if="drawingPoint" icon="fa-check" title="Finish a point annotation" v-on:click="finishDrawPoint" :active="true"></control-button>' +
+                '<control-button v-else icon="fa-dot-circle" title="Start a point annotation" v-on:click="startDrawPoint"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -36,9 +37,8 @@ biigle.$component('components.videoScreen', {
             // A map of annotation IDs to OpenLayers feature objects for all currently
             // rendered annotations.
             renderedAnnotationMap: {},
-            // TODO Count frames in server and put to video metadata. This allows to
-            // calculate the frame time for a "ftep frame forward", "step frame backward"
-            // button.
+            drawingPoint: false,
+            pendingAnnotation: {},
         };
     },
     computed: {
@@ -82,7 +82,7 @@ biigle.$component('components.videoScreen', {
 
             return map;
         },
-        createVideoLayer: function () {
+        init: function () {
             this.videoCanvas.width = this.video.videoWidth;
             this.videoCanvas.height = this.video.videoHeight;
 
@@ -112,6 +112,7 @@ biigle.$component('components.videoScreen', {
 
             this.map.getView().fit(extent);
             this.annotationLayer.setMap(this.map);
+            this.pendingAnnotationLayer.setMap(this.map);
         },
         createAnnotationLayer: function () {
             this.annotationFeatures = new ol.Collection();
@@ -125,6 +126,16 @@ biigle.$component('components.videoScreen', {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
                 style: biigle.$require('stores.styles').features,
+            });
+
+            this.pendingAnnotationSource = new ol.source.Vector();
+
+            this.pendingAnnotationLayer = new ol.layer.Vector({
+                opacity: 0.5,
+                source: this.pendingAnnotationSource,
+                updateWhileAnimating: true,
+                updateWhileInteracting: true,
+                style: biigle.$require('stores.styles').editing,
             });
         },
         renderVideo: function () {
@@ -278,7 +289,40 @@ biigle.$component('components.videoScreen', {
             this.$emit('create-bookmark', this.video.currentTime);
         },
         startDrawPoint: function () {
-            console.log('draw');
+            this.resetPendingAnnotation();
+            this.drawingPoint = true;
+            this.drawInteraction = new ol.interaction.Draw({
+                source: this.pendingAnnotationSource,
+                type: 'Point',
+                style: biigle.$require('stores.styles').editing,
+            });
+            this.drawInteraction.on('drawend', this.extendPendingAnnotation);
+            this.map.addInteraction(this.drawInteraction);
+        },
+        finishDrawPoint: function () {
+            this.drawingPoint = false;
+            this.map.removeInteraction(this.drawInteraction);
+            this.pendingAnnotationSource.clear();
+            this.$emit('create-annotation', this.pendingAnnotation);
+        },
+        resetPendingAnnotation: function () {
+            this.pendingAnnotation = {
+                frames: [],
+                coordinates: [],
+            };
+        },
+        extendPendingAnnotation: function (e) {
+            var lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
+            if (lastFrame === undefined || lastFrame < this.video.currentTime) {
+                this.pendingAnnotation.frames.push(this.video.currentTime);
+                this.pendingAnnotation.coordinates.push(
+                    this.invertPointsYAxis(e.feature.getGeometry().getCoordinates().slice())
+                );
+            } else {
+                this.pendingAnnotationSource.once('addfeature', function (e) {
+                    this.removeFeature(e.feature);
+                });
+            }
         },
     },
     watch: {
@@ -294,7 +338,7 @@ biigle.$component('components.videoScreen', {
         this.map = this.createMap();
         this.videoCanvas = document.createElement('canvas');
         this.videoCanvasCtx = this.videoCanvas.getContext('2d');
-        this.video.addEventListener('loadedmetadata', this.createVideoLayer);
+        this.video.addEventListener('loadedmetadata', this.init);
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
         this.video.addEventListener('seeked', this.renderVideo);

@@ -8,6 +8,7 @@
         :annotations="annotations"
         :video=video
         v-on:create-bookmark="createBookmark"
+        v-on:create-annotation="createAnnotation"
         ></video-screen>
     <video-timeline
         :annotations="annotations"

@@ -40,7 +40,7 @@ biigle.$component('components.controlButton', {
         },
         iconClass: function () {
             if (this.icon.startsWith('fa-')) {
-                return 'fa ' + this.icon;
+                return 'fa fa-fw ' + this.icon;
             }
 
             return 'icon icon-white ' + this.icon;
