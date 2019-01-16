@@ -66,7 +66,7 @@ biigle.$component('components.videoTimeline', {
     methods: {
         startUpdateLoop: function () {
             var now = Date.now();
-            if (now - this.refreshLastTime > this.refreshRate) {
+            if (now - this.refreshLastTime >= this.refreshRate) {
                 this.updateCurrentTime();
                 this.refreshLastTime = now;
             }

@@ -1,10 +1,9 @@
 biigle.$component('components.videoScreen', {
     template: '<div class="video-screen">' +
-        // '<video :src="src" controls></video>' +
         '<div class="controls">' +
             '<div class="btn-group">' +
-                '<control-button v-if="playing" icon="fa-pause" title="Pause" v-on:click="pause"></control-button>' +
-                '<control-button v-else icon="fa-play" title="Play" v-on:click="play"></control-button>' +
+                '<control-button v-if="playing" icon="fa-pause" title="Pause [Spacebar]" v-on:click="pause"></control-button>' +
+                '<control-button v-else icon="fa-play" title="Play [Spacebar]" v-on:click="play"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -129,7 +128,7 @@ biigle.$component('components.videoScreen', {
             this.videoLayer.changed();
 
             var now = Date.now();
-            if (now - this.refreshLastTime > this.refreshRate) {
+            if (now - this.refreshLastTime >= this.refreshRate) {
                 this.refreshAnnotations(this.video.currentTime);
                 this.refreshLastTime = now;
             }
@@ -147,6 +146,13 @@ biigle.$component('components.videoScreen', {
         },
         setPaused: function () {
             this.playing = false;
+        },
+        togglePlaying: function () {
+            if (this.playing) {
+                this.pause();
+            } else {
+                this.play();
+            }
         },
         play: function () {
             this.video.play();
@@ -284,6 +290,9 @@ biigle.$component('components.videoScreen', {
         this.video.addEventListener('seeked', this.renderVideo);
         this.video.addEventListener('loadeddata', this.renderVideo);
         this.createAnnotationLayer();
+
+        var keyboard = biigle.$require('keyboard');
+        keyboard.on(' ', this.togglePlaying);
     },
     mounted: function () {
         this.map.setTarget(this.$el);

@@ -8,7 +8,7 @@
         :annotations="annotations"
         :video=video
         ></video-screen>
-    <video-timeline v-cloak
+    <video-timeline
         :annotations="annotations"
         :video=video
         v-on:seek="seek"
