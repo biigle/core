@@ -17,6 +17,15 @@ class Init extends Migration
             $table->increments('id');
             $table->uuid('uuid')->unique();
             $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('url');
+
+            $table->integer('project_id')->unsigned()->index();
+            $table->foreign('project_id')
+                  ->references('id')
+                  ->on('projects')
+                  ->onDelete('cascade');
+
             $table->json('meta');
             $table->timestamps();
         });

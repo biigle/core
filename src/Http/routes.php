@@ -4,7 +4,7 @@ $router->group([
     'middleware' => 'auth',
     'namespace' => 'Views',
     ], function ($router) {
-        $router->get('{uuid}', 'VideoController@show')->name('video');
+        $router->get('videos/{id}', 'VideoController@show')->name('video');
     });
 
 $router->group([
@@ -14,5 +14,5 @@ $router->group([
     ], function ($router) {
         $router->resource('videos', 'VideoController', ['only' => ['store']]);
 
-        $router->get('videos/{uuid}/file', 'VideoFileController@show');
+        $router->get('videos/{id}/file', 'VideoFileController@show');
     });

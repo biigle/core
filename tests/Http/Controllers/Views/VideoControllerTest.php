@@ -2,16 +2,20 @@
 
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Views;
 
-use Biigle\Tests\TestCase;
-use Biigle\Modules\Videos\Video;
+use ApiTestCase;
+use Biigle\Tests\Modules\Videos\VideoTest;
 
-class VideoControllerTest extends TestCase
+class VideoControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $video = factory(Video::class)->create();
+        $video = VideoTest::create(['project_id' => $this->project()->id]);
 
-        $this->get('foo')->assertStatus(404);
-        $this->get($video->uuid)->assertStatus(200);
+        $this->beUser();
+        $this->get('videos/999')->assertStatus(404);
+        $this->get("videos/{$video->id}")->assertStatus(403);
+
+        $this->beGuest();
+        $this->get("videos/{$video->id}")->assertStatus(200);
     }
 }

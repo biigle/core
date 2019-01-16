@@ -3,29 +3,55 @@
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
-use Biigle\Tests\TestCase;
-use Biigle\Modules\Videos\Video;
+use ApiTestCase;
+use Biigle\Tests\Modules\Videos\VideoTest;
 
-class VideoFileControllerTest extends TestCase
+class VideoFileControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $video = factory(Video::class)->create();
-        Storage::fake('videos');
-        Storage::disk('videos')->put($video->uuid, 'testvideo');
+        Storage::fake('test');
+        Storage::disk('test')->put('video.mp4', 'testvideo');
+        $video = VideoTest::create([
+            'url' => 'test://video.mp4',
+            'project_id' => $this->project()->id,
+        ]);
 
+        $this->doTestApiRoute('GET', "api/v1/videos/{$video->id}/file");
+
+        $this->beUser();
         $this->get('api/v1/videos/foo/file')->assertStatus(404);
-        $this->get("api/v1/videos/{$video->uuid}/file")->assertStatus(200);
+        $this->get("api/v1/videos/{$video->id}/file")->assertStatus(403);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")->assertStatus(200);
+    }
+
+    public function testShowNotFound()
+    {
+        Storage::fake('test');
+        $video = VideoTest::create([
+            'url' => 'test://video.mp4',
+            'project_id' => $this->project()->id,
+        ]);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")->assertStatus(404);
     }
 
     public function testShowPartial()
     {
-        $video = factory(Video::class)->create(['meta' => ['size' => 9]]);
-        Storage::fake('videos');
-        Storage::disk('videos')->put($video->uuid, 'testvideo');
+        Storage::fake('test');
+        Storage::disk('test')->put('video.mp4', 'testvideo');
+        $video = VideoTest::create([
+            'url' => 'test://video.mp4',
+            'project_id' => $this->project()->id,
+            'meta' => ['size' => 9],
+        ]);
 
+        $this->beGuest();
         $response = $this->withHeaders(['Range' => 'bytes=3-'])
-            ->getJson("api/v1/videos/{$video->uuid}/file")
+            ->getJson("api/v1/videos/{$video->id}/file")
             ->assertStatus(206);
 
         $this->assertEquals(6, $response->headers->get('Content-Length'));

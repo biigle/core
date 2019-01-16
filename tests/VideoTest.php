@@ -2,18 +2,36 @@
 
 namespace Biigle\Tests\Modules\Videos;
 
+use ModelTestCase;
 use Biigle\Modules\Videos\Video;
-use Biigle\Tests\Modules\Videos\TestCase;
 
-class VideoTest extends TestCase
+class VideoTest extends ModelTestCase
 {
-    public function testModel()
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Video::class;
+
+    public function testAttributes()
     {
-        $video = factory(Video::class)->create();
-        $this->assertNotNull($video->name);
-        $this->assertNotNull($video->uuid);
-        $this->assertNotNull($video->created_at);
-        $this->assertNotNull($video->updated_at);
-        $this->assertEquals([], $video->meta);
+        $this->assertNotNull($this->model->uuid);
+        $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->url);
+        $this->assertNotNull($this->model->project);
+        $this->assertNotNull($this->model->created_at);
+        $this->assertNotNull($this->model->updated_at);
+        $this->assertEquals([], $this->model->meta);
+    }
+
+    public function testGetDisk()
+    {
+        $this->model->url = 'test://my/video.mp4';
+        $this->assertEquals('test', $this->model->getDisk());
+    }
+
+    public function testGetPath()
+    {
+        $this->model->url = 'test://my/video.mp4';
+        $this->assertEquals('my/video.mp4', $this->model->getPath());
     }
 }

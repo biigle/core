@@ -25,4 +25,34 @@ class Video extends Model
     protected $casts = [
         'meta' => 'array',
     ];
+
+    /**
+     * The project this video belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the name of the storage disk of this video.
+     *
+     * @return string
+     */
+    public function getDisk()
+    {
+        return explode('://', $this->url)[0];
+    }
+
+    /**
+     * Get the file path in the storage disk of this video.
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return explode('://', $this->url)[1];
+    }
 }

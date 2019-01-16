@@ -42,7 +42,7 @@ class VideosServiceProvider extends ServiceProvider
         //     'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         // ]);
 
-        // Gate::policy(Video::class, Policies\VideoPolicy::class);
+        Gate::policy(Video::class, Policies\VideoPolicy::class);
         // Event::listen(VideoCreated::class, HandleCreateddVideo::class);
     }
 

@@ -2,25 +2,23 @@
 
 namespace Biigle\Tests\Modules\Videos;
 
-use Biigle\Tests\TestCase;
+use ModelTestCase;
 use Biigle\Modules\Videos\VideoAnnotation;
 
-class AnnotationTest extends TestCase
+class AnnotationTest extends ModelTestCase
 {
-    public function testModel()
-    {
-        $annotation = factory(VideoAnnotation::class)->create();
-        $this->assertNotNull($annotation->video);
-        $this->assertNotNull($annotation->shape);
-        $this->assertNotNull($annotation->created_at);
-        $this->assertNotNull($annotation->updated_at);
-        $this->assertNotNull($annotation->points);
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = VideoAnnotation::class;
 
-    public function testCastsPoints()
+    public function testAttributes()
     {
-        $expect = ['t 10.0', 100, 123, 't 15.0'];
-        $annotation = factory(VideoAnnotation::class)->create(['points' => $expect]);
-        $this->assertEquals($expect, $annotation->points);
+        $this->assertNotNull($this->model->video);
+        $this->assertNotNull($this->model->shape);
+        $this->assertNotNull($this->model->created_at);
+        $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->points);
+        $this->assertNotNull($this->model->frames);
     }
 }

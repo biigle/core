@@ -11,14 +11,15 @@ class VideoController extends Controller
     /**
      * Show the video annotation tool.
      *
-     * @param string $uuid
+     * @param number $id
      *
      * @return mixed
      */
-    public function show($uuid)
+    public function show($id)
     {
-        $video = Video::where('uuid', $uuid)->firstOrFail();
+        $video = Video::findOrFail($id);
+        $this->authorize('access', $video);
 
-        return view('show', compact('video'));
+        return view('videos::show', compact('video'));
     }
 }

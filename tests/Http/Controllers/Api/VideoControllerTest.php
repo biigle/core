@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
-use Biigle\Tests\TestCase;
+use TestCase;
 use Biigle\Modules\Videos\Video;
 use Illuminate\Http\UploadedFile;
 
@@ -11,6 +11,7 @@ class VideoControllerTest extends TestCase
 {
     public function testStore()
     {
+        $this->markTestIncomplete();
         Storage::fake('videos');
         // Name and file are required.
         $this->postJson('api/v1/videos')->assertStatus(422);

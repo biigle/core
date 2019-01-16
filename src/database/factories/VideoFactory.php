@@ -4,8 +4,12 @@ use Faker\Generator as Faker;
 
 $factory->define(Biigle\Modules\Videos\Video::class, function (Faker $faker) {
     return [
-        'name' => $faker->firstName(),
         'uuid' => $faker->unique()->uuid(),
+        'name' => $faker->firstName(),
+        'url' => $faker->url(),
         'meta' => [],
+        'project_id' => function () {
+            return factory(Biigle\Project::class)->create()->id;
+        },
     ];
 });

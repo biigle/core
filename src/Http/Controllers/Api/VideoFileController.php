@@ -6,21 +6,36 @@ use Storage;
 use Illuminate\Http\Request;
 use Biigle\Modules\Videos\Video;
 use Biigle\Http\Controllers\Api\Controller;
+use League\Flysystem\FileNotFoundException;
 
 class VideoFileController extends Controller
 {
     /**
      * Get a video file.
      *
+     * @api {get} videos/:id/file Get a video file
+     * @apiGroup Videos
+     * @apiName ShowVideoFile
+     * @apiParam {Number} id The video ID.
+     * @apiPermission projectMember
+     * @apiDescription This endpoint supports the `Range` header.
+     *
      * @param Request $request
-     * @param string $uuid
+     * @param int $id
      *
      * @return mixed
      */
-    public function show(Request $request, $uuid)
+    public function show(Request $request, $id)
     {
-        $video = Video::where('uuid', $uuid)->firstOrFail();
-        $response = Storage::disk('videos')->response($uuid);
+        $video = Video::findOrFail($id);
+        $this->authorize('access', $video);
+
+        try {
+            $response = Storage::disk($video->getDisk())->response($video->getPath());
+        } catch (FileNotFoundException $e) {
+            abort(404);
+        }
+
         $response->headers->set('Accept-Ranges', 'bytes');
 
         $range = $this->getByteRange($video, $request);
@@ -30,14 +45,14 @@ class VideoFileController extends Controller
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
             $offset = $range[0];
             $length = $range[1] - $range[0] + 1;
-            $total = $video->meta['size'];
+            $stream = Storage::disk($video->getDisk())->readStream($video->getPath());
+            $total = fstat($stream)['size'];
             $response->headers->set('Content-Length', $length);
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
 
             // This overrides the default streamed response callback.
-            $response->setCallback(function () use ($uuid, $offset, $length) {
-                $stream = Storage::disk('videos')->readStream($uuid);
+            $response->setCallback(function () use ($stream, $offset, $length) {
                 $chunkSize = 1024;
                 fseek($stream, $offset);
                 // Read the file in chunks because the whole requested range may not fit
