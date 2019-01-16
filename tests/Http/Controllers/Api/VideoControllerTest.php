@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
-use App\Video;
-use Tests\TestCase;
+use Biigle\Tests\TestCase;
+use Biigle\Modules\Videos\Video;
 use Illuminate\Http\UploadedFile;
 
 class VideoControllerTest extends TestCase

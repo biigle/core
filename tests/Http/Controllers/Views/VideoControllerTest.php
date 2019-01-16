@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Http\Controllers\Views;
+namespace Biigle\Tests\Modules\Videos\Http\Controllers\Views;
 
-use App\Video;
-use Tests\TestCase;
+use Biigle\Tests\TestCase;
+use Biigle\Modules\Videos\Video;
 
 class VideoControllerTest extends TestCase
 {

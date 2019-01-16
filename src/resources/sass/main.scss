@@ -1,0 +1,25 @@
+@import "variables";
+
+html, body {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-form {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@import 'video';
+@import 'components/videoScreen';
+@import 'components/controlButton';
+@import 'components/videoTimeline';
+@import 'components/trackHeaders';
+@import 'components/scrollStrip';
+@import 'components/videoProgress';
+@import 'components/annotationTracks';
+@import 'components/annotationTrack';
+@import 'components/annotationClip';

@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Biigle\Tests\Modules\Videos;
 
-use App\Video;
-use Tests\TestCase;
+use Biigle\Modules\Videos\Video;
+use Biigle\Tests\Modules\Videos\TestCase;
 
 class VideoTest extends TestCase
 {
