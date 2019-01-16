@@ -160,14 +160,16 @@ biigle.$component('components.videoScreen', {
             var oldRendered = this.renderedAnnotationMap;
             var newRendered = {};
             this.renderedAnnotationMap = newRendered;
-            var toUpdate = {};
-            var toCreate = {};
+            var toCreate = [];
             var annotation;
+            var hasRenderedFeatures = false;
 
             for (var i = 0, length = annotations.length; i < length; i++) {
                 // We can skip ahead and break early because of the sorting in the
                 // annotationsPreparedToRender array.
-                if (annotations[i].end <= time) {
+                // Check for start!=time in case this is a single frame annotation
+                // (start==end). It wwould never be shown otherwise.
+                if (annotations[i].end <= time && annotations[i].start !== time) {
                     continue;
                 }
 
@@ -176,19 +178,25 @@ biigle.$component('components.videoScreen', {
                 }
 
                 annotation = annotations[i];
+                hasRenderedFeatures = true;
                 if (oldRendered.hasOwnProperty(annotation.id)) {
-                    toUpdate[annotation.id] = oldRendered[annotation.id];
+                    newRendered[annotation.id] = oldRendered[annotation.id];
                     delete oldRendered[annotation.id];
                 } else {
-                    toCreate[annotation.id] = annotation.self;
+                    toCreate.push(annotation.self);
                 }
             }
 
-            Object.values(oldRendered).forEach(function (feature) {
-                source.removeFeature(feature);
-            });
+            if (hasRenderedFeatures) {
+                Object.values(oldRendered).forEach(function (feature) {
+                    source.removeFeature(feature);
+                });
+            } else {
+                source.clear();
+            }
 
-            var features = Object.values(toCreate).map(this.createFeature);
+
+            var features = toCreate.map(this.createFeature);
             features.forEach(function (feature) {
                 newRendered[feature.getId()] = feature;
             });
@@ -197,15 +205,17 @@ biigle.$component('components.videoScreen', {
                 source.addFeatures(features);
             }
 
-            // TODO update/interpolate features
-            Object.assign(newRendered, toUpdate);
-            // console.log('remove', Object.keys(oldRendered));
-            // console.log('update', Object.keys(toUpdate));
-            // console.log('create', Object.keys(toCreate));
+            Object.values(newRendered).forEach(function (feature) {
+                this.interpolateGeometry(feature, time);
+            }, this);
+        },
+        createGeometry: function (shape, coordinates) {
+            // Only supports points for now.
+            return new ol.geom.Point(coordinates);
         },
         createFeature: function (annotation) {
             var feature = new ol.Feature(
-                new ol.geom.Point(annotation.points.coordinates[0])
+                this.createGeometry('Point', annotation.points.coordinates[0])
             );
 
             feature.setId(annotation.id);
@@ -215,6 +225,31 @@ biigle.$component('components.videoScreen', {
             }
 
             return feature;
+        },
+        interpolateGeometry: function (feature, time) {
+            var annotation = feature.get('annotation');
+            var frames = annotation.points.frames;
+
+            if (frames.length <= 1) {
+                return;
+            }
+
+            var i;
+            for (i = frames.length - 1; i >= 0; i--) {
+                if (frames[i] <= time) {
+                    break;
+                }
+            }
+
+            var coords = annotation.points.coordinates;
+            var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
+            feature.setGeometry(this.createGeometry('Point',
+                this.interpolateCoordinates(coords[i], coords[i + 1], progress)));
+        },
+        interpolateCoordinates: function (coords1, coords2, progress) {
+            return coords1.map(function (coord, index) {
+                return coord + (coords2[index] - coord) * progress;
+            });
         },
     },
     watch: {
