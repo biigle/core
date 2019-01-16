@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f47eff870df92d3e51519e2197ea2d8",
+    "content-hash": "4f07abaa9314019bed320d42b990ceda",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -571,6 +571,44 @@
                 "issues": "https://github.com/biigle/sync/issues"
             },
             "time": "2018-10-26T06:51:02+00:00"
+        },
+        {
+            "name": "biigle/videos",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/videos.git",
+                "reference": "eda30a895bf1bfd79975dc514c8d16e1c5e4b408"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/eda30a895bf1bfd79975dc514c8d16e1c5e4b408",
+                "reference": "eda30a895bf1bfd79975dc514c8d16e1c5e4b408",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/annotations": "^3.9",
+                "biigle/label-trees": "^1.19",
+                "ramsey/uuid": "^3.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Videos\\": "src"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Create, edit and explore video annotations",
+            "support": {
+                "source": "https://github.com/biigle/videos/tree/master",
+                "issues": "https://github.com/biigle/videos/issues"
+            },
+            "time": "2019-01-16T14:27:39+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -5842,6 +5880,7 @@
         "biigle/projects": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
+        "biigle/videos": 20,
         "biigle/volumes": 20
     },
     "prefer-stable": true,

@@ -34,6 +34,7 @@
         "biigle/projects": "@dev",
         "biigle/reports": "@dev",
         "biigle/sync": "@dev",
+        "biigle/videos": "@dev",
         "biigle/volumes": "@dev",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
@@ -175,6 +176,10 @@
         "maia": {
             "type": "vcs",
             "url": "git@github.com:biigle/maia.git"
+        },
+        "videos": {
+            "type": "vcs",
+            "url": "git@github.com:biigle/videos.git"
         }
     }
 }
