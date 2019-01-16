@@ -289,6 +289,7 @@ biigle.$component('components.videoScreen', {
             this.$emit('create-bookmark', this.video.currentTime);
         },
         startDrawPoint: function () {
+            this.pause();
             this.resetPendingAnnotation();
             this.drawingPoint = true;
             this.drawInteraction = new ol.interaction.Draw({
@@ -322,6 +323,11 @@ biigle.$component('components.videoScreen', {
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
+            }
+
+            if (this.video.currentTime < this.video.duration) {
+                this.play();
+                setTimeout(this.pause, 1000);
             }
         },
     },
