@@ -206,12 +206,25 @@ biigle.$component('components.videoScreen', {
             }
 
             Object.values(newRendered).forEach(function (feature) {
-                this.interpolateGeometry(feature, time);
+                this.updateGeometry(feature, time);
             }, this);
+        },
+        invertPointsYAxis: function (points) {
+            // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
+            // the points. CAUTION: Modifies the array in place!
+            // The y axis should be switched from "top to bottom" to "bottom to top"
+            // or vice versa. Our database expects ttb, OpenLayers expects btt.
+
+            var height = this.videoCanvas.height;
+            for (var i = 1; i < points.length; i += 2) {
+                points[i] = height - points[i];
+            }
+
+            return points;
         },
         createGeometry: function (shape, coordinates) {
             // Only supports points for now.
-            return new ol.geom.Point(coordinates);
+            return new ol.geom.Point(this.invertPointsYAxis(coordinates.slice()));
         },
         createFeature: function (annotation) {
             var feature = new ol.Feature(
@@ -226,7 +239,7 @@ biigle.$component('components.videoScreen', {
 
             return feature;
         },
-        interpolateGeometry: function (feature, time) {
+        updateGeometry: function (feature, time) {
             var annotation = feature.get('annotation');
             var frames = annotation.points.frames;
 
