@@ -9,6 +9,7 @@ biigle.$viewModel('video-container', function (element) {
         },
         data: {
             video: document.createElement('video'),
+            bookmarks: [],
             annotations: [],
             // annotations: [
             //     {
@@ -162,12 +163,21 @@ biigle.$viewModel('video-container', function (element) {
             selectAnnotation: function (annotation, frameIndex) {
                 this.deselectAnnotations();
                 annotation.selected = frameIndex;
-                this.video.currentTime = annotation.points.frames[frameIndex];
+                this.seek(annotation.points.frames[frameIndex]);
             },
             deselectAnnotations: function () {
                 this.annotations.forEach(function (annotation) {
                     annotation.selected = false;
                 });
+            },
+            createBookmark: function (time) {
+                var hasBookmark = this.bookmarks.reduce(function (has, b) {
+                    return has || b.time === time;
+                }, false);
+
+                if (!hasBookmark) {
+                    this.bookmarks.push({time: time});
+                }
             },
         },
         created: function () {

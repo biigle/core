@@ -7,10 +7,12 @@
     <video-screen
         :annotations="annotations"
         :video=video
+        v-on:create-bookmark="createBookmark"
         ></video-screen>
     <video-timeline
         :annotations="annotations"
         :video=video
+        :bookmarks="bookmarks"
         v-on:seek="seek"
         v-on:select="selectAnnotation"
         v-on:deselect="deselectAnnotations"

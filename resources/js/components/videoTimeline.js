@@ -12,6 +12,7 @@ biigle.$component('components.videoTimeline', {
             ' :annotations="annotations"' +
             ' :duration="duration"' +
             ' :current-time="currentTime"' +
+            ' :bookmarks="bookmarks"' +
             ' @seek="emitSeek"' +
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
@@ -33,6 +34,12 @@ biigle.$component('components.videoTimeline', {
         video: {
             type: HTMLVideoElement,
             required: true,
+        },
+        bookmarks: {
+            type: Array,
+            default: function () {
+                return [];
+            },
         },
     },
     data: function () {

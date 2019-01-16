@@ -1,13 +1,13 @@
 biigle.$component('components.scrollStrip', {
     template: '<div class="scroll-strip">' +
         '<video-progress' +
+            ' :bookmarks="bookmarks"' +
             ' :duration="duration"' +
             ' @seek="emitSeek"' +
             '></video-progress>' +
         '<annotation-tracks' +
             ' :annotations="annotations"' +
             ' :duration="duration"' +
-            ' :element-width="elementWidth"' +
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
             ' @update="emitUpdateTracks"' +
@@ -21,6 +21,12 @@ biigle.$component('components.scrollStrip', {
     },
     props: {
         annotations: {
+            type: Array,
+            required: function () {
+                return [];
+            },
+        },
+        bookmarks: {
             type: Array,
             required: function () {
                 return [];
@@ -56,8 +62,8 @@ biigle.$component('components.scrollStrip', {
         updateElementWidth: function () {
             this.elementWidth = this.$el.clientWidth;
         },
-        emitSeek: function (offset) {
-            this.$emit('seek', offset / this.elementWidth * this.duration);
+        emitSeek: function (time) {
+            this.$emit('seek', time);
         },
         emitSelect: function (annotation, index) {
             this.$emit('select', annotation, index);

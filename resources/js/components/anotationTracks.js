@@ -25,10 +25,6 @@ biigle.$component('components.annotationTracks', {
             type: Number,
             required: true,
         },
-        elementWidth: {
-            type: Number,
-            required: true,
-        },
     },
     data: function () {
         return {

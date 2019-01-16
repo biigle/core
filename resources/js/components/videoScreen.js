@@ -5,6 +5,10 @@ biigle.$component('components.videoScreen', {
                 '<control-button v-if="playing" icon="fa-pause" title="Pause [Spacebar]" v-on:click="pause"></control-button>' +
                 '<control-button v-else icon="fa-play" title="Play [Spacebar]" v-on:click="play"></control-button>' +
             '</div>' +
+            '<div class="btn-group">' +
+                '<control-button icon="fa-bookmark" title="Create a bookmark [b]" v-on:click="emitCreateBookmark"></control-button>' +
+                '<control-button icon="fa-dot-circle" title="Create a point annotation" v-on:click="startDrawPoint" disabled></control-button>' +
+            '</div>' +
         '</div>' +
     '</div>',
     components: {
@@ -270,6 +274,12 @@ biigle.$component('components.videoScreen', {
                 return coord + (coords2[index] - coord) * progress;
             });
         },
+        emitCreateBookmark: function () {
+            this.$emit('create-bookmark', this.video.currentTime);
+        },
+        startDrawPoint: function () {
+            console.log('draw');
+        },
     },
     watch: {
         playing: function (playing) {
@@ -293,6 +303,7 @@ biigle.$component('components.videoScreen', {
 
         var keyboard = biigle.$require('keyboard');
         keyboard.on(' ', this.togglePlaying);
+        keyboard.on('b', this.emitCreateBookmark);
     },
     mounted: function () {
         this.map.setTarget(this.$el);
