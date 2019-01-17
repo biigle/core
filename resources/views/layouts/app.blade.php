@@ -13,7 +13,7 @@
     @hasSection('description')
         <meta name="description" content="@yield('description')">
     @else
-        <meta name="description" content="The Bio-Image Indexing and Graphical Labelling Environment is a sophisticated web service for efficient and rapid annotation of still images.">
+        <meta name="description" content="The Bio-Image Indexing and Graphical Labelling Environment is a web service for the efficient and rapid annotation of still images.">
     @endif
 
     <link href="{{ cachebust_asset('assets/styles/main.css') }}" rel="stylesheet">
