@@ -11,13 +11,14 @@ use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
 use Biigle\Modules\Videos\VideoAnnotationLabel;
 use Biigle\Modules\Videos\Http\Requests\StoreVideoAnnotation;
+use Biigle\Modules\Videos\Http\Requests\UpdateVideoAnnotation;
 
 class VideoAnnotationController extends Controller
 {
     /**
      * Shows a list of all annotations of the specified video.
      *
-     * @api {get} videos/:id/annotations Get all annotations
+     * @api {get} videos/:id/annotations Get all video annotations
      * @apiGroup Videos
      * @apiName IndexVideoAnnotations
      * @apiPermission projectMember
@@ -67,7 +68,7 @@ class VideoAnnotationController extends Controller
     /**
      * Creates a new annotation in the specified video.
      *
-     * @api {post} videos/:id/annotations Create a new annotation
+     * @api {post} videos/:id/annotations Create a new video annotation
      * @apiGroup Annotations
      * @apiName StoreVideoAnnotations
      * @apiPermission projectEditor
@@ -164,5 +165,68 @@ class VideoAnnotationController extends Controller
         $annotation->load('labels.label', 'labels.user');
 
         return $annotation;
+    }
+
+    /**
+     * Updates the video annotation
+     *
+     * @api {put} video-annotations/:id Update an annotation
+     * @apiGroup VideoAnnotations
+     * @apiName UpdateVideoAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The video annotation ID.
+     * @apiParam (Required attributes) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new video annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParam (Required attributes) {Number[]} frames Array of new key frames of the annotation. The new key frames will replace the old key frames.
+     *
+     * @apiParamExample {json} Request example (JSON):
+     * {
+     *    "points": [[10, 11], [20, 21]],
+     *    "frames": [5.0, 10.]
+     * }
+     *
+     * @param UpdateVideoAnnotation $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateVideoAnnotation $request, $id)
+    {
+        // from a JSON request, the array may already be decoded
+        $points = $request->input('points');
+
+        if (is_string($points)) {
+            $points = json_decode($points);
+        }
+
+        $request->annotation->points = $points;
+        $request->annotation->frames = $request->input('frames');
+
+        try {
+            $request->annotation->validatePoints();
+        } catch (Exception $e) {
+            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
+        }
+
+        $request->annotation->save();
+    }
+
+    /**
+     * Removes a video annotation.
+     *
+     * @api {delete} video-annotations/:id Delete a video annotation
+     * @apiGroup VideoAnnotations
+     * @apiName DestroyVideoAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $annotation = VideoAnnotation::findOrFail($id);
+        $this->authorize('destroy', $annotation);
+        $annotation->delete();
     }
 }

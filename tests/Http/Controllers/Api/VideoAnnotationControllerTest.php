@@ -153,4 +153,79 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
     }
+
+    public function testUpdate()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+        ]);
+
+        $this->doTestApiRoute('PUT', "api/v1/video-annotations/{$annotation->id}");
+
+        $this->beUser();
+        $this->putJson("api/v1/video-annotations/{$annotation->id}")->assertStatus(403);
+
+        $this->beAdmin();
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20], [30, 40]],
+                'frames' => [1.0, 10.0]
+            ])
+            ->assertStatus(200);
+
+        $annotation = $annotation->fresh();
+        $this->assertEquals([[10, 20], [30, 40]], $annotation->points);
+        $this->assertEquals([1.0, 10.0], $annotation->frames);
+    }
+
+    public function testUpdateValidatePoints()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+        ]);
+
+        $this->beAdmin();
+        // invalid number of points
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 15, 20]],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testDestroy()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+        ]);
+
+        $this->doTestApiRoute('DELETE', "api/v1/video-annotations/{$annotation->id}");
+
+        $this->beUser();
+        $this->delete("api/v1/video-annotations/{$annotation->id}")->assertStatus(403);
+
+        $this->assertNotNull($annotation->fresh());
+
+        $this->beUser();
+        $response = $this->delete("api/v1/video-annotations/{$annotation->id}");
+        $response->assertStatus(403);
+
+        $this->beGuest();
+        $response = $this->delete("api/v1/video-annotations/{$annotation->id}");
+        $response->assertStatus(403);
+
+        $this->beEditor();
+        $response = $this->delete("api/v1/video-annotations/{$annotation->id}");
+        $response->assertStatus(200);
+
+        $this->assertNull($annotation->fresh());
+
+        // admin could delete but the annotation was already deleted
+        $this->beAdmin();
+        $response = $this->delete("api/v1/video-annotations/{$annotation->id}");
+        $response->assertStatus(404);
+    }
 }

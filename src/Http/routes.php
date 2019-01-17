@@ -24,4 +24,9 @@ $router->group([
             'only' => ['index', 'store'],
             'parameters' => ['videos' => 'id'],
         ]);
+
+        $router->resource('video-annotations', 'VideoAnnotationController', [
+            'only' => ['update', 'destroy'],
+            'parameters' => ['video-annotations' => 'id'],
+        ]);
     });
