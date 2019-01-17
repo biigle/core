@@ -62,4 +62,11 @@ class VideoTest extends ModelTestCase
         $this->model->save();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
     }
+
+    public function testAnnotations()
+    {
+        $this->assertFalse($this->model->annotations()->exists());
+        VideoAnnotationTest::create(['video_id' => $this->model->id]);
+        $this->assertTrue($this->model->annotations()->exists());
+    }
 }

@@ -50,6 +50,34 @@ class CreateVideosTables extends Migration
 
             $table->timestamps();
         });
+
+        Schema::create('video_annotation_labels', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('video_annotation_id')->unsigned();
+            $table->foreign('video_annotation_id')
+                  ->references('id')
+                  ->on('video_annotations')
+                  ->onDelete('cascade');
+
+            $table->integer('label_id')->unsigned();
+            $table->foreign('label_id')
+                  ->references('id')
+                  ->on('labels')
+                  // don't delete labels in use
+                  ->onDelete('restrict');
+
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  // don't delete video annotation labels if the creator is deleted
+                  ->onDelete('set null');
+
+            $table->timestamps();
+
+            // each user may set the same label only once for each video annotation
+            $table->unique(['video_annotation_id', 'label_id', 'user_id']);
+        });
     }
 
     /**
@@ -59,6 +87,7 @@ class CreateVideosTables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('video_annotation_labels');
         Schema::dropIfExists('video_annotations');
         Schema::dropIfExists('videos');
     }

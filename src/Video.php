@@ -62,6 +62,16 @@ class Video extends Model
     }
 
     /**
+     * The annotations that belong to this video.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function annotations()
+    {
+        return $this->hasMany(VideoAnnotation::class);
+    }
+
+    /**
      * Get the name of the storage disk of this video.
      *
      * @return string

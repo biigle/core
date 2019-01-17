@@ -43,6 +43,7 @@ class VideosServiceProvider extends ServiceProvider
         ]);
 
         Gate::policy(Video::class, Policies\VideoPolicy::class);
+        Gate::policy(VideoAnnotation::class, Policies\VideoAnnotationPolicy::class);
         // Event::listen(VideoCreated::class, HandleCreateddVideo::class);
     }
 

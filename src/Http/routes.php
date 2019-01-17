@@ -19,4 +19,9 @@ $router->group([
         ]);
 
         $router->get('videos/{id}/file', 'VideoFileController@show');
+
+        $router->resource('videos.annotations', 'VideoAnnotationController', [
+            'only' => ['index', 'store'],
+            'parameters' => ['videos' => 'id'],
+        ]);
     });
