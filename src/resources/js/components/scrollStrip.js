@@ -1,4 +1,4 @@
-biigle.$component('components.scrollStrip', {
+biigle.$component('videos.components.scrollStrip', {
     template: '<div class="scroll-strip">' +
         '<video-progress' +
             ' :bookmarks="bookmarks"' +
@@ -16,8 +16,8 @@ biigle.$component('components.scrollStrip', {
         '<span class="time-indicator" :style="indicatorStyle"></span>' +
     '</div>',
     components: {
-        videoProgress: biigle.$require('components.videoProgress'),
-        annotationTracks: biigle.$require('components.annotationTracks'),
+        videoProgress: biigle.$require('videos.components.videoProgress'),
+        annotationTracks: biigle.$require('videos.components.annotationTracks'),
     },
     props: {
         annotations: {
@@ -78,8 +78,14 @@ biigle.$component('components.scrollStrip', {
             this.$emit('scroll-y', scrollTop);
         },
     },
+    created: function () {
+        window.addEventListener('resize', this.updateElementWidth);
+        var self = this;
+        biigle.$require('events').$on('sidebar.toggle', function () {
+            self.$nextTick(self.updateElementWidth);
+        });
+    },
     mounted: function () {
         this.updateElementWidth();
-        window.addEventListener('resize', this.updateElementWidth);
     },
 });

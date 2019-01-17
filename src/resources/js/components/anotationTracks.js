@@ -1,4 +1,4 @@
-biigle.$component('components.annotationTracks', {
+biigle.$component('videos.components.annotationTracks', {
     template: '<div class="annotation-tracks"' +
         ' @click="emitDeselect"' +
         ' @scroll.stop="handleScroll"' +
@@ -12,7 +12,7 @@ biigle.$component('components.annotationTracks', {
                 '></annotation-track>' +
     '</div>',
     components: {
-        annotationTrack: biigle.$require('components.annotationTrack'),
+        annotationTrack: biigle.$require('videos.components.annotationTrack'),
     },
     props: {
         annotations: {
@@ -36,11 +36,11 @@ biigle.$component('components.annotationTracks', {
             var map = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
-                    if (!map.hasOwnProperty(label.id)) {
-                        map[label.id] = [];
+                    if (!map.hasOwnProperty(label.label_id)) {
+                        map[label.label_id] = [];
                     }
 
-                    map[label.id].push(annotation);
+                    map[label.label_id].push(annotation);
                 });
             });
 

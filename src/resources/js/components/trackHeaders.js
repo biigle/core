@@ -1,7 +1,7 @@
-biigle.$component('components.trackHeaders', {
+biigle.$component('videos.components.trackHeaders', {
     template: '<div class="track-headers">' +
         '<div class="track-header" v-for="track in tracks">'+
-            '<div class="label-name" v-text="track.label.name"></div>' +
+            '<div class="label-name" v-text="track.label.label.name"></div>' +
             '<div class="lane-dummy" v-for="lane in track.lanes"></div>' +
         '</div>' +
     '</div>',

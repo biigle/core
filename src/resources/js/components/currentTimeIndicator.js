@@ -1,4 +1,4 @@
-biigle.$component('components.currentTimeIndicator', {
+biigle.$component('videos.components.currentTimeIndicator', {
     template: '<span class="time-indicator" :style="style"></span>',
     props: {
         duration: {

@@ -2,7 +2,9 @@
 
 namespace Biigle\Modules\Videos\Http\Controllers\Views;
 
+use Biigle\Shape;
 use Biigle\Project;
+use Biigle\LabelTree;
 use Illuminate\Http\Request;
 use Biigle\Modules\Videos\Video;
 use Biigle\Http\Controllers\Views\Controller;
@@ -21,7 +23,22 @@ class VideoController extends Controller
         $video = Video::findOrFail($id);
         $this->authorize('access', $video);
 
-        return view('videos::show', compact('video'));
+        $shapes = Shape::pluck('name', 'id');
+
+        $labelTrees = LabelTree::with('labels')
+            ->select('id', 'name')
+            ->whereIn('id', function ($query) use ($video) {
+                $query->select('label_tree_id')
+                    ->from('label_tree_project')
+                    ->where('project_id', $video->project_id);
+            })
+            ->get();
+
+        return view('videos::show', compact(
+            'video',
+            'shapes',
+            'labelTrees'
+        ));
     }
 
     /**

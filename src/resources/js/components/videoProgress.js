@@ -1,4 +1,4 @@
-biigle.$component('components.videoProgress', {
+biigle.$component('videos.components.videoProgress', {
     template: '<div class="video-progress" @click="emitSeek">' +
         '<bookmark v-for="mark in bookmarks"' +
             ' :bookmark="mark"' +

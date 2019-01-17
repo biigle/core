@@ -1,4 +1,4 @@
-biigle.$component('components.annotationClip', {
+biigle.$component('videos.components.annotationClip', {
     template: '<div class="annotation-clip"' +
         ' v-show="duration > 0"' +
         ' :style="style"' +
@@ -63,10 +63,10 @@ biigle.$component('components.annotationClip', {
     },
     computed: {
         startFrame: function () {
-            return this.annotation.points.frames[0];
+            return this.annotation.frames[0];
         },
         endFrame: function () {
-            return this.annotation.points.frames[this.annotation.points.frames.length - 1];
+            return this.annotation.frames[this.annotation.frames.length - 1];
         },
         offset: function () {
             return this.startFrame / this.duration;
@@ -80,8 +80,8 @@ biigle.$component('components.annotationClip', {
         color: function () {
             var labelId = parseInt(this.labelId);
             for (var i = this.annotation.labels.length - 1; i >= 0; i--) {
-                if (this.annotation.labels[i].id === labelId) {
-                    return this.annotation.labels[i].color;
+                if (this.annotation.labels[i].label_id === labelId) {
+                    return this.annotation.labels[i].label.color;
                 }
             }
 
@@ -97,7 +97,7 @@ biigle.$component('components.annotationClip', {
         keyframes: function () {
             var selected = this.annotation.selected;
 
-            return this.annotation.points.frames.map(function (time, index) {
+            return this.annotation.frames.map(function (time, index) {
                 return {
                     time: time,
                     selected: selected === index,

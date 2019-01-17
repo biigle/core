@@ -27,6 +27,17 @@
             v-on:deselect="deselectAnnotations"
             ></video-timeline>
     </div>
+    @can('edit-in', $video)
+        <sidebar :toggle-on-keyboard="true" open-tab="labels" v-cloak>
+            <sidebar-tab name="labels" icon="tags" title="Label trees">
+                <div class="labels-tab">
+                    <div class="labels-tab__trees">
+                        <label-trees :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+                    </div>
+                </div>
+            </sidebar-tab>
+        </sidebar>
+    @endcan
 </div>
 @endsection
 
@@ -37,14 +48,22 @@
     <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
 @endif
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
 <script type="text/javascript">
-    biigle.$declare('videoSrc', '{{url('api/v1/videos/'.$video->id.'/file')}}');
+    biigle.$declare('videos.id', '{{$video->id}}');
+    biigle.$declare('videos.src', '{{url('api/v1/videos/'.$video->id.'/file')}}');
+    @can('editIn', $video)
+        biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
+    @endcan
+    biigle.$declare('videos.shapes', {!! $shapes !!});
+    biigle.$declare('videos.isEditor', @can('editIn', $video) true @else false @endcan);
 </script>
 @endpush
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/videos/styles/main.css') }}" rel="stylesheet">
 @endpush

@@ -1,4 +1,4 @@
-biigle.$component('components.annotationTrack', {
+biigle.$component('videos.components.annotationTrack', {
     template: '<div class="annotation-track">' +
         '<div class="annotation-lane" v-for="lane in lanes">' +
             '<annotation-clip v-for="annotation in lane"' +
@@ -10,7 +10,7 @@ biigle.$component('components.annotationTrack', {
         '</div>' +
     '</div>',
     components: {
-        annotationClip: biigle.$require('components.annotationClip'),
+        annotationClip: biigle.$require('videos.components.annotationClip'),
     },
     props: {
         annotations: {
@@ -38,8 +38,8 @@ biigle.$component('components.annotationTrack', {
 
             this.annotations.forEach(function (annotation) {
                 var range = [
-                    annotation.points.frames[0],
-                    annotation.points.frames[annotation.points.frames.length - 1],
+                    annotation.frames[0],
+                    annotation.frames[annotation.frames.length - 1],
                 ];
                 var lane = 0;
                 var set = false;

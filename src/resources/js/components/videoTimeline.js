@@ -1,4 +1,4 @@
-biigle.$component('components.videoTimeline', {
+biigle.$component('videos.components.videoTimeline', {
     template: '<div class="video-timeline">' +
         '<div class="static-strip">' +
             '<div class="current-time" v-text="currentTimeString"></div>' +
@@ -21,8 +21,8 @@ biigle.$component('components.videoTimeline', {
         '></scroll-strip>' +
     '</div>',
     components: {
-        trackHeaders: biigle.$require('components.trackHeaders'),
-        scrollStrip: biigle.$require('components.scrollStrip'),
+        trackHeaders: biigle.$require('videos.components.trackHeaders'),
+        scrollStrip: biigle.$require('videos.components.scrollStrip'),
     },
     props: {
         annotations: {
@@ -61,8 +61,8 @@ biigle.$component('components.videoTimeline', {
             var map = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
-                    if (!map.hasOwnProperty(label.id)) {
-                        map[label.id] = label;
+                    if (!map.hasOwnProperty(label.label_id)) {
+                        map[label.label_id] = label;
                     }
                 });
             });

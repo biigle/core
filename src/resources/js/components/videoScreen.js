@@ -1,4 +1,4 @@
-biigle.$component('components.videoScreen', {
+biigle.$component('videos.components.videoScreen', {
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
@@ -48,8 +48,8 @@ biigle.$component('components.videoScreen', {
             return this.annotations.map(function (annotation) {
                     return {
                         id: annotation.id,
-                        start: annotation.points.frames[0],
-                        end: annotation.points.frames[annotation.points.frames.length - 1],
+                        start: annotation.frames[0],
+                        end: annotation.frames[annotation.frames.length - 1],
                         self: annotation,
                     };
                 })
@@ -255,20 +255,20 @@ biigle.$component('components.videoScreen', {
         },
         createFeature: function (annotation) {
             var feature = new ol.Feature(
-                this.createGeometry('Point', annotation.points.coordinates[0])
+                this.createGeometry('Point', annotation.points[0])
             );
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
             if (annotation.labels && annotation.labels.length > 0) {
-                feature.set('color', annotation.labels[0].color);
+                feature.set('color', annotation.labels[0].label.color);
             }
 
             return feature;
         },
         updateGeometry: function (feature, time) {
             var annotation = feature.get('annotation');
-            var frames = annotation.points.frames;
+            var frames = annotation.frames;
 
             if (frames.length <= 1) {
                 return;
@@ -281,14 +281,14 @@ biigle.$component('components.videoScreen', {
                 }
             }
 
-            var coords = annotation.points.coordinates;
+            var points = annotation.points;
             var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
             feature.setGeometry(this.createGeometry('Point',
-                this.interpolateCoordinates(coords[i], coords[i + 1], progress)));
+                this.interpolatePoints(points[i], points[i + 1], progress)));
         },
-        interpolateCoordinates: function (coords1, coords2, progress) {
-            return coords1.map(function (coord, index) {
-                return coord + (coords2[index] - coord) * progress;
+        interpolatePoints: function (point1, point2, progress) {
+            return point1.map(function (value, index) {
+                return value + (point2[index] - value) * progress;
             });
         },
         emitCreateBookmark: function () {
@@ -315,14 +315,14 @@ biigle.$component('components.videoScreen', {
         resetPendingAnnotation: function () {
             this.pendingAnnotation = {
                 frames: [],
-                coordinates: [],
+                points: [],
             };
         },
         extendPendingAnnotation: function (e) {
             var lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
                 this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.coordinates.push(
+                this.pendingAnnotation.points.push(
                     this.invertPointsYAxis(e.feature.getGeometry().getCoordinates().slice())
                 );
             } else {
@@ -360,6 +360,13 @@ biigle.$component('components.videoScreen', {
         var keyboard = biigle.$require('keyboard');
         keyboard.on(' ', this.togglePlaying);
         keyboard.on('b', this.emitCreateBookmark);
+
+        var self = this;
+        biigle.$require('events').$on('sidebar.toggle', function () {
+            self.$nextTick(function () {
+                self.map.updateSize();
+            });
+        });
     },
     mounted: function () {
         this.map.setTarget(this.$el);
