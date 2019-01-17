@@ -1,5 +1,6 @@
 biigle.$component('components.annotationClip', {
     template: '<div class="annotation-clip"' +
+        ' v-show="duration > 0"' +
         ' :style="style"' +
         ' :class="classObj"' +
         ' @click.stop="emitSelectFrame(0)"' +

@@ -2,13 +2,13 @@ biigle.$component('components.videoScreen', {
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
-                '<control-button v-if="playing" icon="fa-pause" title="Pause [Spacebar]" v-on:click="pause"></control-button>' +
-                '<control-button v-else icon="fa-play" title="Play [Spacebar]" v-on:click="play"></control-button>' +
+                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗯" v-on:click="emitCreateBookmark"></control-button>' +
+                '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="pause"></control-button>' +
+                '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
             '</div>' +
             '<div class="btn-group">' +
-                '<control-button icon="fa-bookmark" title="Create a bookmark [b]" v-on:click="emitCreateBookmark"></control-button>' +
                 '<control-button v-if="drawingPoint" icon="fa-check" title="Finish a point annotation" v-on:click="finishDrawPoint" :active="true"></control-button>' +
-                '<control-button v-else icon="fa-dot-circle" title="Start a point annotation" v-on:click="startDrawPoint"></control-button>' +
+                '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -62,14 +62,14 @@ biigle.$component('components.videoScreen', {
         createMap: function () {
             var map = new ol.Map({
                 renderer: 'canvas',
-                // controls: [
-                //     new ol.control.Zoom(),
-                //     new ol.control.ZoomToExtent({
-                //         tipLabel: 'Zoom to show whole image',
-                //         // fontawesome compress icon
-                //         label: '\uf066'
-                //     }),
-                // ],
+                controls: [
+                    new ol.control.Zoom(),
+                    new ol.control.ZoomToExtent({
+                        tipLabel: 'Zoom to show whole video',
+                        // fontawesome compress icon
+                        label: '\uf066'
+                    }),
+                ],
                 interactions: ol.interaction.defaults({
                     altShiftDragRotate: false,
                     doubleClickZoom: false,
@@ -79,6 +79,12 @@ biigle.$component('components.videoScreen', {
                     pinchZoom: false
                 }),
             });
+
+            var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
+            map.addControl(new ZoomToNativeControl({
+                // fontawesome expand icon
+                label: '\uf065'
+            }));
 
             return map;
         },

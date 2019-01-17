@@ -16,6 +16,7 @@ $ol-control-color: rgb(0, 60, 136);
 .video-screen {
     background: $gray-lighter;
     position: relative;
+    background-image: url(../../annotations/images/noise.png);
 
     video {
         min-height: 100%;

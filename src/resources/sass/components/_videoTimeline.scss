@@ -1,9 +1,11 @@
 .video-timeline {
     display: flex;
+    border-top: 2px solid $legend-border-color;
+    overflow: hidden;
 
     .static-strip {
         max-width: 150px;
-        border-right: 1px solid $gray-lighter;
+        border-right: 1px solid $legend-border-color;
         display: flex;
         flex-direction: column;
 
@@ -11,7 +13,7 @@
             height: 34px;
             font-weight: bold;
             padding: 0.5em 1em;
-            border-bottom: 1px solid $gray-lighter;
+            border-bottom: 1px solid $legend-border-color;
             text-align: center;
         }
 
