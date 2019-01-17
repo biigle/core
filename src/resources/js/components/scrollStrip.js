@@ -84,6 +84,11 @@ biigle.$component('videos.components.scrollStrip', {
         biigle.$require('events').$on('sidebar.toggle', function () {
             self.$nextTick(self.updateElementWidth);
         });
+
+        // Do not scroll down when the Spacebar is pressed.
+        biigle.$require('keyboard').on(' ', function (e) {
+            e.preventDefault();
+        });
     },
     mounted: function () {
         this.updateElementWidth();

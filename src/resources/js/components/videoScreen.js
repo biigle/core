@@ -8,7 +8,7 @@ biigle.$component('videos.components.videoScreen', {
             '</div>' +
             '<div class="btn-group">' +
                 '<control-button v-if="drawingPoint" icon="fa-check" title="Finish a point annotation" v-on:click="finishDrawPoint" :active="true"></control-button>' +
-                '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint"></control-button>' +
+                '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -26,13 +26,16 @@ biigle.$component('videos.components.videoScreen', {
                 return [];
             },
         },
+        selectedLabel: {
+            type: Object,
+        },
     },
     data: function () {
         return {
             playing: false,
             animationFrameId: null,
             // Refresh the annotations only every x ms.
-            refreshRate: 100,
+            refreshRate: 30,
             refreshLastTime: Date.now(),
             // A map of annotation IDs to OpenLayers feature objects for all currently
             // rendered annotations.
@@ -56,6 +59,9 @@ biigle.$component('videos.components.videoScreen', {
                 .sort(function (a, b) {
                     return a.start - b.start;
                 });
+        },
+        hasNoSelectedLabel: function () {
+            return !this.selectedLabel;
         },
     },
     methods: {
@@ -295,6 +301,10 @@ biigle.$component('videos.components.videoScreen', {
             this.$emit('create-bookmark', this.video.currentTime);
         },
         startDrawPoint: function () {
+            if (this.hasNoSelectedLabel) {
+                return;
+            }
+
             this.pause();
             this.resetPendingAnnotation();
             this.drawingPoint = true;

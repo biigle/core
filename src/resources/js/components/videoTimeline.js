@@ -46,7 +46,7 @@ biigle.$component('videos.components.videoTimeline', {
         return {
             animationFrameId: null,
             // Refresh the current time only every x ms.
-            refreshRate: 100,
+            refreshRate: 30,
             refreshLastTime: Date.now(),
             currentTime: 0,
             currentTimeDate: new Date(0),

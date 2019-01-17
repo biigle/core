@@ -15,6 +15,7 @@
         <video-screen
             :annotations="annotations"
             :video=video
+            :selected-label="selectedLabel"
             v-on:create-bookmark="createBookmark"
             v-on:create-annotation="createAnnotation"
             ></video-screen>

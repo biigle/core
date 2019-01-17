@@ -21,9 +21,6 @@
         background-color: #990000;
         box-shadow: 0 0 1px black;
         will-change: transform;
-        // The duration is half the refresh rate of the videoTimeline. Using the same or
-        // similar duration results in horrible flickering for some reason.
-        transition: transform 50ms linear;
 
         &:before {
             content: '';
