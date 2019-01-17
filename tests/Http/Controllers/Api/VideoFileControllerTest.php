@@ -46,7 +46,7 @@ class VideoFileControllerTest extends ApiTestCase
         $video = VideoTest::create([
             'url' => 'test://video.mp4',
             'project_id' => $this->project()->id,
-            'meta' => ['size' => 9],
+            'attrs' => ['size' => 9],
         ]);
 
         $this->beGuest();

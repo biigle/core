@@ -12,7 +12,10 @@ $router->group([
     'namespace' => 'Api',
     'prefix' => 'api/v1',
     ], function ($router) {
-        $router->resource('videos', 'VideoController', ['only' => ['store']]);
+        $router->resource('projects.videos', 'ProjectVideoController', [
+            'only' => ['store'],
+            'parameters' => ['projects' => 'id'],
+        ]);
 
         $router->get('videos/{id}/file', 'VideoFileController@show');
     });

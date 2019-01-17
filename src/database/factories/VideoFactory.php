@@ -7,7 +7,7 @@ $factory->define(Biigle\Modules\Videos\Video::class, function (Faker $faker) {
         'uuid' => $faker->unique()->uuid(),
         'name' => $faker->firstName(),
         'url' => $faker->url(),
-        'meta' => [],
+        'attrs' => [],
         'project_id' => function () {
             return factory(Biigle\Project::class)->create()->id;
         },

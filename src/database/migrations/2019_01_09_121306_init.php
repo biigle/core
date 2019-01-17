@@ -26,7 +26,7 @@ class Init extends Migration
                   ->on('projects')
                   ->onDelete('cascade');
 
-            $table->json('meta');
+            $table->json('attrs')->nullable();
             $table->timestamps();
         });
 

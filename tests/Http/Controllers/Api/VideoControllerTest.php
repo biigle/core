@@ -3,40 +3,81 @@
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
-use TestCase;
+use ApiTestCase;
+use Illuminate\Http\File;
 use Biigle\Modules\Videos\Video;
-use Illuminate\Http\UploadedFile;
+use Biigle\Modules\Videos\Project;
 
-class VideoControllerTest extends TestCase
+class VideoControllerTest extends ApiTestCase
 {
     public function testStore()
     {
-        $this->markTestIncomplete();
-        Storage::fake('videos');
-        // Name and file are required.
-        $this->postJson('api/v1/videos')->assertStatus(422);
+        $id = $this->project()->id;
+        $project = Project::find($id);
+        $this->doTestApiRoute('POST', "/api/v1/projects/{$id}/videos");
 
-        $this->postJson('api/v1/videos', [
-                'name' => 'test',
-            ])->assertStatus(422);
+        $this->beEditor();
+        $this->post("/api/v1/projects/{$id}/videos")->assertStatus(403);
 
-        $path = __DIR__.'/../../../files/test.mp4';
-        $file = new UploadedFile($path, 'test.mp4', 'video/mp4', null, true);
+        $this->beAdmin();
+        // mssing arguments
+        $this->json('POST', "/api/v1/projects/{$id}/videos")->assertStatus(422);
 
-        $this->postJson('api/v1/videos', [
-                'name' => 'test',
-                'file' => $file,
-            ])->assertStatus(201);
+        // invalid url format
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'test',
+            ])
+            ->assertStatus(422);
 
-        $video = Video::first();
+        // unknown storage disk
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'random',
+            ])
+            ->assertStatus(422);
+
+        // video file not exist in storage disk
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'test://video',
+            ])
+            ->assertStatus(422);
+
+        Storage::fake('test');
+        Storage::disk('test')->put('video.txt', 'abc');
+
+        // invalid video format
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'test://video.txt',
+            ])
+            ->assertStatus(422);
+
+        $file = new File(__DIR__.'/../../../files/test.mp4');
+        Storage::disk('test')->putFileAs('', $file, 'video.mp4');
+
+        $this->assertFalse($project->videos()->exists());
+
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'test://video.mp4',
+                'description' => 'desc',
+                'gis_link' => 'gis',
+                'doi' => '123',
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'name' => 'my video no. 1',
+                'url' => 'test://video.mp4',
+                'description' => 'desc',
+                'gis_link' => 'gis',
+                'doi' => '123',
+            ]);
+
+        $video = $project->videos()->first();
         $this->assertNotNull($video);
-        $this->assertEquals('test', $video->name);
-        $expect = [
-            'filename' => 'test.mp4',
-            'size' => 104500,
-            'mimetype' => 'video/mp4',
-        ];
-        $this->assertEquals($expect, $video->meta);
-        $this->assertTrue(Storage::disk('videos')->exists($video->uuid));
+        $this->assertEquals(104500, $video->attrs['size']);
+        $this->assertEquals('video/mp4', $video->attrs['mimetype']);
     }
 }

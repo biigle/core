@@ -2,10 +2,19 @@
 
 namespace Biigle\Modules\Videos\Http\Requests;
 
+use Biigle\Project;
+use Biigle\Modules\Videos\Rules\VideoUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVideo extends FormRequest
 {
+    /**
+     * The project to attach the video to.
+     *
+     * @var Project
+     */
+    public $project;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +22,9 @@ class StoreVideo extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $this->project = Project::findOrFail($this->route('id'));
+
+        return $this->user()->can('update', $this->project);
     }
 
     /**
@@ -24,13 +35,8 @@ class StoreVideo extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'file' => [
-                'required',
-                'file',
-                'max:10000000',
-                'mimetypes:video/mpeg,video/mp4,video/webm',
-            ],
+            'name' => 'required|max:512',
+            'url' => ['required', new VideoUrl],
         ];
     }
 }

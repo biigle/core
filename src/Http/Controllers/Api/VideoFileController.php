@@ -31,7 +31,7 @@ class VideoFileController extends Controller
         $this->authorize('access', $video);
 
         try {
-            $response = Storage::disk($video->getDisk())->response($video->getPath());
+            $response = Storage::disk($video->disk)->response($video->path);
         } catch (FileNotFoundException $e) {
             abort(404);
         }
@@ -45,8 +45,8 @@ class VideoFileController extends Controller
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
             $offset = $range[0];
             $length = $range[1] - $range[0] + 1;
-            $stream = Storage::disk($video->getDisk())->readStream($video->getPath());
-            $total = fstat($stream)['size'];
+            $stream = Storage::disk($video->disk)->readStream($video->path);
+            $total = $video->attrs['size'];
             $response->headers->set('Content-Length', $length);
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
@@ -91,7 +91,7 @@ class VideoFileController extends Controller
             $range = array_map('intval', explode('-', trim($header[1])));
 
             if ($range[1] === 0) {
-                $range[1] = $video->meta['size'] - 1;
+                $range[1] = $video->attrs['size'] - 1;
             }
         }
 
