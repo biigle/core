@@ -62,7 +62,6 @@ class VideoControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/videos", [
                 'name' => 'my video no. 1',
                 'url' => 'test://video.mp4',
-                'description' => 'desc',
                 'gis_link' => 'gis',
                 'doi' => '123',
             ])
@@ -70,7 +69,6 @@ class VideoControllerTest extends ApiTestCase
             ->assertJson([
                 'name' => 'my video no. 1',
                 'url' => 'test://video.mp4',
-                'description' => 'desc',
                 'gis_link' => 'gis',
                 'doi' => '123',
             ]);

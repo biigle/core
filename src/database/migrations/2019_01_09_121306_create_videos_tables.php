@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Init extends Migration
+class CreateVideosTables extends Migration
 {
     /**
      * Run the migrations.
@@ -17,7 +17,6 @@ class Init extends Migration
             $table->increments('id');
             $table->uuid('uuid')->unique();
             $table->string('name');
-            $table->string('description')->nullable();
             $table->string('url');
 
             $table->integer('project_id')->unsigned()->index();

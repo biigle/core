@@ -4,8 +4,8 @@ var gulp = require('gulp');
 var h = require('gulp-helpers');
 var publish = h.publish('Biigle\\Modules\\Videos\\VideosServiceProvider');
 
-h.paths.sass = 'src/resources/assets/sass/';
-h.paths.js = 'src/resources/assets/js/';
+h.paths.sass = 'src/resources/sass/';
+h.paths.js = 'src/resources/js/';
 h.paths.public = 'src/public/assets/';
 
 gulp.task('sass-main', function () {

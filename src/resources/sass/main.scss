@@ -1,21 +1,16 @@
 @import "variables";
 
-html, body {
-    height: 100%;
-    position: relative;
-    overflow: hidden;
+.video-container {
+    .video-screen {
+        height: 65%;
+    }
+
+    .video-timeline {
+        height: 35%;
+    }
 }
 
-.upload-form {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-@import 'video';
 @import 'components/videoScreen';
-@import 'components/controlButton';
 @import 'components/videoTimeline';
 @import 'components/trackHeaders';
 @import 'components/scrollStrip';

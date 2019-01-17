@@ -5,6 +5,7 @@ $router->group([
     'namespace' => 'Views',
     ], function ($router) {
         $router->get('videos/{id}', 'VideoController@show')->name('video');
+        $router->get('videos/create', 'VideoController@store')->name('create-video');
     });
 
 $router->group([

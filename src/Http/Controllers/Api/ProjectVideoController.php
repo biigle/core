@@ -53,7 +53,6 @@ class ProjectVideoController extends Controller
             'uuid' => Uuid::uuid4(),
             'name' => $request->input('name'),
             'url' => $request->input('url'),
-            'description' => $request->input('description'),
             'project_id' => $request->project->id,
             'attrs' => [
                 'size' => Storage::disk($disk)->size($path),

@@ -35,12 +35,12 @@ class VideosServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        // $modules->register('videos', [
-        //     'viewMixins' => [
-        //         //
-        //     ],
-        //     'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
-        // ]);
+        $modules->register('videos', [
+            'viewMixins' => [
+                'projectsShow',
+            ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
+        ]);
 
         Gate::policy(Video::class, Policies\VideoPolicy::class);
         // Event::listen(VideoCreated::class, HandleCreateddVideo::class);
