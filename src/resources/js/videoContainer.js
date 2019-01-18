@@ -46,10 +46,19 @@ biigle.$viewModel('video-container', function (element) {
             seek: function (time) {
                 this.video.currentTime = time;
             },
-            selectAnnotation: function (annotation, frameIndex) {
+            selectAnnotation: function (annotation, time) {
+                this.selectAnnotations([annotation], [time]);
+            },
+            selectAnnotations: function (annotations, times) {
                 this.deselectAnnotations();
-                annotation.selected = frameIndex;
-                this.seek(annotation.frames[frameIndex]);
+
+                annotations.forEach(function (annotation, index) {
+                    annotation.selected = times[index];
+                });
+
+                // if (times && times.length > 0) {
+                //     this.seek(times[0]);
+                // }
             },
             deselectAnnotations: function () {
                 this.annotations.forEach(function (annotation) {

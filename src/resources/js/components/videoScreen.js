@@ -63,6 +63,11 @@ biigle.$component('videos.components.videoScreen', {
         hasNoSelectedLabel: function () {
             return !this.selectedLabel;
         },
+        selectedAnnotations: function () {
+            return this.annotations.filter(function (annotation) {
+                return annotation.selected !== false;
+            });
+        },
     },
     methods: {
         createMap: function () {
@@ -125,8 +130,11 @@ biigle.$component('videos.components.videoScreen', {
             this.map.getView().fit(extent);
             this.annotationLayer.setMap(this.map);
             this.pendingAnnotationLayer.setMap(this.map);
+            this.map.addInteraction(this.selectInteraction);
         },
         createAnnotationLayer: function () {
+            var styles = biigle.$require('annotations.stores.styles');
+
             this.annotationFeatures = new ol.Collection();
 
             this.annotationSource = new ol.source.Vector({
@@ -137,7 +145,7 @@ biigle.$component('videos.components.videoScreen', {
                 source: this.annotationSource,
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
-                style: biigle.$require('annotations.stores.styles').features,
+                style: styles.features,
             });
 
             this.pendingAnnotationSource = new ol.source.Vector();
@@ -147,8 +155,18 @@ biigle.$component('videos.components.videoScreen', {
                 source: this.pendingAnnotationSource,
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
-                style: biigle.$require('annotations.stores.styles').editing,
+                style: styles.editing,
             });
+
+            this.selectInteraction = new ol.interaction.Select({
+                condition: ol.events.condition.click,
+                style: styles.highlight,
+                layers: [this.annotationLayer],
+                multi: true
+            });
+
+            this.selectedFeatures = this.selectInteraction.getFeatures();
+            this.selectInteraction.on('select', this.handleFeatureSelect);
         },
         renderVideo: function () {
             this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
@@ -189,6 +207,7 @@ biigle.$component('videos.components.videoScreen', {
         },
         refreshAnnotations: function (time) {
             var source = this.annotationSource;
+            var selected = this.selectedFeatures;
             var annotations = this.annotationsPreparedToRender;
             var oldRendered = this.renderedAnnotationMap;
             var newRendered = {};
@@ -223,15 +242,20 @@ biigle.$component('videos.components.videoScreen', {
             if (hasRenderedFeatures) {
                 Object.values(oldRendered).forEach(function (feature) {
                     source.removeFeature(feature);
+                    selected.remove(feature);
                 });
             } else {
                 source.clear();
+                selected.clear();
             }
 
 
             var features = toCreate.map(this.createFeature);
             features.forEach(function (feature) {
                 newRendered[feature.getId()] = feature;
+                if (feature.get('annotation').selected !== false) {
+                    selected.push(feature);
+                }
             });
 
             if (features.length > 0) {
@@ -346,6 +370,16 @@ biigle.$component('videos.components.videoScreen', {
                 setTimeout(this.pause, 1000);
             }
         },
+        handleFeatureSelect: function (e) {
+            this.$emit('select',
+                e.selected.map(function (feature) {
+                    return feature.get('annotation');
+                }),
+                e.selected.map(function () {
+                    return this.video.currentTime;
+                }, this)
+            );
+        },
     },
     watch: {
         playing: function (playing) {
@@ -354,6 +388,18 @@ biigle.$component('videos.components.videoScreen', {
             } else if (!playing) {
                 this.stopRenderLoop();
             }
+        },
+        selectedAnnotations: function (annotations) {
+            var source = this.annotationSource;
+            var features = this.selectedFeatures;
+            var feature;
+            features.clear();
+            annotations.forEach(function (annotation) {
+                feature = source.getFeatureById(annotation.id);
+                if (feature) {
+                    features.push(feature);
+                }
+            });
         },
     },
     created: function () {

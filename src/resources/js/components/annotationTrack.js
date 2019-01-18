@@ -67,8 +67,8 @@ biigle.$component('videos.components.annotationTrack', {
         },
     },
     methods: {
-        emitSelect: function (annotation, index) {
-            this.$emit('select', annotation, index);
+        emitSelect: function (annotation, time) {
+            this.$emit('select', annotation, time);
         },
         rangesCollide: function (range1, range2) {
             // Start of range1 overlaps with range2.

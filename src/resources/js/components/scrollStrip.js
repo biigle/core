@@ -65,8 +65,8 @@ biigle.$component('videos.components.scrollStrip', {
         emitSeek: function (time) {
             this.$emit('seek', time);
         },
-        emitSelect: function (annotation, index) {
-            this.$emit('select', annotation, index);
+        emitSelect: function (annotation, time) {
+            this.$emit('select', annotation, time);
         },
         emitDeselect: function () {
             this.$emit('deselect');

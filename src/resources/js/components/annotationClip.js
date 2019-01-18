@@ -3,11 +3,11 @@ biigle.$component('videos.components.annotationClip', {
         ' v-show="duration > 0"' +
         ' :style="style"' +
         ' :class="classObj"' +
-        ' @click.stop="emitSelectFrame(0)"' +
+        ' @click.stop="select($event)"' +
         '>' +
             '<keyframe v-for="(frame, i) in keyframes"' +
                 ' :frame="frame"' +
-                ' @select="emitSelectFrame(i)"' +
+                ' @select="selectFrame(i)"' +
                 '></keyframe>' +
     '</div>',
     components: {
@@ -97,10 +97,10 @@ biigle.$component('videos.components.annotationClip', {
         keyframes: function () {
             var selected = this.annotation.selected;
 
-            return this.annotation.frames.map(function (time, index) {
+            return this.annotation.frames.map(function (time) {
                 return {
                     time: time,
-                    selected: selected === index,
+                    selected: selected === time,
                 };
             });
         },
@@ -114,8 +114,14 @@ biigle.$component('videos.components.annotationClip', {
         },
     },
     methods: {
-        emitSelectFrame: function (index) {
-            this.$emit('select', this.annotation, index);
+        emitSelect: function (time) {
+            this.$emit('select', this.annotation, time);
+        },
+        selectFrame: function (index) {
+            this.emitSelect(this.annotation.frames[index]);
+        },
+        select: function (e) {
+            this.emitSelect(this.startFrame + ((e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.clipDuration));
         },
     },
     mounted: function () {

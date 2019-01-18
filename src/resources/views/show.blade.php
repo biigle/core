@@ -18,6 +18,7 @@
             :selected-label="selectedLabel"
             v-on:create-bookmark="createBookmark"
             v-on:create-annotation="createAnnotation"
+            v-on:select="selectAnnotations"
             ></video-screen>
         <video-timeline
             :annotations="annotations"

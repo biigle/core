@@ -48,8 +48,8 @@ biigle.$component('videos.components.annotationTracks', {
         },
     },
     methods: {
-        emitSelect: function (annotation, index) {
-            this.$emit('select', annotation, index);
+        emitSelect: function (annotation, time) {
+            this.$emit('select', annotation, time);
 
         },
         emitDeselect: function () {
