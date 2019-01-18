@@ -14,15 +14,17 @@
     <div class="sidebar-container__content">
         <video-screen
             :annotations="annotations"
-            :video=video
+            :selected-annotations="selectedAnnotations"
+            :video="video"
             :selected-label="selectedLabel"
             v-on:create-bookmark="createBookmark"
             v-on:create-annotation="createAnnotation"
             v-on:select="selectAnnotations"
+            v-on:delete="deleteSelectedAnnotations"
             ></video-screen>
         <video-timeline
             :annotations="annotations"
-            :video=video
+            :video="video"
             :bookmarks="bookmarks"
             v-on:seek="seek"
             v-on:select="selectAnnotation"

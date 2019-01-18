@@ -2,13 +2,16 @@ biigle.$component('videos.components.videoScreen', {
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
-                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗯" v-on:click="emitCreateBookmark"></control-button>' +
                 '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="pause"></control-button>' +
                 '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
             '</div>' +
             '<div class="btn-group">' +
                 '<control-button v-if="drawingPoint" icon="fa-check" title="Finish a point annotation" v-on:click="finishDrawPoint" :active="true"></control-button>' +
                 '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel"></control-button>' +
+            '</div>' +
+            '<div class="btn-group">' +
+                '<control-button icon="fa-trash" title="Delete selected annotations" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
+                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗯" v-on:click="emitCreateBookmark"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -21,6 +24,12 @@ biigle.$component('videos.components.videoScreen', {
             required: true,
         },
         annotations: {
+            type: Array,
+            default: function () {
+                return [];
+            },
+        },
+        selectedAnnotations: {
             type: Array,
             default: function () {
                 return [];
@@ -63,10 +72,11 @@ biigle.$component('videos.components.videoScreen', {
         hasNoSelectedLabel: function () {
             return !this.selectedLabel;
         },
-        selectedAnnotations: function () {
-            return this.annotations.filter(function (annotation) {
-                return annotation.selected !== false;
-            });
+        hasSelectedAnnotations: function () {
+            return this.selectedAnnotations.length > 0;
+        },
+        annotationLength: function () {
+            return this.annotations.length;
         },
     },
     methods: {
@@ -380,6 +390,11 @@ biigle.$component('videos.components.videoScreen', {
                 }, this)
             );
         },
+        emitDelete: function () {
+            if (this.hasSelectedAnnotations) {
+                this.$emit('delete');
+            }
+        },
     },
     watch: {
         playing: function (playing) {
@@ -400,6 +415,10 @@ biigle.$component('videos.components.videoScreen', {
                     features.push(feature);
                 }
             });
+        },
+        annotationLength: function () {
+            // This is called when an annotation is deleted.
+            this.refreshAnnotations(this.video.currentTime);
         },
     },
     created: function () {

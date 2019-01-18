@@ -30,6 +30,11 @@ biigle.$viewModel('video-container', function (element) {
 
                 return map;
             },
+            selectedAnnotations: function () {
+                return this.annotations.filter(function (annotation) {
+                    return annotation.selected !== false;
+                });
+            },
         },
         methods: {
             prepareAnnotation: function (annotation) {
@@ -88,6 +93,20 @@ biigle.$viewModel('video-container', function (element) {
             },
             handleDeselectedLabel: function () {
                 this.selectedLabel = null;
+            },
+            deleteSelectedAnnotations: function () {
+                this.selectedAnnotations.forEach(function (annotation) {
+                    ANNOTATION_API.delete({id: annotation.id})
+                        .then(this.deletedAnnotation(annotation), MSG.handleResponseError);
+                }, this);
+            },
+            deletedAnnotation: function (annotation) {
+                return (function () {
+                    var index = this.annotations.indexOf(annotation);
+                    if (index !== -1) {
+                        this.annotations.splice(index, 1);
+                    }
+                }).bind(this);
             },
         },
         created: function () {
