@@ -21,7 +21,7 @@ RUN apk add --no-cache --virtual .build-deps \
         tiff-dev libjpeg-turbo-dev libgsf-dev libpng-dev \
     && apk add --no-cache glib tiff libjpeg-turbo libgsf libpng expat \
     && cd /tmp \
-    && curl -L https://github.com/jcupitt/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz > vips-${LIBVIPS_VERSION}.tar.gz \
+    && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
     && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
     && cd vips-${LIBVIPS_VERSION} \
     && ./configure \
@@ -32,7 +32,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && make \
     && make -s install-strip \
     && cd /tmp \
-    && curl -L https://github.com/jcupitt/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz > vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && curl -L https://github.com/libvips/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz > vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && docker-php-ext-enable vips \
     && rm -r /tmp/* \
