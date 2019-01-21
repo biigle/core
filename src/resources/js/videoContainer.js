@@ -61,9 +61,9 @@ biigle.$viewModel('video-container', function (element) {
                     annotation.selected = times[index];
                 });
 
-                // if (times && times.length > 0) {
-                //     this.seek(times[0]);
-                // }
+                if (times && times.length > 0) {
+                    this.seek(times[0]);
+                }
             },
             deselectAnnotations: function () {
                 this.annotations.forEach(function (annotation) {
