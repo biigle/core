@@ -11,7 +11,7 @@
     "require": {
         "biigle/label-trees": "^1.19",
         "biigle/annotations": "^3.9",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.5"
     },
     "autoload": {
         "psr-4": {
