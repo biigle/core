@@ -7,7 +7,7 @@ class ObjectTracker(object):
     def __init__(self, params):
         self.video_path = params['video_path']
         self.start_time = params['start_time']
-        self.track_window = tuple(params['start_window'])
+        self.track_window = tuple(map(int, params['start_window']))
 
         self.video = cv2.VideoCapture(self.video_path)
         self.fps = self.video.get(cv2.CAP_PROP_FPS)
@@ -45,7 +45,7 @@ class ObjectTracker(object):
         if self.debug:
             cv2.destroyAllWindows()
 
-    def __next__(self):
+    def _next(self):
         success, frame = self.video.read()
         if not success:
             raise StopIteration
@@ -72,6 +72,12 @@ class ObjectTracker(object):
 
         return (current_time,) + self.track_window
 
+    def __next__(self):
+        return self._next()
+
+    def next(self):
+        return self._next()
+
 
 with open(sys.argv[1]) as f:
     params = json.load(f)
@@ -79,8 +85,12 @@ with open(sys.argv[1]) as f:
 last_time = 0
 current_time = 0
 keyframe_distance = params['keyframe_distance']
+keyframes = []
 
-for t, x, y, w, h in ObjectTracker(params):
-    if t - last_time >= keyframe_distance:
-        last_time = t
-        print('{},{},{},{},{}'.format(t, x, y, w, h))
+for keyframe in ObjectTracker(params):
+    if keyframe[0] - last_time >= keyframe_distance:
+        last_time = keyframe[0]
+        keyframes.append(keyframe)
+
+with open(sys.argv[2], 'w') as f:
+    json.dump(keyframes, f)

@@ -54,7 +54,7 @@ class VideosServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // $this->mergeConfigFrom(__DIR__.'/config/videos.php', 'videos');
+        $this->mergeConfigFrom(__DIR__.'/config/videos.php', 'videos');
 
         $this->app->singleton('command.videos.publish', function ($app) {
             return new \Biigle\Modules\Videos\Console\Commands\Publish;
