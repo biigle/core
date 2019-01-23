@@ -10,6 +10,9 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel"></control-button>' +
             '</div>' +
             '<div class="btn-group">' +
+                '<control-button icon="fa-project-diagram" title="Automatically track the selected annotations" v-on:click="emitTrack" :disabled="hasNoSelectedAnnotations"></control-button>' +
+            '</div>' +
+            '<div class="btn-group">' +
                 '<control-button icon="fa-trash" title="Delete selected annotations" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
                 '<control-button icon="fa-bookmark" title="Create a bookmark 𝗯" v-on:click="emitCreateBookmark"></control-button>' +
             '</div>' +
@@ -74,6 +77,9 @@ biigle.$component('videos.components.videoScreen', {
         },
         hasSelectedAnnotations: function () {
             return this.selectedAnnotations.length > 0;
+        },
+        hasNoSelectedAnnotations: function () {
+            return !this.hasSelectedAnnotations;
         },
         annotationLength: function () {
             return this.annotations.length;
@@ -394,6 +400,9 @@ biigle.$component('videos.components.videoScreen', {
             if (this.hasSelectedAnnotations) {
                 this.$emit('delete');
             }
+        },
+        emitTrack: function () {
+            this.$emit('track');
         },
     },
     watch: {

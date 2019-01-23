@@ -21,6 +21,7 @@
             v-on:create-annotation="createAnnotation"
             v-on:select="selectAnnotations"
             v-on:delete="deleteSelectedAnnotations"
+            v-on:track="handleTrackSelectedAnnotations"
             ></video-screen>
         <video-timeline
             :annotations="annotations"

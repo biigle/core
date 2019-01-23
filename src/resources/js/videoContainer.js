@@ -108,6 +108,11 @@ biigle.$viewModel('video-container', function (element) {
                     }
                 }).bind(this);
             },
+            handleTrackSelectedAnnotations: function () {
+                this.selectedAnnotations.forEach(function (annotation) {
+                    ANNOTATION_API.track({id: annotation.id}, {}).catch(MSG.handleResponseError);
+                });
+            },
         },
         created: function () {
             this.video.muted = true;

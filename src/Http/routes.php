@@ -29,4 +29,6 @@ $router->group([
             'only' => ['update', 'destroy'],
             'parameters' => ['video-annotations' => 'id'],
         ]);
+
+        $router->post('video-annotations/{id}/track', 'TrackAnnotationController@store');
     });

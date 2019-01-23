@@ -15,6 +15,9 @@
  * Delete an annotation:
  * resource.delete({id: annotationId}).then(...);
  *
+ * Track a single frame annotation:
+ * resource.track({id: annotationId}, {}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annotations{/id}', {}, {
@@ -25,5 +28,9 @@ biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annota
     save: {
         method: 'POST',
         url: 'api/v1/videos{/id}/annotations',
+    },
+    track: {
+        method: 'POST',
+        url: 'api/v1/video-annotations{/id}/track',
     },
 }));
