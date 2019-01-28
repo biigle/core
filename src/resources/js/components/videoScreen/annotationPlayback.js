@@ -123,13 +123,72 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                 var points = annotation.points;
                 var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
                 feature.setGeometry(this.getGeometryFromPoints(annotation.shape,
-                    this.interpolatePoints(points[i], points[i + 1], progress)
+                    this.interpolatePoints(annotation.shape, points[i], points[i + 1], progress)
                 ));
             },
-            interpolatePoints: function (point1, point2, progress) {
-                return point1.map(function (value, index) {
-                    return value + (point2[index] - value) * progress;
-                });
+            interpolatePoints: function (shape, points1, points2, progress) {
+                switch (shape) {
+                    case 'Point':
+                    case 'Circle':
+                        return points1.map(function (value, index) {
+                            return value + (points2[index] - value) * progress;
+                        });
+                    case 'Rectangle':
+                    case 'Ellipse':
+                        return this.interpolationPointsToRectangle(
+                            this.interpolatePoints('Point',
+                                this.rectangleToInterpolationPoints(points1),
+                                this.rectangleToInterpolationPoints(points2),
+                                progress
+                            )
+                        );
+                    default:
+                        // polygon
+                        return points1;
+                }
+            },
+            rectangleToInterpolationPoints: function (points) {
+                // Return the center point, the normalized vector from the first point
+                // (A) to the second point (B), the width and the height.
+                var ab = [points[2] - points[0], points[3] - points[1]];
+                var ad = [points[6] - points[0], points[7] - points[1]];
+                var w = Math.sqrt(ad[0] * ad[0] + ad[1] * ad[1]);
+                var h = Math.sqrt(ab[0] * ab[0] + ab[1] * ab[1]);
+
+                var center = [
+                    (points[0] + points[2] + points[4] + points[6]) / 4,
+                    (points[1] + points[3] + points[5] + points[7]) / 4,
+                ];
+
+                var lengthAb = Math.sqrt(ab[0] * ab[0] + ab[1] * ab[1]);
+                var normalizedAb = [ab[0] / lengthAb, ab[1] / lengthAb];
+
+                return [center[0], center[1], normalizedAb[0], normalizedAb[1], w, h];
+            },
+            interpolationPointsToRectangle: function (points) {
+                // Reconstruct a rectangle from the center point, the normalized vector
+                // from the first point (A) to the second point (B), the width and the
+                // height.
+                var center = [points[0], points[1]];
+                var normalizedAb = [points[2], points[3]];
+                var perpendicularAb = [-normalizedAb[1], normalizedAb[0]];
+                var w = points[4];
+                var h = points[5];
+
+                return [
+                    // A
+                    center[0] - h/2 * normalizedAb[0] - w/2 * perpendicularAb[0],
+                    center[1] - h/2 * normalizedAb[1] - w/2 * perpendicularAb[1],
+                    // B
+                    center[0] + h/2 * normalizedAb[0] - w/2 * perpendicularAb[0],
+                    center[1] + h/2 * normalizedAb[1] - w/2 * perpendicularAb[1],
+                    // C
+                    center[0] + h/2 * normalizedAb[0] + w/2 * perpendicularAb[0],
+                    center[1] + h/2 * normalizedAb[1] + w/2 * perpendicularAb[1],
+                    // D
+                    center[0] - h/2 * normalizedAb[0] + w/2 * perpendicularAb[0],
+                    center[1] - h/2 * normalizedAb[1] + w/2 * perpendicularAb[1],
+                ];
             },
             getGeometryFromPoints: function (shape, points) {
                 points = this.convertPointsFromDbToOl(points);

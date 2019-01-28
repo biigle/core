@@ -13,7 +13,10 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button icon="icon-point" title="Start a point annotation 𝗔" v-on:click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
                     '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-circle" title="Start a circle annotation 𝗦" v-on:click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
+                '<control-button icon="icon-rectangle" title="Start a rectangle annotation 𝗦" v-on:click="drawRectangle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingRectangle" :active="isDrawingRectangle">' +
+                    '<control-button icon="fa-check" title="Finish the rectangle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '</control-button>' +
+                '<control-button icon="icon-circle" title="Start a circle annotation 𝗗" v-on:click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
                     '<control-button icon="fa-check" title="Finish the circle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
             '</div>' +
@@ -84,6 +87,9 @@ biigle.$component('videos.components.videoScreen', {
         },
         isDrawingPoint: function () {
             return this.interactionMode === 'drawPoint';
+        },
+        isDrawingRectangle: function () {
+            return this.interactionMode === 'drawRectangle';
         },
         isDrawingCircle: function () {
             return this.interactionMode === 'drawCircle';
@@ -172,6 +178,9 @@ biigle.$component('videos.components.videoScreen', {
         },
         drawPoint: function () {
             this.draw('Point');
+        },
+        drawRectangle: function () {
+            this.draw('Rectangle');
         },
         drawCircle: function () {
             this.draw('Circle');
