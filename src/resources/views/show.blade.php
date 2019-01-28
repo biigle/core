@@ -15,6 +15,9 @@
         <loader-block :active="loading"></loader-block>
         <video-screen
             :annotations="annotations"
+            :can-add="true"
+            :can-modify="true"
+            :can-delete="true"
             :selected-annotations="selectedAnnotations"
             :selected-label="selectedLabel"
             :video="video"

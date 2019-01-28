@@ -1,19 +1,22 @@
 biigle.$component('videos.components.videoScreen', {
+    mixins: [
+        biigle.$require('videos.components.videoScreen.videoPlayback'),
+        biigle.$require('videos.components.videoScreen.annotationPlayback'),
+    ],
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
                 '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="pause"></control-button>' +
                 '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
             '</div>' +
-            '<div class="btn-group">' +
-                '<control-button icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="drawingPoint" :active="drawingPoint">' +
+            '<div v-if="canAdd" class="btn-group">' +
+                '<control-button icon="icon-point" title="Start a point annotation" v-on:click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
                     '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawPoint"></control-button>' +
-                    '<control-button icon="fa-times" title="Cancel the point annotation" v-on:click="cancelDrawPoint"></control-button>' +
                 '</control-button>' +
             '</div>' +
-            '<div class="btn-group">' +
-                '<control-button icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹𝗲𝘁𝗲" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
-                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗕" v-on:click="emitCreateBookmark"></control-button>' +
+            '<div v-if="canDelete || canAdd" class="btn-group">' +
+                '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹𝗲𝘁𝗲" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
+                '<control-button v-if="canAdd" icon="fa-bookmark" title="Create a bookmark 𝗕" v-on:click="emitCreateBookmark"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -26,6 +29,22 @@ biigle.$component('videos.components.videoScreen', {
             default: function () {
                 return [];
             },
+        },
+        canAdd: {
+            type: Boolean,
+            default: false,
+        },
+        canModify: {
+            type: Boolean,
+            default: false,
+        },
+        canDelete: {
+            type: Boolean,
+            default: false,
+        },
+        listenerSet: {
+            type: String,
+            default: 'default',
         },
         selectedAnnotations: {
             type: Array,
@@ -43,33 +62,13 @@ biigle.$component('videos.components.videoScreen', {
     },
     data: function () {
         return {
-            playing: false,
-            animationFrameId: null,
-            // Refresh the annotations only every x ms.
-            refreshRate: 30,
-            refreshLastTime: Date.now(),
-            // A map of annotation IDs to OpenLayers feature objects for all currently
-            // rendered annotations.
-            renderedAnnotationMap: {},
-            drawingPoint: false,
             pendingAnnotation: {},
+            interactionMode: 'default',
         };
     },
     computed: {
-        annotationsPreparedToRender: function () {
-            // Extract start and end times of the annotations as well as sort them so
-            // they can be accessed fast during rendering.
-            return this.annotations.map(function (annotation) {
-                    return {
-                        id: annotation.id,
-                        start: annotation.frames[0],
-                        end: annotation.frames[annotation.frames.length - 1],
-                        self: annotation,
-                    };
-                })
-                .sort(function (a, b) {
-                    return a.start - b.start;
-                });
+        hasSelectedLabel: function () {
+            return !!this.selectedLabel;
         },
         hasNoSelectedLabel: function () {
             return !this.selectedLabel;
@@ -77,8 +76,11 @@ biigle.$component('videos.components.videoScreen', {
         hasSelectedAnnotations: function () {
             return this.selectedAnnotations.length > 0;
         },
-        annotationLength: function () {
-            return this.annotations.length;
+        isDrawing: function () {
+            return this.interactionMode.startsWith('draw');
+        },
+        isDrawingPoint: function () {
+            return this.interactionMode === 'drawPoint';
         },
     },
     methods: {
@@ -111,40 +113,7 @@ biigle.$component('videos.components.videoScreen', {
 
             return map;
         },
-        init: function () {
-            this.videoCanvas.width = this.video.videoWidth;
-            this.videoCanvas.height = this.video.videoHeight;
-
-            var extent = [0, 0, this.videoCanvas.width, this.videoCanvas.height];
-            var projection = new ol.proj.Projection({
-                code: 'biigle-image',
-                units: 'pixels',
-                extent: extent,
-            });
-
-            this.videoLayer = new ol.layer.Image({
-                map: this.map,
-                source: new ol.source.Canvas({
-                    canvas: this.videoCanvas,
-                    projection: this.projection,
-                    canvasExtent: extent,
-                    canvasSize: [extent[0], extent[1]],
-                }),
-            });
-
-            this.map.setView(new ol.View({
-                projection: projection,
-                // zoomFactor: 2,
-                minResolution: 0.25,
-                extent: extent
-            }));
-
-            this.map.getView().fit(extent);
-            this.annotationLayer.setMap(this.map);
-            this.pendingAnnotationLayer.setMap(this.map);
-            this.map.addInteraction(this.selectInteraction);
-        },
-        createAnnotationLayer: function () {
+        initLayersAndInteractions: function (map) {
             var styles = biigle.$require('annotations.stores.styles');
 
             this.annotationFeatures = new ol.Collection();
@@ -179,191 +148,53 @@ biigle.$component('videos.components.videoScreen', {
 
             this.selectedFeatures = this.selectInteraction.getFeatures();
             this.selectInteraction.on('select', this.handleFeatureSelect);
+
+            this.annotationLayer.setMap(map);
+            this.pendingAnnotationLayer.setMap(map);
+            map.addInteraction(this.selectInteraction);
         },
-        renderVideo: function () {
-            this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
-            this.videoLayer.changed();
 
-            var now = Date.now();
-            if (now - this.refreshLastTime >= this.refreshRate) {
-                this.refreshAnnotations(this.video.currentTime);
-                this.refreshLastTime = now;
-            }
-        },
-        startRenderLoop: function () {
-            this.renderVideo();
-            this.animationFrameId = window.requestAnimationFrame(this.startRenderLoop);
-        },
-        stopRenderLoop: function () {
-            window.cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
-        },
-        setPlaying: function () {
-            this.playing = true;
-        },
-        setPaused: function () {
-            this.playing = false;
-        },
-        togglePlaying: function () {
-            if (this.playing) {
-                this.pause();
-            } else {
-                this.play();
-            }
-        },
-        play: function () {
-            this.video.play();
-        },
-        pause: function () {
-            this.video.pause();
-        },
-        refreshAnnotations: function (time) {
-            var source = this.annotationSource;
-            var selected = this.selectedFeatures;
-            var annotations = this.annotationsPreparedToRender;
-            var oldRendered = this.renderedAnnotationMap;
-            var newRendered = {};
-            this.renderedAnnotationMap = newRendered;
-            var toCreate = [];
-            var annotation;
-            var hasRenderedFeatures = false;
-
-            for (var i = 0, length = annotations.length; i < length; i++) {
-                // We can skip ahead and break early because of the sorting in the
-                // annotationsPreparedToRender array.
-                // Check for start!=time in case this is a single frame annotation
-                // (start==end). It wwould never be shown otherwise.
-                if (annotations[i].end <= time && annotations[i].start !== time) {
-                    continue;
-                }
-
-                if (annotations[i].start > time) {
-                    break;
-                }
-
-                annotation = annotations[i];
-                hasRenderedFeatures = true;
-                if (oldRendered.hasOwnProperty(annotation.id)) {
-                    newRendered[annotation.id] = oldRendered[annotation.id];
-                    delete oldRendered[annotation.id];
-                } else {
-                    toCreate.push(annotation.self);
-                }
-            }
-
-            if (hasRenderedFeatures) {
-                Object.values(oldRendered).forEach(function (feature) {
-                    source.removeFeature(feature);
-                    selected.remove(feature);
-                });
-            } else {
-                source.clear();
-                selected.clear();
-            }
-
-
-            var features = toCreate.map(this.createFeature);
-            features.forEach(function (feature) {
-                newRendered[feature.getId()] = feature;
-                if (feature.get('annotation').selected !== false) {
-                    selected.push(feature);
-                }
-            });
-
-            if (features.length > 0) {
-                source.addFeatures(features);
-            }
-
-            Object.values(newRendered).forEach(function (feature) {
-                this.updateGeometry(feature, time);
-            }, this);
-        },
-        invertPointsYAxis: function (points) {
-            // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
-            // the points. CAUTION: Modifies the array in place!
-            // The y axis should be switched from "top to bottom" to "bottom to top"
-            // or vice versa. Our database expects ttb, OpenLayers expects btt.
-
-            var height = this.videoCanvas.height;
-            for (var i = 1; i < points.length; i += 2) {
-                points[i] = height - points[i];
-            }
-
-            return points;
-        },
-        createGeometry: function (shape, coordinates) {
-            // Only supports points for now.
-            return new ol.geom.Point(this.invertPointsYAxis(coordinates.slice()));
-        },
-        createFeature: function (annotation) {
-            var feature = new ol.Feature(
-                this.createGeometry('Point', annotation.points[0])
-            );
-
-            feature.setId(annotation.id);
-            feature.set('annotation', annotation);
-            if (annotation.labels && annotation.labels.length > 0) {
-                feature.set('color', annotation.labels[0].label.color);
-            }
-
-            return feature;
-        },
-        updateGeometry: function (feature, time) {
-            var annotation = feature.get('annotation');
-            var frames = annotation.frames;
-
-            if (frames.length <= 1) {
-                return;
-            }
-
-            var i;
-            for (i = frames.length - 1; i >= 0; i--) {
-                if (frames[i] <= time) {
-                    break;
-                }
-            }
-
-            var points = annotation.points;
-            var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
-            feature.setGeometry(this.createGeometry('Point',
-                this.interpolatePoints(points[i], points[i + 1], progress)));
-        },
-        interpolatePoints: function (point1, point2, progress) {
-            return point1.map(function (value, index) {
-                return value + (point2[index] - value) * progress;
-            });
-        },
         emitCreateBookmark: function () {
             this.$emit('create-bookmark', this.video.currentTime);
         },
-        startDrawPoint: function () {
-            if (this.hasNoSelectedLabel || this.drawingPoint) {
-                return;
+        draw: function (name) {
+            if (this['isDrawing' + name]) {
+                this.resetInteractionMode();
+            } else if (this.canAdd) {
+                this.interactionMode = 'draw' + name;
+            }
+        },
+        drawPoint: function () {
+            this.draw('Point');
+        },
+        maybeUpdateDrawInteractionMode: function (mode) {
+            this.resetPendingAnnotation();
+
+            if (this.drawInteraction) {
+                this.map.removeInteraction(this.drawInteraction);
+                this.drawInteraction = undefined;
             }
 
-            this.pause();
-            this.resetPendingAnnotation();
-            this.drawingPoint = true;
-            this.drawInteraction = new ol.interaction.Draw({
-                source: this.pendingAnnotationSource,
-                type: 'Point',
-                style: biigle.$require('stores.styles').editing,
-            });
-            this.drawInteraction.on('drawend', this.extendPendingAnnotation);
-            this.map.addInteraction(this.drawInteraction);
+            if (this.isDrawing && this.hasSelectedLabel) {
+                this.pause();
+                this.drawInteraction = new ol.interaction.Draw({
+                    source: this.pendingAnnotationSource,
+                    type: mode.slice(4), // remove 'draw' prefix
+                    style: biigle.$require('stores.styles').editing,
+                });
+                this.drawInteraction.on('drawend', this.extendPendingAnnotation);
+                this.map.addInteraction(this.drawInteraction);
+            }
+        },
+        resetInteractionMode: function () {
+            this.interactionMode = 'default';
         },
         finishDrawPoint: function () {
-            this.drawingPoint = false;
-            this.map.removeInteraction(this.drawInteraction);
-            this.pendingAnnotationSource.clear();
             this.$emit('create-annotation', this.pendingAnnotation);
-        },
-        cancelDrawPoint: function () {
-            this.drawingPoint = false;
-            this.map.removeInteraction(this.drawInteraction);
-            this.pendingAnnotationSource.clear();
+            this.resetInteractionMode();
         },
         resetPendingAnnotation: function () {
+            this.pendingAnnotationSource.clear();
             this.pendingAnnotation = {
                 frames: [],
                 points: [],
@@ -398,52 +229,49 @@ biigle.$component('videos.components.videoScreen', {
             );
         },
         emitDelete: function () {
-            if (this.hasSelectedAnnotations) {
+            if (this.canDelete && this.hasSelectedAnnotations) {
                 this.$emit('delete');
             }
         },
     },
     watch: {
-        playing: function (playing) {
-            if (playing && !this.animationFrameId) {
-                this.startRenderLoop();
-            } else if (!playing) {
-                this.stopRenderLoop();
-            }
-        },
         selectedAnnotations: function (annotations) {
             var source = this.annotationSource;
             var features = this.selectedFeatures;
-            var feature;
-            features.clear();
-            annotations.forEach(function (annotation) {
-                feature = source.getFeatureById(annotation.id);
-                if (feature) {
-                    features.push(feature);
-                }
-            });
-        },
-        annotationLength: function () {
-            // This is called when an annotation is deleted.
-            this.refreshAnnotations(this.video.currentTime);
+            if (source && features) {
+                var feature;
+                features.clear();
+                annotations.forEach(function (annotation) {
+                    feature = source.getFeatureById(annotation.id);
+                    if (feature) {
+                        features.push(feature);
+                    }
+                });
+            }
         },
     },
     created: function () {
+        this.$once('map-ready', this.initLayersAndInteractions);
         this.map = this.createMap();
-        this.videoCanvas = document.createElement('canvas');
-        this.videoCanvasCtx = this.videoCanvas.getContext('2d');
-        this.video.addEventListener('loadedmetadata', this.init);
-        this.video.addEventListener('play', this.setPlaying);
-        this.video.addEventListener('pause', this.setPaused);
-        this.video.addEventListener('seeked', this.renderVideo);
-        this.video.addEventListener('loadeddata', this.renderVideo);
-        this.createAnnotationLayer();
+        this.$emit('map-created', this.map);
 
-        var keyboard = biigle.$require('keyboard');
-        keyboard.on(' ', this.togglePlaying);
-        keyboard.on('a', this.startDrawPoint);
-        keyboard.on('b', this.emitCreateBookmark);
-        keyboard.on('Delete', this.emitDelete);
+        var kb = biigle.$require('keyboard');
+
+        if (this.canAdd) {
+            kb.on('a', this.drawPoint, 0, this.listenerSet);
+            // kb.on('s', this.drawRectangle, 0, this.listenerSet);
+            // kb.on('d', this.drawCircle, 0, this.listenerSet);
+            // kb.on('D', this.drawEllipse, 0, this.listenerSet);
+            // kb.on('f', this.drawLineString, 0, this.listenerSet);
+            // kb.on('g', this.drawPolygon, 0, this.listenerSet);
+            this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
+
+            kb.on('b', this.emitCreateBookmark);
+        }
+
+        if (this.canDelete) {
+            kb.on('Delete', this.emitDelete);
+        }
 
         var self = this;
         biigle.$require('events').$on('sidebar.toggle', function () {
