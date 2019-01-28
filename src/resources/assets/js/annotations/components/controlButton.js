@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.controlButton', {
-    template: '<span class="control-button btn" :title="title" :class="classObject" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">' +
+    template: '<span class="control-button btn" :title="title" :class="classObject" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :disabled="disabled">' +
         '<i :class="iconClass" aria-hidden="true"></i>' +
         '<span v-if="hasSubControls" @click.stop class="control-button__sub-controls btn-group">' +
             '<slot></slot>' +
@@ -20,6 +20,20 @@ biigle.$component('annotations.components.controlButton', {
             required: true,
         },
         active: {
+            type: Boolean,
+            default: false,
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
+        // Allow opening of the sub controls on mouseover.
+        hover: {
+            type: Boolean,
+            default: true,
+        },
+        // Open the sub controls.
+        open: {
             type: Boolean,
             default: false,
         },
@@ -40,7 +54,7 @@ biigle.$component('annotations.components.controlButton', {
         },
         iconClass: function () {
             if (this.icon.startsWith('fa-')) {
-                return 'fa ' + this.icon;
+                return 'fa fa-fw ' + this.icon;
             }
 
             return 'icon icon-white ' + this.icon;
@@ -49,7 +63,7 @@ biigle.$component('annotations.components.controlButton', {
             return this.$slots.hasOwnProperty('default');
         },
         showSubControls: function () {
-            return this.mouseOver || this.hasActiveSubControl;
+            return this.mouseOver || this.hasActiveSubControl || this.open;
         },
         hasActiveSubControl: function () {
             return this.activeSubControls > 0;
@@ -57,10 +71,14 @@ biigle.$component('annotations.components.controlButton', {
     },
     methods: {
         handleClick: function () {
-            this.$emit('click');
+            if (!this.disabled) {
+                this.$emit('click');
+            }
         },
         handleMouseEnter: function () {
-            this.mouseOver = true;
+            if (!this.disabled && this.hover) {
+                this.mouseOver = true;
+            }
             window.clearTimeout(this.timeout);
         },
         handleMouseLeave: function () {
@@ -79,8 +97,11 @@ biigle.$component('annotations.components.controlButton', {
         }
     },
     watch: {
-        active: function (active) {
-            this.$parent.$emit('control-button-active', active);
+        active: {
+            immediate: true,
+            handler: function (active) {
+                this.$parent.$emit('control-button-active', active);
+            },
         },
     },
     created: function () {
