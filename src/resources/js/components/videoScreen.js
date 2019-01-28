@@ -10,8 +10,11 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
             '</div>' +
             '<div v-if="canAdd" class="btn-group">' +
-                '<control-button icon="icon-point" title="Start a point annotation" v-on:click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
-                    '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawPoint"></control-button>' +
+                '<control-button icon="icon-point" title="Start a point annotation 𝗔" v-on:click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
+                    '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '</control-button>' +
+                '<control-button icon="icon-circle" title="Start a circle annotation 𝗦" v-on:click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
+                    '<control-button icon="fa-check" title="Finish the circle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
             '</div>' +
             '<div v-if="canDelete || canAdd" class="btn-group">' +
@@ -81,6 +84,9 @@ biigle.$component('videos.components.videoScreen', {
         },
         isDrawingPoint: function () {
             return this.interactionMode === 'drawPoint';
+        },
+        isDrawingCircle: function () {
+            return this.interactionMode === 'drawCircle';
         },
     },
     methods: {
@@ -167,6 +173,9 @@ biigle.$component('videos.components.videoScreen', {
         drawPoint: function () {
             this.draw('Point');
         },
+        drawCircle: function () {
+            this.draw('Circle');
+        },
         maybeUpdateDrawInteractionMode: function (mode) {
             this.resetPendingAnnotation();
 
@@ -176,26 +185,29 @@ biigle.$component('videos.components.videoScreen', {
             }
 
             if (this.isDrawing && this.hasSelectedLabel) {
+                var shape = mode.slice(4); // Remove the 'draw' prefix.
                 this.pause();
                 this.drawInteraction = new ol.interaction.Draw({
                     source: this.pendingAnnotationSource,
-                    type: mode.slice(4), // remove 'draw' prefix
-                    style: biigle.$require('stores.styles').editing,
+                    type: shape,
+                    style: biigle.$require('annotations.stores.styles').editing,
                 });
                 this.drawInteraction.on('drawend', this.extendPendingAnnotation);
                 this.map.addInteraction(this.drawInteraction);
+                this.pendingAnnotation.shape = shape;
             }
         },
         resetInteractionMode: function () {
             this.interactionMode = 'default';
         },
-        finishDrawPoint: function () {
+        finishDrawAnnotation: function () {
             this.$emit('create-annotation', this.pendingAnnotation);
             this.resetInteractionMode();
         },
         resetPendingAnnotation: function () {
             this.pendingAnnotationSource.clear();
             this.pendingAnnotation = {
+                shape: '',
                 frames: [],
                 points: [],
             };
@@ -204,9 +216,7 @@ biigle.$component('videos.components.videoScreen', {
             var lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
                 this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(
-                    this.invertPointsYAxis(e.feature.getGeometry().getCoordinates().slice())
-                );
+                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
             } else {
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
@@ -260,7 +270,7 @@ biigle.$component('videos.components.videoScreen', {
         if (this.canAdd) {
             kb.on('a', this.drawPoint, 0, this.listenerSet);
             // kb.on('s', this.drawRectangle, 0, this.listenerSet);
-            // kb.on('d', this.drawCircle, 0, this.listenerSet);
+            kb.on('d', this.drawCircle, 0, this.listenerSet);
             // kb.on('D', this.drawEllipse, 0, this.listenerSet);
             // kb.on('f', this.drawLineString, 0, this.listenerSet);
             // kb.on('g', this.drawPolygon, 0, this.listenerSet);

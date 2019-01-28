@@ -94,27 +94,8 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                     this.updateGeometry(feature, time);
                 }, this);
             },
-            invertPointsYAxis: function (points) {
-                // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
-                // the points. CAUTION: Modifies the array in place!
-                // The y axis should be switched from "top to bottom" to "bottom to top"
-                // or vice versa. Our database expects ttb, OpenLayers expects btt.
-
-                var height = this.videoCanvas.height;
-                for (var i = 1; i < points.length; i += 2) {
-                    points[i] = height - points[i];
-                }
-
-                return points;
-            },
-            createGeometry: function (shape, coordinates) {
-                // Only supports points for now.
-                return new ol.geom.Point(this.invertPointsYAxis(coordinates.slice()));
-            },
             createFeature: function (annotation) {
-                var feature = new ol.Feature(
-                    this.createGeometry('Point', annotation.points[0])
-                );
+                var feature = new ol.Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
                 feature.setId(annotation.id);
                 feature.set('annotation', annotation);
@@ -141,13 +122,91 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
 
                 var points = annotation.points;
                 var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
-                feature.setGeometry(this.createGeometry('Point',
-                    this.interpolatePoints(points[i], points[i + 1], progress)));
+                feature.setGeometry(this.getGeometryFromPoints(annotation.shape,
+                    this.interpolatePoints(points[i], points[i + 1], progress)
+                ));
             },
             interpolatePoints: function (point1, point2, progress) {
                 return point1.map(function (value, index) {
                     return value + (point2[index] - value) * progress;
                 });
+            },
+            getGeometryFromPoints: function (shape, points) {
+                points = this.convertPointsFromDbToOl(points);
+
+                switch (shape) {
+                    case 'Point':
+                        return new ol.geom.Point(points[0]);
+                    case 'Rectangle':
+                        return new ol.geom.Rectangle([points]);
+                    case 'Polygon':
+                        return new ol.geom.Polygon([points]);
+                    case 'LineString':
+                        return new ol.geom.LineString(points);
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        return new ol.geom.Circle(points[0], points[1][0]);
+                    case 'Ellipse':
+                        return new ol.geom.Ellipse([points]);
+                    default:
+                        // unsupported shapes are ignored
+                        console.error('Unknown annotation shape: ' + shape);
+                        return;
+                }
+            },
+            getPointsFromGeometry: function (geometry) {
+                var points;
+                switch (geometry.getType()) {
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        points = [geometry.getCenter(), [geometry.getRadius()]];
+                        break;
+                    case 'Polygon':
+                    case 'Rectangle':
+                    case 'Ellipse':
+                        points = geometry.getCoordinates()[0];
+                        break;
+                    case 'Point':
+                        points = [geometry.getCoordinates()];
+                        break;
+                    default:
+                        points = geometry.getCoordinates();
+                }
+
+                return this.convertPointsFromOlToDb(points);
+            },
+            invertPointsYAxis: function (points) {
+                // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
+                // the points. CAUTION: Modifies the array in place!
+                // The y axis should be switched from "top to bottom" to "bottom to top"
+                // or vice versa. Our database expects ttb, OpenLayers expects btt.
+
+                var height = this.videoCanvas.height;
+                for (var i = 1; i < points.length; i += 2) {
+                    points[i] = height - points[i];
+                }
+
+                return points;
+            },
+            convertPointsFromOlToDb: function (points) {
+                // Merge the individual point arrays to a single array first.
+                // [[x1, y1], [x2, y2]] -> [x1, y1, x2, y2]
+                return this.invertPointsYAxis(Array.prototype.concat.apply([], points));
+            },
+            convertPointsFromDbToOl: function (points) {
+                // Duplicate the points array because we don't want to modify the
+                // original array.
+                points = this.invertPointsYAxis(points.slice());
+                var newPoints = [];
+                for (var i = 0; i < points.length; i += 2) {
+                    newPoints.push([
+                        points[i],
+                        // Circles have no fourth point so we take 0.
+                        (points[i + 1] || 0)
+                    ]);
+                }
+
+                return newPoints;
             },
         },
         watch: {

@@ -40,6 +40,7 @@ biigle.$viewModel('video-container', function (element) {
         methods: {
             prepareAnnotation: function (annotation) {
                 annotation.selected = false;
+                annotation.shape = SHAPES[annotation.shape_id];
 
                 return annotation;
             },
@@ -82,9 +83,10 @@ biigle.$viewModel('video-container', function (element) {
             },
             createAnnotation: function (pendingAnnotation) {
                 var annotation = Object.assign(pendingAnnotation, {
-                    shape_id: this.shapes.Point,
+                    shape_id: this.shapes[pendingAnnotation.shape],
                     label_id: this.selectedLabel ? this.selectedLabel.id : 0,
                 });
+                delete annotation.shape;
 
                 ANNOTATION_API.save({id: VIDEO_ID}, annotation)
                     .then(this.addCreatedAnnotation, MSG.handleResponseError);
