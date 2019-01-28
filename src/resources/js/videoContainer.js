@@ -7,6 +7,7 @@ biigle.$viewModel('video-container', function (element) {
 
     new Vue({
         el: element,
+        mixins: [biigle.$require('core.mixins.loader')],
         components: {
             videoScreen: biigle.$require('videos.components.videoScreen'),
             videoTimeline: biigle.$require('videos.components.videoTimeline'),
@@ -95,10 +96,13 @@ biigle.$viewModel('video-container', function (element) {
                 this.selectedLabel = null;
             },
             deleteSelectedAnnotations: function () {
-                this.selectedAnnotations.forEach(function (annotation) {
-                    ANNOTATION_API.delete({id: annotation.id})
-                        .then(this.deletedAnnotation(annotation), MSG.handleResponseError);
-                }, this);
+                if (confirm('Are you sure that you want o delete all selected annotations?')) {
+                    this.selectedAnnotations.forEach(function (annotation) {
+                        ANNOTATION_API.delete({id: annotation.id})
+                            .then(this.deletedAnnotation(annotation))
+                            .catch(MSG.handleResponseError);
+                    }, this);
+                }
             },
             deletedAnnotation: function (annotation) {
                 return (function () {
@@ -111,8 +115,19 @@ biigle.$viewModel('video-container', function (element) {
         },
         created: function () {
             this.video.muted = true;
-            ANNOTATION_API.query({id: VIDEO_ID})
-                .then(this.setAnnotations, MSG.handleResponseError);
+            this.video.addEventListener('error', function () {
+                MSG.danger('Error while loading video file.');
+            });
+            this.startLoading();
+            var self = this;
+            var videoPromise = new Vue.Promise(function (resolve, reject) {
+                self.video.addEventListener('loadeddata', resolve);
+                self.video.addEventListener('error', reject);
+            });
+            var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
+            annotationPromise.then(this.setAnnotations, MSG.handleResponseError);
+
+            Vue.Promise.all([videoPromise, annotationPromise]).then(this.finishLoading);
         },
         mounted: function () {
             // Wait for the sub-components to register their event listeners before

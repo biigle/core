@@ -6,12 +6,14 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
             '</div>' +
             '<div class="btn-group">' +
-                '<control-button v-if="drawingPoint" icon="fa-check" title="Finish a point annotation" v-on:click="finishDrawPoint" :active="true"></control-button>' +
-                '<control-button v-else icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel"></control-button>' +
+                '<control-button icon="icon-point" title="Start a point annotation" v-on:click="startDrawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="drawingPoint" :active="drawingPoint">' +
+                    '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawPoint"></control-button>' +
+                    '<control-button icon="fa-times" title="Cancel the point annotation" v-on:click="cancelDrawPoint"></control-button>' +
+                '</control-button>' +
             '</div>' +
             '<div class="btn-group">' +
-                '<control-button icon="fa-trash" title="Delete selected annotations" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
-                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗯" v-on:click="emitCreateBookmark"></control-button>' +
+                '<control-button icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹𝗲𝘁𝗲" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
+                '<control-button icon="fa-bookmark" title="Create a bookmark 𝗕" v-on:click="emitCreateBookmark"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -19,10 +21,6 @@ biigle.$component('videos.components.videoScreen', {
         controlButton: biigle.$require('annotations.components.controlButton'),
     },
     props: {
-        video: {
-            type: HTMLVideoElement,
-            required: true,
-        },
         annotations: {
             type: Array,
             default: function () {
@@ -37,6 +35,10 @@ biigle.$component('videos.components.videoScreen', {
         },
         selectedLabel: {
             type: Object,
+        },
+        video: {
+            type: HTMLVideoElement,
+            required: true,
         },
     },
     data: function () {
@@ -335,7 +337,7 @@ biigle.$component('videos.components.videoScreen', {
             this.$emit('create-bookmark', this.video.currentTime);
         },
         startDrawPoint: function () {
-            if (this.hasNoSelectedLabel) {
+            if (this.hasNoSelectedLabel || this.drawingPoint) {
                 return;
             }
 
@@ -356,6 +358,11 @@ biigle.$component('videos.components.videoScreen', {
             this.pendingAnnotationSource.clear();
             this.$emit('create-annotation', this.pendingAnnotation);
         },
+        cancelDrawPoint: function () {
+            this.drawingPoint = false;
+            this.map.removeInteraction(this.drawInteraction);
+            this.pendingAnnotationSource.clear();
+        },
         resetPendingAnnotation: function () {
             this.pendingAnnotation = {
                 frames: [],
@@ -375,10 +382,10 @@ biigle.$component('videos.components.videoScreen', {
                 });
             }
 
-            if (this.video.currentTime < this.video.duration) {
-                this.play();
-                setTimeout(this.pause, 1000);
-            }
+            // if (this.video.currentTime < this.video.duration) {
+            //     this.play();
+            //     setTimeout(this.pause, 1000);
+            // }
         },
         handleFeatureSelect: function (e) {
             this.$emit('select',
@@ -434,7 +441,9 @@ biigle.$component('videos.components.videoScreen', {
 
         var keyboard = biigle.$require('keyboard');
         keyboard.on(' ', this.togglePlaying);
+        keyboard.on('a', this.startDrawPoint);
         keyboard.on('b', this.emitCreateBookmark);
+        keyboard.on('Delete', this.emitDelete);
 
         var self = this;
         biigle.$require('events').$on('sidebar.toggle', function () {

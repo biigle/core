@@ -12,11 +12,12 @@
 @section('content')
 <div id="video-container" class="video-container sidebar-container">
     <div class="sidebar-container__content">
+        <loader-block :active="loading"></loader-block>
         <video-screen
             :annotations="annotations"
             :selected-annotations="selectedAnnotations"
-            :video="video"
             :selected-label="selectedLabel"
+            :video="video"
             v-on:create-bookmark="createBookmark"
             v-on:create-annotation="createAnnotation"
             v-on:select="selectAnnotations"
@@ -24,8 +25,8 @@
             ></video-screen>
         <video-timeline
             :annotations="annotations"
-            :video="video"
             :bookmarks="bookmarks"
+            :video="video"
             v-on:seek="seek"
             v-on:select="selectAnnotation"
             v-on:deselect="deselectAnnotations"
