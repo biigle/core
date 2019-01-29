@@ -5,6 +5,8 @@ biigle.$viewModel('video-container', function (element) {
     var ANNOTATION_API = biigle.$require('videos.api.videoAnnotations');
     var MSG = biigle.$require('messages.store');
 
+    var Annotation = biigle.$require('videos.models.Annotation');
+
     new Vue({
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
@@ -40,10 +42,7 @@ biigle.$viewModel('video-container', function (element) {
         },
         methods: {
             prepareAnnotation: function (annotation) {
-                annotation.selected = false;
-                annotation.shape = SHAPES[annotation.shape_id];
-
-                return annotation;
+                return new Annotation({data: annotation});
             },
             setAnnotations: function (response) {
                 this.annotations = response.body.map(this.prepareAnnotation);
@@ -101,13 +100,24 @@ biigle.$viewModel('video-container', function (element) {
             handleDeselectedLabel: function () {
                 this.selectedLabel = null;
             },
-            deleteSelectedAnnotations: function () {
-                if (confirm('Are you sure that you want to delete all selected annotations?')) {
-                    this.selectedAnnotations.forEach(function (annotation) {
-                        ANNOTATION_API.delete({id: annotation.id})
-                            .then(this.deletedAnnotation(annotation))
-                            .catch(MSG.handleResponseError);
-                    }, this);
+            deleteAnnotationsOrKeyframes: function (event) {
+                if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                    event.forEach(this.deleteAnnotationOrKeyframe);
+                }
+            },
+            deleteAnnotationOrKeyframe: function (event) {
+                var index = event.annotation.frames.indexOf(event.time);
+
+                if (index !== -1) {
+                    // Delete only the keyframe of the annotation.
+                    event.annotation.frames.splice(index, 1);
+                    event.annotation.points.splice(index, 1);
+                    console.log('TODO: API request update annotation');
+                } else {
+                    // Delete the whole annotation.
+                    ANNOTATION_API.delete({id: event.annotation.id})
+                        .then(this.deletedAnnotation(event.annotation))
+                        .catch(MSG.handleResponseError);
                 }
             },
             deletedAnnotation: function (annotation) {
@@ -120,6 +130,27 @@ biigle.$viewModel('video-container', function (element) {
             },
             handleVideoSeeked: function () {
                 this.seeking = false;
+            },
+            modifyAnnotations: function (event) {
+                event.forEach(this.modifyAnnotation);
+            },
+            modifyAnnotation: function (event) {
+                var index = event.annotation.frames.indexOf(event.time);
+                if (index !== -1) {
+                    // Use splice so Vue can pick up the change.
+                    event.annotation.points.splice(index, 1, event.points);
+                } else {
+                    for (var i = event.annotation.frames.length - 1; i >= 0; i--) {
+                        if (event.annotation.frames[i] <= event.time) {
+                            break;
+                        }
+                    }
+
+                    event.annotation.frames.splice(i + 1, 0, event.time);
+                    event.annotation.points.splice(i + 1, 0, event.points);
+                }
+
+                console.log('TODO: API request update annotation');
             },
         },
         watch: {

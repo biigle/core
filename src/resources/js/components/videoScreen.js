@@ -3,6 +3,7 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.videoPlayback'),
         biigle.$require('videos.components.videoScreen.annotationPlayback'),
         biigle.$require('videos.components.videoScreen.drawInteractions'),
+        biigle.$require('videos.components.videoScreen.modifyInteractions'),
     ],
     template: '<div class="video-screen">' +
         '<div class="controls">' +
@@ -159,11 +160,6 @@ biigle.$component('videos.components.videoScreen', {
                 }, this)
             );
         },
-        emitDelete: function () {
-            if (this.canDelete && this.hasSelectedAnnotations) {
-                this.$emit('delete');
-            }
-        },
     },
     watch: {
         selectedAnnotations: function (annotations) {
@@ -180,6 +176,9 @@ biigle.$component('videos.components.videoScreen', {
                 });
             }
         },
+        interactionMode: function (mode) {
+            this.selectInteraction.setActive(mode === 'default');
+        }
     },
     created: function () {
         this.$once('map-ready', this.initLayersAndInteractions);
@@ -190,10 +189,6 @@ biigle.$component('videos.components.videoScreen', {
 
         if (this.canAdd) {
             kb.on('b', this.emitCreateBookmark);
-        }
-
-        if (this.canDelete) {
-            kb.on('Delete', this.emitDelete);
         }
 
         var self = this;

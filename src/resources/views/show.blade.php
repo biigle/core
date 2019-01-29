@@ -24,7 +24,8 @@
             v-on:create-bookmark="createBookmark"
             v-on:create-annotation="createAnnotation"
             v-on:select="selectAnnotations"
-            v-on:delete="deleteSelectedAnnotations"
+            v-on:modify="modifyAnnotations"
+            v-on:delete="deleteAnnotationsOrKeyframes"
             ></video-screen>
         <video-timeline
             :annotations="annotations"

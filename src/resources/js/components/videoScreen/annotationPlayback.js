@@ -13,8 +13,10 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
             };
         },
         computed: {
-            annotationLength: function () {
-                return this.annotations.length;
+            annotationsRevision: function () {
+                return this.annotations.reduce(function (carry, annotation) {
+                    return carry + annotation.revision;
+                }, 0);
             },
             annotationsPreparedToRender: function () {
                 // Extract start and end times of the annotations as well as sort them so
@@ -332,8 +334,7 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
         created: function () {
             this.$on('refresh', this.refreshAnnotations);
             this.$once('map-ready', function () {
-                // This is called when an annotation is deleted.
-                this.$watch('annotationLength', function () {
+                this.$watch('annotationsRevision', function () {
                     this.refreshAnnotations(this.video.currentTime);
                 });
             });
