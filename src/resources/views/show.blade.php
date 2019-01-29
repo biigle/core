@@ -30,6 +30,7 @@
             :annotations="annotations"
             :bookmarks="bookmarks"
             :video="video"
+            :seeking="seeking"
             v-on:seek="seek"
             v-on:select="selectAnnotation"
             v-on:deselect="deselectAnnotations"

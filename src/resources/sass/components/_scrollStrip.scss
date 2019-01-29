@@ -40,5 +40,17 @@
             border: 5px solid transparent;
             border-top-color: #ff0000;
         }
+
+        &.time-indicator--seeking {
+            background-color: grayscale(#990000);
+
+            &:before {
+                background-color: grayscale(#ff0000);
+            }
+
+            &:after {
+                border-top-color: grayscale(#ff0000);
+            }
+        }
     }
 }

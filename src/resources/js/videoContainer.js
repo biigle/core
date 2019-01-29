@@ -21,6 +21,7 @@ biigle.$viewModel('video-container', function (element) {
             selectedLabel: null,
             bookmarks: [],
             annotations: [],
+            seeking: false,
         },
         computed: {
             shapes: function () {
@@ -51,7 +52,10 @@ biigle.$viewModel('video-container', function (element) {
                 this.annotations.push(this.prepareAnnotation(response.body));
             },
             seek: function (time) {
-                this.video.currentTime = time;
+                if (!this.seeking) {
+                    this.seeking = true;
+                    this.video.currentTime = time;
+                }
             },
             selectAnnotation: function (annotation, time) {
                 this.selectAnnotations([annotation], [time]);
@@ -114,12 +118,19 @@ biigle.$viewModel('video-container', function (element) {
                     }
                 }).bind(this);
             },
+            handleVideoSeeked: function () {
+                this.seeking = false;
+            },
+        },
+        watch: {
+            //
         },
         created: function () {
             this.video.muted = true;
             this.video.addEventListener('error', function () {
                 MSG.danger('Error while loading video file.');
             });
+            this.video.addEventListener('seeked', this.handleVideoSeeked);
             this.startLoading();
             var self = this;
             var videoPromise = new Vue.Promise(function (resolve, reject) {

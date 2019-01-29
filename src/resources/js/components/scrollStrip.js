@@ -12,7 +12,7 @@ biigle.$component('videos.components.scrollStrip', {
             ' @deselect="emitDeselect"' +
             ' @scroll-y="emitScrollY"' +
             '></annotation-tracks>' +
-        '<span class="time-indicator" :style="indicatorStyle"></span>' +
+        '<span class="time-indicator" :class="indicatorClass" :style="indicatorStyle"></span>' +
     '</div>',
     components: {
         videoProgress: biigle.$require('videos.components.videoProgress'),
@@ -39,6 +39,10 @@ biigle.$component('videos.components.scrollStrip', {
             type: Number,
             required: true,
         },
+        seeking: {
+            type: Boolean,
+            default: false,
+        },
     },
     data: function () {
         return {
@@ -52,6 +56,11 @@ biigle.$component('videos.components.scrollStrip', {
             }
 
             return 0;
+        },
+        indicatorClass: function () {
+            return {
+                'time-indicator--seeking': this.seeking,
+            };
         },
         indicatorStyle: function () {
             return 'transform: translateX(' + this.currentTimeOffset + 'px);';
