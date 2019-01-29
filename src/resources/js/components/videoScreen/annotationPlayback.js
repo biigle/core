@@ -167,7 +167,7 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                             // The points come from preparedAnnotationPoints and only
                             // have to converted back to rectangle points after
                             // interpolation.
-                            this.interpolatePoints('Point', points1, points2, progress)
+                            this.interpolateNaive(points1, points2, progress)
                         );
                     case 'LineString':
                     case 'Polygon':
@@ -175,10 +175,13 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                         // already converted to SVG paths for Polymorph.
                         return this.interpolatePolymorph(points1, points2, progress);
                     default:
-                        return points1.map(function (value, index) {
-                            return value + (points2[index] - value) * progress;
-                        });
+                        return this.interpolateNaive(points1, points2, progress);
                 }
+            },
+            interpolateNaive: function (from, to, progress) {
+                return from.map(function (value, index) {
+                    return value + (to[index] - value) * progress;
+                });
             },
             interpolatePolymorph: function (from, to, progress) {
                 var interpolator = polymorph.interpolate([from, to]);
@@ -197,19 +200,17 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
             },
             rectangleToInterpolationPoints: function (points) {
                 // Return the center point, the normalized vector from the first point
-                // (A) to the second point (B), the width and the height.
+                // (A) to the second point (B), the width (A->B) and the height (A->D).
                 var ab = [points[2] - points[0], points[3] - points[1]];
                 var ad = [points[6] - points[0], points[7] - points[1]];
                 var w = Math.sqrt(ad[0] * ad[0] + ad[1] * ad[1]);
                 var h = Math.sqrt(ab[0] * ab[0] + ab[1] * ab[1]);
+                var normalizedAb = [ab[0] / h, ab[1] / h];
 
                 var center = [
                     (points[0] + points[2] + points[4] + points[6]) / 4,
                     (points[1] + points[3] + points[5] + points[7]) / 4,
                 ];
-
-                var lengthAb = Math.sqrt(ab[0] * ab[0] + ab[1] * ab[1]);
-                var normalizedAb = [ab[0] / lengthAb, ab[1] / lengthAb];
 
                 return [center[0], center[1], normalizedAb[0], normalizedAb[1], w, h];
             },
@@ -217,25 +218,27 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                 // Reconstruct a rectangle from the center point, the normalized vector
                 // from the first point (A) to the second point (B), the width and the
                 // height.
-                var center = [points[0], points[1]];
                 var normalizedAb = [points[2], points[3]];
                 var perpendicularAb = [-normalizedAb[1], normalizedAb[0]];
-                var w = points[4];
-                var h = points[5];
+                var halfWpAb0 = points[4] / 2 * perpendicularAb[0];
+                var halfWpAb1 = points[4] / 2 * perpendicularAb[1];
+                var halfHnAb0 = points[5] / 2 * normalizedAb[0];
+                var halfHnAb1 = points[5] / 2 * normalizedAb[1];
 
                 return [
-                    // A
-                    center[0] - h/2 * normalizedAb[0] - w/2 * perpendicularAb[0],
-                    center[1] - h/2 * normalizedAb[1] - w/2 * perpendicularAb[1],
+                    // A: Move from center backwards half the height in normalizedAb
+                    // direction and half the width in perpendicularAb direction.
+                    points[0] - halfHnAb0 - halfWpAb0,
+                    points[1] - halfHnAb1 - halfWpAb1,
                     // B
-                    center[0] + h/2 * normalizedAb[0] - w/2 * perpendicularAb[0],
-                    center[1] + h/2 * normalizedAb[1] - w/2 * perpendicularAb[1],
+                    points[0] + halfHnAb0 - halfWpAb0,
+                    points[1] + halfHnAb1 - halfWpAb1,
                     // C
-                    center[0] + h/2 * normalizedAb[0] + w/2 * perpendicularAb[0],
-                    center[1] + h/2 * normalizedAb[1] + w/2 * perpendicularAb[1],
+                    points[0] + halfHnAb0 + halfWpAb0,
+                    points[1] + halfHnAb1 + halfWpAb1,
                     // D
-                    center[0] - h/2 * normalizedAb[0] + w/2 * perpendicularAb[0],
-                    center[1] - h/2 * normalizedAb[1] + w/2 * perpendicularAb[1],
+                    points[0] - halfHnAb0 + halfWpAb0,
+                    points[1] - halfHnAb1 + halfWpAb1,
                 ];
             },
             getGeometryFromPoints: function (shape, points) {
