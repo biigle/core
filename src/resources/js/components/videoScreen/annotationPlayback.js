@@ -60,7 +60,7 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                     // annotationsPreparedToRender array.
                     // Check for start!=time in case this is a single frame annotation
                     // (start==end). It wwould never be shown otherwise.
-                    if (annotations[i].end <= time && annotations[i].start !== time) {
+                    if (annotations[i].end < time && annotations[i].start !== time) {
                         continue;
                     }
 
@@ -131,10 +131,16 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                     }
                 }
 
-                var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
-                feature.setGeometry(this.getGeometryFromPoints(annotation.shape,
-                    this.interpolatePoints(annotation, i, progress)
-                ));
+                if (frames[i] === time) {
+                    // No interpolation needed.
+                    feature.setGeometry(this.getGeometryFromPoints(annotation.shape, annotation.points[i]));
+                } else {
+                    var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
+                    feature.setGeometry(this.getGeometryFromPoints(annotation.shape,
+                        this.interpolatePoints(annotation, i, progress)
+                    ));
+                }
+
             },
             prepareInterpolationPoints: function (annotation) {
                 switch (annotation.shape) {
