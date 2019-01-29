@@ -184,6 +184,7 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                 });
             },
             interpolatePolymorph: function (from, to, progress) {
+                // Polymorph expects SVG path strings as input.
                 var interpolator = polymorph.interpolate([from, to]);
 
                 return interpolator(progress)

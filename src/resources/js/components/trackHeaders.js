@@ -1,20 +1,14 @@
 biigle.$component('videos.components.trackHeaders', {
     template: '<div class="track-headers">' +
         '<div class="track-header" v-for="track in tracks">'+
-            '<div class="label-name" v-text="track.label.label.name"></div>' +
+            '<div class="label-name" v-text="track.label.name"></div>' +
             '<div class="lane-dummy" v-for="lane in track.lanes"></div>' +
         '</div>' +
     '</div>',
     props: {
-        labels: {
-            type: Object,
+        tracks: {
+            type: Array,
             required: true,
-        },
-        laneCounts: {
-            type: Object,
-            default: function () {
-                return {};
-            },
         },
         scrollTop: {
             type: Number,
@@ -27,14 +21,7 @@ biigle.$component('videos.components.trackHeaders', {
         };
     },
     computed: {
-        tracks: function () {
-            return Object.keys(this.laneCounts).map(function (labelId) {
-                return {
-                    label: this.labels[labelId],
-                    lanes: Array.apply(null, {length: this.laneCounts[labelId]}),
-                };
-            }, this);
-        },
+        //
     },
     methods: {
         //

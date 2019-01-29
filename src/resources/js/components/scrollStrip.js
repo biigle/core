@@ -6,11 +6,10 @@ biigle.$component('videos.components.scrollStrip', {
             ' @seek="emitSeek"' +
             '></video-progress>' +
         '<annotation-tracks' +
-            ' :annotations="annotations"' +
+            ' :tracks="tracks"' +
             ' :duration="duration"' +
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
-            ' @update="emitUpdateTracks"' +
             ' @scroll-y="emitScrollY"' +
             '></annotation-tracks>' +
         '<span class="time-indicator" :style="indicatorStyle"></span>' +
@@ -20,7 +19,7 @@ biigle.$component('videos.components.scrollStrip', {
         annotationTracks: biigle.$require('videos.components.annotationTracks'),
     },
     props: {
-        annotations: {
+        tracks: {
             type: Array,
             required: function () {
                 return [];
@@ -70,9 +69,6 @@ biigle.$component('videos.components.scrollStrip', {
         },
         emitDeselect: function () {
             this.$emit('deselect');
-        },
-        emitUpdateTracks: function (labelId, laneCount) {
-            this.$emit('update-tracks', labelId, laneCount);
         },
         emitScrollY: function (scrollTop) {
             this.$emit('scroll-y', scrollTop);

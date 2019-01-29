@@ -47,8 +47,8 @@ biigle.$component('videos.components.annotationClip', {
             type: Object,
             required: true,
         },
-        labelId: {
-            type: String,
+        label: {
+            type: Object,
             required: true,
         },
         duration: {
@@ -78,14 +78,7 @@ biigle.$component('videos.components.annotationClip', {
             return this.clipDuration / this.duration;
         },
         color: function () {
-            var labelId = parseInt(this.labelId);
-            for (var i = this.annotation.labels.length - 1; i >= 0; i--) {
-                if (this.annotation.labels[i].label_id === labelId) {
-                    return this.annotation.labels[i].label.color;
-                }
-            }
-
-            return '000000';
+            return this.label.color || '000000';
         },
         style: function () {
             return {

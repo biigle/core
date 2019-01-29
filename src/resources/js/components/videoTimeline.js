@@ -3,20 +3,18 @@ biigle.$component('videos.components.videoTimeline', {
         '<div class="static-strip">' +
             '<div class="current-time" v-text="currentTimeString"></div>' +
             '<track-headers ref="trackheaders"' +
-                ' :labels="labelMap"' +
-                ' :lane-counts="laneCounts"' +
+                ' :tracks="annotationTracks"' +
                 ' :scroll-top="scrollTop"' +
                 '></track-headers>' +
         '</div>' +
         '<scroll-strip' +
-            ' :annotations="annotations"' +
+            ' :tracks="annotationTracks"' +
             ' :duration="duration"' +
             ' :current-time="currentTime"' +
             ' :bookmarks="bookmarks"' +
             ' @seek="emitSeek"' +
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
-            ' @update-tracks="handleUpdatedTracks"' +
             ' @scroll-y="handleScrollY"' +
         '></scroll-strip>' +
     '</div>',
@@ -52,7 +50,6 @@ biigle.$component('videos.components.videoTimeline', {
             currentTimeDate: new Date(0),
             currentTimeString: '00:00:00.000',
             duration: 0,
-            laneCounts: {},
             scrollTop: 0,
         };
     },
@@ -62,12 +59,31 @@ biigle.$component('videos.components.videoTimeline', {
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
-                        map[label.label_id] = label;
+                        map[label.label_id] = label.label;
                     }
                 });
             });
 
             return map;
+        },
+        annotationTracks: function () {
+            var map = {};
+            this.annotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (label) {
+                    if (!map.hasOwnProperty(label.label_id)) {
+                        map[label.label_id] = [];
+                    }
+
+                    map[label.label_id].push(annotation);
+                });
+            });
+
+            return Object.keys(map).map(function (labelId) {
+                return {
+                    label: this.labelMap[labelId],
+                    lanes: this.getAnnotationTrackLanes(map[labelId])
+                };
+            }, this);
         },
     },
     methods: {
@@ -107,11 +123,53 @@ biigle.$component('videos.components.videoTimeline', {
         emitDeselect: function () {
             this.$emit('deselect');
         },
-        handleUpdatedTracks: function (labelId, laneCount) {
-            Vue.set(this.laneCounts, labelId, laneCount);
-        },
         handleScrollY: function (scrollTop) {
             this.scrollTop = scrollTop;
+        },
+        getAnnotationTrackLanes: function (annotations) {
+            var timeRanges = [[]];
+            var lanes = [[]];
+
+            annotations.forEach(function (annotation) {
+                var range = [
+                    annotation.frames[0],
+                    annotation.frames[annotation.frames.length - 1],
+                ];
+                var lane = 0;
+                var set = false;
+
+                outerloop: while (!set) {
+                    if (!lanes[lane]) {
+                        timeRanges[lane] = [];
+                        lanes[lane] = [];
+                    } else {
+                        for (var i = timeRanges[lane].length - 1; i >= 0; i--) {
+                            if (this.rangesCollide(timeRanges[lane][i], range)) {
+                                lane += 1;
+                                continue outerloop;
+                            }
+                        }
+                    }
+
+                    timeRanges[lane].push(range);
+                    lanes[lane].push(annotation);
+                    set = true;
+                }
+            }, this);
+
+            return lanes;
+        },
+        rangesCollide: function (range1, range2) {
+            // Start of range1 overlaps with range2.
+            return range1[0] >= range2[0] && range1[0] < range2[1] ||
+                // End of range1 overlaps with range2.
+                range1[1] > range2[0] && range1[1] <= range2[1] ||
+                // Start of range2 overlaps with range1.
+                range2[0] >= range1[0] && range2[0] < range1[1] ||
+                // End of range2 overlaps with range1.
+                range2[1] > range1[0] && range2[1] <= range1[1] ||
+                // range1 equals range2.
+                range1[0] === range2[0] && range1[1] === range2[1];
         },
     },
     watch: {
