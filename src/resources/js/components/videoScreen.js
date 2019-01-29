@@ -19,6 +19,12 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button icon="icon-circle" title="Start a circle annotation 𝗗" v-on:click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
                     '<control-button icon="fa-check" title="Finish the circle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
+                '<control-button icon="icon-linestring" title="Start a line annotation 𝗙" v-on:click="drawLineString" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingLineString" :active="isDrawingLineString">' +
+                    '<control-button icon="fa-check" title="Finish the line annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '</control-button>' +
+                '<control-button icon="icon-polygon" title="Start a polygon annotation 𝗚" v-on:click="drawPolygon" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPolygon" :active="isDrawingPolygon">' +
+                    '<control-button icon="fa-check" title="Finish the polygon annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '</control-button>' +
             '</div>' +
             '<div v-if="canDelete || canAdd" class="btn-group">' +
                 '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹𝗲𝘁𝗲" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
@@ -93,6 +99,12 @@ biigle.$component('videos.components.videoScreen', {
         },
         isDrawingCircle: function () {
             return this.interactionMode === 'drawCircle';
+        },
+        isDrawingLineString: function () {
+            return this.interactionMode === 'drawLineString';
+        },
+        isDrawingPolygon: function () {
+            return this.interactionMode === 'drawPolygon';
         },
     },
     methods: {
@@ -184,6 +196,12 @@ biigle.$component('videos.components.videoScreen', {
         },
         drawCircle: function () {
             this.draw('Circle');
+        },
+        drawLineString: function () {
+            this.draw('LineString');
+        },
+        drawPolygon: function () {
+            this.draw('Polygon');
         },
         maybeUpdateDrawInteractionMode: function (mode) {
             this.resetPendingAnnotation();
@@ -278,11 +296,11 @@ biigle.$component('videos.components.videoScreen', {
 
         if (this.canAdd) {
             kb.on('a', this.drawPoint, 0, this.listenerSet);
-            // kb.on('s', this.drawRectangle, 0, this.listenerSet);
+            kb.on('s', this.drawRectangle, 0, this.listenerSet);
             kb.on('d', this.drawCircle, 0, this.listenerSet);
             // kb.on('D', this.drawEllipse, 0, this.listenerSet);
-            // kb.on('f', this.drawLineString, 0, this.listenerSet);
-            // kb.on('g', this.drawPolygon, 0, this.listenerSet);
+            kb.on('f', this.drawLineString, 0, this.listenerSet);
+            kb.on('g', this.drawPolygon, 0, this.listenerSet);
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
 
             kb.on('b', this.emitCreateBookmark);

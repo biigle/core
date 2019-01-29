@@ -128,11 +128,6 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
             },
             interpolatePoints: function (shape, points1, points2, progress) {
                 switch (shape) {
-                    case 'Point':
-                    case 'Circle':
-                        return points1.map(function (value, index) {
-                            return value + (points2[index] - value) * progress;
-                        });
                     case 'Rectangle':
                     case 'Ellipse':
                         return this.interpolationPointsToRectangle(
@@ -142,10 +137,40 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                                 progress
                             )
                         );
+                    case 'LineString':
+                    case 'Polygon':
+                        return this.interpolatePolymorph(
+                            this.pointsToSvgPath(points1),
+                            this.pointsToSvgPath(points2),
+                            progress
+                        );
                     default:
-                        // polygon
-                        return points1;
+                        return points1.map(function (value, index) {
+                            return value + (points2[index] - value) * progress;
+                        });
                 }
+            },
+            pointsToSvgPath: function (points) {
+                points = points.slice();
+                points.unshift('M');
+                points.splice(3, 0, 'L');
+
+                return points.join(' ');
+            },
+            interpolatePolymorph: function (from, to, progress) {
+                var interpolator = polymorph.interpolate([from, to]);
+
+                return interpolator(progress)
+                    // Replace any SVG draw command or whitespace with a single space.
+                    .replace(/[MCL\s]+/g, ' ')
+                    // Trim whitespace.
+                    .trim()
+                    // Split coordinates.
+                    .split(' ')
+                    // Parse coordinates to int.
+                    .map(function (n) {
+                        return parseInt(n, 10);
+                    });
             },
             rectangleToInterpolationPoints: function (points) {
                 // Return the center point, the normalized vector from the first point

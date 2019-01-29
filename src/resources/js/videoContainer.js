@@ -98,7 +98,7 @@ biigle.$viewModel('video-container', function (element) {
                 this.selectedLabel = null;
             },
             deleteSelectedAnnotations: function () {
-                if (confirm('Are you sure that you want o delete all selected annotations?')) {
+                if (confirm('Are you sure that you want to delete all selected annotations?')) {
                     this.selectedAnnotations.forEach(function (annotation) {
                         ANNOTATION_API.delete({id: annotation.id})
                             .then(this.deletedAnnotation(annotation))

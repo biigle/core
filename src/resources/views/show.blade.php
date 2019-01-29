@@ -57,6 +57,7 @@
 @endif
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/videos/scripts/polymorph.min.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('videos.id', '{{$video->id}}');
