@@ -31,6 +31,17 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                         return a.start - b.start;
                     });
             },
+            preparedInterpolationPoints: function () {
+                // This prepares the information used to interpolate each annotation
+                // between keyframes. This has to be done only if the annotation points
+                // change (and not in every rendering step).
+                var map = {};
+                this.annotations.forEach(function (annotation) {
+                    map[annotation.id] = this.prepareInterpolationPoints(annotation);
+                }, this);
+
+                return map;
+            },
         },
         methods: {
             refreshAnnotations: function (time) {
@@ -120,42 +131,54 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                     }
                 }
 
-                var points = annotation.points;
                 var progress = (time - frames[i]) / (frames[i + 1] - frames[i]);
                 feature.setGeometry(this.getGeometryFromPoints(annotation.shape,
-                    this.interpolatePoints(annotation.shape, points[i], points[i + 1], progress)
+                    this.interpolatePoints(annotation, i, progress)
                 ));
             },
-            interpolatePoints: function (shape, points1, points2, progress) {
-                switch (shape) {
+            prepareInterpolationPoints: function (annotation) {
+                switch (annotation.shape) {
                     case 'Rectangle':
                     case 'Ellipse':
-                        return this.interpolationPointsToRectangle(
-                            this.interpolatePoints('Point',
-                                this.rectangleToInterpolationPoints(points1),
-                                this.rectangleToInterpolationPoints(points2),
-                                progress
-                            )
-                        );
+                        return annotation.points.map(this.rectangleToInterpolationPoints);
                     case 'LineString':
                     case 'Polygon':
-                        return this.interpolatePolymorph(
-                            this.pointsToSvgPath(points1),
-                            this.pointsToSvgPath(points2),
-                            progress
-                        );
+                        return annotation.points.map(this.polygonToSvgPath);
                     default:
-                        return points1.map(function (value, index) {
-                            return value + (points2[index] - value) * progress;
-                        });
+                        return annotation.points;
                 }
             },
-            pointsToSvgPath: function (points) {
+            polygonToSvgPath: function (points) {
                 points = points.slice();
                 points.unshift('M');
                 points.splice(3, 0, 'L');
 
                 return points.join(' ');
+            },
+            interpolatePoints: function (annotation, frameIndex, progress) {
+                var points = this.preparedInterpolationPoints[annotation.id];
+                var points1 = points[frameIndex];
+                var points2 = points[frameIndex + 1];
+
+                switch (annotation.shape) {
+                    case 'Rectangle':
+                    case 'Ellipse':
+                        return this.interpolationPointsToRectangle(
+                            // The points come from preparedAnnotationPoints and only
+                            // have to converted back to rectangle points after
+                            // interpolation.
+                            this.interpolatePoints('Point', points1, points2, progress)
+                        );
+                    case 'LineString':
+                    case 'Polygon':
+                        // The points come from preparedInterpolationPoints and are
+                        // already converted to SVG paths for Polymorph.
+                        return this.interpolatePolymorph(points1, points2, progress);
+                    default:
+                        return points1.map(function (value, index) {
+                            return value + (points2[index] - value) * progress;
+                        });
+                }
             },
             interpolatePolymorph: function (from, to, progress) {
                 var interpolator = polymorph.interpolate([from, to]);
