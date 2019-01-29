@@ -112,7 +112,12 @@ biigle.$viewModel('video-container', function (element) {
                     // Delete only the keyframe of the annotation.
                     event.annotation.frames.splice(index, 1);
                     event.annotation.points.splice(index, 1);
-                    console.log('TODO: API request update annotation');
+
+                    ANNOTATION_API.update({id: event.annotation.id}, {
+                            frames: event.annotation.frames,
+                            points: event.annotation.points,
+                        })
+                        .catch(MSG.handleResponseError);
                 } else {
                     // Delete the whole annotation.
                     ANNOTATION_API.delete({id: event.annotation.id})
@@ -150,7 +155,11 @@ biigle.$viewModel('video-container', function (element) {
                     event.annotation.points.splice(i + 1, 0, event.points);
                 }
 
-                console.log('TODO: API request update annotation');
+                ANNOTATION_API.update({id: event.annotation.id}, {
+                        frames: event.annotation.frames,
+                        points: event.annotation.points,
+                    })
+                    .catch(MSG.handleResponseError);
             },
         },
         watch: {
