@@ -3,6 +3,7 @@ biigle.$component('videos.components.annotationTrack', {
         '<div class="annotation-lane" v-for="lane in lanes">' +
             '<annotation-clip v-for="annotation in lane"' +
                 ' :annotation="annotation"' +
+                ' :element-width="elementWidth"' +
                 ' :label="label"' +
                 ' :duration="duration"' +
                 ' @select="emitSelect"' +
@@ -22,6 +23,10 @@ biigle.$component('videos.components.annotationTrack', {
             required: true,
         },
         duration: {
+            type: Number,
+            required: true,
+        },
+        elementWidth: {
             type: Number,
             required: true,
         },

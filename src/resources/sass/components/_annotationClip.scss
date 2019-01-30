@@ -37,3 +37,19 @@
         z-index: 0;
     }
 }
+
+.annotation-clip--compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        width: $border-radius-small;
+    }
+}
+
+.annotation-clip--more-compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        display: none;
+    }
+}

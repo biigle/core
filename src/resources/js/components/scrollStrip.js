@@ -8,6 +8,7 @@ biigle.$component('videos.components.scrollStrip', {
         '<annotation-tracks' +
             ' :tracks="tracks"' +
             ' :duration="duration"' +
+            ' :element-width="elementWidth"' +
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
             ' @scroll-y="emitScrollY"' +

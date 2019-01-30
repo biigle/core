@@ -7,6 +7,7 @@ biigle.$component('videos.components.annotationTracks', {
                 ' :label="track.label"' +
                 ' :lanes="track.lanes"' +
                 ' :duration="duration"' +
+                ' :element-width="elementWidth"' +
                 ' @select="emitSelect"' +
                 '></annotation-track>' +
     '</div>',
@@ -19,6 +20,10 @@ biigle.$component('videos.components.annotationTracks', {
             required: true,
         },
         duration: {
+            type: Number,
+            required: true,
+        },
+        elementWidth: {
             type: Number,
             required: true,
         },

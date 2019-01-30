@@ -55,6 +55,10 @@ biigle.$component('videos.components.annotationClip', {
             type: Number,
             required: true,
         },
+        elementWidth: {
+            type: Number,
+            required: true,
+        },
     },
     data: function () {
         return {
@@ -103,7 +107,30 @@ biigle.$component('videos.components.annotationClip', {
         classObj: function () {
             return {
                 'annotation-clip--selected': this.selected,
+                'annotation-clip--compact': this.shouldBeCompact,
+                'annotation-clip--more-compact': this.shouldBeMoreCompact,
             };
+        },
+        minTimeBetweenKeyframes: function () {
+            var min = Infinity;
+            for (var i = this.keyframes.length - 1; i > 0; i--) {
+                min = Math.min(min, this.keyframes[i].time - this.keyframes[i - 1].time);
+            }
+
+            return min;
+        },
+        minDistanceBetweenKeyframes: function () {
+            var distanceInPercent = this.minTimeBetweenKeyframes / this.duration;
+
+            return distanceInPercent * this.elementWidth;
+        },
+        shouldBeCompact: function () {
+            // Twice the width of a regular keyframe element.
+            return this.minDistanceBetweenKeyframes <= 18;
+        },
+        shouldBeMoreCompact: function () {
+            // Twice the width of a compact keyframe element.
+            return this.minDistanceBetweenKeyframes <= 6;
         },
     },
     methods: {
