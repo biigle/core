@@ -108,7 +108,7 @@ biigle.$viewModel('video-container', function (element) {
             deleteAnnotationOrKeyframe: function (event) {
                 var index = event.annotation.frames.indexOf(event.time);
 
-                if (index !== -1) {
+                if (index !== -1 && event.annotation.frames.length > 1) {
                     // Delete only the keyframe of the annotation.
                     event.annotation.frames.splice(index, 1);
                     event.annotation.points.splice(index, 1);
