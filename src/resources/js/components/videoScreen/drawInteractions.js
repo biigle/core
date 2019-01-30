@@ -53,7 +53,7 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
             draw: function (name) {
                 if (this['isDrawing' + name]) {
                     this.resetInteractionMode();
-                } else if (this.canAdd) {
+                } else if (this.canAdd && this.hasSelectedLabel) {
                     this.interactionMode = 'draw' + name;
                 }
             },

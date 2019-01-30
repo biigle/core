@@ -51,7 +51,7 @@ biigle.$viewModel('video-container', function (element) {
                 this.annotations.push(this.prepareAnnotation(response.body));
             },
             seek: function (time) {
-                if (!this.seeking) {
+                if (!this.seeking && this.video.currentTime !== time) {
                     this.seeking = true;
                     this.video.currentTime = time;
                 }
