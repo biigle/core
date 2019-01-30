@@ -8,29 +8,30 @@ biigle.$component('videos.components.videoScreen', {
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
-                '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="pause"></control-button>' +
-                '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" v-on:click="play"></control-button>' +
+                '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" @click="pause"></control-button>' +
+                '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" @click="play"></control-button>' +
             '</div>' +
             '<div v-if="canAdd" class="btn-group">' +
-                '<control-button icon="icon-point" title="Start a point annotation 𝗔" v-on:click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
-                    '<control-button icon="fa-check" title="Finish the point annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '<control-button icon="icon-point" title="Start a point annotation 𝗔" @click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
+                    '<control-button icon="fa-check" title="Finish the point annotation" @click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-rectangle" title="Start a rectangle annotation 𝗦" v-on:click="drawRectangle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingRectangle" :active="isDrawingRectangle">' +
-                    '<control-button icon="fa-check" title="Finish the rectangle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '<control-button icon="icon-rectangle" title="Start a rectangle annotation 𝗦" @click="drawRectangle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingRectangle" :active="isDrawingRectangle">' +
+                    '<control-button icon="fa-check" title="Finish the rectangle annotation" @click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-circle" title="Start a circle annotation 𝗗" v-on:click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
-                    '<control-button icon="fa-check" title="Finish the circle annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '<control-button icon="icon-circle" title="Start a circle annotation 𝗗" @click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
+                    '<control-button icon="fa-check" title="Finish the circle annotation" @click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-linestring" title="Start a line annotation 𝗙" v-on:click="drawLineString" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingLineString" :active="isDrawingLineString">' +
-                    '<control-button icon="fa-check" title="Finish the line annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '<control-button icon="icon-linestring" title="Start a line annotation 𝗙" @click="drawLineString" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingLineString" :active="isDrawingLineString">' +
+                    '<control-button icon="fa-check" title="Finish the line annotation" @click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-polygon" title="Start a polygon annotation 𝗚" v-on:click="drawPolygon" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPolygon" :active="isDrawingPolygon">' +
-                    '<control-button icon="fa-check" title="Finish the polygon annotation" v-on:click="finishDrawAnnotation"></control-button>' +
+                '<control-button icon="icon-polygon" title="Start a polygon annotation 𝗚" @click="drawPolygon" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPolygon" :active="isDrawingPolygon">' +
+                    '<control-button icon="fa-check" title="Finish the polygon annotation" @click="finishDrawAnnotation"></control-button>' +
                 '</control-button>' +
             '</div>' +
-            '<div v-if="canDelete || canAdd" class="btn-group">' +
-                '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹𝗲𝘁𝗲" v-on:click="emitDelete" :disabled="!hasSelectedAnnotations"></control-button>' +
-                '<control-button v-if="canAdd" icon="fa-bookmark" title="Create a bookmark 𝗕" v-on:click="emitCreateBookmark"></control-button>' +
+            '<div v-if="canEdit" class="btn-group">' +
+                '<control-button v-if="canAdd" icon="fa-bookmark" title="Create a bookmark 𝗕" @click="emitCreateBookmark"></control-button>' +
+                '<control-button v-if="canModify" icon="fa-arrows-alt" title="Move selected annotations 𝗠" :active="isTranslating" @click="toggleTranslating"></control-button>' +
+                '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲" @click="emitDelete" :disabled="hasNoSelectedAnnotations"></control-button>' +
             '</div>' +
         '</div>' +
     '</div>',
@@ -80,8 +81,17 @@ biigle.$component('videos.components.videoScreen', {
         };
     },
     computed: {
+        canEdit: function () {
+            return this.canAdd || this.canModify || this.canDelete;
+        },
         hasSelectedAnnotations: function () {
             return this.selectedAnnotations.length > 0;
+        },
+        hasNoSelectedAnnotations: function () {
+            return !this.hasSelectedAnnotations;
+        },
+        isDefaultInteractionMode: function () {
+            return this.interactionMode === 'default';
         },
     },
     methods: {
@@ -134,13 +144,13 @@ biigle.$component('videos.components.videoScreen', {
                 condition: ol.events.condition.click,
                 style: styles.highlight,
                 layers: [this.annotationLayer],
-                multi: true
+                multi: true,
             });
 
             this.selectedFeatures = this.selectInteraction.getFeatures();
             this.selectInteraction.on('select', this.handleFeatureSelect);
 
-            this.annotationLayer.setMap(map);
+            map.addLayer(this.annotationLayer);
             map.addInteraction(this.selectInteraction);
         },
 
@@ -176,9 +186,9 @@ biigle.$component('videos.components.videoScreen', {
                 });
             }
         },
-        interactionMode: function (mode) {
-            this.selectInteraction.setActive(mode === 'default');
-        }
+        isDefaultInteractionMode: function (isDefault) {
+            this.selectInteraction.setActive(isDefault);
+        },
     },
     created: function () {
         this.$once('map-ready', this.initLayersAndInteractions);
@@ -186,6 +196,7 @@ biigle.$component('videos.components.videoScreen', {
         this.$emit('map-created', this.map);
 
         var kb = biigle.$require('keyboard');
+        kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
         if (this.canAdd) {
             kb.on('b', this.emitCreateBookmark);

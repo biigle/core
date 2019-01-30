@@ -48,7 +48,7 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
                     style: styles.editing,
                 });
 
-                this.pendingAnnotationLayer.setMap(map);
+                map.addLayer(this.pendingAnnotationLayer);
             },
             draw: function (name) {
                 if (this['isDrawing' + name]) {

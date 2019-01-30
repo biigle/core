@@ -30,7 +30,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 });
 
                 this.videoLayer = new ol.layer.Image({
-                    map: map,
+                    name: 'videoLayer',
                     source: new ol.source.Canvas({
                         canvas: this.videoCanvas,
                         projection: projection,
@@ -38,6 +38,8 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                         canvasSize: [extent[0], extent[1]],
                     }),
                 });
+
+                map.addLayer(this.videoLayer);
 
                 map.setView(new ol.View({
                     projection: projection,

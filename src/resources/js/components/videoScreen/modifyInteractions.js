@@ -8,7 +8,10 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
     return {
         data: function () {
             return {
-                //
+                // This is no interaction mode because we want the select interaction to
+                // be active while translating, too. The select interaction is only
+                // enabled in default interaction mode.
+                isTranslating: false,
             };
         },
         computed: {
@@ -57,9 +60,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                     this.$emit('modify', payload);
                 }
             },
-            maybeUpdateModifyInteractionMode: function (mode) {
+            maybeUpdateModifyInteractionMode: function (isDefault) {
                 if (this.modifyInteraction) {
-                    this.modifyInteraction.setActive(mode === 'default');
+                    this.modifyInteraction.setActive(isDefault);
                 }
             },
             emitDelete: function () {
@@ -72,14 +75,44 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                     }, this));
                 }
             },
+            toggleTranslating: function () {
+                this.resetInteractionMode();
+                this.isTranslating = !this.isTranslating;
+            },
+            initTranslateInteraction: function (map) {
+                var Interaction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
+                this.translateInteraction = new Interaction({
+                    features: this.selectedFeatures,
+                    map: map,
+                });
+                this.translateInteraction.setActive(false);
+                this.translateInteraction.on('translatestart', this.handleModifyStart);
+                this.translateInteraction.on('translateend', this.handleModifyEnd);
+                this.map.addInteraction(this.translateInteraction);
+            },
+            maybeUpdateIsTranslating: function (isDefault) {
+                if (this.translateInteraction && !isDefault) {
+                    this.isTranslating = false;
+                }
+            },
+            resetTranslating: function () {
+                this.isTranslating = false;
+            },
         },
         watch: {
-            //
+            isTranslating: function (translating) {
+                if (this.translateInteraction) {
+                    this.translateInteraction.setActive(translating);
+                    if (translating) {
+                        this.modifyInteraction.setActive(false);
+                    } else if (this.isDefaultInteractionMode) {
+                        this.modifyInteraction.setActive(true);
+                    }
+                }
+            },
         },
         created: function () {
-
             var kb = biigle.$require('keyboard');
-
 
             if (this.canModify) {
                 this.$once('map-created', function () {
@@ -87,9 +120,13 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                     // videoScreen so the select interaction is created before the
                     // modify interaction.
                     this.$once('map-ready', this.initModifyInteraction);
+                    this.$once('map-ready', this.initTranslateInteraction);
                 });
 
-                this.$watch('interactionMode', this.maybeUpdateModifyInteractionMode);
+                this.$watch('isDefaultInteractionMode', this.maybeUpdateModifyInteractionMode);
+                this.$watch('isDefaultInteractionMode', this.maybeUpdateIsTranslating);
+                kb.on('m', this.toggleTranslating, 0, this.listenerSet);
+                kb.on('Escape', this.resetTranslating, 0, this.listenerSet);
             }
 
             if (this.canDelete) {
