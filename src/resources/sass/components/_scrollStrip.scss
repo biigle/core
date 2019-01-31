@@ -14,30 +14,35 @@
     .time-indicator {
         position: absolute;
         top: 0;
-        left: 0px;
+        left: 0;
         height: 100%;
         width: 1px;
         background-color: #990000;
         box-shadow: 0 0 1px black;
         will-change: transform;
+        pointer-events: none;
+        z-index: 100;
 
         &:before {
             content: '';
             position: absolute;
             top: 0;
             left: -5px;
-            width: 10px;
-            height: 5px;
+            width: 11px;
+            height: 3px;
             background-color: #ff0000;
         }
 
         &:after {
             content: '';
             position: absolute;
-            top: 5px;
+            display: block;
+            top: 3px;
             left: -5px;
             border: 5px solid transparent;
             border-top-color: #ff0000;
+            width: 11px;
+            height: 11px;
         }
 
         &.time-indicator--seeking {
@@ -52,12 +57,21 @@
             }
         }
     }
+
+    .hover-time-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 34px;
+        width: 1px;
+        background-color: $text-muted;
+        will-change: transform;
+        pointer-events: none;
+    }
 }
 
 .scroll-strip__scroller {
-    position: absolute;
-    left: 0;
-    top: 0;
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;

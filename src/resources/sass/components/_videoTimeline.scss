@@ -4,18 +4,10 @@
     overflow: hidden;
 
     .static-strip {
-        max-width: 150px;
+        width: 150px;
         border-right: 1px solid $legend-border-color;
         display: flex;
         flex-direction: column;
-
-        .current-time {
-            height: 34px;
-            font-weight: bold;
-            padding: 5px;
-            border-bottom: 1px solid $legend-border-color;
-            text-align: center;
-        }
 
         .track-headers {
             flex: 1;

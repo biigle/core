@@ -1,7 +1,11 @@
 biigle.$component('videos.components.videoTimeline', {
     template: '<div class="video-timeline">' +
         '<div class="static-strip">' +
-            '<div class="current-time" v-text="currentTimeString"></div>' +
+            '<current-time' +
+                ' :current-time="currentTime"' +
+                ' :hover-time="hoverTime"' +
+                ' :seeking="seeking"' +
+                '></current-time>' +
             '<track-headers ref="trackheaders"' +
                 ' :tracks="annotationTracks"' +
                 ' :scroll-top="scrollTop"' +
@@ -17,9 +21,11 @@ biigle.$component('videos.components.videoTimeline', {
             ' @select="emitSelect"' +
             ' @deselect="emitDeselect"' +
             ' @scroll-y="handleScrollY"' +
+            ' @hover-time="updateHoverTime"' +
         '></scroll-strip>' +
     '</div>',
     components: {
+        currentTime: biigle.$require('videos.components.currentTime'),
         trackHeaders: biigle.$require('videos.components.trackHeaders'),
         scrollStrip: biigle.$require('videos.components.scrollStrip'),
     },
@@ -52,10 +58,9 @@ biigle.$component('videos.components.videoTimeline', {
             refreshRate: 30,
             refreshLastTime: Date.now(),
             currentTime: 0,
-            currentTimeDate: new Date(0),
-            currentTimeString: '00:00:00.000',
             duration: 0,
             scrollTop: 0,
+            hoverTime: 0,
         };
     },
     computed: {
@@ -107,14 +112,6 @@ biigle.$component('videos.components.videoTimeline', {
         },
         updateCurrentTime: function () {
             this.currentTime = this.video.currentTime;
-            // setTime expects milliseconds, currentTime is in seconds.
-            this.currentTimeDate.setTime(this.currentTime * 1000);
-            // Extract the "14:48:00.000" part from a string like
-            // "2011-10-05T14:48:00.000Z".
-            this.currentTimeString = this.currentTimeDate
-                .toISOString()
-                .split('T')[1]
-                .slice(0, -1);
         },
         setDuration: function () {
             this.duration = this.video.duration;
@@ -175,6 +172,9 @@ biigle.$component('videos.components.videoTimeline', {
                 range2[1] > range1[0] && range2[1] <= range1[1] ||
                 // range1 equals range2.
                 range1[0] === range2[0] && range1[1] === range2[1];
+        },
+        updateHoverTime: function (time) {
+            this.hoverTime = time;
         },
     },
     watch: {

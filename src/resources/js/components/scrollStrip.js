@@ -1,22 +1,41 @@
 biigle.$component('videos.components.scrollStrip', {
     template:
-    '<div class="scroll-strip" @wheel.stop="handleScroll">' +
-        '<div class="scroll-strip__scroller" ref="scroller" :style="scrollerStyle">' +
-            '<video-progress' +
-                ' :bookmarks="bookmarks"' +
-                ' :duration="duration"' +
-                ' @seek="emitSeek"' +
-                '></video-progress>' +
-            '<annotation-tracks' +
-                ' :tracks="tracks"' +
-                ' :duration="duration"' +
-                ' :element-width="elementWidth"' +
-                ' @select="emitSelect"' +
-                ' @deselect="emitDeselect"' +
-                ' @scroll-y="emitScrollY"' +
-                '></annotation-tracks>' +
-            '<span class="time-indicator" :class="indicatorClass" :style="indicatorStyle"></span>' +
-        '</div>' +
+    '<div' +
+        ' class="scroll-strip"' +
+        ' @wheel.stop="handleWheel"' +
+        ' @mouseleave="handleHideHoverTime"' +
+        '>' +
+            '<div' +
+                ' class="scroll-strip__scroller"' +
+                ' ref="scroller"' +
+                ' :style="scrollerStyle"' +
+                ' @mousemove="handleUpdateHoverTime"' +
+                '>' +
+                    '<video-progress' +
+                        ' :bookmarks="bookmarks"' +
+                        ' :duration="duration"' +
+                        ' :element-width="elementWidth"' +
+                        ' @seek="emitSeek"' +
+                        '></video-progress>' +
+                    '<annotation-tracks' +
+                        ' :tracks="tracks"' +
+                        ' :duration="duration"' +
+                        ' :element-width="elementWidth"' +
+                        ' @select="emitSelect"' +
+                        ' @deselect="emitDeselect"' +
+                        ' @scroll-y="emitScrollY"' +
+                        '></annotation-tracks>' +
+                    '<span' +
+                        ' class="time-indicator"' +
+                        ' :class="timeIndicatorClass"' +
+                        ' :style="timeIndicatorStyle"' +
+                        '></span>' +
+                    '<span' +
+                        ' class="hover-time-indicator"' +
+                        ' :style="hoverTimeIndicatorStyle"' +
+                        ' v-show="showHoverTime"' +
+                        '></span>' +
+            '</div>' +
     '</div>',
     components: {
         videoProgress: biigle.$require('videos.components.videoProgress'),
@@ -54,23 +73,27 @@ biigle.$component('videos.components.scrollStrip', {
             zoomFactor: 0.1,
             initialElementWidth: 0,
             scrollerLeft: 0,
+            hoverTime: 0,
         };
     },
     computed: {
-        currentTimeOffset: function () {
+        currentTimePosition: function () {
             if (this.duration > 0) {
                 return this.elementWidth * this.currentTime / this.duration;
             }
 
             return 0;
         },
-        indicatorClass: function () {
+        timeIndicatorClass: function () {
             return {
                 'time-indicator--seeking': this.seeking,
             };
         },
-        indicatorStyle: function () {
-            return 'transform: translateX(' + this.currentTimeOffset + 'px);';
+        timeIndicatorStyle: function () {
+            return 'transform: translateX(' + this.currentTimePosition + 'px);';
+        },
+        hoverTimeIndicatorStyle: function () {
+            return 'transform: translateX(' + this.hoverPosition + 'px);';
         },
         scrollerStyle: function () {
             return {
@@ -80,6 +103,16 @@ biigle.$component('videos.components.scrollStrip', {
         },
         elementWidth: function () {
             return this.initialElementWidth * this.zoom;
+        },
+        hoverPosition: function () {
+            if (this.duration > 0) {
+                return this.elementWidth * this.hoverTime / this.duration;
+            }
+
+            return 0;
+        },
+        showHoverTime: function () {
+            return this.hoverTime !== 0;
         },
     },
     methods: {
@@ -98,7 +131,7 @@ biigle.$component('videos.components.scrollStrip', {
         emitScrollY: function (scrollTop) {
             this.$emit('scroll-y', scrollTop);
         },
-        handleScroll: function (e) {
+        handleWheel: function (e) {
             if (e.shiftKey && e.deltaY !== 0) {
                 var xRel = e.clientX - this.$el.getBoundingClientRect().left;
                 var xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
@@ -117,9 +150,17 @@ biigle.$component('videos.components.scrollStrip', {
                 });
             }
         },
+        handleHideHoverTime: function () {
+            this.hoverTime = 0;
+        },
+        handleUpdateHoverTime: function (e) {
+            this.hoverTime = (e.clientX - this.$refs.scroller.getBoundingClientRect().left) / this.elementWidth * this.duration;
+        },
     },
     watch: {
-        //
+        hoverTime: function (time) {
+          this.$emit('hover-time', time);
+        },
     },
     created: function () {
         window.addEventListener('resize', this.updateInitialElementWidth);

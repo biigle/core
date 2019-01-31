@@ -16,4 +16,16 @@
             background-color: $gray;
         }
     }
+
+    .tick {
+        position: absolute;
+        left: 0;
+        top: 0;
+        // height: 10px;
+        width: 1px;
+        border-left: 1px solid $text-muted;
+        color: $text-muted;
+        font-size: $font-size-small;
+        padding: 0 5px;
+    }
 }
