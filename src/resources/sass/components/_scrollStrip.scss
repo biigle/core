@@ -68,6 +68,32 @@
         will-change: transform;
         pointer-events: none;
     }
+
+    .overflow-shadow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        pointer-events: none;
+    }
+
+    .overflow-shadow--top {
+        top: 34px;
+        box-shadow: inset 0 10px 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--bottom {
+        box-shadow: inset 0 -10px 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--left {
+        box-shadow: inset 10px 0 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--right {
+        box-shadow: inset -10px 0 5px -5px rgba(black, 0.75);
+    }
 }
 
 .scroll-strip__scroller {

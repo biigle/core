@@ -1,5 +1,7 @@
 biigle.$component('videos.components.annotationTracks', {
-    template: '<div class="annotation-tracks"' +
+    template:
+    '<div' +
+        ' class="annotation-tracks"' +
         ' @click="emitDeselect"' +
         ' @scroll.stop="handleScroll"' +
         '>' +
@@ -30,7 +32,8 @@ biigle.$component('videos.components.annotationTracks', {
     },
     data: function () {
         return {
-            //
+            hasOverflowTop: false,
+            hasOverflowBottom: false,
         };
     },
     computed: {
@@ -45,6 +48,26 @@ biigle.$component('videos.components.annotationTracks', {
         },
         handleScroll: function () {
             this.$emit('scroll-y', this.$el.scrollTop);
+            this.updateHasOverflow();
         },
+        updateHasOverflow: function () {
+            this.hasOverflowTop = this.$el.scrollTop > 0;
+            var breakpoint = (this.$el.scrollHeight - this.$el.clientHeight);
+            this.hasOverflowBottom = breakpoint > 0 && this.$el.scrollTop < breakpoint;
+        },
+    },
+    watch: {
+        tracks: function () {
+            this.$nextTick(this.updateHasOverflow);
+        },
+        hasOverflowTop: function (has) {
+            this.$emit('overflow-top', has);
+        },
+        hasOverflowBottom: function (has) {
+            this.$emit('overflow-bottom', has);
+        },
+    },
+    created: function () {
+        window.addEventListener('resize', this.updateHasOverflow);
     },
 });

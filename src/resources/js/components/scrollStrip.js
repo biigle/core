@@ -24,6 +24,8 @@ biigle.$component('videos.components.scrollStrip', {
                         ' @select="emitSelect"' +
                         ' @deselect="emitDeselect"' +
                         ' @scroll-y="emitScrollY"' +
+                        ' @overflow-top="updateOverflowTop"' +
+                        ' @overflow-bottom="updateOverflowBottom"' +
                         '></annotation-tracks>' +
                     '<span' +
                         ' class="time-indicator"' +
@@ -36,6 +38,10 @@ biigle.$component('videos.components.scrollStrip', {
                         ' v-show="showHoverTime"' +
                         '></span>' +
             '</div>' +
+            '<div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>' +
+            '<div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>' +
+            '<div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>' +
+            '<div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>' +
     '</div>',
     components: {
         videoProgress: biigle.$require('videos.components.videoProgress'),
@@ -78,6 +84,8 @@ biigle.$component('videos.components.scrollStrip', {
             initialElementWidth: 0,
             scrollLeft: 0,
             hoverTime: 0,
+            hasOverflowTop: false,
+            hasOverflowBottom: false,
         };
     },
     computed: {
@@ -117,6 +125,12 @@ biigle.$component('videos.components.scrollStrip', {
         },
         showHoverTime: function () {
             return this.hoverTime !== 0;
+        },
+        hasOverflowLeft: function () {
+            return this.scrollLeft < 0;
+        },
+        hasOverflowRight: function () {
+            return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
     },
     methods: {
@@ -171,6 +185,12 @@ biigle.$component('videos.components.scrollStrip', {
         },
         updateScrollLeft: function (value) {
             this.scrollLeft = Math.max(Math.min(0, value), this.initialElementWidth - this.elementWidth);
+        },
+        updateOverflowTop: function (has) {
+            this.hasOverflowTop = has;
+        },
+        updateOverflowBottom: function (has) {
+            this.hasOverflowBottom = has;
         },
     },
     watch: {
