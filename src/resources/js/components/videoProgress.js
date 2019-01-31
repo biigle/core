@@ -9,6 +9,7 @@ biigle.$component('videos.components.videoProgress', {
                 ' @select="emitSelectBookmark"' +
                 '></bookmark>' +
             '<tick' +
+                ' v-if="hasTicks"' +
                 ' v-for="time in ticks"' +
                 ' :time="time"' +
                 '></tick>' +
@@ -59,7 +60,7 @@ biigle.$component('videos.components.videoProgress', {
             },
             computed: {
                 style: function () {
-                    return 'left: ' + (100 * this.time / this.$parent.duration) + '%';
+                    return 'left: ' + (this.time / this.$parent.duration * this.$parent.elementWidth) + 'px';
                 },
                 text: function () {
                     return Vue.filter('videoTime')(this.time);
@@ -73,14 +74,19 @@ biigle.$component('videos.components.videoProgress', {
         };
     },
     computed: {
+        tickCount: function () {
+            return Math.floor(this.elementWidth / this.tickSpacing);
+        },
         ticks: function () {
-            var count = Math.floor(this.elementWidth / this.tickSpacing);
-            var step = this.duration / count;
+            var step = this.duration / this.tickCount;
 
-            return Array.apply(null, {length: count})
+            return Array.apply(null, {length: this.tickCount})
                 .map(function (item, index) {
                     return step * index;
                 });
+        },
+        hasTicks: function () {
+            return this.tickCount > 0 && this.duration > 0;
         },
     },
     methods: {

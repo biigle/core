@@ -70,9 +70,13 @@ biigle.$component('videos.components.scrollStrip', {
     data: function () {
         return {
             zoom: 1,
-            zoomFactor: 0.1,
+            // Zoom amount to add/substract per vertical scroll event.
+            zoomFactor: 0.3,
+            // Number of pixels to move the scroller left/right per horizontal scroll
+            // event.
+            scrollFactor: 10,
             initialElementWidth: 0,
-            scrollerLeft: 0,
+            scrollLeft: 0,
             hoverTime: 0,
         };
     },
@@ -98,7 +102,7 @@ biigle.$component('videos.components.scrollStrip', {
         scrollerStyle: function () {
             return {
                 width: (this.zoom * 100) + '%',
-                left: this.scrollerLeft + 'px',
+                left: this.scrollLeft + 'px',
             };
         },
         elementWidth: function () {
@@ -132,23 +136,32 @@ biigle.$component('videos.components.scrollStrip', {
             this.$emit('scroll-y', scrollTop);
         },
         handleWheel: function (e) {
-            if (e.shiftKey && e.deltaY !== 0) {
-                var xRel = e.clientX - this.$el.getBoundingClientRect().left;
-                var xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
-                var xPercent = xAbs / this.elementWidth;
-
-                this.zoom = Math.max(1, this.zoom + this.zoomFactor * (1 - e.deltaY));
-
-                this.$nextTick(function () {
-                    var newRect = this.$refs.scroller.getBoundingClientRect();
-                    var newXAbs = xPercent * this.elementWidth;
-                    var left = Math.round(xRel - newXAbs);
-                    // The left and right edge of scroller should not be moved inside
-                    // the parent element.
-                    left = Math.max(Math.min(0, left),this.initialElementWidth - this.elementWidth);
-                    this.scrollerLeft = left;
-                });
+            if (e.shiftKey) {
+                if (e.deltaY !== 0) {
+                    this.updateZoom(e);
+                }
+            } else {
+                if (e.deltaX < 0) {
+                    this.updateScrollLeft(this.scrollLeft + this.scrollFactor);
+                } else if (e.deltaX > 0) {
+                    this.updateScrollLeft(this.scrollLeft - this.scrollFactor);
+                }
             }
+        },
+        updateZoom: function (e) {
+            var xRel = e.clientX - this.$el.getBoundingClientRect().left;
+            var xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
+            var xPercent = xAbs / this.elementWidth;
+
+            var factor = e.deltaY < 0 ? this.zoomFactor : -1 * this.zoomFactor;
+            this.zoom = Math.max(1, this.zoom + factor);
+
+            this.$nextTick(function () {
+                var newXAbs = xPercent * this.elementWidth;
+                // Update scroll position so the cursor position stays fixed while
+                // zooming.
+                this.updateScrollLeft(xRel - newXAbs);
+            });
         },
         handleHideHoverTime: function () {
             this.hoverTime = 0;
@@ -156,10 +169,16 @@ biigle.$component('videos.components.scrollStrip', {
         handleUpdateHoverTime: function (e) {
             this.hoverTime = (e.clientX - this.$refs.scroller.getBoundingClientRect().left) / this.elementWidth * this.duration;
         },
+        updateScrollLeft: function (value) {
+            this.scrollLeft = Math.max(Math.min(0, value), this.initialElementWidth - this.elementWidth);
+        },
     },
     watch: {
         hoverTime: function (time) {
           this.$emit('hover-time', time);
+        },
+        initialElementWidth: function () {
+            this.updateScrollLeft(this.scrollLeft);
         },
     },
     created: function () {
