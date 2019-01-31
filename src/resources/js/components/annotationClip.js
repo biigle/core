@@ -5,7 +5,8 @@ biigle.$component('videos.components.annotationClip', {
         ' :class="classObj"' +
         ' @click.stop="select($event)"' +
         '>' +
-            '<keyframe v-for="(frame, i) in keyframes"' +
+            '<keyframe' +
+                ' v-for="(frame, i) in keyframes"' +
                 ' :frame="frame"' +
                 ' @select="selectFrame(i)"' +
                 '></keyframe>' +
@@ -73,21 +74,21 @@ biigle.$component('videos.components.annotationClip', {
             return this.annotation.frames[this.annotation.frames.length - 1];
         },
         offset: function () {
-            return this.startFrame / this.duration;
+            return this.startFrame / this.duration * this.elementWidth;
         },
         clipDuration: function () {
             return this.endFrame - this.startFrame;
         },
         width: function () {
-            return this.clipDuration / this.duration;
+            return this.clipDuration / this.duration * this.elementWidth;
         },
         color: function () {
             return this.label.color || '000000';
         },
         style: function () {
             return {
-                left: (this.offset * 100) + '%',
-                width: (this.width * 100) + '%',
+                left: this.offset + 'px',
+                width: this.width + 'px',
                 'background-color': '#' + this.color + '66',
             };
         },
