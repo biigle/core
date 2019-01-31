@@ -109,7 +109,11 @@ biigle.$component('videos.components.scrollStrip', {
                 this.$nextTick(function () {
                     var newRect = this.$refs.scroller.getBoundingClientRect();
                     var newXAbs = xPercent * this.elementWidth;
-                    this.scrollerLeft = Math.min(0, Math.round(xRel - newXAbs));
+                    var left = Math.round(xRel - newXAbs);
+                    // The left and right edge of scroller should not be moved inside
+                    // the parent element.
+                    left = Math.max(Math.min(0, left),this.initialElementWidth - this.elementWidth);
+                    this.scrollerLeft = left;
                 });
             }
         },
