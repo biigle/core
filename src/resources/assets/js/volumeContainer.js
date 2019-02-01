@@ -7,7 +7,7 @@ biigle.$viewModel('volume-container', function (element) {
     var thumbUri = biigle.$require('volumes.thumbUri');
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
-    var urlParams = biigle.$require('volumes.urlParams');
+    var urlParams = biigle.$require('urlParams');
     var volumesApi = biigle.$require('api.volumes');
 
     /*
