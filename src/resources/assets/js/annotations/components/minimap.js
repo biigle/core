@@ -5,13 +5,10 @@
  */
 biigle.$component('annotations.components.minimap', function () {
     return {
+        template: '<div class="minimap"></div>',
         props: {
             extent: {
                 type: Array,
-                required: true,
-            },
-            projection: {
-                type: Object,
                 required: true,
             },
             intendedWidth: {
@@ -68,7 +65,7 @@ biigle.$component('annotations.components.minimap', function () {
                     imageHeight / this.intendedHeight
                 );
                 this.minimap.setView(new ol.View({
-                    projection: this.projection,
+                    projection: this.mapView.getProjection(),
                     center: ol.extent.getCenter(this.extent),
                     resolution: resolution,
                 }));

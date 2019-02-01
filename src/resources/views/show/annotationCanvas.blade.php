@@ -1,7 +1,5 @@
 <div class="annotation-canvas">
-    <minimap v-if="showMinimap" :extent="extent" :projection="projection" inline-template>
-        <div class="annotation-canvas__minimap"></div>
-    </minimap>
+    <minimap v-if="showMinimap" :extent="extent"></minimap>
     <div class="annotation-canvas__left-indicators">
         <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template>
             <div class="scale-line-indicator" title="Scale">
