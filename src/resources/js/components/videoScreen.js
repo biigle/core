@@ -6,6 +6,10 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.modifyInteractions'),
     ],
     template: '<div class="video-screen">' +
+        '<minimap' +
+            ' v-if="showMinimap"' +
+            ' :extent="extent"' +
+            '></minimap>' +
         '<div class="controls">' +
             '<div class="btn-group">' +
                 '<control-button' +
@@ -131,6 +135,7 @@ biigle.$component('videos.components.videoScreen', {
     '</div>',
     components: {
         controlButton: biigle.$require('annotations.components.controlButton'),
+        minimap: biigle.$require('annotations.components.minimap'),
     },
     props: {
         annotations: {
@@ -171,6 +176,10 @@ biigle.$component('videos.components.videoScreen', {
         },
         selectedLabel: {
             type: Object,
+        },
+        showMinimap: {
+            type: Boolean,
+            required: true,
         },
         video: {
             type: HTMLVideoElement,

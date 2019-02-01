@@ -1,4 +1,7 @@
 biigle.$component('videos.components.settingsTab', {
+    components: {
+        powerToggle: biigle.$require('core.components.powerToggle'),
+    },
     props: {
         //
     },
@@ -6,9 +9,11 @@ biigle.$component('videos.components.settingsTab', {
         return {
             restoreKeys: [
                 'annotationOpacity',
+                'showMinimap',
                 'autoplayDraw',
             ],
             annotationOpacity: 1,
+            showMinimap: true,
             autoplayDraw: 0,
         };
     },
@@ -18,13 +23,22 @@ biigle.$component('videos.components.settingsTab', {
         },
     },
     methods: {
-        //
+        handleShowMinimap: function () {
+            this.showMinimap = true;
+        },
+        handleHideMinimap: function () {
+            this.showMinimap = false;
+        },
     },
     watch: {
         annotationOpacity: function (opacity) {
             opacity = parseFloat(opacity);
             this.$emit('update', 'annotationOpacity', opacity);
             this.settings.set('annotationOpacity', opacity);
+        },
+        showMinimap: function (show) {
+            this.$emit('update', 'showMinimap', show);
+            this.settings.set('showMinimap', show);
         },
         autoplayDraw: function (opacity) {
             opacity = parseFloat(opacity);

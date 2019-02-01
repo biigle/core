@@ -27,6 +27,7 @@ biigle.$viewModel('video-container', function (element) {
             seeking: false,
             settings: {
                 annotationOpacity: 1,
+                showMinimap: true,
                 autoplayDraw: 0,
             },
             openTab: '',
@@ -45,7 +46,7 @@ biigle.$viewModel('video-container', function (element) {
                     return annotation.selected !== false;
                 });
             },
-            settings: function () {
+            settingsStore: function () {
                 return biigle.$require('videos.settings');
             },
         },
@@ -174,10 +175,10 @@ biigle.$viewModel('video-container', function (element) {
                 this.settings[key] = value;
             },
             handleOpenedTab: function (name) {
-                this.settings.set('openTab', name);
+                this.settingsStore.set('openTab', name);
             },
             handleClosedTab: function () {
-                this.settings.delete('openTab');
+                this.settingsStore.delete('openTab');
             },
         },
         watch: {
@@ -200,8 +201,8 @@ biigle.$viewModel('video-container', function (element) {
 
             Vue.Promise.all([videoPromise, annotationPromise]).then(this.finishLoading);
 
-            if (this.settings.has('openTab')) {
-                this.openTab = this.settings.get('openTab');
+            if (this.settingsStore.has('openTab')) {
+                this.openTab = this.settingsStore.get('openTab');
             }
         },
         mounted: function () {

@@ -12,6 +12,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 // Refresh the annotations only every x ms.
                 refreshRate: 30,
                 refreshLastTime: Date.now(),
+                extent: [0, 0, 0, 0],
             };
         },
         computed: {
@@ -22,20 +23,20 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 var map = args[0];
                 this.videoCanvas.width = this.video.videoWidth;
                 this.videoCanvas.height = this.video.videoHeight;
-                var extent = [0, 0, this.videoCanvas.width, this.videoCanvas.height];
+                this.extent = [0, 0, this.videoCanvas.width, this.videoCanvas.height];
                 var projection = new ol.proj.Projection({
                     code: 'biigle-image',
                     units: 'pixels',
-                    extent: extent,
+                    extent: this.extent,
                 });
 
                 this.videoLayer = new ol.layer.Image({
-                    name: 'videoLayer',
+                    name: 'image', // required by the minimap component
                     source: new ol.source.Canvas({
                         canvas: this.videoCanvas,
                         projection: projection,
-                        canvasExtent: extent,
-                        canvasSize: [extent[0], extent[1]],
+                        canvasExtent: this.extent,
+                        canvasSize: [this.extent[0], this.extent[1]],
                     }),
                 });
 
@@ -45,10 +46,10 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                     projection: projection,
                     // zoomFactor: 2,
                     minResolution: 0.25,
-                    extent: extent
+                    extent: this.extent
                 }));
 
-                map.getView().fit(extent);
+                map.getView().fit(this.extent);
             },
             renderVideo: function () {
                 this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);

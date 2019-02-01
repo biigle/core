@@ -8,6 +8,7 @@
       :can-delete="true"
       :selected-annotations="selectedAnnotations"
       :selected-label="selectedLabel"
+      :show-minimap="settings.showMinimap"
       :video="video"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
