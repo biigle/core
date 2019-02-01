@@ -237,7 +237,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.featureRevisionMap = {};
                 this.modifyInteraction = new ol.interaction.Modify({
                     features: this.selectInteraction.getFeatures(),
-                    // She Shift key must be pressed to delete vertices, so that new
+                    // The Shift key must be pressed to delete vertices, so that new
                     // vertices can be drawn at the same position of existing
                     // vertices.
                     deleteCondition: function(event) {

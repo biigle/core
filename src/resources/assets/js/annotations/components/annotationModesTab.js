@@ -17,11 +17,11 @@ biigle.$component('annotations.components.annotationModesTab', {
                 'randomSampling',
                 'regularSampling',
             ],
-            defaults: {
-                randomSamplingNumber: 9,
-                regularSamplingRows: 3,
-                regularSamplingColumns: 3,
-            },
+            restoreKeys: [
+                'randomSamplingNumber',
+                'regularSamplingRows',
+                'regularSamplingColumns',
+            ],
             randomSamplingNumber: 9,
             regularSamplingRows: 3,
             regularSamplingColumns: 3,
@@ -110,35 +110,19 @@ biigle.$component('annotations.components.annotationModesTab', {
             }
         },
         randomSamplingNumber: function (number) {
-            if (number !== this.defaults.randomSamplingNumber) {
-                this.settings.set('randomSamplingNumber', number);
-            } else {
-                this.settings.delete('randomSamplingNumber');
-            }
+            this.settings.set('randomSamplingNumber', number);
         },
         regularSamplingRows: function (number) {
-            if (number !== this.defaults.regularSamplingRows) {
-                this.settings.set('regularSamplingRows', number);
-            } else {
-                this.settings.delete('regularSamplingRows');
-            }
+            this.settings.set('regularSamplingRows', number);
         },
         regularSamplingColumns: function (number) {
-            if (number !== this.defaults.regularSamplingColumns) {
-                this.settings.set('regularSamplingColumns', number);
-            } else {
-                this.settings.delete('regularSamplingColumns');
-            }
+            this.settings.set('regularSamplingColumns', number);
         },
     },
     created: function () {
-        this.settings.restoreProperties(this, [
-            // Take care when modifying these variable names as they are mentioned as
-            // configurable URL parameters in the documentation.
-            'randomSamplingNumber',
-            'regularSamplingRows',
-            'regularSamplingColumns',
-        ], true);
+        this.restoreKeys.forEach(function (key) {
+            this[key] = this.settings.get(key);
+        }, this);
 
         var mode = biigle.$require('volumes.urlParams').get('annotationMode');
         if (mode) {

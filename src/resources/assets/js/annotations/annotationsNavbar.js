@@ -113,7 +113,7 @@ biigle.$viewModel('annotations-navbar', function (element) {
 
             var settings = biigle.$require('annotations.stores.settings');
             this.updateShowIndicator(settings.get('progressIndicator'));
-            settings.$watch('settings.progressIndicator', this.updateShowIndicator);
+            settings.watch('progressIndicator', this.updateShowIndicator);
         },
     });
 });

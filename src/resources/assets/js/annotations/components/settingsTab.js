@@ -8,8 +8,24 @@ biigle.$component('annotations.components.settingsTab', {
         screenshotButton: biigle.$require('annotations.components.screenshotButton'),
         powerToggle: biigle.$require('core.components.powerToggle'),
     },
+    props: {
+        image: {
+            type: Object,
+            default: null,
+        },
+    },
     data: function () {
         return {
+            restoreKeys: [
+                'annotationOpacity',
+                'mousePosition',
+                'zoomLevel',
+                'scaleLine',
+                'labelTooltip',
+                'measureTooltip',
+                'minimap',
+                'progressIndicator',
+            ],
             annotationOpacity: 1.0,
             mousePosition: false,
             zoomLevel: false,
@@ -19,12 +35,6 @@ biigle.$component('annotations.components.settingsTab', {
             minimap: true,
             progressIndicator: true,
         };
-    },
-    props: {
-        image: {
-            type: Object,
-            default: null,
-        },
     },
     computed: {
         settings: function () {
@@ -93,84 +103,42 @@ biigle.$component('annotations.components.settingsTab', {
     watch: {
         annotationOpacity: function (opacity) {
             opacity = parseFloat(opacity);
-            if (opacity === 1) {
-                this.settings.delete('annotationOpacity');
-            } else {
-                this.settings.set('annotationOpacity', opacity);
-            }
             this.$emit('change', 'annotationOpacity', opacity);
+            this.settings.set('annotationOpacity', opacity);
         },
         mousePosition: function (show) {
-            if (show) {
-                this.settings.set('mousePosition', true);
-            } else {
-                this.settings.delete('mousePosition');
-            }
             this.$emit('change', 'mousePosition', show);
+            this.settings.set('mousePosition', show);
         },
         zoomLevel: function (show) {
-            if (show) {
-                this.settings.set('zoomLevel', true);
-            } else {
-                this.settings.delete('zoomLevel');
-            }
             this.$emit('change', 'zoomLevel', show);
+            this.settings.set('zoomLevel', show);
         },
         scaleLine: function (show) {
-            if (show) {
-                this.settings.set('scaleLine', true);
-            } else {
-                this.settings.delete('scaleLine');
-            }
             this.$emit('change', 'scaleLine', show);
+            this.settings.set('scaleLine', show);
         },
         labelTooltip: function (show) {
-            if (show) {
-                this.settings.set('labelTooltip', true);
-            } else {
-                this.settings.delete('labelTooltip');
-            }
             this.$emit('change', 'labelTooltip', show);
+            this.settings.set('labelTooltip', show);
         },
         measureTooltip: function (show) {
-            if (show) {
-                this.settings.set('measureTooltip', true);
-            } else {
-                this.settings.delete('measureTooltip');
-            }
             this.$emit('change', 'measureTooltip', show);
+            this.settings.set('measureTooltip', show);
         },
         minimap: function (show) {
-            if (show) {
-                this.settings.delete('minimap');
-            } else {
-                this.settings.set('minimap', false);
-            }
             this.$emit('change', 'minimap', show);
+            this.settings.set('minimap', show);
         },
         progressIndicator: function (show) {
-            if (show) {
-                this.settings.delete('progressIndicator');
-            } else {
-                this.settings.set('progressIndicator', false);
-            }
             this.$emit('change', 'progressIndicator', show);
+            this.settings.set('progressIndicator', show);
         },
     },
     created: function () {
-        this.settings.restoreProperties(this, [
-            // Take care when modifying these variable names as they are mentioned as
-            // configurable URL parameters in the documentation.
-            'annotationOpacity',
-            'mousePosition',
-            'zoomLevel',
-            'scaleLine',
-            'labelTooltip',
-            'measureTooltip',
-            'minimap',
-            'progressIndicator',
-        ], true);
-
+        this.restoreKeys.forEach(function (key) {
+            this[key] = this.settings.get(key);
+        }, this);
         biigle.$require('keyboard').on('o', this.toggleAnnotationOpacity);
     },
 });
