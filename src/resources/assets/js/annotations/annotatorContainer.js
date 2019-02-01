@@ -7,7 +7,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var imagesIds = biigle.$require('annotations.imagesIds');
     var imagesStore = biigle.$require('annotations.stores.images');
     var annotationsStore = biigle.$require('annotations.stores.annotations');
-    var urlParams = biigle.$require('volumes.urlParams');
+    var urlParams = biigle.$require('urlParams');
     var messages = biigle.$require('messages.store');
     var utils = biigle.$require('annotations.stores.utils');
     var settings = biigle.$require('annotations.stores.settings');

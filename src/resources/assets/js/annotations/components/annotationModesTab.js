@@ -124,7 +124,7 @@ biigle.$component('annotations.components.annotationModesTab', {
             this[key] = this.settings.get(key);
         }, this);
 
-        var mode = biigle.$require('volumes.urlParams').get('annotationMode');
+        var mode = biigle.$require('urlParams').get('annotationMode');
         if (mode) {
             var self = this;
             biigle.$require('events').$once('images.change', function () {
