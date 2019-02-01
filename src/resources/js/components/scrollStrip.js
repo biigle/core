@@ -24,6 +24,7 @@ biigle.$component('videos.components.scrollStrip', {
                         ' @select="emitSelect"' +
                         ' @deselect="emitDeselect"' +
                         ' @scroll-y="emitScrollY"' +
+                        ' @drag-x="handleDragX"' +
                         ' @overflow-top="updateOverflowTop"' +
                         ' @overflow-bottom="updateOverflowBottom"' +
                         '></annotation-tracks>' +
@@ -191,6 +192,9 @@ biigle.$component('videos.components.scrollStrip', {
         },
         updateOverflowBottom: function (has) {
             this.hasOverflowBottom = has;
+        },
+        handleDragX: function (delta) {
+            this.updateScrollLeft(this.scrollLeft + delta);
         },
     },
     watch: {
