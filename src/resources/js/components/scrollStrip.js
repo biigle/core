@@ -197,8 +197,10 @@ biigle.$component('videos.components.scrollStrip', {
         hoverTime: function (time) {
           this.$emit('hover-time', time);
         },
-        initialElementWidth: function () {
-            this.updateScrollLeft(this.scrollLeft);
+        initialElementWidth: function (newWidth, oldWidth) {
+            // Make sure the left position stays the same if the browser resizes or the
+            // sidebar open state is toggled.
+            this.updateScrollLeft(this.scrollLeft * newWidth / oldWidth);
         },
     },
     created: function () {
