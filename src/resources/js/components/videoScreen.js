@@ -8,30 +8,117 @@ biigle.$component('videos.components.videoScreen', {
     template: '<div class="video-screen">' +
         '<div class="controls">' +
             '<div class="btn-group">' +
-                '<control-button v-if="playing" icon="fa-pause" title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" @click="pause"></control-button>' +
-                '<control-button v-else icon="fa-play" title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿" @click="play"></control-button>' +
+                '<control-button' +
+                    ' v-if="playing"' +
+                    ' icon="fa-pause"' +
+                    ' title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"' +
+                    ' @click="pause"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-else' +
+                    ' icon="fa-play"' +
+                    ' title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"' +
+                    ' @click="play"' +
+                    '></control-button>' +
             '</div>' +
             '<div v-if="canAdd" class="btn-group">' +
-                '<control-button icon="icon-point" title="Start a point annotation 𝗔" @click="drawPoint" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPoint" :active="isDrawingPoint">' +
-                    '<control-button icon="fa-check" title="Finish the point annotation" @click="finishDrawAnnotation"></control-button>' +
+                '<control-button' +
+                    ' icon="icon-point"' +
+                    ' title="Start a point annotation 𝗔"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' :hover="false"' +
+                    ' :open="isDrawingPoint"' +
+                    ' :active="isDrawingPoint"' +
+                    ' @click="drawPoint"' +
+                    '>' +
+                        '<control-button' +
+                            ' icon="fa-check"' +
+                            ' title="Finish the point annotation"' +
+                            ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-rectangle" title="Start a rectangle annotation 𝗦" @click="drawRectangle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingRectangle" :active="isDrawingRectangle">' +
-                    '<control-button icon="fa-check" title="Finish the rectangle annotation" @click="finishDrawAnnotation"></control-button>' +
+                '<control-button' +
+                    ' icon="icon-rectangle"' +
+                    ' title="Start a rectangle annotation 𝗦"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' :hover="false"' +
+                    ' :open="isDrawingRectangle"' +
+                    ' :active="isDrawingRectangle"' +
+                    ' @click="drawRectangle"' +
+                    '>' +
+                        '<control-button' +
+                            ' icon="fa-check"' +
+                            ' title="Finish the rectangle annotation"' +
+                            ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-circle" title="Start a circle annotation 𝗗" @click="drawCircle" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingCircle" :active="isDrawingCircle">' +
-                    '<control-button icon="fa-check" title="Finish the circle annotation" @click="finishDrawAnnotation"></control-button>' +
+                '<control-button' +
+                    ' icon="icon-circle"' +
+                    ' title="Start a circle annotation 𝗗"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' :hover="false"' +
+                    ' :open="isDrawingCircle"' +
+                    ' :active="isDrawingCircle"' +
+                    ' @click="drawCircle"' +
+                    '>' +
+                        '<control-button' +
+                        ' icon="fa-check"' +
+                        ' title="Finish the circle annotation"' +
+                        ' @click="finishDrawAnnotation"' +
+                        '></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-linestring" title="Start a line annotation 𝗙" @click="drawLineString" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingLineString" :active="isDrawingLineString">' +
-                    '<control-button icon="fa-check" title="Finish the line annotation" @click="finishDrawAnnotation"></control-button>' +
+                '<control-button' +
+                    ' icon="icon-linestring"' +
+                    ' title="Start a line annotation 𝗙"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' :hover="false"' +
+                    ' :open="isDrawingLineString"' +
+                    ' :active="isDrawingLineString"' +
+                    ' @click="drawLineString"' +
+                    '>' +
+                        '<control-button' +
+                            ' icon="fa-check"' +
+                            ' title="Finish the line annotation"' +
+                            ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
                 '</control-button>' +
-                '<control-button icon="icon-polygon" title="Start a polygon annotation 𝗚" @click="drawPolygon" :disabled="hasNoSelectedLabel" :hover="false" :open="isDrawingPolygon" :active="isDrawingPolygon">' +
-                    '<control-button icon="fa-check" title="Finish the polygon annotation" @click="finishDrawAnnotation"></control-button>' +
+                '<control-button' +
+                    ' icon="icon-polygon"' +
+                    ' title="Start a polygon annotation 𝗚"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' :hover="false"' +
+                    ' :open="isDrawingPolygon"' +
+                    ' :active="isDrawingPolygon"' +
+                    ' @click="drawPolygon"' +
+                    '>' +
+                        '<control-button' +
+                            ' icon="fa-check"' +
+                            ' title="Finish the polygon annotation"' +
+                            ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
                 '</control-button>' +
             '</div>' +
             '<div v-if="canEdit" class="btn-group">' +
-                '<control-button v-if="canAdd" icon="fa-bookmark" title="Create a bookmark 𝗕" @click="emitCreateBookmark"></control-button>' +
-                '<control-button v-if="canModify" icon="fa-arrows-alt" title="Move selected annotations 𝗠" :active="isTranslating" @click="toggleTranslating"></control-button>' +
-                '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲" @click="emitDelete" :disabled="hasNoSelectedAnnotations"></control-button>' +
+                '<control-button' +
+                    ' v-if="canAdd"' +
+                    ' icon="fa-bookmark"' +
+                    ' title="Create a bookmark 𝗕"' +
+                    ' @click="emitCreateBookmark"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-if="canModify"' +
+                    ' icon="fa-arrows-alt"' +
+                    ' title="Move selected annotations 𝗠"' +
+                    ' :active="isTranslating"' +
+                    ' @click="toggleTranslating"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-if="canDelete"' +
+                    ' icon="fa-trash"' +
+                    ' title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"' +
+                    ' :disabled="hasNoSelectedAnnotations"' +
+                    ' @click="emitDelete"' +
+                    '></control-button>' +
             '</div>' +
         '</div>' +
         '<div class="indicators indicators--right">' +
