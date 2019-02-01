@@ -5,7 +5,7 @@ biigle.$declare('core.models.Settings', function () {
     return Vue.extend({
         data: function () {
             return {
-                urlParams: false,
+                urlParams: [],
                 storageKey: 'biigle.settings',
                 defaults: {},
                 data: {},
@@ -33,7 +33,7 @@ biigle.$declare('core.models.Settings', function () {
                 this.persist();
             },
             get: function (key) {
-                return this.data[key] || this.defaults[key];
+                return this.has(key) ? this.data[key] : this.defaults[key];
             },
             has: function (key) {
                 return this.data.hasOwnProperty(key);
@@ -55,14 +55,19 @@ biigle.$declare('core.models.Settings', function () {
                 var params = biigle.$require('urlParams').params;
                 keys = keys || Object.keys(params);
                 keys.forEach(function (key) {
-                    Vue.set(this.data, key, params[key]);
+                    if (params.hasOwnProperty(key)) {
+                        Vue.set(this.data, key, params[key]);
+                    }
                 }, this);
+            },
+            watch: function (key, callback) {
+                return this.$watch('data.' + key, callback);
             },
         },
         created: function () {
             this.restoreFromLocalStorage();
-            if (this.urlParams) {
-                this.restoreFromUrlParams();
+            if (this.urlParams.length > 0) {
+                this.restoreFromUrlParams(this.urlParams);
             }
         },
     });
