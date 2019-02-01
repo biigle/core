@@ -12,40 +12,12 @@
 @section('content')
 <div id="video-container" class="video-container sidebar-container">
     <div class="sidebar-container__content">
-        <loader-block :active="loading"></loader-block>
-        <video-screen
-            :annotations="annotations"
-            :can-add="true"
-            :can-modify="true"
-            :can-delete="true"
-            :selected-annotations="selectedAnnotations"
-            :selected-label="selectedLabel"
-            :video="video"
-            v-on:create-bookmark="createBookmark"
-            v-on:create-annotation="createAnnotation"
-            v-on:select="selectAnnotations"
-            v-on:modify="modifyAnnotations"
-            v-on:delete="deleteAnnotationsOrKeyframes"
-            ></video-screen>
-        <video-timeline
-            :annotations="annotations"
-            :bookmarks="bookmarks"
-            :video="video"
-            :seeking="seeking"
-            v-on:seek="seek"
-            v-on:select="selectAnnotation"
-            v-on:deselect="deselectAnnotations"
-            ></video-timeline>
+        @include('videos::show.content')
     </div>
     @can('edit-in', $video)
-        <sidebar :toggle-on-keyboard="true" open-tab="labels" v-cloak>
-            <sidebar-tab name="labels" icon="tags" title="Label trees">
-                <div class="labels-tab">
-                    <div class="labels-tab__trees">
-                        <label-trees :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
-                    </div>
-                </div>
-            </sidebar-tab>
+        <sidebar :toggle-on-keyboard="true" v-cloak>
+            @include('videos::show.sidebar-labels')
+            @include('videos::show.sidebar-settings')
         </sidebar>
     @endcan
 </div>

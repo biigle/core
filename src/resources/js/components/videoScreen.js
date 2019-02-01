@@ -139,6 +139,10 @@ biigle.$component('videos.components.videoScreen', {
                 return [];
             },
         },
+        annotationOpacity: {
+            type: Number,
+            default: 1.0,
+        },
         canAdd: {
             type: Boolean,
             default: false,
@@ -232,6 +236,7 @@ biigle.$component('videos.components.videoScreen', {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
                 style: styles.features,
+                opacity: this.annotationOpacity,
             });
 
             this.selectInteraction = new ol.interaction.Select({
@@ -282,6 +287,11 @@ biigle.$component('videos.components.videoScreen', {
         },
         isDefaultInteractionMode: function (isDefault) {
             this.selectInteraction.setActive(isDefault);
+        },
+        annotationOpacity: function (opactiy) {
+            if (this.annotationLayer) {
+                this.annotationLayer.setOpacity(opactiy);
+            }
         },
     },
     created: function () {

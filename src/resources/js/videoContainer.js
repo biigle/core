@@ -16,6 +16,7 @@ biigle.$viewModel('video-container', function (element) {
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+            settingsTab: biigle.$require('videos.components.settingsTab'),
         },
         data: {
             video: document.createElement('video'),
@@ -24,6 +25,9 @@ biigle.$viewModel('video-container', function (element) {
             bookmarks: [],
             annotations: [],
             seeking: false,
+            settings: {
+                annotationOpacity: 1,
+            },
         },
         computed: {
             shapes: function () {
@@ -160,6 +164,9 @@ biigle.$viewModel('video-container', function (element) {
                         points: event.annotation.points,
                     })
                     .catch(MSG.handleResponseError);
+            },
+            handleUpdatedSettings: function (key, value) {
+                this.settings[key] = value;
             },
         },
         watch: {

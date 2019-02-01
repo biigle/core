@@ -1,0 +1,25 @@
+<loader-block :active="loading"></loader-block>
+<video-screen
+      :annotations="annotations"
+      :annotation-opacity="settings.annotationOpacity"
+      :can-add="true"
+      :can-modify="true"
+      :can-delete="true"
+      :selected-annotations="selectedAnnotations"
+      :selected-label="selectedLabel"
+      :video="video"
+      v-on:create-bookmark="createBookmark"
+      v-on:create-annotation="createAnnotation"
+      v-on:select="selectAnnotations"
+      v-on:modify="modifyAnnotations"
+      v-on:delete="deleteAnnotationsOrKeyframes"
+      ></video-screen>
+<video-timeline
+      :annotations="annotations"
+      :bookmarks="bookmarks"
+      :video="video"
+      :seeking="seeking"
+      v-on:seek="seek"
+      v-on:select="selectAnnotation"
+      v-on:deselect="deselectAnnotations"
+      ></video-timeline>
