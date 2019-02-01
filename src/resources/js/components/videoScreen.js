@@ -34,6 +34,13 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button v-if="canDelete" icon="fa-trash" title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲" @click="emitDelete" :disabled="hasNoSelectedAnnotations"></control-button>' +
             '</div>' +
         '</div>' +
+        '<div class="indicators indicators--right">' +
+            '<div' +
+                ' class="indicator"' +
+                ' v-if="selectedLabel"' +
+                ' v-text="selectedLabel.name"' +
+                '></div>' +
+        '</div>' +
     '</div>',
     components: {
         controlButton: biigle.$require('annotations.components.controlButton'),
