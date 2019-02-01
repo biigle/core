@@ -143,6 +143,10 @@ biigle.$component('videos.components.videoScreen', {
             type: Number,
             default: 1.0,
         },
+        autoplayDraw: {
+            type: Number,
+            default: 0,
+        },
         canAdd: {
             type: Boolean,
             default: false,

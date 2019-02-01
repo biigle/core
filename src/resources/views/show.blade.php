@@ -15,9 +15,15 @@
         @include('videos::show.content')
     </div>
     @can('edit-in', $video)
-        <sidebar :toggle-on-keyboard="true" v-cloak>
-            @include('videos::show.sidebar-labels')
-            @include('videos::show.sidebar-settings')
+        <sidebar
+            v-cloak
+            :toggle-on-keyboard="true"
+            :open-tab="openTab"
+            v-on:open="handleOpenedTab"
+            v-on:close="handleClosedTab"
+            >
+                @include('videos::show.sidebar-labels')
+                @include('videos::show.sidebar-settings')
         </sidebar>
     @endcan
 </div>

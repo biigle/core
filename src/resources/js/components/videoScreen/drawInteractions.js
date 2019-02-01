@@ -8,6 +8,7 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
         data: function () {
             return {
                 pendingAnnotation: {},
+                autoplayDrawTimeout: null,
             };
         },
         computed: {
@@ -107,19 +108,21 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
             },
             extendPendingAnnotation: function (e) {
                 var lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
+
                 if (lastFrame === undefined || lastFrame < this.video.currentTime) {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
                     this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
+
+                    if (!this.video.ended && this.autoplayDraw > 0) {
+                        this.play();
+                        window.clearTimeout(this.autoplayDrawTimeout);
+                        this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                    }
                 } else {
                     this.pendingAnnotationSource.once('addfeature', function (e) {
                         this.removeFeature(e.feature);
                     });
                 }
-
-                // if (this.video.currentTime < this.video.duration) {
-                //     this.play();
-                //     setTimeout(this.pause, 1000);
-                // }
             },
         },
         watch: {

@@ -27,7 +27,9 @@ biigle.$viewModel('video-container', function (element) {
             seeking: false,
             settings: {
                 annotationOpacity: 1,
+                autoplayDraw: 0,
             },
+            openTab: '',
         },
         computed: {
             shapes: function () {
@@ -42,6 +44,9 @@ biigle.$viewModel('video-container', function (element) {
                 return this.annotations.filter(function (annotation) {
                     return annotation.selected !== false;
                 });
+            },
+            settings: function () {
+                return biigle.$require('videos.settings');
             },
         },
         methods: {
@@ -168,6 +173,12 @@ biigle.$viewModel('video-container', function (element) {
             handleUpdatedSettings: function (key, value) {
                 this.settings[key] = value;
             },
+            handleOpenedTab: function (name) {
+                this.settings.set('openTab', name);
+            },
+            handleClosedTab: function () {
+                this.settings.delete('openTab');
+            },
         },
         watch: {
             //
@@ -188,6 +199,10 @@ biigle.$viewModel('video-container', function (element) {
             annotationPromise.then(this.setAnnotations, MSG.handleResponseError);
 
             Vue.Promise.all([videoPromise, annotationPromise]).then(this.finishLoading);
+
+            if (this.settings.has('openTab')) {
+                this.openTab = this.settings.get('openTab');
+            }
         },
         mounted: function () {
             // Wait for the sub-components to register their event listeners before

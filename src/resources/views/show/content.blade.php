@@ -2,6 +2,7 @@
 <video-screen
       :annotations="annotations"
       :annotation-opacity="settings.annotationOpacity"
+      :autoplay-draw="settings.autoplayDraw"
       :can-add="true"
       :can-modify="true"
       :can-delete="true"
