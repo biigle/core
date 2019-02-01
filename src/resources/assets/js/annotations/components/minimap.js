@@ -25,8 +25,7 @@ biigle.$component('annotations.components.minimap', function () {
         },
         data: function () {
             return {
-                mapView: null,
-                mapSize: null,
+                //
             };
         },
         computed: {
@@ -112,6 +111,9 @@ biigle.$component('annotations.components.minimap', function () {
             viewportSource.addFeature(this.viewport);
 
             var map = this.$parent.map;
+            // Do not set these in data because they should not be made reactive. Vue
+            // would propagate this and make the whole Map instance reactive. This might
+            // cause infinite loops in watchers and computed properties.
             this.mapSize = map.getSize();
             this.mapView = map.getView();
             map.on('postcompose', this.updateViewport);
