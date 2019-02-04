@@ -14,10 +14,10 @@
       :video="video"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
+      v-on:track-annotation="trackAnnotation"
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
       v-on:delete="deleteAnnotationsOrKeyframes"
-      v-on:track="handleTrackSelectedAnnotations"
       ></video-screen>
 <video-timeline
       :annotations="annotations"

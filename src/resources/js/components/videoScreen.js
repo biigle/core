@@ -46,6 +46,13 @@ biigle.$component('videos.components.videoScreen', {
                             ' icon="fa-check"' +
                             ' title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' @click="finishDrawAnnotation"' +
+                            ' :disabled="cantFinishDrawAnnotation"' +
+                            '></control-button>' +
+                        '<control-button' +
+                            ' icon="fa-project-diagram"' +
+                            ' title="Finish and track the point annotation"' +
+                            ' v-on:click="finishTrackAnnotation"' +
+                            ' :disabled="cantFinishTrackAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
                 '<control-button' +
@@ -115,13 +122,6 @@ biigle.$component('videos.components.videoScreen', {
                     ' icon="fa-bookmark"' +
                     ' title="Create a bookmark 𝗕"' +
                     ' @click="emitCreateBookmark"' +
-                    '></control-button>' +
-                '<control-button' +
-                    ' v-if="canModify"' +
-                    ' icon="fa-project-diagram"' +
-                    ' title="Automatically track the selected annotations"' +
-                    ' v-on:click="emitTrack"' +
-                    ' :disabled="hasNoSelectedAnnotations"' +
                     '></control-button>' +
                 '<control-button' +
                     ' v-if="canModify"' +

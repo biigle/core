@@ -39,6 +39,12 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
             hasPendingAnnotation: function () {
                 return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length > 0;
             },
+            cantFinishDrawAnnotation: function () {
+                return !this.hasPendingAnnotation;
+            },
+            cantFinishTrackAnnotation: function () {
+                return !this.pendingAnnotation.frames || this.pendingAnnotation.frames.length !== 1;
+            },
         },
         methods: {
             initPendingAnnotationLayer: function (map) {
@@ -101,6 +107,14 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
                 if (this.isDrawing) {
                     if (this.hasPendingAnnotation) {
                         this.$emit('create-annotation', this.pendingAnnotation);
+                    }
+                    this.resetInteractionMode();
+                }
+            },
+            finishTrackAnnotation: function () {
+                if (this.isDrawing) {
+                    if (this.hasPendingAnnotation) {
+                        this.$emit('track-annotation', this.pendingAnnotation);
                     }
                     this.resetInteractionMode();
                 }

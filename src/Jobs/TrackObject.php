@@ -86,6 +86,8 @@ class TrackObject extends Job implements ShouldQueue
             $inputPath = $this->createInputJson($annotation);
             $outputPath = $this->getOutputJsonPath($annotation);
             $output = $this->python("{$script} {$inputPath} {$outputPath}");
+            // TODO parse keyframe array depending on shape. Array contains [x, y, w, h].
+            // Set negative values to 0.
             $keyframes = json_decode(File::get($outputPath), true);
         } finally {
             if (isset($inputPath)) {
@@ -215,7 +217,7 @@ class TrackObject extends Job implements ShouldQueue
 
         $points = $annotation->points[0];
 
-        // Center a 30x30 py window around the point.
-        return [$points[0] - 15, $points[1] - 15, 30, 30];
+        // Center a 100x100 px window around the point. [x, y, w, h].
+        return [$points[0] - 15, $points[1] - 15, 100, 100];
     }
 }

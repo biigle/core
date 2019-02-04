@@ -61,7 +61,10 @@ biigle.$viewModel('video-container', function (element) {
                 this.annotations = response.body.map(this.prepareAnnotation);
             },
             addCreatedAnnotation: function (response) {
-                this.annotations.push(this.prepareAnnotation(response.body));
+                var annotation = this.prepareAnnotation(response.body);
+                this.annotations.push(annotation);
+
+                return annotation;
             },
             seek: function (time) {
                 if (!this.seeking && this.video.currentTime !== time) {
@@ -104,8 +107,15 @@ biigle.$viewModel('video-container', function (element) {
                 });
                 delete annotation.shape;
 
-                ANNOTATION_API.save({id: VIDEO_ID}, annotation)
+                return ANNOTATION_API.save({id: VIDEO_ID}, annotation)
                     .then(this.addCreatedAnnotation, MSG.handleResponseError);
+            },
+            trackAnnotation: function (pendingAnnotation) {
+                this.createAnnotation(pendingAnnotation)
+                    .then(function (a) {
+                        return ANNOTATION_API.track({id: a.id}, {});
+                    })
+                    .catch(MSG.handleResponseError);
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
@@ -145,11 +155,6 @@ biigle.$viewModel('video-container', function (element) {
                         this.annotations.splice(index, 1);
                     }
                 }).bind(this);
-            },
-            handleTrackSelectedAnnotations: function () {
-                this.selectedAnnotations.forEach(function (annotation) {
-                    ANNOTATION_API.track({id: annotation.id}, {}).catch(MSG.handleResponseError);
-                });
             },
             handleVideoSeeked: function () {
                 this.seeking = false;
