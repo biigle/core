@@ -55,7 +55,7 @@ class ObjectTracker(object):
             cv2.imshow("frame", frame)
             cv2.waitKey(1)
 
-        return (current_time,) + box
+        return (current_time, box[0] + (box[2] / 2), box[1] + (box[3] / 2))
 
     def __next__(self):
         return self._next()
