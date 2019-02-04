@@ -218,6 +218,7 @@ class TrackObject extends Job implements ShouldQueue
         $points = $annotation->points[0];
 
         // Center a 100x100 px window around the point. [x, y, w, h].
-        return [$points[0] - 15, $points[1] - 15, 100, 100];
+        $width = 100;
+        return [$points[0] - $width/2, $points[1] - $width/2, $width, $width];
     }
 }
