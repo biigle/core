@@ -18,17 +18,7 @@
             <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
         </label-indicator>
     </div>
-    <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition" inline-template>
-        <div class="annotation-tooltip">
-            <ul class="annotation-tooltip__annotations">
-                <li v-for="annotationLabel in annotationLabels">
-                    <ul class="annotation-tooltip__labels">
-                        <li v-for="label in annotationLabel" v-text="label.label.name"></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </label-tooltip>
+    <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition"></label-tooltip>
     <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
     <measure-tooltip watch="changeMeasureFeature" :show="hasMeasureFeature" :position="measureFeaturePosition" positioning="center-left" :image="image" :areas="imagesArea"></measure-tooltip>
     <div class="annotation-canvas__toolbar">

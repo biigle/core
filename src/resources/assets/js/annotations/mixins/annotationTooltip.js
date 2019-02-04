@@ -43,17 +43,20 @@ biigle.$component('annotations.mixins.annotationTooltip', {
         },
     },
     watch: {
-        show: function (show) {
-            // Do NOT pass the features as prop of this component because this would make
-            // them reactive. As the features store a reference back to the map,
-            // EVERYTHING would be made reactive.
-            // See: https://github.com/biigle/annotations/issues/108
-            if (show) {
-                this.$parent.$on(this.watch, this.updateAnnotations);
-            } else {
-                this.$parent.$off(this.watch, this.updateAnnotations);
-            }
+        show: {
+            immediate: true,
+            handler: function (show) {
+                // Do NOT pass the features as prop of this component because this would
+                // make them reactive. As the features store a reference back to the map,
+                // EVERYTHING would be made reactive.
+                // See: https://github.com/biigle/annotations/issues/108
+                if (show) {
+                    this.$parent.$on(this.watch, this.updateAnnotations);
+                } else {
+                    this.$parent.$off(this.watch, this.updateAnnotations);
+                }
 
+            },
         },
         position: function (position) {
             this.overlay.setPosition(position);

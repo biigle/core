@@ -31,20 +31,12 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
             };
         },
         methods: {
+            annotationLayerFilter: function (layer) {
+                return layer.get('name') === 'annotations';
+            },
             updateHoveredAnnotations: function (e) {
-                var features = [];
-                this.map.forEachFeatureAtPixel(e.pixel,
-                    function (feature) {
-                        features.push(feature);
-                    },
-                    {
-                        layerFilter: function (layer) {
-                            return layer.get('name') === 'annotations';
-                        },
-                    }
-                );
-
-                var hash = features.map(function (a) {return a.getId();}).join('-');
+                var features = this.map.getFeaturesAtPixel(e.pixel, {layerFilter: this.annotationLayerFilter}) || [];
+                var hash = features.map(function (f) {return f.getId();}).join('-');
 
                 if (this.hoveredFeaturesHash !== hash) {
                     this.hoveredFeaturesHash = hash;
