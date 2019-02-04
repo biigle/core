@@ -7,8 +7,8 @@ class ObjectTracker(object):
     def __init__(self, params):
         self.video = cv2.VideoCapture(params['video_path'])
         self.fps = self.video.get(cv2.CAP_PROP_FPS)
-        # self.width = self.video.get(cv2.CAP_PROP_FRAME_WIDTH)
-        # self.height = self.video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        self.width = self.video.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.height = self.video.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
         start_frame = round(params['start_time'] * self.fps)
         self.video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
@@ -19,6 +19,9 @@ class ObjectTracker(object):
         self.tracker.init(frame, track_window)
 
         self.debug = False
+
+    def box_out_of_frame(self, box):
+        return box[0] < 0 or box[1] < 0 or (box[0] + box[2]) > self.width or (box[1] + box[3]) > self.height
 
     def __iter__(self):
         return self
@@ -38,6 +41,9 @@ class ObjectTracker(object):
         (success, box) = self.tracker.update(frame)
 
         if not success:
+            raise StopIteration
+
+        if self.box_out_of_frame(box):
             raise StopIteration
 
         current_frame = self.video.get(cv2.CAP_PROP_POS_FRAMES)
