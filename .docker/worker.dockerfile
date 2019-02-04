@@ -5,7 +5,8 @@ MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap zip pcntl
+    && docker-php-ext-install pdo pdo_pgsql pgsql json zip fileinfo exif mbstring soap \
+        pcntl
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # Install vips from source because the edge package does not have libgsf support.
@@ -16,9 +17,8 @@ ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # reused.
 ARG LIBVIPS_VERSION=8.5.7
 ARG PHP_VIPS_EXT_VERSION=1.0.7
-RUN apk add --no-cache --virtual .build-deps \
-        autoconf automake build-base glib-dev expat-dev \
-        tiff-dev libjpeg-turbo-dev libgsf-dev libpng-dev \
+RUN apk add --no-cache --virtual .build-deps autoconf automake build-base \
+        glib-dev tiff-dev libjpeg-turbo-dev libgsf-dev libpng-dev expat-dev \
     && apk add --no-cache glib tiff libjpeg-turbo libgsf libpng expat \
     && cd /tmp \
     && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
@@ -29,10 +29,10 @@ RUN apk add --no-cache --virtual .build-deps \
         --enable-debug=no \
         --disable-dependency-tracking \
         --disable-static \
-    && make \
+    && make -j $(nproc) \
     && make -s install-strip \
     && cd /tmp \
-    && curl -L https://github.com/libvips/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz > vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && curl -L https://github.com/libvips/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && docker-php-ext-enable vips \
     && rm -r /tmp/* \
