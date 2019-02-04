@@ -30,6 +30,7 @@ biigle.$viewModel('video-container', function (element) {
                 showMinimap: true,
                 autoplayDraw: 0,
                 showLabelTooltip: false,
+                showMousePosition: false,
             },
             openTab: '',
         },

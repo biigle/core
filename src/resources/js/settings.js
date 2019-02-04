@@ -5,6 +5,7 @@ biigle.$declare('videos.settings', function () {
         showMinimap: true,
         autoplayDraw: 0,
         showLabelTooltip: false,
+        showMousePosition: false,
     };
 
     return new Settings({

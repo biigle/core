@@ -10,6 +10,7 @@
       :selected-label="selectedLabel"
       :show-label-tooltip="settings.showLabelTooltip"
       :show-minimap="settings.showMinimap"
+      :show-mouse-position="settings.showMousePosition"
       :video="video"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"

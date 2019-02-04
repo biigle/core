@@ -5,6 +5,7 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.drawInteractions'),
         biigle.$require('videos.components.videoScreen.modifyInteractions'),
         biigle.$require('videos.components.videoScreen.tooltips'),
+        biigle.$require('videos.components.videoScreen.indicators'),
     ],
     template: '<div class="video-screen">' +
         '<minimap' +
@@ -131,6 +132,12 @@ biigle.$component('videos.components.videoScreen', {
                     '></control-button>' +
             '</div>' +
         '</div>' +
+        '<div class="indicators indicators--left">' +
+            '<mouse-position-indicator' +
+                ' v-if="showMousePosition"' +
+                ' :position="mousePositionImageCoordinates"' +
+                '></mouse-position-indicator>' +
+        '</div>' +
         '<div class="indicators indicators--right">' +
             '<div' +
                 ' class="indicator"' +
@@ -188,6 +195,10 @@ biigle.$component('videos.components.videoScreen', {
             default: false,
         },
         showMinimap: {
+            type: Boolean,
+            default: true,
+        },
+        showMousePosition: {
             type: Boolean,
             default: true,
         },
