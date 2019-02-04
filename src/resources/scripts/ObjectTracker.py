@@ -43,8 +43,8 @@ class ObjectTracker(object):
         if not success:
             raise StopIteration
 
-        if self.box_out_of_frame(box):
-            raise StopIteration
+        # if self.box_out_of_frame(box):
+        #     raise StopIteration
 
         current_frame = self.video.get(cv2.CAP_PROP_POS_FRAMES)
         current_time = current_frame / self.fps
