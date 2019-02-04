@@ -44,7 +44,7 @@ biigle.$component('videos.components.videoScreen', {
                     '>' +
                         '<control-button' +
                             ' icon="fa-check"' +
-                            ' title="Finish the point annotation"' +
+                            ' title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
@@ -59,7 +59,7 @@ biigle.$component('videos.components.videoScreen', {
                     '>' +
                         '<control-button' +
                             ' icon="fa-check"' +
-                            ' title="Finish the rectangle annotation"' +
+                            ' title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
@@ -74,7 +74,7 @@ biigle.$component('videos.components.videoScreen', {
                     '>' +
                         '<control-button' +
                         ' icon="fa-check"' +
-                        ' title="Finish the circle annotation"' +
+                        ' title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"' +
                         ' @click="finishDrawAnnotation"' +
                         '></control-button>' +
                 '</control-button>' +
@@ -89,7 +89,7 @@ biigle.$component('videos.components.videoScreen', {
                     '>' +
                         '<control-button' +
                             ' icon="fa-check"' +
-                            ' title="Finish the line annotation"' +
+                            ' title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
@@ -104,7 +104,7 @@ biigle.$component('videos.components.videoScreen', {
                     '>' +
                         '<control-button' +
                             ' icon="fa-check"' +
-                            ' title="Finish the polygon annotation"' +
+                            ' title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
