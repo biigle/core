@@ -38,4 +38,29 @@ $ol-control-color: rgb(0, 60, 136);
             margin-right: 0.5em;
         }
     }
+
+    .indicators {
+        z-index: 1;
+        position: absolute;
+        bottom: 0.5em;
+    }
+
+    .indicators--right {
+        right: 0.5em;
+    }
+
+    .indicators--left {
+        left: 0.5em;
+    }
+
+    .indicator {
+        border-radius: 4px;
+        background-color: fade-out(#222, 0.3);
+        border: 1px solid #353535;
+        padding: .25em .5em;
+
+        &:not(:last-child) {
+            margin-bottom: .25em;
+        }
+    }
 }

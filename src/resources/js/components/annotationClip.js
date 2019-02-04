@@ -5,7 +5,8 @@ biigle.$component('videos.components.annotationClip', {
         ' :class="classObj"' +
         ' @click.stop="select($event)"' +
         '>' +
-            '<keyframe v-for="(frame, i) in keyframes"' +
+            '<keyframe' +
+                ' v-for="(frame, i) in keyframes"' +
                 ' :frame="frame"' +
                 ' @select="selectFrame(i)"' +
                 '></keyframe>' +
@@ -47,11 +48,15 @@ biigle.$component('videos.components.annotationClip', {
             type: Object,
             required: true,
         },
-        labelId: {
-            type: String,
+        label: {
+            type: Object,
             required: true,
         },
         duration: {
+            type: Number,
+            required: true,
+        },
+        elementWidth: {
             type: Number,
             required: true,
         },
@@ -69,28 +74,21 @@ biigle.$component('videos.components.annotationClip', {
             return this.annotation.frames[this.annotation.frames.length - 1];
         },
         offset: function () {
-            return this.startFrame / this.duration;
+            return this.startFrame / this.duration * this.elementWidth;
         },
         clipDuration: function () {
             return this.endFrame - this.startFrame;
         },
         width: function () {
-            return this.clipDuration / this.duration;
+            return this.clipDuration / this.duration * this.elementWidth;
         },
         color: function () {
-            var labelId = parseInt(this.labelId);
-            for (var i = this.annotation.labels.length - 1; i >= 0; i--) {
-                if (this.annotation.labels[i].label_id === labelId) {
-                    return this.annotation.labels[i].label.color;
-                }
-            }
-
-            return '000000';
+            return this.label.color || '000000';
         },
         style: function () {
             return {
-                left: (this.offset * 100) + '%',
-                width: (this.width * 100) + '%',
+                left: this.offset + 'px',
+                width: this.width + 'px',
                 'background-color': '#' + this.color + '66',
             };
         },
@@ -110,7 +108,30 @@ biigle.$component('videos.components.annotationClip', {
         classObj: function () {
             return {
                 'annotation-clip--selected': this.selected,
+                'annotation-clip--compact': this.shouldBeCompact,
+                'annotation-clip--more-compact': this.shouldBeMoreCompact,
             };
+        },
+        minTimeBetweenKeyframes: function () {
+            var min = Infinity;
+            for (var i = this.keyframes.length - 1; i > 0; i--) {
+                min = Math.min(min, this.keyframes[i].time - this.keyframes[i - 1].time);
+            }
+
+            return min;
+        },
+        minDistanceBetweenKeyframes: function () {
+            var distanceInPercent = this.minTimeBetweenKeyframes / this.duration;
+
+            return distanceInPercent * this.elementWidth;
+        },
+        shouldBeCompact: function () {
+            // Twice the width of a regular keyframe element.
+            return this.minDistanceBetweenKeyframes <= 18;
+        },
+        shouldBeMoreCompact: function () {
+            // Twice the width of a compact keyframe element.
+            return this.minDistanceBetweenKeyframes <= 6;
         },
     },
     methods: {

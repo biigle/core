@@ -9,15 +9,13 @@
             </span>
         @endcan
     </div>
-    <div class="panel-body container-fluid videos-grid">
-        <div class="row">
-            @forelse(\Biigle\Modules\Videos\Video::where('project_id', $project->id)->get() as $video)
-                <div class="col-xs-12">
-                    <a href="{{route('video', $video->id)}}">{{$video->name}}</a>
-                </div>
-            @empty
-                <div class="col-xs-12 text-muted">This project has no videos.</div>
-            @endforelse
-        </div>
-    </div>
+    <ul class="list-group">
+        @forelse(\Biigle\Modules\Videos\Video::where('project_id', $project->id)->get() as $video)
+            <li class="list-group-item">
+                <a href="{{route('video', $video->id)}}">{{$video->name}}</a>
+            </li>
+        @empty
+            <li class="list-group-item text-muted">This project has no videos.</li>
+        @endforelse
+    </ul>
 </div>

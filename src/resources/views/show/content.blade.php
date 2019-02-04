@@ -1,0 +1,30 @@
+<loader-block :active="loading"></loader-block>
+<video-screen
+      :annotations="annotations"
+      :annotation-opacity="settings.annotationOpacity"
+      :autoplay-draw="settings.autoplayDraw"
+      :can-add="true"
+      :can-modify="true"
+      :can-delete="true"
+      :selected-annotations="selectedAnnotations"
+      :selected-label="selectedLabel"
+      :show-label-tooltip="settings.showLabelTooltip"
+      :show-minimap="settings.showMinimap"
+      :show-mouse-position="settings.showMousePosition"
+      :video="video"
+      v-on:create-bookmark="createBookmark"
+      v-on:create-annotation="createAnnotation"
+      v-on:select="selectAnnotations"
+      v-on:modify="modifyAnnotations"
+      v-on:delete="deleteAnnotationsOrKeyframes"
+      v-on:track="handleTrackSelectedAnnotations"
+      ></video-screen>
+<video-timeline
+      :annotations="annotations"
+      :bookmarks="bookmarks"
+      :video="video"
+      :seeking="seeking"
+      v-on:seek="seek"
+      v-on:select="selectAnnotation"
+      v-on:deselect="deselectAnnotations"
+      ></video-timeline>

@@ -10,5 +10,8 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git#v1.1.0"
+  },
+  "dependencies": {
+    "polymorph-js": "^0.2.4"
   }
 }

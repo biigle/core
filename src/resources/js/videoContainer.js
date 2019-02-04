@@ -5,14 +5,18 @@ biigle.$viewModel('video-container', function (element) {
     var ANNOTATION_API = biigle.$require('videos.api.videoAnnotations');
     var MSG = biigle.$require('messages.store');
 
+    var Annotation = biigle.$require('videos.models.Annotation');
+
     new Vue({
         el: element,
+        mixins: [biigle.$require('core.mixins.loader')],
         components: {
             videoScreen: biigle.$require('videos.components.videoScreen'),
             videoTimeline: biigle.$require('videos.components.videoTimeline'),
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+            settingsTab: biigle.$require('videos.components.settingsTab'),
         },
         data: {
             video: document.createElement('video'),
@@ -20,6 +24,16 @@ biigle.$viewModel('video-container', function (element) {
             selectedLabel: null,
             bookmarks: [],
             annotations: [],
+            seeking: false,
+            settings: {
+                annotationOpacity: 1,
+                showMinimap: true,
+                autoplayDraw: 0,
+                showLabelTooltip: false,
+                showMousePosition: false,
+                playbackRate: 1.0,
+            },
+            openTab: '',
         },
         computed: {
             shapes: function () {
@@ -35,12 +49,13 @@ biigle.$viewModel('video-container', function (element) {
                     return annotation.selected !== false;
                 });
             },
+            settingsStore: function () {
+                return biigle.$require('videos.settings');
+            },
         },
         methods: {
             prepareAnnotation: function (annotation) {
-                annotation.selected = false;
-
-                return annotation;
+                return new Annotation({data: annotation});
             },
             setAnnotations: function (response) {
                 this.annotations = response.body.map(this.prepareAnnotation);
@@ -49,7 +64,10 @@ biigle.$viewModel('video-container', function (element) {
                 this.annotations.push(this.prepareAnnotation(response.body));
             },
             seek: function (time) {
-                this.video.currentTime = time;
+                if (!this.seeking && this.video.currentTime !== time) {
+                    this.seeking = true;
+                    this.video.currentTime = time;
+                }
             },
             selectAnnotation: function (annotation, time) {
                 this.selectAnnotations([annotation], [time]);
@@ -81,9 +99,10 @@ biigle.$viewModel('video-container', function (element) {
             },
             createAnnotation: function (pendingAnnotation) {
                 var annotation = Object.assign(pendingAnnotation, {
-                    shape_id: this.shapes.Point,
+                    shape_id: this.shapes[pendingAnnotation.shape],
                     label_id: this.selectedLabel ? this.selectedLabel.id : 0,
                 });
+                delete annotation.shape;
 
                 ANNOTATION_API.save({id: VIDEO_ID}, annotation)
                     .then(this.addCreatedAnnotation, MSG.handleResponseError);
@@ -94,11 +113,30 @@ biigle.$viewModel('video-container', function (element) {
             handleDeselectedLabel: function () {
                 this.selectedLabel = null;
             },
-            deleteSelectedAnnotations: function () {
-                this.selectedAnnotations.forEach(function (annotation) {
-                    ANNOTATION_API.delete({id: annotation.id})
-                        .then(this.deletedAnnotation(annotation), MSG.handleResponseError);
-                }, this);
+            deleteAnnotationsOrKeyframes: function (event) {
+                if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                    event.forEach(this.deleteAnnotationOrKeyframe);
+                }
+            },
+            deleteAnnotationOrKeyframe: function (event) {
+                var index = event.annotation.frames.indexOf(event.time);
+
+                if (index !== -1 && event.annotation.frames.length > 1) {
+                    // Delete only the keyframe of the annotation.
+                    event.annotation.frames.splice(index, 1);
+                    event.annotation.points.splice(index, 1);
+
+                    ANNOTATION_API.update({id: event.annotation.id}, {
+                            frames: event.annotation.frames,
+                            points: event.annotation.points,
+                        })
+                        .catch(MSG.handleResponseError);
+                } else {
+                    // Delete the whole annotation.
+                    ANNOTATION_API.delete({id: event.annotation.id})
+                        .then(this.deletedAnnotation(event.annotation))
+                        .catch(MSG.handleResponseError);
+                }
             },
             deletedAnnotation: function (annotation) {
                 return (function () {
@@ -113,11 +151,69 @@ biigle.$viewModel('video-container', function (element) {
                     ANNOTATION_API.track({id: annotation.id}, {}).catch(MSG.handleResponseError);
                 });
             },
+            handleVideoSeeked: function () {
+                this.seeking = false;
+            },
+            modifyAnnotations: function (event) {
+                event.forEach(this.modifyAnnotation);
+            },
+            modifyAnnotation: function (event) {
+                var index = event.annotation.frames.indexOf(event.time);
+                if (index !== -1) {
+                    // Use splice so Vue can pick up the change.
+                    event.annotation.points.splice(index, 1, event.points);
+                } else {
+                    for (var i = event.annotation.frames.length - 1; i >= 0; i--) {
+                        if (event.annotation.frames[i] <= event.time) {
+                            break;
+                        }
+                    }
+
+                    event.annotation.frames.splice(i + 1, 0, event.time);
+                    event.annotation.points.splice(i + 1, 0, event.points);
+                }
+
+                ANNOTATION_API.update({id: event.annotation.id}, {
+                        frames: event.annotation.frames,
+                        points: event.annotation.points,
+                    })
+                    .catch(MSG.handleResponseError);
+            },
+            handleUpdatedSettings: function (key, value) {
+                this.settings[key] = value;
+            },
+            handleOpenedTab: function (name) {
+                this.settingsStore.set('openTab', name);
+            },
+            handleClosedTab: function () {
+                this.settingsStore.delete('openTab');
+            },
+        },
+        watch: {
+            'settings.playbackRate': function (rate) {
+                this.video.playbackRate = rate;
+            },
         },
         created: function () {
             this.video.muted = true;
-            ANNOTATION_API.query({id: VIDEO_ID})
-                .then(this.setAnnotations, MSG.handleResponseError);
+            this.video.addEventListener('error', function () {
+                MSG.danger('Error while loading video file.');
+            });
+            this.video.addEventListener('seeked', this.handleVideoSeeked);
+            this.startLoading();
+            var self = this;
+            var videoPromise = new Vue.Promise(function (resolve, reject) {
+                self.video.addEventListener('loadeddata', resolve);
+                self.video.addEventListener('error', reject);
+            });
+            var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
+            annotationPromise.then(this.setAnnotations, MSG.handleResponseError);
+
+            Vue.Promise.all([videoPromise, annotationPromise]).then(this.finishLoading);
+
+            if (this.settingsStore.has('openTab')) {
+                this.openTab = this.settingsStore.get('openTab');
+            }
         },
         mounted: function () {
             // Wait for the sub-components to register their event listeners before

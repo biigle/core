@@ -10,8 +10,17 @@
     }
 }
 
+.settings-tab {
+    .form-control--small {
+        display: inline-block;
+        width: 70px;
+        vertical-align: middle;
+    }
+}
+
 @import 'components/videoScreen';
 @import 'components/videoTimeline';
+@import 'components/currentTime';
 @import 'components/trackHeaders';
 @import 'components/scrollStrip';
 @import 'components/videoProgress';

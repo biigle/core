@@ -12,35 +12,18 @@
 @section('content')
 <div id="video-container" class="video-container sidebar-container">
     <div class="sidebar-container__content">
-        <video-screen
-            :annotations="annotations"
-            :selected-annotations="selectedAnnotations"
-            :video="video"
-            :selected-label="selectedLabel"
-            v-on:create-bookmark="createBookmark"
-            v-on:create-annotation="createAnnotation"
-            v-on:select="selectAnnotations"
-            v-on:delete="deleteSelectedAnnotations"
-            v-on:track="handleTrackSelectedAnnotations"
-            ></video-screen>
-        <video-timeline
-            :annotations="annotations"
-            :video="video"
-            :bookmarks="bookmarks"
-            v-on:seek="seek"
-            v-on:select="selectAnnotation"
-            v-on:deselect="deselectAnnotations"
-            ></video-timeline>
+        @include('videos::show.content')
     </div>
     @can('edit-in', $video)
-        <sidebar :toggle-on-keyboard="true" open-tab="labels" v-cloak>
-            <sidebar-tab name="labels" icon="tags" title="Label trees">
-                <div class="labels-tab">
-                    <div class="labels-tab__trees">
-                        <label-trees :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
-                    </div>
-                </div>
-            </sidebar-tab>
+        <sidebar
+            v-cloak
+            :toggle-on-keyboard="true"
+            :open-tab="openTab"
+            v-on:open="handleOpenedTab"
+            v-on:close="handleClosedTab"
+            >
+                @include('videos::show.sidebar-labels')
+                @include('videos::show.sidebar-settings')
         </sidebar>
     @endcan
 </div>
@@ -54,6 +37,7 @@
 @endif
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/videos/scripts/polymorph.min.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('videos.id', '{{$video->id}}');
