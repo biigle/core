@@ -14,6 +14,10 @@
                 </div>
 
                 <div class="sidebar-tab__section">
+                    <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate
+                </div>
+
+                <div class="sidebar-tab__section">
                     <power-toggle :active="showMinimap" title-off="Show minimap" title-on="Hide minimap" v-on:on="handleShowMinimap" v-on:off="handleHideMinimap">Minimap</power-toggle>
                 </div>
 

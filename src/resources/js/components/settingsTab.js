@@ -19,6 +19,7 @@ biigle.$component('videos.components.settingsTab', {
             autoplayDraw: 0,
             showLabelTooltip: false,
             showMousePosition: false,
+            playbackRate: 1.0,
         };
     },
     computed: {
@@ -47,19 +48,19 @@ biigle.$component('videos.components.settingsTab', {
         },
     },
     watch: {
-        annotationOpacity: function (opacity) {
-            opacity = parseFloat(opacity);
-            this.$emit('update', 'annotationOpacity', opacity);
-            this.settings.set('annotationOpacity', opacity);
+        annotationOpacity: function (value) {
+            value = parseFloat(value);
+            this.$emit('update', 'annotationOpacity', value);
+            this.settings.set('annotationOpacity', value);
         },
         showMinimap: function (show) {
             this.$emit('update', 'showMinimap', show);
             this.settings.set('showMinimap', show);
         },
-        autoplayDraw: function (opacity) {
-            opacity = parseFloat(opacity);
-            this.$emit('update', 'autoplayDraw', opacity);
-            this.settings.set('autoplayDraw', opacity);
+        autoplayDraw: function (value) {
+            value = parseFloat(value);
+            this.$emit('update', 'autoplayDraw', value);
+            this.settings.set('autoplayDraw', value);
         },
         showLabelTooltip: function (show) {
             this.$emit('update', 'showLabelTooltip', show);
@@ -68,6 +69,10 @@ biigle.$component('videos.components.settingsTab', {
         showMousePosition: function (show) {
             this.$emit('update', 'showMousePosition', show);
             this.settings.set('showMousePosition', show);
+        },
+        playbackRate: function (value) {
+            value = parseFloat(value);
+            this.$emit('update', 'playbackRate', value);
         },
     },
     created: function () {

@@ -31,6 +31,7 @@ biigle.$viewModel('video-container', function (element) {
                 autoplayDraw: 0,
                 showLabelTooltip: false,
                 showMousePosition: false,
+                playbackRate: 1.0,
             },
             openTab: '',
         },
@@ -184,7 +185,9 @@ biigle.$viewModel('video-container', function (element) {
             },
         },
         watch: {
-            //
+            'settings.playbackRate': function (rate) {
+                this.video.playbackRate = rate;
+            },
         },
         created: function () {
             this.video.muted = true;
