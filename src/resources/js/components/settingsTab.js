@@ -11,10 +11,12 @@ biigle.$component('videos.components.settingsTab', {
                 'annotationOpacity',
                 'showMinimap',
                 'autoplayDraw',
+                'showLabelTooltip',
             ],
             annotationOpacity: 1,
             showMinimap: true,
             autoplayDraw: 0,
+            showLabelTooltip: false,
         };
     },
     computed: {
@@ -28,6 +30,12 @@ biigle.$component('videos.components.settingsTab', {
         },
         handleHideMinimap: function () {
             this.showMinimap = false;
+        },
+        handleShowLabelTooltip: function () {
+            this.showLabelTooltip = true;
+        },
+        handleHideLabelTooltip: function () {
+            this.showLabelTooltip = false;
         },
     },
     watch: {
@@ -44,6 +52,10 @@ biigle.$component('videos.components.settingsTab', {
             opacity = parseFloat(opacity);
             this.$emit('update', 'autoplayDraw', opacity);
             this.settings.set('autoplayDraw', opacity);
+        },
+        showLabelTooltip: function (show) {
+            this.$emit('update', 'showLabelTooltip', show);
+            this.settings.set('showLabelTooltip', show);
         },
     },
     created: function () {

@@ -29,6 +29,7 @@ biigle.$viewModel('video-container', function (element) {
                 annotationOpacity: 1,
                 showMinimap: true,
                 autoplayDraw: 0,
+                showLabelTooltip: false,
             },
             openTab: '',
         },

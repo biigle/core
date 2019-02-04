@@ -4,6 +4,7 @@ biigle.$declare('videos.settings', function () {
         annotationOpacity: 1,
         showMinimap: true,
         autoplayDraw: 0,
+        showLabelTooltip: false,
     };
 
     return new Settings({

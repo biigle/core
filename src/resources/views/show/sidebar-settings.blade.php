@@ -10,11 +10,15 @@
                 </div>
 
                 <div class="sidebar-tab__section">
+                    <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
+                </div>
+
+                <div class="sidebar-tab__section">
                     <power-toggle :active="showMinimap" title-off="Show minimap" title-on="Hide minimap" v-on:on="handleShowMinimap" v-on:off="handleHideMinimap">Minimap</power-toggle>
                 </div>
 
                 <div class="sidebar-tab__section">
-                    <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
+                    <power-toggle :active="showLabelTooltip" title-off="Show label tooltip" title-on="Hide label tooltip" v-on:on="handleShowLabelTooltip" v-on:off="handleHideLabelTooltip">Label Tooltip</power-toggle>
                 </div>
 
             </div>

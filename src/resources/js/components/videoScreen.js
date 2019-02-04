@@ -4,12 +4,18 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.annotationPlayback'),
         biigle.$require('videos.components.videoScreen.drawInteractions'),
         biigle.$require('videos.components.videoScreen.modifyInteractions'),
+        biigle.$require('videos.components.videoScreen.tooltips'),
     ],
     template: '<div class="video-screen">' +
         '<minimap' +
             ' v-if="showMinimap"' +
             ' :extent="extent"' +
             '></minimap>' +
+        '<label-tooltip' +
+            ' watch="hoverFeatures"' +
+            ' :show="showLabelTooltip"' +
+            ' :position="mousePosition"' +
+            '></label-tooltip>' +
         '<div class="controls">' +
             '<div class="btn-group">' +
                 '<control-button' +
@@ -177,9 +183,13 @@ biigle.$component('videos.components.videoScreen', {
         selectedLabel: {
             type: Object,
         },
+        showLabelTooltip: {
+            type: Boolean,
+            default: false,
+        },
         showMinimap: {
             type: Boolean,
-            required: true,
+            default: true,
         },
         video: {
             type: HTMLVideoElement,
@@ -189,6 +199,8 @@ biigle.$component('videos.components.videoScreen', {
     data: function () {
         return {
             interactionMode: 'default',
+            // Mouse position in OpenLayers coordinates.
+            mousePosition: [0, 0],
         };
     },
     computed: {
@@ -250,6 +262,7 @@ biigle.$component('videos.components.videoScreen', {
                 updateWhileInteracting: true,
                 style: styles.features,
                 opacity: this.annotationOpacity,
+                name: 'annotations',
             });
 
             this.selectInteraction = new ol.interaction.Select({
@@ -282,6 +295,9 @@ biigle.$component('videos.components.videoScreen', {
                 }, this)
             );
         },
+        updateMousePosition: function (e) {
+            this.mousePosition = e.coordinate;
+        },
     },
     watch: {
         selectedAnnotations: function (annotations) {
@@ -311,6 +327,7 @@ biigle.$component('videos.components.videoScreen', {
         this.$once('map-ready', this.initLayersAndInteractions);
         this.map = this.createMap();
         this.$emit('map-created', this.map);
+        this.map.on('pointermove', this.updateMousePosition);
 
         var kb = biigle.$require('keyboard');
         kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
