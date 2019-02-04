@@ -6,9 +6,7 @@
                 <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
             </div>
         </scale-line-indicator>
-        <mouse-position-indicator v-if="showMousePosition" :position="mousePositionIC" inline-template>
-            <div class="mouse-position-indicator" title="Mouse position on the image" v-text="positionText"></div>
-        </mouse-position-indicator>
+        <mouse-position-indicator v-if="showMousePosition" :position="mousePositionIC"></mouse-position-indicator>
         <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution" inline-template>
             <div class="zoom-level-indicator" title="Zoom level of the viewport" v-text="zoomLevelText"></div>
         </zoom-level-indicator>

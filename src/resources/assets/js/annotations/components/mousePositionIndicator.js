@@ -4,14 +4,21 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.mousePositionIndicator', {
+    template:
+    '<div' +
+        ' class="mouse-position-indicator"' +
+        ' title="Mouse position in the image"' +
+        ' v-text="positionText"' +
+        '></div>',
     props: {
         position: {
+            type: Array,
             required: true,
         },
     },
     computed: {
         positionText: function () {
-            return this.position[0] + ' × ' + this.position[1];
+            return this.position.join(' × ');
         },
     },
 });
