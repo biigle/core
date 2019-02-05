@@ -26,6 +26,6 @@ return [
     | Padding in pixels of a point when it is converted to an initial window for object
     | tracking. The window is twice the padding in width and height.
     */
-    'tracking_point_padding' => 50,
+    'tracking_point_padding' => 25,
 
 ];

@@ -21,7 +21,7 @@ class ObjectTracker(object):
         self.debug = False
 
     def center_out_of_frame(self, center):
-        return center[0] < 0 or center[1] < 0 or center[0] > self.width or center[1] > self.height
+        return center[0] <= 0 or center[1] <= 0 or center[0] >= self.width or center[1] >= self.height
 
     def __iter__(self):
         return self
