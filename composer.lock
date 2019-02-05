@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e"
+                "reference": "50bd0947695c2c6860f7310a1214176ec78297be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d4305f15b46187ddc81f49110a4672cad6365b1e",
-                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/50bd0947695c2c6860f7310a1214176ec78297be",
+                "reference": "50bd0947695c2c6860f7310a1214176ec78297be",
                 "shasum": ""
             },
             "require": {
@@ -47,14 +47,7 @@
                     "Biigle\\FileCache\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\FileCache\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -65,11 +58,7 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "support": {
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v2.0.0",
-                "issues": "https://github.com/biigle/laravel-file-cache/issues"
-            },
-            "time": "2019-02-05T13:01:55+00:00"
+            "time": "2019-02-05T15:02:31+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
