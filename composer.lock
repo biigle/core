@@ -47,7 +47,14 @@
                     "Biigle\\FileCache\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Biigle\\FileCache\\Tests\\": "tests/"
+                },
+                "classmap": [
+                    "tests/TestCase.php"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -58,6 +65,10 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
+            "support": {
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v2.0.0",
+                "issues": "https://github.com/biigle/laravel-file-cache/issues"
+            },
             "time": "2019-02-05T13:01:55+00:00"
         },
         {
