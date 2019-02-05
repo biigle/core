@@ -5,7 +5,7 @@ namespace Biigle\Modules\Largo\Jobs;
 use File;
 use Exception;
 use VipsImage;
-use ImageCache;
+use FileCache;
 use Biigle\Image;
 use Biigle\Shape;
 use Biigle\Jobs\Job;
@@ -84,7 +84,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         }
 
         try {
-            ImageCache::get($this->annotation->getImage(), [$this, 'handleImage']);
+            FileCache::get($this->annotation->getImage(), [$this, 'handleImage']);
         } catch (Exception $e) {
             if (str_contains($e->getMessage(), 'The source resource could not be established') && $this->attempts() < 3) {
                 // Retry in 10 minutes, maybe the remote source is available again.
