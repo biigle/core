@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8036b8a19d3f8b36a9aef83936efa47a",
+    "content-hash": "0e3e1b318544543b999abba334694ded",
     "packages": [
         {
-            "name": "biigle/laravel-image-cache",
-            "version": "v1.1.3",
+            "name": "biigle/laravel-file-cache",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/biigle/laravel-image-cache.git",
-                "reference": "850fa57afb47d81890c92398448d5245ebd018bc"
+                "url": "https://github.com/biigle/laravel-file-cache.git",
+                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/850fa57afb47d81890c92398448d5245ebd018bc",
-                "reference": "850fa57afb47d81890c92398448d5245ebd018bc",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d4305f15b46187ddc81f49110a4672cad6365b1e",
+                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e",
                 "shasum": ""
             },
             "require": {
@@ -35,26 +35,19 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Biigle\\ImageCache\\ImageCacheServiceProvider"
+                        "Biigle\\FileCache\\FileCacheServiceProvider"
                     ],
                     "aliases": {
-                        "ImageCache": "Biigle\\ImageCache\\Facades\\ImageCache"
+                        "FileCache": "Biigle\\FileCache\\Facades\\FileCache"
                     }
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Biigle\\ImageCache\\": "src"
+                    "Biigle\\FileCache\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\ImageCache\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -64,12 +57,8 @@
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
-            "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.3",
-                "issues": "https://github.com/biigle/laravel-image-cache/issues"
-            },
-            "time": "2018-12-21T13:37:08+00:00"
+            "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
+            "time": "2019-02-05T13:01:55+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1399,16 +1388,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.49",
+            "version": "1.0.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a63cc83d8a931b271be45148fa39ba7156782ffd"
+                "reference": "dab4e7624efa543a943be978008f439c333f2249"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a63cc83d8a931b271be45148fa39ba7156782ffd",
-                "reference": "a63cc83d8a931b271be45148fa39ba7156782ffd",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/dab4e7624efa543a943be978008f439c333f2249",
+                "reference": "dab4e7624efa543a943be978008f439c333f2249",
                 "shasum": ""
             },
             "require": {
@@ -1479,7 +1468,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2018-11-23T23:41:29+00:00"
+            "time": "2019-02-01T08:50:36+00:00"
         },
         {
             "name": "monolog/monolog",
