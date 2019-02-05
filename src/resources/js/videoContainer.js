@@ -62,6 +62,7 @@ biigle.$viewModel('video-container', function (element) {
             },
             addCreatedAnnotation: function (response) {
                 var annotation = this.prepareAnnotation(response.body);
+                annotation.$on('tracking-failed', this.handleFailedTracking);
                 this.annotations.push(annotation);
 
                 return annotation;
@@ -112,7 +113,11 @@ biigle.$viewModel('video-container', function (element) {
             },
             trackAnnotation: function (pendingAnnotation) {
                 pendingAnnotation.track = true;
-                this.createAnnotation(pendingAnnotation);
+                this.createAnnotation(pendingAnnotation)
+                    .then(this.startPollTrackingAnnotation);
+            },
+            startPollTrackingAnnotation: function (annotation) {
+                annotation.startPollTracking();
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
@@ -189,6 +194,12 @@ biigle.$viewModel('video-container', function (element) {
             },
             handleClosedTab: function () {
                 this.settingsStore.delete('openTab');
+            },
+            handleFailedTracking: function (annotation) {
+                var index = this.annotations.indexOf(annotation);
+                if (index !== -1) {
+                    this.annotations.splice(index, 1);
+                }
             },
         },
         watch: {

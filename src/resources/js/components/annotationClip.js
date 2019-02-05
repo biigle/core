@@ -3,6 +3,7 @@ biigle.$component('videos.components.annotationClip', {
         ' v-show="duration > 0"' +
         ' :style="style"' +
         ' :class="classObj"' +
+        ' :title="title"' +
         ' @click.stop="select($event)"' +
         '>' +
             '<keyframe' +
@@ -110,6 +111,7 @@ biigle.$component('videos.components.annotationClip', {
                 'annotation-clip--selected': this.selected,
                 'annotation-clip--compact': this.shouldBeCompact,
                 'annotation-clip--more-compact': this.shouldBeMoreCompact,
+                'annotation-clip--tracking': this.annotation.tracking,
             };
         },
         minTimeBetweenKeyframes: function () {
@@ -132,6 +134,9 @@ biigle.$component('videos.components.annotationClip', {
         shouldBeMoreCompact: function () {
             // Twice the width of a compact keyframe element.
             return this.minDistanceBetweenKeyframes <= 6;
+        },
+        title: function () {
+            return this.annotation.tracking ? 'Tracking in progress' : '';
         },
     },
     methods: {
