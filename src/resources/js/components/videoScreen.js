@@ -45,8 +45,8 @@ biigle.$component('videos.components.videoScreen', {
                         '<control-button' +
                             ' icon="fa-check"' +
                             ' title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"' +
-                            ' @click="finishDrawAnnotation"' +
                             ' :disabled="cantFinishDrawAnnotation"' +
+                            ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                         '<control-button' +
                             ' icon="fa-project-diagram"' +
@@ -67,6 +67,7 @@ biigle.$component('videos.components.videoScreen', {
                         '<control-button' +
                             ' icon="fa-check"' +
                             ' title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"' +
+                            ' :disabled="cantFinishDrawAnnotation"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
@@ -82,6 +83,7 @@ biigle.$component('videos.components.videoScreen', {
                         '<control-button' +
                             ' icon="fa-check"' +
                             ' title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"' +
+                            ' :disabled="cantFinishDrawAnnotation"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                         '<control-button' +
@@ -103,6 +105,7 @@ biigle.$component('videos.components.videoScreen', {
                         '<control-button' +
                             ' icon="fa-check"' +
                             ' title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"' +
+                            ' :disabled="cantFinishDrawAnnotation"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
@@ -118,6 +121,7 @@ biigle.$component('videos.components.videoScreen', {
                         '<control-button' +
                             ' icon="fa-check"' +
                             ' title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"' +
+                            ' :disabled="cantFinishDrawAnnotation"' +
                             ' @click="finishDrawAnnotation"' +
                             '></control-button>' +
                 '</control-button>' +
