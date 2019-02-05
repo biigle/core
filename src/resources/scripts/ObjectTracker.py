@@ -20,8 +20,8 @@ class ObjectTracker(object):
 
         self.debug = False
 
-    def box_out_of_frame(self, box):
-        return box[0] < 0 or box[1] < 0 or (box[0] + box[2]) > self.width or (box[1] + box[3]) > self.height
+    def center_out_of_frame(self, center):
+        return center[0] < 0 or center[1] < 0 or center[0] > self.width or center[1] > self.height
 
     def __iter__(self):
         return self
@@ -40,11 +40,14 @@ class ObjectTracker(object):
 
         (success, box) = self.tracker.update(frame)
 
+        center = (box[0] + box[2] * 0.5, box[1] + box[3] * 0.5)
+        radius = max(box[2], box[3])
+
         if not success:
             raise StopIteration
 
-        # if self.box_out_of_frame(box):
-        #     raise StopIteration
+        if self.center_out_of_frame(center):
+            raise StopIteration
 
         current_frame = self.video.get(cv2.CAP_PROP_POS_FRAMES)
         current_time = current_frame / self.fps
@@ -55,7 +58,7 @@ class ObjectTracker(object):
             cv2.imshow("frame", frame)
             cv2.waitKey(1)
 
-        return (current_time, box[0] + (box[2] / 2), box[1] + (box[3] / 2))
+        return (current_time, center[0], center[1], radius)
 
     def __next__(self):
         return self._next()
