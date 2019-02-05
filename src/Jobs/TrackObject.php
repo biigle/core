@@ -57,7 +57,10 @@ class TrackObject extends Job implements ShouldQueue
 
         $this->annotation->frames = $frames;
         $this->annotation->points = $points;
-        $this->annotation->save();
+        // If the annotation has been deleted in the meantime, ignore the result.
+        if ($this->annotation->exists()) {
+            $this->annotation->save();
+        }
     }
 
     /**

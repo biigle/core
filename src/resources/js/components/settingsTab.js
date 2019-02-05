@@ -50,8 +50,10 @@ biigle.$component('videos.components.settingsTab', {
     watch: {
         annotationOpacity: function (value) {
             value = parseFloat(value);
-            this.$emit('update', 'annotationOpacity', value);
-            this.settings.set('annotationOpacity', value);
+            if (!isNaN(value)) {
+                this.$emit('update', 'annotationOpacity', value);
+                this.settings.set('annotationOpacity', value);
+            }
         },
         showMinimap: function (show) {
             this.$emit('update', 'showMinimap', show);
@@ -72,7 +74,9 @@ biigle.$component('videos.components.settingsTab', {
         },
         playbackRate: function (value) {
             value = parseFloat(value);
-            this.$emit('update', 'playbackRate', value);
+            if (!isNaN(value)) {
+                this.$emit('update', 'playbackRate', value);
+            }
         },
     },
     created: function () {
