@@ -258,8 +258,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0],
                 'track' => true,
             ])
-            // Circles cannot be tracked (for now).
-            ->assertStatus(422);
+            ->assertStatus(200);
     }
 
     public function testStoreAndTrackLineString()

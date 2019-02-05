@@ -41,7 +41,7 @@ class ObjectTracker(object):
         (success, box) = self.tracker.update(frame)
 
         center = (box[0] + box[2] * 0.5, box[1] + box[3] * 0.5)
-        radius = max(box[2], box[3])
+        radius = max(box[2], box[3]) * 0.5
 
         if not success:
             raise StopIteration

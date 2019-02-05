@@ -61,7 +61,12 @@ class StoreVideoAnnotation extends FormRequest
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
-                if (intval($this->input('shape_id')) !== Shape::pointId()) {
+                $allowedShapes = [
+                    Shape::pointId(),
+                    Shape::circleId(),
+                ];
+
+                if (!in_array(intval($this->input('shape_id')), $allowedShapes)) {
                     $validator->errors()->add('id', 'Only point annotations can be tracked.');
                 }
             });

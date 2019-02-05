@@ -51,8 +51,7 @@ class TrackObject extends Job implements ShouldQueue
 
         foreach ($keyframes as $keyframe) {
             $frames[] = $keyframe[0];
-            // TODO Handle different shapes.
-            $points[] = [$keyframe[1], $keyframe[2]];
+            $points[] = $this->getPointsFromKeyframe($this->annotation, $keyframe);
         }
 
         $this->annotation->frames = $frames;
@@ -213,22 +212,55 @@ class TrackObject extends Job implements ShouldQueue
      */
     protected function getStartWindow(VideoAnnotation $annotation)
     {
-        if ($annotation->shape_id !== Shape::pointId()) {
-            throw new Exception('Object tracking supports only point annotations for now.');
+        switch ($annotation->shape_id) {
+            case Shape::pointId():
+                $points = $annotation->points[0];
+                $padding = config('videos.tracking_point_padding');
+
+                return [
+                    // x
+                    $points[0] - $padding,
+                    // y
+                    $points[1] - $padding,
+                    // width
+                    $padding * 2,
+                    // height
+                    $padding * 2,
+                ];
+            case Shape::circleId():
+                $points = $annotation->points[0];
+
+                return [
+                    // x
+                    $points[0] - $points[2],
+                    // y
+                    $points[1] - $points[2],
+                    // width
+                    $points[2] * 2,
+                    // height
+                    $points[2] * 2,
+                ];
+            default:
+                throw new Exception('Object tracking supports only point annotations for now.');
         }
+    }
 
-        $points = $annotation->points[0];
-        $padding = config('videos.tracking_point_padding');
-
-        return [
-            // x
-            $points[0] - $padding,
-            // y
-            $points[1] - $padding,
-            // width
-            $padding * 2,
-            // height
-            $padding * 2,
-        ];
+    /**
+     * Get the points of a keyframe depending on the annotation shape.
+     *
+     * @param VideoAnnotation $annotation
+     * @param array $keyframe
+     *
+     * @return array
+     */
+    protected function getPointsFromKeyframe(VideoAnnotation $annotation, $keyframe)
+    {
+        switch ($annotation->shape_id) {
+            case Shape::pointId():
+                return [$keyframe[1], $keyframe[2]];
+            default:
+                array_shift($keyframe);
+                return $keyframe;
+        }
     }
 }

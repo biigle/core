@@ -80,10 +80,16 @@ biigle.$component('videos.components.videoScreen', {
                     ' @click="drawCircle"' +
                     '>' +
                         '<control-button' +
-                        ' icon="fa-check"' +
-                        ' title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"' +
-                        ' @click="finishDrawAnnotation"' +
-                        '></control-button>' +
+                            ' icon="fa-check"' +
+                            ' title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"' +
+                            ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
+                        '<control-button' +
+                            ' icon="fa-project-diagram"' +
+                            ' title="Finish and track the circle annotation"' +
+                            ' v-on:click="finishTrackAnnotation"' +
+                            ' :disabled="cantFinishTrackAnnotation"' +
+                            '></control-button>' +
                 '</control-button>' +
                 '<control-button' +
                     ' icon="icon-linestring"' +

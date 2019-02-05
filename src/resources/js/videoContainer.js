@@ -117,7 +117,9 @@ biigle.$viewModel('video-container', function (element) {
                     .then(this.startPollTrackingAnnotation);
             },
             startPollTrackingAnnotation: function (annotation) {
-                annotation.startPollTracking();
+                if (annotation) {
+                    annotation.startPollTracking();
+                }
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
