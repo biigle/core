@@ -55,6 +55,40 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertJsonFragment(['name' => 'My label']);
     }
 
+    public function testShow()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+        ]);
+
+        $label = LabelTest::create([
+            'name' => 'My label',
+            'color' => 'bada55',
+        ]);
+
+        VideoAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'video_annotation_id' => $annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->doTestApiRoute('GET', "/api/v1/video-annotations/{$annotation->id}");
+
+        $this->beUser();
+        $this->getJson("/api/v1/video-annotations/{$annotation->id}")
+            ->assertStatus(403);
+
+        $this->beGuest();
+        $this->getJson("/api/v1/video-annotations/{$annotation->id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['frames' => [1.0]])
+            ->assertJsonFragment(['points' => [[10, 20]]])
+            ->assertJsonFragment(['color' => 'bada55'])
+            ->assertJsonFragment(['name' => 'My label']);
+    }
+
     public function testStore()
     {
         $label = LabelTest::create();

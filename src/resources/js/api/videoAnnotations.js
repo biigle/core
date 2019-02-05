@@ -6,6 +6,9 @@
  * List annotations:
  * resource.query({id: videoId}).then(...);
  *
+ * Show a single annotation:
+ * resource.get({id: annotationId}).then(...);
+ *
  * Create an annotation:
  * resource.save({id: videoId}, {points: [[10, 10]], ...}).then(...)
  *

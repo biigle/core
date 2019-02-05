@@ -68,6 +68,55 @@ class VideoAnnotationController extends Controller
     }
 
     /**
+     * Shows a video annotation.
+     *
+     * @api {get} video-annotations/:id Show a video annotation
+     * @apiGroup Videos
+     * @apiName SHowVideoAnnotation
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The annotation ID.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 1,
+     *    "created_at": "2015-02-18 11:45:00",
+     *    "updated_at": "2015-02-18 11:45:00",
+     *    "video_id": 1,
+     *    "shape_id": 1,
+     *    "frames": [10.0, 15.0]
+     *    "points": [[100, 200],[200, 300]],
+     *    "labels": [
+     *       {
+     *          "id": 1,
+     *          "label": {
+     *             "color": "bada55",
+     *             "id": 3,
+     *             "name": "My label",
+     *             "parent_id": null,
+     *          },
+     *          "user": {
+     *             "id": 4,
+     *             "firstname": "Graham",
+     *             "lastname": "Hahn",
+     *          }
+     *       }
+     *    ]
+     * }
+     *
+     * @param int $id Snnotation id
+     * @return mixed
+     */
+    public function show($id)
+    {
+        $annotation = VideoAnnotation::findOrFail($id);
+        $this->authorize('access', $annotation);
+        $annotation->load('labels.label', 'labels.user');
+
+        return $annotation;
+    }
+
+    /**
      * Creates a new annotation in the specified video.
      *
      * @api {post} videos/:id/annotations Create a new video annotation
