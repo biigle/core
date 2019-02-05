@@ -22,4 +22,10 @@ return [
     */
     'keyframe_distance' => 1.0,
 
+    /*
+    | Padding in pixels of a point when it is converted to an initial window for object
+    | tracking. The window is twice the padding in width and height.
+    */
+    'tracking_point_padding' => 50,
+
 ];

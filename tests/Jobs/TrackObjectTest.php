@@ -16,6 +16,7 @@ class TrackObjectTest extends TestCase
     public function testHandlePoint()
     {
         config(['videos.keyframe_distance' => 123]);
+        config(['videos.tracking_point_padding' => 15]);
 
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::pointId(),

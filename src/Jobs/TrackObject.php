@@ -50,8 +50,9 @@ class TrackObject extends Job implements ShouldQueue
         $points = $this->annotation->points;
 
         foreach ($keyframes as $keyframe) {
-            $frames[] = array_shift($keyframe);
-            $points[] = $keyframe;
+            $frames[] = $keyframe[0];
+            // TODO Handle different shapes.
+            $points[] = [$keyframe[1], $keyframe[2]];
         }
 
         $this->annotation->frames = $frames;
@@ -86,8 +87,6 @@ class TrackObject extends Job implements ShouldQueue
             $inputPath = $this->createInputJson($annotation);
             $outputPath = $this->getOutputJsonPath($annotation);
             $output = $this->python("{$script} {$inputPath} {$outputPath}");
-            // TODO parse keyframe array depending on shape. Array contains [x, y, w, h].
-            // Set negative values to 0.
             $keyframes = json_decode(File::get($outputPath), true);
         } finally {
             if (isset($inputPath)) {
@@ -216,9 +215,17 @@ class TrackObject extends Job implements ShouldQueue
         }
 
         $points = $annotation->points[0];
+        $padding = config('videos.tracking_point_padding');
 
-        // Center a 100x100 px window around the point. [x, y, w, h].
-        $width = 100;
-        return [$points[0] - $width/2, $points[1] - $width/2, $width, $width];
+        return [
+            // x
+            $points[0] - $padding,
+            // y
+            $points[1] - $padding,
+            // width
+            $padding * 2,
+            // height
+            $padding * 2,
+        ];
     }
 }
