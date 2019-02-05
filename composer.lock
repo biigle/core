@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f07abaa9314019bed320d42b990ceda",
+    "content-hash": "0026cfb90c47e612dd291d41e8957548",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -235,6 +235,60 @@
             "time": "2018-12-17T12:35:40+00:00"
         },
         {
+            "name": "biigle/laravel-file-cache",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-file-cache.git",
+                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d4305f15b46187ddc81f49110a4672cad6365b1e",
+                "reference": "d4305f15b46187ddc81f49110a4672cad6365b1e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^5.5",
+                "illuminate/filesystem": "^5.5",
+                "illuminate/support": "^5.5",
+                "league/flysystem": "^1.0"
+            },
+            "require-dev": {
+                "laravel/laravel": "^5.5",
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "^7.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\FileCache\\FileCacheServiceProvider"
+                    ],
+                    "aliases": {
+                        "FileCache": "Biigle\\FileCache\\Facades\\FileCache"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\FileCache\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
+            "time": "2019-02-05T13:01:55+00:00"
+        },
+        {
             "name": "biigle/laravel-image-cache",
             "version": "v1.1.3",
             "source": {
@@ -275,14 +329,7 @@
                     "Biigle\\ImageCache\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\ImageCache\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -293,10 +340,7 @@
                 }
             ],
             "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
-            "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.3",
-                "issues": "https://github.com/biigle/laravel-image-cache/issues"
-            },
+            "abandoned": "biigle/laravel-file-cache",
             "time": "2018-12-21T13:37:08+00:00"
         },
         {
@@ -445,12 +489,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/maia.git",
-                "reference": "0b9f5e4453dd69a9a2c801341876e713e67946ca"
+                "reference": "762fa22303a618a9ba31fe13d99889b7bdf1a001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/0b9f5e4453dd69a9a2c801341876e713e67946ca",
-                "reference": "0b9f5e4453dd69a9a2c801341876e713e67946ca",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/762fa22303a618a9ba31fe13d99889b7bdf1a001",
+                "reference": "762fa22303a618a9ba31fe13d99889b7bdf1a001",
                 "shasum": ""
             },
             "require": {
@@ -474,10 +518,10 @@
             ],
             "description": "Perform the Machine Learning Assisted Image Annotation method in BIIGLE",
             "support": {
-                "source": "https://github.com/biigle/maia/tree/master",
+                "source": "https://github.com/biigle/maia/tree/v1.1.0",
                 "issues": "https://github.com/biigle/maia/issues"
             },
-            "time": "2018-12-14T15:31:20+00:00"
+            "time": "2019-02-01T15:14:46+00:00"
         },
         {
             "name": "biigle/projects",
@@ -578,18 +622,18 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/videos.git",
-                "reference": "eda30a895bf1bfd79975dc514c8d16e1c5e4b408"
+                "reference": "10fc104e335bdafa8c3bbbf8342c323691e2efe7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/eda30a895bf1bfd79975dc514c8d16e1c5e4b408",
-                "reference": "eda30a895bf1bfd79975dc514c8d16e1c5e4b408",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/10fc104e335bdafa8c3bbbf8342c323691e2efe7",
+                "reference": "10fc104e335bdafa8c3bbbf8342c323691e2efe7",
                 "shasum": ""
             },
             "require": {
                 "biigle/annotations": "^3.9",
                 "biigle/label-trees": "^1.19",
-                "ramsey/uuid": "^3.8"
+                "ramsey/uuid": "^3.5"
             },
             "type": "library",
             "autoload": {
@@ -608,7 +652,7 @@
                 "source": "https://github.com/biigle/videos/tree/master",
                 "issues": "https://github.com/biigle/videos/issues"
             },
-            "time": "2019-01-16T14:27:39+00:00"
+            "time": "2019-02-05T11:56:37+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -2045,16 +2089,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.49",
+            "version": "1.0.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a63cc83d8a931b271be45148fa39ba7156782ffd"
+                "reference": "dab4e7624efa543a943be978008f439c333f2249"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a63cc83d8a931b271be45148fa39ba7156782ffd",
-                "reference": "a63cc83d8a931b271be45148fa39ba7156782ffd",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/dab4e7624efa543a943be978008f439c333f2249",
+                "reference": "dab4e7624efa543a943be978008f439c333f2249",
                 "shasum": ""
             },
             "require": {
@@ -2125,7 +2169,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2018-11-23T23:41:29+00:00"
+            "time": "2019-02-01T08:50:36+00:00"
         },
         {
             "name": "monolog/monolog",

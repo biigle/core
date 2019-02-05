@@ -8,7 +8,7 @@ use File;
 use Storage;
 use Exception;
 use VipsImage;
-use ImageCache;
+use FileCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ErrorException;
@@ -100,7 +100,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         foreach ($images as $image) {
             try {
                 if ($this->needsProcessing($image)) {
-                    ImageCache::getOnce($image, $callback);
+                    FileCache::getOnce($image, $callback);
                 }
 
                 // Do this after processing so the image has width and height attributes.
