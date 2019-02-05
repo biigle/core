@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Videos\Jobs;
 
 use File;
-use Storage;
 use Exception;
+use FileCache;
 use Biigle\Shape;
 use Biigle\Jobs\Job;
 use League\Flysystem\Adapter\Local;
@@ -83,24 +83,26 @@ class TrackObject extends Job implements ShouldQueue
      */
     protected function getTrackingKeyframes(VideoAnnotation $annotation)
     {
-        $script = config('videos.object_tracker_script');
+        return FileCache::get($annotation->video, function ($video, $path) use ($annotation) {
+            $script = config('videos.object_tracker_script');
 
-        try {
-            $inputPath = $this->createInputJson($annotation);
-            $outputPath = $this->getOutputJsonPath($annotation);
-            $output = $this->python("{$script} {$inputPath} {$outputPath}");
-            $keyframes = json_decode(File::get($outputPath), true);
-        } finally {
-            if (isset($inputPath)) {
-                $this->maybeDeleteFile($inputPath);
+            try {
+                $inputPath = $this->createInputJson($annotation, $path);
+                $outputPath = $this->getOutputJsonPath($annotation);
+                $output = $this->python("{$script} {$inputPath} {$outputPath}");
+                $keyframes = json_decode(File::get($outputPath), true);
+            } finally {
+                if (isset($inputPath)) {
+                    $this->maybeDeleteFile($inputPath);
+                }
+
+                if (isset($outputPath)) {
+                    $this->maybeDeleteFile($outputPath);
+                }
             }
 
-            if (isset($outputPath)) {
-                $this->maybeDeleteFile($outputPath);
-            }
-        }
-
-        return $keyframes;
+            return $keyframes;
+        });
     }
 
     /**
@@ -119,14 +121,15 @@ class TrackObject extends Job implements ShouldQueue
      * Create the JSON file that is the input for the object tracking script.
      *
      * @param VideoAnnotation $annotation
+     * @param string $path Path to the video file.
      *
-     * @return string Path to the file.
+     * @return string Path to the JSON file.
      */
-    protected function createInputJson(VideoAnnotation $annotation)
+    protected function createInputJson(VideoAnnotation $annotation, $path)
     {
         $path = $this->getInputJsonPath($annotation);
         $content = json_encode([
-            'video_path' => $this->getVideoPath($annotation),
+            'video_path' => $path,
             'start_time' => $annotation->frames[0],
             'start_window' => $this->getStartWindow($annotation),
             'keyframe_distance' => config('videos.keyframe_distance'),
@@ -181,25 +184,6 @@ class TrackObject extends Job implements ShouldQueue
         }
 
         return end($lines);
-    }
-
-    /**
-     * Get the file path to the video of an annotation.
-     *
-     * @param VideoAnnotation $annotation
-     *
-     * @return string
-     */
-    protected function getVideoPath(VideoAnnotation $annotation)
-    {
-        $video = $annotation->video;
-        $adapter = Storage::disk($video->disk)->getAdapter();
-
-        if ($adapter instanceof Local) {
-            return $adapter->applyPathPrefix($video->path);
-        }
-
-        throw new Exception('Object tracking supports only locally stored videos for now.');
     }
 
     /**

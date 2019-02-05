@@ -4,8 +4,9 @@ namespace Biigle\Modules\Videos;
 
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Biigle\FileCache\Contracts\File as FileContract;
 
-class Video extends Model
+class Video extends Model implements FileContract
 {
     use HasJsonAttributes;
 
@@ -50,6 +51,14 @@ class Video extends Model
     protected $hidden = [
         'attrs',
     ];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
     /**
      * The project this video belongs to.
