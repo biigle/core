@@ -70,15 +70,20 @@ class ObjectTracker(object):
 with open(sys.argv[1]) as f:
     params = json.load(f)
 
-last_time = 0
-current_time = 0
+last_time = params['start_time']
+last_keyframe = ()
 keyframe_distance = params['keyframe_distance']
 keyframes = []
 
 for keyframe in ObjectTracker(params):
+    last_keyframe = keyframe
     if keyframe[0] - last_time >= keyframe_distance:
         last_time = keyframe[0]
         keyframes.append(keyframe)
+
+# Add the last keyframe even if it did not have the right keyframe distance.
+if keyframes[-1][0] != last_keyframe[0]:
+    keyframes.append(last_keyframe)
 
 with open(sys.argv[2], 'w') as f:
     json.dump(keyframes, f)
