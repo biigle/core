@@ -3,10 +3,12 @@
 namespace Biigle\Modules\Videos\Http\Controllers\Api;
 
 use DB;
+use Queue;
 use Exception;
 use Biigle\Label;
 use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\VideoAnnotation;
+use Biigle\Modules\Videos\Jobs\TrackObject;
 use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
 use Biigle\Modules\Videos\VideoAnnotationLabel;
@@ -87,6 +89,7 @@ class VideoAnnotationController extends Controller
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
+     * @apiParam (Optional arguments) {Boolean} track Set to true to start automatic object tracking for the new annotation. This can only be done for single frame point annotations. Poll the show video annotation endpoint to see when the object tracking is finished. On success, the annotation gets additional frames. On failure the annotation is deleted.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -161,6 +164,10 @@ class VideoAnnotationController extends Controller
 
             return $annotation;
         });
+
+        if ($request->shouldTrack()) {
+            Queue::push(new TrackObject($annotation));
+        }
 
         $annotation->load('labels.label', 'labels.user');
 

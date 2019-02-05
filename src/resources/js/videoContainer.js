@@ -111,11 +111,8 @@ biigle.$viewModel('video-container', function (element) {
                     .then(this.addCreatedAnnotation, MSG.handleResponseError);
             },
             trackAnnotation: function (pendingAnnotation) {
-                this.createAnnotation(pendingAnnotation)
-                    .then(function (a) {
-                        return ANNOTATION_API.track({id: a.id}, {});
-                    })
-                    .catch(MSG.handleResponseError);
+                pendingAnnotation.track = true;
+                this.createAnnotation(pendingAnnotation);
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;

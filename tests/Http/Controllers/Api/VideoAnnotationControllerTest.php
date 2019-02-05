@@ -3,11 +3,13 @@
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Cache;
+use Queue;
 use ApiTestCase;
 use Biigle\Shape;
 use Carbon\Carbon;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Modules\Videos\Jobs\TrackObject;
 use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
 use Biigle\Tests\Modules\Videos\VideoAnnotationLabelTest;
 
@@ -144,13 +146,113 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidatePoints()
     {
         $this->beEditor();
-        // invalid number of points
         $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13]],
-                'frames' => [0.0]
+                'frames' => [0.0],
             ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreAndTrackPoint()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11]],
+                'frames' => [0.0, 1.0],
+                'track' => true,
+            ])
+            // Not a single frame annotation.
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], [20, 21]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Still not a single frame annotation.
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11]],
+                'frames' => [0.0],
+                'track' => 'whatever',
+            ])
+            // Track must be bool.
+            ->assertStatus(422);
+
+        Queue::fake();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertStatus(200);
+        Queue::assertPushed(TrackObject::class);
+    }
+
+    public function testStoreAndTrackRectangle()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::rectangleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11, 12, 13]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Rectangles cannot be tracked.
+            ->assertStatus(422);
+    }
+
+    public function testStoreAndTrackCircle()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::circleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11, 12]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Circles cannot be tracked (for now).
+            ->assertStatus(422);
+    }
+
+    public function testStoreAndTrackLineString()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::lineId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11, 12, 13]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Line strings cannot be tracked.
+            ->assertStatus(422);
+    }
+
+    public function testStoreAndTrackPolygon()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::polygonId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11, 12, 13, 14, 15]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Polygons cannot be tracked.
             ->assertStatus(422);
     }
 
