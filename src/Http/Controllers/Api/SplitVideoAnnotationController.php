@@ -13,7 +13,7 @@ class SplitVideoAnnotationController extends Controller
     /**
      * Split the video annotation
      *
-     * @api {put} video-annotations/:id/split Split an annotation
+     * @api {post} video-annotations/:id/split Split an annotation
      * @apiGroup VideoAnnotations
      * @apiName SplitVideoAnnotation
      * @apiPermission projectEditor
@@ -24,7 +24,7 @@ class SplitVideoAnnotationController extends Controller
      * @apiParam {Number} id The video annotation ID.
      * @apiParam (Required attributes) {Number} time Time at which the annotation should be split.
      *
-     * @apiParamExample {json} Request example (JSON):
+     * @apiSuccessExample {json} Success example:
      * [
      *    {
      *       "id": 1,
@@ -87,21 +87,33 @@ class SplitVideoAnnotationController extends Controller
         $oldAnnotation = $request->annotation;
         $oldFrames = $oldAnnotation->frames;
         $oldPoints = $oldAnnotation->points;
-        $middlePoint = $oldAnnotation->interpolatePoints($time);
 
         $i = count($oldFrames) - 1;
         for (; $i >= 0 ; $i--) {
-            if ($oldFrames[$i] <= $time) {
+            if ($oldFrames[$i] <= $time && $oldFrames[$i] !== null) {
                 break;
             }
         }
 
-        $newFrames = array_splice($oldFrames, $i + 1);
-        $newPoints = array_splice($oldPoints, $i + 1);
-        array_push($oldFrames, $time);
-        array_push($oldPoints, $middlePoint);
-        array_unshift($newFrames, $time);
-        array_unshift($newPoints, $middlePoint);
+        if ($oldFrames[$i + 1] === null) {
+            // The annotation should be split at a gap. Remove the gap to create two
+            // separate annotations in this case.
+            $newFrames = array_splice($oldFrames, $i + 2);
+            $newPoints = array_splice($oldPoints, $i + 2);
+            array_pop($oldFrames);
+            array_pop($oldPoints);
+        } else {
+            // The annotation should be split regularly. Determine the interpolated
+            // points at this time and create two annotations, the first ends at the
+            // interpolated points and the second starts there.
+            $newFrames = array_splice($oldFrames, $i + 1);
+            $newPoints = array_splice($oldPoints, $i + 1);
+            $middlePoint = $oldAnnotation->interpolatePoints($time);
+            array_push($oldFrames, $time);
+            array_push($oldPoints, $middlePoint);
+            array_unshift($newFrames, $time);
+            array_unshift($newPoints, $middlePoint);
+        }
 
         $newAnnotation = VideoAnnotation::make([
             'video_id' => $oldAnnotation->video_id,

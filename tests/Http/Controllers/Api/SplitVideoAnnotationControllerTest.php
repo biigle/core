@@ -169,4 +169,24 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
             // Polygons cannot be split because the interpolation is not implemented.
             ->assertStatus(422);
     }
+
+    public function testStorePointAtGap()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, null, 2.0],
+            'points' => [[10, 10], [], [20, 20]],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+                'time' => 1.5,
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['frames' => [1.0]])
+            ->assertJsonFragment(['points' => [[10, 10]]])
+            ->assertJsonFragment(['frames' => [2.0]])
+            ->assertJsonFragment(['points' => [[20, 20]]]);
+    }
 }
