@@ -81,17 +81,19 @@ biigle.$viewModel('video-container', function (element) {
                 }
             },
             selectAnnotations: function (selected, deselected, time) {
+                // Deselect first because previously selected annotations might be
+                // selected again.
+                deselected.forEach(function (annotation) {
+                    annotation.selected = false;
+                });
+
                 var hadSelected = this.selectedAnnotations.length > 0;
 
                 selected.forEach(function (annotation) {
                     annotation.selected = time;
                 });
 
-                deselected.forEach(function (annotation) {
-                    annotation.selected = false;
-                });
-
-                if (time && !hadSelected) {
+                if (time !== undefined && hadSelected === false) {
                     this.seek(time);
                 }
             },
