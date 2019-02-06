@@ -55,6 +55,10 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                         continue;
                     }
 
+                    if (annotations[i].self.hasGapAt(time)) {
+                        continue;
+                    }
+
                     if (annotations[i].start > time) {
                         break;
                     }

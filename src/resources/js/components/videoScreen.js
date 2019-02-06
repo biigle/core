@@ -142,9 +142,15 @@ biigle.$component('videos.components.videoScreen', {
                     '></control-button>' +
                 '<control-button' +
                     ' v-if="canModify"' +
+                    ' icon="fa-link"' +
+                    ' title="Link selected annotations"' +
+                    ' :disabled="cannotLinkAnnotations"' +
+                    ' @click="emitLinkAnnotations"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-if="canModify"' +
                     ' icon="fa-unlink"' +
                     ' title="Split selected annotation"' +
-                    ' :active="false"' +
                     ' :disabled="cannotSplitAnnotation"' +
                     ' @click="emitSplitAnnotation"' +
                     '></control-button>' +

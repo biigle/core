@@ -46,6 +46,16 @@ biigle.$declare('videos.models.Annotation', function () {
                         return this.points;
                 }
             },
+            gapRanges: function () {
+                var ranges = [];
+                this.frames.map(function (value, index, frames) {
+                    if (value === null) {
+                        ranges.push([frames[index - 1], frames[index + 1]]);
+                    }
+                });
+
+                return ranges;
+            },
         },
         methods: {
             startPollTracking: function () {
@@ -81,10 +91,14 @@ biigle.$declare('videos.models.Annotation', function () {
                     return [];
                 }
 
+                if (this.hasGapAt(time)) {
+                    return [];
+                }
+
                 var frames = this.frames;
                 var i = frames.length - 1;
                 for (; i >= 0; i--) {
-                    if (frames[i] <= time) {
+                    if (frames[i] <= time && frames[i] !== null) {
                         break;
                     }
                 }
@@ -189,6 +203,19 @@ biigle.$declare('videos.models.Annotation', function () {
                 points.splice(3, 0, 'L');
 
                 return points.join(' ');
+            },
+            hasGapAt: function (time) {
+                if (time < this.startFrame || time > this.endFrame) {
+                    return false;
+                }
+
+                for (var i = this.gapRanges.length - 1; i >= 0; i--) {
+                    if (this.gapRanges[i][0] < time && this.gapRanges[i][1] > time) {
+                        return true;
+                    }
+                }
+
+                return false;
             },
         },
         watch: {

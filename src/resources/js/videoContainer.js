@@ -62,7 +62,7 @@ biigle.$viewModel('video-container', function (element) {
             },
             addCreatedAnnotation: function (response) {
                 var annotation = this.prepareAnnotation(response.body);
-                annotation.$on('tracking-failed', this.handleFailedTracking);
+                annotation.$on('tracking-failed', this.removeAnnotation);
                 this.annotations.push(annotation);
 
                 return annotation;
@@ -168,10 +168,7 @@ biigle.$viewModel('video-container', function (element) {
             },
             deletedAnnotation: function (annotation) {
                 return (function () {
-                    var index = this.annotations.indexOf(annotation);
-                    if (index !== -1) {
-                        this.annotations.splice(index, 1);
-                    }
+                    this.removeAnnotation(annotation);
                 }).bind(this);
             },
             handleVideoSeeked: function () {
@@ -211,7 +208,7 @@ biigle.$viewModel('video-container', function (element) {
             handleClosedTab: function () {
                 this.settingsStore.delete('openTab');
             },
-            handleFailedTracking: function (annotation) {
+            removeAnnotation: function (annotation) {
                 var index = this.annotations.indexOf(annotation);
                 if (index !== -1) {
                     this.annotations.splice(index, 1);
@@ -231,6 +228,21 @@ biigle.$viewModel('video-container', function (element) {
                 }
 
                 this.annotations.push(this.prepareAnnotation(response.body[1]));
+            },
+            linkAnnotations: function (annotations) {
+                ANNOTATION_API.link({id: annotations[0].id}, {annotation_id: annotations[1].id})
+                    .then(this.updateLinkedAnnotation)
+                    .then(this.deletedAnnotation(annotations[1]))
+                    .catch(MSG.handleResponseError);
+            },
+            updateLinkedAnnotation: function (response) {
+                for (var i = this.annotations.length - 1; i >= 0; i--) {
+                    if (this.annotations[i].id === response.body.id) {
+                        this.annotations[i].frames = response.body.frames;
+                        this.annotations[i].points = response.body.points;
+                        this.annotations[i].labels = response.body.labels;
+                    }
+                }
             },
         },
         watch: {

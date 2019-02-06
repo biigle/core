@@ -21,6 +21,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                 return this.selectedAnnotations.length !== 1 ||
                     allowedShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
             },
+            cannotLinkAnnotations: function () {
+                return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
+            },
         },
         methods: {
             initModifyInteraction: function (map) {
@@ -105,6 +108,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
             },
             emitSplitAnnotation: function () {
                 this.$emit('split-annotation', this.selectedAnnotations[0], this.video.currentTime);
+            },
+            emitLinkAnnotations: function () {
+                this.$emit('link-annotations', this.selectedAnnotations);
             },
         },
         watch: {

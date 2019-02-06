@@ -21,6 +21,9 @@
  * Split an annotation:
  * resource.split({id: annotationId}, {time: splitTime}).then(...);
  *
+ * Link two annotations:
+ * resource.link({id: firstId}, {annotation_id: secondId}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annotations{/id}', {}, {
@@ -35,5 +38,9 @@ biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annota
     split: {
         method: 'POST',
         url: 'api/v1/video-annotations{/id}/split',
+    },
+    link: {
+        method: 'POST',
+        url: 'api/v1/video-annotations{/id}/link',
     },
 }));
