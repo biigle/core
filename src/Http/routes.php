@@ -29,4 +29,9 @@ $router->group([
             'only' => ['show', 'update', 'destroy'],
             'parameters' => ['video-annotations' => 'id'],
         ]);
+
+        $router->resource('video-annotations.split', 'SplitVideoAnnotationController', [
+            'only' => ['store'],
+            'parameters' => ['video-annotations' => 'id'],
+        ]);
     });

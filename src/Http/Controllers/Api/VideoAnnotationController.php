@@ -242,10 +242,9 @@ class VideoAnnotationController extends Controller
      * }
      *
      * @param UpdateVideoAnnotation $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateVideoAnnotation $request, $id)
+    public function update(UpdateVideoAnnotation $request)
     {
         // from a JSON request, the array may already be decoded
         $points = $request->input('points');

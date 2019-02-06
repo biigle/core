@@ -8,7 +8,7 @@ use Illuminate\Http\File;
 use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\Project;
 
-class VideoControllerTest extends ApiTestCase
+class ProjectVideoControllerTest extends ApiTestCase
 {
     public function testStore()
     {
