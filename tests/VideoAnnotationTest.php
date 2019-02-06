@@ -114,4 +114,47 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->points = [[10]];
         $this->model->validatePoints();
     }
+
+    public function testInterpolatePointsPoint()
+    {
+        $this->model->shape_id = Shape::pointId();
+        $this->model->points = [[0, 0], [10, 10]];
+        $this->model->frames = [0.0, 1.0];
+        $this->assertEquals([5, 5], $this->model->interpolatePoints(0.5));
+    }
+
+    public function testInterpolatePointsRectangle()
+    {
+        $this->model->shape_id = Shape::rectangleId();
+        $this->model->points = [
+            [0, 0, 10, 0, 20, 20, 0, 20],
+            [20, 10, 20, 20, 0, 20, 0, 10],
+        ];
+        $this->model->frames = [0.0, 1.0];
+
+        $expect = [11.25, 5, 16.25, 10, 6.25, 20, 1.25, 15];
+        $this->assertEquals($expect, $this->model->interpolatePoints(0.5));
+    }
+
+    public function testInterpolatePointsCircle()
+    {
+        $this->model->shape_id = Shape::circleId();
+        $this->model->points = [[0, 0, 5], [10, 10, 10]];
+        $this->model->frames = [0.0, 1.0];
+        $this->assertEquals([5, 5, 7.5], $this->model->interpolatePoints(0.5));
+    }
+
+    public function testInterpolatePointsLineString()
+    {
+        $this->model->shape_id = Shape::lineId();
+        $this->expectException(Exception::class);
+        $this->model->interpolatePoints(0.5);
+    }
+
+    public function testInterpolatePointsPolygon()
+    {
+        $this->model->shape_id = Shape::polygonId();
+        $this->expectException(Exception::class);
+        $this->model->interpolatePoints(0.5);
+    }
 }
