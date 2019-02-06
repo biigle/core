@@ -133,10 +133,7 @@ biigle.$component('videos.components.videoTimeline', {
             var lanes = [[]];
 
             annotations.forEach(function (annotation) {
-                var range = [
-                    annotation.frames[0],
-                    annotation.frames[annotation.frames.length - 1],
-                ];
+                var range = [annotation.startFrame, annotation.endFrame];
                 var lane = 0;
                 var set = false;
 

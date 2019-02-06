@@ -69,10 +69,10 @@ biigle.$component('videos.components.annotationClip', {
     },
     computed: {
         startFrame: function () {
-            return this.annotation.frames[0];
+            return this.annotation.startFrame;
         },
         endFrame: function () {
-            return this.annotation.frames[this.annotation.frames.length - 1];
+            return this.annotation.endFrame;
         },
         offset: function () {
             return this.startFrame / this.duration * this.elementWidth;
