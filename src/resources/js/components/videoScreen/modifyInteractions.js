@@ -15,7 +15,12 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
             };
         },
         computed: {
-            //
+            cannotSplitAnnotation: function () {
+                var allowedShapes = ['Point', 'Circle', 'Rectangle'];
+
+                return this.selectedAnnotations.length !== 1 ||
+                    allowedShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
+            },
         },
         methods: {
             initModifyInteraction: function (map) {
@@ -97,6 +102,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
             },
             resetTranslating: function () {
                 this.isTranslating = false;
+            },
+            emitSplitAnnotation: function () {
+                this.$emit('split-annotation', this.selectedAnnotations[0], this.video.currentTime);
             },
         },
         watch: {

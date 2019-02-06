@@ -31,6 +31,12 @@ biigle.$component('videos.components.videoScreen', {
                     ' title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"' +
                     ' @click="play"' +
                     '></control-button>' +
+                '<control-button' +
+                    ' v-if="canAdd"' +
+                    ' icon="fa-bookmark"' +
+                    ' title="Create a bookmark 𝗕"' +
+                    ' @click="emitCreateBookmark"' +
+                    '></control-button>' +
             '</div>' +
             '<div v-if="canAdd" class="btn-group">' +
                 '<control-button' +
@@ -128,17 +134,19 @@ biigle.$component('videos.components.videoScreen', {
             '</div>' +
             '<div v-if="canEdit" class="btn-group">' +
                 '<control-button' +
-                    ' v-if="canAdd"' +
-                    ' icon="fa-bookmark"' +
-                    ' title="Create a bookmark 𝗕"' +
-                    ' @click="emitCreateBookmark"' +
-                    '></control-button>' +
-                '<control-button' +
                     ' v-if="canModify"' +
                     ' icon="fa-arrows-alt"' +
                     ' title="Move selected annotations 𝗠"' +
                     ' :active="isTranslating"' +
                     ' @click="toggleTranslating"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-if="canModify"' +
+                    ' icon="fa-unlink"' +
+                    ' title="Split selected annotation"' +
+                    ' :active="false"' +
+                    ' :disabled="cannotSplitAnnotation"' +
+                    ' @click="emitSplitAnnotation"' +
                     '></control-button>' +
                 '<control-button' +
                     ' v-if="canDelete"' +

@@ -17,8 +17,9 @@ class SplitVideoAnnotationController extends Controller
      * @apiGroup VideoAnnotations
      * @apiName SplitVideoAnnotation
      * @apiPermission projectEditor
-     * @apiDescription Returns an array with the updated old annotation as first element
-     * and the split new annotation as the second element.
+     * @apiDescription Only point, rectangle and circle annotations can be split.
+     * Returns an array with the updated old annotation as first element and the split
+     * new annotation as the second element.
      *
      * @apiParam {Number} id The video annotation ID.
      * @apiParam (Required attributes) {Number} time Time at which the annotation should be split.

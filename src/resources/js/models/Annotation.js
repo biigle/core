@@ -75,7 +75,7 @@ biigle.$declare('videos.models.Annotation', function () {
                 this.$emit('tracking-failed', this);
             },
             interpolatePoints: function (time) {
-                // This function must give the same results than interpolatePoints of
+                // This function must be equivalent to the interpolatePoints method of
                 // the PHP VideoAnnotation model!
                 if (time < this.startFrame || time > this.endFrame) {
                     return [];

@@ -18,6 +18,9 @@
  * Delete an annotation:
  * resource.delete({id: annotationId}).then(...);
  *
+ * Split an annotation:
+ * resource.split({id: annotationId}, {time: splitTime}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annotations{/id}', {}, {
@@ -28,5 +31,9 @@ biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annota
     save: {
         method: 'POST',
         url: 'api/v1/videos{/id}/annotations',
+    },
+    split: {
+        method: 'POST',
+        url: 'api/v1/video-annotations{/id}/split',
     },
 }));

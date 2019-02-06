@@ -215,6 +215,21 @@ biigle.$viewModel('video-container', function (element) {
                     this.annotations.splice(index, 1);
                 }
             },
+            splitAnnotation: function (annotation, time) {
+                ANNOTATION_API.split({id: annotation.id}, {time: time})
+                    .then(this.updateSplitAnnotation, MSG.handleResponseError);
+            },
+            updateSplitAnnotation: function (response) {
+                var oldAnnotation = response.body[0];
+                for (var i = this.annotations.length - 1; i >= 0; i--) {
+                    if (this.annotations[i].id === oldAnnotation.id) {
+                        this.annotations[i].frames = oldAnnotation.frames;
+                        this.annotations[i].points = oldAnnotation.points;
+                    }
+                }
+
+                this.annotations.push(this.prepareAnnotation(response.body[1]));
+            },
         },
         watch: {
             'settings.playbackRate': function (rate) {
