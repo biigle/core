@@ -34,4 +34,9 @@ $router->group([
             'only' => ['store'],
             'parameters' => ['video-annotations' => 'id'],
         ]);
+
+        $router->resource('video-annotations.link', 'LinkVideoAnnotationController', [
+            'only' => ['store'],
+            'parameters' => ['video-annotations' => 'id'],
+        ]);
     });
