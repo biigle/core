@@ -73,24 +73,36 @@ biigle.$viewModel('video-container', function (element) {
                     this.video.currentTime = time;
                 }
             },
-            selectAnnotation: function (annotation, time) {
-                this.selectAnnotations([annotation], [time]);
-            },
-            selectAnnotations: function (annotations, times) {
-                this.deselectAnnotations();
-
-                annotations.forEach(function (annotation, index) {
-                    annotation.selected = times[index];
-                });
-
-                if (times && times.length > 0) {
-                    this.seek(times[0]);
+            selectAnnotation: function (annotation, time, shift) {
+                if (shift) {
+                    this.selectAnnotations([annotation], [], time);
+                } else {
+                    this.selectAnnotations([annotation], this.selectedAnnotations, time);
                 }
             },
-            deselectAnnotations: function () {
-                this.annotations.forEach(function (annotation) {
+            selectAnnotations: function (selected, deselected, time) {
+                var hadSelected = this.selectedAnnotations.length > 0;
+
+                selected.forEach(function (annotation) {
+                    annotation.selected = time;
+                });
+
+                deselected.forEach(function (annotation) {
                     annotation.selected = false;
                 });
+
+                if (time && !hadSelected) {
+                    this.seek(time);
+                }
+            },
+            deselectAnnotation: function (annotation) {
+                if (annotation) {
+                    annotation.selected = false;
+                } else {
+                    this.selectedAnnotations.forEach(function (annotation) {
+                        annotation.selected = false;
+                    });
+                }
             },
             createBookmark: function (time) {
                 var hasBookmark = this.bookmarks.reduce(function (has, b) {

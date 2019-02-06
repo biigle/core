@@ -119,11 +119,11 @@ biigle.$component('videos.components.videoTimeline', {
         emitSeek: function (time) {
             this.$emit('seek', time);
         },
-        emitSelect: function (annotation, time) {
-            this.$emit('select', annotation, time);
+        emitSelect: function (annotation, time, shift) {
+            this.$emit('select', annotation, time, shift);
         },
-        emitDeselect: function () {
-            this.$emit('deselect');
+        emitDeselect: function (annotation) {
+            this.$emit('deselect', annotation);
         },
         handleScrollY: function (scrollTop) {
             this.scrollTop = scrollTop;

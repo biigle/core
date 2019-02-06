@@ -7,6 +7,7 @@ biigle.$component('videos.components.annotationTrack', {
                 ' :label="label"' +
                 ' :duration="duration"' +
                 ' @select="emitSelect"' +
+                ' @deselect="emitDeselect"' +
                 '></annotation-clip>' +
         '</div>' +
     '</div>',
@@ -40,8 +41,11 @@ biigle.$component('videos.components.annotationTrack', {
         //
     },
     methods: {
-        emitSelect: function (annotation, time) {
-            this.$emit('select', annotation, time);
+        emitSelect: function (annotation, time, shift) {
+            this.$emit('select', annotation, time, shift);
+        },
+        emitDeselect: function (annotation) {
+            this.$emit('deselect', annotation);
         },
     },
     watch: {

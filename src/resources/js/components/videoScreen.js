@@ -313,14 +313,14 @@ biigle.$component('videos.components.videoScreen', {
         resetInteractionMode: function () {
             this.interactionMode = 'default';
         },
+        extractAnnotationFromFeature: function (feature) {
+            return feature.get('annotation');
+        },
         handleFeatureSelect: function (e) {
             this.$emit('select',
-                e.selected.map(function (feature) {
-                    return feature.get('annotation');
-                }),
-                e.selected.map(function () {
-                    return this.video.currentTime;
-                }, this)
+                e.selected.map(this.extractAnnotationFromFeature),
+                e.deselected.map(this.extractAnnotationFromFeature),
+                this.video.currentTime
             );
         },
         updateMousePosition: function (e) {

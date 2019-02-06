@@ -26,5 +26,5 @@
       :seeking="seeking"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
-      v-on:deselect="deselectAnnotations"
+      v-on:deselect="deselectAnnotation"
       ></video-timeline>

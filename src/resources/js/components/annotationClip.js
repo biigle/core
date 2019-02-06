@@ -7,9 +7,9 @@ biigle.$component('videos.components.annotationClip', {
         ' @click.stop="select($event)"' +
         '>' +
             '<keyframe' +
-                ' v-for="(frame, i) in keyframes"' +
+                ' v-for="frame in keyframes"' +
                 ' :frame="frame"' +
-                ' @select="selectFrame(i)"' +
+                ' @select="selectFrame"' +
                 '></keyframe>' +
     '</div>',
     components: {
@@ -38,8 +38,8 @@ biigle.$component('videos.components.annotationClip', {
                 },
             },
             methods: {
-                emitSelect: function () {
-                    this.$emit('select');
+                emitSelect: function (e) {
+                    this.$emit('select', this.frame, e.shiftKey);
                 },
             },
         },
@@ -140,14 +140,19 @@ biigle.$component('videos.components.annotationClip', {
         },
     },
     methods: {
-        emitSelect: function (time) {
-            this.$emit('select', this.annotation, time);
+        emitSelect: function (time, shift) {
+            if (this.selected && shift) {
+                this.$emit('deselect', this.annotation);
+            } else {
+                this.$emit('select', this.annotation, time, shift);
+            }
         },
-        selectFrame: function (index) {
-            this.emitSelect(this.annotation.frames[index]);
+        selectFrame: function (frame, shift) {
+            this.emitSelect(frame.time, shift);
         },
         select: function (e) {
-            this.emitSelect(this.startFrame + ((e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.clipDuration));
+            var time = this.startFrame + ((e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.clipDuration);
+            this.emitSelect(time, e.shiftKey);
         },
     },
     mounted: function () {
