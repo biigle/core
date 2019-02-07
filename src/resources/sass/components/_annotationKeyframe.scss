@@ -33,18 +33,22 @@
     }
 }
 
-@keyframes pulse {
-    50% {
-        opacity: 0;
-    }
-
+@keyframes rotate {
     100% {
-        opacity: 1;
+        background-position: 0 6px;
     }
 }
 
 .annotation-clip--tracking {
     .annotation-keyframe {
-        animation: 1s pulse infinite;
+        animation: .5s linear rotate infinite;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.3) 2px,
+            rgba(0, 0, 0, 0.3) 4px
+        );
+        background-size: 100% 200%;
     }
 }
