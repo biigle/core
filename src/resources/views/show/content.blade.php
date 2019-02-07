@@ -6,6 +6,8 @@
       :can-add="true"
       :can-modify="true"
       :can-delete="true"
+      :initial-center="initialMapCenter"
+      :initial-resolution="initialMapResolution"
       :selected-annotations="selectedAnnotations"
       :selected-label="selectedLabel"
       :show-label-tooltip="settings.showLabelTooltip"
@@ -20,6 +22,7 @@
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
       v-on:delete="deleteAnnotationsOrKeyframes"
+      v-on:moveend="updateMapUrlParams"
       ></video-screen>
 <video-timeline
       :annotations="annotations"

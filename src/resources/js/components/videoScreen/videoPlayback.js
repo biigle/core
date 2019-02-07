@@ -13,6 +13,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 refreshRate: 30,
                 refreshLastTime: Date.now(),
                 extent: [0, 0, 0, 0],
+                minResolution: 0.25,
             };
         },
         computed: {
@@ -45,7 +46,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 map.setView(new ol.View({
                     projection: projection,
                     // zoomFactor: 2,
-                    minResolution: 0.25,
+                    minResolution: this.minResolution,
                     extent: this.extent
                 }));
 

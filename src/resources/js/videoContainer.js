@@ -4,6 +4,7 @@ biigle.$viewModel('video-container', function (element) {
     var SHAPES = biigle.$require('videos.shapes');
     var ANNOTATION_API = biigle.$require('videos.api.videoAnnotations');
     var MSG = biigle.$require('messages.store');
+    var URL_PARAMS = biigle.$require('urlParams');
 
     var Annotation = biigle.$require('videos.models.Annotation');
 
@@ -34,6 +35,15 @@ biigle.$viewModel('video-container', function (element) {
                 playbackRate: 1.0,
             },
             openTab: '',
+            urlParams: {
+                x: 0,
+                y: 0,
+                r: 0,
+                t: 0,
+            },
+            initialCurrentTime: 0,
+            initialMapCenter: [0, 0],
+            initialMapResolution: 0,
         },
         computed: {
             shapes: function () {
@@ -244,18 +254,64 @@ biigle.$viewModel('video-container', function (element) {
                     }
                 }
             },
+            updateMapUrlParams: function (center, resolution) {
+                this.urlParams.x = Math.round(center[0]);
+                this.urlParams.y = Math.round(center[1]);
+                this.urlParams.r = Math.round(resolution * 100);
+            },
+            updateVideoUrlParams: function () {
+                this.urlParams.t = Math.round(this.video.currentTime * 100);
+            },
+            restoreUrlParams: function () {
+                if (URL_PARAMS.get('r') !== undefined) {
+                    this.initialMapResolution = parseInt(URL_PARAMS.get('r'), 10) / 100;
+                }
+
+                if (URL_PARAMS.get('x') !== undefined && URL_PARAMS.get('y') !== undefined) {
+                    this.initialMapCenter = [
+                        parseInt(URL_PARAMS.get('x'), 10),
+                        parseInt(URL_PARAMS.get('y'), 10),
+                    ];
+                }
+
+                if (URL_PARAMS.get('t') !== undefined) {
+                    this.initialCurrentTime = parseInt(URL_PARAMS.get('t'), 10) / 100;
+                }
+            },
+            maybeInitCurrentTime: function () {
+                if (this.initialCurrentTime === 0) {
+                    return Vue.Promise.resolve();
+                }
+
+                var promise = new Vue.Promise((function (resolve, reject) {
+                    this.video.addEventListener('seeked', resolve);
+                    this.video.addEventListener('error', reject);
+                }).bind(this));
+                this.seek(this.initialCurrentTime);
+
+                return promise;
+            },
         },
         watch: {
             'settings.playbackRate': function (rate) {
                 this.video.playbackRate = rate;
             },
+            urlParams: {
+                deep: true,
+                handler:function (params) {
+                    URL_PARAMS.set(params);
+                },
+            },
         },
         created: function () {
+            this.restoreUrlParams();
             this.video.muted = true;
             this.video.addEventListener('error', function () {
                 MSG.danger('Error while loading video file.');
             });
             this.video.addEventListener('seeked', this.handleVideoSeeked);
+            this.video.addEventListener('pause', this.updateVideoUrlParams);
+            this.video.addEventListener('seeked', this.updateVideoUrlParams);
             this.startLoading();
             var self = this;
             var videoPromise = new Vue.Promise(function (resolve, reject) {
@@ -265,7 +321,9 @@ biigle.$viewModel('video-container', function (element) {
             var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
             annotationPromise.then(this.setAnnotations, MSG.handleResponseError);
 
-            Vue.Promise.all([videoPromise, annotationPromise]).then(this.finishLoading);
+            Vue.Promise.all([videoPromise, annotationPromise])
+                .then(this.maybeInitCurrentTime)
+                .then(this.finishLoading);
 
             if (this.settingsStore.has('openTab')) {
                 this.openTab = this.settingsStore.get('openTab');

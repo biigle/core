@@ -208,6 +208,14 @@ biigle.$component('videos.components.videoScreen', {
             type: Boolean,
             default: false,
         },
+        initialCenter: {
+            type: Array,
+            default: [0, 0],
+        },
+        initialResolution: {
+            type: Number,
+            default: 0,
+        },
         listenerSet: {
             type: String,
             default: 'default',
@@ -343,6 +351,20 @@ biigle.$component('videos.components.videoScreen', {
         emitTrack: function () {
             this.$emit('track');
         },
+        emitMoveend: function (e) {
+            var view = e.target.getView();
+            this.$emit('moveend', view.getCenter(), view.getResolution());
+        },
+        initInitialCenterAndResolution: function (map) {
+            var view = map.getView();
+            if (this.initialResolution !==0) {
+                view.setResolution(Math.min(view.getMaxResolution(), Math.max(view.getMinResolution(), this.initialResolution)));
+            }
+
+            if ((this.initialCenter[0] !== 0 || this.initialCenter[1] !== 0) && ol.extent.containsCoordinate(this.extent, this.initialCenter)) {
+                view.setCenter(this.initialCenter);
+            }
+        },
     },
     watch: {
         selectedAnnotations: function (annotations) {
@@ -370,9 +392,11 @@ biigle.$component('videos.components.videoScreen', {
     },
     created: function () {
         this.$once('map-ready', this.initLayersAndInteractions);
+        this.$once('map-ready', this.initInitialCenterAndResolution);
         this.map = this.createMap();
         this.$emit('map-created', this.map);
         this.map.on('pointermove', this.updateMousePosition);
+        this.map.on('moveend', this.emitMoveend);
 
         var kb = biigle.$require('keyboard');
         kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
