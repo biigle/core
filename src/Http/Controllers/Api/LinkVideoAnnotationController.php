@@ -17,10 +17,13 @@ class LinkVideoAnnotationController extends Controller
      * @apiGroup VideoAnnotations
      * @apiName LinkVideoAnnotations
      * @apiPermission projectEditor
-     * @apiDescription The labels of the two annotations will be merged. The result is
-     * an annotation with a gap. One part of the annotation stops before a `null` frame
-     * and the next part starts after the `null` frame. Annotations with gaps can be
-     * used if the same object disappears from a video and reappears later.
+     * @apiDescription The labels of the two annotations will be merged. If the two
+     * annotations do not touch, the result is an annotation with a gap. One part of the
+     * annotation stops before a `null` frame and the next part starts after the `null`
+     * frame. Annotations with gaps can be used if the same object disappears from a
+     * video and reappears later. If the annotations touch, they will be merged without
+     * a gap and the keyframe of the annotation that starts first will be used as
+     * keyframe at the time where the annotations touch.
      *
      * @apiParam {Number} id The video annotation ID.
      * @apiParam (Required attributes) {Number} annotation_id ID of the other video annotation.
@@ -72,8 +75,18 @@ class LinkVideoAnnotationController extends Controller
             $secondPoints = $first->points;
         }
 
-        $first->frames = array_merge($firstFrames, [null], $secondFrames);
-        $first->points = array_merge($firstPoints, [[]], $secondPoints);
+        if ($firstFrames[count($firstFrames) - 1] !== $secondFrames[0]) {
+            // Add a gap if the annotations do not touch.
+            $first->frames = array_merge($firstFrames, [null], $secondFrames);
+            $first->points = array_merge($firstPoints, [[]], $secondPoints);
+        } else {
+            // Use the keyframe of the first annotation at the time where the
+            // annotations touch.
+            array_shift($secondFrames);
+            array_shift($secondPoints);
+            $first->frames = array_merge($firstFrames, $secondFrames);
+            $first->points = array_merge($firstPoints, $secondPoints);
+        }
 
         DB::transaction(function () use ($first, $second) {
             $this->mergeAnnotationLabels($first, $second);

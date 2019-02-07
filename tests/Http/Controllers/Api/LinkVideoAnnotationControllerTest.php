@@ -201,4 +201,31 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         $this->assertEquals($a1->id, $l3->fresh()->video_annotation_id);
         $this->assertNull($l4->fresh());
     }
+
+    public function testStoreTouching()
+    {
+        $a1 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 10], [20, 20]],
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [2.0, 3.0],
+            'points' => [[30, 30], [40, 40]],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(200);
+
+        $a1->refresh();
+        $this->assertEquals([1.0, 2.0, 3.0], $a1->frames);
+        $this->assertEquals([[10, 10], [20, 20], [40, 40]], $a1->points);
+    }
 }
