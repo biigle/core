@@ -214,7 +214,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         $a2 = VideoAnnotationTest::create([
             'shape_id' => Shape::pointId(),
             'video_id' => $this->video->id,
-            'frames' => [2.0, 3.0],
+            'frames' => [2.09, 3.0],
             'points' => [[30, 30], [40, 40]],
         ]);
 

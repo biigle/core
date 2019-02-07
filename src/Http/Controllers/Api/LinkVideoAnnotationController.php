@@ -75,17 +75,18 @@ class LinkVideoAnnotationController extends Controller
             $secondPoints = $first->points;
         }
 
-        if ($firstFrames[count($firstFrames) - 1] !== $secondFrames[0]) {
-            // Add a gap if the annotations do not touch.
-            $first->frames = array_merge($firstFrames, [null], $secondFrames);
-            $first->points = array_merge($firstPoints, [[]], $secondPoints);
-        } else {
-            // Use the keyframe of the first annotation at the time where the
-            // annotations touch.
+        $distance = abs($firstFrames[count($firstFrames) - 1] - $secondFrames[0]);
+        if ($distance < 0.1) {
+            // If the annotations touch, use the keyframe of the first annotation at the
+            // time where the annotations touch.
             array_shift($secondFrames);
             array_shift($secondPoints);
             $first->frames = array_merge($firstFrames, $secondFrames);
             $first->points = array_merge($firstPoints, $secondPoints);
+        } else {
+            // Add a gap if the annotations do not touch.
+            $first->frames = array_merge($firstFrames, [null], $secondFrames);
+            $first->points = array_merge($firstPoints, [[]], $secondPoints);
         }
 
         DB::transaction(function () use ($first, $second) {

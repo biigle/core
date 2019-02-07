@@ -108,11 +108,20 @@ class SplitVideoAnnotationController extends Controller
             // interpolated points and the second starts there.
             $newFrames = array_splice($oldFrames, $i + 1);
             $newPoints = array_splice($oldPoints, $i + 1);
-            $middlePoint = $oldAnnotation->interpolatePoints($time);
-            array_push($oldFrames, $time);
-            array_push($oldPoints, $middlePoint);
-            array_unshift($newFrames, $time);
-            array_unshift($newPoints, $middlePoint);
+
+            if ($oldFrames[$i] === $time) {
+                // The annotation should be split at a keyframe. We don't need to
+                // interpolate a new point in this case, just add the keyframe to the
+                // new annotation.
+                array_unshift($newFrames, $time);
+                array_unshift($newPoints, $oldPoints[$i]);
+            } else {
+                $middlePoint = $oldAnnotation->interpolatePoints($time);
+                array_push($oldFrames, $time);
+                array_push($oldPoints, $middlePoint);
+                array_unshift($newFrames, $time);
+                array_unshift($newPoints, $middlePoint);
+            }
         }
 
         $newAnnotation = VideoAnnotation::make([
