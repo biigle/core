@@ -38,6 +38,7 @@ class VideosServiceProvider extends ServiceProvider
         $modules->register('videos', [
             'viewMixins' => [
                 'projectsShow',
+                'manualTutorial',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
