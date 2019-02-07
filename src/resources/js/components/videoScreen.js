@@ -31,12 +31,12 @@ biigle.$component('videos.components.videoScreen', {
                     ' title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"' +
                     ' @click="play"' +
                     '></control-button>' +
-                '<control-button' +
-                    ' v-if="canAdd"' +
-                    ' icon="fa-bookmark"' +
-                    ' title="Create a bookmark 𝗕"' +
-                    ' @click="emitCreateBookmark"' +
-                    '></control-button>' +
+                // '<control-button' +
+                //     ' v-if="canAdd"' +
+                //     ' icon="fa-bookmark"' +
+                //     ' title="Create a bookmark 𝗕"' +
+                //     ' @click="emitCreateBookmark"' +
+                //     '></control-button>' +
             '</div>' +
             '<div v-if="canAdd" class="btn-group">' +
                 '<control-button' +
