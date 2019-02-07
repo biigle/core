@@ -39,7 +39,7 @@ biigle.$viewModel('video-container', function (element) {
             shapes: function () {
                 var map = {};
                 Object.keys(SHAPES).forEach(function (id) {
-                    map[SHAPES[id]] = id;
+                    map[SHAPES[id]] = parseInt(id);
                 });
 
                 return map;

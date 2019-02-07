@@ -1,0 +1,50 @@
+.annotation-keyframe {
+    position: absolute;
+    height: 100%;
+    width: 3 * $border-radius-small;
+    border-radius: $border-radius-small;
+    left: 0;
+
+    // The last keyframe be aligned with the end of the annotation clip.
+    &:last-child:not(:only-child) {
+        transform: translateX(-100%);
+    }
+}
+
+.annotation-keyframe--selected {
+    border: 2px solid white;
+    background-color: #ff5e00 !important;
+    z-index: 1;
+}
+
+.annotation-clip--compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        width: $border-radius-small;
+    }
+}
+
+.annotation-clip--more-compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        display: none;
+    }
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.annotation-clip--tracking {
+    .annotation-keyframe {
+        animation: 1s pulse infinite;
+    }
+}
