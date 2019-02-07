@@ -121,15 +121,15 @@ class TrackObject extends Job implements ShouldQueue
      * Create the JSON file that is the input for the object tracking script.
      *
      * @param VideoAnnotation $annotation
-     * @param string $path Path to the video file.
+     * @param string $videoPath Path to the video file.
      *
      * @return string Path to the JSON file.
      */
-    protected function createInputJson(VideoAnnotation $annotation, $path)
+    protected function createInputJson(VideoAnnotation $annotation, $videoPath)
     {
         $path = $this->getInputJsonPath($annotation);
         $content = json_encode([
-            'video_path' => $path,
+            'video_path' => $videoPath,
             'start_time' => $annotation->frames[0],
             'start_window' => $this->getStartWindow($annotation),
             'keyframe_distance' => config('videos.keyframe_distance'),

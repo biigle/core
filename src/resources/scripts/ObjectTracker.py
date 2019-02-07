@@ -9,16 +9,17 @@ class ObjectTracker(object):
         self.fps = self.video.get(cv2.CAP_PROP_FPS)
         self.width = self.video.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        self.debug = False
 
         start_frame = round(params['start_time'] * self.fps)
         self.video.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
         self.tracker = cv2.TrackerCSRT_create()
-        _, frame = self.video.read()
+        success, frame = self.video.read()
+        if not success:
+            raise IOError('The video file could not be read: {}'.format(params['video_path']))
         track_window = tuple(map(int, params['start_window']))
         self.tracker.init(frame, track_window)
-
-        self.debug = False
 
     def center_out_of_frame(self, center):
         return center[0] <= 0 or center[1] <= 0 or center[0] >= self.width or center[1] >= self.height

@@ -31,6 +31,8 @@ class VideoAnnotation extends Model
      * @var array
      */
     protected $casts = [
+        'video_id' => 'int',
+        'shape_id' => 'int',
         'frames' => 'array',
         'points' => 'array',
     ];

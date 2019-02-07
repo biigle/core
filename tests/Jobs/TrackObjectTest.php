@@ -31,6 +31,7 @@ class TrackObjectTest extends TestCase
         $this->assertEquals(0.5, $input['start_time']);
         $this->assertEquals(123, $input['keyframe_distance']);
         $this->assertArrayHasKey('video_path', $input);
+        $this->assertContains('my-video.mp4', $input['video_path']);
 
         foreach ($job->paths as $path) {
             $this->assertFalse(File::exists($path));
