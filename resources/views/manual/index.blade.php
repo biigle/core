@@ -8,27 +8,21 @@
         <div class="row">
             <h1>Manual</h1>
             <p class="lead">
-                This is the application manual of BIIGLE. Here you can find tutorials on how to use the application as well as reference publications and the developer documentation.
+                This is the application manual of BIIGLE. Here you can find articles on how to use the application as well as reference publications and the developer documentation.
             </p>
         </div>
         <div class="row">
-            <h2>Tutorials</h2>
-
-            <p>
-                Learn more about the different functions and tools of BIIGLE for an efficient workflow.
-            </p>
-
-            <h4>
+            <h3>
                 <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Account settings</a>
-            </h4>
+            </h3>
 
             <p>
                 Learn how you can manage your user account.
             </p>
 
-            <h4>
+            <h3>
                 <a href="{{route('manual-tutorials', 'notifications')}}">Notifications</a>
-            </h4>
+            </h3>
 
             <p>
                 View and manage BIIGLE notifications in the notification center.
