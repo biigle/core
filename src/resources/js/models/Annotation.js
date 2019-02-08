@@ -4,9 +4,7 @@
  * @type {Object}
  */
 biigle.$declare('videos.models.Annotation', function () {
-    var ANNOTATION_API = biigle.$require('videos.api.videoAnnotations');
     var POLL_INTERVAL = 5000;
-    var MSG = biigle.$require('messages.store');
 
     return Vue.extend({
         data: function () {
@@ -63,7 +61,7 @@ biigle.$declare('videos.models.Annotation', function () {
                 this.continuePollTracking();
             },
             pollTracking: function () {
-                ANNOTATION_API.get({id: this.id})
+                biigle.$require('videos.api.videoAnnotations').get({id: this.id})
                     .then(this.maybeFinishPollTracking, this.cancelPollTracking);
             },
             maybeFinishPollTracking: function (response) {
@@ -80,7 +78,8 @@ biigle.$declare('videos.models.Annotation', function () {
                 this.pollTimeout = window.setTimeout(this.pollTracking, POLL_INTERVAL);
             },
             cancelPollTracking: function () {
-                MSG.danger('Tracking of annotation ' + this.id + ' failed.');
+                biigle.$require('messages.store')
+                    .danger('Tracking of annotation ' + this.id + ' failed.');
                 this.tracking = false;
                 this.$emit('tracking-failed', this);
             },
