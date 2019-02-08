@@ -7,5 +7,6 @@
         <p class="lead">
             All sidebar tabs of the video annotation tool explained.
         </p>
+        <a name="play-pause-while-drawing"></a>
     </div>
 @endsection

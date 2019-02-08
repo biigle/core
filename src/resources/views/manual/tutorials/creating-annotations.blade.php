@@ -56,6 +56,9 @@
         <p>
             The result of the automatic object tracking may not always be perfect. Sometimes the tracked object may be lost and the annotation "wanders off" if the object moves too quickly. Or sometimes the tracked object becomes too small or indistinguishable from the background. If the annotation clip produced by the object tracking is only partly wrong, you can <a href="{{route('manual-tutorials', ['videos', 'editing-annotations'])}}">edit it</a> afterwards. If the object tracking does not work at all, you might have to fall back to the fully manual creation of annotation clips.
         </p>
+        <p>
+            Read on and learn more about the <a href="{{route('manual-tutorials', ['videos', 'navigating-timeline'])}}">video timeline</a>.
+        </p>
 
         <h3><a name="references"></a>References</h3>
         <ol>
