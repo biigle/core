@@ -14,13 +14,13 @@
             <a href="{{asset('vendor/videos/images/manual/getting_started_1.jpg')}}"><img src="{{asset('vendor/videos/images/manual/getting_started_1.jpg')}}" width="75%" style="border: 1px solid #111;"></a>
         </p>
         <p>
-            The main element of the video annotation tool is the video which you can navigate similar to an interactive map (like Google Maps). You can grab and move the video with the mouse or zoom in and out using the mouse wheel. On the top right on top of the video there is the minimap. It always shows the entire video and highlights your current viewport depending on the zoom level and position.
+            The main element of the video annotation tool is the video which you can navigate similar to an interactive map (like Google Maps). You can grab and move the video with the mouse or zoom in and out using the mouse wheel. On the top right of the video there is the minimap. It always shows the entire video and highlights your current viewport depending on the zoom level and position.
         </p>
         <p>
             At the bottom of the video annotation tool there is the video timeline. It indicates the current time of the video with a red line and will show the video annotations if there are any.
         </p>
         <p>
-            On the right there is the sidebar with the <i class="fa fa-tags"></i> label trees and <i class="fa fa-cog"></i> settings tabs. Open a tab by clicking on an icon.
+            On the right there is the sidebar with the <i class="fa fa-tags"></i> label trees and <i class="fa fa-cog"></i> settings tabs. Open a tab by clicking on the icon.
         </p>
         <p>
             Finally, on the bottom of the video there is the tool bar. Starting from the left there is the video playback button, the annotation tools to create new video annotations and the manipulation tools to edit existing video annotations.
@@ -41,7 +41,7 @@
             <a href="{{asset('vendor/videos/images/manual/getting_started_3.jpg')}}"><img src="{{asset('vendor/videos/images/manual/getting_started_3.jpg')}}" width="75%" style="border: 1px solid #111;"></a>
         </p>
         <p>
-            Draw the circle with a click to set the center and another click to set the radius. Then click on the <button class="btn btn-xs btn-default"><i class="fa fa-check"></i></button> button above the circle tool to finish the video annotation.
+            Draw the circle with a click to set the center and another click to set the radius. Then click on the <button class="btn btn-xs btn-default"><i class="fa fa-check"></i></button> button above the circle tool to finish the new video annotation.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/getting_started_4.jpg')}}"><img src="{{asset('vendor/videos/images/manual/getting_started_4.jpg')}}" width="32%"></a>

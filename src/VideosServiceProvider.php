@@ -39,6 +39,7 @@ class VideosServiceProvider extends ServiceProvider
             'viewMixins' => [
                 'projectsShow',
                 'manualTutorial',
+                'manualReferences',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
