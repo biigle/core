@@ -52,9 +52,9 @@
             The new annotation is displayed both in the video and the video timeline. This annotation is a single frame annotation, marking an object in a single frame of the video. Now you should be able to use the video annotation tool for basic tasks. Learn about more advanced ways to create video annotations in the next articles:
         </p>
         <ul>
-            <li><a href="{{route('manual-tutorials', ['videos', 'creating-annotations'])}}">Learn how to create different kinds of video annotations.</a></li>
+            <li><a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}">Learn how to create different kinds of video annotations.</a></li>
             <li><a href="{{route('manual-tutorials', ['videos', 'navigating-timeline'])}}">Learn about the video timeline and how to navigate it.</a></li>
-            <li><a href="{{route('manual-tutorials', ['videos', 'editing-annotations'])}}">Learn about all the tools to modify or delete existing video annotations.</a></li>
+            <li><a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">Learn about all the tools to modify or delete existing video annotations.</a></li>
             <li><a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}">All sidebar tabs of the video annotation tool explained.</a></li>
 
             <li><a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}">A list of all available shortcut keys in the video annotation tool.</a></li>

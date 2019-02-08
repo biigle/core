@@ -8,7 +8,7 @@
             Learn about the video timeline and how to navigate it.
         </p>
         <p>
-            Apart from the video itself, the timeline is the second most important element of the video annotation tool. It shows at which point of time you currently are in the video and it visualizes all annotations of the video at a glance. Additionally, it is used for the more advanced ways of <a href="{{route('manual-tutorials', ['videos', 'editing-annotations'])}}">editing annotation clips</a>.
+            Apart from the video itself, the timeline is the second most important element of the video annotation tool. It shows at which point of time you currently are in the video and it visualizes all annotations of the video at a glance. Additionally, it is used for the more advanced ways of <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">editing annotation clips</a>.
         </p>
 
         <p class="text-center">
@@ -56,7 +56,7 @@
             Annotations can be selected by clicking on them in the timeline. This automatically sets the current time of the video to the time at the position where the annotation was selected. If a single-frame annotation or keyframe is selected, the current time jumps to the time of the frame. Multiple annotations can be selected at the same time by pressing the <code>Shift</code> key and clicking on the annotation.
         </p>
         <p>
-            Read on and learn how to <a href="{{route('manual-tutorials', ['videos', 'editing-annotations'])}}">edit annotations</a>.
+            Read on and learn how to <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">edit video annotations</a>.
         </p>
     </div>
 @endsection

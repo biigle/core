@@ -7,7 +7,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['videos', 'creating-annotations'])}}">Creating Annotations</a>
+    <a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}">Creating Video Annotations</a>
 </h4>
 
 <p>
@@ -23,7 +23,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['videos', 'editing-annotations'])}}">Editing Annotations</a>
+    <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">Editing Video Annotations</a>
 </h4>
 
 <p>
