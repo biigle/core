@@ -132,7 +132,7 @@ biigle.$component('videos.components.videoScreen', {
                             '></control-button>' +
                 '</control-button>' +
             '</div>' +
-            '<div v-if="canEdit" class="btn-group">' +
+            '<div v-if="showModifyBar" class="btn-group">' +
                 '<control-button' +
                     ' v-if="canModify"' +
                     ' icon="fa-arrows-alt"' +
@@ -254,8 +254,8 @@ biigle.$component('videos.components.videoScreen', {
         };
     },
     computed: {
-        canEdit: function () {
-            return this.canAdd || this.canModify || this.canDelete;
+        showModifyBar: function () {
+            return this.canModify || this.canDelete;
         },
         hasSelectedAnnotations: function () {
             return this.selectedAnnotations.length > 0;

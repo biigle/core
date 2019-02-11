@@ -20,6 +20,7 @@ biigle.$viewModel('video-container', function (element) {
             settingsTab: biigle.$require('videos.components.settingsTab'),
         },
         data: {
+            canEdit: biigle.$require('videos.isEditor'),
             video: document.createElement('video'),
             labelTrees: biigle.$require('videos.labelTrees'),
             selectedLabel: null,
