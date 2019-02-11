@@ -401,9 +401,9 @@ biigle.$component('videos.components.videoScreen', {
         var kb = biigle.$require('keyboard');
         kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
-        if (this.canAdd) {
-            kb.on('b', this.emitCreateBookmark);
-        }
+        // if (this.canAdd) {
+        //     kb.on('b', this.emitCreateBookmark);
+        // }
 
         var self = this;
         biigle.$require('events').$on('sidebar.toggle', function () {
