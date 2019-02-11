@@ -108,7 +108,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
                     TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
-                Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
+                Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
                 if (App::runningUnitTests()) {
                     throw $e;
                 }
