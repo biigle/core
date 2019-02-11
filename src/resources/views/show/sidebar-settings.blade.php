@@ -9,9 +9,11 @@
                     <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
                 </div>
 
-                <div class="sidebar-tab__section">
-                    <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
-                </div>
+                @can('edit-in', $video)
+                    <div class="sidebar-tab__section">
+                        <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
+                    </div>
+                @endcan
 
                 <div class="sidebar-tab__section">
                     <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate

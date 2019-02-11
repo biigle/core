@@ -14,7 +14,6 @@
     <div class="sidebar-container__content">
         @include('videos::show.content')
     </div>
-    @can('edit-in', $video)
         <sidebar
             v-cloak
             :toggle-on-keyboard="true"
@@ -22,10 +21,11 @@
             v-on:open="handleOpenedTab"
             v-on:close="handleClosedTab"
             >
-                @include('videos::show.sidebar-labels')
+                @can('edit-in', $video)
+                    @include('videos::show.sidebar-labels')
+                @endcan
                 @include('videos::show.sidebar-settings')
         </sidebar>
-    @endcan
 </div>
 @endsection
 
