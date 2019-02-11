@@ -9,7 +9,7 @@
             </span>
         @endcan
     </div>
-    <ul class="list-group">
+    <ul class="list-group" v-cloak>
         <li class="list-group-item" v-for="video in videos">
             <a :href="'{{route('video', '')}}/' + video.id" v-text="video.name"></a>
             <span v-if="editing" class="btn btn-xs btn-danger pull-right" v-on:click="deleteVideo(video)" :title="'Delete video ' + video.name">
