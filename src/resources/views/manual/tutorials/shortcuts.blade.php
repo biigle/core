@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title', 'Sidebar')
+@section('manual-title', 'Shortcuts')
 
 @section('manual-content')
     <div class="row">

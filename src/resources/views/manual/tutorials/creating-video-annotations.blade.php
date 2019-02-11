@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title', 'Creating Annotations')
+@section('manual-title', 'Creating Video Annotations')
 
 @section('manual-content')
     <div class="row">
