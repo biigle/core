@@ -42,8 +42,8 @@ class ProjectVideoController extends Controller
      *    "doi": "10.3389/fmars.2017.00083"
      * }
      *
-     * @param StoreVolume $request
-     * @return Volume
+     * @param StoreVideo $request
+     * @return  mixed
      */
     public function store(StoreVideo $request)
     {
