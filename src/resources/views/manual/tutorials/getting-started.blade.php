@@ -8,7 +8,7 @@
             An introduction to the video annotation tool.
         </p>
         <p>
-            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can also create new video annotations as well as modify or delete existing ones. Each video belongs to a project. You can access a video by clicking on its name in the project page.
+            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can create new video annotations as well as modify or delete existing ones. Each video belongs to a project. You can access a video by clicking on its name in the project page.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/getting_started_1.jpg')}}"><img src="{{asset('vendor/videos/images/manual/getting_started_1.jpg')}}" width="75%" style="border: 1px solid #111;"></a>
@@ -49,7 +49,7 @@
             <a href="{{asset('vendor/videos/images/manual/getting_started_6.jpg')}}"><img src="{{asset('vendor/videos/images/manual/getting_started_6.jpg')}}" width="32%"></a>
         </p>
         <p>
-            The new annotation is displayed both in the video and the video timeline. This annotation is a single frame annotation, marking an object in a single frame of the video. Now you should be able to use the video annotation tool for basic tasks. Learn about more advanced ways to create video annotations in the next articles:
+            The new annotation is displayed both in the video and the video timeline. This annotation is a single-keyframe annotation, marking an object in a single frame of the video. Now you should be able to use the video annotation tool for basic tasks. Learn about more advanced ways to create video annotations in the next articles:
         </p>
         <ul>
             <li><a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}">Learn how to create different kinds of video annotations.</a></li>

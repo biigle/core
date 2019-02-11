@@ -8,7 +8,7 @@
             Learn about all the tools to modify or delete existing video annotations.
         </p>
         <p>
-            The video annotation tool provides many ways to edit video annotations. Most of these can be accessed in the toolbar.
+            The video annotation tool provides many ways to edit video annotations. Most of these can be accessed in the tool bar.
         </p>
 
         <p class="text-center">
@@ -22,7 +22,7 @@
 
         <h3><a name="link-annotation-clips"></a><i class="fa fa-link"></i> Link annotation clips</h3>
         <p>
-            Sometimes an object or region of interest (ROI) might disappear from the video and reappear at a later time. To still count this object or ROI as a single annotation, annotation clips can be linked. First, create two separate annotation clips, marking the object or ROI at both times at which it is visible in the video. Next, select both annotation clips. Finally, click the <button class="btn btn-xs btn-default"><i class="fa fa-link"></i></button> button in the toolbar to link the two annotation clips. The result is a single annotation clip with a gap, which is marked with a dotted line between two keyframes. You can repeat this process to create an annotation clip with several gaps.
+            Sometimes an object or region of interest (ROI) might disappear from the video and reappear at a later time. To still count this object or ROI as a single annotation, annotation clips can be linked. First, create two separate annotation clips, marking the object or ROI at both times at which it is visible in the video. Next, select both annotation clips. Finally, click the <button class="btn btn-xs btn-default"><i class="fa fa-link"></i></button> button in the tool bar to link the two annotation clips. The result is a single annotation clip with a gap, which is marked with a dotted line between two keyframes. You can repeat this process to create an annotation clip with several gaps.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/editing_annotations_2.jpg')}}"><img src="{{asset('vendor/videos/images/manual/editing_annotations_2.jpg')}}" width="33%"></a><br>
@@ -32,7 +32,7 @@
 
         <h3><a name="split-annotation-clips"></a><i class="fa fa-unlink"></i> Split annotation clips</h3>
         <p>
-            Sometimes, e.g. if an <a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}#object-tracking">object tracking</a> went wrong, you might want to remove part of an annotation clip. You can do this by either deleting the last few keyframes (see below) or by splitting an annotation clip in two and deleting one of them. Annotation clips can also be split at a gap, restoring the separate annotation clips to their state before they were linked. To split an annotation clip, move the current time of the video to the time at which the annotation clip should be split. Then click the <button class="btn btn-xs btn-default"><i class="fa fa-unlink"></i></button> button in the toolbar.
+            Sometimes, e.g. if an <a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}#object-tracking">object tracking</a> went wrong, you might want to remove part of an annotation clip. You can do this by either deleting the last few keyframes (see below) or by splitting an annotation clip in two and deleting one of them. Annotation clips can also be split at a gap, restoring the separate annotation clips to their state before they were linked. To split an annotation clip, move the current time of the video to the time at which the annotation clip should be split. Then click the <button class="btn btn-xs btn-default"><i class="fa fa-unlink"></i></button> button in the tool bar.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/editing_annotations_6.jpg')}}"><img src="{{asset('vendor/videos/images/manual/editing_annotations_6.jpg')}}" width="33%"></a>
@@ -48,7 +48,11 @@
 
         <h3><a name="delete-annotations-or-keyframes"></a><i class="fa fa-trash"></i> Delete annotations or keyframes</h3>
         <p>
-            To delete an annotation, select it and then click the <button class="btn btn-xs btn-default"><i class="fa fa-trash"></i></button> button in the toolbar. Note that only project experts or admins can delete annotations to which labels were attached by other users. To delete only a keyframe of an annotation clip, select the keyframe in the timeline and then click the <button class="btn btn-xs btn-default"><i class="fa fa-trash"></i></button> button.
+            To delete an annotation, select it and then click the <button class="btn btn-xs btn-default"><i class="fa fa-trash"></i></button> button in the tool bar. Note that only project experts or admins can delete annotations to which labels were attached by other users. To delete only a keyframe of an annotation clip, select the keyframe in the timeline and then click the <button class="btn btn-xs btn-default"><i class="fa fa-trash"></i></button> button.
+        </p>
+
+        <p>
+            Read on and learn more about the <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}">sidebar</a> of the video annotation tool.
         </p>
     </div>
 @endsection

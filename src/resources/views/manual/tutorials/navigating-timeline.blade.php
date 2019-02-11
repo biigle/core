@@ -40,12 +40,12 @@
 
         <h3><a name="annotation-tracks"></a>Annotation Tracks</h3>
         <p>
-            The annotations of the video are grouped by their label into several <i>tracks</i>. Each track shows the label name at the left and the annotations along the time axis at the right. Annotations of the same track are displayed in the color of the label to which the track belongs. If multiple annotation clips occur at the same time, they are displayed on top of each other in the same track. Note that multiple labels can be attached to a single annotation, too, so the same annotation may be displayed in more than one track.
+            The annotations of the video are grouped by their label into several <i>tracks</i>. Each track shows the label name at the left and the annotations along the time axis at the right. Annotations of the same track are displayed in the color of the label to which the track belongs. If multiple annotation clips occur at the same time, they are stacked in the same track. Note that multiple labels can be attached to a single annotation, too, so the same annotation may be displayed in more than one track.
         </p>
 
         <h3><a name="annotations"></a>Annotations</h3>
         <p>
-            Single-frame annotations are displayed as single bars at the time they occur along the time axis. Annotation clips, which consist of multiple keyframes, are displayed as multiple connected bars. The first and the last keyframe determine the duration of the annotation clip. Annotation clips can be displayed in three different ways, depending on the space between two of their keyframes and the current zoom along the time axis. In the most condensed form, the keyframes of an annotation clip are invisible. In the partly condensed form, the keyframe bars are visible but smaller than in the regular form.
+            Single-keyframe annotations are displayed as single bars at the time they occur along the time axis. Annotation clips, which consist of multiple keyframes, are displayed as multiple connected bars. The first and the last keyframe determine the duration of the annotation clip. Annotation clips can be displayed in three different ways, depending on the space between two of their keyframes and the current zoom along the time axis. In the most condensed form, the keyframes of an annotation clip are invisible. In the partly condensed form, the keyframe bars are visible but smaller than in the regular form.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/navigating_the_timeline_8.jpg')}}"><img src="{{asset('vendor/videos/images/manual/navigating_the_timeline_8.jpg')}}" width="100%"></a>
@@ -53,7 +53,7 @@
             <a href="{{asset('vendor/videos/images/manual/navigating_the_timeline_10.jpg')}}"><img src="{{asset('vendor/videos/images/manual/navigating_the_timeline_10.jpg')}}" width="100%"></a>
         </p>
         <p>
-            Annotations can be selected by clicking on them in the timeline. This automatically sets the current time of the video to the time at the position where the annotation was selected. If a single-frame annotation or keyframe is selected, the current time jumps to the time of the frame. Multiple annotations can be selected at the same time by pressing the <code>Shift</code> key and clicking on the annotation.
+            Annotations can be selected by clicking on them in the timeline. This automatically sets the current time of the video to the time at the position where the annotation was selected. If a keyframe is selected, the current time jumps to the time of the frame. Multiple annotations can be selected at the same time by pressing the <code>Shift</code> key and clicking on the annotation.
         </p>
         <p>
             Read on and learn how to <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">edit video annotations</a>.
