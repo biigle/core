@@ -2,8 +2,10 @@
 
 namespace Biigle\Modules\Videos\Http\Controllers\Api;
 
+use App;
 use Storage;
 use Ramsey\Uuid\Uuid;
+use GuzzleHttp\Client;
 use Biigle\Modules\Videos\Video;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Videos\Http\Requests\StoreVideo;
@@ -21,7 +23,7 @@ class ProjectVideoController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {String} name The name of the new video.
-     * @apiParam (Required attributes) {String} url The URL of the video files. Must be a path to a storage disk like `local://videos/1.mp4`. Supported video formats are WEBM, MP4 and MPEG.
+     * @apiParam (Required attributes) {String} url The URL of the video files. Must be a path to a storage disk like `local://videos/1.mp4` or a remote URL like `https://myhost.tld/videos/1.mp4`. Supported video formats are WEBM, MP4 and MPEG.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this video.
      * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new video.
      *
@@ -49,18 +51,26 @@ class ProjectVideoController extends Controller
     {
         list($disk, $path) = explode('://', $request->input('url'));
 
-        $video = Video::create([
+        $video = Video::make([
             'uuid' => Uuid::uuid4(),
             'name' => $request->input('name'),
             'url' => $request->input('url'),
             'project_id' => $request->project->id,
-            'attrs' => [
-                'size' => Storage::disk($disk)->size($path),
-                'mimetype' => Storage::disk($disk)->mimeType($path),
-                'gis_link' => $request->input('gis_link'),
-                'doi' => $request->input('doi'),
-            ],
         ]);
+
+        if ($video->isRemote()) {
+            list($size, $mime) = $this->getRemoteAttrs($video);
+        } else {
+            list($size, $mime) = $this->getDiskAttrs($video);
+        }
+
+        $video->attrs = [
+            'size' => $size,
+            'mimetype' => $mime,
+            'gis_link' => $request->input('gis_link'),
+            'doi' => $request->input('doi'),
+        ];
+        $video->save();
 
         if ($this->isAutomatedRequest()) {
             return $video;
@@ -69,5 +79,38 @@ class ProjectVideoController extends Controller
         return $this->fuzzyRedirect()
             ->with('message', "Video {$video->name} created")
             ->with('messageType', 'success');
+    }
+
+    /**
+     * Get the size and mime type of a video from a storage disk.
+     *
+     * @param Video $video
+     *
+     * @return array
+     */
+    protected function getDiskAttrs(Video $video)
+    {
+        return [
+            Storage::disk($video->disk)->size($video->path),
+            Storage::disk($video->disk)->mimeType($video->path),
+        ];
+    }
+
+    /**
+     * Get the size and mime type of a video from a remote source.
+     *
+     * @param Video $video
+     *
+     * @return array
+     */
+    protected function getRemoteAttrs(Video $video)
+    {
+        $client = App::make(Client::class);
+        $response = $client->head($video->url);
+
+        return [
+            intval($response->getHeaderLine('Content-Length')),
+            explode(';', $response->getHeaderLine('Content-Type'))[0],
+        ];
     }
 }

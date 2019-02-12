@@ -18,7 +18,7 @@ class VideoFileController extends Controller
      * @apiName ShowVideoFile
      * @apiParam {Number} id The video ID.
      * @apiPermission projectMember
-     * @apiDescription This endpoint supports the `Range` header.
+     * @apiDescription This endpoint supports the `Range` header. If the video has a remote source, this endpoint redirects to the remote URL, instead.
      *
      * @param Request $request
      * @param int $id
@@ -29,6 +29,10 @@ class VideoFileController extends Controller
     {
         $video = Video::findOrFail($id);
         $this->authorize('access', $video);
+
+        if ($video->isRemote()) {
+            return redirect($video->url);
+        }
 
         try {
             $response = Storage::disk($video->disk)->response($video->path);

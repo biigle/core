@@ -2,8 +2,13 @@
 
 namespace Biigle\Modules\Videos\Rules;
 
+use App;
 use Storage;
+use GuzzleHttp\Client;
 use Illuminate\Contracts\Validation\Rule;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 
 class VideoUrl implements Rule
 {
@@ -43,8 +48,11 @@ class VideoUrl implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $this->passesDiskUrl($value)
-            && $this->passesMimeType($value);
+        if (strpos($value, 'http') === 0 && !config('biigle.offline_mode')) {
+            return $this->passesRemoteUrl($value);
+        } else {
+            return $this->passesDiskUrl($value);
+        }
     }
 
     /**
@@ -88,16 +96,52 @@ class VideoUrl implements Rule
             return false;
         }
 
-        return true;
+        return $this->passesMimeType(Storage::disk($disk)->mimeType($path));
     }
 
-    protected function passesMimeType($value)
+    /**
+     * Validate a remote video URL.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function passesRemoteUrl($value)
     {
-        list($disk, $path) = explode('://', $value);
-        $type = Storage::disk($disk)->mimeType($path);
+        $client = App::make(Client::class);
 
-        if (!in_array($type, $this->allowedMimes)) {
-            $this->message = "Videos of type '{$type}' are not supported.";
+        try {
+            $response = $client->head($value);
+        } catch (ServerException $e) {
+            $this->message = 'The remote video URL returned an error response. '.$e->getMessage();
+
+            return false;
+        } catch (ClientException $e) {
+            $this->message = 'The remote video URL returned an error response. '.$e->getMessage();
+
+            return false;
+        } catch (RequestException $e) {
+            $this->message = 'The remote video URL does not seem to exist. '.$e->getMessage();
+
+            return false;
+        }
+
+        $mime = explode(';', $response->getHeaderLine('Content-Type'))[0];
+
+        return $this->passesMimeType($mime);
+    }
+
+    /**
+     * Validate the MIME type of a video
+     *
+     * @param string $mime
+     *
+     * @return bool
+     */
+    protected function passesMimeType($mime)
+    {
+        if (!in_array($mime, $this->allowedMimes)) {
+            $this->message = "Videos of type '{$mime}' are not supported.";
 
             return false;
         }

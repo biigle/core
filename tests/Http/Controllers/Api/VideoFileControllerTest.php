@@ -58,4 +58,15 @@ class VideoFileControllerTest extends ApiTestCase
         $this->assertTrue($response->headers->has('Content-Range'));
         $this->assertEquals('bytes 3-8/9', $response->headers->get('Content-Range'));
     }
+
+    public function testShowRemote()
+    {
+        $video = VideoTest::create([
+            'url' => 'https://domain.tdl/video.mp4',
+            'project_id' => $this->project()->id,
+        ]);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")->assertRedirect($video->url);
+    }
 }

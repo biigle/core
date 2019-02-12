@@ -143,4 +143,14 @@ class Video extends Model implements FileContract
     {
         return $this->getJsonAttr('doi');
     }
+
+    /**
+     * Determine if this video comes from a remote source.
+     *
+     * @return bool
+     */
+    public function isRemote()
+    {
+        return strpos($this->url, 'http') === 0;
+    }
 }

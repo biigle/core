@@ -4,9 +4,14 @@ namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
 use ApiTestCase;
+use GuzzleHttp\Client;
 use Illuminate\Http\File;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\Project;
+use GuzzleHttp\Handler\MockHandler;
 
 class ProjectVideoControllerTest extends ApiTestCase
 {
@@ -76,6 +81,38 @@ class ProjectVideoControllerTest extends ApiTestCase
         $video = $project->videos()->first();
         $this->assertNotNull($video);
         $this->assertEquals(104500, $video->attrs['size']);
+        $this->assertEquals('video/mp4', $video->attrs['mimetype']);
+    }
+
+    public function testStoreRemote()
+    {
+        $response = new Response(200, [
+            'Content-Type' => ['video/mp4; charset=whatever'],
+            'Content-Length' => ['12345'],
+        ]);
+        // One response for the validation and one for fetching the attrs.
+        $mock = new MockHandler([$response, $response]);
+        $container = [];
+        $history = Middleware::history($container);
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+        $client = new Client(['handler' => $handler]);
+        $this->app->bind(Client::class, function () use ($client) {
+            return $client;
+        });
+
+        $id = $this->project()->id;
+        $project = Project::find($id);
+        $this->beAdmin();
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 2',
+                'url' => 'https://domain.tdl/video.mp4',
+            ])
+            ->assertStatus(200);
+
+        $video = $project->videos()->first();
+        $this->assertNotNull($video);
+        $this->assertEquals(12345, $video->attrs['size']);
         $this->assertEquals('video/mp4', $video->attrs['mimetype']);
     }
 }

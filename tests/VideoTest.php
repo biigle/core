@@ -69,4 +69,14 @@ class VideoTest extends ModelTestCase
         VideoAnnotationTest::create(['video_id' => $this->model->id]);
         $this->assertTrue($this->model->annotations()->exists());
     }
+
+    public function testIsRemote()
+    {
+        $this->model->url = 'local://path';
+        $this->assertFalse($this->model->isRemote());
+        $this->model->url = 'http://remote.path';
+        $this->assertTrue($this->model->isRemote());
+        $this->model->url = 'https://remote.path';
+        $this->assertTrue($this->model->isRemote());
+    }
 }
