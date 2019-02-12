@@ -18,6 +18,7 @@ biigle.$viewModel('video-container', function (element) {
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
             settingsTab: biigle.$require('videos.components.settingsTab'),
+            annotationsTab: biigle.$require('videos.components.annotationsTab'),
         },
         data: {
             canEdit: biigle.$require('videos.isEditor'),
@@ -57,7 +58,7 @@ biigle.$viewModel('video-container', function (element) {
             },
             selectedAnnotations: function () {
                 return this.annotations.filter(function (annotation) {
-                    return annotation.selected !== false;
+                    return annotation.isSelected;
                 });
             },
             settingsStore: function () {
@@ -291,6 +292,10 @@ biigle.$viewModel('video-container', function (element) {
                 this.seek(this.initialCurrentTime);
 
                 return promise;
+            },
+            detachAnnotationLabel: function (annotation, annotationLabel) {
+                annotation.detachAnnotationLabel(annotationLabel)
+                    .catch(MSG.handleResponseError);
             },
         },
         watch: {

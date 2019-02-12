@@ -23,6 +23,9 @@ biigle.$declare('videos.models.Annotation', function () {
             };
         },
         computed: {
+            api: function () {
+                return biigle.$require('videos.api.videoAnnotations');
+            },
             shape: function () {
                 return biigle.$require('videos.shapes')[this.shape_id];
             },
@@ -53,6 +56,9 @@ biigle.$declare('videos.models.Annotation', function () {
                 });
 
                 return ranges;
+            },
+            isSelected: function () {
+                return this.selected !== false;
             },
         },
         methods: {
@@ -215,6 +221,11 @@ biigle.$declare('videos.models.Annotation', function () {
                 }
 
                 return false;
+            },
+            detachAnnotationLabel: function (annotationLabel) {
+                console.log('detach', this.id, annotationLabel.id);
+
+                return Vue.Promise.resolve();
             },
         },
         watch: {

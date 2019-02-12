@@ -87,7 +87,7 @@ biigle.$component('videos.components.annotationClip', {
             });
         },
         selected: function () {
-            return this.annotation.selected !== false;
+            return this.annotation.isSelected;
         },
         classObj: function () {
             return {

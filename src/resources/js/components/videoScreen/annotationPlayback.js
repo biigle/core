@@ -87,7 +87,7 @@ biigle.$component('videos.components.videoScreen.annotationPlayback', function (
                 var features = toCreate.map(this.createFeature);
                 features.forEach(function (feature) {
                     newRendered[feature.getId()] = feature;
-                    if (feature.get('annotation').selected !== false) {
+                    if (feature.get('annotation').isSelected) {
                         selected.push(feature);
                     }
                 });

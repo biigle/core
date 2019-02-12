@@ -21,6 +21,7 @@
             v-on:open="handleOpenedTab"
             v-on:close="handleClosedTab"
             >
+                @include('videos::show.sidebar-annotations')
                 @can('edit-in', $video)
                     @include('videos::show.sidebar-labels')
                 @endcan
