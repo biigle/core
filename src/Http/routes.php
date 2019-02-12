@@ -50,4 +50,8 @@ $router->group([
             'parameters' => ['video-annotations' => 'id'],
         ]);
 
+        $router->resource('video-annotation-labels', 'VideoAnnotationLabelController', [
+            'only' => ['destroy'],
+            'parameters' => ['video-annotation-labels' => 'id'],
+        ]);
     });

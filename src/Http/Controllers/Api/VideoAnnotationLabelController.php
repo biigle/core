@@ -5,6 +5,7 @@ namespace Biigle\Modules\Videos\Http\Controllers\Api;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Videos\VideoAnnotationLabel;
 use Biigle\Modules\Videos\Http\Requests\StoreVideoAnnotationLabel;
+use Biigle\Modules\Videos\Http\Requests\DestroyVideoAnnotationLabel;
 
 class VideoAnnotationLabelController extends Controller
 {
@@ -48,5 +49,24 @@ class VideoAnnotationLabelController extends Controller
             'user_id' => $request->user()->id,
             'video_annotation_id' => $request->annotation->id,
         ])->load('label', 'user');
+    }
+
+    /**
+     * Detach a label
+     *
+     * @api {delete} video-annotation-labels/:id Detach a label
+     * @apiGroup VideoAnnotations
+     * @apiName DeleteVideoAnnotationLabels
+     * @apiPermission projectEditor
+     * @apiDescription Only project experts or admins can detach labels of other users. The last label of an annotation cannot be detached.
+     *
+     * @apiParam {Number} id The **annotation label** ID (not the label ID).
+     *
+     * @param DestroyVideoAnnotationLabel $request
+     * @return mixed
+     */
+    public function destroy(DestroyVideoAnnotationLabel $request)
+    {
+        $request->annotationLabel->delete();
     }
 }

@@ -50,6 +50,42 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
-        $this->markTestIncomplete();
+        $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        $annotationLabel1 = VideoAnnotationLabelTest::create([
+            'video_annotation_id' => $annotation->id,
+            'user_id' => $this->expert()->id,
+        ]);
+        $annotationLabel2 = VideoAnnotationLabelTest::create([
+            'video_annotation_id' => $annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+        $annotationLabel3 = VideoAnnotationLabelTest::create([
+            'video_annotation_id' => $annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->doTestApiRoute('DELETE', "api/v1/video-annotation-labels/{$annotationLabel1->id}");
+
+        $this->beUser();
+        $this->deleteJson("api/v1/video-annotation-labels/{$annotationLabel1->id}")
+            ->assertStatus(403);
+
+        $this->beEditor();
+        $this->deleteJson("api/v1/video-annotation-labels/{$annotationLabel1->id}")
+            // Cannot detach label of other user.
+            ->assertStatus(403);
+
+        $this->deleteJson("api/v1/video-annotation-labels/{$annotationLabel3->id}")
+            ->assertStatus(200);
+        $this->assertNull($annotationLabel3->fresh());
+
+        $this->beExpert();
+        $this->deleteJson("api/v1/video-annotation-labels/{$annotationLabel2->id}")
+            ->assertStatus(200);
+        $this->assertNull($annotationLabel2->fresh());
+
+        $this->deleteJson("api/v1/video-annotation-labels/{$annotationLabel1->id}")
+            // Cannot detach the last label.
+            ->assertStatus(422);
     }
 }
