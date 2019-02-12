@@ -120,7 +120,7 @@ class VideoAnnotationController extends Controller
      * Creates a new annotation in the specified video.
      *
      * @api {post} videos/:id/annotations Create a new video annotation
-     * @apiGroup Annotations
+     * @apiGroup VideoAnnotations
      * @apiName StoreVideoAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by

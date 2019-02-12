@@ -35,7 +35,7 @@ $router->group([
             'parameters' => ['video-annotations' => 'id'],
         ]);
 
-        $router->resource('video-annotations.split', 'SplitVideoAnnotationController', [
+        $router->resource('video-annotations.labels', 'VideoAnnotationLabelController', [
             'only' => ['store'],
             'parameters' => ['video-annotations' => 'id'],
         ]);
@@ -44,4 +44,10 @@ $router->group([
             'only' => ['store'],
             'parameters' => ['video-annotations' => 'id'],
         ]);
+
+        $router->resource('video-annotations.split', 'SplitVideoAnnotationController', [
+            'only' => ['store'],
+            'parameters' => ['video-annotations' => 'id'],
+        ]);
+
     });
