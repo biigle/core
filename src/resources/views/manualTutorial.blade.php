@@ -54,3 +54,11 @@
 <p>
     Advanced configuration of the video annotation tool.
 </p>
+
+<h4>
+    <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">Remote Videos</a>
+</h4>
+
+<p>
+    With remote videos you can use videos from your own data source in BIIGLE.
+</p>
