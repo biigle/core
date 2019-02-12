@@ -5,15 +5,15 @@ biigle.$component('videos.components.annotationsTabAnnotationItem', {
         ' :class="classObject"' +
         ' @click="emitSelect"' +
         '>' +
-            // '<button' +
-            //     ' v-if="canDetach"' +
-            //     ' type="button"' +
-            //     ' title="Detach this label from the annotation"' +
-            //     ' class="close"' +
-            //     ' @click.stop="emitDetach"' +
-            //     '>' +
-            //         '<span aria-hidden="true">&times;</span>' +
-            // '</button>' +
+            '<button' +
+                ' v-if="canDetach"' +
+                ' type="button"' +
+                ' title="Detach this label from the annotation"' +
+                ' class="close"' +
+                ' @click.stop="emitDetach"' +
+                '>' +
+                    '<span aria-hidden="true">&times;</span>' +
+            '</button>' +
             '<span' +
                 ' class="icon"' +
                 ' :class="shapeClass"' +

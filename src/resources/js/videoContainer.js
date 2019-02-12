@@ -246,8 +246,14 @@ biigle.$viewModel('video-container', function (element) {
                 return promise;
             },
             detachAnnotationLabel: function (annotation, annotationLabel) {
-                annotation.detachAnnotationLabel(annotationLabel)
-                    .catch(MSG.handleResponseError);
+                if (annotation.labels.length > 1) {
+                    annotation.detachAnnotationLabel(annotationLabel)
+                        .catch(MSG.handleResponseError);
+                } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
+                    annotation.delete()
+                        .then(this.deletedAnnotation(annotation))
+                        .catch(MSG.handleResponseError);
+                }
             },
         },
         watch: {

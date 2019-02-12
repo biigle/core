@@ -24,6 +24,12 @@
  * Link two annotations:
  * resource.link({id: firstId}, {annotation_id: secondId}).then(...);
  *
+ * Attach a label:
+ * resource.attachLabel({id: annotationId}, {label_id: labelId}).then(...);
+ *
+ * Detach a label:
+ * resource.detachLabel({id: annotationLabelId}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annotations{/id}', {}, {
@@ -42,5 +48,13 @@ biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annota
     link: {
         method: 'POST',
         url: 'api/v1/video-annotations{/id}/link',
+    },
+    attachLabel: {
+        method: 'POST',
+        url: 'api/v1/video-annotations{/id}/labels',
+    },
+    detachLabel: {
+        method: 'DELETE',
+        url: 'api/v1/video-annotation-labels{/id}',
     },
 }));

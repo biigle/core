@@ -226,9 +226,12 @@ biigle.$declare('videos.models.Annotation', function () {
                 return false;
             },
             detachAnnotationLabel: function (annotationLabel) {
-                console.log('detach', this.id, annotationLabel.id);
+                var index = this.labels.indexOf(annotationLabel);
+                if (index !== -1) {
+                    this.labels.splice(index, 1);
+                }
 
-                return Vue.Promise.resolve();
+                return this.api.detachLabel({id: annotationLabel.id});
             },
             hasKeyframe: function (frame) {
                 return this.frames.indexOf(frame) !== -1;
