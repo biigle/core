@@ -46,6 +46,12 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         $this->assertNotNull($label);
         $this->assertEquals($this->labelRoot()->id, $label->label_id);
         $this->assertEquals($this->editor()->id, $label->user_id);
+
+        $this->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            // Label is already attached.
+            ->assertStatus(422);
     }
 
     public function testDestroy()

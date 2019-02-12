@@ -135,6 +135,14 @@ biigle.$component('videos.components.videoScreen', {
             '<div v-if="showModifyBar" class="btn-group">' +
                 '<control-button' +
                     ' v-if="canModify"' +
+                    ' icon="fa-tag"' +
+                    ' title="Attach the currently selected label to existing annotations 𝗟"' +
+                    ' :active="isAttaching"' +
+                    ' :disabled="hasNoSelectedLabel"' +
+                    ' @click="toggleAttaching"' +
+                    '></control-button>' +
+                '<control-button' +
+                    ' v-if="canModify"' +
                     ' icon="fa-arrows-alt"' +
                     ' title="Move selected annotations 𝗠"' +
                     ' :active="isTranslating"' +

@@ -8,9 +8,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
     return {
         data: function () {
             return {
-                // This is no interaction mode because we want the select interaction to
-                // be active while translating, too. The select interaction is only
-                // enabled in default interaction mode.
+                // This is no interaction mode because we want the select interaction
+                // to be active too. The select interaction is only enabled in default
+                // interaction mode.
                 isTranslating: false,
             };
         },
@@ -23,6 +23,9 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
             },
             cannotLinkAnnotations: function () {
                 return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
+            },
+            isAttaching: function () {
+                return this.interactionMode === 'attachLabel';
             },
         },
         methods: {
@@ -112,6 +115,31 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
             emitLinkAnnotations: function () {
                 this.$emit('link-annotations', this.selectedAnnotations);
             },
+            toggleAttaching: function () {
+                if (this.isAttaching) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'attachLabel';
+                }
+            },
+            initAttachInteraction: function (map) {
+                var Interaction = biigle.$require('annotations.ol.AttachLabelInteraction');
+                this.attachInteraction = new Interaction({
+                    features: this.annotationFeatures,
+                    map: map,
+                });
+                this.attachInteraction.setActive(false);
+                this.attachInteraction.on('attach', this.handleAttachLabel);
+                this.map.addInteraction(this.attachInteraction);
+            },
+            handleAttachLabel: function (e) {
+                this.$emit('attach-label', e.feature.get('annotation'), this.selectedLabel);
+            },
+            maybeResetAttaching: function (hasNoLabel) {
+                if (this.isAttaching && hasNoLabel) {
+                    this.resetInteractionMode();
+                }
+            },
         },
         watch: {
             isTranslating: function (translating) {
@@ -122,6 +150,11 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                     } else if (this.isDefaultInteractionMode) {
                         this.modifyInteraction.setActive(true);
                     }
+                }
+            },
+            isAttaching: function (attaching) {
+                if (this.attachInteraction) {
+                    this.attachInteraction.setActive(attaching);
                 }
             },
         },
@@ -135,12 +168,15 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                     // modify interaction.
                     this.$once('map-ready', this.initModifyInteraction);
                     this.$once('map-ready', this.initTranslateInteraction);
+                    this.$once('map-ready', this.initAttachInteraction);
                 });
 
                 this.$watch('isDefaultInteractionMode', this.maybeUpdateModifyInteractionMode);
                 this.$watch('isDefaultInteractionMode', this.maybeUpdateIsTranslating);
                 kb.on('m', this.toggleTranslating, 0, this.listenerSet);
                 kb.on('Escape', this.resetTranslating, 0, this.listenerSet);
+                kb.on('l', this.toggleAttaching, 0, this.listenerSet);
+                this.$watch('hasNoSelectedLabel', this.maybeResetAttaching);
             }
 
             if (this.canDelete) {

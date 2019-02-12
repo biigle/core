@@ -255,6 +255,10 @@ biigle.$viewModel('video-container', function (element) {
                         .catch(MSG.handleResponseError);
                 }
             },
+            attachAnnotationLabel: function (annotation, label) {
+                annotation.attachAnnotationLabel(label)
+                    .catch(MSG.handleResponseError);
+            },
         },
         watch: {
             'settings.playbackRate': function (rate) {

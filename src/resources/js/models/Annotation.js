@@ -233,6 +233,15 @@ biigle.$declare('videos.models.Annotation', function () {
 
                 return this.api.detachLabel({id: annotationLabel.id});
             },
+            attachAnnotationLabel: function (label) {
+                var promise = this.api.attachLabel({id: this.id}, {label_id: label.id});
+                promise.then(this.handleAttachedLabel);
+
+                return promise;
+            },
+            handleAttachedLabel: function (response) {
+                this.labels.push(response.body);
+            },
             hasKeyframe: function (frame) {
                 return this.frames.indexOf(frame) !== -1;
             },

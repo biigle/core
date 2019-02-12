@@ -46,4 +46,24 @@ class StoreVideoAnnotationLabel extends FormRequest
             'label_id' => 'required|integer|exists:labels,id',
         ];
     }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $alreadyExists = $this->annotation->labels()
+                ->where('label_id', $this->label->id)
+                ->where('user_id', $this->user()->id)
+                ->exists();
+
+            if ($alreadyExists) {
+                $validator->errors()->add('label_id', 'The user already attached this label to the annotation.');
+            }
+        });
+    }
 }

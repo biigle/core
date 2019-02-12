@@ -19,6 +19,7 @@
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"
       v-on:link-annotations="linkAnnotations"
+      v-on:attach-label="attachAnnotationLabel"
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
       v-on:delete="deleteAnnotationsOrKeyframes"
