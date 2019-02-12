@@ -159,22 +159,13 @@ biigle.$viewModel('video-container', function (element) {
                 }
             },
             deleteAnnotationOrKeyframe: function (event) {
-                var index = event.annotation.frames.indexOf(event.time);
-
-                if (index !== -1 && event.annotation.frames.length > 1) {
-                    // Delete only the keyframe of the annotation.
-                    event.annotation.frames.splice(index, 1);
-                    event.annotation.points.splice(index, 1);
-
-                    ANNOTATION_API.update({id: event.annotation.id}, {
-                            frames: event.annotation.frames,
-                            points: event.annotation.points,
-                        })
+                var annotation = event.annotation;
+                if (annotation.isClip && annotation.hasKeyframe(event.time)) {
+                    annotation.deleteKeyframe(event.time)
                         .catch(MSG.handleResponseError);
                 } else {
-                    // Delete the whole annotation.
-                    ANNOTATION_API.delete({id: event.annotation.id})
-                        .then(this.deletedAnnotation(event.annotation))
+                    annotation.delete()
+                        .then(this.deletedAnnotation(annotation))
                         .catch(MSG.handleResponseError);
                 }
             },
@@ -190,25 +181,7 @@ biigle.$viewModel('video-container', function (element) {
                 event.forEach(this.modifyAnnotation);
             },
             modifyAnnotation: function (event) {
-                var index = event.annotation.frames.indexOf(event.time);
-                if (index !== -1) {
-                    // Use splice so Vue can pick up the change.
-                    event.annotation.points.splice(index, 1, event.points);
-                } else {
-                    for (var i = event.annotation.frames.length - 1; i >= 0; i--) {
-                        if (event.annotation.frames[i] <= event.time) {
-                            break;
-                        }
-                    }
-
-                    event.annotation.frames.splice(i + 1, 0, event.time);
-                    event.annotation.points.splice(i + 1, 0, event.points);
-                }
-
-                ANNOTATION_API.update({id: event.annotation.id}, {
-                        frames: event.annotation.frames,
-                        points: event.annotation.points,
-                    })
+                event.annotation.modify(event.time, event.points)
                     .catch(MSG.handleResponseError);
             },
             handleUpdatedSettings: function (key, value) {
@@ -227,34 +200,13 @@ biigle.$viewModel('video-container', function (element) {
                 }
             },
             splitAnnotation: function (annotation, time) {
-                ANNOTATION_API.split({id: annotation.id}, {time: time})
-                    .then(this.updateSplitAnnotation, MSG.handleResponseError);
-            },
-            updateSplitAnnotation: function (response) {
-                var oldAnnotation = response.body[0];
-                for (var i = this.annotations.length - 1; i >= 0; i--) {
-                    if (this.annotations[i].id === oldAnnotation.id) {
-                        this.annotations[i].frames = oldAnnotation.frames;
-                        this.annotations[i].points = oldAnnotation.points;
-                    }
-                }
-
-                this.annotations.push(this.prepareAnnotation(response.body[1]));
+                annotation.split(time)
+                    .then(this.addCreatedAnnotation, MSG.handleResponseError);
             },
             linkAnnotations: function (annotations) {
-                ANNOTATION_API.link({id: annotations[0].id}, {annotation_id: annotations[1].id})
-                    .then(this.updateLinkedAnnotation)
+                annotations[0].link(annotations[1])
                     .then(this.deletedAnnotation(annotations[1]))
                     .catch(MSG.handleResponseError);
-            },
-            updateLinkedAnnotation: function (response) {
-                for (var i = this.annotations.length - 1; i >= 0; i--) {
-                    if (this.annotations[i].id === response.body.id) {
-                        this.annotations[i].frames = response.body.frames;
-                        this.annotations[i].points = response.body.points;
-                        this.annotations[i].labels = response.body.labels;
-                    }
-                }
             },
             updateMapUrlParams: function (center, resolution) {
                 this.urlParams.x = Math.round(center[0]);

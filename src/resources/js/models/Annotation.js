@@ -60,6 +60,9 @@ biigle.$declare('videos.models.Annotation', function () {
             isSelected: function () {
                 return this.selected !== false;
             },
+            isClip: function () {
+                return this.frames.length > 1;
+            },
         },
         methods: {
             startPollTracking: function () {
@@ -226,6 +229,70 @@ biigle.$declare('videos.models.Annotation', function () {
                 console.log('detach', this.id, annotationLabel.id);
 
                 return Vue.Promise.resolve();
+            },
+            hasKeyframe: function (frame) {
+                return this.frames.indexOf(frame) !== -1;
+            },
+            modify: function (frame, points) {
+                var index = this.frames.indexOf(frame);
+
+                if (index !== -1) {
+                    this.points.splice(index, 1, points);
+                } else {
+                    for (var i = this.frames.length - 1; i >= 0; i--) {
+                        if (this.frames[i] <= frame) {
+                            break;
+                        }
+                    }
+
+                    this.frames.splice(i + 1, 0, frame);
+                    this.points.splice(i + 1, 0, points);
+                }
+
+                return this.api.update({id: this.id}, {
+                    frames: this.frames,
+                    points: this.points,
+                });
+            },
+            split: function (time) {
+                return this.api.split({id: this.id}, {time: time})
+                    .then(this.handleFinishedSplit);
+            },
+            handleFinishedSplit: function (response) {
+                this.frames = response.body[0].frames;
+                this.points = response.body[0].points;
+                response.body = response.body[1];
+
+                return response;
+            },
+            link: function (other) {
+                return this.api.link({id: this.id}, {annotation_id: other.id})
+                    .then(this.handleFinishedLink);
+            },
+            handleFinishedLink: function (response) {
+                this.frames = response.body.frames;
+                this.points = response.body.points;
+                this.labels = response.body.labels;
+
+                return response;
+            },
+            deleteKeyframe: function (frame) {
+                var index = this.frames.indexOf(frame);
+
+                if (index !== -1) {
+                    this.frames.splice(index, 1);
+                    this.points.splice(index, 1);
+
+                    return this.api.update({id: this.id}, {
+                        frames: this.frames,
+                        points: this.points
+                    });
+                }
+
+                return Vue.Promise.reject('Unknown keyframe ' + frame + ' of annotation ' + this.id);
+            },
+            delete: function () {
+                return this.api.delete({id: this.id});
             },
         },
         watch: {
