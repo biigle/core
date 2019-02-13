@@ -3,6 +3,8 @@ biigle.$component('videos.components.annotationsTabAnnotationItem', {
     '<li' +
         ' class="annotations-tab-item__sub-item"' +
         ' :class="classObject"' +
+        // This is required for the 'scroll into view' feature of the annotation tab.
+        ' :data-annotation-id="annotation.id"' +
         ' @click="emitSelect"' +
         '>' +
             '<button' +

@@ -7,6 +7,7 @@
     >
         <annotations-tab
             :annotations="filteredAnnotations"
+            :selected-annotations="selectedAnnotations"
             :annotation-filters="annotationFilters"
             :can-detach-others="@can('forceEditIn', $video) true @else false @endcan"
             :has-active-filter="hasActiveAnnotationFilter"

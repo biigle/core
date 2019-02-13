@@ -62,11 +62,15 @@ biigle.$component('videos.components.annotationsTab', {
         },
         annotations: {
             type: Array,
-            default: [],
+            default: function () {
+                return [];
+            },
         },
         annotationFilters: {
             type: Array,
-            default: [],
+            default: function () {
+                return [];
+            },
         },
         canDetachOthers: {
             type: Boolean,
@@ -75,6 +79,12 @@ biigle.$component('videos.components.annotationsTab', {
         ownUserId: {
             type: Number,
             default: null,
+        },
+        selectedAnnotations: {
+            type: Array,
+            default: function () {
+                return [];
+            },
         },
     },
     data: function () {
@@ -139,6 +149,42 @@ biigle.$component('videos.components.annotationsTab', {
         emitUnselectFilter: function () {
             this.$emit('unselect-filter');
         },
+        // If an annotation is selected on the map the respective annotation labels
+        // should be visible in the annotations tab, too. This function adjusts the
+        // scrollTop of the list so all selected annotation labels are visible (if
+        // possible).
+        scrollIntoView: function (annotations) {
+            var scrollElement = this.$refs.scrollList;
+            var scrollTop = scrollElement.scrollTop;
+            var height = scrollElement.offsetHeight;
+            var top = Infinity;
+            var bottom = 0;
+
+            var element;
+            annotations.forEach(function (annotation) {
+                var elements = scrollElement.querySelectorAll(
+                    '[data-annotation-id="' + annotation.id + '"]'
+                );
+                for (var i = elements.length - 1; i >= 0; i--) {
+                    element = elements[i];
+                    top = Math.min(element.offsetTop, top);
+                    bottom = Math.max(element.offsetTop + element.offsetHeight, bottom);
+                }
+            }, this);
+
+            // Scroll scrollElement so all list items of selected annotations are
+            // visible or scroll to the first list item if all items don't fit inside
+            // scrollElement.
+            if (scrollTop > top) {
+                scrollElement.scrollTop = top;
+            } else if ((scrollTop + height) < bottom) {
+                if (height >= (bottom - top)) {
+                    scrollElement.scrollTop = bottom - scrollElement.offsetHeight;
+                } else {
+                    scrollElement.scrollTop = top;
+                }
+            }
+        },
     },
     watch: {
         selectedFilter: function (filter, oldFilter) {
@@ -149,6 +195,15 @@ biigle.$component('videos.components.annotationsTab', {
 
             this.$refs.filterElement.appendChild(filter.$el);
             filter.$on('select', this.emitSelectFilter);
+        },
+        selectedAnnotations: function (annotations) {
+            if (annotations.length > 0) {
+                // Wait for the annotations list to be rendered so the offsetTop of each
+                // item can be determined.
+                this.$nextTick(function () {
+                    this.scrollIntoView(annotations);
+                });
+            }
         },
     },
 });

@@ -37,11 +37,15 @@ biigle.$component('videos.components.annotationsTabLabelItem', {
     props: {
         label: {
             type: Object,
-            default: [],
+            default: function () {
+                return {};
+            },
         },
         annotations: {
             type: Array,
-            default: [],
+            default: function () {
+                return [];
+            },
         },
         canDetachOthers: {
             type: Boolean,
