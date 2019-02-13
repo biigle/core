@@ -1,62 +1,99 @@
-/**
- * The annotations tab of the annotator
- *
- * @type {Object}
- */
 biigle.$component('annotations.components.annotationsTab', {
     components: {
-        labelItem: biigle.$require('annotations.components.annotationsTabItem'),
-        annotationsFilter: biigle.$require('annotations.components.annotationsFilter'),
+        filters: biigle.$require('annotations.components.annotationsTabFilters'),
+        labelItem: biigle.$require('annotations.components.annotationsTabLabelItem'),
     },
     props: {
+        hasActiveFilter: {
+            type: Boolean,
+            default: false,
+        },
         annotations: {
             type: Array,
-            required: true,
+            default: function () {
+                return [];
+            },
         },
-        filteredAnnotations: {
+        annotationFilters: {
             type: Array,
-            required: true,
+            default: function () {
+                return [];
+            },
+        },
+        canDetachOthers: {
+            type: Boolean,
+            default: false,
+        },
+        ownUserId: {
+            type: Number,
+            default: null,
+        },
+        selectedAnnotations: {
+            type: Array,
+            default: function () {
+                return [];
+            },
         },
     },
+    data: function () {
+        return {
+            //
+        };
+    },
     computed: {
-        plugins: function () {
-            return biigle.$require('annotations.components.annotationsTabPlugins');
-        },
-        // Compiles a list of all labels and their associated annotations.
-        items: function () {
-            var labels = [];
+        labelItems: function () {
+            var labels = {};
             var annotations = {};
-            this.filteredAnnotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (annotationLabel) {
-                    var item = {
-                        annotation: annotation,
-                        annotationLabel: annotationLabel,
-                    };
 
-                    if (annotations.hasOwnProperty(annotationLabel.label.id)) {
-                        annotations[annotationLabel.label.id].push(item);
-                    } else {
-                        annotations[annotationLabel.label.id] = [item];
-                        labels.push(annotationLabel.label);
+            this.annotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (annotationLabel) {
+                    if (!labels.hasOwnProperty(annotationLabel.label.id)) {
+                        labels[annotationLabel.label.id] = annotationLabel.label;
+                        annotations[annotationLabel.label.id] = [];
                     }
+
+                    annotations[annotationLabel.label.id].push(annotation);
                 });
             });
 
-            // Sort labels alphabetically in the sidebar.
-            return labels.sort(this.sortByName)
+            return Object.values(labels)
+                .sort(function (a, b) {
+                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                })
                 .map(function (label) {
                     return {
+                        id: label.id,
                         label: label,
-                        annotations: annotations[label.id]
+                        annotations: annotations[label.id],
                     };
                 });
         },
     },
     methods: {
-        sortByName: function (a, b) {
-            return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+        handleSelect: function (annotation, shift) {
+            if (annotation.selected !== false && shift) {
+                this.$emit('deselect', annotation);
+            } else {
+                this.$emit('select', annotation, shift);
+            }
         },
-        reallyScrollIntoView: function (annotations) {
+        emitDetach: function (annotation, annotationLabel) {
+            this.$emit('detach', annotation, annotationLabel);
+        },
+        emitSelectFilter: function (filter) {
+            this.$emit('select-filter', filter);
+        },
+        emitUnselectFilter: function () {
+            this.$emit('unselect-filter');
+        },
+        emitFocus: function (annotation) {
+            this.$emit('focus', annotation);
+        },
+        // If an annotation is selected on the map the respective annotation labels
+        // should be visible in the annotations tab, too. This function adjusts the
+        // scrollTop of the list so all selected annotation labels are visible (if
+        // possible).
+        scrollIntoView: function (annotations) {
             var scrollElement = this.$refs.scrollList;
             var scrollTop = scrollElement.scrollTop;
             var height = scrollElement.offsetHeight;
@@ -88,48 +125,16 @@ biigle.$component('annotations.components.annotationsTab', {
                 }
             }
         },
-        // If an annotation is selected on the map the respective annotation labels
-        // should be visible in the annotations tab, too. This function adjusts the
-        // scrollTop of the list so all selected annotation labels are visible (if
-        // possible).
-        scrollIntoView: function (annotations) {
-            if (annotations.length === 0) {
-                return;
-            }
-
-            // Wait for the annotations list to be rendered so the offsetTop of each
-            // item can be determined.
-            this.$nextTick(function () {
-                this.reallyScrollIntoView(annotations);
-            });
-        },
-        // If an annotation label is selected it may be that a preceding annotation item
-        // expands which would push the currently selected annotation label down. This
-        // function adjusts the scrollTop so the selected annotation label stays at the
-        // same position relative to the cursor.
-        keepElementPosition: function (element) {
-            var scrollElement = this.$refs.scrollList;
-            var positionBefore = element.offsetTop - scrollElement.scrollTop;
-            // Wait until everything is rendered.
-            this.$nextTick(function () {
+    },
+    watch: {
+        selectedAnnotations: function (annotations) {
+            if (annotations.length > 0) {
+                // Wait for the annotations list to be rendered so the offsetTop of each
+                // item can be determined.
                 this.$nextTick(function () {
-                    var positionAfter = element.offsetTop - scrollElement.scrollTop;
-                    // Scroll so the element has the same relative position than before.
-                    scrollElement.scrollTop += positionAfter - positionBefore;
+                    this.scrollIntoView(annotations);
                 });
-            });
-        },
-        bubbleFilter: function (filter) {
-            this.$emit('filter', filter);
+            }
         },
     },
 });
-
-/**
- * Additional components that can be dynamically added by other Biigle modules via
- * view mixins. These components are meant for the "annotationsAnnotationsTab" view mixin
- * mount point.
- *
- * @type {Object}
- */
-biigle.$declare('annotations.components.annotationsTabPlugins', {});

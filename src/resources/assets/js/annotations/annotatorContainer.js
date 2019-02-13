@@ -12,13 +12,18 @@ biigle.$viewModel('annotator-container', function (element) {
     var utils = biigle.$require('annotations.stores.utils');
     var settings = biigle.$require('annotations.stores.settings');
 
+    var LabelFilter = biigle.$require('annotations.models.LabelAnnotationFilter');
+    var UserFilter = biigle.$require('annotations.models.UserAnnotationFilter');
+    var ShapeFilter = biigle.$require('annotations.models.ShapeAnnotationFilter');
+    var SessionFilter = biigle.$require('annotations.models.SessionAnnotationFilter');
+
     new Vue({
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
         components: {
             sidebar: biigle.$require('annotations.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
-            annotationsTab: biigle.$require('annotations.components.annotationsTab'),
+            annotationsTab: biigle.$require('annotations.components.siaAnnotationsTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
             annotationModesTab: biigle.$require('annotations.components.annotationModesTab'),
             colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
@@ -32,6 +37,12 @@ biigle.$viewModel('annotator-container', function (element) {
             image: null,
             annotations: [],
             annotationFilter: null,
+            annotationFilters: [
+                new LabelFilter(),
+                new UserFilter(),
+                new ShapeFilter({data: {shapes: biigle.$require('annotations.shapes')}}),
+                new SessionFilter({data: {sessions: biigle.$require('annotations.sessions')}}),
+            ],
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
             annotationOpacity: 1,
@@ -60,15 +71,15 @@ biigle.$viewModel('annotator-container', function (element) {
                 return this.imagesIds[this.imageIndex];
             },
             hasAnnotationFilter: function () {
-                return typeof this.annotationFilter === 'function';
+                return this.annotationFilter !== null;
             },
             filteredAnnotations: function () {
                 var annotations = this.annotations.filter(function (a) {
                     return !a.markedForDeletion;
                 });
 
-                if (this.hasAnnotationFilter) {
-                    return annotations.filter(this.annotationFilter);
+                if (this.annotationFilter) {
+                    return this.annotationFilter.filter(annotations);
                 }
 
                 return annotations;
@@ -274,8 +285,10 @@ biigle.$viewModel('annotator-container', function (element) {
                 });
             },
             // Handler for the select event fired by the global event bus.
-            handleSelectAnnotation: function (annotation, event) {
-                if (event && event.shiftKey) {
+            handleSelectAnnotation: function (annotation, shift) {
+                // Handle the case where the second argument is an event object for
+                // backwards compatibility.
+                if (shift === true || (typeof shift === 'object' && shift.shiftKey)) {
                     annotation.selected = true;
                     return;
                 }
@@ -293,26 +306,27 @@ biigle.$viewModel('annotator-container', function (element) {
                 deselected.forEach(function (annotation) {
                     annotation.selected = false;
                 });
-
-                this.$refs.annotationsTab.scrollIntoView(this.selectedAnnotations);
             },
-            handleDeselectAnnotation: function (annotation, event) {
-                if (event && event.shiftKey) {
+            handleDeselectAnnotation: function (annotation) {
+                if (annotation) {
                     annotation.selected = false;
-                    return;
+                } else {
+                    this.annotations.forEach(function (a) {
+                        a.selected = false;
+                    });
                 }
-
-                this.annotations.forEach(function (a) {
-                    a.selected = false;
-                });
             },
             focusAnnotation: function (annotation, fast, keepResolution) {
                 this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
             },
-            handleDetachAnnotationLabel: function (annotation, label) {
+            handleDetachAnnotationLabel: function (annotation, annotationLabel) {
                 if (this.isEditor) {
-                    annotationsStore.detachLabel(annotation, label)
-                        .catch(messages.handleErrorResponse);
+                    if (annotation.labels.length > 1) {
+                        annotationsStore.detachLabel(annotation, annotationLabel)
+                            .catch(messages.handleErrorResponse);
+                    } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
+                        this.handleDeleteAnnotation(annotation);
+                    }
                 }
             },
             handleDeleteAnnotation: function (annotation) {
@@ -349,6 +363,12 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             handleFilter: function (filter) {
                 this.annotationFilter = filter;
+            },
+            resetFilter: function () {
+                if (this.annotationFilter) {
+                    this.annotationFilter.reset();
+                }
+                this.annotationFilter = null;
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
@@ -506,7 +526,11 @@ biigle.$viewModel('annotator-container', function (element) {
                 if (this.isVolareAnnotationMode) {
                     this.userUpdatedVolareResolution = true;
                 }
-            }
+            },
+            annotations: function (annotations) {
+                this.annotationFilters[0].annotations = annotations;
+                this.annotationFilters[1].annotations = annotations;
+            },
         },
         created: function () {
             if (this.imagesIds.length === 0) {
@@ -534,11 +558,13 @@ biigle.$viewModel('annotator-container', function (element) {
                 ];
             }
 
+            // These events are used by the SHERPA client of Michael Kloster and
+            // retained for backwards compatibility.
             events.$on('annotations.select', this.handleSelectAnnotation);
             events.$on('annotations.deselect', this.handleDeselectAnnotation);
-            events.$on('annotations.focus', this.focusAnnotation);
             events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
             events.$on('annotations.delete', this.handleDeleteAnnotation);
+            events.$on('annotations.focus', this.focusAnnotation);
 
             if (urlParams.get('annotation')) {
                 var id = parseInt(urlParams.get('annotation'));
