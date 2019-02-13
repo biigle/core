@@ -12,12 +12,12 @@
         </p>
 
         <p class="text-center">
-            <a href="{{asset('vendor/videos/images/manual/editing_annotations_1.jpg')}}"><img src="{{asset('vendor/videos/images/manual/editing_annotations_1.jpg')}}" width="33%"></a>
+            <a href="{{asset('vendor/videos/images/manual/editing_annotations_1.jpg')}}"><img src="{{asset('vendor/videos/images/manual/editing_annotations_1.jpg')}}" width="50%"></a>
         </p>
 
         <h3><a name="modify-annotations"></a>Modify annotations</h3>
         <p>
-            Only keyframes of a video annotation can be modified. First, select a keyframe in the <a href="{{route('manual-tutorials', ['videos', 'navigating-timeline'])}}">timeline</a> and then modify or move the annotation at this keyframe in the same way than a <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">still image annotation</a>. If you do not select a keyframe of the annotation first, a new keyframe will be created at the current time of the video.
+            Only the keyframes of a video annotation can be modified. First, select a keyframe in the <a href="{{route('manual-tutorials', ['videos', 'navigating-timeline'])}}">timeline</a> and then modify or <i class="fa fa-arrows-alt"></i> move the annotation at this keyframe in the same way than a <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">still image annotation</a>. If you do not select a keyframe of the annotation first, a new keyframe will be created at the current time of the video. Labels can be <i class="fa fa-tag"></i> attached to or detached from video annotations in the same way than for <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}#attach-labels">still image annotations</a>.
         </p>
 
         <h3><a name="link-annotation-clips"></a><i class="fa fa-link"></i> Link annotation clips</h3>
