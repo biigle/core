@@ -115,10 +115,4 @@ biigle.$component('videos.components.annotationsTabLabelItem', {
             return this.canDetachOthers || this.ownUserId === annotationLabel.user_id;
         },
     },
-    watch: {
-        //
-    },
-    created: function () {
-        //
-    },
 });

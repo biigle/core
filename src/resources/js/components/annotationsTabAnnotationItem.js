@@ -23,8 +23,6 @@ biigle.$component('videos.components.annotationsTabAnnotationItem', {
             '<span v-text="username"></span>' +
         '</li>' +
     '</li>',
-    components: {
-    },
     props: {
         annotation: {
             type: Object,
@@ -38,11 +36,6 @@ biigle.$component('videos.components.annotationsTabAnnotationItem', {
             type: Boolean,
             default: false,
         },
-    },
-    data: function () {
-        return {
-            //
-        };
     },
     computed: {
         classObject: function () {
@@ -64,11 +57,5 @@ biigle.$component('videos.components.annotationsTabAnnotationItem', {
         emitDetach: function () {
             this.$emit('detach', this.annotation, this.annotationLabel);
         },
-    },
-    watch: {
-        //
-    },
-    created: function () {
-        //
     },
 });

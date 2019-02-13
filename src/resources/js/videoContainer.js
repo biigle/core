@@ -272,9 +272,9 @@ biigle.$viewModel('video-container', function (element) {
                     .catch(MSG.handleResponseError);
             },
             initAnnotationFilters: function () {
-                var LabelFilter = biigle.$require('videos.models.LabelAnnotationFilter');
-                var UserFilter = biigle.$require('videos.models.UserAnnotationFilter');
-                var ShapeFilter = biigle.$require('videos.models.ShapeAnnotationFilter');
+                var LabelFilter = biigle.$require('annotations.models.LabelAnnotationFilter');
+                var UserFilter = biigle.$require('annotations.models.UserAnnotationFilter');
+                var ShapeFilter = biigle.$require('annotations.models.ShapeAnnotationFilter');
 
                 this.annotationFilters = [
                     new LabelFilter({data: {annotations: this.annotations}}),
