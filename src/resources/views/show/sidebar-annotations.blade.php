@@ -17,5 +17,27 @@
             v-on:detach="detachAnnotationLabel"
             v-on:select-filter="setActiveAnnotationFilter"
             v-on:unselect-filter="resetAnnotationFilter"
-            ></annotations-tab>
+            inline-template
+            >
+                <div class="annotations-tab">
+                    <filters
+                         :annotation-filters="annotationFilters"
+                         :has-active-filter="hasActiveFilter"
+                         v-on:select="emitSelectFilter"
+                         v-on:unselect="emitUnselectFilter"
+                        ></filters>
+                    <ul class="annotations-tab__list list-unstyled" ref="scrollList">
+                        <label-item
+                             v-for="item in labelItems"
+                             :key="item.id"
+                             :label="item.label"
+                             :annotations="item.annotations"
+                             :can-detach-others="canDetachOthers"
+                             :own-user-id="ownUserId"
+                             v-on:select="handleSelect"
+                             v-on:detach="emitDetach"
+                             ></label-item>
+                    </ul>
+                </div>
+        </annotations-tab>
 </sidebar-tab>
