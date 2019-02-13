@@ -33,7 +33,7 @@
     }
 }
 
-@keyframes rotate {
+@keyframes keyframe-stripes {
     100% {
         background-position: 0 6px;
     }
@@ -41,7 +41,7 @@
 
 .annotation-clip--tracking {
     .annotation-keyframe {
-        animation: .5s linear rotate infinite;
+        animation: .5s linear keyframe-stripes infinite;
         background: repeating-linear-gradient(
             45deg,
             transparent,
