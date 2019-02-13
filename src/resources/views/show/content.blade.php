@@ -1,6 +1,6 @@
 <loader-block :active="loading"></loader-block>
 <video-screen
-      :annotations="annotations"
+      :annotations="filteredAnnotations"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
       :can-add="canEdit"
@@ -26,7 +26,7 @@
       v-on:moveend="updateMapUrlParams"
       ></video-screen>
 <video-timeline
-      :annotations="annotations"
+      :annotations="filteredAnnotations"
       :bookmarks="bookmarks"
       :video="video"
       :seeking="seeking"

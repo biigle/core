@@ -23,7 +23,7 @@ class VideoController extends Controller
         $video = Video::findOrFail($id);
         $this->authorize('access', $video);
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::where('name', '!=', 'Ellipse')->pluck('name', 'id');
 
         $labelTrees = LabelTree::with('labels')
             ->select('id', 'name')

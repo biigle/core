@@ -46,6 +46,8 @@ biigle.$viewModel('video-container', function (element) {
             initialCurrentTime: 0,
             initialMapCenter: [0, 0],
             initialMapResolution: 0,
+            annotationFilters: [],
+            activeAnnotationFilter: null,
         },
         computed: {
             shapes: function () {
@@ -57,12 +59,22 @@ biigle.$viewModel('video-container', function (element) {
                 return map;
             },
             selectedAnnotations: function () {
-                return this.annotations.filter(function (annotation) {
+                return this.filteredAnnotations.filter(function (annotation) {
                     return annotation.isSelected;
                 });
             },
             settingsStore: function () {
                 return biigle.$require('videos.settings');
+            },
+            filteredAnnotations: function () {
+                if (this.activeAnnotationFilter) {
+                    return this.activeAnnotationFilter.filter(this.annotations);
+                }
+
+                return this.annotations;
+            },
+            hasActiveAnnotationFilter: function () {
+                return this.activeAnnotationFilter !== null;
             },
         },
         methods: {
@@ -259,6 +271,26 @@ biigle.$viewModel('video-container', function (element) {
                 annotation.attachAnnotationLabel(label)
                     .catch(MSG.handleResponseError);
             },
+            initAnnotationFilters: function () {
+                var LabelFilter = biigle.$require('videos.models.LabelAnnotationFilter');
+                var UserFilter = biigle.$require('videos.models.UserAnnotationFilter');
+                var ShapeFilter = biigle.$require('videos.models.ShapeAnnotationFilter');
+
+                this.annotationFilters = [
+                    new LabelFilter({data: {annotations: this.annotations}}),
+                    new UserFilter({data: {annotations: this.annotations}}),
+                    new ShapeFilter({data: {shapes: SHAPES}}),
+                ];
+            },
+            setActiveAnnotationFilter: function (filter) {
+                this.activeAnnotationFilter = filter;
+            },
+            resetAnnotationFilter: function () {
+                if (this.activeAnnotationFilter) {
+                    this.activeAnnotationFilter.reset();
+                }
+                this.activeAnnotationFilter = null;
+            },
         },
         watch: {
             'settings.playbackRate': function (rate) {
@@ -287,7 +319,8 @@ biigle.$viewModel('video-container', function (element) {
                 self.video.addEventListener('error', reject);
             });
             var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
-            annotationPromise.then(this.setAnnotations, MSG.handleResponseError);
+            annotationPromise.then(this.setAnnotations, MSG.handleResponseError)
+                .then(this.initAnnotationFilters);
 
             Vue.Promise.all([videoPromise, annotationPromise])
                 .then(this.maybeInitCurrentTime)
