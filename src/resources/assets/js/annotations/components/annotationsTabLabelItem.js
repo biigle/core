@@ -72,7 +72,7 @@ biigle.$component('annotations.components.annotationsTabLabelItem', {
             };
         },
         count: function () {
-            return this.annotations.length;
+            return this.annotationItems.length;
         },
         countTitle: function () {
             return 'There are ' + this.count + ' annotations with label ' + this.label.name;

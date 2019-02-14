@@ -44,15 +44,23 @@ biigle.$component('annotations.components.annotationsTab', {
         labelItems: function () {
             var labels = {};
             var annotations = {};
+            var uniqueMap = {};
 
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (annotationLabel) {
                     if (!labels.hasOwnProperty(annotationLabel.label.id)) {
-                        labels[annotationLabel.label.id] = annotationLabel.label;
-                        annotations[annotationLabel.label.id] = [];
+                        labels[annotationLabel.label_id] = annotationLabel.label;
+                        annotations[annotationLabel.label_id] = [];
                     }
 
-                    annotations[annotationLabel.label.id].push(annotation);
+                    // Make sure each annotation is added only once for each label item.
+                    // This is important if the annotation has the same label attached by
+                    // multiple users.
+                    var uniqueKey = annotation.id + '-' + annotationLabel.label_id;
+                    if (!uniqueMap.hasOwnProperty(uniqueKey)) {
+                        uniqueMap[uniqueKey] = null;
+                        annotations[annotationLabel.label_id].push(annotation);
+                    }
                 });
             });
 
