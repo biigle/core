@@ -18,7 +18,7 @@ biigle.$viewModel('video-container', function (element) {
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
             settingsTab: biigle.$require('videos.components.settingsTab'),
-            annotationsTab: biigle.$require('videos.components.annotationsTab'),
+            annotationsTab: biigle.$require('videos.components.viaAnnotationsTab'),
         },
         data: {
             canEdit: biigle.$require('videos.isEditor'),
