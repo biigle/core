@@ -8,6 +8,23 @@
             All sidebar tabs of the video annotation tool explained.
         </p>
 
+        <h3><a name="annotations-tab"></a> <i class="fa fa-map-marker-alt"></i> Annotations</h3>
+        <p>
+            The annotations tab shows a list of all annotations in the video, grouped by their label. A click on a label expands the list item to show all annotations that have this label attached. Each annotation is represented by the icon of the shape of the annotation and the user who attached the label to the annotation. A click on an annotation list item selects the annotation. A selected annotation is highlighted both on the image an in the annotations list.
+        </p>
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/sidebar_annotations_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/sidebar_annotations_1.jpg')}}" width="50%"></a>
+        </p>
+        <p>
+            An annotation can have multiple labels by multiple users attached to it. This means that there may be multiple highlighted items in the annotation list for a single selected annotation.
+        </p>
+        <p>
+            At the very top of the annotations tab there is the annotation filter. Annotations can be filtered by label, user or shape. You can use the filter e.g. to display only your own annotations in the video. Whenever the annotation filter is active, the button of the annotations tab will be highlighted so you don't forget the active filter.
+        </p>
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/sidebar_annotations_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/sidebar_annotations_2.jpg')}}" width="50%"></a>
+        </p>
+
         <h3><a name="label-trees-tab"></a> <i class="fa fa-tags"></i> Label Trees</h3>
 
         <p>
