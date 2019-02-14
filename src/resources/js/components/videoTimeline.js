@@ -78,21 +78,13 @@ biigle.$component('videos.components.videoTimeline', {
         },
         annotationTracks: function () {
             var map = {};
-            var uniqueMap = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
                         map[label.label_id] = [];
                     }
 
-                    // Make sure to add each annotation only once for each label. This is
-                    // important if the same label is attached to the annotation by
-                    // multiple users.
-                    var uniqueKey = annotation.id + '-' + label.label_id;
-                    if (!uniqueMap.hasOwnProperty(uniqueKey)) {
-                        uniqueMap[uniqueKey] = null;
-                        map[label.label_id].push(annotation);
-                    }
+                    map[label.label_id].push(annotation);
                 });
             });
 
