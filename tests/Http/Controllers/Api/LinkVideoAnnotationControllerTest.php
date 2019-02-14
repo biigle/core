@@ -26,9 +26,9 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::circleId(),
+            'shape_id' => Shape::pointId(),
             'video_id' => $this->video->id,
-            'frames' => [1.5, 2.5],
+            'frames' => [2.0, 4.0],
             'points' => [[30, 30], [40, 40]],
         ]);
 
@@ -47,41 +47,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // Second annotation ID must exist.
             ->assertStatus(404);
 
+        $a2->update(['video_id' => VideoTest::create()->id]);
         $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             // Other annotation must belong to the same video.
             ->assertStatus(422);
 
-        $a2->update(['video_id' => $a1->video_id]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
-                'annotation_id' => $a2->id,
-            ])
-            // Times must not overlap.
-            ->assertStatus(422);
-
-        $a2->update(['frames' => [0.5, 1.5]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
-                'annotation_id' => $a2->id,
-            ])
-            // Times still must not overlap.
-            ->assertStatus(422);
-
-        $a2->update(['frames' => [1.25, 1.75]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
-                'annotation_id' => $a2->id,
-            ])
-            // Times still must not overlap.
-            ->assertStatus(422);
-
-        $a2->update(['frames' => [0.5, 2.5]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
-                'annotation_id' => $a2->id,
-            ])
-            // Times still must not overlap.
-            ->assertStatus(422);
-
-        $a2->update(['frames' => [3.0, 4.0]]);
+        $a2->update(['video_id' => $this->video->id, 'shape_id' => Shape::circleId()]);
         $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
@@ -97,6 +70,65 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
         $this->assertEquals(1, $this->video->annotations()->count());
         $this->assertNull($a2->fresh());
+    }
+
+    public function testStoreValidateOverlap()
+    {
+        $a1 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 10], [20, 20]],
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.5, 2.5],
+            'points' => [[30, 30], [40, 40]],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [0.5, 1.5]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [1.25, 1.75]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [0.5, 2.5]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [0.5, 2.0]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [1.0, 2.5]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
+
+        $a2->update(['frames' => [1.0, 2.0]]);
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422);
     }
 
     public function testStoreBefore()
@@ -227,5 +259,29 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         $a1->refresh();
         $this->assertEquals([1.0, 2.0, 3.0], $a1->frames);
         $this->assertEquals([[10, 10], [20, 20], [40, 40]], $a1->points);
+    }
+
+    public function testStoreSingleFrameTouching()
+    {
+        $a1 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 10]],
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[30, 30]],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            // This is the same than overlapping times of an annotation clip.
+            ->assertStatus(422);
     }
 }

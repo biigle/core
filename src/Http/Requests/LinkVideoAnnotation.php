@@ -69,7 +69,8 @@ class LinkVideoAnnotation extends FormRequest
             if ($firstStarts > $secondStarts && $firstStarts < $secondEnds
                 || $firstEnds > $secondStarts && $firstEnds < $secondEnds
                 || $secondStarts > $firstStarts && $secondStarts < $firstEnds
-                || $secondEnds > $firstStarts && $secondEnds < $firstEnds) {
+                || $secondEnds > $firstStarts && $secondEnds < $firstEnds
+                || $firstStarts === $secondStarts && $firstEnds === $secondEnds) {
                 $validator->errors()->add('annotation_id', 'The two annotations must not overlap.');
             }
 
