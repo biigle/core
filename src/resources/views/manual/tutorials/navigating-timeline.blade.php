@@ -40,7 +40,7 @@
 
         <h3><a name="annotation-tracks"></a>Annotation Tracks</h3>
         <p>
-            The annotations of the video are grouped by their label into several <i>tracks</i>. Each track shows the label name at the left and the annotations along the time axis at the right. Annotations of the same track are displayed in the color of the label to which the track belongs. If multiple annotation clips occur at the same time, they are stacked in the same track. Note that multiple labels can be attached to a single annotation, too, so the same annotation may be displayed in more than one track.
+            The annotations of the video are grouped by their label into several <i>tracks</i>. Each track shows the label name at the left and the annotations along the time axis at the right. Annotations of the same track are displayed in the color of the label to which the track belongs. If multiple annotation clips occur at the same time, they are stacked in the same track. Note that multiple labels can be attached to a single annotation. This means that the same annotation may be displayed in more than one track or even multiple times in the same track if different users attached the same label.
         </p>
 
         <h3><a name="annotations"></a>Annotations</h3>
