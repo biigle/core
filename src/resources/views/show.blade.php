@@ -85,6 +85,7 @@
             v-on:update="handleUpdateAnnotations"
             v-on:attach="handleAttachLabel"
             v-on:delete="handleDeleteAnnotations"
+            v-on:measuring="fetchImagesArea"
             ref="canvas"
             inline-template>
             @include('annotations::show.annotationCanvas')

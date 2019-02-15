@@ -481,6 +481,14 @@ biigle.$viewModel('annotator-container', function (element) {
             createSampledAnnotation: function () {
                 this.$refs.canvas.createSampledAnnotation();
             },
+            fetchImagesArea: function () {
+                if (!this.imagesArea) {
+                    this.imagesArea = {};
+                    biigle.$require('annotations.api.volumeImageArea')
+                        .get({id: volumeId})
+                        .then(this.setImagesArea, messages.handleErrorResponse);
+                }
+            },
             setImagesArea: function (response) {
                 this.imagesArea = response.body;
             },
@@ -510,11 +518,13 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.maybeUpdateFocussedAnnotation();
             },
             showScaleLine: function (show) {
-                if (show && !this.imagesArea) {
-                    this.imagesArea = {};
-                    biigle.$require('annotations.api.volumeImageArea')
-                        .get({id: volumeId})
-                        .then(this.setImagesArea, messages.handleErrorResponse);
+                if (show) {
+                    this.fetchImagesArea();
+                }
+            },
+            showMeasureTooltip: function (show) {
+                if (show) {
+                    this.fetchImagesArea();
                 }
             },
             isVolareAnnotationMode: function (enabled) {

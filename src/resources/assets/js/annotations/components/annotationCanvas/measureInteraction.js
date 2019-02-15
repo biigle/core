@@ -51,6 +51,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                 if (measuring) {
                     this.map.addLayer(measureLayer);
                     this.map.addInteraction(measureInteraction);
+                    this.$emit('measuring');
                 } else {
                     measureLayer.getSource().clear();
                     this.setMeasureFeature(undefined);
