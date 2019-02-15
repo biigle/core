@@ -182,12 +182,16 @@ class VolumeImageMetadataController extends Controller
         $toFill = array_only($toFill, $this->allowedAttributes);
         $image->fillable($this->allowedAttributes);
 
-        if (array_key_exists('lng', $toFill) && !is_numeric($toFill['lng'])) {
-            throw new Exception("'{$toFill['lng']}' is no valid longitude for image {$image->filename}.");
+        if (array_key_exists('lng', $toFill)) {
+            if (!is_numeric($toFill['lng']) || abs($toFill['lng']) > 180) {
+                throw new Exception("'{$toFill['lng']}' is no valid longitude for image {$image->filename}.");
+            }
         }
 
-        if (array_key_exists('lat', $toFill) && !is_numeric($toFill['lat'])) {
-            throw new Exception("'{$toFill['lat']}' is no valid latitude for image {$image->filename}.");
+        if (array_key_exists('lat', $toFill)) {
+            if (!is_numeric($toFill['lat']) || abs($toFill['lat']) > 90) {
+                throw new Exception("'{$toFill['lat']}' is no valid latitude for image {$image->filename}.");
+            }
         }
 
         // Catch both a malformed date (false) and the zero date (negative integer).

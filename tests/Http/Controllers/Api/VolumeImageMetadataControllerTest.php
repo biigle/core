@@ -23,44 +23,33 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
 
         $csv = $this->getCsv('image-metadata.csv');
         $this->beEditor();
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // no permissions
-        $response->assertStatus(403);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(403);
 
         $this->beAdmin();
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata");
         // file required
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata")->assertStatus(422);
 
         $csv = $this->getCsv('image-metadata-nocols.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns required
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
 
         $csv = $this->getCsv('image-metadata-wrongcols.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns content invalid
-        $response->assertStatus(302);
-
-        $csv = $this->getCsv('image-metadata-nolat.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
-        // lng requires lat, too
-        $response->assertStatus(302);
-
-        $csv = $this->getCsv('image-metadata-nolng.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
-        // lat requires lng, too
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
 
         $csv = $this->getCsv('image-metadata-colcount.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns don't match file
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
 
         $csv = $this->getCsv('image-metadata.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // image does not exist
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
 
         $png = ImageTest::create([
             'filename' => 'abc.png',
@@ -75,16 +64,11 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
             ]],
         ]);
 
-        $csv = $this->getCsv('image-metadata-colordering.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
-        // date is no valid longitude
-        $response->assertStatus(302);
-
         $this->assertFalse($this->volume()->hasGeoInfo());
 
         $csv = $this->getCsv('image-metadata.csv');
-        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
-        $response->assertStatus(200);
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
 
         $this->assertTrue($this->volume()->hasGeoInfo());
 
@@ -104,5 +88,37 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->assertNull($png->lng);
         $this->assertNull($png->lat);
         $this->assertEmpty($png->metadata);
+    }
+
+    public function testStoreInvalidLonLat()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-nolat.csv');
+        // lng requires lat, too
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
+
+        $csv = $this->getCsv('image-metadata-nolng.csv');
+        // lat requires lng, too
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
+
+        $csv = $this->getCsv('image-metadata-colordering.csv');
+        // date is no valid longitude
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
+
+        $csv = $this->getCsv('image-metadata-invalid-lat.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
+
+        $csv = $this->getCsv('image-metadata-invalid-lng.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
     }
 }
