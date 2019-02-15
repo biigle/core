@@ -12,10 +12,10 @@
             <div class="form-group" :class="{'has-error':hasError('images')}">
                 <label>Filename(s):&nbsp;</label>
                 <input type="text" class="form-control" name="filename" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" v-model="filenames" required>
+                <button type="submit" class="btn btn-success" :disabled="loading">Add image(s)</button>
                 <p class="help-block" v-text="getError('images')" v-if="hasError('images')"></p>
+                <span v-else class="help-block">Mutliple images may be added by submitting the image filenames as comma separated values.</span>
             </div>
-            <button type="submit" class="btn btn-success" :disabled="loading">Add image(s)</button>
-            <span class="help-block">Mutliple images may be added by submitting the image filenames as comma separated values.</span>
         </form>
     </div>
     <ul class="list-group images-list" v-cloak>

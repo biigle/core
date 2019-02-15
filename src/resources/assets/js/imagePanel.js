@@ -89,7 +89,7 @@ biigle.$viewModel('image-panel', function (element) {
             },
             handleErrorResponse: function (response) {
                 if (response.status === 422) {
-                    this.errors = response.data;
+                    this.errors = response.data.errors;
                 } else {
                     messages.handleErrorResponse(response);
                 }
@@ -98,7 +98,7 @@ biigle.$viewModel('image-panel', function (element) {
                 return this.errors.hasOwnProperty(name);
             },
             getError: function (name) {
-                return this.errors[name];
+                return this.errors[name].join("\n");
             },
             setImages: function (response) {
                 for (var id in response.body) {
