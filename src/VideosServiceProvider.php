@@ -40,8 +40,13 @@ class VideosServiceProvider extends ServiceProvider
                 'projectsShow',
                 'manualTutorial',
                 'manualReferences',
+                'searchTab',
+                'searchTabContent',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
+            'controllerMixins' => [
+                'search' => Http\Controllers\Mixins\SearchControllerMixin::class.'@index',
+            ],
         ]);
 
         Gate::policy(Video::class, Policies\VideoPolicy::class);

@@ -2,7 +2,9 @@
 
 namespace Biigle\Tests\Modules\Videos;
 
+use Biigle\Role;
 use ModelTestCase;
+use Biigle\Tests\UserTest;
 use Biigle\Modules\Videos\Video;
 
 class VideoTest extends ModelTestCase
@@ -78,5 +80,15 @@ class VideoTest extends ModelTestCase
         $this->assertTrue($this->model->isRemote());
         $this->model->url = 'https://remote.path';
         $this->assertTrue($this->model->isRemote());
+    }
+
+    public function testScopeAccessibleBy()
+    {
+        $user = UserTest::create();
+        $guest = UserTest::create();
+        $this->model->project->addUserId($guest->id, Role::guestId());
+
+        $this->assertEquals(0, Video::accessibleBy($user)->count());
+        $this->assertEquals(1, Video::accessibleBy($guest)->count());
     }
 }

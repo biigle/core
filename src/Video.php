@@ -2,6 +2,8 @@
 
 namespace Biigle\Modules\Videos;
 
+use DB;
+use Biigle\User;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Biigle\FileCache\Contracts\File as FileContract;
@@ -51,6 +53,27 @@ class Video extends Model implements FileContract
     protected $hidden = [
         'attrs',
     ];
+
+    /**
+     * Scope a query to all videos that are accessible by a user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessibleBy($query, User $user)
+    {
+        if ($user->can('sudo')) {
+            return $query;
+        }
+
+        return $query->whereExists(function ($query) use ($user) {
+            $query->select(DB::raw(1))
+                ->from('videos')
+                ->join('project_user', 'project_user.project_id', '=', 'videos.project_id')
+                ->where('project_user.user_id', $user->id);
+        });
+    }
 
     /**
      * {@inheritdoc}
