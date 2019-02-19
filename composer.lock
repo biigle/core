@@ -236,16 +236,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v2.0.2",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "e2fb3d163cdfa19234bcf880dfd205b288e772b7"
+                "reference": "0e3deacd18ea2f17d3acf224b81c4620139ee66b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/e2fb3d163cdfa19234bcf880dfd205b288e772b7",
-                "reference": "e2fb3d163cdfa19234bcf880dfd205b288e772b7",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/0e3deacd18ea2f17d3acf224b81c4620139ee66b",
+                "reference": "0e3deacd18ea2f17d3acf224b81c4620139ee66b",
                 "shasum": ""
             },
             "require": {
@@ -286,7 +286,7 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "time": "2019-02-07T17:19:28+00:00"
+            "time": "2019-02-12T08:58:07+00:00"
         },
         {
             "name": "biigle/laravel-remote-queue",
