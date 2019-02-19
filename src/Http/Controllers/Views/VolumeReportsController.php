@@ -2,7 +2,8 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
-use Biigle\Volume;
+use Biigle\Volume as BaseVolume;
+use Biigle\Modules\Reports\Volume;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -16,14 +17,14 @@ class VolumeReportsController extends Controller
      */
     public function show($id)
     {
-        $volume = Volume::findOrFail($id);
+        $volume = BaseVolume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
         $types = ReportType::all();
 
         return view('reports::volumeReports', [
             'projects' => $volume->projects,
-            'volume' => $volume,
+            'volume' => Volume::convert($volume),
             'annotationSessions' => $sessions,
             'reportTypes' => $types,
         ]);

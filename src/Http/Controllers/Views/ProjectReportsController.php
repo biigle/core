@@ -19,10 +19,14 @@ class ProjectReportsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
         $types = ReportType::all();
+        $hasExportArea = $project->volumes()
+            ->whereNotNull('attrs->export_area')
+            ->exists();
 
         return view('reports::projectReports', [
             'project' => $project,
             'reportTypes' => $types,
+            'hasExportArea' => $hasExportArea,
         ]);
     }
 }

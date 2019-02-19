@@ -74,9 +74,15 @@
                 <div class="row" v-if="wantsType('Annotations')" v-cloak>
                     <div class="col-sm-7" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
-                            <label>
-                                <input type="checkbox" v-model="options.export_area"> Restrict to export area
-                            </label>
+                            @if ($volume->exportArea)
+                                <label>
+                                    <input type="checkbox" v-model="options.export_area"> Restrict to export area
+                                </label>
+                            @else
+                                <label class="text-muted">
+                                    <input type="checkbox" v-model="options.export_area" disabled> Restrict to export area
+                                </label>
+                            @endif
                         </div>
                         <div v-if="errors.export_area" v-cloak class="help-block" v-text="getError('export_area')"></div>
                     </div>
