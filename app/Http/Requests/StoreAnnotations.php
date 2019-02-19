@@ -30,13 +30,6 @@ class StoreAnnotations extends FormRequest
     public $images;
 
     /**
-     * Unique label IDs of this request.
-     *
-     * @var array
-     */
-    public $labelIds;
-
-    /**
      * The labels that should be attached to the new annotations.
      *
      * @var array
@@ -54,8 +47,8 @@ class StoreAnnotations extends FormRequest
         $this->imageIds = $input->pluck('image_id')->unique();
         $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
 
-        $this->labelIds = $input->pluck('label_id')->unique();
-        $this->labels = Label::findMany($this->labelIds)->keyBy('id');
+        $labelIds = $input->pluck('label_id')->unique();
+        $this->labels = Label::findMany($labelIds)->keyBy('id');
 
         return $this->images->reduce(function ($carry, $image) {
             return $carry && $this->user()->can('add-annotation', $image);
@@ -98,10 +91,6 @@ class StoreAnnotations extends FormRequest
 
             if ($this->imageIds->count() !== $this->images->count()) {
                 $validator->errors()->add('image_id', 'The image id does not exist.');
-            }
-
-            if ($this->labelIds->count() !== $this->labels->count()) {
-                $validator->errors()->add('label_id', 'The label id does not exist.');
             }
         });
     }
