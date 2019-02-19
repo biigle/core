@@ -52,7 +52,7 @@ class AnnotationController extends Controller
      * @apiDescription Accepts an array of new annotations that should be batch-created. A maximum of 100 annotations can be created with a single request.
      *
      * @apiParam (Required arguments) {Number} image_id ID of the image to which the annotation should belong.
-     * @apiParam (Required arguments) {} . All required arguments of the "Create a new annotation" endpoint.
+     * @apiParam (Required arguments) {Mixed} . All required arguments of the "Create a new annotation" endpoint.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * [
