@@ -35,7 +35,7 @@ class LabelPolicy extends CachedPolicy
      */
     public function update(User $user, Label $label)
     {
-        return $this->remember("label-can-update-{$user->id}-{$label->id}", function () use ($user, $label) {
+        return $this->remember("label-can-update-{$user->id}-{$label->label_tree_id}", function () use ($user, $label) {
             return DB::table('label_tree_user')
                 ->where('label_tree_id', $label->label_tree_id)
                 ->where('user_id', $user->id)

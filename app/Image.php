@@ -5,16 +5,16 @@ namespace Biigle;
 use Response;
 use Exception;
 use TileCache;
-use ImageCache;
+use FileCache;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\ImageCache\Contracts\Image as ImageContract;
+use Biigle\FileCache\Contracts\File as FileContract;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model implements ImageContract
+class Image extends Model implements FileContract
 {
     use HasJsonAttributes;
 
@@ -181,7 +181,7 @@ class Image extends Model implements ImageContract
         }
 
         try {
-            $stream = ImageCache::getStream($this);
+            $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
                 abort(404);
             }

@@ -62,7 +62,7 @@ class ImagePolicy extends CachedPolicy
      */
     public function addAnnotation(User $user, Image $image)
     {
-        return $this->remember("image-can-add-annotation-{$user->id}-{$image->id}", function () use ($user, $image) {
+        return $this->remember("image-can-add-annotation-{$user->id}-{$image->volume_id}", function () use ($user, $image) {
             // check if user is member of one of the projects, the image belongs to
             return DB::table('project_user')
                 ->where('user_id', $user->id)
@@ -90,7 +90,7 @@ class ImagePolicy extends CachedPolicy
      */
     public function destroy(User $user, Image $image)
     {
-        return $this->remember("image-can-destroy-{$user->id}-{$image->id}", function () use ($user, $image) {
+        return $this->remember("image-can-destroy-{$user->id}-{$image->volume_id}", function () use ($user, $image) {
             // check if user is member of one of the projects, the image belongs to
             return DB::table('project_user')
                 ->where('user_id', $user->id)
@@ -119,7 +119,7 @@ class ImagePolicy extends CachedPolicy
      */
     public function attachLabel(User $user, Image $image, Label $label)
     {
-        return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
+        return $this->remember("image-can-attach-label-{$user->id}-{$image->volume_id}-{$label->id}", function () use ($user, $image, $label) {
             // Projects, the image belongs to *and* the user is editor, expert or admin
             // of.
             $projectIds = Project::inCommon($user, $image->volume_id, [

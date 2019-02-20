@@ -116,7 +116,7 @@ class ApiTokenController extends Controller
             $token->delete();
 
             if (!$this->isAutomatedRequest()) {
-                $this->fuzzyRedirect()->with('deleted', true);
+                return $this->fuzzyRedirect()->with('deleted', true);
             }
         } else {
             // Dont't disclose existing token IDs to other users.

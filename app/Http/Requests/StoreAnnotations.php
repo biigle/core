@@ -1,0 +1,97 @@
+<?php
+
+namespace Biigle\Http\Requests;
+
+use Biigle\Label;
+use Biigle\Image;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreAnnotations extends FormRequest
+{
+    /**
+     * Maximum number of new annotations that can be created in a single request.
+     *
+     * @var int
+     */
+    const LIMIT = 100;
+
+    /**
+     * Unique image IDs of this request.
+     *
+     * @var array
+     */
+    public $imageIds;
+
+    /**
+     * The images on which the annotations should be created.
+     *
+     * @var array
+     */
+    public $images;
+
+    /**
+     * The labels that should be attached to the new annotations.
+     *
+     * @var array
+     */
+    public $labels;
+
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        $input = collect($this->all());
+        $this->imageIds = $input->pluck('image_id')->unique();
+        $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
+
+        $labelIds = $input->pluck('label_id')->unique();
+        $this->labels = Label::findMany($labelIds)->keyBy('id');
+
+        return $this->images->reduce(function ($carry, $image) {
+            return $carry && $this->user()->can('add-annotation', $image);
+        }, true);
+
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            '*.label_id' => 'required|exists:labels,id',
+            '*.confidence' => 'required|numeric|between:0,1',
+            '*.shape_id' => 'required|exists:shapes,id',
+            '*.points' => 'required|array',
+        ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        if (count($this->all()) > self::LIMIT) {
+            $validator->errors()->add('limit', 'No more than 100 annotations can be created with a single request.');
+            $this->failedValidation($validator);
+        }
+
+        $validator->after(function ($validator) {
+            if ($this->imageIds->count() !== $this->images->count()) {
+                $validator->errors()->add('image_id', 'The image id does not exist.');
+            }
+
+            if ($this->imageIds->count() !== $this->images->count()) {
+                $validator->errors()->add('image_id', 'The image id does not exist.');
+            }
+        });
+    }
+}
