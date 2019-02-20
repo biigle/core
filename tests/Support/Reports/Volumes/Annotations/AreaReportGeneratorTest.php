@@ -319,7 +319,7 @@ class AreaReportGeneratorTest extends TestCase
 
         $image = ImageTest::create([
             'volume_id' => $volume->id,
-            'attrs' => ['laserpoints' => ['area' => 1, 'px' => 1000 * 1000]],
+            'attrs' => ['laserpoints' => ['area' => 1], 'width' => 1000, 'height' => 1000],
         ]);
 
         $a = AnnotationTest::create([

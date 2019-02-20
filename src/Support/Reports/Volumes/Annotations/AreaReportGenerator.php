@@ -293,16 +293,15 @@ class AreaReportGenerator extends AnnotationReportGenerator
             if (!property_exists($image, 'area') || !property_exists($image, 'px')) {
                 $laserpointsImage = LImage::convert($image);
                 $image->area = $laserpointsImage->area;
-                $image->px = $laserpointsImage->px;
+                if ($image->width && $image->height) {
+                    $image->px = $image->width * $image->height;
+                }
             }
 
-            $imageArea = $image->area;
-            $imagePx = $image->px;
-
-            if (!is_null($imageArea) && !is_null($imagePx)) {
+            if (!is_null($image->area) && !is_null($image->px)) {
                 // If we assume a pixel is a little square then this is the area of a
                 // single pixel.
-                $area = $imageArea / $imagePx;
+                $area = $image->area / $image->px;
                 // And this is the width/height of a single pixel.
                 $widthHeight = sqrt($area);
 
