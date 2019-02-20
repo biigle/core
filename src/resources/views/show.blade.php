@@ -26,6 +26,9 @@
                     @include('videos::show.sidebar-labels')
                 @endcan
                 @include('videos::show.sidebar-settings')
+                @can('update', $video)
+                    @include('videos::show.sidebar-edit')
+                @endcan
         </sidebar>
 </div>
 @endsection

@@ -21,7 +21,7 @@ $router->group([
         $router->get('videos/{id}/file', 'VideoFileController@show');
 
         $router->resource('videos', 'VideoController', [
-            'only' => ['destroy'],
+            'only' => ['update', 'destroy'],
             'parameters' => ['videos' => 'id'],
         ]);
 

@@ -25,9 +25,17 @@
 
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
             <label for="url">Video url</label>
-            <input type="text" class="form-control" name="url" id="url" placeholder="local://videos/file.mp4" value="{{ old('url') }}" required>
+            @if (config('biigle.offline_mode'))
+                <input type="text" class="form-control" name="url" id="url" placeholder="local://videos/file.mp4" value="{{ old('url') }}" required>
+            @else
+                <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/videos/file.mp4" value="{{ old('url') }}" required>
+            @endif
             <p class="help-block">
-                The video file on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>).
+                @if (config('biigle.offline_mode'))
+                  The video file on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>).
+               @else
+                  The video file of a <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">remote video</a> (e.g. <code>https://my-domain.tld/videos/file.mp4</code>) or on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>).
+               @endif
             </p>
             @if($errors->has('url'))
                <span class="help-block">{{ $errors->first('url') }}</span>

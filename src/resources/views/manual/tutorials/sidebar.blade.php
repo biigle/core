@@ -60,5 +60,11 @@
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
         </p>
+
+        <h3><a name="edit-tab"></a> <i class="fa fa-pencil-alt"></i> Edit</h3>
+
+        <p>
+            Project admins have access to the edit tab. This tab can be used to edit video information such as the name or URL.
+        </p>
     </div>
 @endsection
