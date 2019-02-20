@@ -49,13 +49,17 @@ biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/images/filter/filename{/pattern}',
     },
-    queryImageLabels: {
+    queryUsedImageLabels: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/image-labels',
     },
     queryFilenames: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/filenames',
+    },
+    queryImageLabels: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/images/labels',
     },
     queryUsers: {
         method: 'GET',

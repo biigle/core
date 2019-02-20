@@ -40,7 +40,7 @@ biigle.$declare('volumes.stores.filters', [
                 };
             },
             created: function () {
-                biigle.$require('api.volumes').queryImageLabels({id: this.volumeId})
+                biigle.$require('api.volumes').queryUsedImageLabels({id: this.volumeId})
                     .then(this.gotItems, biigle.$require('messages.store').handleErrorResponse);
             },
         },

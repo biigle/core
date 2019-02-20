@@ -42,6 +42,9 @@ biigle.$viewModel('volume-container', function (element) {
             loadingFilenames: false,
             showFilenames: false,
             filenamesPromise: null,
+            loadingLabels: false,
+            showLabels: false,
+            labelsPromise: null,
         },
         computed: {
             // Map from image ID to index of sorted array to compute sortedImages fast.
@@ -178,6 +181,30 @@ biigle.$viewModel('volume-container', function (element) {
                     image.filename = response.body[image.id];
                 });
             },
+            enableLabels: function () {
+                if (!this.labelsPromise) {
+                    this.loadingLabels = true;
+                    this.labelsPromise = volumesApi
+                        .queryImageLabels({id: this.volumeId})
+                        .then(this.setLabels)
+                        .bind(this)
+                        .finally(function () {
+                            this.loadingLabels = false;
+                        });
+                }
+
+                this.labelsPromise.bind(this).then(function () {
+                    this.showLabels = true;
+                });
+            },
+            disableLabels: function () {
+                this.showLabels = false;
+            },
+            setLabels: function (response) {
+                this.images.forEach(function (image) {
+                    image.labels = response.body[image.id];
+                });
+            },
         },
         watch: {
             imageIdsToShow: function (imageIdsToShow) {
@@ -219,6 +246,7 @@ biigle.$viewModel('volume-container', function (element) {
                     imageUrl: imageUri.replace('{id}', id),
                     flagged: false,
                     filename: null,
+                    labels: [],
                 };
             });
 

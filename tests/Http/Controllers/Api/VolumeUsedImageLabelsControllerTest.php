@@ -7,7 +7,7 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageLabelTest;
 
-class VolumeImageLabelControllerTest extends ApiTestCase
+class VolumeUsedImageLabelsControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

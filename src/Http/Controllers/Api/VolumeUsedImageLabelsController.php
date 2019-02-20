@@ -7,14 +7,14 @@ use Biigle\Label;
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;
 
-class VolumeImageLabelController extends Controller
+class VolumeUsedImageLabelsController extends Controller
 {
     /**
      * Get all image labels that were used in a volume.
      *
      * @api {get} volumes/:id/image-labels Get used image labels
      * @apiGroup Volumes
-     * @apiName VolumeIndexImageLabels
+     * @apiName VolumeIndexUsedImageLabels
      * @apiPermission projectMember
      * @apiDescription Returns all image labels that were used in the volume.
      *

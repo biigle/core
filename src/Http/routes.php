@@ -60,7 +60,7 @@ $router->group([
         ]);
 
         $router->get('{id}/image-labels', [
-            'uses' => 'VolumeImageLabelController@index',
+            'uses' => 'VolumeUsedImageLabelsController@index',
         ]);
 
         $router->get('{id}/filenames', [
@@ -69,6 +69,10 @@ $router->group([
 
         $router->get('{id}/users', [
             'uses' => 'VolumeUserController@index',
+        ]);
+
+        $router->get('{id}/images/labels', [
+            'uses' => 'VolumeImageLabelsController@index',
         ]);
 
         $router->post('{id}/images/metadata', [

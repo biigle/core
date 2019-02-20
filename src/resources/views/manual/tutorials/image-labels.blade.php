@@ -18,7 +18,7 @@
         </p>
 
         <p>
-            To attach an image label, first select the appropriate label from the label trees tab. Next, click on the image to which the label should be attached. The image will show a blue border if the selected label can be attached. If no border is shown, the label is already attached to the image. While the newly attached image label is being saved, a yellow border is shown. Successful saving is indicated by a green border.
+            To attach an image label, select the appropriate label from the label trees tab. Next, click on the image to which the label should be attached. The image will show a blue border if the selected label can be attached. If no border is shown, the label is already attached to the image. While the newly attached image label is being saved, a yellow border is shown. Successful saving is indicated by a green border.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/volumes/images/manual/image_labels_1.png')}}"><img src="{{asset('vendor/volumes/images/manual/image_labels_1.png')}}" width="30%"></a>
@@ -26,14 +26,8 @@
             <a href="{{asset('vendor/volumes/images/manual/image_labels_3.png')}}"><img src="{{asset('vendor/volumes/images/manual/image_labels_3.png')}}" width="30%"></a>
         </p>
 
-        <h3>View image labels</h3>
-
         <p>
-            To view the labels attached to an image, click the <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i></button> button that appears when you hover your cursor over the image. This will show the list of all attached labels. Click the <button class="close" style="float: none;">×</button> button next to an image label to detach it.
-        </p>
-
-        <p class="text-center">
-            <a href="{{asset('vendor/volumes/images/manual/image_labels_4.png')}}"><img src="{{asset('vendor/volumes/images/manual/image_labels_4.png')}}" width="30%"></a>
+            To show all labels that are attached to the images activate the "Show labels of each image" switch in the <i class="fa fa-tags"></i> image labels tab. This will show the list of all attached labels on each image. Click the <button class="close" style="float: none;">×</button> button next to an image label to detach it.
         </p>
 
         <h3>Filter by image label</h3>

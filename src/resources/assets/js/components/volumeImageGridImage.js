@@ -18,13 +18,9 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             '<a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">' +
                 '<span class="fa fa-info-circle" aria-hidden="true"></span>' +
             '</a>' +
-            '<button @click="toggleImageLabels" class="image-button" title="Show image labels">' +
-                '<loader v-if="!imageLabelsLoaded" :active="loading"></loader>' +
-                '<span v-if="!loading" class="fa fa-tag" aria-hidden="true"></span>' +
-            '</button>' +
         '</div>' +
-        '<div v-if="imageLabelsLoaded && showImageLabels" class="image-labels" @wheel.stop>' +
-            '<image-label-list :image-labels="imageLabels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>' +
+        '<div v-if="showLabels" class="image-labels" @wheel.stop>' +
+            '<image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>' +
         '</div>' +
     '</figure>',
     components: {
@@ -32,9 +28,6 @@ biigle.$component('volumes.components.volumeImageGridImage', {
     },
     data: function () {
         return {
-            showImageLabels: false,
-            imageLabels: [],
-            imageLabelsLoaded: false,
             attachingSuccess: null,
             timeout: null,
             saving: false,
@@ -49,6 +42,10 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             type: Boolean,
             default: false,
         },
+        showLabels: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         userId: function () {
@@ -58,13 +55,11 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             return biigle.$require('volumes.isAdmin');
         },
         alreadyHasSelectedLabel: function () {
-            for (var i = this.imageLabels.length - 1; i >= 0; i--) {
-                if (this.imageLabels[i].label.id === this.selectedLabel.id) {
-                    return true;
-                }
-            }
+            var selected = this.selectedLabel;
 
-            return false;
+            return this.image.labels.reduce(function (carry, item) {
+                return carry || selected.id === item.label_id;
+            }, false);
         },
         showAnnotationLink: function () {
             var route = biigle.$require('largo.showAnnotationRoute');
@@ -90,22 +85,6 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         },
     },
     methods: {
-        toggleImageLabels: function () {
-            this.showImageLabels = !this.showImageLabels;
-            if (!this.imageLabelsLoaded && !this.loading) {
-                this.loadImageLabels();
-            }
-        },
-        loadImageLabels: function () {
-            this.startLoading();
-            biigle.$require('api.imageLabels').query({image_id: this.image.id})
-                .then(this.loadedImageLabels, biigle.$require('messages.store').handleErrorResponse)
-                .finally(this.finishLoading);
-        },
-        loadedImageLabels: function (response) {
-            this.imageLabelsLoaded = true;
-            this.imageLabels = response.data;
-        },
         handleClick: function () {
             if (!this.canBeSelected) {
                 return;
@@ -121,7 +100,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         },
         labelAttached: function (response) {
             this.attachingSuccess = true;
-            this.imageLabels.push(response.data);
+            this.image.labels.push(response.data);
         },
         attachingFailed: function (response) {
             this.attachingSuccess = false;
@@ -135,11 +114,9 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             }, 3000);
         },
         removeImageLabel: function (item) {
-            for (var i = this.imageLabels.length - 1; i >= 0; i--) {
-                if (this.imageLabels[i].id === item.id) {
-                    this.imageLabels.splice(i, 1);
-                    return;
-                }
+            var index = this.image.labels.indexOf(item);
+            if (index !== -1) {
+                this.image.labels.splice(index, 1);
             }
         }
     },
