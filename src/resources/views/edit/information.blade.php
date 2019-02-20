@@ -32,9 +32,17 @@
             <div class="row">
                 <div class="form-group col-xs-12{{ $errors->has('url') ? ' has-error' : '' }}">
                     <label for="url">URL</label>
-                    <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="/vol/images/volume" required>
+                    @if (config('biigle.offline_mode'))
+                        <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="local://images/volume" required>
+                    @else
+                        <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="https://my-domain.tld/volume" required>
+                    @endif
                     <p class="help-block">
-                        The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
+                        @if (config('biigle.offline_mode'))
+                          The volume directory on the BIIGLE server (e.g. <code>local://images/volume</code>).
+                       @else
+                          The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://images/volume</code>).
+                       @endif
                     </p>
                     @if($errors->has('url'))
                         <span class="help-block">{{ $errors->first('url') }}</span>
