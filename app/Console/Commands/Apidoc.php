@@ -42,6 +42,9 @@ class Apidoc extends Command
 
         $this->info("Executing: {$command}");
 
-        passthru($command);
+        $code = 0;
+        system($command, $code);
+
+        return $code;
     }
 }

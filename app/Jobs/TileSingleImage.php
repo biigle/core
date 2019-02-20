@@ -5,7 +5,7 @@ namespace Biigle\Jobs;
 use File;
 use Storage;
 use VipsImage;
-use ImageCache;
+use FileCache;
 use SplFileInfo;
 use Biigle\Image;
 use Illuminate\Queue\SerializesModels;
@@ -58,7 +58,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function handle()
     {
         try {
-            ImageCache::getOnce($this->image, [$this, 'generateTiles']);
+            FileCache::getOnce($this->image, [$this, 'generateTiles']);
             $this->uploadToStorage();
             $this->image->tiled = true;
             $this->image->save();

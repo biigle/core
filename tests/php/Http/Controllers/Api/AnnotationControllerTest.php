@@ -6,6 +6,8 @@ use Cache;
 use ApiTestCase;
 use Biigle\Shape;
 use Carbon\Carbon;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 
@@ -72,6 +74,170 @@ class AnnotationControllerTest extends ApiTestCase
 
         $response = $this->get("api/v1/annotations/{$this->annotation->id}");
         $response->assertStatus(403);
+    }
+
+    public function testStore()
+    {
+        $this->doTestApiRoute('POST', 'api/v1/annotations');
+
+        $image = ImageTest::create();
+        $this->beUser();
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $image->id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(403);
+
+        $this->beEditor();
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $image->id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(403);
+
+        $this->postJson('api/v1/annotations', [
+                [
+                    'image_id' => $image->id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ]
+            ])
+            ->assertStatus(403);
+
+        $this->postJson('api/v1/annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ]
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals(3, $this->annotation->image->annotations()->count());
+        $annotation = $this->annotation->image->annotations()->orderBy('id', 'desc')->first();
+        $this->assertEquals(Shape::pointId(), $annotation->shape_id);
+        $this->assertEquals([100, 100], $annotation->points);
+        $this->assertEquals(1, $annotation->labels()->count());
+        $this->assertEquals($this->labelRoot()->id, $annotation->labels()->first()->label_id);
+    }
+
+    public function testStoreValidation()
+    {
+        $this->beEditor();
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => 999,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(422);
+
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $this->annotation->image_id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(422);
+
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $this->annotation->image_id,
+                'shape_id' => 999,
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(422);
+
+        $this->postJson('api/v1/annotations', [[
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(422);
+
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $this->annotation->image_id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => 999,
+                'confidence' => 1.0,
+            ]])
+            ->assertStatus(422);
+
+        $this->postJson('api/v1/annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => LabelTest::create()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(403);
+
+        $this->postJson('api/v1/annotations', [[
+                'image_id' => $this->annotation->image_id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 999,
+            ]])
+            ->assertStatus(422);
+
+        $this->assertEquals(1, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreLimit()
+    {
+        $data = [];
+        for ($i=0; $i < 101; $i++) {
+            $data[] = [
+                'image_id' => $this->annotation->image_id,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 1.0,
+            ];
+        }
+
+        $this->beEditor();
+        $this->postJson('api/v1/annotations', $data)
+            ->assertStatus(422);
     }
 
     public function testUpdate()

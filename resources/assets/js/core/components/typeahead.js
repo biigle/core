@@ -4,7 +4,18 @@
  * @type {Object}
  */
 biigle.$component('core.components.typeahead', {
-    template: '<typeahead ref="typeahead" class="typeahead clearfix" :data="items" :placeholder="placeholder" :on-hit="selectItem" :template="template" :disabled="disabled" match-property="name" @clear="clear"></typeahead>',
+    template:
+    '<typeahead' +
+        ' class="typeahead clearfix"' +
+        ' match-property="name"' +
+        ' ref="typeahead"' +
+        ' :data="items"' +
+        ' :disabled="disabled"' +
+        ' :on-hit="selectItem"' +
+        ' :placeholder="placeholder"' +
+        ' :template="template"' +
+        ' @clear="clear"' +
+        '></typeahead>',
     components: {
         typeahead: VueStrap.typeahead,
     },
@@ -31,7 +42,7 @@ biigle.$component('core.components.typeahead', {
         },
         template: {
             default: '{{item.name}}',
-        }
+        },
     },
     methods: {
         selectItem: function (item, typeahead) {
@@ -42,11 +53,17 @@ biigle.$component('core.components.typeahead', {
         },
         clear: function () {
             this.$emit('select', undefined);
-        }
+        },
+        updateValue: function () {
+            this.$refs.typeahead.setValue(this.value);
+        },
     },
     watch: {
-        value: function (value) {
-            this.$refs.typeahead.setValue(value);
-        },
+        value: function () {
+            this.updateValue();
+        }
+    },
+    mounted: function () {
+        this.updateValue();
     },
 });

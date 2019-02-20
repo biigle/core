@@ -16,7 +16,7 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
-        "biigle/laravel-image-cache": "^1.1",
+        "biigle/laravel-file-cache": "^2.0",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "~3.3",

@@ -12,7 +12,7 @@
 */
 
 $router->resource('annotations', 'AnnotationController', [
-    'only' => ['show', 'update', 'destroy'],
+    'only' => ['show', 'store', 'update', 'destroy'],
     'parameters' => ['annotations' => 'id'],
 ]);
 

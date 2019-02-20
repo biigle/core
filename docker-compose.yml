@@ -34,6 +34,7 @@ services:
     environment:
       - "DB_PORT=5432"
       - "REDIS_HOST=cache"
+    init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
   # The web server
