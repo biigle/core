@@ -13,7 +13,7 @@ biigle.$declare('core.models.Settings', function () {
         },
         computed: {
             debounce: function () {
-                return biigle.$require('annotations.stores.utils').debounce;
+                return biigle.$require('utils.debounce');
             },
         },
         methods: {
