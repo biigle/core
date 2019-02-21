@@ -9,6 +9,7 @@ biigle.$viewModel('volume-container', function (element) {
     var imageUri = biigle.$require('volumes.imageUri');
     var urlParams = biigle.$require('urlParams');
     var volumesApi = biigle.$require('api.volumes');
+    var Settings = biigle.$require('core.models.Settings');
 
     /*
      * ABOUT PERFORMANCE
@@ -45,6 +46,15 @@ biigle.$viewModel('volume-container', function (element) {
             loadingLabels: false,
             showLabels: false,
             labelsPromise: null,
+            settings: new Settings({
+                data: {
+                    storageKey: 'biigle.volumes.settings',
+                    defaults: {
+                        showFilenames: false,
+                        showLabels: false,
+                    },
+                },
+            }),
         },
         computed: {
             // Map from image ID to index of sorted array to compute sortedImages fast.
@@ -205,6 +215,15 @@ biigle.$viewModel('volume-container', function (element) {
                     image.labels = response.body[image.id];
                 });
             },
+            restoreSettings: function () {
+                if (this.settings.get('showFilenames') === true) {
+                    this.enableFilenames();
+                }
+
+                if (this.settings.get('showLabels') === true) {
+                    this.enableLabels();
+                }
+            },
         },
         watch: {
             imageIdsToShow: function (imageIdsToShow) {
@@ -233,6 +252,12 @@ biigle.$viewModel('volume-container', function (element) {
 
                 biigle.$require('volumes.stores.image').count = imageIdsToShow.length;
             },
+            showFilenames: function (show) {
+                this.settings.set('showFilenames', show);
+            },
+            showLabels: function (show) {
+                this.settings.set('showLabels', show);
+            },
         },
         created: function () {
             var self = this;
@@ -251,6 +276,7 @@ biigle.$viewModel('volume-container', function (element) {
             });
 
             Vue.set(this, 'images', images);
+            this.restoreSettings();
         },
     });
 });
