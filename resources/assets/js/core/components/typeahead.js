@@ -57,6 +57,12 @@ biigle.$component('core.components.typeahead', {
         updateValue: function () {
             this.$refs.typeahead.setValue(this.value);
         },
+        emitFocus: function (e) {
+            this.$emit('focus', e);
+        },
+        emitBlur: function (e) {
+            this.$emit('blur', e);
+        },
     },
     watch: {
         value: function () {
@@ -65,5 +71,8 @@ biigle.$component('core.components.typeahead', {
     },
     mounted: function () {
         this.updateValue();
+        // Monkey patch additional events to the input.
+        this.$refs.typeahead.$el.firstChild.addEventListener('focus', this.emitFocus);
+        this.$refs.typeahead.$el.firstChild.addEventListener('blur', this.emitBlur);
     },
 });
