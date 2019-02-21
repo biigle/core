@@ -9,7 +9,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var annotationsStore = biigle.$require('annotations.stores.annotations');
     var urlParams = biigle.$require('urlParams');
     var messages = biigle.$require('messages.store');
-    var utils = biigle.$require('annotations.stores.utils');
+    var debounce = biigle.$require('utils.debounce');
     var settings = biigle.$require('annotations.stores.settings');
 
     var LabelFilter = biigle.$require('annotations.models.LabelAnnotationFilter');
@@ -434,7 +434,7 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             updateColorAdjustment: function (params) {
                 var canvas = this.$refs.canvas;
-                utils.debounce(function () {
+                debounce(function () {
                     imagesStore.updateColorAdjustment(params);
                     canvas.render();
                 }, 100, 'annotations.color-adjustment.update');

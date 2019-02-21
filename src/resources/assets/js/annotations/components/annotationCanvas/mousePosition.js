@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas.mousePosition', function () {
-    var throttle;
+    var throttle = biigle.$require('utils.throttle');
 
     return {
         components: {
@@ -30,9 +30,6 @@ biigle.$component('annotations.components.annotationCanvas.mousePosition', funct
                     self.mousePositionIC = self.invertPointsYAxis(position.slice()).map(Math.round);
                 }, 100, 'annotations.canvas.mouse-position-ic');
             },
-        },
-        created: function () {
-            throttle = biigle.$require('annotations.stores.utils').throttle;
         },
     };
 });

@@ -27,7 +27,7 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
         };
 
         this.keyboard = biigle.$require('keyboard');
-        this.utils = biigle.$require('annotations.stores.utils');
+        this.debounce = biigle.$require('utils.debounce');
         this.setMap(options.map);
         this.translating = false;
     }
