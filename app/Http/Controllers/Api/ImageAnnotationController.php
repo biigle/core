@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use DB;
 use Exception;
 use Biigle\Image;
 use Biigle\Shape;
@@ -166,13 +167,15 @@ class ImageAnnotationController extends Controller
         $label = Label::findOrFail($request->input('label_id'));
 
         $this->authorize('attach-label', [$annotation, $label]);
-        $annotation->save();
 
-        $annotationLabel = new AnnotationLabel;
-        $annotationLabel->label_id = $label->id;
-        $annotationLabel->user_id = $request->user()->id;
-        $annotationLabel->confidence = $request->input('confidence');
-        $annotation->labels()->save($annotationLabel);
+        DB::transaction(function () use ($annotation, $request, $label) {
+            $annotation->save();
+            $annotationLabel = new AnnotationLabel;
+            $annotationLabel->label_id = $label->id;
+            $annotationLabel->user_id = $request->user()->id;
+            $annotationLabel->confidence = $request->input('confidence');
+            $annotation->labels()->save($annotationLabel);
+        });
 
         $annotation->load('labels');
 
