@@ -447,4 +447,10 @@ class VolumeTest extends ModelTestCase
         $ids = Volume::accessibleBy($user)->pluck('id');
         $this->assertContains($this->model->id, $ids);
     }
+
+    public function testSanitizeUrl()
+    {
+        $this->model->url = 'http://example.com/images/';
+        $this->assertEquals('http://example.com/images', $this->model->url);
+    }
 }

@@ -360,6 +360,16 @@ class Volume extends Model
     }
 
     /**
+     * Set the url attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setUrlAttribute($value)
+    {
+        return $this->attributes['url'] = $value ? rtrim($value, '/') : $value;
+    }
+
+    /**
      * Set the video_link attribute of this volume.
      *
      * @param string $value
