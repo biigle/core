@@ -44,8 +44,11 @@ class ImagesCleanupListenerTest extends TestCase
 
         $job = end($this->dispatchedJobs);
 
-        $this->assertEquals($image->volume_id, $job->volumeId);
-        $this->assertEquals([$a->id, $a2->id], $job->annotationIds);
+        $expect = [
+            $a->id => $image->uuid,
+            $a2->id => $image2->uuid,
+        ];
+        $this->assertEquals($expect, $job->annotationIds);
     }
 
     public function testPartial()
@@ -60,7 +63,9 @@ class ImagesCleanupListenerTest extends TestCase
 
         $job = end($this->dispatchedJobs);
 
-        $this->assertEquals($image->volume_id, $job->volumeId);
-        $this->assertEquals([$a->id], $job->annotationIds);
+        $expect = [
+            $a->id => $image->uuid,
+        ];
+        $this->assertEquals($expect, $job->annotationIds);
     }
 }

@@ -92,7 +92,7 @@ class AnnotationExamplesController extends Controller
                 return $query->orderBy('annotations.created_at', 'desc')
                     ->take($take);
             })
-            ->pluck('annotations.id');
+            ->pluck('images.uuid', 'annotations.id');
 
         return [
             'label' => $closestLabel,

@@ -3,9 +3,9 @@
 return [
 
     /*
-    | Directory where the annotation patch images will be stored
+    | Storage disk where the annotation patch images will be stored
     */
-    'patch_storage' => storage_path('largo_patches'),
+    'patch_storage_disk' => env('LARGO_PATCH_STORAGE_DISK'),
 
     /*
     | Image file format for the annotation patch images.

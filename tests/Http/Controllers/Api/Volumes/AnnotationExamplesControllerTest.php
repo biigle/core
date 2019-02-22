@@ -68,31 +68,29 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
 
         $this->beUser();
-        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $response->assertStatus(403);
+        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+            ->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}", ['take' => 'abc']);
         // take must be integer
-        $response->assertStatus(422);
+        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}", ['take' => 'abc'])
+            ->assertStatus(422);
 
-        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $response->assertStatus(200);
-
-        $response->assertExactJson([
-            'label' => $label->toArray(),
-            'annotations' => [$annotation->id],
-        ]);
+        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'label' => $label->toArray(),
+                'annotations' => [$annotation->id => $image->uuid],
+            ]);
 
         $al0->delete();
 
-        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $response->assertStatus(200);
-
-        $response->assertExactJson([
-            'label' => $parentLabel->toArray(),
-            'annotations' => [$annotation->id],
-        ]);
+        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'label' => $parentLabel->toArray(),
+                'annotations' => [$annotation->id => $image->uuid],
+            ]);
     }
 
     public function testIndexAnnotationSession()
@@ -145,32 +143,42 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $session->users()->attach($this->editor());
 
-        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => [$a2->id, $a3->id]]);
+        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['annotations' => [
+                $a2->id => $image->uuid,
+                $a3->id => $image->uuid,
+            ]]);
 
         // test hide other
         $session->hide_own_annotations = false;
         $session->hide_other_users_annotations = true;
         $session->save();
 
-        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => [$a1->id, $a2->id]]);
+        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['annotations' => [
+                $a1->id => $image->uuid,
+                $a2->id => $image->uuid,
+            ]]);
 
         // test hide both
         $session->hide_own_annotations = true;
         $session->save();
 
-        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => [$a2->id]]);
+        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['annotations' => [$a2->id => $image->uuid]]);
 
         $session->users()->detach($this->editor());
 
-        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => [$a1->id, $a2->id, $a3->id]]);
+        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['annotations' => [
+                $a1->id => $image->uuid,
+                $a2->id => $image->uuid,
+                $a3->id => $image->uuid,
+            ]]);
     }
 
     public function testIndexOtherTree()

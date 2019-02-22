@@ -15,7 +15,10 @@ class AnnotationObserver
      */
     public function saved(Annotation $annotation)
     {
-        GenerateAnnotationPatch::dispatch($annotation)
+        GenerateAnnotationPatch::dispatch(
+                $annotation,
+                config('largo.patch_storage_disk')
+            )
             ->delay(config('largo.patch_generation_delay'));
     }
 
@@ -27,10 +30,9 @@ class AnnotationObserver
      */
     public function deleting(Annotation $annotation)
     {
-        RemoveAnnotationPatches::dispatch(
-            $annotation->image->volume_id,
-            [$annotation->id]
-        );
+        RemoveAnnotationPatches::dispatch([
+            $annotation->id => $annotation->image->uuid,
+        ]);
 
         return true;
     }

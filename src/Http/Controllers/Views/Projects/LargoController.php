@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Projects;
 
+use Storage;
 use Biigle\Project;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -23,10 +24,14 @@ class LargoController extends Controller
             ->select('id', 'name')
             ->get();
 
+        $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
+            ->url('{prefix}/{id}.'.config('largo.patch_format'));
+
         return view('largo::project', [
             'project' => $project,
             'labelTrees' => $labelTrees,
             'target' => $project,
+            'patchUrlTemplate' => $patchUrlTemplate,
         ]);
     }
 }

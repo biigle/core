@@ -35,7 +35,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
             return this.shown && this.label !== null;
         },
         hasExamples: function () {
-            return this.exampleLabel && this.exampleAnnotations && this.exampleAnnotations.length > 0;
+            return this.exampleLabel && this.exampleAnnotations && Object.keys(this.exampleAnnotations).length > 0;
         },
         volumesApi: function () {
             return  biigle.$require('largo.api.volumes');
@@ -48,7 +48,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         setExampleAnnotations: function (args) {
             // Delete the cached item if there is less than the desired number of example
             // annotations. Maybe there are more the next time we fetch them again.
-            if (!args[0].hasOwnProperty('annotations') || args[0].annotations.length < this.count) {
+            if (!args[0].hasOwnProperty('annotations') || Object.keys(args[0].annotations).length < this.count) {
                 delete this.cache[args[1]];
             }
 

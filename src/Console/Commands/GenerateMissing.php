@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Largo\Console\Commands;
 
 use File;
+use Storage;
 use Biigle\Annotation;
 use Illuminate\Console\Command;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
@@ -24,11 +25,11 @@ class GenerateMissing extends Command
     protected $description = 'Generate missing patches for annotations.';
 
     /**
-     * Largo patch storage prefix.
+     * Largo patch storage disk.
      *
      * @var string
      */
-    protected $prefix;
+    protected $disk;
 
     /**
      * Largo patch storage file format.
@@ -50,7 +51,7 @@ class GenerateMissing extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->prefix = config('largo.patch_storage');
+        $this->disk = config('largo.patch_storage_disk');
         $this->format = config('largo.patch_format');
         $this->count = 0.0;
     }
@@ -63,24 +64,25 @@ class GenerateMissing extends Command
     public function handle()
     {
         $pushToQueue = !$this->option('dry-run');
+        $storage = Storage::disk($this->disk);
 
         $annotations = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
-            ->select('annotations.id', 'images.volume_id');
-
-        if ($this->option('volume')) {
-            $annotations->where('images.volume_id', $this->option('volume'));
-        }
+            ->when($this->option('volume'), function ($query) {
+                $query->where('images.volume_id', $this->option('volume'));
+            })
+            ->select('annotations.id', 'images.uuid as uuid');
 
         $total = $annotations->count();
         $progress = $this->output->createProgressBar($total);
         $this->info("Checking {$total} annotations...");
 
-        $handleChunk = function ($chunk) use ($progress, $pushToQueue) {
+        $handleChunk = function ($chunk) use ($progress, $pushToQueue, $storage) {
             foreach ($chunk as $annotation) {
-                if (!File::exists("{$this->prefix}/{$annotation->volume_id}/{$annotation->id}.{$this->format}")) {
+                $prefix = fragment_uuid_path($annotation->uuid);
+                if (!$storage->exists("{$prefix}/{$annotation->id}.{$this->format}")) {
                     $this->count++;
                     if ($pushToQueue) {
-                        GenerateAnnotationPatch::dispatch($annotation);
+                        GenerateAnnotationPatch::dispatch($annotation, $this->disk);
                     }
                 }
             }

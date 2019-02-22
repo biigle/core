@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use File;
+use Storage;
 use Exception;
 use VipsImage;
 use FileCache;
@@ -11,7 +11,6 @@ use Biigle\Shape;
 use Biigle\Jobs\Job;
 use Biigle\Contracts\Annotation;
 use Illuminate\Queue\InteractsWithQueue;
-use Biigle\Annotation as AnnotationModel;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class GenerateAnnotationPatch extends Job implements ShouldQueue
@@ -40,28 +39,28 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     protected $annotation;
 
     /**
-     * Path to the file to store the annotation patch.
+     * The storage disk to store the annotation patches to.
      *
      * @var string
      */
-    protected $targetPath;
+    protected $targetDisk;
 
     /**
      * Create a new job instance.
      *
      * @param Annotation $annotation The the annotation to generate a patch for.
-     * @param string|null $targetPath Path to the file to store the annotation patch. If null, th default path for a Largo annotation is used.
+     * @param string|null $targetDisk The storage disk to store the annotation patches to.
      *
      * @return void
      */
-    public function __construct(Annotation $annotation, $targetPath = null)
+    public function __construct(Annotation $annotation, $targetDisk)
     {
         // We do not use the SerializesModels trait because there is a good chance that
         // the annotation is deleted when this job should be executed. If this is the
         // case, this job should be ignored (see handle method).
         $this->annotationId = $annotation->getQueueableId();
         $this->annotationClass = get_class($annotation);
-        $this->targetPath = $targetPath;
+        $this->targetDisk = $targetDisk;
     }
 
     /**
@@ -74,13 +73,6 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $this->annotation = $this->annotationClass::find($this->annotationId);
         if ($this->annotation === null) {
             return;
-        }
-
-        // Do not do this in the constructor because that would require fetching all
-        // the images of the annotations. This would be really slow when lots of
-        // annotation patchs should be generated.
-        if (is_null($this->targetPath)) {
-            $this->targetPath = $this->getDefaultTargetPath($this->annotation);
         }
 
         try {
@@ -105,23 +97,28 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handleImage(Image $image, $path)
     {
-        $targetDir = File::dirname($this->targetPath);
-        if (!File::exists($targetDir)) {
-            // Make recursive. With force to ignore errors due to race conditions.
-            // see: https://github.com/biigle/largo/issues/47
-            File::makeDirectory($targetDir, 0755, true, true);
-        }
+        // Do not get the path in the constructor because that would require fetching all
+        // the images of the annotations. This would be really slow when lots of
+        // annotation patchs should be generated.
+        $targetPath = $this->getTargetPath($this->annotation);
 
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
 
-        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
         $image = $this->getVipsImage($path);
+        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
         $rect = $this->makeRectContained($rect, $image);
 
-        $image->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
+        $buffer = $image->crop(
+                $rect['left'],
+                $rect['top'],
+                $rect['width'],
+                $rect['height']
+            )
             ->resize(floatval($thumbWidth) / $rect['width'])
-            ->writeToFile($this->targetPath);
+            ->writeToBuffer('.'.config('largo.patch_format'));
+
+        Storage::disk($this->targetDisk)->put($targetPath, $buffer);
     }
 
     /**
@@ -238,15 +235,15 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     }
 
     /**
-     * Assemble the default target path for a Largo annotation patch.
+     * Assemble the target path for an annotation patch.
      *
-     * @param AnnotationModel $annotation
+     * @param Annotation $annotation
      *
      * @return string
      */
-    protected function getDefaultTargetPath(AnnotationModel $annotation): string
+    protected function getTargetPath(Annotation $annotation): string
     {
-        $prefix = config('largo.patch_storage').'/'.$annotation->image->volume_id;
+        $prefix = fragment_uuid_path($annotation->getImage()->uuid);
         $format = config('largo.patch_format');
 
         return "{$prefix}/{$annotation->id}.{$format}";

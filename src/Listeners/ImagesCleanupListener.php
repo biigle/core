@@ -21,20 +21,15 @@ class ImagesCleanupListener
      */
     public function handle(ImagesDeleted $event)
     {
-        if (empty($event->uuids)) {
-            return;
+        if (!empty($event->uuids)) {
+            $annotationIds = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+                ->whereIn('images.uuid', $event->uuids)
+                ->pluck('images.uuid', 'annotations.id')
+                ->toArray();
+
+            if (!empty($annotationIds)) {
+                RemoveAnnotationPatches::dispatch($annotationIds);
+            }
         }
-
-        $images = Image::whereIn('uuid', $event->uuids)->select('id', 'volume_id')->get();
-
-        if ($images->isEmpty()) {
-            return;
-        }
-
-        $annotationIds = Annotation::whereIn('image_id', $images->pluck('id'))
-            ->pluck('id')
-            ->toArray();
-
-        RemoveAnnotationPatches::dispatch($images->first()->volume_id, $annotationIds);
     }
 }

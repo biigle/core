@@ -28,25 +28,25 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");
 
         $this->beUser();
-        $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");
-        $response->assertStatus(403);
+        $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}")
+            ->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
         // take must be integer
-        $response->assertStatus(422);
+        $this->json('GET', "/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc'])
+            ->assertStatus(422);
 
-        $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");
-        $response->assertStatus(200);
-        $response->assertExactJson([$a2->id, $a1->id]);
+        $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a2->id => $image->uuid, $a1->id => $image->uuid]);
 
-        $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l3->label_id}");
-        $response->assertStatus(200);
-        $response->assertExactJson([$a3->id]);
+        $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l3->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a3->id => $image->uuid]);
 
-        $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
-        $response->assertStatus(200);
-        $response->assertExactJson([$a2->id]);
+        $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}?take=1")
+            ->assertStatus(200)
+            ->assertExactJson([$a2->id => $image->uuid]);
     }
 
     public function testIndexDuplicate()
@@ -72,6 +72,6 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id]);
+            ->assertExactJson([$a1->id => $image->uuid]);
     }
 }

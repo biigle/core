@@ -10,6 +10,7 @@
         biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showAnnotationRoute', '@if(Route::has('show-annotation')){{ route('show-annotation', '') }}/' @else '' @endif);
+        biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
     </script>
 @endpush
 
