@@ -72,6 +72,13 @@ return [
             'container' => env('OS_CONTAINER_NAME', ''),
         ],
 
+        'largo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/largo-patches'),
+            'url' => env('APP_URL').'/storage/largo-patches',
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];
