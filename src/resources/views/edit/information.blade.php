@@ -8,6 +8,11 @@
                 The volume information was successfully updated.
             </div>
         @endif
+        @if (session('reread'))
+            <div class="alert alert-success" role="alert">
+                The volume images are reprocessed.
+            </div>
+        @endif
         <form role="form" method="POST" action="{{ url('api/v1/volumes/'.$volume->id) }}">
             <div class="row">
                 <div class="form-group col-sm-6{{ $errors->has('name') ? ' has-error' : '' }}">
