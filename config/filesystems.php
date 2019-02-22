@@ -43,12 +43,6 @@ return [
 
     'disks' => [
 
-        // Default general purpose storage disk.
-        'default' => [
-            'driver' => 'local',
-            'root' => storage_path('app'),
-        ],
-
         // Default storage disk for images.
         'local' => [
             'driver' => 'local',
