@@ -112,16 +112,19 @@ class VolumeController extends Controller
         $volume->doi = $request->input('doi', $volume->doi);
 
         $isDirty = $volume->isDirty();
+        $shouldReread = !$isDirty && $request->user()->can('sudo');
         $newUrl = $volume->isDirty('url');
         $volume->save();
 
         // Do this *after* saving.
-        if ($newUrl) {
+        if ($newUrl || $shouldReread) {
             $volume->handleNewImages();
         }
 
         if (!$this->isAutomatedRequest()) {
-            return $this->fuzzyRedirect()->with('saved', $isDirty);
+            return $this->fuzzyRedirect()
+                ->with('saved', $isDirty)
+                ->with('reread', $shouldReread);
         }
     }
 }

@@ -118,6 +118,16 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals('test://volumes', $this->volume()->fresh()->url);
     }
 
+    public function testUpdateGlobalAdmin()
+    {
+        $this->beGlobalAdmin();
+        // A request that changes no attributes performed by a global admin triggers
+        // a reread.
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id)
+            ->assertStatus(200);
+    }
+
     public function testUpdateValidation()
     {
         $id = $this->volume()->id;
