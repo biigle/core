@@ -4,6 +4,8 @@
  * @type {Object}
  */
 biigle.$component('videos.components.videoScreen.indicators', function () {
+    var throttle = biigle.$require('utils.throttle');
+
     return {
         components: {
             mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
@@ -25,7 +27,7 @@ biigle.$component('videos.components.videoScreen.indicators', function () {
         },
         watch: {
             mousePosition: function (position) {
-                biigle.$require('annotations.stores.utils').throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
+                throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
             },
         },
         created: function () {
