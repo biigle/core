@@ -5,6 +5,7 @@ namespace Biigle\Modules\Sync\Jobs;
 use Biigle\Volume;
 use Biigle\Jobs\Job;
 use Biigle\Annotation;
+use Biigle\Jobs\ProcessNewImages;
 use Illuminate\Support\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,7 +43,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
     public function handle()
     {
         Volume::whereIn('id', $this->ids)->select('id')->each(function ($volume) {
-            $volume->handleNewImages();
+            ProcessNewImages::dispatch($volume);
         });
 
         if (class_exists(LargoServiceProvider::class)) {
