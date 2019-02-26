@@ -73,6 +73,20 @@ return [
             'visibility' => 'public',
         ],
 
+        'maia-tp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/maia-tp'),
+            'url' => env('APP_URL').'/storage/maia-tp',
+            'visibility' => 'public',
+        ],
+
+        'maia-ac' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/maia-ac'),
+            'url' => env('APP_URL').'/storage/maia-ac',
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];
