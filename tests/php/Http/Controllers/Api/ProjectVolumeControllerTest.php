@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use Event;
 use Cache;
+use Queue;
 use Storage;
 use Biigle\Role;
 use Biigle\Image;
@@ -14,6 +15,7 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Events\ImagesDeleted;
+use Biigle\Jobs\CreateNewImages;
 
 class ProjectVolumeControllerTest extends ApiTestCase
 {
@@ -129,8 +131,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // error because of unsupported image format
         $response->assertStatus(422);
 
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
-
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
@@ -141,14 +141,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $content = $response->getContent();
         $this->assertEquals($count + 1, $this->project()->volumes()->count());
-        $this->assertEquals($imageCount + 2, Image::all()->count());
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
 
         $id = json_decode($content)->id;
-        $volume = Volume::find($id);
-        $this->assertTrue($volume->images()->where('filename', '1.jpg')->exists());
-        $this->assertTrue($volume->images()->where('filename', '2.jpg')->exists());
+        Queue::assertPushed(CreateNewImages::class, function ($job) use ($id) {
+            return $job->volume->id === $id &&
+                in_array('1.jpg', $job->filenames) &&
+                in_array('2.jpg', $job->filenames);
+        });
     }
 
     public function testStoreJsonAttrs()
@@ -158,7 +159,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $id = $this->project()->id;
         $this->beAdmin();
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',

@@ -3,9 +3,11 @@
 namespace Biigle\Http\Controllers\Api;
 
 use DB;
+use Queue;
 use Biigle\Volume;
 use Biigle\Project;
 use Illuminate\Http\Request;
+use Biigle\Jobs\CreateNewImages;
 use Biigle\Http\Requests\StoreVolume;
 
 class ProjectVolumeController extends Controller
@@ -99,18 +101,19 @@ class ProjectVolumeController extends Controller
         $volume->gis_link = $request->input('gis_link');
         $volume->doi = $request->input('doi');
         $volume->creator()->associate($request->user());
-
-        // Use a transaction to roll back creation of the volume or images if any error
-        // occurs.
-        DB::transaction(function () use ($request, $volume) {
-            // Save first, so the volume gets an ID for associating with images.
-            $volume->save();
-            $volume->createImages($request->input('images'));
-        });
-
-        // It's important that this is done *after* all images were added.
-        $volume->handleNewImages();
+        $volume->save();
         $request->project->volumes()->attach($volume);
+
+        $images = $request->input('images');
+
+        // If too many images should be created, do this asynchronously in the
+        // background. Else the script will run in the 30 s execution timeout.
+        $job = new CreateNewImages($volume, $images);
+        if (count($images) > 10000) {
+            Queue::pushOn('high', $job);
+        } else {
+            Queue::connection('sync')->push($job);
+        }
 
         // media type shouldn't be returned
         unset($volume->media_type);

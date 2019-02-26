@@ -99,28 +99,6 @@ class VolumeTest extends ModelTestCase
         $this->model->setMediaTypeId(99999);
     }
 
-    public function testCreateImages()
-    {
-        $this->assertEmpty($this->model->images);
-        $return = $this->model->createImages(['1.jpg']);
-        $this->assertTrue($return);
-        $this->model = $this->model->fresh();
-        $this->assertNotEmpty($this->model->images);
-        $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
-    }
-
-    public function testCreateImagesDuplicateInsert()
-    {
-        $this->expectException(QueryException::class);
-        $return = $this->model->createImages(['1.jpg', '1.jpg']);
-    }
-
-    public function testHandleNewImages()
-    {
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
-        $this->model->HandleNewImages();
-    }
-
     public function testCastsAttrs()
     {
         $this->model->attrs = [1, 2, 3];
@@ -165,13 +143,6 @@ class VolumeTest extends ModelTestCase
         Event::assertDispatched(TiledImagesDeleted::class, function ($event) use ($image) {
             return $event->uuids[0] === $image->uuid;
         });
-    }
-
-    public function testCreateImagesCreatesUuids()
-    {
-        $this->model->createImages(['1.jpg']);
-        $image = $this->model->images()->first();
-        $this->assertNotNull($image->uuid);
     }
 
     public function testAnnotationSessions()

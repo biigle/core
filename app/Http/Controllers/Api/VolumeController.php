@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Biigle\Jobs\ProcessNewImages;
 use Biigle\Http\Requests\UpdateVolume;
 use Illuminate\Validation\ValidationException;
 
@@ -118,7 +119,7 @@ class VolumeController extends Controller
 
         // Do this *after* saving.
         if ($newUrl || $shouldReread) {
-            $volume->handleNewImages();
+            ProcessNewImages::dispatch($volume);
         }
 
         if (!$this->isAutomatedRequest()) {
