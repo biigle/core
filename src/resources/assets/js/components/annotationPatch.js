@@ -4,9 +4,14 @@
  * @type {Object}
  */
 biigle.$component('largo.components.annotationPatch', {
+    mixins: [biigle.$require('largo.mixins.annotationPatch')],
     props: {
         id: {
-            type: Number,
+            type: String,
+            required: true,
+        },
+        uuid: {
+            type: String,
             required: true,
         },
         label: {
@@ -17,10 +22,14 @@ biigle.$component('largo.components.annotationPatch', {
             type: String,
             required: true,
         },
+        urlTemplate: {
+            type: String,
+            required: true,
+        },
     },
     data: function () {
         return {
-            blobUrl: '',
+            url: '',
         };
     },
     computed: {
@@ -28,23 +37,15 @@ biigle.$component('largo.components.annotationPatch', {
             return 'Example annotation for label ' + this.label.name;
         },
         src: function () {
-            return this.blobUrl || this.emptySrc;
+            return this.url || this.emptySrc;
         },
     },
     methods: {
-        setBlobUrl: function (response) {
-            var urlCreator = window.URL || window.webkitURL;
-            this.blobUrl = urlCreator.createObjectURL(response.body);
+        showEmptyImage: function () {
+            this.url = '';
         },
     },
     created: function () {
-        biigle.$require('largo.api.annotations').get({id: this.id})
-            .then(this.setBlobUrl);
-    },
-    destroyed: function () {
-        if (this.blobUrl) {
-            var urlCreator = window.URL || window.webkitURL;
-            urlCreator.revokeObjectURL(this.blobUrl);
-        }
+        this.url = this.getUrl();
     },
 });

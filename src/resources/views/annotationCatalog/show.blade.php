@@ -9,6 +9,7 @@
 <script type="text/javascript">
     biigle.$declare('annotationCatalog.labelTree', {!! $tree !!});
     biigle.$declare('annotationCatalog.showAnnotationRoute', '@if(Route::has('show-annotation')){{ route('show-annotation', '') }}/' @else '' @endif);
+    biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
 </script>
 @endpush
 

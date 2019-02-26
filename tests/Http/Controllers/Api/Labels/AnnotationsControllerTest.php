@@ -24,19 +24,26 @@ class AnnotationsControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/labels/{$label->id}/annotations");
 
         $this->beUser();
-        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
+        $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertStatus(200)
             ->assertExactJson([]);
-        $response->assertStatus(200);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
-            ->assertExactJson([$a2->id, $a1->id]);
-        $response->assertStatus(200);
+        $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertStatus(200)
+            ->assertExactJson([
+                $a2->id => $image->uuid,
+                $a1->id => $image->uuid
+            ]);
 
-        $response = $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
-            // Show the newest annotation first.
-            ->assertExactJson([$a2->id]);
-        $response->assertStatus(200);
+        // Show the newest annotation first.
+        $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
+            ->assertStatus(200)
+            ->assertExactJson([$a2->id => $image->uuid]);
+
+        $this->beGlobalAdmin();
+        $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
+            ->assertStatus(200);
     }
 
     public function testIndexDuplicates()
@@ -48,7 +55,7 @@ class AnnotationsControllerTest extends ApiTestCase
         AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
-            ->assertExactJson([$a1->id]);
+        $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertExactJson([$a1->id => $image->uuid]);
     }
 }

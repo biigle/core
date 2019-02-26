@@ -113,15 +113,20 @@ biigle.$declare('largo.mixins.largoContainer', {
         gotAnnotations: function (label, annotations) {
             // This is the object that we will use to store information for each
             // annotation patch.
-            annotations = annotations.map(function (id) {
-                return {
-                    id: id,
-                    label_id: label.id,
-                    blob: null,
-                    dismissed: false,
-                    newLabel: null,
-                };
-            });
+            annotations = Object.keys(annotations)
+                .map(function (id) {
+                    return {
+                        id: id,
+                        uuid: annotations[id],
+                        label_id: label.id,
+                        dismissed: false,
+                        newLabel: null,
+                    };
+                })
+                // Show the newest annotations (with highest ID) first.
+                .sort(function (a, b) {
+                    return b.id - a.id;
+                });
 
             Vue.set(this.annotationsCache, label.id, annotations);
         },

@@ -17,7 +17,7 @@ class AnnotationsController extends Controller
      * @apiName ShowLabelAnnotations
      * @apiParam {Number} id The Label ID
      * @apiPermission user
-     * @apiDescription Only annotations that are visible to the current user are returned.
+     * @apiDescription Returns a map of annotation IDs to their image UUIDs. Only annotations that are visible to the current user are returned.
      *
      * @param Request $request
      * @param int $id Label ID
@@ -29,13 +29,14 @@ class AnnotationsController extends Controller
         $this->validate($request, ['take' => 'integer']);
 
         return Annotation::visibleFor($request->user())
+            ->join('images', 'images.id', '=', 'annotations.image_id')
             ->withLabel($label)
             ->when($request->filled('take'), function ($query) use ($request) {
                 return $query->take($request->input('take'));
             })
-            ->select('annotations.id')
+            ->select('images.uuid', 'annotations.id')
             ->distinct()
             ->orderBy('annotations.id', 'desc')
-            ->pluck('id');
+            ->pluck('images.uuid', 'annotations.id');
     }
 }

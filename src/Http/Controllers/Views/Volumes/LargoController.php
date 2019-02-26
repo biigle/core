@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
+use Storage;
 use Biigle\Role;
 use Biigle\Volume;
 use Biigle\Project;
@@ -46,11 +47,15 @@ class LargoController extends Controller
             })
             ->get();
 
+        $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
+            ->url('{prefix}/{id}.'.config('largo.patch_format'));
+
         return view('largo::show', [
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
             'target' => $volume,
+            'patchUrlTemplate' => $patchUrlTemplate,
         ]);
     }
 }
