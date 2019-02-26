@@ -254,7 +254,7 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $response = $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
+        $response = $this->put("api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
@@ -281,6 +281,10 @@ class AnnotationControllerTest extends ApiTestCase
         $response = $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         // invalid number of points
         $response->assertStatus(422);
+
+        // Points must be array.
+        $this->json('PUT', "api/v1/annotations/{$id}")
+            ->assertStatus(422);
     }
 
     public function testDestroy()
