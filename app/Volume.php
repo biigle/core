@@ -6,8 +6,6 @@ use DB;
 use Cache;
 use Exception;
 use Carbon\Carbon;
-use Ramsey\Uuid\Uuid;
-use Biigle\Jobs\ProcessNewImages;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -174,43 +172,6 @@ class Volume extends Model
                         ->where('volume_id', $this->id);
                 });
         });
-    }
-
-    /**
-     * Creates the image objects to be associated with this volume.
-     *
-     * Make sure the image filenames are valid.
-     *
-     * @param array $filenames image filenames at the location of the volume URL
-     *
-     * @throws QueryException If there was an error creating the images (e.g. if there were
-     * duplicate filenames).
-     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException If the UUID generator cannot be executed for some reason.
-     *
-     * @return bool
-     */
-    public function createImages($filenames)
-    {
-        $images = [];
-        foreach ($filenames as $filename) {
-            $images[] = [
-                'filename' => $filename,
-                'volume_id' => $this->id,
-                'uuid' => Uuid::uuid4(),
-            ];
-        }
-
-        return Image::insert($images);
-    }
-
-    /**
-     * Perform actions when new images were added to the volume.
-     *
-     * @param  array  $only IDs of images to restrict the actions to.
-     */
-    public function handleNewImages($only = [])
-    {
-        ProcessNewImages::dispatch($this, $only);
     }
 
     /**
