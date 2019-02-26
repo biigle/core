@@ -35,7 +35,7 @@ class StoreAnnotation extends StoreAnnotationLabel
     {
         return array_merge(parent::rules(), [
             'shape_id' => 'required|exists:shapes,id',
-            'points'   => 'required',
+            'points'   => 'required|array',
         ]);
     }
 }
