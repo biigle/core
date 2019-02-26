@@ -25,10 +25,6 @@ $router->group([
     'prefix' => 'api/v1',
     'middleware' => 'auth:web,api',
 ], function ($router) {
-    $router->get('annotations/{id}/patch', [
-        'uses' => 'PatchController@show',
-    ]);
-
     $router->post('volumes/{id}/largo', [
         'uses' => 'Volumes\LargoController@save',
     ]);
