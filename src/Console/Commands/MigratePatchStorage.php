@@ -82,10 +82,10 @@ class MigratePatchStorage extends Command
                     ->findMany($chunk->keys())
                     ->keyBy('id');
 
-                foreach ($chunk as $id => $file) {
-                    $prefix = fragment_uuid_path($annotations[$id]->image->uuid);
+                foreach ($annotations as $id => $annotation) {
+                    $prefix = fragment_uuid_path($annotation->image->uuid);
                     if (!$this->dryRun) {
-                        $this->disk->putFileAs($prefix, $file, $file->getBasename());
+                        $this->disk->putFileAs($prefix, $chunk[$id], $chunk[$id]->getBasename());
                     }
                 }
 
