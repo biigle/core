@@ -5,7 +5,7 @@
     @foreach ($results as $volume)
         <li class="col-xs-4">
             <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
-                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{thumbnail_url()}}" format="{{config('thumbnails.format')}}">
                     @if ($volume->thumbnail)
                         <img src="{{ thumbnail_url($volume->thumbnail->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else

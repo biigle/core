@@ -3,7 +3,7 @@
         <div class="panel-heading">Most recently edited volume</div>
         <div class="panel-body dashboard__hot-thumbnail">
             <a href="{{route('volume', $recentVolume->id)}}" title="Show volume {{$recentVolume->name}}">
-                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$recentVolume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$recentVolume->id}}" uri="{{ thumbnail_url() }}" format="{{config('thumbnails.format')}}">
                     @if ($recentVolume->thumbnail)
                         <img src="{{ thumbnail_url($recentVolume->thumbnail->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else

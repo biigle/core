@@ -10,7 +10,7 @@
         {{-- Add image IDs as array, too, because the ordering is important! --}}
         biigle.$declare('volumes.imageIds', {!! $imageIds->keys() !!});
         biigle.$declare('volumes.imageUuids', {!! $imageIds !!});
-        biigle.$declare('volumes.thumbUri', '{{ asset(config('thumbnails.uri')) }}/{uuid}.{{ config('thumbnails.format') }}');
+        biigle.$declare('volumes.thumbUri', '{{ Storage::disk(config('thumbnails.storage_disk'))->url('{uuid}.'.config('thumbnails.format')) }}');
         biigle.$declare('volumes.annotateUri', @if (Route::has('annotate'))'{{ route('annotate', '') }}/{id}'@endif);
         biigle.$declare('volumes.imageUri', '{{ route('image', '') }}/{id}');
 
