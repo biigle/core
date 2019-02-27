@@ -55,6 +55,13 @@ return [
             'root' => storage_path('tiles'),
         ],
 
+        'thumbs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/thumbs'),
+            'url' => env('APP_URL').'/storage/thumbs',
+            'visibility' => 'public',
+        ],
+
         'swift' => [
             'driver'    => 'swift',
             'authUrl'   => env('OS_AUTH_URL', ''),

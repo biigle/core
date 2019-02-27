@@ -36,7 +36,6 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
-$router->get('images/{id}/thumb', 'ImageController@showThumb');
 $router->get('images/{id}/file', 'ImageController@showFile');
 $router->resource('images', 'ImageController', [
     'only' => ['show', 'destroy'],
