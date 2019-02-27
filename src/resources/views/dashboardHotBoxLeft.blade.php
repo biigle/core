@@ -4,11 +4,7 @@
         <div class="panel-body dashboard__hot-thumbnail">
             <figure class="image-thumbnail">
                 <a href="{{ route('annotate', $recentImage->id) }}" title="Show image {{$recentImage->filename}}">
-                    @if (File::exists($recentImage->thumbPath))
-                        <img src="{{ thumbnail_url($recentImage->uuid) }}">
-                    @else
-                        <img src="{{ asset(config('thumbnails.empty_url')) }}">
-                    @endif
+                    <img src="{{ thumbnail_url($recentImage->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}';">
                     <figcaption class="caption">
                         {{ $recentImage->filename }}
                     </figcaption>
