@@ -3,18 +3,14 @@
 return [
 
     /*
-    | URI where the image thumbnails are available from.
-    | If you have 'thumbs', the URL will look like 'example.com/thumbs/abc.jpg'.
-    |
-    | The URI must exist as directory in the public path.
-    | For 'thumbs' there must be a 'public/thumbs' directory.
+    | Storage disk where the thumbnail images will be stored.
     */
-    'uri' => 'thumbs',
+    'storage_disk' => env('THUMBNAIL_STORAGE_DISK', 'thumbs'),
 
     /*
-    | Dimensions of the thumbnail images to create. Only change this if you know what you are
-    | doing, since the views must work with these images. The images are always scaled
-    | proportionally, so this values are kind of a max-width and max-height.
+    | Dimensions of the thumbnail images to create. Only change this if you know what
+    | you are doing, since the views must work with these images. The images are always
+    | scaled proportionally, so this values are kind of a max-width and max-height.
     */
     'width' => 180,
     'height' => 135,

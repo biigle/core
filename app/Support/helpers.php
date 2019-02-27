@@ -67,10 +67,9 @@ if (!function_exists('thumbnail_url')) {
      */
     function thumbnail_url($uuid)
     {
-        $uri = config('thumbnails.uri');
+        $prefix = fragment_uuid_path($uuid);
         $format = config('thumbnails.format');
-        $fragment = fragment_uuid_path($uuid);
 
-        return asset("{$uri}/{$fragment}.{$format}");
+        return Storage::disk(config('thumbnails.storage_disk'))->url("{$prefix}.{$url}");
     }
 }

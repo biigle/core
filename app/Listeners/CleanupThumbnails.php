@@ -2,7 +2,7 @@
 
 namespace Biigle\Listeners;
 
-use File;
+use Storage;
 use Biigle\Events\ImagesDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -16,15 +16,12 @@ class CleanupThumbnails implements ShouldQueue
      */
     public function handle(ImagesDeleted $event)
     {
-        $prefix = public_path(config('thumbnails.uri'));
+        $disk = Storage::disk(config('thumbnails.storage_disk'));
         $format = config('thumbnails.format');
 
         foreach ($event->uuids as $uuid) {
-            $fragment = fragment_uuid_path($uuid);
-            $path = "{$prefix}/{$fragment}.{$format}";
-            if (File::exists($path)) {
-                File::delete($path);
-            }
+            $prefix = fragment_uuid_path($uuid);
+            $disk->delete("{$prefix}.{$format}");
         }
     }
 }
