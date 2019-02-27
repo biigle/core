@@ -41,30 +41,6 @@ class ImageControllerTest extends ApiTestCase
         $this->assertContains('"volume"', $content);
     }
 
-    public function testShowThumb()
-    {
-        $id = $this->image->id;
-        File::makeDirectory(File::dirname($this->image->thumbPath), 0755, true, true);
-        File::put($this->image->thumbPath, 'test123');
-
-        $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
-
-        $this->beUser();
-        $response = $this->get("/api/v1/images/{$id}/thumb");
-        $response->assertStatus(403);
-
-        $this->beGuest();
-        $response = $this->get('/api/v1/images/-1/thumb');
-        $response->assertStatus(404);
-
-        $response = $this->get("/api/v1/images/{$id}/thumb");
-        $response->assertStatus(200);
-        $this->assertEquals('text/plain', $response->headers->get('content-type'));
-        unlink($this->image->thumbPath);
-        @rmdir(dirname($this->image->thumbPath, 1));
-        @rmdir(dirname($this->image->thumbPath, 2));
-    }
-
     public function testShowFile()
     {
         $id = $this->image->id;
