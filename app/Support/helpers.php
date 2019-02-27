@@ -65,11 +65,14 @@ if (!function_exists('thumbnail_url')) {
      * @param  string $uuid
      * @return string
      */
-    function thumbnail_url($uuid)
+    function thumbnail_url($uuid = null)
     {
-        $prefix = fragment_uuid_path($uuid);
-        $format = config('thumbnails.format');
+        $path = '';
 
-        return Storage::disk(config('thumbnails.storage_disk'))->url("{$prefix}.{$url}");
+        if ($uuid) {
+            $path = fragment_uuid_path($uuid).'.'.config('thumbnails.format');
+        }
+
+        return Storage::disk(config('thumbnails.storage_disk'))->url($path);
     }
 }
