@@ -78,14 +78,12 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         try {
             FileCache::get($this->annotation->getImage(), [$this, 'handleImage']);
         } catch (Exception $e) {
-            if (str_contains($e->getMessage(), 'The source resource could not be established') && $this->attempts() < 3) {
-                // Retry in 10 minutes, maybe the remote source is available again.
+            if ($this->shouldRetryAfterException($e)) {
+                // Retry in 10 minutes.
                 $this->release(600);
-
-                return;
+            } else {
+                throw new Exception("Could not generate annotation patch for annotation {$this->annotationId}: {$e->getMessage()}");
             }
-
-            throw new Exception("Could not generate annotation patch for annotation {$this->annotationId}: {$e->getMessage()}");
         }
     }
 
@@ -247,5 +245,23 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $format = config('largo.patch_format');
 
         return "{$prefix}/{$annotation->id}.{$format}";
+    }
+
+    /**
+     * Determine if this job should retry instead of fail after an exception
+     *
+     * @param Exception $e
+     *
+     * @return bool
+     */
+    protected function shouldRetryAfterException(Exception $e)
+    {
+        $message = $e->getMessage();
+        return $this->attempts() < 3 && (
+            // The remote source might be available again after a while.
+            str_contains($message, 'The source resource could not be established') ||
+            // This error presumably occurs due to worker concurrency.
+            str_contains($message, 'Impossible to create the root directory')
+        );
     }
 }
