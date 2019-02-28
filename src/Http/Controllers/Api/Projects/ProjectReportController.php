@@ -3,11 +3,17 @@
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Projects;
 
 use Biigle\Project;
+use Illuminate\Http\Request;
+use Biigle\Modules\Reports\Report;
+use Illuminate\Validation\ValidationException;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class ProjectReportController extends ReportController
 {
     /**
+     * Generate a project report.
+     *
      * @api {post} projects/:id/reports Request a project report
      * @apiGroup Reports
      * @apiName GenerateProjectReport
@@ -22,16 +28,26 @@ class ProjectReportController extends ReportController
      *
      * @apiPermission projectMember
      *
+     * @param Request $request
+     * @param int $id Project ID
      */
-
-    /**
-     * Get the source to generate the report for.
-     *
-     * @param int $id
-     * @return mixed
-     */
-    protected function getSource($id)
+    public function store(Request $request, $id)
     {
-        return Project::findOrFail($id);
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+        $this->validate($request, ['type_id' => 'required|exists:report_types,id']);
+
+        if (!$project->volumes()->exists()) {
+            throw ValidationException::withMessages(['type_id' => ['The project must contain volumes.']]);
+        }
+
+        $report = new Report;
+        $report->source()->associate($project);
+        $report->type_id = $request->input('type_id');
+        $report->user()->associate($request->user());
+        $report->options = $this->getOptions($request);
+        $report->save();
+
+        GenerateReportJob::dispatch($report)->onQueue('high');
     }
 }

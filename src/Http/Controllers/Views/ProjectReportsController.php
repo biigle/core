@@ -17,6 +17,9 @@ class ProjectReportsController extends Controller
     public function show($id)
     {
         $project = Project::findOrFail($id);
+        if (!$project->volumes()->exists()) {
+            abort(404);
+        }
         $this->authorize('access', $project);
         $types = ReportType::all();
         $hasExportArea = $project->volumes()

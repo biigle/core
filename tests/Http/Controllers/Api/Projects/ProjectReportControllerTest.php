@@ -11,6 +11,8 @@ class ProjectReportControllerTest extends ApiTestCase
     public function testStore()
     {
         $projectId = $this->project()->id;
+        // Create the volume by calling it.
+        $this->volume();
         $typeId = ReportType::first()->id;
 
         $this->doTestApiRoute('POST', "api/v1/projects/{$projectId}/reports");
@@ -51,5 +53,15 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+    }
+
+    public function testStoreEmptyProject()
+    {
+        $projectId = $this->project()->id;
+        $this->beGuest();
+        $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::first()->id,
+            ])
+            ->assertStatus(422);
     }
 }

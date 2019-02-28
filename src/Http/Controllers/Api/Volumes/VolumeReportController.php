@@ -4,11 +4,15 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class VolumeReportController extends ReportController
 {
     /**
+     * Generate a volume report.
+     *
      * @api {post} volumes/:id/reports Request a volume report
      * @apiGroup Reports
      * @apiName GenerateVolumeReport
@@ -24,7 +28,27 @@ class VolumeReportController extends ReportController
      *
      * @apiPermission projectMember
      *
+     * @param Request $request
+     * @param int $id Volume ID
      */
+    public function store(Request $request, $id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+        $this->validate($request, [
+            'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$volume->id}",
+            'type_id' => 'required|exists:report_types,id'
+        ]);
+
+        $report = new Report;
+        $report->source()->associate($volume);
+        $report->type_id = $request->input('type_id');
+        $report->user()->associate($request->user());
+        $report->options = $this->getOptions($request);
+        $report->save();
+
+        GenerateReportJob::dispatch($report)->onQueue('high');
+    }
 
     /**
      * Get the options of the requested report.
@@ -36,23 +60,8 @@ class VolumeReportController extends ReportController
     {
         $options = parent::getOptions($request);
 
-        $this->validate($request, [
-            'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->source->id}",
-        ]);
-
         return array_merge($options, [
             'annotationSession' => $request->input('annotation_session_id'),
         ]);
-    }
-
-    /**
-     * Get the source to generate the report for.
-     *
-     * @param int $id
-     * @return mixed
-     */
-    protected function getSource($id)
-    {
-        return Volume::findOrFail($id);
     }
 }
