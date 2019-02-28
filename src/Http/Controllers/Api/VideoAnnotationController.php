@@ -215,7 +215,7 @@ class VideoAnnotationController extends Controller
         });
 
         if ($request->shouldTrack()) {
-            Queue::push(new TrackObject($annotation));
+            Queue::pushOn('high', new TrackObject($annotation));
         }
 
         $annotation->load('labels.label', 'labels.user');

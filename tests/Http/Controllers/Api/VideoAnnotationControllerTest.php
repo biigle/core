@@ -231,7 +231,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'track' => true,
             ])
             ->assertStatus(200);
-        Queue::assertPushed(TrackObject::class);
+        Queue::assertPushedOn('high', TrackObject::class);
     }
 
     public function testStoreAndTrackRectangle()
