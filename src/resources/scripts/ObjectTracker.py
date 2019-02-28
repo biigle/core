@@ -83,7 +83,7 @@ for keyframe in ObjectTracker(params):
         keyframes.append(keyframe)
 
 # Add the last keyframe even if it did not have the right keyframe distance.
-if keyframes[-1][0] != last_keyframe[0]:
+if keyframes and keyframes[-1][0] != last_keyframe[0]:
     keyframes.append(last_keyframe)
 
 with open(sys.argv[2], 'w') as f:

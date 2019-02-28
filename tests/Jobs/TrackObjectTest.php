@@ -93,12 +93,27 @@ class TrackObjectTest extends TestCase
 
         $this->assertNull($annotation->fresh());
     }
+
+    public function testHandleEmpty()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::circleId(),
+            'frames' => [0.5],
+            'points' => [[10, 10, 5]],
+            'video_id' => VideoTest::create(['url' => 'test://my-video.mp4']),
+        ]);
+        $job = new TrackObjectStub($annotation);
+        $job->keyframes = '[]';
+        $job->handle();
+        $this->assertNull($annotation->fresh());
+    }
 }
 
 class TrackObjectStub extends TrackObject
 {
     public $files = [];
     public $paths = [];
+    public $keyframes = '[[1.0, 10, 10, 5], [2.0, 20, 20, 6], [3.0, 30, 30, 7]]';
 
     protected function maybeDeleteFile($path)
     {
@@ -110,6 +125,6 @@ class TrackObjectStub extends TrackObject
 
     protected function python($command)
     {
-        File::put($this->getOutputJsonPath($this->annotation), '[[1.0, 10, 10, 5], [2.0, 20, 20, 6], [3.0, 30, 30, 7]]');
+        File::put($this->getOutputJsonPath($this->annotation), $this->keyframes);
     }
 }

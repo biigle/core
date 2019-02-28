@@ -49,6 +49,12 @@ class TrackObject extends Job implements ShouldQueue
         $frames = $this->annotation->frames;
         $points = $this->annotation->points;
 
+        if (empty($keyframes)) {
+            $this->annotation->delete();
+
+            return;
+        }
+
         foreach ($keyframes as $keyframe) {
             $frames[] = $keyframe[0];
             $points[] = $this->getPointsFromKeyframe($this->annotation, $keyframe);
