@@ -130,10 +130,9 @@ class AnnotationController extends Controller
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
-     *    "points": [10, 11, 20, 21]
+     *    "points": [10, 11, 20, 21],
+     *    "shape_id": 3
      * }
-     * @apiParamExample {String} Request example (String):
-     * points: '[10, 11, 20, 21]'
      *
      * @param Request $request
      * @param  int  $id
