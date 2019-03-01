@@ -287,6 +287,28 @@ class AnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testUpdateChangeShape()
+    {
+        $id = $this->annotation->id;
+        $this->annotation->points = [100, 200];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beEditor();
+        // invalid points for a circle
+        $this->putJson("api/v1/annotations/{$id}", ['shape_id' => Shape::circleId()])
+            ->assertStatus(422);
+
+        $this->putJson("api/v1/annotations/{$id}", [
+                'shape_id' => Shape::circleId(),
+                'points' => [100, 200, 300],
+            ])
+            ->assertStatus(200);
+
+        $this->annotation->refresh();
+        $this->assertEquals(Shape::circleId(), $this->annotation->shape_id);
+    }
+
     public function testDestroy()
     {
         $id = $this->annotation->id;

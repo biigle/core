@@ -126,6 +126,7 @@ class AnnotationController extends Controller
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation ID.
+     * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
@@ -142,10 +143,14 @@ class AnnotationController extends Controller
     {
         $annotation = Annotation::findOrFail($id);
         $this->authorize('update', $annotation);
-        $request->validate(['points' => 'required|array']);
+        $request->validate([
+            'shape_id' => 'required_without:points|exists:shapes,id',
+            'points' => 'required_without:shape_id|array',
+        ]);
 
         // from a JSON request, the array may already be decoded
-        $points = $request->input('points');
+        $points = $request->input('points', $annotation->points);
+        $annotation->shape_id = $request->input('shape_id', $annotation->shape_id);
 
         try {
             $annotation->validatePoints($points);
