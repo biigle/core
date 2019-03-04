@@ -50,7 +50,8 @@ class Report extends Model
     }
 
     /**
-     * Source of the report (\Biigle\Volume or \Biigle\Project).
+     * Source of the report (\Biigle\Volume, \Biigle\Project or
+     * \Biigle\Modules\Videos\Video).
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
@@ -144,7 +145,7 @@ class Report extends Model
      */
     public function getFilenameAttribute()
     {
-        return $this->source_id.'_'.$this->getReportGenerator()->getFullfilename();
+        return $this->source_id.'_'.$this->getReportGenerator()->getFullFilename();
     }
 
     /**

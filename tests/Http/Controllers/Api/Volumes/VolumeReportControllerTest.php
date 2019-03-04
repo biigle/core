@@ -52,4 +52,14 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
     }
+
+    public function testStoreVideoAnnotations()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::videoAnnotationsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
 }

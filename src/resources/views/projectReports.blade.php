@@ -104,9 +104,6 @@
                     <button class="btn btn-success pull-right" type="submit" :disabled="loading">Request this report</button>
                 </div>
             </form>
-            <p class="text-muted">
-                ProTip: You can request reports for individual volumes (and with more options) from the volume overview page.
-            </p>
         </div>
     </div>
 </div>

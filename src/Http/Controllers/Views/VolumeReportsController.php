@@ -20,7 +20,9 @@ class VolumeReportsController extends Controller
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
-        $types = ReportType::all();
+        $types = ReportType::where('name', 'like', 'Annotations%')
+            ->orWhere('name', 'like', 'ImageLabels%')
+            ->get();
 
         return view('reports::volumeReports', [
             'projects' => $volume->projects,

@@ -4,6 +4,7 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class ProjectReportControllerTest extends ApiTestCase
@@ -59,9 +60,30 @@ class ProjectReportControllerTest extends ApiTestCase
     {
         $projectId = $this->project()->id;
         $this->beGuest();
-        $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::first()->id,
             ])
             ->assertStatus(422);
+    }
+
+    public function testStoreVideoAnnotations()
+    {
+        if (!class_exists(VideoTest::class)) {
+            $this->markTestSkipped('Requires the biigle/videos module.');
+        }
+
+        $projectId = $this->project()->id;
+        $this->beGuest();
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::videoAnnotationsCsvId(),
+            ])
+            ->assertStatus(422);
+
+        VideoTest::create(['project_id' => $projectId]);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::videoAnnotationsCsvId(),
+            ])
+            ->assertStatus(200);
     }
 }

@@ -7,17 +7,22 @@ use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Modules\Videos\Video;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Tests\Modules\Reports\ReportTest;
 
 class SearchControllerMixinTest extends TestCase
 {
-    public function testIndex()
+    public function testIndexVolume()
     {
         $r1 = ReportTest::create([
+            'type_id' => ReportType::annotationsCsvId(),
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
+            'type_id' => ReportType::annotationsCsvId(),
             'user_id' => $r1->user_id,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
@@ -25,15 +30,35 @@ class SearchControllerMixinTest extends TestCase
         $r3 = ReportTest::create();
 
         $this->be($r1->user);
-        $response = $this->get('search?t=reports')->assertStatus(200);
-        $response->assertSeeText('my volume');
-        $response->assertSeeText('my project');
-        $response->assertDontSeeText($r3->source->name);
+        $this->get('search?t=reports')
+            ->assertStatus(200)
+            ->assertSeeText('my volume')
+            ->assertSeeText('my project')
+            ->assertDontSeeText($r3->source->name);
 
-        $response = $this->get('search?t=reports&q=volume')->assertStatus(200);
-        $response->assertSeeText('my volume');
-        $response->assertDontSeeText('my project');
-        $response->assertDontSeeText($r3->source->name);
+        $this->get('search?t=reports&q=volume')
+            ->assertStatus(200)
+            ->assertSeeText('my volume')
+            ->assertDontSeeText('my project')
+            ->assertDontSeeText($r3->source->name);
+    }
+
+    public function testIndexVideo()
+    {
+        if (!class_exists(Video::class)) {
+            $this->markTestSkipped('Requires the biigle/videos module.');
+        }
+
+        $r1 = ReportTest::create([
+            'type_id' => ReportType::videoAnnotationsCsvId(),
+            'source_id' => VideoTest::create(['name' => 'my video'])->id,
+            'source_type' => Video::class,
+        ]);
+
+        $this->be($r1->user);
+        $this->get('search?t=reports&q=video')
+            ->assertStatus(200)
+            ->assertSeeText('my video');
     }
 
     public function testIndexDeleted()

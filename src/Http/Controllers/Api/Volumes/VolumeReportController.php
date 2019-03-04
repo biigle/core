@@ -4,7 +4,9 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
@@ -16,6 +18,7 @@ class VolumeReportController extends ReportController
      * @api {post} volumes/:id/reports Request a volume report
      * @apiGroup Reports
      * @apiName GenerateVolumeReport
+     * @apiDescription Accepts only requests for annotation and image label reports.
      *
      * @apiParam {Number} id The volume ID.
      *
@@ -37,7 +40,11 @@ class VolumeReportController extends ReportController
         $this->authorize('access', $volume);
         $this->validate($request, [
             'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$volume->id}",
-            'type_id' => 'required|exists:report_types,id'
+            'type_id' => [
+                'required',
+                Rule::notIn([ReportType::videoAnnotationsCsvId()]),
+                'exists:report_types,id',
+            ],
         ]);
 
         $report = new Report;

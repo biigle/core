@@ -6,6 +6,7 @@ use DB;
 use Biigle\User;
 use Biigle\Volume;
 use Biigle\Project;
+use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\Report;
 
 class SearchControllerMixin
@@ -24,29 +25,35 @@ class SearchControllerMixin
         $queryBuilder = Report::where('reports.user_id', '=', $user->id);
 
         if ($query) {
-            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-                $operator = 'ilike';
-            } else {
-                $operator = 'like';
-            }
-
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query, $operator) {
+            $queryBuilder = $queryBuilder
+                ->where(function ($q) use ($query) {
                     $q->where('reports.source_type', Volume::class)
-                        ->whereExists(function ($q) use ($query, $operator) {
+                        ->whereExists(function ($q) use ($query) {
                             $q->select(DB::raw(1))
                                 ->from('reports')
                                 ->join('volumes', 'reports.source_id', '=', 'volumes.id')
-                                ->where('volumes.name', $operator, "%{$query}%");
+                                ->where('volumes.name', 'like', "%{$query}%");
                         });
                 })
-                ->orWhere(function ($q) use ($query, $operator) {
+                ->orWhere(function ($q) use ($query) {
                     $q->where('reports.source_type', Project::class)
-                        ->whereExists(function ($q) use ($query, $operator) {
+                        ->whereExists(function ($q) use ($query) {
                             $q->select(DB::raw(1))
                                 ->from('reports')
                                 ->join('projects', 'reports.source_id', '=', 'projects.id')
-                                ->where('projects.name', $operator, "%{$query}%");
+                                ->where('projects.name', 'like', "%{$query}%");
                         });
+                })
+                ->when(class_exists(Video::class), function ($q) use ($query) {
+                    $q->orWhere(function ($q) use ($query) {
+                        $q->where('reports.source_type', Video::class)
+                            ->whereExists(function ($q) use ($query) {
+                                $q->select(DB::raw(1))
+                                    ->from('reports')
+                                    ->join('videos', 'reports.source_id', '=', 'videos.id')
+                                    ->where('videos.name', 'like', "%{$query}%");
+                            });
+                    });
                 });
         }
 
