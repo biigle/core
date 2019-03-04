@@ -55,7 +55,6 @@ class ReportsServiceProvider extends ServiceProvider
                 'manualTutorial',
                 'volumesSidebar',
                 'annotationsManualSidebarSettings',
-                'notificationTabs',
                 'searchTab',
                 'searchTabContent',
             ],
