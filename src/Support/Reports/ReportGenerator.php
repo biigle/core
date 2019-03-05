@@ -78,9 +78,11 @@ class ReportGenerator
             if (class_exists($fullClass)) {
                 return new $fullClass($options);
             }
+
+            throw new Exception("Report generator {$fullClass} does not exist.");
         }
 
-        return;
+        throw new Exception("Source class {$sourceClass} does not exist.");
     }
 
     /**

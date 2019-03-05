@@ -16,7 +16,10 @@ biigle.$viewModel('project-report-form', function (element) {
                 ],
                 'ImageLabels': [
                     'separate_label_trees'
-                ]
+                ],
+                'VideoAnnotations': [
+                    'separate_label_trees'
+                ],
             },
         },
         methods: {

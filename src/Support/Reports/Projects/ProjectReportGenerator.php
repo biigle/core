@@ -13,11 +13,11 @@ class ProjectReportGenerator extends ReportGenerator
     use MakesZipArchives;
 
     /**
-     * The class of the volume report generator to use for this project report.
+     * The class of the report generator to use for this project report.
      *
      * @var string
      */
-    protected $volumeReportClass;
+    protected $reportClass;
 
     /**
      * File extension of the report file.
@@ -36,7 +36,7 @@ class ProjectReportGenerator extends ReportGenerator
         $filesForZip = [];
 
         foreach ($this->source->volumes as $volume) {
-            $report = $this->getReportGenerator($volume);
+            $report = $this->getReportGenerator();
             $file = File::makeTmp();
             $report->generate($volume, $file->getPath());
             // The individual volume reports should be deleted again after
@@ -49,14 +49,12 @@ class ProjectReportGenerator extends ReportGenerator
     }
 
     /**
-     * Get the report generator for a volume.
-     *
-     * @param Volume $volume
+     * Get the report generator.
      *
      * @return \Biigle\Modules\Reports\Support\Reports\ReportGenerator
      */
-    protected function getReportGenerator(Volume $volume)
+    protected function getReportGenerator()
     {
-        return new $this->volumeReportClass($volume, $this->options);
+        return new $this->reportClass($this->options);
     }
 }

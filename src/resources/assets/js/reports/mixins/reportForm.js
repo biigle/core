@@ -6,22 +6,9 @@
 biigle.$component('reports.mixins.reportForm', {
     mixins: [biigle.$require('core.mixins.loader')],
     data: {
-        variants: {
-            'Annotations': [
-                'Basic',
-                'Extended',
-                'Area',
-                'Full',
-                'Csv',
-            ],
-            'ImageLabels': [
-                'Basic',
-                'Csv',
-            ]
-        },
         allowedOptions: {},
-        selectedType: 'Annotations',
-        selectedVariant: 'Basic',
+        selectedType: '',
+        selectedVariant: '',
         success: false,
         errors: {},
         options: {
@@ -31,9 +18,24 @@ biigle.$component('reports.mixins.reportForm', {
         },
     },
     computed: {
+        reportTypes: function () {
+            return biigle.$require('reports.reportTypes');
+        },
+        variants: function () {
+            var variants = {};
+            this.reportTypes.forEach(function (type) {
+                var fragments = type.name.split('\\');
+                if (!variants.hasOwnProperty(fragments[0])) {
+                    variants[fragments[0]] = [];
+                }
+                variants[fragments[0]].push(fragments[1]);
+            });
+
+            return variants;
+        },
         availableReportTypes: function () {
             var types = {};
-            biigle.$require('reports.reportTypes').forEach(function (type) {
+            this.reportTypes.forEach(function (type) {
                 types[type.name] = type.id;
             });
 
@@ -44,6 +46,9 @@ biigle.$component('reports.mixins.reportForm', {
         },
         availableVariants: function () {
             return this.variants[this.selectedType];
+        },
+        onlyOneAvailableVariant: function () {
+            return this.availableVariants.length === 1;
         },
         selectedOptions: function () {
             var options = {};
@@ -94,5 +99,9 @@ biigle.$component('reports.mixins.reportForm', {
         wantsCombination: function (type, variant) {
             return this.selectedType === type && this.selectedVariant === variant;
         },
+    },
+    created: function () {
+        this.selectedType = Object.keys(this.variants)[0];
+        this.selectedVariant = this.availableVariants[0];
     },
 });
