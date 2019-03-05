@@ -28,4 +28,20 @@ class ReportsControllerTest extends ApiTestCase
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(200);
     }
+
+    public function testDestroy()
+    {
+        $report = ReportTest::create();
+        $this->doTestApiRoute('DELETE', "api/v1/reports/{$report->id}");
+
+        $this->beAdmin();
+        $this->json('DELETE', "api/v1/reports/{$report->id}")
+            ->assertStatus(403);
+
+        $this->be($report->user);
+        $this->json('DELETE', "api/v1/reports/{$report->id}")
+            ->assertStatus(200);
+
+        $this->assertNull($report->fresh());
+    }
 }

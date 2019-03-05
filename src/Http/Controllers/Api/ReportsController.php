@@ -41,4 +41,30 @@ class ReportsController extends Controller
             abort(404);
         }
     }
+
+    /**
+     * Delete a report.
+     *
+     * @api {delete} reports/:id Delete a report
+     * @apiGroup Reports
+     * @apiName DestroyReport
+     * @apiPermission reportOwner
+     *
+     * @apiParam {Number} id The report ID.
+     *
+     * @param int $id report id
+     * @return mixed
+     */
+    public function destroy($id)
+    {
+        $report = Report::findOrFail($id);
+        $this->authorize('destroy', $report);
+        $report->delete();
+
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
+                ->with('message', 'Report deleted.')
+                ->with('messageType', 'success');
+        }
+    }
 }

@@ -30,9 +30,13 @@ $router->group([
         'uses' => 'Projects\ProjectReportController@store',
     ]);
 
-    $router->get('reports/{id}', [
-        'uses' => 'ReportsController@show',
-        'as' => 'show-reports',
+    $router->resource('reports', 'ReportsController', [
+        'only' => ['show', 'destroy'],
+        'parameters' => ['reports' => 'id'],
+        'names' => [
+            'show' => 'show-reports',
+            'destroy' => 'destroy-reports',
+        ],
     ]);
 
     $router->post('users/my/settings/reports', [

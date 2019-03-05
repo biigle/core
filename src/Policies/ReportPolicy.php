@@ -35,4 +35,16 @@ class ReportPolicy
     {
         return $report->user_id === $user->id;
     }
+
+    /**
+     * Determine if the given report can be destroyed by the user.
+     *
+     * @param  User  $user
+     * @param  Report  $report
+     * @return bool
+     */
+    public function destroy(User $user, Report $report)
+    {
+        return $report->user_id === $user->id;
+    }
 }
