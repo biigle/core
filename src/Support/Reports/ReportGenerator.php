@@ -7,6 +7,7 @@ use Exception;
 use Biigle\Label;
 use ReflectionClass;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Modules\Reports\Support\File as FileHelper;
 
 class ReportGenerator
 {
@@ -101,8 +102,10 @@ class ReportGenerator
      *
      * @param mixed $source Source to generate the report for (e.g. a volume)
      * @param string $path Path to write the report file to.
+     *
+     * @return string Path to the generated report file.
      */
-    public function generate($source, $path)
+    public function generate($source)
     {
         $this->setSource($source);
 
@@ -110,10 +113,7 @@ class ReportGenerator
             throw new Exception('Cannot generate report because the source does not exist.');
         }
 
-        $directory = File::dirname($path);
-        if (!File::isDirectory($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
+        $path = FileHelper::makeTmp()->getPath();
 
         try {
             $this->generateReport($path);
@@ -124,9 +124,15 @@ class ReportGenerator
             throw $e;
         } finally {
             array_walk($this->tmpFiles, function ($file) {
-                $file->delete();
+                if (is_string($file)) {
+                    File::delete($file);
+                } else {
+                    $file->delete();
+                }
             });
         }
+
+        return $path;
     }
 
     /**

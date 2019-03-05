@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports;
 
 use File;
+use Storage;
 use Mockery;
 use ModelTestCase;
 use Carbon\Carbon;
@@ -39,14 +40,25 @@ class ReportTest extends ModelTestCase
 
     public function testGenerate()
     {
+        config(['reports.storage_disk' => 'test']);
+        Storage::fake('test');
+        $disk = Storage::disk('test');
+        $disk->put('tmp.file', 'content');
+
         $id = $this->model->id;
         $path = config('reports.reports_storage');
 
         $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('generate')->once()->with($this->model->source, "{$path}/{$id}");
+        $mock->shouldReceive('generate')
+            ->once()
+            ->with($this->model->source)
+            ->andReturn($disk->path('tmp.file'));
 
         $this->model->setReportGenerator($mock);
         $this->model->generate();
+
+        $this->assertTrue($disk->exists($this->model->id));
+        $this->assertFalse($disk->exists('tmp.file'));
     }
 
     public function testGenerateSourceDeleted()
@@ -106,15 +118,21 @@ class ReportTest extends ModelTestCase
 
     public function testObserveSelf()
     {
-        File::shouldReceive('delete')->once()->with($this->model->getPath());
+        config(['reports.storage_disk' => 'test']);
+        Storage::fake('test');
+        Storage::disk('test')->put($this->model->id, 'content');
         $this->model->delete();
+        $this->assertFalse(Storage::disk('test')->exists($this->model->id));
     }
 
     public function testObserveUser()
     {
-        File::shouldReceive('delete')->once()->with([$this->model->getPath()]);
+        config(['reports.storage_disk' => 'test']);
+        Storage::fake('test');
+        Storage::disk('test')->put($this->model->id, 'content');
         $this->model->user->delete();
         $this->assertNull($this->model->fresh());
+        $this->assertFalse(Storage::disk('test')->exists($this->model->id));
     }
 
     public function testDontObserveProjects()

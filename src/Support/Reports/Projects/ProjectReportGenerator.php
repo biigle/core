@@ -2,9 +2,6 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Volume;
-use Biigle\Project;
-use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 
@@ -35,14 +32,13 @@ class ProjectReportGenerator extends ReportGenerator
     {
         $filesForZip = [];
 
-        foreach ($this->source->volumes as $volume) {
+        foreach ($this->getProjectSources() as $source) {
             $report = $this->getReportGenerator();
-            $file = File::makeTmp();
-            $report->generate($volume, $file->getPath());
-            // The individual volume reports should be deleted again after
+            $p = $report->generate($source);
+            // The individual source reports should be deleted again after
             // the ZIP of this report was created.
-            $this->tmpFiles[] = $file;
-            $filesForZip[$file->getPath()] = $volume->id.'_'.$report->getFullFilename();
+            $this->tmpFiles[] = $p;
+            $filesForZip[$p] = $source->id.'_'.$report->getFullFilename();
         }
 
         $this->makeZip($filesForZip, $path);
@@ -56,5 +52,15 @@ class ProjectReportGenerator extends ReportGenerator
     protected function getReportGenerator()
     {
         return new $this->reportClass($this->options);
+    }
+
+    /**
+     * Get sources for the sub-reports that should be generated for this project.
+     *
+     * @return mixed
+     */
+    protected function getProjectSources()
+    {
+        return $this->source->volumes;
     }
 }

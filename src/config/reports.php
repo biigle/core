@@ -16,10 +16,10 @@ return [
         'full_report' => __DIR__.'/../resources/scripts/full_report.py',
     ],
 
-    /*
-    | Directory to store the report files to
-    */
-    'reports_storage' => storage_path('reports'),
+    /**
+     * Storage disk to store the report files to.
+     */
+    'storage_disk' => env('REPORTS_STORAGE_DISK', 'reports'),
 
     /*
     | Directory to store temporary files to

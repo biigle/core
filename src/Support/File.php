@@ -39,7 +39,7 @@ class File
     public function __construct($path = null)
     {
         if (is_null($path)) {
-            $this->path = tempnam(config('reports.tmp_storage').'/', 'biigle-reports-csv-');
+            $this->path = tempnam(config('reports.tmp_storage'), 'biigle-report-');
         } else {
             $this->path = $path;
         }

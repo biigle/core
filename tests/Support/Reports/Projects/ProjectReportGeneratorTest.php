@@ -48,19 +48,14 @@ class ProjectReportGeneratorTest extends TestCase
         $mock->shouldReceive('generate')
             ->with(Mockery::on(function ($v) use ($volume) {
                 return $v instanceof Volume && $volume->id === $v->id;
-            }), 'my_tmp_file_path')
-            ->once();
+            }))
+            ->once()
+            ->andReturn('my_tmp_file_path');
+
         $mock->shouldReceive('getFullFilename')->once()
             ->andReturn('my_download_filename.pdf');
 
         $generator->mock = $mock;
-
-        $mock = Mockery::mock();
-        $mock->shouldReceive('getPath')->andReturn('my_tmp_file_path');
-        $mock->shouldReceive('delete')->once();
-        App::bind(File::class, function () use ($mock) {
-            return $mock;
-        });
 
         $mock = Mockery::mock();
         $mock->shouldReceive('open')->once()->andReturn(true);

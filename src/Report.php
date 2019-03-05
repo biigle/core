@@ -3,6 +3,8 @@
 namespace Biigle\Modules\Reports;
 
 use File;
+use Storage;
+use SplFileInfo;
 use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
@@ -103,17 +105,13 @@ class Report extends Model
      */
     public function generate()
     {
-        $this->getReportGenerator()->generate($this->source, $this->getPath());
-    }
-
-    /**
-     * Get the path to the report file.
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return config('reports.reports_storage').'/'.$this->id;
+        $path = $this->getReportGenerator()->generate($this->source);
+        try {
+            Storage::disk(config('reports.storage_disk'))
+                ->putFileAs('', new SplFileInfo($path), $this->id);
+        } finally {
+            File::delete($path);
+        }
     }
 
     /**
@@ -156,5 +154,13 @@ class Report extends Model
     public function getUrl()
     {
         return route('show-reports', $this->id);
+    }
+
+    /**
+     * Delete the file that belongs to this report.
+     */
+    public function deleteFile()
+    {
+        Storage::disk(config('reports.storage_disk'))->delete($this->id);
     }
 }

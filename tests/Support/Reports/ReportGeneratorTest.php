@@ -51,37 +51,17 @@ class ReportGeneratorTest extends TestCase
 
     public function testHandleException()
     {
-        File::shouldReceive('dirname')->andReturn('');
-        File::shouldReceive('isDirectory')->andReturn(true);
-        File::shouldReceive('exists')->with('somepath')->andReturn(true);
-        File::shouldReceive('delete')->with('somepath')->once();
+        File::shouldReceive('exists')->andReturn(true);
+        File::shouldReceive('delete')->once()->passthru();
 
         $this->expectException(Exception::class);
-        with(new GeneratorStub(['throw' => true]))->generate(VolumeTest::make(), 'somepath');
+        with(new GeneratorStub(['throw' => true]))->generate(VolumeTest::make());
     }
 
     public function testHandleSourceEmpty()
     {
         $this->expectException(Exception::class);
-        with(new GeneratorStub)->generate(null, 'somepath');
-    }
-
-    public function testHandleRegular()
-    {
-        File::shouldReceive('dirname')
-            ->once()
-            ->andReturn('some');
-
-        File::shouldReceive('isDirectory')
-            ->once()
-            ->with('some')
-            ->andReturn(false);
-
-        File::shouldReceive('makeDirectory')
-            ->once()
-            ->with('some', 0755, true);
-
-        with(new GeneratorStub)->generate(VolumeTest::make(), 'some/path');
+        with(new GeneratorStub)->generate(null);
     }
 
     public function testExpandLabelName()

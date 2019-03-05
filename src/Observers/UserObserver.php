@@ -17,14 +17,11 @@ class UserObserver
      */
     public function deleting($user)
     {
-        $files = Report::where('user_id', '=', $user->id)
+        Report::where('user_id', $user->id)
             ->select('id')
             ->get()
-            ->map(function ($report) {
-                return $report->getPath();
-            })
-            ->toArray();
-
-        File::delete($files);
+            ->each(function ($report) {
+                return $report->deleteFile();
+            });
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Reports\Observers;
 
-use File;
 use Biigle\Modules\Reports\Report;
 
 class ReportObserver
@@ -24,6 +23,6 @@ class ReportObserver
      */
     public function deleted($report)
     {
-        File::delete($report->getPath());
+        $report->deleteFile();
     }
 }

@@ -31,26 +31,10 @@ class CsvReportGenerator extends ProjectReportGenerator
     protected $filename = 'csv_video_annotation_report';
 
     /**
-     * Generate the report.
-     *
-     * @param string $path Path to the report file that should be generated
+     * {@inheritdoc}
      */
-    public function generateReport($path)
+    protected function getProjectSources()
     {
-        $filesForZip = [];
-        logger($this->source->id);
-
-        foreach (Video::where('project_id', $this->source->id)->get() as $video) {
-            $report = $this->getReportGenerator();
-            $file = File::makeTmp();
-            $report->generate($video, $file->getPath());
-            // The individual video reports should be deleted again after
-            // the ZIP of this report was created.
-            $this->tmpFiles[] = $file;
-            $filesForZip[$file->getPath()] = $video->id.'_'.$report->getFullFilename();
-        }
-
-
-        $this->makeZip($filesForZip, $path);
+        return Video::where('project_id', $this->source->id)->get();
     }
 }
