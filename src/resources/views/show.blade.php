@@ -25,6 +25,7 @@
                 @can('edit-in', $video)
                     @include('videos::show.sidebar-labels')
                 @endcan
+                @mixin('videosSidebar')
                 @include('videos::show.sidebar-settings')
                 @can('update', $video)
                     @include('videos::show.sidebar-edit')
