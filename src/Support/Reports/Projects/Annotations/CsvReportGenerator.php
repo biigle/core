@@ -11,7 +11,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $volumeReportClass = ReportGenerator::class;
+    protected $reportClass = ReportGenerator::class;
 
     /**
      * Name of the report for use in text.

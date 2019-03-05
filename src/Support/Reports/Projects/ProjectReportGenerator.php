@@ -13,11 +13,11 @@ class ProjectReportGenerator extends ReportGenerator
     use MakesZipArchives;
 
     /**
-     * The class of the volume report generator to use for this project report.
+     * The class of the report generator to use for this project report.
      *
      * @var string
      */
-    protected $volumeReportClass;
+    protected $reportClass;
 
     /**
      * File extension of the report file.
@@ -55,6 +55,6 @@ class ProjectReportGenerator extends ReportGenerator
      */
     protected function getReportGenerator()
     {
-        return new $this->volumeReportClass($this->options);
+        return new $this->reportClass($this->options);
     }
 }

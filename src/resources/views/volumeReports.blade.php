@@ -29,50 +29,40 @@
                 Request a volume report to consolidate data of the volume into downloadable files.
             </p>
             <form v-on:submit.prevent="submit">
-                <div class="row">
-                    <div class="col-sm-7">
-                        <div class="form-group">
-                            <label>Report type</label>
-                            <div class="btn-group btn-group-justified">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('Annotations')" :class="{active: wantsType('Annotations')}">Annotation report</button>
-                                </div>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
-                                </div>
-                            </div>
+                <div class="form-group">
+                    <label>Report type</label>
+                    <div class="btn-group btn-group-justified">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('Annotations')" :class="{active: wantsType('Annotations')}">Annotation report</button>
                         </div>
-                        <div class="form-group">
-                            <label for="report-variant">Report variant</label>
-                            <select id="report-variant" class="form-control" v-model="selectedVariant" required="">
-                                <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
-                            </select>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                         </div>
-                    </div>
-                    <div class="col-sm-5">
-                        @include('reports::partials.reportTypeInfo')
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="report-variant">Report variant</label>
+                    <select id="report-variant" class="form-control" v-model="selectedVariant" required="">
+                        <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
+                    </select>
+                    @include('reports::partials.reportTypeInfo')
+                </div>
                 @if ($annotationSessions->count() > 0)
-                    <div class="row" v-if="wantsType('Annotations')" v-cloak>
-                        <div class="col-sm-7">
-                            <div class="form-group" :class="{'has-error': errors.annotation_session_id}">
-                                <label for="annotation-session">Restrict to annotation session</label>
-                                <select id="annotation-session" class="form-control" v-model="options.annotation_session_id">
-                                    @foreach ($annotationSessions as $session)
-                                        <option value="{{$session->id}}">{{$session->name}}</option>
-                                    @endforeach
-                                </select>
-                                <div class="help-block" v-if="errors.annotation_session_id" v-text="getError('annotation_session_id')"></div>
-                            </div>
-                        </div>
-                        <div class="col-sm-5 help-block" v-if="options.annotation_session_id" v-cloak>
+                    <div v-if="wantsType('Annotations')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
+                        <label for="annotation-session">Restrict to annotation session</label>
+                        <select id="annotation-session" class="form-control" v-model="options.annotation_session_id">
+                            @foreach ($annotationSessions as $session)
+                                <option value="{{$session->id}}">{{$session->name}}</option>
+                            @endforeach
+                        </select>
+                        <div class="help-block" v-if="errors.annotation_session_id" v-text="getError('annotation_session_id')"></div>
+                        <div v-else class="help-block">
                             Only annotations that were created during the selected annotation session will be included in the report.
                         </div>
                     </div>
                 @endif
-                <div class="row" v-if="wantsType('Annotations')" v-cloak>
-                    <div class="col-sm-7" :class="{'has-error': errors.export_area}">
+                <div v-if="wantsType('Annotations')" v-cloak>
+                    <div class="form-group" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
                             @if ($volume->exportArea)
                                 <label>
@@ -85,32 +75,30 @@
                             @endif
                         </div>
                         <div v-if="errors.export_area" v-cloak class="help-block" v-text="getError('export_area')"></div>
+                        <div v-else class="help-block">
+                            Annotations that are outside of the export area will be discarded for this report.
+                        </div>
                     </div>
-                    <div class="col-sm-5 help-block" v-if="options.export_area" v-cloak>
-                        Annotations that are outside of the export area will be discarded for this report.
-                    </div>
-                    <div class="col-sm-7" :class="{'has-error': errors.newest_label}">
+                    <div class="form-group" :class="{'has-error': errors.newest_label}">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
                             </label>
                         </div>
                         <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
-                    </div>
-                    <div class="col-sm-5 help-block" v-if="options.newest_label" v-cloak>
-                        Only the newest label of each annotation will be included in the report.
+                        <div v-else class="help-block">
+                            Only the newest label of each annotation will be included in the report.
+                        </div>
                     </div>
                 </div>
-                <div class="row form-group">
-                    <div class="col-sm-7" :class="{'has-error': errors.separate_label_trees}">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
-                            </label>
-                        </div>
-                        <div class="help-block" v-if="errors.separate_label_trees" v-cloak v-text="getError('separate_label_trees')"></div>
+                <div class="form-group" :class="{'has-error': errors.separate_label_trees}">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
+                        </label>
                     </div>
-                    <div class="col-sm-5 help-block" v-if="options.separate_label_trees" v-cloak>
+                    <div class="help-block" v-if="errors.separate_label_trees" v-cloak v-text="getError('separate_label_trees')"></div>
+                    <div v-else class="help-block">
                         Annotations belonging to different label trees will be separated to different files/sheets.
                     </div>
                 </div>

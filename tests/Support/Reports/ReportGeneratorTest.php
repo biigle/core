@@ -18,8 +18,8 @@ class ReportGeneratorTest extends TestCase
 {
     public function testGetNotExists()
     {
-        $type = factory(ReportType::class)->make();
-        $this->assertNull(ReportGenerator::get(Volume::class, $type));
+        $this->expectException(Exception::class);
+        ReportGenerator::get(Volume::class, factory(ReportType::class)->make());
     }
 
     public function testGet()
