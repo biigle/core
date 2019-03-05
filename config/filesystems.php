@@ -62,6 +62,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
+        ],
+
         'swift' => [
             'driver'    => 'swift',
             'authUrl'   => env('OS_AUTH_URL', ''),
