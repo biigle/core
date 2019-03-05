@@ -203,39 +203,39 @@ Animalia
         </ol>
 
         @if (class_exists(Biigle\Modules\Videos\VideosServiceProvider::class))
-        <h3>Video annotation reports</h3>
-        <h4><a name="video-annotation-csv-report"></a>CSV</h4>
-        <p>
-            The CSV report is similar to the <a href="#annotation-csv-report">annotation CSV report</a>.
-        </p>
-        <p>
-            Each CSV file contains one row for each video annotation label. Since a video annotation can have multiple different labels, there may be multiple rows for a single video annotation. The columns are as follows:
-        </p>
-        <ol>
-            <li><strong>Video annotation label ID</strong> (not the video annotation ID)</li>
-            <li><strong>Label ID</strong></li>
-            <li><strong>Label name</strong></li>
-            <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label hierarchy)</li>
-            <li><strong>ID of the user who created/attached the video annotation label</strong></li>
-            <li><strong>User firstname</strong></li>
-            <li><strong>User lastname</strong></li>
-            <li><strong>Video ID</strong></li>
-            <li><strong>Video name</strong></li>
-            <li><strong>Video annotation shape ID</strong></li>
-            <li><strong>Video annotation shape name</strong></li>
-            <li>
-                <strong>Video annotation points</strong>
-                <p>
-                    The video annotation points are encoded as nested JSON arrays of alternating x and y values (e.g. <code>[[x11,y11,x12,y12,...],[x21,y21,...],...]</code>). Each array describes the video annotation for a specific key frame (time). For circles, the third value of the points array is the radius of the circle. An empty array means there is a gap in the video annotation.
-                </p>
-            </li>
-            <li>
-                <strong>Video annotation key frames</strong>
-                <p>
-                    The key frames are encoded as a JSON array. Each key frame represents a time that corresponds to the ponts array at the same index. <code>null</code> menas there is a gap in the video annotation.
-                </p>
-            </li>
-        </ol>
+            <h3><a name="video-annotation-reports"></a>Video annotation reports</h3>
+            <h4><a name="video-annotation-csv-report"></a>CSV</h4>
+            <p>
+                The CSV report is similar to the <a href="#annotation-csv-report">annotation CSV report</a>.
+            </p>
+            <p>
+                Each CSV file contains one row for each video annotation label. Since a video annotation can have multiple different labels, there may be multiple rows for a single video annotation. The columns are as follows:
+            </p>
+            <ol>
+                <li><strong>Video annotation label ID</strong> (not the video annotation ID)</li>
+                <li><strong>Label ID</strong></li>
+                <li><strong>Label name</strong></li>
+                <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label hierarchy)</li>
+                <li><strong>ID of the user who created/attached the video annotation label</strong></li>
+                <li><strong>User firstname</strong></li>
+                <li><strong>User lastname</strong></li>
+                <li><strong>Video ID</strong></li>
+                <li><strong>Video name</strong></li>
+                <li><strong>Video annotation shape ID</strong></li>
+                <li><strong>Video annotation shape name</strong></li>
+                <li>
+                    <strong>Video annotation points</strong>
+                    <p>
+                        The video annotation points are encoded as nested JSON arrays of alternating x and y values (e.g. <code>[[x11,y11,x12,y12,...],[x21,y21,...],...]</code>). Each array describes the video annotation for a specific key frame (time). For circles, the third value of the points array is the radius of the circle. An empty array means there is a gap in the video annotation.
+                    </p>
+                </li>
+                <li>
+                    <strong>Video annotation key frames</strong>
+                    <p>
+                        The key frames are encoded as a JSON array. Each key frame represents a time that corresponds to the ponts array at the same index. <code>null</code> menas there is a gap in the video annotation.
+                    </p>
+                </li>
+            </ol>
         @endif
     </div>
 @endsection
