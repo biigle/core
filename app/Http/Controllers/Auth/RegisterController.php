@@ -58,7 +58,13 @@ class RegisterController extends Controller
             $data['email'] = strtolower($data['email']);
         }
 
-        return Validator::make($data, (new StoreUser)->rules());
+        $rules = (new StoreUser)->rules();
+
+        return Validator::make($data, array_merge($rules, [
+            'website' => 'honeypot',
+            'homepage' => 'honeytime:5|required',
+            'affiliation' => 'required|max:255',
+        ]));
     }
 
     /**
@@ -72,6 +78,7 @@ class RegisterController extends Controller
         $user = new User;
         $user->firstname = $data['firstname'];
         $user->lastname = $data['lastname'];
+        $user->affiliation = $data['affiliation'];
         $user->email = $data['email'];
         $user->password = bcrypt($data['password']);
         $user->uuid = Uuid::uuid4();
