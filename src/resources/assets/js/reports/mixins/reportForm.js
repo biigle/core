@@ -7,8 +7,8 @@ biigle.$component('reports.mixins.reportForm', {
     mixins: [biigle.$require('core.mixins.loader')],
     data: {
         allowedOptions: {},
-        selectedType: 'Annotations',
-        selectedVariant: 'Basic',
+        selectedType: '',
+        selectedVariant: '',
         success: false,
         errors: {},
         options: {
@@ -99,5 +99,9 @@ biigle.$component('reports.mixins.reportForm', {
         wantsCombination: function (type, variant) {
             return this.selectedType === type && this.selectedVariant === variant;
         },
+    },
+    created: function () {
+        this.selectedType = Object.keys(this.variants)[0];
+        this.selectedVariant = this.availableVariants[0];
     },
 });
