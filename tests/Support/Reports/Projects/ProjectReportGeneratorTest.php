@@ -79,7 +79,7 @@ class ProjectReportGeneratorTest extends TestCase
 class ProjectReportStub extends ProjectReportGenerator
 {
     public $mock;
-    protected function getReportGenerator(Volume $volume)
+    protected function getReportGenerator()
     {
         return $this->mock;
     }
