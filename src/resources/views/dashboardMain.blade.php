@@ -12,10 +12,8 @@
         </div>
     @empty
         <div class="row">
-            <div class="panel panel-info col-md-6 col-md-offset-3">
-                <div class="panel-body text-info">
-                    You do not belong to any projects yet. You can @can ('create', Biigle\Project::class) <a href="{{route('projects-create')}}">create your own project</a> or @endcan request a project admin to add you to a project.
-                </div>
+            <div class="text-info text-center col-md-8 col-md-offset-2">
+                You do not belong to any projects yet.<br>You can @can ('create', Biigle\Project::class) <a href="{{route('projects-create')}}">create your own project</a> or @endcan request a project admin to add you to a project.
             </div>
         </div>
     @endforelse
