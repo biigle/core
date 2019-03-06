@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use View;
 use Validator;
 use Biigle\User;
 use Ramsey\Uuid\Uuid;
@@ -59,12 +60,17 @@ class RegisterController extends Controller
         }
 
         $rules = (new StoreUser)->rules();
-
-        return Validator::make($data, array_merge($rules, [
+        $additionalRules = [
             'website' => 'honeypot',
             'homepage' => 'honeytime:5|required',
             'affiliation' => 'required|max:255',
-        ]));
+        ];
+
+        if (View::exists('privacy')) {
+            $additionalRules['privacy'] = 'required|accepted';
+        }
+
+        return Validator::make($data, array_merge($rules, $additionalRules));
     }
 
     /**

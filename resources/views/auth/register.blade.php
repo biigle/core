@@ -66,12 +66,25 @@
                         <div class="input-group-addon">
                             <i class="fa fa-lock"></i>
                         </div>
-                        <input type="password" placeholder="{{ trans('form.password') }}" class="form-control" name="password" value="{{ old('password') }}" required>
+                        <input type="password" minlength="8" placeholder="{{ trans('form.password') }}" class="form-control" name="password" required>
                     </div>
                     @if($errors->has('password'))
                         <span class="help-block">{{ $errors->first('password') }}</span>
                     @endif
                 </div>
+
+                @if (View::exists('privacy'))
+                    <div class="form-group{{ $errors->has('privacy') ? ' has-error' : '' }}">
+                        <div class="checkbox">
+                            <label>
+                                <input name="privacy" type="checkbox" value="1" required @if (old('privacy')) checked @endif> I have read and agree to the <a href="{{route('privacy')}}">privacy notice</a>. This includes the use of my full name, email address and affiliation.
+                            </label>
+                        </div>
+                        @if($errors->has('privacy'))
+                            <span class="help-block">{{ $errors->first('privacy') }}</span>
+                        @endif
+                    </div>
+                @endif
 
                 @if ($errors->has('homepage'))
                     <p class="text-danger">{{ $errors->first('homepage') }}</p>
