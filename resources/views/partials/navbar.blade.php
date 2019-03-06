@@ -59,7 +59,12 @@
                                     <li>
                                         <a href="{{ route('manual') }}" title="Manual">Manual</a>
                                     </li>
-                                    @mixin('navbarMenuItemFooter')
+                                    @if (View::exists('imprint'))
+                                        <li><a href="{{route('imprint')}}" title="Imprint">Imprint</a></li>
+                                    @endif
+                                    @if (View::exists('privacy'))
+                                        <li><a href="{{route('privacy')}}" title="Privacy">Privacy</a></li>
+                                    @endif
                                 </ul>
                             </li>
                         </ul>

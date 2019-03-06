@@ -8,5 +8,7 @@ Allow: /login
 Allow: /password
 Allow: /register
 Allow: /manual
+Allow: /imprint
+Allow: /privacy
 
 Disallow: /
