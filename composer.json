@@ -29,7 +29,6 @@
         "biigle/laravel-remote-queue": "^1.2",
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
-        "biigle/legal": "@dev",
         "biigle/maia": "@dev",
         "biigle/projects": "@dev",
         "biigle/reports": "@dev",
