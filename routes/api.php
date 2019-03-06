@@ -170,3 +170,13 @@ $router->resource('users', 'UserController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['users' => 'id'],
 ]);
+
+$router->get('accept-user-registration/{id}', [
+    'as' => 'accept-registration',
+    'uses' => 'UserRegistrationController@accept',
+]);
+
+$router->get('reject-user-registration/{id}', [
+    'as' => 'reject-registration',
+    'uses' => 'UserRegistrationController@reject',
+]);
