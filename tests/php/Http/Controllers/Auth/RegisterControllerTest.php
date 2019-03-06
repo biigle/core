@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Auth;
 
 use Session;
 use TestCase;
+use Honeypot;
 use Biigle\User;
 use Biigle\Tests\UserTest;
 
@@ -13,6 +14,7 @@ class RegisterControllerTest extends TestCase
     {
         parent::setUp();
         config(['biigle.user_registration' => true]);
+        Honeypot::disable();
     }
 
     public function testRegisterRoute()
@@ -35,30 +37,32 @@ class RegisterControllerTest extends TestCase
             ->assertRedirect('register');
     }
 
-    public function testPasswordConfirmation()
+    public function testRegisterSuccess()
     {
+        Honeypot::enable();
         $this->get('register');
         $response = $this->post('register', [
             '_token'    => Session::token(),
             'email'     => 'e@ma.il',
             'password'  => 'password',
-            'password_confirmation'  => 'drowssap',
             'firstname' => 'a',
             'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
         ])->assertRedirect('register');
-    }
 
-    public function testRegisterSuccess()
-    {
         $this->assertFalse(User::where('email', 'e@ma.il')->exists());
+
+        Honeypot::disable();
 
         $response = $this->post('register', [
             '_token'    => Session::token(),
             'email'     => 'e@ma.il',
             'password'  => 'password',
-            'password_confirmation'  => 'password',
             'firstname' => 'a',
             'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
         ])->assertRedirect('/');
 
         $this->assertTrue(User::where('email', 'e@ma.il')->exists());
@@ -74,7 +78,6 @@ class RegisterControllerTest extends TestCase
             '_token'    => Session::token(),
             'email'     => 'test@test.com',
             'password'  => 'password',
-            'password_confirmation'  => 'password',
             'firstname' => 'a',
             'lastname'  => 'b',
         ])->assertRedirect('register');
@@ -92,7 +95,6 @@ class RegisterControllerTest extends TestCase
             '_token'    => Session::token(),
             'email'     => 'Test@Test.com',
             'password'  => 'password',
-            'password_confirmation'  => 'password',
             'firstname' => 'a',
             'lastname'  => 'b',
         ])->assertRedirect('register');
@@ -111,7 +113,6 @@ class RegisterControllerTest extends TestCase
             '_token'    => Session::token(),
             'email'     => 'e@ma.il',
             'password'  => 'password',
-            'password_confirmation'  => 'password',
             'firstname' => 'a',
             'lastname'  => 'b',
         ])->assertRedirect('/');

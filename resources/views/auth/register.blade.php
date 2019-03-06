@@ -9,6 +9,9 @@
         <div class="col-md-4 col-sm-6">
             <h1 class="logo  logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
             <form class="well clearfix" role="form" method="POST" action="{{ url('register') }}">
+
+                {!! Honeypot::generate('website', 'homepage') !!}
+
                 <p class="lead text-center">{{ trans('biigle.new_acc') }}</p>
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
@@ -49,7 +52,7 @@
                 <div class="form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="fa fa-user"></i>
+                            <i class="fa fa-building"></i>
                         </div>
                         <input type="text" placeholder="Affiliation" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
                     </div>
@@ -70,20 +73,16 @@
                     @endif
                 </div>
 
-                <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-lock"></i>
-                        </div>
-                        <input type="password" placeholder="{{ trans('form.password_confirmation') }}" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
-                    </div>
-                    @if($errors->has('password_confirmation'))
-                        <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
-                    @endif
-                </div>
+                @if ($errors->has('homepage'))
+                    <p class="text-danger">{{ $errors->first('homepage') }}</p>
+                @endif
+                @if ($errors->has('website'))
+                    <p class="text-danger">{{ $errors->first('website') }}</p>
+                @endif
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-success btn-block" value="Sign up">
+
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>

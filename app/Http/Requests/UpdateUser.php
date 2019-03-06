@@ -43,7 +43,7 @@ class UpdateUser extends FormRequest
         return [
             // Ignore the email of the own user.
             'email' => "filled|email|unique:users,email,{$this->user->id}|max:255",
-            'password' => 'nullable|min:8|confirmed',
+            'password' => 'nullable|min:8',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
             'role_id' => "filled|in:{$roles}",

@@ -180,6 +180,7 @@ return [
          * Package Service Providers...
          */
         // Insert package service providers here.
+        Msurguy\Honeypot\HoneypotServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -255,6 +256,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        'Honeypot' => Msurguy\Honeypot\HoneypotFacade::class,
         'Modules' => Biigle\Facades\Modules::class,
         'VipsImage' => Biigle\Facades\VipsImage::class,
         'TileCache' => Biigle\Facades\TileCache::class,
