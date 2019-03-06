@@ -27,4 +27,13 @@ return [
    */
    'user_registration' => false,
 
+   /*
+   | Enable user registration confirmation by admins. Whenever a new user is registered,
+   | they are created with the global "guest" role and an email notification is sent to
+   | the admin_email. If admins approve the registration, the global role of the new user
+   | is changed to "editor". If they reject the registration, the new user is deleted.
+   | If this is disabled, all new users immediately get the global "editor" role.
+   */
+   'user_registration_confirmation' => false,
+
 ];

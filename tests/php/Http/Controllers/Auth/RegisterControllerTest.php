@@ -7,7 +7,11 @@ use Session;
 use TestCase;
 use Honeypot;
 use Biigle\User;
+use Biigle\Role;
 use Biigle\Tests\UserTest;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Notifications\AnonymousNotifiable;
+use Biigle\Notifications\RegistrationConfirmation;
 
 class RegisterControllerTest extends TestCase
 {
@@ -36,6 +40,26 @@ class RegisterControllerTest extends TestCase
         $this->get('register');
         $this->post('register', ['_token'   => Session::token()])
             ->assertRedirect('register');
+    }
+
+    public function testRegisterSuccess()
+    {
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ])->assertRedirect('/');
+
+        $user = User::where('email', 'e@ma.il')->first();
+        $this->assertNotNull($user);
+        $this->assertEquals('a', $user->firstname);
+        $this->assertEquals('b', $user->lastname);
+        $this->assertEquals('something', $user->affiliation);
+        $this->assertEquals(Role::editorId(), $user->role_id);
     }
 
     public function testRegisterHoneypot()
@@ -123,6 +147,7 @@ class RegisterControllerTest extends TestCase
 
     public function testRegisterPrivacy()
     {
+        Notification::fake();
         View::shouldReceive('exists')->with('privacy')->andReturn(true);
         View::shouldReceive('share')->passthru();
         $this->get('register');
@@ -150,5 +175,41 @@ class RegisterControllerTest extends TestCase
         ])->assertRedirect('/');
 
         $this->assertEquals(1, User::count());
+    }
+
+    public function testRegisterAdminConfirmationDisabled()
+    {
+        Notification::fake();
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ]);
+
+        Notification::assertNothingSent();
+    }
+
+    public function testRegisterAdminConfirmationEnabled()
+    {
+        config(['biigle.user_registration_confirmation' => true]);
+        Notification::fake();
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ]);
+
+        Notification::assertSentTo(new AnonymousNotifiable, RegistrationConfirmation::class);
+        $user = User::where('email', 'e@ma.il')->first();
+        $this->assertNotNull($user);
+        $this->assertEquals(Role::guestId(), $user->role_id);
     }
 }
