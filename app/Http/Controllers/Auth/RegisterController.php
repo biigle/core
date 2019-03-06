@@ -147,7 +147,7 @@ class RegisterController extends Controller
      */
     protected function isAdminConfirmationEnabled()
     {
-        return config('biigle.user_registration_confirmation');
+        return config('biigle.user_registration_confirmation') && !config('biigle.offline_mode');
     }
 
     /**
