@@ -34,7 +34,6 @@ class EventServiceProvider extends ServiceProvider
         parent::boot();
 
         \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
-        \Biigle\User::observe(new \Biigle\Observers\UserObserver);
         \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
     }

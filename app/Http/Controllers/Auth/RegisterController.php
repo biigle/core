@@ -2,13 +2,17 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use View;
 use Validator;
 use Biigle\User;
+use Biigle\Role;
+use Notification;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Biigle\Notifications\RegistrationConfirmation;
 
 class RegisterController extends Controller
 {
@@ -58,7 +62,18 @@ class RegisterController extends Controller
             $data['email'] = strtolower($data['email']);
         }
 
-        return Validator::make($data, (new StoreUser)->rules());
+        $rules = (new StoreUser)->rules();
+        $additionalRules = [
+            'website' => 'honeypot',
+            'homepage' => 'honeytime:5|required',
+            'affiliation' => 'required|max:255',
+        ];
+
+        if (View::exists('privacy')) {
+            $additionalRules['privacy'] = 'required|accepted';
+        }
+
+        return Validator::make($data, array_merge($rules, $additionalRules));
     }
 
     /**
@@ -72,9 +87,15 @@ class RegisterController extends Controller
         $user = new User;
         $user->firstname = $data['firstname'];
         $user->lastname = $data['lastname'];
+        $user->affiliation = $data['affiliation'];
         $user->email = $data['email'];
         $user->password = bcrypt($data['password']);
         $user->uuid = Uuid::uuid4();
+        if ($this->isAdminConfirmationEnabled()) {
+            $user->role_id = Role::guestId();
+        } else {
+            $user->role_id = Role::editorId();
+        }
         $user->save();
 
         return $user;
@@ -117,5 +138,33 @@ class RegisterController extends Controller
     protected function isRegistrationDisabled()
     {
         return !config('biigle.user_registration');
+    }
+
+    /**
+     * Determines if the user registration confirmation by admins is enabled.
+     *
+     * @return bool
+     */
+    protected function isAdminConfirmationEnabled()
+    {
+        return config('biigle.user_registration_confirmation');
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        if ($this->isAdminConfirmationEnabled()) {
+            $notifiable = Notification::route('mail', config('biigle.admin_email'));
+            Notification::send($notifiable, new RegistrationConfirmation($user));
+        }
+
+        return redirect($this->redirectPath())
+            ->with('welcomeMessage', true);
     }
 }
