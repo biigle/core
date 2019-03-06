@@ -17,7 +17,7 @@
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
     <a href="{{route('project', $video->project_id)}}" class="navbar-link" title="Show project {{$video->project->name}}">{{$video->project->name}}</a> /
-    <strong>{{$video->name}}</strong>
+    <a href="{{route('video', $video->id)}}" class="navbar-link" title="Show video {{$video->name}}">{{$video->name}}</a> / <strong>Reports</strong>
 </div>
 @endsection
 
