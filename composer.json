@@ -161,10 +161,6 @@
             "type": "vcs",
             "url": "git@github.com:biigle/sync.git"
         },
-        "11": {
-            "type": "vcs",
-            "url": "git@github.com:biigle/legal.git"
-        },
         "12": {
             "type": "vcs",
             "url": "git@github.com:biigle/demo.git"
