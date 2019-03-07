@@ -67,6 +67,11 @@ return [
             'root' => storage_path('reports'),
         ],
 
+        'geo-overlays' => [
+            'driver' => 'local',
+            'root' => storage_path('geo-overlays'),
+        ],
+
         'swift' => [
             'driver'    => 'swift',
             'authUrl'   => env('OS_AUTH_URL', ''),
