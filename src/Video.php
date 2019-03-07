@@ -24,6 +24,7 @@ class Video extends Model implements FileContract
         'project_id',
         'uuid',
         'attrs',
+        'duration',
     ];
 
     /**
@@ -33,6 +34,7 @@ class Video extends Model implements FileContract
      */
     protected $casts = [
         'attrs' => 'array',
+        'duration' => 'float',
     ];
 
     /**

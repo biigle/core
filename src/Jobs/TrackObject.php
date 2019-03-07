@@ -7,7 +7,6 @@ use Exception;
 use FileCache;
 use Biigle\Shape;
 use Biigle\Jobs\Job;
-use League\Flysystem\Adapter\Local;
 use Illuminate\Queue\SerializesModels;
 use Biigle\Modules\Videos\VideoAnnotation;
 use Illuminate\Contracts\Queue\ShouldQueue;

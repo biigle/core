@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
+use Queue;
 use Storage;
 use ApiTestCase;
 use GuzzleHttp\Client;
@@ -12,6 +13,7 @@ use GuzzleHttp\Psr7\Response;
 use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\Project;
 use GuzzleHttp\Handler\MockHandler;
+use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
 
 class ProjectVideoControllerTest extends ApiTestCase
 {
@@ -49,6 +51,7 @@ class ProjectVideoControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
+        Queue::fake();
         Storage::fake('test');
         Storage::disk('test')->put('video.txt', 'abc');
 
@@ -82,6 +85,7 @@ class ProjectVideoControllerTest extends ApiTestCase
         $this->assertNotNull($video);
         $this->assertEquals(104500, $video->attrs['size']);
         $this->assertEquals('video/mp4', $video->attrs['mimetype']);
+        Queue::assertPushed(ProcessNewVideo::class);
     }
 
     public function testStoreRemote()

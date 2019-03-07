@@ -22,6 +22,7 @@ class VideoTest extends ModelTestCase
         $this->assertNotNull($this->model->project);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->duration);
         $this->assertEquals([], $this->model->attrs);
     }
 

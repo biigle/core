@@ -2,10 +2,12 @@
 
 namespace Biigle\Tests\Modules\Videos\Http\Controllers\Api;
 
+use Queue;
 use Storage;
 use ApiTestCase;
 use Illuminate\Http\File;
 use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
 use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
 
 class VideoControllerTest extends ApiTestCase
@@ -46,6 +48,30 @@ class VideoControllerTest extends ApiTestCase
         $this->assertEquals('test://video.mp4', $video->url);
         $this->assertEquals('my doi', $video->doi);
         $this->assertEquals('my link', $video->gis_link);
+    }
+
+    public function testUpdateUrl()
+    {
+        $this->beAdmin();
+        $video = VideoTest::create(['project_id' => $this->project()->id]);
+        Queue::fake();
+        Storage::fake('test');
+        $file = new File(__DIR__.'/../../../files/test.mp4');
+        Storage::disk('test')->putFileAs('', $file, 'video.mp4');
+
+        $this->putJson("/api/v1/videos/{$video->id}", [
+                'name' => 'New name',
+            ])
+            ->assertStatus(200);
+
+        Queue::assertNothingPushed();
+
+        $this->putJson("/api/v1/videos/{$video->id}", [
+                'url' => 'test://video.mp4',
+            ])
+            ->assertStatus(200);
+
+        Queue::assertPushed(ProcessNewVideo::class);
     }
 
     public function testDestroy()
