@@ -34,7 +34,7 @@ class UserRegistrationController extends Controller
      */
     public function accept($id)
     {
-        if (!config('biigle.user_registration_confirmation')) {
+        if (!$this->isAdminConfirmationEnabled()) {
             abort(404);
         }
 
@@ -67,7 +67,7 @@ class UserRegistrationController extends Controller
      */
     public function reject($id)
     {
-        if (!config('biigle.user_registration_confirmation')) {
+        if (!$this->isAdminConfirmationEnabled()) {
             abort(404);
         }
 
@@ -80,5 +80,15 @@ class UserRegistrationController extends Controller
                 ->with('messageType', 'success')
                 ->with('message', 'The user has been deleted');
         }
+    }
+
+    /**
+     * Determines if the user registration confirmation by admins is enabled.
+     *
+     * @return bool
+     */
+    protected function isAdminConfirmationEnabled()
+    {
+        return config('biigle.user_registration_confirmation') && !config('biigle.offline_mode');
     }
 }
