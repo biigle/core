@@ -19,11 +19,7 @@
     <div class="row">
         <div class="col-sm-6 col-lg-4">
             <div class="panel panel-default panel-image">
-                @if (File::exists($image->thumbPath))
-                    <img src="{{ thumbnail_url($image->uuid) }}">
-                @else
-                    <img src="{{ asset(config('thumbnails.empty_url')) }}">
-                @endif
+                <img src="{{ thumbnail_url($image->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
             </div>
             @include('volumes::images.index.meta')
         </div>
