@@ -37,7 +37,7 @@ class VideosServiceProvider extends ServiceProvider
 
         $modules->register('videos', [
             'viewMixins' => [
-                'projectsShow',
+                'projectsShowLeft',
                 'manualTutorial',
                 'manualReferences',
                 'searchTab',
