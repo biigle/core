@@ -26,11 +26,13 @@
     @include('projects::show.toolbar')
     <div class="col-md-6">
         @include('projects::show.volumes')
+        @mixin('projectsShowLeft')
     </div>
     <div class="col-md-6">
         @include('projects::show.label-trees')
         @include('projects::show.members')
         @mixin('projectsShow')
+        @mixin('projectsShowRight')
     </div>
 </div>
 @endsection

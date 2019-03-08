@@ -38,7 +38,7 @@ biigle.$component('projects.components.volumeThumbnail', {
         removeTitle: {
             type: String,
             default: 'Remove this volume'
-        }
+        },
     },
     data: function () {
         return {
