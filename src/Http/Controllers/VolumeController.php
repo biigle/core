@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers;
 
+use Storage;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -61,11 +62,16 @@ class VolumeController extends Controller
         $imageIds = $volume->orderedImages()
             ->pluck('uuid', 'id');
 
-        return view('volumes::show')
-            ->with('volume', $volume)
-            ->with('labelTrees', $labelTrees)
-            ->with('projects', $projects)
-            ->with('imageIds', $imageIds);
+        $thumbUriTemplate = Storage::disk(config('thumbnails.storage_disk'))
+            ->url(':uuid.'.config('thumbnails.format'));
+
+        return view('volumes::show', compact(
+            'volume',
+            'labelTrees',
+            'projects',
+            'imageIds',
+            'thumbUriTemplate'
+        ));
     }
 
     /**

@@ -266,9 +266,9 @@ biigle.$viewModel('volume-container', function (element) {
             var images = this.imageIds.map(function (id) {
                 return {
                     id: id,
-                    url: thumbUri.replace('{uuid}', self.transformUuid(imageUuids[id])),
-                    annotateUrl: annotateUri.replace('{id}', id),
-                    imageUrl: imageUri.replace('{id}', id),
+                    url: thumbUri.replace(':uuid', self.transformUuid(imageUuids[id])),
+                    annotateUrl: annotateUri.replace(':id', id),
+                    imageUrl: imageUri.replace(':id', id),
                     flagged: false,
                     filename: null,
                     labels: [],
