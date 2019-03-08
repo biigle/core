@@ -1,3 +1,4 @@
+<?php $videoUrl = Storage::disk(config('videos.thumbnail_storage_disk'))->url(''); ?>
 <div id="projects-show-video-list" class="panel panel-default" v-bind:class="{'panel-warning':editing}">
     <div class="panel-heading">
         Videos
@@ -9,15 +10,19 @@
             </span>
         @endcan
     </div>
-    <ul class="list-group" v-cloak>
-        <li class="list-group-item" v-for="video in videos">
-            <a :href="'{{route('video', '')}}/' + video.id" v-text="video.name"></a>
-            <span v-if="editing" class="btn btn-xs btn-danger pull-right" v-on:click="deleteVideo(video)" :title="'Delete video ' + video.name">
-                Delete
-            </span>
-        </li>
-        <li v-if="hasNoVideos" class="list-group-item text-muted">This project has no videos.</li>
-    </ul>
+    <div class="panel-body container-fluid videos-grid">
+        <div class="row">
+            <div class="col-sm-6" v-for="video in videos" v-bind:key="video.id" v-cloak>
+                <a class="video-thumbnail__link" v-bind:href="'{{route('video', '')}}/'+video.id" v-bind:title="'Show video '+video.name">
+                    <video-thumbnail class="volume-thumbnail volume-thumbnail--projects" v-bind:tid="video.id" :uuid="video.uuid" :thumb-count="{{config('videos.thumbnail_count')}}" uri="{{ $videoUrl }}" format="{{ config('thumbnails.format') }}" @can('update', $project) v-bind:removable="editing" v-bind:remove-title="'Delete video '+video.name" @endcan v-on:remove="deleteVideo(video)">
+                        <img v-bind:src="'{{ $videoUrl }}/'+video.uuid[0]+video.uuid[1]+'/'+video.uuid[2]+video.uuid[3]+'/'+video.uuid+'/'+'0.{{ config('thumbnails.format') }}'" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                        <figcaption slot="caption" v-text="video.name"></figcaption>
+                    </video-thumbnail>
+                </a>
+            </div>
+        </div>
+        <span class="text-muted" v-if="!videos.length" v-cloak>This project has no videos.</span>
+    </div>
 </div>
 
 @push('scripts')
