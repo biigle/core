@@ -7,8 +7,8 @@ biigle.$component('largo.mixins.annotationPatch', {
     methods: {
         getUrl: function () {
             return this.urlTemplate
-                .replace('{prefix}', this.patchPrefix)
-                .replace('{id}', this.id);
+                .replace(':prefix', this.patchPrefix)
+                .replace(':id', this.id);
         },
     },
 });

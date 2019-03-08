@@ -25,7 +25,7 @@ class LargoController extends Controller
             ->get();
 
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
-            ->url('{prefix}/{id}.'.config('largo.patch_format'));
+            ->url(':prefix/:id.'.config('largo.patch_format'));
 
         return view('largo::project', [
             'project' => $project,

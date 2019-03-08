@@ -20,7 +20,7 @@ class AnnotationCatalogController extends Controller
         $this->authorize('access', $tree);
 
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
-            ->url('{prefix}/{id}.'.config('largo.patch_format'));
+            ->url(':prefix/:id.'.config('largo.patch_format'));
 
         return view('largo::annotationCatalog.show', compact('tree', 'patchUrlTemplate'));
     }
