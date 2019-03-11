@@ -2,10 +2,12 @@
 
 namespace Biigle\Tests\Modules\Videos;
 
+use Event;
 use Biigle\Role;
 use ModelTestCase;
 use Biigle\Tests\UserTest;
 use Biigle\Modules\Videos\Video;
+use Biigle\Modules\Videos\Events\VideoDeleted;
 
 class VideoTest extends ModelTestCase
 {
@@ -91,5 +93,12 @@ class VideoTest extends ModelTestCase
 
         $this->assertEquals(0, Video::accessibleBy($user)->count());
         $this->assertEquals(1, Video::accessibleBy($guest)->count());
+    }
+
+    public function testDispatchesDeletedEvent()
+    {
+        Event::fake();
+        $this->model->delete();
+        Event::assertDispatched(VideoDeleted::class);
     }
 }
