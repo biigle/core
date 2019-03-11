@@ -2,11 +2,12 @@
 
 namespace Biigle\Modules\Videos\Jobs;
 
-use File;
+use App;
+use Log;
 use Storage;
+use Exception;
 use FileCache;
 use VipsImage;
-use SplFileInfo;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
 use Biigle\Jobs\Job;
@@ -50,22 +51,38 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     public function handle()
     {
-        FileCache::getOnce($this->video, function ($file, $path) {
-            $this->video->duration = $this->getVideoDuration($path);
-            $this->video->save();
-
-            $times = $this->getThumbnailTimes($this->video->duration);
-            $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
-            $fragment = fragment_uuid_path($this->video->uuid);
-            $format = config('thumbnails.format');
-            $width = config('thumbnails.width');
-            $height = config('thumbnails.height');
-
-            foreach ($times as $index => $time) {
-                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
-                $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+        try {
+            FileCache::getOnce($this->video, [$this, 'handleFile']);
+        } catch (Exception $e) {
+            Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
+            if (App::runningUnitTests()) {
+                throw $e;
             }
-        });
+        }
+    }
+
+    /**
+     * Process a cached video file.
+     *
+     * @param Video $file
+     * @param string $path
+     */
+    public function handleFile($file, $path)
+    {
+        $this->video->duration = $this->getVideoDuration($path);
+        $this->video->save();
+
+        $times = $this->getThumbnailTimes($this->video->duration);
+        $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
+        $fragment = fragment_uuid_path($this->video->uuid);
+        $format = config('thumbnails.format');
+        $width = config('thumbnails.width');
+        $height = config('thumbnails.height');
+
+        foreach ($times as $index => $time) {
+            $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
+            $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+        }
     }
 
     /**
@@ -99,17 +116,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
         if (!isset($this->ffmpegVideo)) {
             $this->ffmpegVideo = FFMpeg::create()->open($path);
         }
-        $thumb = tempnam(config('videos.tmp_dir'), 'video-thumb-');
 
-        try {
-            $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))->save($thumb);
-            $buffer = VipsImage::thumbnail($thumb, $width, ['height' => $height])
-                ->writeToBuffer(".{$format}");
-        } finally {
-            File::delete($thumb);
-        }
+        $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
+            ->save(null, false, true);
 
-        return $buffer;
+        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
+            ->writeToBuffer(".{$format}");
     }
 
     /**
