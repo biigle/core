@@ -49,7 +49,21 @@ class ImportController extends Controller
      * @apiGroup Sync
      * @apiName UpdateImport
      * @apiPermission admin
-     * @apiDescription This endpoint is not properly documented yet.
+     *
+     * @apiParam {string} token The import token.
+     *
+     * @apiParam (User import parameters) {array} only (optional) Array of user IDs to import.
+     *
+     * @apiParam (Label tree import parameters) {array} only_label_trees (optional) Array of label trees IDs to import.
+     * @apiParam (Label tree import parameters) {array} only_labels (optional) Array of label IDs to import.
+     * @apiParam (Label tree import parameters) {array} name_conflicts (optional) Array that specifies how label name conflicts should be resolved either `'import'` or `'existing'` for each conflicting label. Example: `[10 => 'import']` uses the imported name of the label with ID 10.
+     * @apiParam (Label tree import parameters) {array} parent_conflicts (optional) Array that specifies how label parent conflicts should be resolved either `'import'` or `'existing'` for each conflict. See `name_conflicts` for an example.
+     *
+     * @apiParam (Volume import parameters) {array} project_id ID of the project to attach the imported volumes to.
+     * @apiParam (Volume import parameters) {array} only (optional) Array of volume IDs to import.
+     * @apiParam (Volume import parameters) {array} new_urls (optional) New volume URLs to use for each volume. Example: `[10 => 'local://my/volume']` changes the URL for the volume with impoer ID 10.
+     * @apiParam (Volume import parameters) {array} name_conflicts (optional) See the label tree import parameters.
+     * @apiParam (Volume import parameters) {array} parent_conflicts (optional) See the label tree import parameters.
      *
      * @param ArchiveManager $manager
      * @param  Request $request
@@ -85,6 +99,8 @@ class ImportController extends Controller
      * @apiGroup Sync
      * @apiName DestroyImport
      * @apiPermission admin
+     *
+     * @apiParam {string} token The import token.
      *
      * @param ArchiveManager $manager
      * @param string $token Import token
