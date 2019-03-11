@@ -44,6 +44,7 @@ class VideosServiceProvider extends ServiceProvider
                 'manualReferences',
                 'searchTab',
                 'searchTabContent',
+                'adminIndex',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
             'controllerMixins' => [
