@@ -133,10 +133,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     protected function getThumbnailTimes($duration)
     {
-        // Round to 100 ms because FFMpeg does not extract frames that are defined with
-        // a time code that equals the duration to the last digit. E.g. for a video with
-        // a duration of 149.84 it will only work with the time code 149.8.
-        $duration = round($duration, 1);
         $count = config('videos.thumbnail_count');
 
         if ($count <= 1) {
@@ -150,6 +146,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
         if (count($range) < $count) {
             $range[] = $duration;
         }
+
+        // Subtract 1 s from the last frame because FFMpeg sometimes does not extract
+        // frames from a time code that is equal to the duration.
+        $range[count($range) - 1] -= 1;
 
         return $range;
     }
