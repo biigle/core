@@ -3,11 +3,13 @@
 namespace Biigle\Modules\Videos\Http\Controllers\Api;
 
 use App;
+use Queue;
 use Storage;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
 use Biigle\Modules\Videos\Video;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
 use Biigle\Modules\Videos\Http\Requests\StoreVideo;
 
 class ProjectVideoController extends Controller
@@ -71,6 +73,7 @@ class ProjectVideoController extends Controller
             'doi' => $request->input('doi'),
         ];
         $video->save();
+        Queue::push(new ProcessNewVideo($video));
 
         if ($this->isAutomatedRequest()) {
             return $video;

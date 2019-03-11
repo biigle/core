@@ -2,7 +2,9 @@
 
 namespace Biigle\Modules\Videos\Http\Controllers\Api;
 
+use Queue;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
 use Biigle\Modules\Videos\Http\Requests\UpdateVideo;
 use Biigle\Modules\Videos\Http\Requests\DestroyVideo;
 
@@ -34,8 +36,13 @@ class VideoController extends Controller
         $video->gis_link = $request->input('gis_link', $video->gis_link);
         $video->doi = $request->input('doi', $video->doi);
 
-        $isDirty = $video->isDirty();
+        $isUrlDirty = $video->isDirty('url');
+        $isDirty = $isUrlDirty || $video->isDirty();
         $video->save();
+
+        if ($isUrlDirty) {
+            Queue::push(new ProcessNewVideo($video));
+        }
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()->with('saved', $isDirty);

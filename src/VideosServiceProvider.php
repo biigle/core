@@ -7,7 +7,9 @@ use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Videos\Events\VideoDeleted;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
+use Biigle\Modules\Videos\Listeners\PrepareDeleteVideoThumbnails;
 
 class VideosServiceProvider extends ServiceProvider
 {
@@ -37,7 +39,7 @@ class VideosServiceProvider extends ServiceProvider
 
         $modules->register('videos', [
             'viewMixins' => [
-                'projectsShow',
+                'projectsShowLeft',
                 'manualTutorial',
                 'manualReferences',
                 'searchTab',
@@ -52,6 +54,7 @@ class VideosServiceProvider extends ServiceProvider
         Gate::policy(Video::class, Policies\VideoPolicy::class);
         Gate::policy(VideoAnnotation::class, Policies\VideoAnnotationPolicy::class);
         Gate::policy(VideoAnnotationLabel::class, Policies\VideoAnnotationLabelPolicy::class);
+        Event::listen(VideoDeleted::class, PrepareDeleteVideoThumbnails::class);
     }
 
     /**

@@ -28,4 +28,14 @@ return [
     */
     'tracking_point_padding' => 25,
 
+    /*
+    | Number of sample thumbnails to generate for a video.
+    */
+    'thumbnail_count' => 10,
+
+    /*
+    | Storage disk to store video thumbnails to.
+    */
+    'thumbnail_storage_disk' => env('VIDEOS_THUMBNAIL_STORAGE_DISK', 'video-thumbs'),
+
 ];

@@ -6,6 +6,7 @@ use DB;
 use Biigle\User;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Biigle\Modules\Videos\Events\VideoDeleted;
 use Biigle\FileCache\Contracts\File as FileContract;
 
 class Video extends Model implements FileContract
@@ -24,6 +25,7 @@ class Video extends Model implements FileContract
         'project_id',
         'uuid',
         'attrs',
+        'duration',
     ];
 
     /**
@@ -33,6 +35,7 @@ class Video extends Model implements FileContract
      */
     protected $casts = [
         'attrs' => 'array',
+        'duration' => 'float',
     ];
 
     /**
@@ -52,6 +55,15 @@ class Video extends Model implements FileContract
      */
     protected $hidden = [
         'attrs',
+    ];
+
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'deleted' => VideoDeleted::class,
     ];
 
     /**
