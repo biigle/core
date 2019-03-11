@@ -1,41 +1,36 @@
 <?php
 // Do this inline because this is a view mixin and we currently don't have a way to add
 // controller code from view mixins.
-if (!(\DB::connection() instanceof \Illuminate\Database\SQLiteConnection)) {
-    $days = \DB::table('annotations')
-        ->select(\DB::raw('cast(created_at as date) as day, count(id)'))
-        ->where('created_at', '>=', \Carbon\Carbon::today()->subWeek())
-        ->groupBy('day')
-        ->pluck('count', 'day');
-    $max = $days->count() > 0 ? max($days->toArray()) : 0;
-    $week = collect([7, 6, 5, 4, 3, 2, 1, 0])->map(function ($item) use ($days, $max) {
-        $day = \Carbon\Carbon::today()->subDays($item);
-        $count = $days->get($day->toDateString(), 0);
+$days = Biigle\Annotation::selectRaw('cast(created_at as date) as day, count(id)')
+    ->where('created_at', '>=', Carbon\Carbon::today()->subWeek())
+    ->groupBy('day')
+    ->pluck('count', 'day');
+$max = $days->max() ?: 0;
+$week = collect([7, 6, 5, 4, 3, 2, 1, 0])->map(function ($item) use ($days, $max) {
+    $day = Carbon\Carbon::today()->subDays($item);
+    $count = $days->get($day->toDateString(), 0);
 
-        return [
-            'day' => $day,
-            'count' => $count,
-            'percent' => ($max !== 0) ? $count / $max : 0,
-        ];
-    });
-    $height = 50;
-    $width = 40;
-}
+    return [
+        'day' => $day,
+        'count' => $count,
+        'percent' => ($max !== 0) ? $count / $max : 0,
+    ];
+});
+$height = 50;
+$width = 40;
 $total = number_format(Biigle\Annotation::count());
 ?>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            Annotations
-            @if (isset($week))
+<div class="col-sm-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Annotations
                 <span class="pull-right">{{ $total }}</span>
-            @endif
-        </h3>
-    </div>
-    <div class="panel-body">
-        @if (isset($week))
-            <svg style="display:block;margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
+            </h3>
+        </div>
+        <div class="panel-body">
+            <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
                 <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
                 @foreach($week as $index => $day)
                     <?php $h = round($height * $day['percent']); ?>
@@ -45,8 +40,6 @@ $total = number_format(Biigle\Annotation::count());
                     </g>
                 @endforeach
             </svg>
-        @else
-            <p class="h1 text-center">{{ $total }}</p>
-        @endif
+        </div>
     </div>
 </div>
