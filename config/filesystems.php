@@ -104,6 +104,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'video-thumbs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/video-thumbs'),
+            'url' => env('APP_URL').'/storage/video-thumbs',
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];
