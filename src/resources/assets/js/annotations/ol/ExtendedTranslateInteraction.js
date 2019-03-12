@@ -69,7 +69,7 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
                 self.translating = false;
                 self.dispatchEvent({type: 'translateend', features: self.features});
             };
-            this.utils.debounce(emit, 500, 'ol.interactions.Translate.translateend');
+            this.debounce(emit, 500, 'ol.interactions.Translate.translateend');
             // Cancel keyboard event handlers with lower priority if features were
             // moved.
             return false;

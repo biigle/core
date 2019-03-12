@@ -92,7 +92,7 @@ biigle.$component('annotations.components.minimap', function () {
                 }
             },
             initImageLayer: function (layers) {
-                layers.forEach(function (layer) {
+                layers.getArray().forEach(function (layer) {
                     this.refreshImageLayer({element: layer});
                 }, this);
             },
