@@ -150,6 +150,7 @@ class RegisterControllerTest extends TestCase
         Notification::fake();
         View::shouldReceive('exists')->with('privacy')->andReturn(true);
         View::shouldReceive('share')->passthru();
+        View::shouldReceive('make')->andReturn('');
         $this->get('register');
         $response = $this->post('register', [
             '_token'    => Session::token(),
