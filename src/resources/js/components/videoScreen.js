@@ -278,7 +278,6 @@ biigle.$component('videos.components.videoScreen', {
     methods: {
         createMap: function () {
             var map = new ol.Map({
-                renderer: 'canvas',
                 controls: [
                     new ol.control.Zoom(),
                     new ol.control.ZoomToExtent({

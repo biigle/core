@@ -10,8 +10,11 @@
         border-radius: $border-radius-small;
         left: 0;
 
-        // The last keyframe be aligned with the end of the annotation clip.
-        &:last-child:not(:only-child) {
+    }
+
+    // The last keyframe be aligned with the end of the annotation clip.
+    &:last-child:not(:only-child) {
+        .annotation-keyframe {
             transform: translateX(-100%);
         }
     }

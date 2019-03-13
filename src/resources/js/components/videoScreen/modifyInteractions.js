@@ -50,7 +50,7 @@ biigle.$component('videos.components.videoScreen.modifyInteractions', function (
                 map.addInteraction(this.modifyInteraction);
             },
             handleModifyStart: function (e) {
-                e.features.forEach(function (feature) {
+                e.features.getArray().forEach(function (feature) {
                     this.featureRevisionMap[feature.getId()] = feature.getRevision();
                 }, this);
             },

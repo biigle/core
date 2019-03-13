@@ -35,7 +35,7 @@
 @endsection
 
 @push('scripts')
-@if (app()->environment('local'))
+@if (app()->environment('local') && File::exists(public_path('vendor/annotations/scripts/ol-debug.js')))
     <script src="{{ cachebust_asset('vendor/annotations/scripts/ol-debug.js') }}"></script>
 @else
     <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
