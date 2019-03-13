@@ -280,10 +280,10 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      */
     MagicWandInteraction.prototype.toggleActive = function () {
         if (this.getActive()) {
-            this.map.on(['moveend', 'change:size'], this.updateSnapshot, this);
+            this.map.on(['moveend', 'change:size'], this.updateSnapshot.bind(this));
             this.updateSnapshot();
         } else {
-            this.map.un(['moveend', 'change:size'], this.updateSnapshot, this);
+            this.map.un(['moveend', 'change:size'], this.updateSnapshot.bind(this));
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
@@ -299,20 +299,24 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      */
     MagicWandInteraction.prototype.updateSnapshot = function () {
         if (!this.updatingSnapshot && this.layer) {
-            this.layer.once('postcompose', function (e) {
-                this.snapshotCanvas.width = e.context.canvas.width;
-                this.snapshotCanvas.height = e.context.canvas.height;
-                this.snapshotContext.drawImage(e.context.canvas, 0, 0);
-                this.snapshot = this.snapshotContext.getImageData(0, 0, this.snapshotCanvas.width, this.snapshotCanvas.height);
-                this.snapshot.bytes = 4;
-            }, this);
-
+            this.layer.once('postcompose', this.updateSnapshotCanvas.bind(this));
             // Set flag to avoid infinite recursion since renderSync will trigger the
             // moveend event again!
             this.updatingSnapshot = true;
             this.map.renderSync();
             this.updatingSnapshot = false;
         }
+    };
+
+    /**
+     * Update the snapshot canvas.
+     */
+    MagicWandInteraction.prototype.updateSnapshotCanvas = function (e) {
+        this.snapshotCanvas.width = e.context.canvas.width;
+        this.snapshotCanvas.height = e.context.canvas.height;
+        this.snapshotContext.drawImage(e.context.canvas, 0, 0);
+        this.snapshot = this.snapshotContext.getImageData(0, 0, this.snapshotCanvas.width, this.snapshotCanvas.height);
+        this.snapshot.bytes = 4;
     };
 
     /**
