@@ -94,21 +94,6 @@ class Image extends Model implements FileContract
     }
 
     /**
-     * Adds the `thumbPath` attribute to the image model. The path points
-     * to the thumbnail image file of this image.
-     *
-     * @return string
-     */
-    public function getThumbPathAttribute()
-    {
-        $uri = config('thumbnails.uri');
-        $format = config('thumbnails.format');
-        $fragment = fragment_uuid_path($this->uuid);
-
-        return public_path("{$uri}/{$fragment}.{$format}");
-    }
-
-    /**
      * Adds the `url` attribute to the image model. The url is the absolute path
      * to the original image file.
      *
@@ -137,20 +122,6 @@ class Image extends Model implements FileContract
     public function getMetadataAttribute()
     {
         return $this->getJsonAttr('metadata', []);
-    }
-
-    /**
-     * Get the thumbnail image as download response.
-     *
-     * @return Response
-     */
-    public function getThumb()
-    {
-        try {
-            return Response::download($this->thumbPath);
-        } catch (FileNotFoundException $e) {
-            abort(404, $e->getMessage());
-        }
     }
 
     /**

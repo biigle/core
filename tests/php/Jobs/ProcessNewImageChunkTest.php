@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Jobs;
 
 use Log;
-use File;
 use Queue;
 use Storage;
 use TestCase;
@@ -17,6 +16,11 @@ use Jcupitt\Vips\Exception as VipsException;
 
 class ProcessNewImageChunkTest extends TestCase
 {
+    public function setUp() {
+        parent::setUp();
+        Storage::fake(config('thumbnails.storage_disk'));
+    }
+
     public function testHandleCollectMetadata()
     {
         $volume = VolumeTest::create();
@@ -62,23 +66,23 @@ class ProcessNewImageChunkTest extends TestCase
         if (!function_exists('vips_call')) {
             $this->markTestSkipped('Requires the PHP vips extension.');
         }
+        Storage::fake('test-thumbs');
+        config(['thumbnails.storage_disk' => 'test-thumbs']);
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
-
-        $this->assertFalse(File::exists($image->thumbPath));
-
         with(new ProcessNewImageChunk([$image->id]))->handle();
 
-        $this->assertTrue(File::exists($image->thumbPath));
-        $size = getimagesize($image->thumbPath);
+        $prefix = fragment_uuid_path($image->uuid);
+        $format = config('thumbnails.format');
+
+        $this->assertTrue(Storage::disk('test-thumbs')->exists("{$prefix}.{$format}"));
+        $size = getimagesize(Storage::disk('test-thumbs')->path("{$prefix}.{$format}"));
         $config = [config('thumbnails.width'), config('thumbnails.height')];
 
         $this->assertTrue($size[0] <= $config[0]);
         $this->assertTrue($size[1] <= $config[1]);
         $this->assertTrue($size[0] == $config[0] || $size[1] == $config[1]);
-
-        $this->cleanup($image);
     }
 
     public function testHandleMakeThumbnailNotReadable()
@@ -92,23 +96,20 @@ class ProcessNewImageChunkTest extends TestCase
             $this->assertFalse(true);
         } catch (VipsException $e) {
             $this->assertContains('not a known file format', $e->getMessage());
-        } finally {
-            $this->cleanup($image, false);
         }
     }
 
     public function testHandleMakeThumbnailSkipExisting()
     {
+        Storage::fake('test-thumbs');
+        config(['thumbnails.storage_disk' => 'test-thumbs']);
         VipsImage::shouldReceive('thumbnail')->never();
         $image = ImageTest::create();
-        File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
-        touch($image->thumbPath);
+        $prefix = fragment_uuid_path($image->uuid);
+        $format = config('thumbnails.format');
+        Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
 
-        try {
-            with(new ProcessNewImageChunk([$image->id]))->handle();
-        } finally {
-            $this->cleanup($image);
-        }
+        with(new ProcessNewImageChunk([$image->id]))->handle();
     }
 
     public function testHandleTileSmallImage()
@@ -159,16 +160,7 @@ class ProcessNewImageChunkTest extends TestCase
 
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
-
         Queue::assertNotPushed(TileSingleImage::class);
-    }
-
-    protected function cleanup($image, $exists = true)
-    {
-        $this->assertTrue(File::delete($image->thumbPath) === $exists);
-        // These directories may contain other thumbnails from a development instance.
-        @rmdir(dirname($image->thumbPath, 1));
-        @rmdir(dirname($image->thumbPath, 2));
     }
 }
 

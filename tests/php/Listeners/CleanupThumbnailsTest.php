@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Listeners;
 
-use File;
 use Queue;
+use Storage;
 use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Events\ImagesDeleted;
@@ -14,18 +14,15 @@ class CleanupThumbnailsTest extends TestCase
 {
     public function testHandle()
     {
+        Storage::fake('test-thumbs');
+        config(['thumbnails.storage_disk' => 'test-thumbs']);
+
         $image = ImageTest::create();
-
-        File::shouldReceive('exists')
-            ->once()
-            ->with($image->thumbPath)
-            ->andReturn(true);
-
-        File::shouldReceive('delete')
-            ->once()
-            ->with($image->thumbPath);
-
+        $prefix = fragment_uuid_path($image->uuid);
+        $format = config('thumbnails.format');
+        Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
         with(new CleanupThumbnails)->handle(new ImagesDeleted($image->uuid));
+        $this->assertFalse(Storage::disk('test-thumbs')->exists("{$prefix}.{$format}"));
     }
 
     public function testListen()

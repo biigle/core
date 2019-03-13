@@ -41,27 +41,6 @@ class ImageController extends Controller
         return $image;
     }
 
-    /**
-     * Shows the specified image thumbnail file.
-     *
-     * @api {get} images/:id/thumb Get a thumbnail image
-     * @apiGroup Images
-     * @apiName ShowImageThumbs
-     * @apiPermission projectMember
-     * @apiDescription Responds with a JPG image thumbnail.
-     *
-     * @apiParam {Number} id The image ID.
-     *
-     * @param int $id image id
-     * @return \Illuminate\Http\Response
-     */
-    public function showThumb($id)
-    {
-        $image = Image::findOrFail($id);
-        $this->authorize('access', $image);
-
-        return $image->getThumb();
-    }
 
     /**
      * Shows the specified image file.

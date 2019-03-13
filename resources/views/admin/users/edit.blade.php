@@ -36,7 +36,7 @@
 
     <div class="row">
 
-        <div class="col-sm-4 form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
+        <div class="col-sm-6 form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
             <label for="firstname">First name*</label>
             <input type="text" class="form-control" name="firstname" id="firstname" value="{{ old('firstname', $affectedUser->firstname) }}" required>
             @if($errors->has('firstname'))
@@ -44,7 +44,7 @@
             @endif
         </div>
 
-        <div class="col-sm-4 form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
+        <div class="col-sm-6 form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
             <label for="lastname">Last name*</label>
             <input type="text" class="form-control" name="lastname" id="lastname" value="{{ old('lastname', $affectedUser->lastname) }}" required>
             @if($errors->has('lastname'))
@@ -52,7 +52,12 @@
             @endif
         </div>
 
-        <div class="col-sm-4 form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6 form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
             <label for="affiliation">Affiliation</label>
             <input type="text" class="form-control" name="affiliation" id="affiliation" value="{{ old('affiliation', $affectedUser->affiliation) }}">
             @if($errors->has('affiliation'))
@@ -60,23 +65,11 @@
             @endif
         </div>
 
-    </div>
-
-    <div class="row">
-
         <div class="col-sm-6 form-group{{ $errors->has('password') ? ' has-error' : '' }}">
             <label for="password">New password</label>
             <input type="password" class="form-control" name="password" id="password" value="">
             @if($errors->has('password'))
                 <span class="help-block">{{ $errors->first('password') }}</span>
-            @endif
-        </div>
-
-        <div class="col-sm-6 form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-            <label for="password_confirmation">New password confirmation</label>
-            <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" value="">
-            @if($errors->has('password_confirmation'))
-                <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
             @endif
         </div>
 

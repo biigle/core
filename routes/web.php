@@ -21,6 +21,16 @@ $router->get('/', [
     'uses' => 'Views\\DashboardController@index',
 ]);
 
+$router->get('imprint', [
+    'as'   => 'imprint',
+    'uses' => 'Views\\ImprintController@show',
+]);
+
+$router->get('privacy', [
+    'as'   => 'privacy',
+    'uses' => 'Views\\PrivacyController@show',
+]);
+
 $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory

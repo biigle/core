@@ -15,18 +15,18 @@
             @endif
         </div>
 
-        <div class=" col-sm-6 form-group{{ $errors->has('uuid') ? ' has-error' : '' }}">
-            <label for="uuid">UUID <span class="text-muted">(leave blank to generate new one)</span></label>
-            <input type="text" class="form-control" name="uuid" id="uuid" value="{{ old('uuid') }}">
-            @if($errors->has('uuid'))
-                <span class="help-block">{{ $errors->first('uuid') }}</span>
+        <div class="col-sm-6 form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
+            <label for="affiliation">Affiliation</label>
+            <input type="text" class="form-control" name="affiliation" id="affiliation" value="{{ old('affiliation') }}">
+            @if($errors->has('affiliation'))
+                <span class="help-block">{{ $errors->first('affiliation') }}</span>
             @endif
         </div>
     </div>
 
     <div class="row">
 
-        <div class="col-sm-4 form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
+        <div class="col-sm-6 form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
             <label for="firstname">First name*</label>
             <input type="text" class="form-control" name="firstname" id="firstname" value="{{ old('firstname') }}" required>
             @if($errors->has('firstname'))
@@ -34,7 +34,7 @@
             @endif
         </div>
 
-        <div class="col-sm-4 form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
+        <div class="col-sm-6 form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
             <label for="lastname">Last name*</label>
             <input type="text" class="form-control" name="lastname" id="lastname" value="{{ old('lastname') }}" required>
             @if($errors->has('lastname'))
@@ -42,13 +42,6 @@
             @endif
         </div>
 
-        <div class="col-sm-4 form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
-            <label for="affiliation">Affiliation</label>
-            <input type="text" class="form-control" name="affiliation" id="affiliation" value="{{ old('affiliation') }}">
-            @if($errors->has('affiliation'))
-                <span class="help-block">{{ $errors->first('affiliation') }}</span>
-            @endif
-        </div>
 
     </div>
 
@@ -62,14 +55,13 @@
             @endif
         </div>
 
-        <div class="col-sm-6 form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-            <label for="password_confirmation">Password confirmation*</label>
-            <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" value="" required>
-            @if($errors->has('password_confirmation'))
-                <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
+        <div class=" col-sm-6 form-group{{ $errors->has('uuid') ? ' has-error' : '' }}">
+            <label for="uuid">UUID <span class="text-muted">(leave blank to generate new one)</span></label>
+            <input type="text" class="form-control" name="uuid" id="uuid" value="{{ old('uuid') }}">
+            @if($errors->has('uuid'))
+                <span class="help-block">{{ $errors->first('uuid') }}</span>
             @endif
         </div>
-
     </div>
 
     <input type="hidden" name="_token" value="{{ csrf_token() }}">

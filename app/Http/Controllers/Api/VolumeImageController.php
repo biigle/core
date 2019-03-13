@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use DB;
 use Biigle\Volume;
+use Biigle\Jobs\CreateNewImages;
 use Biigle\Http\Requests\StoreVolumeImage;
 
 class VolumeImageController extends Controller
@@ -69,20 +70,16 @@ class VolumeImageController extends Controller
      */
     public function store(StoreVolumeImage $request)
     {
-        DB::transaction(function () use ($request) {
-            $request->volume->createImages($request->input('images'));
-        });
+        $images = $request->input('images');
+        // No asynchronous processing from this endpoint since the new images should
+        // be immediately returned. Do not push the job on the sync queue because the
+        // returned JSON could not be tested this way.
+        (new CreateNewImages($request->volume, $images))->handle();
 
-        $images = $request->volume->images()
+        return $request->volume->images()
             ->select('id', 'filename')
             ->orderBy('id', 'desc')
-            ->take(sizeof($request->input('images')))
+            ->take(sizeof($images))
             ->get();
-
-        $ids = $images->pluck('id')->toArray();
-        $request->volume->handleNewImages($ids);
-        event('images.created', [$request->volume->id, $ids]);
-
-        return $images;
     }
 }

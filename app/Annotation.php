@@ -48,14 +48,17 @@ class Annotation extends Model implements AnnotationContract
             return $query;
         }
 
-        return $query->join('images', 'images.id', '=', 'annotations.image_id')
-            ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
-            ->whereIn('project_volume.project_id', function ($query) use ($user) {
-                $query->select('project_id')
-                    ->from('project_user')
-                    ->where('user_id', $user->id);
-            })
-            ->select('annotations.*');
+        return $query->whereIn('annotations.id', function ($query) use ($user) {
+            $query->select('annotations.id')
+                ->from('annotations')
+                ->join('images', 'images.id', '=', 'annotations.image_id')
+                ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
+                ->whereIn('project_volume.project_id', function ($query) use ($user) {
+                    $query->select('project_id')
+                        ->from('project_user')
+                        ->where('user_id', $user->id);
+                });
+        });
     }
 
     /**

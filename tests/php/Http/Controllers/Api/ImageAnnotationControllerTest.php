@@ -159,7 +159,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
-            'points' => '[]',
+            'points' => [],
         ]);
         // at least one point required
         $response->assertStatus(422);
@@ -168,7 +168,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
-            'points' => '[10, 11]',
+            'points' => [10, 11],
         ]);
         // label does not belong to a label tree of the project of the image
         $response->assertStatus(403);
@@ -181,7 +181,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
-            'points' => '[10, 11]',
+            'points' => [10, 11],
         ]);
 
         $response->assertStatus(200);
@@ -203,7 +203,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'shape_id' => Shape::pointId(),
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
-            'points' => '[10, 11, 12, 13]',
+            'points' => [10, 11, 12, 13],
         ]);
         // invalid number of points
         $response->assertStatus(422);
