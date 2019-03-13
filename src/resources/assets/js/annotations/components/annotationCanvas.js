@@ -172,7 +172,6 @@ biigle.$component('annotations.components.annotationCanvas', {
     methods: {
         createMap: function () {
             var map = new ol.Map({
-                renderer: 'canvas',
                 controls: [
                     new ol.control.Zoom(),
                     new ol.control.ZoomToExtent({

@@ -77,7 +77,7 @@ biigle.$declare('annotations.stores.styles', function () {
 
     return {
         colors: colors,
-        features: function (feature) {
+        features: function (feature, resolution) {
             var color = feature.get('color');
             color = color ? ('#' + color) : colors.blue;
 
@@ -91,7 +91,13 @@ biigle.$declare('annotations.stores.styles', function () {
                                 color: color
                             }),
                             stroke: defaultCircleStroke
-                        })
+                        }),
+                        // Add transparent fill for hit detection inside of circles and
+                        // polygons.
+                        // See https://github.com/openlayers/openlayers/pull/7750
+                        fill: new ol.style.Fill({
+                            color: 'transparent',
+                        }),
                     }),
                     new ol.style.Style({
                         stroke: new ol.style.Stroke({
