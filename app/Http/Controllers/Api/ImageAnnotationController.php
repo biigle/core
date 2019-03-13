@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use DB;
 use Exception;
 use Biigle\Image;
 use Biigle\Shape;
@@ -89,7 +90,7 @@ class ImageAnnotationController extends Controller
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
-     * @apiParam (Required arguments) {Number[]} points Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
+     * @apiParam (Required arguments) {Number[]} points Array of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
      * **Rectangle:** The first four points are the vertices of the rectangle (in the given order).
      * **Polygon:** Like rectangle with one or more vertices.
@@ -104,12 +105,6 @@ class ImageAnnotationController extends Controller
      *    "confidence": 0.75,
      *    "points": [10, 11, 20, 21]
      * }
-     *
-     * @apiParamExample {String} Request example (String):
-     * shape_id: 3
-     * label_id: 1
-     * confidence: 0.75
-     * points: '[10, 11, 20, 21]'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -145,12 +140,7 @@ class ImageAnnotationController extends Controller
      */
     public function store(StoreAnnotation $request)
     {
-        // from a JSON request, the array may already be decoded
         $points = $request->input('points');
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
 
         $annotation = new Annotation;
         $annotation->shape_id = $request->input('shape_id');
@@ -166,13 +156,15 @@ class ImageAnnotationController extends Controller
         $label = Label::findOrFail($request->input('label_id'));
 
         $this->authorize('attach-label', [$annotation, $label]);
-        $annotation->save();
 
-        $annotationLabel = new AnnotationLabel;
-        $annotationLabel->label_id = $label->id;
-        $annotationLabel->user_id = $request->user()->id;
-        $annotationLabel->confidence = $request->input('confidence');
-        $annotation->labels()->save($annotationLabel);
+        DB::transaction(function () use ($annotation, $request, $label) {
+            $annotation->save();
+            $annotationLabel = new AnnotationLabel;
+            $annotationLabel->label_id = $label->id;
+            $annotationLabel->user_id = $request->user()->id;
+            $annotationLabel->confidence = $request->input('confidence');
+            $annotation->labels()->save($annotationLabel);
+        });
 
         $annotation->load('labels');
 

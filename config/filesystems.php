@@ -43,12 +43,6 @@ return [
 
     'disks' => [
 
-        // Default general purpose storage disk.
-        'default' => [
-            'driver' => 'local',
-            'root' => storage_path('app'),
-        ],
-
         // Default storage disk for images.
         'local' => [
             'driver' => 'local',
@@ -61,6 +55,12 @@ return [
             'root' => storage_path('tiles'),
         ],
 
+        'thumbs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/thumbs'),
+            'url' => env('APP_URL').'/storage/thumbs',
+            'visibility' => 'public',
+        ],
     ],
 
 ];

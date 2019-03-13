@@ -254,7 +254,7 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $response = $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
+        $response = $this->put("api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
@@ -281,6 +281,32 @@ class AnnotationControllerTest extends ApiTestCase
         $response = $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         // invalid number of points
         $response->assertStatus(422);
+
+        // Points must be array.
+        $this->json('PUT', "api/v1/annotations/{$id}")
+            ->assertStatus(422);
+    }
+
+    public function testUpdateChangeShape()
+    {
+        $id = $this->annotation->id;
+        $this->annotation->points = [100, 200];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beEditor();
+        // invalid points for a circle
+        $this->putJson("api/v1/annotations/{$id}", ['shape_id' => Shape::circleId()])
+            ->assertStatus(422);
+
+        $this->putJson("api/v1/annotations/{$id}", [
+                'shape_id' => Shape::circleId(),
+                'points' => [100, 200, 300],
+            ])
+            ->assertStatus(200);
+
+        $this->annotation->refresh();
+        $this->assertEquals(Shape::circleId(), $this->annotation->shape_id);
     }
 
     public function testDestroy()

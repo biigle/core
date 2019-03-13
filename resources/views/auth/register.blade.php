@@ -9,6 +9,9 @@
         <div class="col-md-4 col-sm-6">
             <h1 class="logo  logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
             <form class="well clearfix" role="form" method="POST" action="{{ url('register') }}">
+
+                {!! Honeypot::generate('website', 'homepage') !!}
+
                 <p class="lead text-center">{{ trans('biigle.new_acc') }}</p>
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
@@ -49,7 +52,7 @@
                 <div class="form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="fa fa-user"></i>
+                            <i class="fa fa-building"></i>
                         </div>
                         <input type="text" placeholder="Affiliation" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
                     </div>
@@ -63,27 +66,36 @@
                         <div class="input-group-addon">
                             <i class="fa fa-lock"></i>
                         </div>
-                        <input type="password" placeholder="{{ trans('form.password') }}" class="form-control" name="password" value="{{ old('password') }}" required>
+                        <input type="password" minlength="8" placeholder="{{ trans('form.password') }}" class="form-control" name="password" required>
                     </div>
                     @if($errors->has('password'))
                         <span class="help-block">{{ $errors->first('password') }}</span>
                     @endif
                 </div>
 
-                <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-lock"></i>
+                @if (View::exists('privacy'))
+                    <div class="form-group{{ $errors->has('privacy') ? ' has-error' : '' }}">
+                        <div class="checkbox">
+                            <label>
+                                <input name="privacy" type="checkbox" value="1" required @if (old('privacy')) checked @endif> I have read and agree to the <a href="{{route('privacy')}}">privacy notice</a>. This includes the use of my full name, email address and affiliation.
+                            </label>
                         </div>
-                        <input type="password" placeholder="{{ trans('form.password_confirmation') }}" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
+                        @if($errors->has('privacy'))
+                            <span class="help-block">{{ $errors->first('privacy') }}</span>
+                        @endif
                     </div>
-                    @if($errors->has('password_confirmation'))
-                        <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
-                    @endif
-                </div>
+                @endif
+
+                @if ($errors->has('homepage'))
+                    <p class="text-danger">{{ $errors->first('homepage') }}</p>
+                @endif
+                @if ($errors->has('website'))
+                    <p class="text-danger">{{ $errors->first('website') }}</p>
+                @endif
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-success btn-block" value="Sign up">
+
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>

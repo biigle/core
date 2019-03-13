@@ -142,7 +142,11 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     protected function needsThumbnail(Image $image)
     {
         if (!array_key_exists($image->id, $this->needsThumbnailCache)) {
-            $this->needsThumbnailCache[$image->id] = !File::exists($image->thumbPath);
+            $prefix = fragment_uuid_path($image->uuid);
+            $format = config('thumbnails.format');
+            $this->needsThumbnailCache[$image->id] =
+                !Storage::disk(config('thumbnails.storage_disk'))
+                    ->exists("{$prefix}.{$format}");
         }
 
         return $this->needsThumbnailCache[$image->id];
@@ -158,9 +162,15 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     {
         // Skip existing thumbnails.
         if ($this->needsThumbnail($image)) {
-            File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
-            VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
-                ->writeToFile($image->thumbPath);
+            $prefix = fragment_uuid_path($image->uuid);
+            $format = config('thumbnails.format');
+            $buffer = VipsImage::thumbnail($path, $this->width, [
+                    'height' => $this->height
+                ])
+                ->writeToBuffer(".{$format}");
+
+            Storage::disk(config('thumbnails.storage_disk'))
+                    ->put("{$prefix}.{$format}", $buffer);
         }
     }
 

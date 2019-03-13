@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Biigle\Jobs\ProcessNewImages;
 use Biigle\Http\Requests\UpdateVolume;
 use Illuminate\Validation\ValidationException;
 
@@ -112,16 +113,19 @@ class VolumeController extends Controller
         $volume->doi = $request->input('doi', $volume->doi);
 
         $isDirty = $volume->isDirty();
+        $shouldReread = !$isDirty && $request->user()->can('sudo');
         $newUrl = $volume->isDirty('url');
         $volume->save();
 
         // Do this *after* saving.
-        if ($newUrl) {
-            $volume->handleNewImages();
+        if ($newUrl || $shouldReread) {
+            ProcessNewImages::dispatch($volume);
         }
 
         if (!$this->isAutomatedRequest()) {
-            return $this->fuzzyRedirect()->with('saved', $isDirty);
+            return $this->fuzzyRedirect()
+                ->with('saved', $isDirty)
+                ->with('reread', $shouldReread);
         }
     }
 }

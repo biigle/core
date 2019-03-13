@@ -120,33 +120,22 @@ class UserControllerTest extends ApiTestCase
         // The own user cannot be updated via this route.
         $response->assertStatus(422);
 
-        // ajax call to get the correct response status
-        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'password' => 'hacked!!',
-        ]);
-        // no password confirmation
-        $response->assertStatus(422);
-
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
         ]);
         // changing the email requires the admin password
         $response->assertStatus(422);
 
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'auth_password' => 'wrongpassword',
         ])->assertStatus(302);
         // Check disabled flashing of passwords.
         $this->assertNull(old('password'));
-        $this->assertNull(old('password_confirmation'));
         $this->assertNull(old('auth_password'));
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
@@ -156,7 +145,6 @@ class UserControllerTest extends ApiTestCase
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'auth_password' => 'adminpassword',
         ]);
         $response->assertStatus(200);
@@ -325,24 +313,18 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
 
         $this->beGuest();
-        $response = $this->json('PUT', '/api/v1/users/my', [
-            'password' => 'hacked!!',
-            '_origin' => 'password',
-        ]);
-        // no password confirmation
-        $response->assertStatus(422);
-        $response->assertSessionHas('origin', 'password');
 
         // ajax call to get the correct response status
         $response = $this->json('PUT', '/api/v1/users/my', [
             'email' => 'no-mail',
+            '_origin' => 'email',
         ]);
         // invalid email format
         $response->assertStatus(422);
+        $response->assertSessionHas('origin', 'email');
 
         $response = $this->json('PUT', '/api/v1/users/my', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
         ]);
         // no auth password provided
         $response->assertStatus(422);
@@ -356,7 +338,6 @@ class UserControllerTest extends ApiTestCase
         // ajax call to get the correct response status
         $response = $this->json('PUT', '/api/v1/users/my', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'auth_password' => 'guest-password',
             'firstname' => 'jack',
             'lastname' => 'jackson',
@@ -442,19 +423,9 @@ class UserControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beGlobalAdmin();
-        // ajax call to get the correct response status
-        $response = $this->json('POST', '/api/v1/users', [
-            'password' => 'newpassword',
-            'firstname' => 'jack',
-            'lastname' => 'jackson',
-            'email' => 'new@email.me',
-        ]);
-        // no password confirmation
-        $response->assertStatus(422);
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
@@ -471,7 +442,6 @@ class UserControllerTest extends ApiTestCase
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
@@ -481,7 +451,6 @@ class UserControllerTest extends ApiTestCase
 
         $response = $this->post('/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new2@email.me',
@@ -494,7 +463,6 @@ class UserControllerTest extends ApiTestCase
         $this->get('/');
         $response = $this->post('/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new3@email.me',
@@ -507,7 +475,6 @@ class UserControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/users', [
             'password' => 'password',
-            'password_confirmation' => 'password',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
@@ -519,7 +486,6 @@ class UserControllerTest extends ApiTestCase
 
         $this->json('POST', '/api/v1/users', [
             'password' => 'password',
-            'password_confirmation' => 'password',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new2@email.me',
@@ -531,7 +497,6 @@ class UserControllerTest extends ApiTestCase
 
         $this->json('POST', '/api/v1/users', [
             'password' => 'password',
-            'password_confirmation' => 'password',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new2@email.me',
@@ -549,7 +514,6 @@ class UserControllerTest extends ApiTestCase
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'Test@Test.com',
@@ -560,7 +524,6 @@ class UserControllerTest extends ApiTestCase
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'Test2@Test.com',

@@ -36,7 +36,6 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
-$router->get('images/{id}/thumb', 'ImageController@showThumb');
 $router->get('images/{id}/file', 'ImageController@showFile');
 $router->resource('images', 'ImageController', [
     'only' => ['show', 'destroy'],
@@ -170,4 +169,14 @@ $router->delete('users/my', 'UserController@destroyOwn');
 $router->resource('users', 'UserController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['users' => 'id'],
+]);
+
+$router->get('accept-user-registration/{id}', [
+    'as' => 'accept-registration',
+    'uses' => 'UserRegistrationController@accept',
+]);
+
+$router->get('reject-user-registration/{id}', [
+    'as' => 'reject-registration',
+    'uses' => 'UserRegistrationController@reject',
 ]);

@@ -24,7 +24,6 @@ class ImageTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->filename);
         $this->assertNotNull($this->model->volume_id);
-        $this->assertNotNull($this->model->thumbPath);
         $this->assertNotNull($this->model->url);
         $this->assertNotNull($this->model->uuid);
         $this->assertFalse($this->model->tiled);
@@ -35,14 +34,6 @@ class ImageTest extends ModelTestCase
     public function testGetUrl()
     {
         $this->assertEquals($this->model->url, $this->model->getUrl());
-    }
-
-    public function testThumbPath()
-    {
-        $path = $this->model->thumbPath;
-        $contains = $this->model->uuid.'.'.config('thumbnails.format');
-        $contains = "{$contains[0]}{$contains[1]}/{$contains[2]}{$contains[3]}/{$contains}";
-        $this->assertContains($contains, $path);
     }
 
     public function testHiddenAttributes()
@@ -86,17 +77,6 @@ class ImageTest extends ModelTestCase
         AnnotationTest::create(['image_id' => $this->model->id]);
         $this->assertEquals(2, $this->model->annotations()->count());
         $this->assertNotNull($this->model->annotations()->find($annotation->id));
-    }
-
-    public function testGetThumb()
-    {
-        Response::shouldReceive('download')
-            ->once()
-            ->with($this->model->thumbPath)
-            ->andReturn('abc');
-
-        $response = $this->model->getThumb();
-        $this->assertEquals('abc', $response);
     }
 
     public function testGetFile()

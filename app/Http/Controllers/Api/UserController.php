@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Hash;
 use Biigle\User;
+use Biigle\Role;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreUser;
@@ -338,6 +338,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->affiliation = $request->input('affiliation');
         $user->password = bcrypt($request->input('password'));
+        $user->role_id = Role::editorId();
         if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {
