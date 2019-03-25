@@ -210,6 +210,13 @@ class LargoController extends Controller
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
+
+                    // Add the new annotation label to the list so any subsequent equal
+                    // annotation label is skipped.
+                    $alreadyThere->push([
+                        'annotation_id' => $annotationId,
+                        'label_id' => $labelId,
+                    ]);
                 }
             }
         }

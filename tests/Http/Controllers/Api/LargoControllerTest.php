@@ -42,6 +42,32 @@ class LargoControllerTest extends ApiTestCase
         $this->assertEquals($l2->id, $a1->labels()->first()->id);
     }
 
+    public function testSaveChangedDuplicate()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $this->beEditor();
+        (new LargoControllerStub)->save($this->editor(), [
+            'dismissed' => [
+                $l1->label_id => [$a1->id],
+            ],
+            'changed' => [
+                // The same annotation may occur multiple times e.g. if it should be
+                // changed "from A to C" and "from B to C" at the same time.
+                $this->labelChild()->id => [$a1->id, $a1->id],
+            ],
+        ]);
+
+        $this->assertEquals(1, $a1->labels()->count());
+        $this->assertEquals($this->labelChild()->id, $a1->labels()->first()->label_id);
+    }
+
     public function testAnnotationMeanwhileDeleted()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
