@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v2.2.0",
+            "version": "v2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "5f8b8f70f4cf2f9d06c514470ff0f62fb93fe859"
+                "reference": "824d21b9a3f6b20cc483f6351b5c9b69330e316b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/5f8b8f70f4cf2f9d06c514470ff0f62fb93fe859",
-                "reference": "5f8b8f70f4cf2f9d06c514470ff0f62fb93fe859",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/824d21b9a3f6b20cc483f6351b5c9b69330e316b",
+                "reference": "824d21b9a3f6b20cc483f6351b5c9b69330e316b",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,7 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "time": "2019-02-18T15:46:09+00:00"
+            "time": "2019-03-25T14:53:49+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
