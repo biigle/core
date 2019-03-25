@@ -16,7 +16,7 @@
                         $today = \Carbon\Carbon::now()->toDateString();
                         $errorCount = array_reduce($logs, function ($carry, $file) use ($yesterday, $today) {
                             $content = File::get($file);
-                            return $carry + substr_count($content, $yesterday) + substr_count($content, $today);
+                            return $carry + substr_count($content, "[{$yesterday}") + substr_count($content, "[{$today}");
                         }, 0);
                     ?>
                     <li role="presentation"@if(Route::is('admin-logs-index')) class="active" @endif><a href="{{route('admin-logs-index')}}">Logs @if ($errorCount > 0 )<span class="badge" title="{{$errorCount}} errors in the last two days">{{$errorCount}}</span>@endif</a></li>
