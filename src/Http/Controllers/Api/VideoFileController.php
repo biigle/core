@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Videos\Http\Controllers\Api;
 
 use Storage;
+use FileCache;
 use Illuminate\Http\Request;
 use Biigle\Modules\Videos\Video;
 use Biigle\Http\Controllers\Api\Controller;
@@ -49,24 +50,26 @@ class VideoFileController extends Controller
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
             $offset = $range[0];
             $length = $range[1] - $range[0] + 1;
-            $stream = Storage::disk($video->disk)->readStream($video->path);
             $total = $video->attrs['size'];
             $response->headers->set('Content-Length', $length);
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
 
             // This overrides the default streamed response callback.
-            $response->setCallback(function () use ($stream, $offset, $length) {
-                $chunkSize = 1024;
-                fseek($stream, $offset);
-                // Read the file in chunks because the whole requested range may not fit
-                // in memory.
-                while ($length > $chunkSize) {
-                    echo fread($stream, $chunkSize);
-                    $length -= $chunkSize;
-                }
-                echo fread($stream, $length);
-                fclose($stream);
+            $response->setCallback(function () use ($video, $offset, $length) {
+                FileCache::get($video, function ($video, $path) use ($offset, $length) {
+                    $stream = fopen($path, 'r');
+                    $chunkSize = 1024;
+                    fseek($stream, $offset);
+                    // Read the file in chunks because the whole requested range may not
+                    // fit in memory.
+                    while ($length > $chunkSize) {
+                        echo fread($stream, $chunkSize);
+                        $length -= $chunkSize;
+                    }
+                    echo fread($stream, $length);
+                    fclose($stream);
+                });
             });
         }
 
