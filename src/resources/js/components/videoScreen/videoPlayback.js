@@ -11,6 +11,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 animationFrameId: null,
                 // Refresh the annotations only every x ms.
                 refreshRate: 30,
+                renderCurrentTime: -1,
                 refreshLastTime: Date.now(),
                 extent: [0, 0, 0, 0],
                 minResolution: 0.25,
@@ -53,13 +54,17 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 map.getView().fit(this.extent);
             },
             renderVideo: function () {
-                this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
-                this.videoLayer.changed();
+                // Drop animation frame if the time has not changed.
+                if (this.renderCurrentTime !== this.video.currentTime) {
+                    this.renderCurrentTime = this.video.currentTime;
+                    this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
+                    this.videoLayer.changed();
 
-                var now = Date.now();
-                if (now - this.refreshLastTime >= this.refreshRate) {
-                    this.$emit('refresh', this.video.currentTime);
-                    this.refreshLastTime = now;
+                    var now = Date.now();
+                    if (now - this.refreshLastTime >= this.refreshRate) {
+                        this.$emit('refresh', this.video.currentTime);
+                        this.refreshLastTime = now;
+                    }
                 }
             },
             startRenderLoop: function () {
