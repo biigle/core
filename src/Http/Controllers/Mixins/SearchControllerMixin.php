@@ -31,7 +31,7 @@ class SearchControllerMixin
         if ($type === 'videos') {
             $values['results'] = $queryBuilder
                 ->orderBy('videos.updated_at', 'desc')
-                ->paginate(10);
+                ->paginate(12);
 
             $values['videoResultCount'] = $values['results']->total();
         } else {
