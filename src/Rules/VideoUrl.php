@@ -35,6 +35,7 @@ class VideoUrl implements Rule
         $this->allowedMimes = [
             'video/mpeg',
             'video/mp4',
+            'video/quicktime',
             'video/webm',
         ];
     }
