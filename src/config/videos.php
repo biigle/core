@@ -18,9 +18,11 @@ return [
     'object_tracker_script' => __DIR__.'/../resources/scripts/ObjectTracker.py',
 
     /*
-    | Distance in seconds between two keyframes determined by the object tracking method.
+    | Distance in pixels between the annotation center positions or circle radii of two
+    | consecutive keyframes determined by the object tracking method. If the annotations
+    | differ by more than this distance, a new keyframe will be created.
     */
-    'keyframe_distance' => 1.0,
+    'keyframe_distance' => 5,
 
     /*
     | Padding in pixels of a point when it is converted to an initial window for object

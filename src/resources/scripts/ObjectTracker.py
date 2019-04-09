@@ -56,7 +56,8 @@ class ObjectTracker(object):
         if self.debug:
             x, y, w, h = map(int, box)
             cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
-            cv2.imshow("frame", frame)
+            show_frame = cv2.resize(frame, (1024, 768))
+            cv2.imshow("frame", show_frame)
             cv2.waitKey(1)
 
         return (current_time, center[0], center[1], radius)
@@ -67,24 +68,26 @@ class ObjectTracker(object):
     def next(self):
         return self._next()
 
-
 with open(sys.argv[1]) as f:
     params = json.load(f)
 
-last_time = params['start_time']
+current_keyframe = ()
 last_keyframe = ()
 keyframe_distance = params['keyframe_distance']
 keyframes = []
 
+def keyframes_differ(a, b):
+    return np.sqrt(np.square(a[1] - b[1]) + np.square(a[2] - b[2])) > keyframe_distance or abs(a[3] - b[3]) > keyframe_distance
+
 for keyframe in ObjectTracker(params):
-    last_keyframe = keyframe
-    if keyframe[0] - last_time >= keyframe_distance:
-        last_time = keyframe[0]
+    current_keyframe = keyframe
+    if not last_keyframe or keyframes_differ(last_keyframe, keyframe):
+        last_keyframe = keyframe
         keyframes.append(keyframe)
 
 # Add the last keyframe even if it did not have the right keyframe distance.
-if keyframes and keyframes[-1][0] != last_keyframe[0]:
-    keyframes.append(last_keyframe)
+if keyframes and keyframes[-1][0] != current_keyframe[0]:
+    keyframes.append(current_keyframe)
 
 with open(sys.argv[2], 'w') as f:
     json.dump(keyframes, f)
