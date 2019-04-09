@@ -10,7 +10,7 @@
             </span>
         @endcan
     </div>
-    <div class="panel-body container-fluid videos-grid">
+    <div class="panel-body container-fluid volumes-grid">
         <div class="row">
             <div class="col-sm-6" v-for="video in videos" v-bind:key="video.id" v-cloak>
                 <a class="video-thumbnail__link" v-bind:href="'{{route('video', '')}}/'+video.id" v-bind:title="'Show video '+video.name">
