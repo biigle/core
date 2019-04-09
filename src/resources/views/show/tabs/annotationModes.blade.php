@@ -5,7 +5,7 @@
                 <h5 title="Cycle through all annotations">Volume Label Review<br><small>cycle through annotations</small></h5>
                 <power-toggle :active="isVolareActive" title-off="Start cycling through all annotations" title-on="Stop cycling through all annotations 𝗘𝘀𝗰" v-on:on="startVolare" v-on:off="resetMode"></power-toggle>
                 @can('add-annotation', $image)
-                    <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the current h5 to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
+                    <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the currently selected label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
                 @endcan
             </div>
 
