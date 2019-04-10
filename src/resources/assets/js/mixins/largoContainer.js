@@ -249,4 +249,15 @@ biigle.$declare('largo.mixins.largoContainer', {
             this.events.$emit('step', step);
         },
     },
+    created: function () {
+        var self = this;
+        window.addEventListener('beforeunload', function (e) {
+            if (self.hasDismissedAnnotations) {
+                e.preventDefault();
+                e.returnValue = '';
+
+                return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
+            }
+        });
+    },
 });
