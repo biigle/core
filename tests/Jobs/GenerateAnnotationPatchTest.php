@@ -36,7 +36,7 @@ class GenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($image);
         $image->shouldReceive('writeToBuffer')
-            ->with('.jpg')
+            ->with('.jpg', ['Q' => 85])
             ->once()
             ->andReturn('abc123');
 
