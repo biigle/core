@@ -185,6 +185,22 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $width = $right - $left;
         $height = $bottom - $top;
 
+        // Ensure the minimum width so the annotation patch is not "zoomed in".
+        if ($width < $thumbWidth) {
+            $delta = ($thumbWidth - $width) / 2.0;
+            $left -= $delta;
+            $right += $delta;
+            $width = $thumbWidth;
+        }
+
+        // Ensure the minimum height so the annotation patch is not "zoomed in".
+        if ($height < $thumbHeight) {
+            $delta = ($thumbHeight - $height) / 2.0;
+            $top -= $delta;
+            $bottom += $delta;
+            $height = $thumbHeight;
+        }
+
         $widthRatio = $width / $thumbWidth;
         $heightRatio = $height / $thumbHeight;
 

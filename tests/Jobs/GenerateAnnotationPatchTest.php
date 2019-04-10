@@ -48,6 +48,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandlePoint()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
@@ -58,7 +59,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(1, 26, 197, 148)
+            ->with(26, 26, 148, 148)
             ->once()
             ->andReturn($image);
 
@@ -68,18 +69,21 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleCircle()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
-            // should handle floats correctly
-            'points' => [100.4, 100.4, 20],
+            // Should handle floats correctly.
+            // Make the circle large enough so the crop is not affected by the minimum
+            // dimension.
+            'points' => [300.4, 300.4, 200],
             'shape_id' => Shape::circleId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation, 'test');
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(60, 70, 80, 60)
+            ->with(90, 90, 420, 420)
             ->once()
             ->andReturn($image);
 
@@ -89,18 +93,21 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleOther()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $padding = config('largo.patch_padding');
         $annotation = AnnotationTest::create([
-            'points' => [100, 100, 100, 200, 200, 200, 200, 100],
+            // Make the polygon large enough so the crop is not affected by the minimum
+            // dimension.
+            'points' => [100, 100, 100, 300, 300, 300, 300, 100],
             'shape_id' => Shape::rectangleId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation, 'test');
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(70, 90, 160, 120)
+            ->with(90, 90, 220, 220)
             ->once()
             ->andReturn($image);
 
@@ -110,6 +117,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleContainedNegative()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
@@ -121,7 +129,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(0, 0, 197, 148)
+            ->with(0, 0, 148, 148)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
@@ -130,6 +138,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleContainedPositive()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
@@ -141,7 +150,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(803, 602, 197, 148)
+            ->with(852, 602, 148, 148)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
@@ -150,6 +159,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleContainedTooLarge()
     {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
         $image->width = 100;
@@ -165,6 +175,27 @@ class GenerateAnnotationPatchTest extends TestCase
         $image->shouldReceive('crop')
             ->once()
             ->with(0, 0, 100, 100)
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once();
+        $job->handleImage($annotation->image, 'abc');
+    }
+
+    public function testHandleMinDimension()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = AnnotationTest::create([
+            'points' => [60, 60, 10],
+            'shape_id' => Shape::circleId(),
+        ]);
+        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(10, 10, 100, 100)
+            ->once()
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
