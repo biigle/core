@@ -50,7 +50,16 @@ biigle.$component('videos.components.annotationClip', {
             return this.annotation.endFrame;
         },
         offset: function () {
-            return this.startFrame / this.duration * this.elementWidth;
+            var offset = this.startFrame / this.duration * this.elementWidth;
+
+            if (!this.annotation.isClip) {
+                // If this is a single frame annotation at the very end of the video,
+                // shift the offset to the left so the keyframe element does not overflow
+                // the timeline and gets invisible. 9 is the width of a keyframe element.
+                offset = Math.min(offset, this.elementWidth - 9);
+            }
+
+            return offset;
         },
         clipDuration: function () {
             return this.endFrame - this.startFrame;
