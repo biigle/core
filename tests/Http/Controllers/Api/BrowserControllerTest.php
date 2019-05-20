@@ -62,7 +62,10 @@ class BrowserControllerTest extends ApiTestCase
 
     public function testIndexImages()
     {
-        Storage::disk('test')->put('test_1/test.jpg', '');
+        Storage::disk('test')->put('test_1/test1.jpg', '');
+        Storage::disk('test')->put('test_1/test1.txt', '');
+        Storage::disk('test')->put('test_1/test2.jpg', '');
+        Storage::disk('test')->put('test_1/test2.txt', '');
 
         $this->doTestApiRoute('GET', '/api/v1/volumes/browser/images/test', [
             'path' => 'test_1',
@@ -80,6 +83,6 @@ class BrowserControllerTest extends ApiTestCase
 
         $this->get('/api/v1/volumes/browser/images/test?path=test_1')
             ->assertStatus(200)
-            ->assertExactJson(['test.jpg']);
+            ->assertExactJson(['test1.jpg', 'test2.jpg']);
     }
 }

@@ -94,8 +94,11 @@ class BrowserController extends Controller
         }
         $path = $request->input('path', '');
         $files = Storage::disk($disk)->files($path);
+        // Use array_values to discard keys. This ensures the JSON returned by this
+        // endpoint is an array, not an object.
+        $images = array_values(preg_grep(Volume::FILE_REGEX, $files));
 
-        return $this->removePrefix($path, preg_grep(Volume::FILE_REGEX, $files));
+        return $this->removePrefix($path, $images);
     }
 
     /**
