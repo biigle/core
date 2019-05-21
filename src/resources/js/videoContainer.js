@@ -315,7 +315,7 @@ biigle.$viewModel('video-container', function (element) {
             this.startLoading();
             var self = this;
             var videoPromise = new Vue.Promise(function (resolve, reject) {
-                self.video.addEventListener('loadeddata', resolve);
+                self.video.addEventListener('canplay', resolve);
                 self.video.addEventListener('error', reject);
             });
             var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
