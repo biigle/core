@@ -42,6 +42,14 @@
             @endif
          </div>
 
+         @unless (config('biigle.offline_mode'))
+             <div class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    If you do not have the resources to host remote videos, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the videos on the BIIGLE server.
+                </div>
+            </div>
+         @endunless
+
          <div class="row">
              <div class="form-group col-sm-6{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
