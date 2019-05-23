@@ -67,7 +67,9 @@ class VideoFileController extends Controller
                         echo fread($stream, $chunkSize);
                         $length -= $chunkSize;
                     }
-                    echo fread($stream, $length);
+                    if ($length > 0) {
+                        echo fread($stream, $length);
+                    }
                     fclose($stream);
                 });
             });
