@@ -47,10 +47,13 @@ class VolumeImageController extends Controller
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required attributes) {String} images List of image file names, formatted as comma separated values.
+     * @apiParam (Required attributes) {String|String[]} images List of image file names, formatted as comma separated values or as array.
      *
      * @apiParamExample {String} Request example:
      * images: '1.jpg,2.jpg,3.jpg'
+     *
+     * @apiParamExample {JSON} Request example:
+     * { "images": ["1.jpg", "2.jpg", "3.jpg"] }
      *
      * @apiSuccessExample {json} Success response:
      * [

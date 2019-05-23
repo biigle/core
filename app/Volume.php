@@ -61,7 +61,7 @@ class Volume extends Model
      *
      * @return array
      */
-    public static function parseImagesQueryString($string)
+    public static function parseImagesQueryString(string $string)
     {
         return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
     }
