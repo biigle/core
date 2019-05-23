@@ -40,7 +40,7 @@ class StoreVolume extends FormRequest
             'name' => 'required|max:512',
             'media_type_id' => 'required|exists:media_types,id',
             'url' => ['required', new VolumeUrl],
-            'images' => ['required', new VolumeImages],
+            'images' => ['required', 'array', new VolumeImages],
         ];
     }
 
@@ -51,8 +51,11 @@ class StoreVolume extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $this->merge([
-            'images' => Volume::parseImagesQueryString($this->input('images')),
-        ]);
+        $images = $this->input('images');
+        if (is_string($images)) {
+            $this->merge([
+                'images' => Volume::parseImagesQueryString($images),
+            ]);
+        }
     }
 }

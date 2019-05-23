@@ -36,7 +36,7 @@ class StoreVolumeImage extends FormRequest
         $this->volume = Volume::findOrFail($this->route('id'));
 
         return [
-            'images' => ['required', new VolumeImages, new VolumeImageUnique($this->volume)],
+            'images' => ['required', 'array', new VolumeImages, new VolumeImageUnique($this->volume)],
         ];
     }
 
@@ -47,8 +47,11 @@ class StoreVolumeImage extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $this->merge([
-            'images' => Volume::parseImagesQueryString($this->input('images')),
-        ]);
+        $images = $this->input('images');
+        if (is_string($images)) {
+            $this->merge([
+                'images' => Volume::parseImagesQueryString($images),
+            ]);
+        }
     }
 }

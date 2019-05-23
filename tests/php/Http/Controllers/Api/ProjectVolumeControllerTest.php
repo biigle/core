@@ -188,6 +188,22 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertNull($volume->doi);
     }
 
+    public function testStoreImagesArray()
+    {
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(200);
+    }
+
     public function testAttach()
     {
         $tid = $this->volume->id;
