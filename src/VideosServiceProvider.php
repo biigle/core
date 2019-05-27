@@ -10,6 +10,8 @@ use Illuminate\Support\ServiceProvider;
 use Biigle\Modules\Videos\Events\VideoDeleted;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Biigle\Modules\Videos\Listeners\PrepareDeleteVideoThumbnails;
+use Biigle\Modules\Videos\Http\Controllers\Mixins\SearchControllerMixin;
+use Biigle\Modules\Videos\Http\Controllers\Mixins\DashboardControllerMixin;
 
 class VideosServiceProvider extends ServiceProvider
 {
@@ -48,7 +50,8 @@ class VideosServiceProvider extends ServiceProvider
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
             'controllerMixins' => [
-                'search' => Http\Controllers\Mixins\SearchControllerMixin::class.'@index',
+                'search' => SearchControllerMixin::class.'@index',
+                'dashboardActivityItems' => DashboardControllerMixin::class.'@activityItems',
             ],
         ]);
 
