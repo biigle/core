@@ -6,8 +6,8 @@
             <div class="row">
                 <div class="col-xs-2 search-thumbnail">
                     <a href="{{route('project', $project->id)}}">
-                        @if ($project->thumbnail)
-                            <img src="{{ thumbnail_url($project->thumbnail->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                        @if ($project->thumbnailUrl)
+                            <img src="{{ $project->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                         @else
                             <img src="{{ asset(config('thumbnails.empty_url')) }}">
                         @endif
