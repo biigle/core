@@ -6,6 +6,7 @@ use Biigle\Role;
 use ModelTestCase;
 use Biigle\Project;
 use Illuminate\Database\QueryException;
+use Biigle\Tests\Modules\Videos\VideoTest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase
@@ -231,19 +232,30 @@ class ProjectTest extends ModelTestCase
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 
-    public function testGetThumbnailAttributeNull()
+    public function testGetThumbnailUrlAttributeNull()
     {
-        $this->assertEquals(null, $this->model->thumbnail);
+        $this->assertEquals(null, $this->model->thumbnailUrl);
     }
 
-    public function testGetThumbnailAttribute()
+    public function testGetVolumeThumbnailUrlAttribute()
     {
         $i1 = ImageTest::create();
         $i2 = ImageTest::create();
         $this->model->addVolumeId($i1->volume_id);
         $this->model->addVolumeId($i2->volume_id);
 
-        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+        $this->assertContains($i1->uuid, $this->model->thumbnailUrl);
+    }
+
+    public function testGetVideoThumbnailUrlAttribute()
+    {
+        if (!class_exists(VideoTest::class)) {
+            $this->markTestSkipped('Requires the biigle/videos module');
+        }
+
+        $video = VideoTest::create(['project_id' => $this->model->id]);
+
+        $this->assertContains($video->uuid, $this->model->thumbnailUrl);
     }
 
     public function testHasGeoInfo()
