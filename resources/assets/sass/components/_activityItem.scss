@@ -1,0 +1,38 @@
+.activity-item {
+    height: 150px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    border-radius: $border-radius-base;
+
+    .label {
+        position: absolute;
+        top: .5em;
+        right: .5em;
+    }
+}
+
+.activity-item-image {
+    &, img {
+        width: auto;
+        height: 100%;
+    }
+
+    figcaption {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        color: white;
+        opacity: 0.75;
+        padding: 0.5em;
+        transition: opacity 0.25s ease;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center;
+    }
+
+    &:hover {
+        figcaption {
+            opacity: 1;
+        }
+    }
+}
