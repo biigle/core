@@ -34,7 +34,6 @@ class AnnotationsServiceProvider extends ServiceProvider
 
         $modules->register('annotations', [
             'viewMixins' => [
-                'dashboardHotBoxLeft',
                 'volumesScripts',
                 'adminIndex',
                 'manualTutorial',
