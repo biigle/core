@@ -3,8 +3,10 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\User;
+use Carbon\Carbon;
 use Biigle\ImageLabel;
 use Biigle\AnnotationLabel;
+use Biigle\Services\Modules;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\View;
 
@@ -24,12 +26,13 @@ class DashboardController extends Controller
      * Show the application dashboard to the user.
      *
      * @param Guard $auth
+     * @param Modules $modules
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Guard $auth, Modules $modules)
     {
         if ($auth->check()) {
-            return $this->indexDashboard($auth->user());
+            return $this->indexDashboard($modules, $auth->user());
         }
 
         return $this->indexLandingPage();
@@ -38,51 +41,31 @@ class DashboardController extends Controller
     /**
      * Show the dashboard for a logged in user.
      *
+     * @param Modules $modules
      * @param User $user
      *
      * @return \Illuminate\Http\Response
      */
-    protected function indexDashboard(User $user)
+    protected function indexDashboard(Modules $modules, User $user)
     {
-        $annotationLabel = AnnotationLabel::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        $imageLabel = ImageLabel::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        if ($annotationLabel) {
-            $recentImage = $annotationLabel->annotation->image;
-        } else {
-            $recentImage = null;
-        }
-
-        if ($imageLabel) {
-            if ($annotationLabel && $annotationLabel->created_at > $imageLabel->created_at) {
-                // if the annotation label is newer than the image label,
-                // take its volume
-                $recentVolume = $recentImage->volume;
-            } else {
-                // else take the volume of the image label
-                $recentVolume = $imageLabel->image->volume;
-            }
-        } elseif ($recentImage) {
-            $recentVolume = $recentImage->volume;
-        } else {
-            $recentVolume = null;
-        }
-
         $projects = $user->projects()
             ->orderBy('updated_at', 'desc')
             ->take(3)
             ->get();
 
+        $args = [
+            'user' => $user,
+            'newerThan' => Carbon::now()->subDays(7),
+            'limit' => 3,
+        ];
+        $items = collect($modules->callControllerMixins('dashboardActivityItems', $args))
+            ->sortByDesc('created_at')
+            ->take(3);
+
         return view('dashboard', [
             'user' => $user,
-            'recentImage' => $recentImage,
-            'recentVolume' => $recentVolume,
             'projects' => $projects,
+            'activityItems' => $items,
         ]);
     }
 
