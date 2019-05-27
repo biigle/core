@@ -59,7 +59,7 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {String} name The name of the new volume.
      * @apiParam (Required attributes) {String} url The base URL of the image files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`.
      * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new volume.
-     * @apiParam (Required attributes) {String|String[]} images List of image file names of the images that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
+     * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
      * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this volume.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.

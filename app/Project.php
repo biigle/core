@@ -4,6 +4,7 @@ namespace Biigle;
 
 use DB;
 use Cache;
+use Biigle\Modules\Videos\Video;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
@@ -167,7 +168,7 @@ class Project extends Model
     {
         $this->volumes()->syncWithoutDetaching($id);
         // Maybe we get a new thumbnail now.
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -199,7 +200,7 @@ class Project extends Model
         // if the volume still belongs to other projects, just detach it
         $this->volumes()->detach($volume->id);
         // Maybe we get a new thumbnail now.
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -223,7 +224,7 @@ class Project extends Model
         foreach ($volumes as $volume) {
             $this->removeVolume($volume, $force);
         }
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -247,19 +248,29 @@ class Project extends Model
     }
 
     /**
-     * An image that can be used a unique thumbnail for this project.
+     * URL to a unique thumbnail image for this project.
      *
-     * @return Image
+     * @return string
      */
-    public function getThumbnailAttribute()
+    public function getThumbnailUrlAttribute()
     {
-        return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
+        return Cache::remember("project-thumbnail-url-{$this->id}", 60, function () {
             $volume = $this->volumes()
                 ->select('id')
                 ->orderBy('id')
                 ->first();
 
-            return $volume ? $volume->thumbnail : null;
+            if ($volume) {
+                return thumbnail_url($volume->thumbnail->uuid);
+            } elseif (class_exists(Video::class)) {
+                $video = Video::where('project_id', $this->id)->first();
+
+                if ($video) {
+                    return thumbnail_url($video->thumbnail, config('videos.thumbnail_storage_disk'));
+                }
+            }
+
+            return null;
         });
     }
 
