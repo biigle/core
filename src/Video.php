@@ -188,4 +188,16 @@ class Video extends Model implements FileContract
     {
         return strpos($this->url, 'http') === 0;
     }
+
+    /**
+     * THumbnail string of this video. Use with the `thumbnail_url` helper function.
+     *
+     * @return string
+     */
+    public function getThumbnailAttribute()
+    {
+        $index = round(config('videos.thumbnail_count') / 2) - 1;
+
+        return "{$this->uuid}/{$index}";
+    }
 }

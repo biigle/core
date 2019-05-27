@@ -101,4 +101,10 @@ class VideoTest extends ModelTestCase
         $this->model->delete();
         Event::assertDispatched(VideoDeleted::class);
     }
+
+    public function testGetThumbnailAttribute()
+    {
+        config(['videos.thumbnail_count' => 3]);
+        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnail);
+    }
 }
