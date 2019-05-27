@@ -6,6 +6,9 @@
 <div class="navbar-text navbar-annotations-breadcrumbs">
     <a href="{{route('project', $video->project_id)}}" class="navbar-link" title="Show project {{$video->project->name}}">{{$video->project->name}}</a> /
     <strong>{{$video->name}}</strong>
+    @if ($video->doi)
+        <a href="https://doi.org/{{$video->doi}}" class="btn btn-default btn-xs" title="DOI: {{$video->doi}}"><span class="fa fa-link" aria-hidden="true" ></span></a>
+    @endif
 </div>
 @endsection
 
