@@ -47,7 +47,7 @@
         </div>
     </div>
     @if ($activityItems->isNotEmpty())
-        <div class="row">
+        <div class="row activity-items">
             @foreach ($activityItems as $item)
                 <div class="col-xs-6 col-md-3">
                     @include($item['include'], $item)
