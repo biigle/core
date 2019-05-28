@@ -261,12 +261,12 @@ class Project extends Model
                 ->first();
 
             if ($volume) {
-                return thumbnail_url($volume->thumbnail->uuid);
+                return $volume->thumbnailUrl;
             } elseif (class_exists(Video::class)) {
                 $video = Video::where('project_id', $this->id)->first();
 
                 if ($video) {
-                    return thumbnail_url($video->thumbnail, config('videos.thumbnail_storage_disk'));
+                    return $video->thumbnailUrl;
                 }
             }
 

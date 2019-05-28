@@ -71,16 +71,14 @@ if (!function_exists('thumbnail_url')) {
             $format = config('thumbnails.format');
         }
 
-        $path = '';
-
-        if (!is_null($uuid)) {
-            $path = fragment_uuid_path($uuid).'.'.$format;
-        }
-
         if (is_null($disk)) {
             $disk = config('thumbnails.storage_disk');
         }
 
-        return Storage::disk($disk)->url($path);
+        if (is_null($uuid)) {
+            return Storage::disk($disk)->url('');
+        }
+
+        return Storage::disk($disk)->url(fragment_uuid_path($uuid).'.'.$format);
     }
 }
