@@ -190,14 +190,49 @@ class Video extends Model implements FileContract
     }
 
     /**
-     * THumbnail string of this video. Use with the `thumbnail_url` helper function.
+     * Thumbnail string of this video. Use with the `thumbnail_url` helper function.
      *
      * @return string
      */
     public function getThumbnailAttribute()
     {
-        $index = round(config('videos.thumbnail_count') / 2) - 1;
+        $thumbnails = $this->thumbnails;
 
-        return "{$this->uuid}/{$index}";
+        return $thumbnails[intdiv(count($thumbnails), 2)];
+    }
+
+    /**
+     * URL to the thumbnail of this video.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return thumbnail_url($this->thumbnail, config('videos.thumbnail_storage_disk'));
+    }
+
+    /**
+     * Thumbnails array of this video. Use with the `thumbnail_url` helper function.
+     *
+     * @return Collection
+     */
+    public function getThumbnailsAttribute()
+    {
+        return collect(range(0, config('videos.thumbnail_count') - 1))
+            ->map(function ($i) {
+                return "{$this->uuid}/{$i}";
+            });
+    }
+
+    /**
+     * URLs to the thumbnails of this video.
+     *
+     * @return Collection
+     */
+    public function getThumbnailsUrlAttribute()
+    {
+        return $this->thumbnails->map(function ($item) {
+            return thumbnail_url($item, config('videos.thumbnail_storage_disk'));
+        });
     }
 }

@@ -12,7 +12,7 @@ biigle.$viewModel('projects-show-video-list', function (element) {
             biigle.$require('core.mixins.editor'),
         ],
         components: {
-            videoThumbnail: biigle.$require('videos.components.videoThumbnail'),
+            previewThumbnail: biigle.$require('projects.components.previewThumbnail'),
         },
         data: {
             project: biigle.$require('projects.project'),

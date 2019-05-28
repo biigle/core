@@ -1,14 +1,13 @@
 @if($type === 'videos')
-<?php $videoUrl = Storage::disk(config('videos.thumbnail_storage_disk'))->url(''); ?>
 <h2 class="lead">{{number_format($videoResultCount)}} video results</h2>
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $video)
         <li class="col-xs-4">
             <a href="{{route('video', $video->id)}}" title="Show video {{$video->name}}">
-                <video-thumbnail class="volume-thumbnail" uuid="{{$video->uuid}}" :thumb-count="{{config('videos.thumbnail_count')}}" v-bind:tid="{{$video->id}}" uri="{{$videoUrl}}" format="{{config('thumbnails.format')}}">
-                    <img src="{{ $videoUrl.'/'.fragment_uuid_path($video->uuid).'/0.'.config('thumbnails.format') }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                <preview-thumbnail class="preview-thumbnail" :id="{{$video->id}}" thumb-uris="{{$video->thumbnailsUrl->implode(',')}}">
+                    <img src="{{ $video->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     <figcaption slot="caption">{{$video->name}}</figcaption>
-                </video-thumbnail>
+                </preview-thumbnail>
             </a>
         </li>
     @endforeach
