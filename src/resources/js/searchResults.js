@@ -1,6 +1,6 @@
 biigle.$viewModel('search-results', function (element) {
     new Vue({
         el: element,
-        components: {videoThumbnail: biigle.$require('videos.components.videoThumbnail')}
+        components: {previewThumbnail: biigle.$require('projects.components.previewThumbnail')}
     });
 });
