@@ -6,6 +6,7 @@ use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Biigle\Modules\Annotations\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Biigle\Modules\Annotations\Http\Controllers\Mixins\Views\DashboardControllerMixin;
 
 class AnnotationsServiceProvider extends ServiceProvider
 {
@@ -34,7 +35,6 @@ class AnnotationsServiceProvider extends ServiceProvider
 
         $modules->register('annotations', [
             'viewMixins' => [
-                'dashboardHotBoxLeft',
                 'volumesScripts',
                 'adminIndex',
                 'manualTutorial',
@@ -46,6 +46,7 @@ class AnnotationsServiceProvider extends ServiceProvider
             ],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
+                'dashboardActivityItems' => DashboardControllerMixin::class.'@activityItems',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
