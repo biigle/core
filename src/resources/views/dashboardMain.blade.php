@@ -1,10 +1,3 @@
-<div class="row">
-    <div class="col-xs-12">
-        <div class="lead">
-            Your projects
-        </div>
-    </div>
-</div>
 @if ($projects->isNotEmpty())
 <div class="dashboard-projects" id="projects-dashboard-main">
     @foreach ($projects as $project)
@@ -54,8 +47,10 @@
 </div>
 @else
     <div class="row">
-        <div class="text-info text-center col-md-8 col-md-offset-2">
-            You do not belong to any projects yet.<br>You can @can ('create', Biigle\Project::class) <a href="{{route('projects-create')}}">create your own project</a> or @endcan request a project admin to add you to a project.
+        <div class="col-md-8 col-md-offset-2">
+            <div class="text-info text-center well">
+                You do not belong to any projects yet.<br>You can @can ('create', Biigle\Project::class) <a href="{{route('projects-create')}}">create your own project</a> or @endcan request a project admin to add you to a project.
+            </div>
         </div>
     </div>
 @endif
