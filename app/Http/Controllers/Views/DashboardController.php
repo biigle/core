@@ -60,7 +60,7 @@ class DashboardController extends Controller
         ];
         $items = collect($modules->callControllerMixins('dashboardActivityItems', $args))
             ->sortByDesc('created_at')
-            ->take(3);
+            ->take(4);
 
         return view('dashboard', [
             'user' => $user,
