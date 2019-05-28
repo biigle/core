@@ -41,7 +41,6 @@ class VolumesServiceProvider extends ServiceProvider
                 'manualTutorial',
                 'dashboardStyles',
                 'dashboardScripts',
-                'dashboardMain.projects',
                 'adminShowUser',
                 'searchTab',
                 'searchTabContent',
