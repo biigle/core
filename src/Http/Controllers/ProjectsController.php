@@ -48,7 +48,8 @@ class ProjectsController extends Controller
             ->get();
 
         $volumes->each(function ($item) {
-            $item->append('thumbnail');
+            $item->append('thumbnailUrl');
+            $item->append('thumbnailsUrl');
         });
 
         $members = $project->users()

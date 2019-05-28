@@ -25,12 +25,11 @@
     <div class="panel-body container-fluid volumes-grid">
         <div class="row">
             <div class="col-sm-6" v-for="volume in volumes" v-bind:key="volume.id" v-cloak>
-                <a class="volume-thumbnail__link" v-bind:href="'{{route('volume', '')}}/'+volume.id" v-bind:title="'Show volume '+volume.name">
-                    <volume-thumbnail class="volume-thumbnail volume-thumbnail--projects" v-bind:tid="volume.id" uri="{{ thumbnail_url() }}" format="{{ config('thumbnails.format') }}" @can('update', $project) v-bind:removable="editing" v-bind:remove-title="'Detach volume '+volume.name" @endcan v-on:remove="removeVolume">
-                        <img v-if="volume.thumbnail" v-bind:src="'{{ thumbnail_url() }}/'+volume.thumbnail.uuid[0]+volume.thumbnail.uuid[1]+'/'+volume.thumbnail.uuid[2]+volume.thumbnail.uuid[3]+'/'+volume.thumbnail.uuid+'.{{ config('thumbnails.format') }}'" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
-                        <img v-if="!volume.thumbnail" src="{{ asset(config('thumbnails.empty_url')) }}">
+                <a v-bind:href="'{{route('volume', '')}}/'+volume.id" v-bind:title="'Show volume '+volume.name">
+                    <preview-thumbnail class="preview-thumbnail--projects" v-bind:id="volume.id" :thumb-uris="volume.thumbnailsUrl" @can('update', $project) v-bind:removable="editing" v-bind:remove-title="'Detach volume '+volume.name" @endcan v-on:remove="removeVolume">
+                        <img v-bind:src="volume.thumbnailUrl" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                         <figcaption slot="caption" v-text="volume.name"></figcaption>
-                    </volume-thumbnail>
+                    </preview-thumbnail>
                 </a>
             </div>
         </div>

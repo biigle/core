@@ -21,8 +21,5 @@ $router->group(
     ['middleware' => 'auth:web,api', 'namespace' => 'Api', 'prefix' => 'api/v1'],
     function ($router) {
         $router->get('projects/{id}/attachable-volumes', 'AttachableVolumesController@index');
-
-        $router->get('volumes/{id}/sample/{number?}', 'VolumeSampleController@index')
-            ->where(['number' => '[0-9]+']);
     }
 );
