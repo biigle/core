@@ -1,6 +1,6 @@
-<a class="activity-item" href="{{route('annotate', $item->id)}}" title="Annotate image {{$item->name}}">
+<a class="activity-item" href="{{route('annotate', $item->id)}}" title="Show image {{$item->filename}}">
     <figure class="activity-item-image">
-        <span class="label label-default">Image</span>
+        <i class="icon fas fa-image fa-lg"></i>
         <img src="{{ thumbnail_url($item->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
         <figcaption>{{$item->filename}}</figcaption>
     </figure>
