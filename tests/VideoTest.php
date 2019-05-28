@@ -107,4 +107,26 @@ class VideoTest extends ModelTestCase
         config(['videos.thumbnail_count' => 3]);
         $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnail);
     }
+
+    public function testGetThumbnailUrlAttribute()
+    {
+        config(['videos.thumbnail_count' => 3]);
+        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailsAttribute()
+    {
+        config(['videos.thumbnail_count' => 3]);
+        $this->assertContains("{$this->model->uuid}/0", $this->model->thumbnails);
+        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnails);
+        $this->assertContains("{$this->model->uuid}/2", $this->model->thumbnails);
+    }
+
+    public function testGetThumbnailsUrlAttribute()
+    {
+        config(['videos.thumbnail_count' => 3]);
+        $this->assertContains("{$this->model->uuid}/0", $this->model->thumbnailsUrl[0]);
+        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnailsUrl[1]);
+        $this->assertContains("{$this->model->uuid}/2", $this->model->thumbnailsUrl[2]);
+    }
 }
