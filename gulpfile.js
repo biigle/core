@@ -12,11 +12,7 @@ gulp.task('sass-main', function () {
     h.sass('main.scss', 'main.css');
 });
 
-gulp.task('sass-dashboard', function () {
-    h.sass('dashboard.scss', 'dashboard.css');
-});
-
-gulp.task('sass', ['sass-main', 'sass-dashboard']);
+gulp.task('sass', ['sass-main']);
 
 gulp.task('js-main', function (cb) {
     h.js('**/*.js', 'main.js', cb);

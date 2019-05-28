@@ -5,14 +5,14 @@
     @foreach ($results as $volume)
         <li class="col-xs-4">
             <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
-                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{thumbnail_url()}}" format="{{config('thumbnails.format')}}">
+                <preview-thumbnail class="preview-thumbnail" v-bind:id="{{$volume->id}}" thumb-uris="{{$volume->thumbnailsUrl->implode(',')}}">
                     @if ($volume->thumbnail)
-                        <img src="{{ thumbnail_url($volume->thumbnail->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                        <img src="{{ $volume->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
                     @endif
                     <figcaption slot="caption">{{$volume->name}}</figcaption>
-                </volume-thumbnail>
+                </preview-thumbnail>
             </a>
         </li>
     @endforeach
