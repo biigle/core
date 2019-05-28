@@ -12,24 +12,6 @@
 
 @section('content')
 <div class="container">
-    @if (session('welcomeMessage'))
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-success">
-                    <div class="panel-body text-success text-center">
-                        <p class="lead">
-                            Welcome to BIIGLE! Take a look around and make yourself at home.
-                        </p>
-                        @if (config('biigle.user_registration_confirmation'))
-                            <p>
-                                You will be able to create new projects or label trees once an admin has accepted your sign up.
-                            </p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right">
@@ -48,11 +30,35 @@
     </div>
     @if ($activityItems->isNotEmpty())
         <div class="row activity-items">
-            @foreach ($activityItems as $item)
-                <div class="col-xs-6 col-md-3">
-                    @include($item['include'], $item)
+            <div class="col-xs-12">
+                <div class="well well-sm">
+                    <div class="row">
+                        @foreach ($activityItems as $item)
+                            <div class="col-xs-6 col-md-3">
+                                @include($item['include'], $item)
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
-            @endforeach
+            </div>
+        </div>
+    @endif
+    @if (session('welcomeMessage'))
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-success">
+                    <div class="panel-body text-success text-center">
+                        <p class="lead">
+                            Welcome to BIIGLE! Take a look around and make yourself at home.
+                        </p>
+                        @if (config('biigle.user_registration_confirmation'))
+                            <p>
+                                You will be able to create new projects or label trees once an admin has accepted your sign up.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
     @mixin('dashboardMain')

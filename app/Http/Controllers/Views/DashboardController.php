@@ -48,11 +48,6 @@ class DashboardController extends Controller
      */
     protected function indexDashboard(Modules $modules, User $user)
     {
-        $projects = $user->projects()
-            ->orderBy('updated_at', 'desc')
-            ->take(3)
-            ->get();
-
         $args = [
             'user' => $user,
             'newerThan' => Carbon::now()->subDays(7),
@@ -61,6 +56,11 @@ class DashboardController extends Controller
         $items = collect($modules->callControllerMixins('dashboardActivityItems', $args))
             ->sortByDesc('created_at')
             ->take(4);
+
+        $projects = $user->projects()
+            ->orderBy('updated_at', 'desc')
+            ->take($items->isEmpty() ? 4 : 3)
+            ->get();
 
         return view('dashboard', [
             'user' => $user,
