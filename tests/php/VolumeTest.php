@@ -7,6 +7,7 @@ use Event;
 use Cache;
 use Exception;
 use Biigle\Role;
+use Biigle\Image;
 use ModelTestCase;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -423,5 +424,37 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->url = 'http://example.com/images/';
         $this->assertEquals('http://example.com/images', $this->model->url);
+    }
+
+    public function testGetThumbnailsAttribute()
+    {
+        $id = $this->model->id;
+        for ($i = 0; $i < 11; $i++) {
+            ImageTest::create(['volume_id' => $id, 'filename' => "file{$i}"]);
+        }
+
+        $thumbnails = $this->model->thumbnails;
+        $this->assertCount(10, $thumbnails);
+        $this->assertInstanceOf(Image::class, $thumbnails[0]);
+    }
+
+    public function testGetThumbnailUrlAttribute()
+    {
+        $i = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->assertContains($i->uuid, $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailsUrlAttribute()
+    {
+        $i = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->assertContains($i->uuid, $this->model->thumbnailsUrl[0]);
     }
 }

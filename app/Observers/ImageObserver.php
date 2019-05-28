@@ -21,7 +21,7 @@ class ImageObserver
             event(new TiledImagesDeleted($image->uuid));
         }
 
-        if ($image->id === $image->volume->thumbnail->id) {
+        if ($image->volume->thumbnails->pluck('id')->contains($image->id)) {
             $image->volume->flushThumbnailCache();
         }
 

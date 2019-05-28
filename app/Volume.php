@@ -280,12 +280,54 @@ class Volume extends Model
      */
     public function getThumbnailAttribute()
     {
-        return Cache::remember("volume-thumbnail-{$this->id}", 60, function () {
-            // Choose an image from the middle of the volume because the first and last
-            // ones are often of bad quality.
-            $index = round($this->images()->count() / 2) - 1;
+        $thumbnails = $this->thumbnails;
 
-            return $this->orderedImages()->skip($index)->first();
+        return $thumbnails->get(intdiv($thumbnails->count() - 1, 2));
+    }
+
+    /**
+     * URL to the thumbnail image of this volume.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return thumbnail_url($this->thumbnail->uuid);
+    }
+
+    /**
+     * Several images that can be used for the preview thumbnail of a volume.
+     *
+     * @return Collection
+     */
+    public function getThumbnailsAttribute()
+    {
+        // We can cache this for 1 hour because it's unlikely to change as long as the
+        // volume exists.
+        return Cache::remember("volume-thumbnails-{$this->id}", 60, function () {
+            $number = 10;
+            $total = $this->images()->count();
+            $query = $this->orderedImages();
+            $step = intdiv($total, $number);
+
+            return $this->orderedImages()
+                ->when($step > 1, function ($query) use ($step) {
+                    $query->whereRaw("(id % {$step}) = 0");
+                })
+                ->limit($number)
+                ->get();
+        });
+    }
+
+    /**
+     * URLs to the thumbnail images of this volume.
+     *
+     * @return array
+     */
+    public function getThumbnailsUrlAttribute()
+    {
+        return $this->thumbnails->map(function ($image) {
+            return thumbnail_url($image->uuid);
         });
     }
 
@@ -294,7 +336,7 @@ class Volume extends Model
      */
     public function flushThumbnailCache()
     {
-        Cache::forget("volume-thumbnail-{$this->id}");
+        Cache::forget("volume-thumbnails-{$this->id}");
     }
 
     /**
