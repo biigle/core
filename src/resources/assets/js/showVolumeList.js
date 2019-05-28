@@ -18,7 +18,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
             attachableVolumes: [],
         },
         components: {
-            volumeThumbnail: biigle.$require('projects.components.volumeThumbnail'),
+            previewThumbnail: biigle.$require('projects.components.previewThumbnail'),
             typeahead: biigle.$require('core.components.typeahead')
         },
         methods: {
