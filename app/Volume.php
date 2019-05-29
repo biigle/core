@@ -292,7 +292,7 @@ class Volume extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return thumbnail_url($this->thumbnail->uuid);
+        return $this->thumbnail ? thumbnail_url($this->thumbnail->uuid) : null;
     }
 
     /**
