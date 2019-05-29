@@ -38,7 +38,8 @@ class AttachableVolumesControllerTest extends ApiTestCase
         $response->assertExactJson([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
-            'thumbnail' => null,
+            'thumbnailUrl' => null,
+            'thumbnailsUrl' => [],
         ]]);
     }
 }
