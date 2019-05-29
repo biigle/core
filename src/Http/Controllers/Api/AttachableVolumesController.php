@@ -70,7 +70,8 @@ class AttachableVolumesController extends Controller
 
         $hidden = ['video_link', 'gis_link', 'doi'];
         $volumes->each(function ($item) use ($hidden) {
-            $item->append('thumbnail')
+            $item->append('thumbnailUrl')
+                ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
         });
 
