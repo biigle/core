@@ -50,7 +50,9 @@ biigle.$component('videos.components.annotationTracks', {
             return this.scrollTop > 0;
         },
         hasOverflowBottom: function () {
-            var breakpoint = (this.scrollHeight - this.clientHeight);
+            // Subtract 1 because sometimes scrollHeight is off by 1 and the breakpoint
+            // is not reached when the annotation tracks are scrolled all the way down.
+            var breakpoint = this.scrollHeight - this.clientHeight - 1;
 
             return breakpoint > 0 && this.scrollTop < breakpoint;
         },
