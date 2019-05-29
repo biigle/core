@@ -16,10 +16,46 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
             project: biigle.$require('projects.project'),
             volumes: biigle.$require('projects.volumes'),
             attachableVolumes: [],
+            filterString: '',
+            fullHeight: 0,
         },
         components: {
             previewThumbnail: biigle.$require('projects.components.previewThumbnail'),
             typeahead: biigle.$require('core.components.typeahead')
+        },
+        computed: {
+            filteredVolumes: function () {
+                if (this.hasFiltering) {
+                    var filterString = this.filterString.toLowerCase();
+
+                    return this.volumes.filter(function (volume) {
+                        return volume.name.toLowerCase().indexOf(filterString) !== -1;
+                    });
+                }
+
+                return this.volumes;
+            },
+            hasFiltering: function () {
+                return this.filterString.length > 0;
+            },
+            filterInputClass: function () {
+                return this.hasFiltering ? 'panel-filter--active' : '';
+            },
+            hasVolumes: function () {
+                return this.volumes.length > 0;
+            },
+            panelStyle: function () {
+                if (this.hasFiltering) {
+                    return {
+                        height: this.fullHeight + 'px',
+                    };
+                }
+
+                return {};
+            },
+            hasNoMatchingVolumes: function () {
+                return this.hasVolumes && this.filteredVolumes.length === 0;
+            },
         },
         methods: {
             removeVolume: function (id) {
@@ -55,6 +91,8 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
                         this.volumes.splice(i, 1);
                     }
                 }
+
+                this.$nextTick(this.updateFullHeight);
             },
             hasVolume: function (id) {
                 for (var i = this.volumes.length - 1; i >= 0; i--) {
@@ -83,6 +121,8 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
                         this.attachableVolumes.splice(i, 1);
                     }
                 }
+
+                this.$nextTick(this.updateFullHeight);
             },
             fetchAttachableVolumes: function () {
                 attachableVolumes.get({id: this.project.id})
@@ -91,9 +131,18 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
             attachableVolumesFetched: function (response) {
                 this.attachableVolumes = response.data;
             },
+            clearFiltering: function () {
+                this.filterString = '';
+            },
+            updateFullHeight: function () {
+                this.fullHeight = this.$el.offsetHeight;
+            },
         },
         created: function () {
             this.$once('editing.start', this.fetchAttachableVolumes);
+        },
+        mounted: function () {
+            this.updateFullHeight();
         },
     });
 });

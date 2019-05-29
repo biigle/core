@@ -30,3 +30,32 @@
 .project-buttons {
     margin-top: 20px;
 }
+
+.panel-filter {
+    display: inline-block;
+    vertical-align: middle;
+
+    &.panel-filter--active {
+        input:not(:focus) {
+            border-color: $brand-info;
+        }
+    }
+
+    input, .form-control-feedback {
+        height: 21.6px;
+        line-height: 21.6px;
+    }
+
+    .form-control-feedback {
+        width: 21.6px;
+        cursor: pointer;
+        z-index: 1;
+        pointer-events: inherit;
+        color: $brand-info;
+    }
+
+    .form-group {
+        display: inline-block;
+        margin: 0;
+    }
+}
