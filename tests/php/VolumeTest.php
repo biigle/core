@@ -440,21 +440,27 @@ class VolumeTest extends ModelTestCase
 
     public function testGetThumbnailUrlAttribute()
     {
+        $this->assertNull($this->model->thumbnailUrl);
+
         $i = ImageTest::create([
             'filename' => 'a.jpg',
             'volume_id' => $this->model->id,
         ]);
 
+        $this->model->flushThumbnailCache();
         $this->assertContains($i->uuid, $this->model->thumbnailUrl);
     }
 
     public function testGetThumbnailsUrlAttribute()
     {
+        $this->assertEmpty($this->model->thumbnailsUrl);
+
         $i = ImageTest::create([
             'filename' => 'a.jpg',
             'volume_id' => $this->model->id,
         ]);
 
+        $this->model->flushThumbnailCache();
         $this->assertContains($i->uuid, $this->model->thumbnailsUrl[0]);
     }
 }
