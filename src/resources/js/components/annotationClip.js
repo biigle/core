@@ -136,7 +136,6 @@ biigle.$component('videos.components.annotationClip', {
             return this.annotation.tracking ? 'Tracking in progress' : '';
         },
         hasDarkColor: function () {
-            console.log('evaluated');
             // see: https://stackoverflow.com/a/12043228/1796523
             var color = this.label.color || '000000';
             var rgb = parseInt(color, 16);
