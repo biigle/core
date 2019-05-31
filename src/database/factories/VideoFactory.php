@@ -12,5 +12,8 @@ $factory->define(Biigle\Modules\Videos\Video::class, function (Faker $faker) {
         'project_id' => function () {
             return factory(Biigle\Project::class)->create()->id;
         },
+        'creator_id' => function () {
+            return factory(Biigle\User::class)->create()->id;
+        },
     ];
 });

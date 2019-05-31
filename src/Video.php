@@ -22,6 +22,7 @@ class Video extends Model implements FileContract
         'name',
         'url',
         'description',
+        'creator_id',
         'project_id',
         'uuid',
         'attrs',
@@ -93,6 +94,16 @@ class Video extends Model implements FileContract
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * The user who created this video.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

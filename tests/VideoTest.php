@@ -21,11 +21,19 @@ class VideoTest extends ModelTestCase
         $this->assertNotNull($this->model->uuid);
         $this->assertNotNull($this->model->name);
         $this->assertNotNull($this->model->url);
+        $this->assertNotNull($this->model->creator);
         $this->assertNotNull($this->model->project);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->duration);
         $this->assertEquals([], $this->model->attrs);
+    }
+
+    public function testCreatorSetNull()
+    {
+        $this->assertNotNull($this->model->creator_id);
+        $this->model->creator()->delete();
+        $this->assertNull($this->model->fresh()->creator_id);
     }
 
     public function testGetDiskAttribute()

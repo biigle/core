@@ -85,6 +85,7 @@ class ProjectVideoControllerTest extends ApiTestCase
         $this->assertNotNull($video);
         $this->assertEquals(104500, $video->attrs['size']);
         $this->assertEquals('video/mp4', $video->attrs['mimetype']);
+        $this->assertEquals($this->admin()->id, $video->creator_id);
         Queue::assertPushed(ProcessNewVideo::class);
     }
 

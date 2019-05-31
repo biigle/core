@@ -58,6 +58,7 @@ class ProjectVideoController extends Controller
             'name' => $request->input('name'),
             'url' => $request->input('url'),
             'project_id' => $request->project->id,
+            'creator_id' => $request->user()->id,
         ]);
 
         if ($video->isRemote()) {
