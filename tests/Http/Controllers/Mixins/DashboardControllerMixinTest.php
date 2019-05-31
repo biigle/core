@@ -5,6 +5,7 @@ namespace Biigle\Tests\Modules\Videos\Http\Controllers\Mixins;
 use ApiTestCase;
 use Biigle\Tests\UserTest;
 use Biigle\Modules\Videos\Video;
+use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Tests\Modules\Videos\VideoAnnotationLabelTest;
 use Biigle\Modules\Videos\Http\Controllers\Mixins\DashboardControllerMixin;
 
@@ -43,6 +44,10 @@ class DashboardControllerMixinTest extends ApiTestCase
 
         $items = $controller->activityItems($user, 3);
         $this->assertCount(3, $items);
+
+        VideoTest::create(['creator_id' => $user->id]);
+        $items = $controller->activityItems($user, 3);
+        $this->assertCount(4, $items);
 
     }
 }
