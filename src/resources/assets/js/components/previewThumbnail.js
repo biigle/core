@@ -22,9 +22,6 @@ biigle.$component('projects.components.previewThumbnail', {
                 '@click.prevent="remove" ' +
                 ':title="removeTitle" ' +
                 '>&times;</span>' +
-            '<div class="preview-thumbnail__fallback">' +
-                '<slot></slot>' +
-            '</div>' +
             '<div class="preview-thumbnail__images" v-if="showPreview">' +
                 '<img ' +
                     'v-for="(uri, i) in uris" ' +
@@ -32,6 +29,9 @@ biigle.$component('projects.components.previewThumbnail', {
                     '@error="failed(i)" ' +
                     ':src="uri" ' +
                     '>' +
+            '</div>' +
+            '<div v-else class="preview-thumbnail__fallback">' +
+                '<slot></slot>' +
             '</div>' +
             '<slot name="caption"></slot>' +
             '<span ' +
