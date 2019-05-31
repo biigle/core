@@ -1,19 +1,15 @@
-@keyframes pulse {
-    50% {opacity: .5;}
-}
-
 .preview-thumbnail {
     display: block;
     position: relative;
     overflow: hidden;
     text-align: center;
     border-radius: $border-radius-base;
-    border: 1px solid rgba(0, 0, 0, 0.8);
+    border: 2px solid $gray-lighter;
+    background-color: $gray-lighter;
 
     img {
-        width: 100%;
+        width: auto;
         height: 100%;
-        object-fit: cover;
     }
 
     figcaption {
@@ -37,6 +33,13 @@
         .preview-thumbnail__progress {
             animation: pulse 1s infinite;
         }
+    }
+}
+
+@supports (object-fit: contain) {
+    .preview-thumbnail img {
+        width: 100%;
+        object-fit: contain;
     }
 }
 
