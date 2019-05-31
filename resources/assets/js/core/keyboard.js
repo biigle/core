@@ -76,10 +76,14 @@ biigle.$declare('keyboard', new Vue({
             }
         },
         executeCallbacks: function (list, e) {
-            // go from highest priority down
+            // Prevent default if there are any listeners.
+            e.preventDefault();
+            // Go from highest priority down.
             for (var i = list.length - 1; i >= 0; i--) {
-                // callbacks can cancel further propagation
-                if (list[i].callback(e) === false) return;
+                // Callbacks can cancel further propagation.
+                if (list[i].callback(e) === false) {
+                    return;
+                }
             }
         },
         on: function (key, callback, priority, set) {
@@ -143,7 +147,7 @@ biigle.$declare('keyboard', new Vue({
         },
     },
     created: function () {
-        // Use keydown because keypress dows not fire for all keys that can be used in
+        // Use keydown because keypress does not fire for all keys that can be used in
         // shortcuts.
         document.body.addEventListener('keydown', this.handleKeyEvents);
     },
