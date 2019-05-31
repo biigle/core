@@ -90,9 +90,9 @@ biigle.$component('annotations.components.controlButton', {
         },
         updateActiveSubControls: function (active) {
             if (active) {
-                this.activeSubControls++;
+                this.activeSubControls += 1;
             } else {
-                this.activeSubControls--;
+                this.activeSubControls = Math.max(0, this.activeSubControls - 1);
             }
         }
     },
