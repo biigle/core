@@ -248,6 +248,11 @@ biigle.$declare('largo.mixins.largoContainer', {
         step: function (step) {
             this.events.$emit('step', step);
         },
+        selectedLabel: function () {
+            if (this.isInDismissStep) {
+                this.$refs.dismissGrid.setOffset(0);
+            }
+        },
     },
     created: function () {
         var self = this;

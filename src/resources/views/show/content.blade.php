@@ -1,5 +1,5 @@
 <div class="sidebar-container__content">
-    <dismiss-image-grid v-if="isInDismissStep" :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleSelectedImageDismiss" :selectable="true" selected-icon="times"></dismiss-image-grid>
+    <dismiss-image-grid v-if="isInDismissStep" ref="dismissGrid" :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleSelectedImageDismiss" :selectable="true" selected-icon="times"></dismiss-image-grid>
     <relabel-image-grid v-cloak v-else :images="dismissedAnnotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleSelectedImageRelabel" :selectable="true"></relabel-image-grid>
     <div class="largo-images__alerts" :class="{block: loading}">
         <div v-cloak v-if="loading">
