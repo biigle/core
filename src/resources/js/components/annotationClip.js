@@ -104,6 +104,7 @@ biigle.$component('videos.components.annotationClip', {
                 'annotation-clip--compact': this.shouldBeCompact,
                 'annotation-clip--more-compact': this.shouldBeMoreCompact,
                 'annotation-clip--tracking': this.annotation.tracking,
+                'annotation-clip--dark': this.annotation.tracking && this.hasDarkColor,
             };
         },
         minTimeBetweenFrames: function () {
@@ -133,6 +134,18 @@ biigle.$component('videos.components.annotationClip', {
         },
         title: function () {
             return this.annotation.tracking ? 'Tracking in progress' : '';
+        },
+        hasDarkColor: function () {
+            console.log('evaluated');
+            // see: https://stackoverflow.com/a/12043228/1796523
+            var color = this.label.color || '000000';
+            var rgb = parseInt(color, 16);
+            var r = (rgb >> 16) & 0xff;
+            var g = (rgb >>  8) & 0xff;
+            var b = (rgb >>  0) & 0xff;
+            var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+            return luma < 128;
         },
     },
     methods: {
