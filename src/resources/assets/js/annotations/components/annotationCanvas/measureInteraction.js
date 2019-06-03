@@ -84,7 +84,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                 style: measureLayer.getStyle(),
             });
             measureInteraction.on('drawstart', this.handleMeasureDrawStart);
-            biigle.$require('keyboard').on('F', this.toggleMeasuring, 0, this.listenerSet);
+            biigle.$require('keyboard').on('Shift+f', this.toggleMeasuring, 0, this.listenerSet);
 
             // Do not make this reactive.
             // See: https://github.com/biigle/annotations/issues/108

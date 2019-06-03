@@ -58,7 +58,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
         },
         created: function () {
             if (this.canAdd) {
-                biigle.$require('keyboard').on('G', this.toggleMagicWand, 0, this.listenerSet);
+                biigle.$require('keyboard').on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
                 this.$watch('image', this.maybeUpdateMagicWandSnapshot);
                 this.$watch('image', this.maybeSetMagicWandLayer);
                 this.$watch('isMagicWanding', this.toggleMagicWandInteraction);
