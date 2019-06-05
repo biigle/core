@@ -35,8 +35,8 @@ class StoreVideo extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:512',
-            'url' => ['required', new VideoUrl],
+            'name' => 'required|max:255',
+            'url' => ['required', 'max:255', new VideoUrl],
         ];
     }
 }

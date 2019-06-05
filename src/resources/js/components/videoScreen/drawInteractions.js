@@ -157,7 +157,6 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
                 kb.on('a', this.drawPoint, 0, this.listenerSet);
                 kb.on('s', this.drawRectangle, 0, this.listenerSet);
                 kb.on('d', this.drawCircle, 0, this.listenerSet);
-                // kb.on('D', this.drawEllipse, 0, this.listenerSet);
                 kb.on('f', this.drawLineString, 0, this.listenerSet);
                 kb.on('g', this.drawPolygon, 0, this.listenerSet);
                 this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
