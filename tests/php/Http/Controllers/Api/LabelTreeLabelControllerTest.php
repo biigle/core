@@ -9,6 +9,7 @@ use ApiTestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelSourceTest;
+use Biigle\Tests\LabelTreeVersionTest;
 use Illuminate\Validation\ValidationException;
 
 class LabelTreeLabelControllerTest extends ApiTestCase
@@ -179,5 +180,19 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         ]);
         $response->assertStatus(422);
         $response->assertJsonFragment(['my_field' => ['Invalid.']]);
+    }
+
+    public function testStoreVersionedTree()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->editor(), Role::editor());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/labels", [
+                'name' => 'new label',
+                'color' => 'bada55',
+            ])
+            ->assertStatus(403);
     }
 }

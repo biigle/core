@@ -84,6 +84,16 @@ $router->resource('label-trees.users', 'LabelTreeUserController', [
     'parameters' => ['label-trees' => 'id', 'users' => 'id2'],
 ]);
 
+$router->resource('label-trees.versions', 'LabelTreeVersionController', [
+    'only' => ['store'],
+    'parameters' => ['label-trees' => 'id'],
+]);
+
+$router->resource('label-tree-versions', 'LabelTreeVersionController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['label-tree-versions' => 'id'],
+]);
+
 $router->resource('media-types', 'MediaTypeController', [
     'only' => ['index', 'show'],
     'parameters' => ['media-types' => 'id'],

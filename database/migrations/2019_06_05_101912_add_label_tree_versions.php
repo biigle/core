@@ -23,10 +23,12 @@ class AddLabelTreeVersions extends Migration
                   ->references('id')
                   ->on('label_trees')
                   ->onDelete('cascade');
+
+            $table->unique(['name', 'label_tree_id']);
         });
 
         Schema::table('label_trees', function (Blueprint $table) {
-            $table->integer('version_id')->unsigned()->nullable();
+            $table->integer('version_id')->unsigned()->nullable()->unique();
             $table->foreign('version_id')
                   ->references('id')
                   ->on('label_tree_versions')

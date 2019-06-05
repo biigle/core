@@ -166,17 +166,22 @@ class LabelTree extends Model
     /**
      * Determines if the label tree can be safely deleted.
      *
-     * A label tree can be safely deleted if none if its labels is in use.
+     * A label tree can be safely deleted if none if its labels or the labels of any of its versions are in use.
      *
      * @return bool
      */
     public function canBeDeleted()
     {
+        $treeIds = $this->versions()
+            ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+            ->pluck('label_trees.id')
+            ->concat([$this->id]);
+
         return !AnnotationLabel::join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->where('labels.label_tree_id', $this->id)
+            ->whereIn('labels.label_tree_id', $treeIds)
             ->exists()
             && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
-            ->where('labels.label_tree_id', $this->id)
+            ->whereIn('labels.label_tree_id', $treeIds)
             ->exists();
     }
 

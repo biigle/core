@@ -85,6 +85,17 @@ class LabelTreeTest extends ModelTestCase
         $this->assertFalse($this->model->canBeDeleted());
     }
 
+    public function testCanBeDeletedVersionLabel()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        AnnotationLabelTest::create([
+            'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])->id,
+        ]);
+        $this->assertFalse($version->labelTree->canBeDeleted());
+    }
+
     public function testAddMember()
     {
         $this->assertFalse($this->model->members()->exists());

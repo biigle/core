@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Route;
+use DB;
 use Biigle\Role;
 use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
@@ -136,7 +136,7 @@ class LabelTreeController extends Controller
     {
         $tree = new LabelTree;
         $tree->name = $request->input('name');
-        $tree->visibility_id = (int) $request->input('visibility_id');
+        $tree->visibility_id = $request->input('visibility_id');
         $tree->description = $request->input('description');
         $tree->uuid = Uuid::uuid4();
         $tree->save();
@@ -180,16 +180,23 @@ class LabelTreeController extends Controller
         $tree = $request->tree;
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
-
         $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
 
-        // Compare the ID of the label tree attribute because it is cast to an int.
-        // The request value is a string and can't be used for strict comparison.
-        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::privateId()) {
-            $tree->detachUnauthorizedProjects();
-        }
+        DB::transaction(function () use ($tree) {
+            if ($tree->isDirty('visibility_id')) {
+                // Propoagate the visibility change to all versions of the label tree.
+                LabelTree::join('label_tree_versions', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                    ->where('label_tree_versions.label_tree_id', $tree->id)
+                    ->update(['visibility_id' => $tree->visibility_id]);
 
-        $tree->save();
+                if ($tree->visibility_id === Visibility::privateId()) {
+                    $tree->detachUnauthorizedProjects();
+                }
+            }
+
+            $tree->save();
+        });
+
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()
@@ -206,7 +213,7 @@ class LabelTreeController extends Controller
      * @apiGroup Label Trees
      * @apiName DestroyLabelTrees
      * @apiPermission labelTreeAdmin
-     * @apiDescription A label tree cannot be deleted if it contains labels that are still used somewhere.
+     * @apiDescription A label tree cannot be deleted if it or any of its versions contain labels that are still used.
      *
      * @apiParam {Number} id The label tree ID.
      *

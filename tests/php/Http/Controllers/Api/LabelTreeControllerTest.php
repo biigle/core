@@ -10,6 +10,7 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelTreeControllerTest extends ApiTestCase
 {
@@ -191,8 +192,25 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => strval(Visibility::privateId()),
         ]);
 
-        // the IDs may be strings when testing with sqlite
-        $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+        $this->assertEquals($authorized->id, $tree->projects()->pluck('id')->first());
+    }
+
+    public function testUpdatePropagateVisibility()
+    {
+        $master = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
+        $tree = LabelTreeTest::create([
+            'version_id' => $version->id,
+            'visibility_id' => Visibility::privateId(),
+        ]);
+        $master->addMember($this->admin(), Role::admin());
+        $this->beAdmin();
+        $this->putJson("/api/v1/label-trees/{$master->id}", [
+                'visibility_id' => Visibility::publicId(),
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals(Visibility::publicId(), $tree->fresh()->visibility_id);
     }
 
     public function testStore()
@@ -384,5 +402,26 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertNull($tree->fresh());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('deleted', true);
+    }
+
+    public function testDestroyVersion()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$tree->id}")
+            ->assertStatus(403);
+    }
+
+    public function testDestroyVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$version->labelTree->id}")
+            ->assertStatus(200);
+        $this->assertNull($tree->fresh());
     }
 }
