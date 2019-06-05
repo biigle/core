@@ -83,7 +83,13 @@ class LabelTreeController extends Controller
      *          "lastname": "Beier",
      *          "role_id": 2
      *       }
-     *    ]
+     *    ],
+     *    "version": {
+     *       "id": 1,
+     *       "name": "v1.0",
+     *       "description": null
+     *    },
+     *    "versions": []
      * }
      *
      *
@@ -94,7 +100,7 @@ class LabelTreeController extends Controller
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
 
-        return $tree->load('labels', 'members');
+        return $tree->load('labels', 'members', 'version', 'versions');
     }
 
     /**

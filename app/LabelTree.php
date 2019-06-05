@@ -24,6 +24,7 @@ class LabelTree extends Model
     protected $hidden = [
         'pivot',
         'uuid',
+        'version_id',
     ];
 
     /**
@@ -33,6 +34,7 @@ class LabelTree extends Model
      */
     protected $casts = [
         'visibility_id' => 'int',
+        'label_tree_version_id' => 'int',
     ];
 
     /**
@@ -107,6 +109,26 @@ class LabelTree extends Model
                     });
                 });
         });
+    }
+
+    /**
+     * The version of this label tree (if it is a version of a master label tree).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function version()
+    {
+        return $this->belongsTo(LabelTreeVersion::class);
+    }
+
+    /**
+     * The versions of this (master) label tree.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function versions()
+    {
+        return $this->hasMany(LabelTreeVersion::class);
     }
 
     /**

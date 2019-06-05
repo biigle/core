@@ -211,4 +211,41 @@ class LabelTreeTest extends ModelTestCase
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertContains($tree->id, $ids);
     }
+
+    public function testVersion()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->assertFalse($this->model->version()->exists());
+        $this->model->version_id = $version->id;
+        $this->assertTrue($this->model->version()->exists());
+    }
+
+    public function testVersions()
+    {
+        $this->assertEquals(0, $this->model->versions()->count());
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertEquals(1, $this->model->versions()->count());
+    }
+
+    public function testCascadeDeleteMaster()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        $version->labelTree()->delete();
+        $this->assertNull($version->fresh());
+        $this->assertNull($this->model->fresh());
+    }
+
+    public function testRestrictDeleteMasterIfLabelIsUsed()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        AnnotationLabelTest::create([
+            'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])
+        ]);
+        $this->expectException(QueryException::class);
+        $version->labelTree()->delete();
+    }
 }
