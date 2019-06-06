@@ -310,4 +310,18 @@ class LabelTree extends Model
                     ->where('label_tree_id', $this->id);
             })->delete();
     }
+
+    /**
+     * Get the name with a version suffix of this label tree.
+     *
+     * @return string
+     */
+    public function getVersionedNameAttribute()
+    {
+        if (is_null($this->version_id)) {
+            return "{$this->name} @ latest";
+        }
+
+        return "{$this->name} @ {$this->version->name}";
+    }
 }

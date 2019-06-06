@@ -295,4 +295,18 @@ class LabelTreeTest extends ModelTestCase
         $version->labelTree->addMember(UserTest::create(), Role::adminId());
         $this->assertFalse(LabelTree::global()->exists());
     }
+
+    public function testGetVersionedNameAttribute()
+    {
+        $version = LabelTreeVersionTest::create([
+            'name' => 'v1.0',
+            'label_tree_id' => static::create(['name' => 'master tree'])->id
+        ]);
+        $this->model->name = 'versioned tree';
+        $this->model->version_id = $version->id;
+        $this->model->save();
+
+        $this->assertEquals('master tree @ latest', $version->labelTree->versionedName);
+        $this->assertEquals('versioned tree @ v1.0', $this->model->versionedName);
+    }
 }
