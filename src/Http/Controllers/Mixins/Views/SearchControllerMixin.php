@@ -21,7 +21,7 @@ class SearchControllerMixin
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
         if ($query) {
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query, $operator) {
+            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
                 $q->where('label_trees.name', 'ilike', "%{$query}%")
                     ->orWhere('label_trees.description', 'ilike', "%{$query}%");
             });

@@ -101,7 +101,7 @@ class LabelTreesController extends Controller
      */
     public function admin()
     {
-        $trees = LabelTree::whereDoesntHave('members')->get();
+        $trees = LabelTree::global()->get();
 
         return view('label-trees::admin', [
             'trees' => $trees,

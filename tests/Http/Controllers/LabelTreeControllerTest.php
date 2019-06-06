@@ -8,6 +8,7 @@ use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelTreeControllerTest extends TestCase
 {
@@ -42,6 +43,21 @@ class LabelTreeControllerTest extends TestCase
         $response = $this->get('admin/label-trees')->assertStatus(403);
         $user->role()->associate(Role::admin());
         $this->get('admin/label-trees')->assertStatus(200);
+    }
+
+    public function testAdminNoVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create([
+            'name' => 'version tree',
+            'version_id' => $version->id,
+        ]);
+        $user = UserTest::create();
+        $user->role()->associate(Role::admin());
+        $this->be($user);
+        $this->get('admin/label-trees')
+            ->assertStatus(200)
+            ->assertDontSeeText('version tree');
     }
 
     public function testIndex()
