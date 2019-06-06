@@ -16,7 +16,6 @@ class AddLabelTreeVersions extends Migration
         Schema::create('label_tree_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 256);
-            $table->text('description')->nullable();
 
             $table->integer('label_tree_id')->unsigned();
             $table->foreign('label_tree_id')

@@ -16,7 +16,6 @@ class LabelTreeVersionTest extends ModelTestCase
     public function testAttributes()
     {
         $this->assertNotNull($this->model->name);
-        $this->assertNotNull($this->model->description);
         $this->assertNotNull($this->model->labelTree);
     }
 

@@ -51,13 +51,12 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $version = $master->versions()->first();
         $this->assertNotNull($version);
         $this->assertEquals('v1.0', $version->name);
-        $this->assertEquals('First version.', $version->description);
         $this->assertEquals($master->id, $version->label_tree_id);
 
         $versionTree = LabelTree::where('version_id', $version->id)->first();
         $this->assertNotNull($versionTree);
         $this->assertEquals($master->name, $versionTree->name);
-        $this->assertEquals($master->description, $versionTree->description);
+        $this->assertEquals('First version.', $versionTree->description);
         $this->assertEquals($master->visibility_id, $versionTree->visibility_id);
         $this->assertNotEquals($master->uuid, $versionTree->uuid);
 
@@ -99,7 +98,6 @@ class LabelTreeVersionControllerTest extends ApiTestCase
 
         $this->putJson("/api/v1/label-tree-versions/{$version->id}",  [
                 'name' => 'v1.3',
-                'description' => 'My version.',
             ])
             ->assertStatus(200);
 
@@ -110,7 +108,6 @@ class LabelTreeVersionControllerTest extends ApiTestCase
 
         $version->refresh();
         $this->assertEquals('v1.3', $version->name);
-        $this->assertEquals('My version.', $version->description);
     }
 
     public function testDestroy()

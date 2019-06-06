@@ -24,7 +24,7 @@ class LabelTreeVersionController extends Controller
      *
      * @apiParam (Required attributes) {String} name Name of the new label tree version.
      *
-     * @apiParam (Optional attributes) {String} description Description of the new label tree version.
+     * @apiParam (Optional attributes) {String} description Description of the new label tree version. If empty, the description of the master label tree will be taken.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -43,13 +43,15 @@ class LabelTreeVersionController extends Controller
         DB::transaction(function () use ($request) {
             $version = new LabelTreeVersion;
             $version->name = $request->input('name');
-            $version->description = $request->input('description');
             $version->label_tree_id = $request->tree->id;
             $version->save();
 
             $versionTree = $request->tree->replicate();
             $versionTree->uuid = Uuid::uuid4();
             $versionTree->version_id = $version->id;
+            if ($request->filled('description')) {
+                $versionTree->description = $request->input('description');
+            }
             $versionTree->save();
 
             $versionTree->authorizedProjects()
@@ -76,7 +78,6 @@ class LabelTreeVersionController extends Controller
      * @apiParam {Number} id The label tree version ID
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the label tree version.
-     * @apiParam (Attributes that can be updated) {String} description Description of the label tree version.
      *
      * @param UpdateLabelTreeVersion $request
      * @return \Illuminate\Http\Response
@@ -85,9 +86,6 @@ class LabelTreeVersionController extends Controller
     {
         $version = $request->version;
         $version->name = $request->input('name', $version->name);
-        if ($request->has('description')) {
-            $version->description = $request->input('description');
-        }
         $version->save();
     }
 

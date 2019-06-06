@@ -42,7 +42,6 @@ class UpdateLabelTreeVersion extends FormRequest
                     return $query->where('label_tree_id', $this->version->label_tree_id);
                 }),
             ],
-            'description' => 'nullable',
         ];
     }
 }

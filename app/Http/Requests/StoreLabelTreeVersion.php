@@ -43,7 +43,6 @@ class StoreLabelTreeVersion extends FormRequest
                     return $query->where('label_tree_id', $this->tree->id);
                 }),
             ],
-            'description' => 'nullable',
         ];
     }
 }
