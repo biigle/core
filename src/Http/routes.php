@@ -16,6 +16,16 @@ $router->group(['middleware' => 'auth'], function ($router) {
         'uses' => 'LabelTreesController@show',
     ]);
 
+    $router->get('label-trees/{id}/versions/{id2}', [
+        'as'   => 'label-tree-versions',
+        'uses' => 'LabelTreeVersionsController@show',
+    ]);
+
+    $router->get('label-trees/{id}/versions/create', [
+        'as'   => 'create-label-tree-versions',
+        'uses' => 'LabelTreeVersionsController@create',
+    ]);
+
     $router->get('admin/label-trees', [
         'as' => 'admin-global-label-trees',
         'middleware' => 'can:sudo',

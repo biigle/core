@@ -5,9 +5,11 @@
             <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
         </span>
         <span class="pull-right label-tree-buttons" v-else>
-            <button class="btn btn-default" v-on:click="startEditing" :disabled="loading">Edit</button>
-            <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading">Delete</button>
-            <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading">Leave</button>
+            <button class="btn btn-default" v-on:click="startEditing" :disabled="loading" title="Edit this label tree">Edit</button>
+            <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading" title="Delete this label tree">Delete</button>
+            @if ($members->pluck('id')->has($user->id))
+                <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
+            @endif
         </span>
         <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">
             <div class="form-group">
@@ -31,16 +33,16 @@
         </h2>
     @else
         <h2>
-            @can('create-label', $tree)
+            @if ($members->pluck('id')->has($user->id))
                 <span class="pull-right">
-                    <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading">Leave</button>
+                    <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
                 </span>
-            @endcan
-            @if($private)
+            @endif
+            @if ($private)
                 <span class="text-muted fa fa-lock" aria-hidden="true" title="This label tree is private"></span>
             @endif
             {{$tree->name}}
-            @if($tree->description)
+            @if ($tree->description)
                 <br><small>{{$tree->description}}</small>
             @endif
         </h2>
