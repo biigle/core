@@ -18,7 +18,7 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        $queryBuilder = LabelTree::accessibleBy($user);
+        $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
         if ($query) {
             if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
