@@ -40,7 +40,7 @@ class LabelTreeVersionController extends Controller
      */
     public function store(StoreLabelTreeVersion $request)
     {
-        DB::transaction(function () use ($request) {
+        $version = DB::transaction(function () use ($request) {
             $version = new LabelTreeVersion;
             $version->name = $request->input('name');
             $version->label_tree_id = $request->tree->id;
@@ -58,10 +58,12 @@ class LabelTreeVersionController extends Controller
                 ->sync($request->tree->authorizedProjects()->pluck('id'));
 
             $this->replicateLabels($request->tree, $versionTree);
+
+            return $version;
         });
 
         if (!$this->isAutomatedRequest()) {
-            return $this->fuzzyRedirect()
+            return $this->fuzzyRedirect('label-tree-versions', [$request->tree->id, $version->id])
                 ->with('message', 'Label tree version created.')
                 ->with('messageType', 'success');
         }
