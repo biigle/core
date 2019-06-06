@@ -22,7 +22,7 @@ class LabelTreesController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $tree = LabelTree::findOrFail($id);
+        $tree = LabelTree::withoutVersions()->findOrFail($id);
         $this->authorize('access', $tree);
         $user = $request->user();
 

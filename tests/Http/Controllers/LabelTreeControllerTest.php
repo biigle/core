@@ -35,6 +35,15 @@ class LabelTreeControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function testShowNoVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get("label-trees/{$tree->id}")->assertStatus(404);
+    }
+
     public function testAdmin()
     {
         $this->get('admin/label-trees')->assertRedirect('login');
