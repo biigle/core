@@ -8,6 +8,7 @@ use Biigle\Role;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
+use Biigle\LabelTreeVersion;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeVersionTest;
 
@@ -29,6 +30,14 @@ class LabelTreeVersionPolicyTest extends TestCase
         $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
         $this->version->labelTree->addMember($this->editor, Role::editor());
         $this->version->labelTree->addMember($this->admin, Role::admin());
+    }
+
+    public function testCreate()
+    {
+        $this->assertFalse($this->user->can('create', [LabelTreeVersion::class, $this->version->labelTree]));
+        $this->assertFalse($this->editor->can('create', [LabelTreeVersion::class, $this->version->labelTree]));
+        $this->assertTrue($this->admin->can('create', [LabelTreeVersion::class, $this->version->labelTree]));
+        $this->assertTrue($this->globalAdmin->can('create', [LabelTreeVersion::class, $this->version->labelTree]));
     }
 
     public function testAccessPublic()

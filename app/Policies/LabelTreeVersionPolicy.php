@@ -3,6 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\User;
+use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -22,6 +23,18 @@ class LabelTreeVersionPolicy extends CachedPolicy
         if ($user->can('sudo')) {
             return true;
         }
+    }
+
+    /**
+     * Determine if the given user can create version of a label tree.
+     *
+     * @param  User  $user
+     * @param  LabelTree $tree
+     * @return bool
+     */
+    public function create(User $user, LabelTree $tree)
+    {
+        return $user->can('update', $tree);
     }
 
     /**
