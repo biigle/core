@@ -71,45 +71,6 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->assertNull($versionLabels[1]->parent_id);
     }
 
-    public function testUpdate()
-    {
-        $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->editor(), Role::editorId());
-        $version->labelTree->addMember($this->admin(), Role::adminId());
-
-        $version2 = LabelTreeVersionTest::create([
-            'label_tree_id' => $version->label_tree_id,
-        ]);
-
-        $this->doTestApiRoute('PUT', "/api/v1/label-tree-versions/{$version->id}");
-
-        $this->beEditor();
-        $this->putJson("/api/v1/label-tree-versions/{$version->id}")
-            ->assertStatus(403);
-
-        $this->beAdmin();
-        $this->putJson("/api/v1/label-tree-versions/999")
-            ->assertStatus(404);
-
-        $this->putJson("/api/v1/label-tree-versions/{$version->id}",  [
-                'name' => '',
-            ])
-            ->assertStatus(422);
-
-        $this->putJson("/api/v1/label-tree-versions/{$version->id}",  [
-                'name' => 'v1.3',
-            ])
-            ->assertStatus(200);
-
-        $this->putJson("/api/v1/label-tree-versions/{$version->id}",  [
-                'name' => $version2->name,
-            ])
-            ->assertStatus(422);
-
-        $version->refresh();
-        $this->assertEquals('v1.3', $version->name);
-    }
-
     public function testDestroy()
     {
         $version = LabelTreeVersionTest::create();

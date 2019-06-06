@@ -69,15 +69,6 @@ class LabelTreeVersionPolicyTest extends TestCase
         $this->assertTrue($project->creator->can('access', $this->version));
     }
 
-    public function testUpdate()
-    {
-        $this->assertFalse($this->user->can('update', $this->version));
-        $this->assertFalse($this->editor->can('update', $this->version));
-        $this->assertTrue($this->admin->can('update', $this->version));
-        $this->assertTrue($this->globalAdmin->can('update', $this->version));
-    }
-
-
     public function testDestroy()
     {
         $this->assertFalse($this->user->can('destroy', $this->version));

@@ -30,7 +30,7 @@ class DestroyLabelTreeVersion extends FormRequest
             throw new AuthorizationException('A label tree version cannot be deleted if it contains labels that are still used.');
         }
 
-        return $this->user()->can('update', $this->version);
+        return $this->user()->can('destroy', $this->version);
     }
 
     /**

@@ -70,28 +70,6 @@ class LabelTreeVersionController extends Controller
     }
 
     /**
-     * Updates the attributes of the specified label tree version.
-     *
-     * @api {put} label-tree-versions/:id Update a label tree version
-     * @apiGroup Label Trees
-     * @apiName UpdateLabelTreeVersionss
-     * @apiPermission labelTreeAdmin
-     *
-     * @apiParam {Number} id The label tree version ID
-     *
-     * @apiParam (Attributes that can be updated) {String} name Name of the label tree version.
-     *
-     * @param UpdateLabelTreeVersion $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateLabelTreeVersion $request)
-    {
-        $version = $request->version;
-        $version->name = $request->input('name', $version->name);
-        $version->save();
-    }
-
-    /**
      * Removes the specified label tree version.
      *
      * @api {delete} label-tree-versions/:id Delete a label tree version
