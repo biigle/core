@@ -112,6 +112,32 @@ class LabelTree extends Model
     }
 
     /**
+     * Scope a query to all trees that are not a varsion of another tree.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithoutVersions($query)
+    {
+        return $query->whereNull('label_trees.version_id');
+    }
+
+    /**
+     * Scope a query to all "global" trees.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGlobal($query)
+    {
+        return $query->withoutVersions()
+            ->whereDoesntHave('members')
+            ->where('label_trees.visibility_id', Visibility::publicId());
+    }
+
+    /**
      * The version of this label tree (if it is a version of a master label tree).
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

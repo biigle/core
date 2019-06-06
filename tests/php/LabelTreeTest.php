@@ -182,8 +182,11 @@ class LabelTreeTest extends ModelTestCase
         $version = LabelTreeVersionTest::create();
         $this->model->version_id = $version->id;
         $this->model->save();
+        // The master label tree is global and attached by default.
         $unauthorized = ProjectTest::create();
+        $unauthorized->labelTrees()->attach($this->model->id);
         $authorized = ProjectTest::create();
+        $authorized->labelTrees()->attach($this->model->id);
         $version->labelTree->authorizedProjects()->attach($authorized->id);
         $this->model->authorizedProjects()->attach($authorized->id);
         $version->labelTree->detachUnauthorizedProjects();
@@ -271,5 +274,25 @@ class LabelTreeTest extends ModelTestCase
         ]);
         $this->expectException(QueryException::class);
         $version->labelTree()->delete();
+    }
+
+    public function testScopeWithoutVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        $this->assertEquals([$version->label_tree_id], LabelTree::withoutVersions()->pluck('id')->all());
+    }
+
+    public function testScopeGlobal()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+
+        $ids = LabelTree::global()->pluck('id')->all();
+        $this->assertEquals([$version->label_tree_id], $ids);
+        $version->labelTree->addMember(UserTest::create(), Role::adminId());
+        $this->assertFalse(LabelTree::global()->exists());
     }
 }
