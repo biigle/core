@@ -177,6 +177,19 @@ class LabelTreeTest extends ModelTestCase
         $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
     }
 
+    public function testDetachUnauthorizedProjectsPropagateToVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        $unauthorized = ProjectTest::create();
+        $authorized = ProjectTest::create();
+        $version->labelTree->authorizedProjects()->attach($authorized->id);
+        $this->model->authorizedProjects()->attach($authorized->id);
+        $version->labelTree->detachUnauthorizedProjects();
+        $this->assertEquals([$authorized->id], $this->model->projects()->pluck('id')->all());
+    }
+
     public function testOrderLabelsByName()
     {
         LabelTest::create([

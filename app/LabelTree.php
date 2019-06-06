@@ -261,9 +261,18 @@ class LabelTree extends Model
      */
     public function detachUnauthorizedProjects()
     {
-        // use DB directly so this can be done in a single query
+        // Use DB directly so this can be done in a single query.
+        // Also detach unauthorized projects of versions of this label tree.
         DB::table('label_tree_project')
-            ->where('label_tree_id', $this->id)
+            ->where(function ($query) {
+                $query->where('label_tree_id', $this->id)
+                    ->orWhereIn('label_tree_id', function ($query) {
+                        $query->select('label_trees.id')
+                            ->from('label_trees')
+                            ->join('label_tree_versions', 'label_tree_versions.id', '=', 'label_trees.version_id')
+                            ->where('label_tree_versions.label_tree_id', $this->id);
+                    });
+            })
             ->whereNotIn('project_id', function ($query) {
                 $query->select('project_id')
                     ->from('label_tree_authorized_project')
