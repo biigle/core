@@ -124,7 +124,9 @@ biigle.$component('labelTrees.components.labelTrees', {
     },
     methods: {
         handleSelect: function (label) {
-            this.$emit('select', label);
+            if (label) {
+                this.$emit('select', label);
+            }
         },
         handleDeselect: function (label) {
             this.$emit('deselect', label);
@@ -158,8 +160,6 @@ biigle.$component('labelTrees.components.labelTrees', {
             if (this.favourites[index]) {
                 this.handleSelect(this.favourites[index]);
             }
-        },
-        parseLabelTreeVersionedName: function (tree) {
         },
     },
     watch: {
