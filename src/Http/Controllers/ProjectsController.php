@@ -39,7 +39,8 @@ class ProjectsController extends Controller
         ]);
 
         $labelTrees = $project->labelTrees()
-            ->select('id', 'name', 'description')
+            ->select('id', 'name', 'description', 'version_id')
+            ->with('version')
             ->get();
 
         $volumes = $project->volumes()

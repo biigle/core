@@ -17,7 +17,7 @@ biigle.$viewModel('projects-label-trees', function (element) {
             loader: biigle.$require('core.components.loader'),
         },
         data: {
-            labelTrees: biigle.$require('projects.labelTrees'),
+            labelTrees: [],
             availableLabelTrees: [],
             typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
         },
@@ -48,7 +48,7 @@ biigle.$viewModel('projects-label-trees', function (element) {
                     .then(this.availableLabelTreesFetched, messages.handleErrorResponse);
             },
             availableLabelTreesFetched: function (response) {
-                Vue.set(this, 'availableLabelTrees', response.data);
+                this.availableLabelTrees = response.data.map(this.parseLabelTreeVersionedName);
             },
             attachTree: function (tree) {
                 if (!tree) return;
@@ -87,9 +87,17 @@ biigle.$viewModel('projects-label-trees', function (element) {
 
                 this.availableLabelTrees.push(tree);
             },
+            parseLabelTreeVersionedName: function (tree) {
+                var version = tree.version ? tree.version.name : 'latest';
+                tree.name = tree.name + ' @ ' + version;
+
+                return tree;
+            },
         },
         created: function () {
             this.$once('editing.start', this.fetchAvailableLabelTrees);
+            this.labelTrees = biigle.$require('projects.labelTrees')
+                .map(this.parseLabelTreeVersionedName);
         },
     });
 });
