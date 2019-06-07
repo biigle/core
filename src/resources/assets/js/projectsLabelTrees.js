@@ -88,8 +88,9 @@ biigle.$viewModel('projects-label-trees', function (element) {
                 this.availableLabelTrees.push(tree);
             },
             parseLabelTreeVersionedName: function (tree) {
-                var version = tree.version ? tree.version.name : 'latest';
-                tree.name = tree.name + ' @ ' + version;
+                if (tree.version) {
+                    tree.name = tree.name + ' @ ' + tree.version.name;
+                }
 
                 return tree;
             },
