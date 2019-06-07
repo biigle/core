@@ -306,7 +306,7 @@ class LabelTreeTest extends ModelTestCase
         $this->model->version_id = $version->id;
         $this->model->save();
 
-        $this->assertEquals('master tree @ latest', $version->labelTree->versionedName);
+        $this->assertEquals('master tree', $version->labelTree->versionedName);
         $this->assertEquals('versioned tree @ v1.0', $this->model->versionedName);
     }
 }

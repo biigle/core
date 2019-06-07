@@ -319,7 +319,7 @@ class LabelTree extends Model
     public function getVersionedNameAttribute()
     {
         if (is_null($this->version_id)) {
-            return "{$this->name} @ latest";
+            return $this->name;
         }
 
         return "{$this->name} @ {$this->version->name}";
