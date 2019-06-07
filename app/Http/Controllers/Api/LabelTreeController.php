@@ -40,7 +40,8 @@ class LabelTreeController extends Controller
     {
         return LabelTree::accessibleBy($request->user())
             ->orderByDesc('id')
-            ->select('id', 'name', 'description', 'created_at', 'updated_at')
+            ->select('id', 'name', 'description', 'created_at', 'updated_at', 'version_id')
+            ->with('version')
             ->get();
     }
 

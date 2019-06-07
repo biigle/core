@@ -20,13 +20,14 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beUser();
         $tree = $this->labelTree();
-        $this->get('/api/v1/label-trees')->assertJsonFragment([
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
-        ]);
+            'version' => null,
+        ]]);
     }
 
     public function testIndexPrivate()
@@ -38,13 +39,33 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beUser();
         $this->get('/api/v1/label-trees')->assertExactJson([]);
         $this->beGlobalAdmin();
-        $this->get('/api/v1/label-trees')->assertJsonFragment([
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
-        ]);
+            'version' => null,
+        ]]);
+    }
+
+    public function testIndexVersion()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/label-trees');
+
+        $this->beUser();
+        $version = LabelTreeVersionTest::create();
+        $tree = $this->labelTree();
+        $tree->version_id = $version->id;
+        $tree->save();
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
+            'id' => $tree->id,
+            'name' => $tree->name,
+            'description' => $tree->description,
+            'created_at' => (string) $tree->created_at,
+            'updated_at' => (string) $tree->updated_at,
+            'version' => $version->toArray(),
+        ]]);
     }
 
     public function testShow()
@@ -75,6 +96,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
+            'version' => null,
+            'versions' => [],
         ])
         ->assertJsonFragment([
             'id' => $label->id,
