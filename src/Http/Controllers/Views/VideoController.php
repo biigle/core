@@ -25,8 +25,8 @@ class VideoController extends Controller
 
         $shapes = Shape::where('name', '!=', 'Ellipse')->pluck('name', 'id');
 
-        $labelTrees = LabelTree::with('labels')
-            ->select('id', 'name')
+        $labelTrees = LabelTree::select('id', 'name', 'version_id')
+            ->with('labels', 'version')
             ->whereIn('id', function ($query) use ($video) {
                 $query->select('label_tree_id')
                     ->from('label_tree_project')
