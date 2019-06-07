@@ -7,7 +7,7 @@
         <span class="pull-right label-tree-buttons" v-else>
             <button class="btn btn-default" v-on:click="startEditing" :disabled="loading" title="Edit this label tree">Edit</button>
             <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading" title="Delete this label tree">Delete</button>
-            @if ($members->pluck('id')->has($user->id))
+            @if ($members->pluck('id')->contains($user->id))
                 <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
             @endif
         </span>
@@ -33,7 +33,7 @@
         </h2>
     @else
         <h2>
-            @if ($members->pluck('id')->has($user->id))
+            @if ($members->pluck('id')->contains($user->id))
                 <span class="pull-right">
                     <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
                 </span>
