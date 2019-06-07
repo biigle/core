@@ -14,7 +14,6 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             biigle.$require('sync.mixins.labelTreeImportContainer'),
         ],
         data: {
-            labelTreeCandidates: biigle.$require('sync.labelTreeCandidates'),
             labelCandidates: biigle.$require('sync.labelCandidates'),
             conflictingParents: biigle.$require('sync.conflictingParents'),
             userCandidates: biigle.$require('sync.userCandidates'),
@@ -22,6 +21,15 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             chosenLabels: [],
         },
         computed: {
+            labelTreeCandidates: function () {
+                return biigle.$require('sync.labelTreeCandidates').map(function (tree) {
+                    if (tree.version) {
+                        tree.name = tree.name + ' @ ' + tree.version.name;
+                    }
+
+                    return tree;
+                });
+            },
             chosenUsers: function () {
                 var self = this;
                 var chosenIds = [];

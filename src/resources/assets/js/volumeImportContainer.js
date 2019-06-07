@@ -19,7 +19,6 @@ biigle.$viewModel('volume-import-container', function (element) {
         },
         data: {
             volumeCandidates: biigle.$require('sync.volumeCandidates'),
-            labelTreeCandidates: biigle.$require('sync.labelTreeCandidates'),
             labelCandidates: biigle.$require('sync.labelCandidates'),
             conflictingParents: biigle.$require('sync.conflictingParents'),
             userCandidates: biigle.$require('sync.userCandidates'),
@@ -29,6 +28,15 @@ biigle.$viewModel('volume-import-container', function (element) {
             targetProject: null,
         },
         computed: {
+            labelTreeCandidates: function () {
+                return biigle.$require('sync.labelTreeCandidates').map(function (tree) {
+                    if (tree.version) {
+                        tree.name = tree.name + ' @ ' + tree.version.name;
+                    }
+
+                    return tree;
+                });
+            },
             volumes: function () {
                 return this.volumeCandidates.map(function (volume) {
                     Vue.set(volume, 'new_url', volume.url);

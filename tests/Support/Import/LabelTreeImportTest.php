@@ -15,6 +15,7 @@ use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 use Biigle\Modules\Sync\Support\Import\LabelTreeImport;
 
@@ -194,6 +195,39 @@ class LabelTreeImportTest extends TestCase
         $this->assertCount(2, $map['users']);
     }
 
+    public function testPerformVersionedTrees()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->labelTree->version_id = $version->id;
+        $this->labelTree->save();
+        $import = $this->getDefaultImport();
+        // This also deletes $this->labelTree.
+        $version->labelTree->delete();
+        $map = $import->perform();
+        $this->assertEquals(2, LabelTree::count());
+        $newVersionedTree = LabelTree::whereNotNull('version_id')->first();
+        $this->assertNotNull($newVersionedTree);
+        $this->assertEquals($this->labelTree->uuid, $newVersionedTree->uuid);
+        $this->assertEquals($version->labelTree->uuid, $newVersionedTree->version->labelTree->uuid);
+    }
+
+    public function testPerformVersionedTreesMasterExists()
+    {
+        $version = LabelTreeVersionTest::create();
+        $masterTree = $version->labelTree;
+        $this->labelTree->version_id = $version->id;
+        $this->labelTree->save();
+        $import = $this->getDefaultImport();
+        // This also deletes $this->labelTree.
+        $version->delete();
+        $map = $import->perform();
+        $this->assertEquals(2, LabelTree::count());
+        $newVersionedTree = LabelTree::whereNotNull('version_id')->first();
+        $this->assertNotNull($newVersionedTree);
+        $this->assertEquals($this->labelTree->uuid, $newVersionedTree->uuid);
+        $this->assertEquals($masterTree->id, $newVersionedTree->version->labelTree->id);
+    }
+
     public function testPerformLabels()
     {
         $import = $this->getDefaultImport();
@@ -238,6 +272,23 @@ class LabelTreeImportTest extends TestCase
         $this->assertTrue(LabelTree::where('uuid', $otherTree->uuid)->exists());
         $this->assertFalse(LabelTree::where('uuid', $this->labelTree->uuid)->exists());
         $this->assertFalse(array_key_exists($this->labelTree->id, $map['labelTrees']));
+    }
+
+    public function testPerformOnlyVersionedTrees()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->labelTree->version_id = $version->id;
+        $this->labelTree->save();
+        $import = $this->getDefaultImport();
+        // This also deletes $this->labelTree.
+        $version->labelTree->delete();
+        // The master label tree should be imported, too.
+        $map = $import->perform([$this->labelTree->id]);
+        $this->assertEquals(2, LabelTree::count());
+        $newVersionedTree = LabelTree::whereNotNull('version_id')->first();
+        $this->assertNotNull($newVersionedTree);
+        $this->assertEquals($this->labelTree->uuid, $newVersionedTree->uuid);
+        $this->assertEquals($version->labelTree->uuid, $newVersionedTree->version->labelTree->uuid);
     }
 
     public function testPerformOnlyLabels()

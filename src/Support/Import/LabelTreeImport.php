@@ -10,6 +10,7 @@ use Biigle\Label;
 use Carbon\Carbon;
 use Biigle\LabelTree;
 use Biigle\Visibility;
+use Biigle\LabelTreeVersion;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -44,6 +45,8 @@ class LabelTreeImport extends Import
 
             $insertTrees = $this->getInsertLabelTrees($onlyTrees);
             $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
+
+            $this->insertLabelTreeVersions($insertTrees, $labelTreeIdMap);
 
             $insertUserIds = $this->getInsertUserIds($insertTrees);
             $userIdMap = $this->getUserImport()->perform($insertUserIds);
@@ -213,6 +216,7 @@ class LabelTreeImport extends Import
                     'labels',
                     'members',
                     'uuid',
+                    'version',
                 ]);
         }
 
@@ -243,11 +247,22 @@ class LabelTreeImport extends Import
     protected function getInsertLabelTrees($onlyTrees)
     {
         $now = Carbon::now();
+        $candidates = $this->getLabelTreeImportCandidates();
+        $trees = $candidates->when(is_array($onlyTrees), function ($collection) use ($onlyTrees) {
+            return $collection->whereIn('id', $onlyTrees);
+        });
 
-        return $this->getLabelTreeImportCandidates()
-            ->when(is_array($onlyTrees), function ($collection) use ($onlyTrees) {
-                return $collection->whereIn('id', $onlyTrees);
+        $masterTreeIdsMissing = $trees->reject(function ($tree) {
+                return is_null($tree['version']);
             })
+            ->map(function ($tree) {
+                return $tree['version']['label_tree_id'];
+            });
+
+        $masterTrees = $candidates->whereIn('id', $masterTreeIdsMissing)
+            ->whereNotIn('id', $trees->pluck('id'));
+
+        return $trees->concat($masterTrees)
             ->map(function ($tree) use ($now) {
                 return [
                     'name' => $tree['name'],
@@ -283,6 +298,28 @@ class LabelTreeImport extends Import
         }
 
         return $labelTreeIdMap;
+    }
+
+    /**
+     * Create label tree versions for imported versioned label trees.
+     *
+     * @param Collection $insertTrees Label trees that have been imported.
+     * @param array $labelTreeIdMap Map of import label trees to existing label trees.
+     */
+    protected function insertLabelTreeVersions($insertTrees, $labelTreeIdMap)
+    {
+        $this->getImportLabelTrees()->whereIn('uuid', $insertTrees->pluck('uuid'))
+            ->each(function ($tree) use ($labelTreeIdMap) {
+                if (!is_null($tree['version'])) {
+                    $id = LabelTreeVersion::insertGetId([
+                        'name' => $tree['version']['name'],
+                        'label_tree_id' => $labelTreeIdMap[$tree['version']['label_tree_id']],
+                    ]);
+
+                    LabelTree::where('uuid', $tree['uuid'])
+                        ->update(['version_id' => $id]);
+                }
+            });
     }
 
     /**
