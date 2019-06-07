@@ -16,7 +16,7 @@ class AnnotationCatalogController extends Controller
      */
     public function show($id)
     {
-        $tree = LabelTree::with('labels')->findOrFail($id);
+        $tree = LabelTree::with('labels', 'version')->findOrFail($id);
         $this->authorize('access', $tree);
 
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
