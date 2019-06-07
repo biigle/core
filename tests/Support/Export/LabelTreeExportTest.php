@@ -90,4 +90,17 @@ class LabelTreeExportTest extends TestCase
         $content = $exports[0]->getContent();
         $this->assertEquals($user->uuid, $content[0]['uuid']);
     }
+
+    public function testGetAdditionalExportsVersion()
+    {
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $user = UserTest::create();
+        $version->labelTree->addMember($user, Role::admin());
+        $exports = (new LabelTreeExport([$tree->id]))->getAdditionalExports();
+
+        $this->assertCount(1, $exports);
+        $content = $exports[0]->getContent();
+        $this->assertEquals($user->uuid, $content[0]['uuid']);
+    }
 }

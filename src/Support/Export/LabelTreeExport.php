@@ -56,7 +56,16 @@ class LabelTreeExport extends Export
     public function getAdditionalExports()
     {
         $ids = DB::table('label_tree_user')
-            ->whereIn('label_tree_id', $this->ids)
+            ->where(function ($query) {
+                $query->whereIn('label_tree_id', $this->ids)
+                    // Also add master trees of all included versioned trees.
+                    ->orWhereIn('label_tree_id', function ($query) {
+                        $query->select('label_tree_versions.label_tree_id')
+                            ->from('label_tree_versions')
+                            ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                            ->whereIn('label_trees.id', $this->ids);
+                    });
+            })
             ->select('user_id')
             ->distinct()
             ->pluck('user_id')
