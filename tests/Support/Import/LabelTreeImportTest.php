@@ -249,6 +249,16 @@ class LabelTreeImportTest extends TestCase
         $this->assertEquals($this->labelChild->color, $newLabel->color);
     }
 
+    public function testPerformWithoutVersion()
+    {
+        $import = $this->getImport([$this->labelTree->id], LabelTreeImportWithoutVersionStub::class);
+        $this->labelTree->delete();
+        $map = $import->perform();
+        $newTree = LabelTree::where('uuid', $this->labelTree->uuid)->first();
+        $this->assertNotNull($newTree);
+        $this->assertEquals(2, $newTree->labels()->count());
+    }
+
     public function testPerformMembers()
     {
         $import = $this->getDefaultImport();
@@ -471,7 +481,7 @@ class LabelTreeImportTest extends TestCase
         return $this->getImport([$this->labelTree->id]);
     }
 
-    protected function getImport(array $ids)
+    protected function getImport(array $ids, $class = LabelTreeImportStub::class)
     {
         $export = new LabelTreeExport($ids);
         $path = $export->getArchive();
@@ -484,7 +494,7 @@ class LabelTreeImportTest extends TestCase
         $zip->extractTo($this->destination);
         $zip->close();
 
-        return new LabelTreeImportStub($this->destination);
+        return new $class($this->destination);
     }
 }
 
@@ -498,5 +508,19 @@ class LabelTreeImportStub extends LabelTreeImport
         }
 
         return parent::mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap);
+    }
+}
+
+class LabelTreeImportWithoutVersionStub extends LabelTreeImport
+{
+    public function getImportLabelTrees()
+    {
+        $this->importLabelTrees = parent::getImportLabelTrees()->map(function ($tree) {
+            unset($tree['version']);
+
+            return $tree;
+        });
+
+        return $this->importLabelTrees;
     }
 }

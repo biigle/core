@@ -216,7 +216,8 @@ class LabelTreeImport extends Import
                     'labels',
                     'members',
                     'uuid',
-                    'version',
+                    // The 'version' key is not required because both exports with and
+                    // without label tree versions are supported.
                 ]);
         }
 
@@ -253,7 +254,7 @@ class LabelTreeImport extends Import
         });
 
         $masterTreeIdsMissing = $trees->reject(function ($tree) {
-                return is_null($tree['version']);
+                return !array_key_exists('version', $tree) || is_null($tree['version']);
             })
             ->map(function ($tree) {
                 return $tree['version']['label_tree_id'];
@@ -309,16 +310,17 @@ class LabelTreeImport extends Import
     protected function insertLabelTreeVersions($insertTrees, $labelTreeIdMap)
     {
         $this->getImportLabelTrees()->whereIn('uuid', $insertTrees->pluck('uuid'))
+            ->reject(function ($tree) {
+                return !array_key_exists('version', $tree) || is_null($tree['version']);
+            })
             ->each(function ($tree) use ($labelTreeIdMap) {
-                if (!is_null($tree['version'])) {
-                    $id = LabelTreeVersion::insertGetId([
-                        'name' => $tree['version']['name'],
-                        'label_tree_id' => $labelTreeIdMap[$tree['version']['label_tree_id']],
-                    ]);
+                $id = LabelTreeVersion::insertGetId([
+                    'name' => $tree['version']['name'],
+                    'label_tree_id' => $labelTreeIdMap[$tree['version']['label_tree_id']],
+                ]);
 
-                    LabelTree::where('uuid', $tree['uuid'])
-                        ->update(['version_id' => $id]);
-                }
+                LabelTree::where('uuid', $tree['uuid'])
+                    ->update(['version_id' => $id]);
             });
     }
 
