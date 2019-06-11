@@ -20,8 +20,8 @@ class LargoController extends Controller
         $this->authorize('edit-in', $project);
 
         $labelTrees = $project->labelTrees()
-            ->with('labels')
-            ->select('id', 'name')
+            ->select('id', 'name', 'version_id')
+            ->with('labels', 'version')
             ->get();
 
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
