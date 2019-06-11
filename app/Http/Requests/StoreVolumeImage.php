@@ -37,6 +37,7 @@ class StoreVolumeImage extends FormRequest
 
         return [
             'images' => ['required', 'array', new VolumeImages, new VolumeImageUnique($this->volume)],
+            'images.*' => ['max:512'],
         ];
     }
 

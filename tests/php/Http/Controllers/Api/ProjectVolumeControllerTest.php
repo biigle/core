@@ -14,6 +14,7 @@ use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Jobs\DeleteVolume;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Jobs\CreateNewImages;
 
@@ -131,6 +132,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // error because of unsupported image format
         $response->assertStatus(422);
 
+        // Image filename too long.
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
+            ])
+            ->assertStatus(422);
+
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
@@ -240,7 +250,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
     {
         $pid = $this->project()->id;
         $id = $this->volume->id;
-        $image = ImageTest::create(['volume_id' => $id]);
 
         $this->doTestApiRoute('DELETE', "/api/v1/projects/{$pid}/volumes/{$id}");
 
@@ -266,15 +275,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // does not belong to the project
         $response->assertStatus(404);
 
-        Event::fake([ImagesDeleted::class]);
+        Queue::fake();
         $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}", [
             'force' => 'abc',
         ]);
         // deleting with force succeeds
         $response->assertStatus(200);
-        $this->assertNull($this->volume->fresh());
-        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
-            return $event->uuids[0] === $image->uuid;
+        Queue::assertPushed(DeleteVolume::class, function ($job) use ($id) {
+            return $id === $job->volume->id;
         });
+        $this->assertFalse($this->project()->volumes()->exists());
     }
 }

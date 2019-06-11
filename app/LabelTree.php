@@ -5,6 +5,7 @@ namespace Biigle;
 use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Biigle\Modules\Videos\VideoAnnotationLabel;
 
 /**
  * A label tree is a group of labels. Projects can choose to used different label trees,
@@ -24,6 +25,7 @@ class LabelTree extends Model
     protected $hidden = [
         'pivot',
         'uuid',
+        'version_id',
     ];
 
     /**
@@ -33,6 +35,7 @@ class LabelTree extends Model
      */
     protected $casts = [
         'visibility_id' => 'int',
+        'label_tree_version_id' => 'int',
     ];
 
     /**
@@ -110,6 +113,52 @@ class LabelTree extends Model
     }
 
     /**
+     * Scope a query to all trees that are not a varsion of another tree.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithoutVersions($query)
+    {
+        return $query->whereNull('label_trees.version_id');
+    }
+
+    /**
+     * Scope a query to all "global" trees.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGlobal($query)
+    {
+        return $query->withoutVersions()
+            ->whereDoesntHave('members')
+            ->where('label_trees.visibility_id', Visibility::publicId());
+    }
+
+    /**
+     * The version of this label tree (if it is a version of a master label tree).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function version()
+    {
+        return $this->belongsTo(LabelTreeVersion::class);
+    }
+
+    /**
+     * The versions of this (master) label tree.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function versions()
+    {
+        return $this->hasMany(LabelTreeVersion::class);
+    }
+
+    /**
      * The visibility of the label tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -144,18 +193,27 @@ class LabelTree extends Model
     /**
      * Determines if the label tree can be safely deleted.
      *
-     * A label tree can be safely deleted if none if its labels is in use.
+     * A label tree can be safely deleted if none if its labels or the labels of any of its versions are in use.
      *
      * @return bool
      */
     public function canBeDeleted()
     {
+        $treeIds = $this->versions()
+            ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+            ->pluck('label_trees.id')
+            ->concat([$this->id]);
+
         return !AnnotationLabel::join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->where('labels.label_tree_id', $this->id)
-            ->exists()
+                ->whereIn('labels.label_tree_id', $treeIds)
+                ->exists()
             && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
-            ->where('labels.label_tree_id', $this->id)
-            ->exists();
+                ->whereIn('labels.label_tree_id', $treeIds)
+                ->exists()
+            && (!class_exists(VideoAnnotationLabel::class)
+                || !VideoAnnotationLabel::join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
+                    ->whereIn('labels.label_tree_id', $treeIds)
+                    ->exists());
     }
 
     /**
@@ -234,13 +292,36 @@ class LabelTree extends Model
      */
     public function detachUnauthorizedProjects()
     {
-        // use DB directly so this can be done in a single query
+        // Use DB directly so this can be done in a single query.
+        // Also detach unauthorized projects of versions of this label tree.
         DB::table('label_tree_project')
-            ->where('label_tree_id', $this->id)
+            ->where(function ($query) {
+                $query->where('label_tree_id', $this->id)
+                    ->orWhereIn('label_tree_id', function ($query) {
+                        $query->select('label_trees.id')
+                            ->from('label_trees')
+                            ->join('label_tree_versions', 'label_tree_versions.id', '=', 'label_trees.version_id')
+                            ->where('label_tree_versions.label_tree_id', $this->id);
+                    });
+            })
             ->whereNotIn('project_id', function ($query) {
                 $query->select('project_id')
                     ->from('label_tree_authorized_project')
                     ->where('label_tree_id', $this->id);
             })->delete();
+    }
+
+    /**
+     * Get the name with a version suffix of this label tree.
+     *
+     * @return string
+     */
+    public function getVersionedNameAttribute()
+    {
+        if (is_null($this->version_id)) {
+            return $this->name;
+        }
+
+        return "{$this->name} @ {$this->version->name}";
     }
 }

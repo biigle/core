@@ -24,7 +24,9 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->can('sudo')) {
+        $except = ['create-label', 'update', 'add-member'];
+
+        if (!in_array($ability, $except) && $user->can('sudo')) {
             return true;
         }
     }
@@ -50,9 +52,14 @@ class LabelTreePolicy extends CachedPolicy
     public function access(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-access-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return (int) $tree->visibility_id === Visibility::publicId()
+            return $tree->visibility_id === Visibility::publicId()
                 || DB::table(self::TABLE)
-                    ->where('label_tree_id', $tree->id)
+                    ->when(!is_null($tree->version_id), function ($query) use ($tree) {
+                        $query->where('label_tree_id', $tree->version->label_tree_id);
+                    })
+                    ->when(is_null($tree->version_id), function ($query) use ($tree) {
+                        $query->where('label_tree_id', $tree->id);
+                    })
                     ->where('user_id', $user->id)
                     ->exists()
                 || DB::table('project_user')
@@ -73,11 +80,16 @@ class LabelTreePolicy extends CachedPolicy
     public function createLabel(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-create-label-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return DB::table(self::TABLE)
+
+            if (is_null($tree->version_id)) {
+                return $user->can('sudo') || DB::table(self::TABLE)
                 ->where('label_tree_id', $tree->id)
                 ->where('user_id', $user->id)
                 ->whereIn('role_id', [Role::adminId(), Role::editorId()])
                 ->exists();
+            }
+
+            return false;
         });
     }
 
@@ -91,11 +103,15 @@ class LabelTreePolicy extends CachedPolicy
     public function update(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-update-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', Role::adminId())
-                ->exists();
+            if (is_null($tree->version_id)) {
+                return $user->can('sudo') || DB::table(self::TABLE)
+                    ->where('label_tree_id', $tree->id)
+                    ->where('user_id', $user->id)
+                    ->where('role_id', Role::adminId())
+                    ->exists();
+            }
+
+            return false;
         });
     }
 

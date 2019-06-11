@@ -2,14 +2,15 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Project;
 use Biigle\LabelTree;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Auth\Access\AuthorizationException;
 
-class DestroyLabelTree extends FormRequest
+class StoreLabelTreeVersion extends FormRequest
 {
     /**
-     * The label tree to destroy.
+     * The label tree from which a new version should be created.
      *
      * @var LabelTree
      */
@@ -24,11 +25,7 @@ class DestroyLabelTree extends FormRequest
     {
         $this->tree = LabelTree::findOrFail($this->route('id'));
 
-        if (!$this->tree->canBeDeleted()) {
-            throw new AuthorizationException('A label tree cannot be deleted if it or any of its versions contain labels that are still used.');
-        }
-
-        return $this->user()->can('destroy', $this->tree);
+        return $this->user()->can('update', $this->tree);
     }
 
     /**
@@ -39,7 +36,13 @@ class DestroyLabelTree extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => [
+                'required',
+                'max:256',
+                Rule::unique('label_tree_versions')->where(function ($query) {
+                    return $query->where('label_tree_id', $this->tree->id);
+                }),
+            ],
         ];
     }
 }

@@ -26,10 +26,10 @@ class StoreUser extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|email|unique:users|max:255',
+            'email' => 'required|string|email|unique:users|max:256',
             'password' => 'required|string|min:8',
-            'firstname' => 'required|string|max:127',
-            'lastname' => 'required|string|max:127',
+            'firstname' => 'required|string|max:128',
+            'lastname' => 'required|string|max:128',
             'role_id' => 'exists:roles,id',
             'uuid' => ['nullable', new Uuid4],
             'affiliation' => 'nullable|max:255',

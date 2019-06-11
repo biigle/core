@@ -2,9 +2,11 @@
 
 namespace Biigle\Tests;
 
+use Queue;
 use Biigle\Role;
 use ModelTestCase;
 use Biigle\Project;
+use Biigle\Jobs\DeleteVolume;
 use Illuminate\Database\QueryException;
 use Biigle\Tests\Modules\Videos\VideoTest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -179,8 +181,12 @@ class ProjectTest extends ModelTestCase
         }
 
         // use the force to detach and delete the volume
+        Queue::fake();
         $this->model->removeVolume($volume, true);
-        $this->assertNull($volume->fresh());
+        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
+            return $volume->id === $job->volume->id;
+        });
+        $this->assertFalse($this->model->volumes()->exists());
     }
 
     public function testRemoveAllVolumes()
@@ -205,8 +211,12 @@ class ProjectTest extends ModelTestCase
         }
 
         // use the force to detach and delete the volume
+        Queue::fake();
         $this->model->removeAllVolumes(true);
-        $this->assertNull($volume->fresh());
+        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
+            return $volume->id === $job->volume->id;
+        });
+        $this->assertFalse($this->model->volumes()->exists());
     }
 
     public function testLabelTrees()
@@ -230,6 +240,15 @@ class ProjectTest extends ModelTestCase
         $project = self::create();
         $this->assertTrue($project->labelTrees()->exists());
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
+    }
+
+    public function testDefaultLabelTreesWithoutVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $project = self::create();
+        $ids = $project->labelTrees()->pluck('id')->all();
+        $this->assertEquals([$version->labelTree->id], $ids);
     }
 
     public function testGetThumbnailUrlAttributeNull()

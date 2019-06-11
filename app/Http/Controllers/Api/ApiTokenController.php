@@ -75,7 +75,7 @@ class ApiTokenController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', ApiToken::class);
-        $this->validate($request, ['purpose' => 'required']);
+        $this->validate($request, ['purpose' => 'required|max:255']);
 
         $token = new ApiToken;
         $token->owner_id = $request->user()->id;
