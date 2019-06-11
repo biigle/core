@@ -9,7 +9,7 @@
         <form class="clearfix" role="form" method="POST" action="{{ url("api/v1/label-trees/{$tree->id}/versions") }}">
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="v1.0" required>
+                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="v1.0" autofocus required>
                 @if($errors->has('name'))
                     <span class="help-block">{{ $errors->first('name') }}</span>
                 @else
