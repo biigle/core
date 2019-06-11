@@ -8,6 +8,7 @@ use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
 
 class SearchControllerMixinTest extends TestCase
 {
@@ -53,5 +54,20 @@ class SearchControllerMixinTest extends TestCase
         $project->labelTrees()->attach($tree);
 
         $this->get('search?t=label-trees')->assertSeeText('private one');
+    }
+
+    public function testIndexHideVersions()
+    {
+        $user = UserTest::create();
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create([
+            'name' => 'random name',
+            'version_id' => $version->id,
+        ]);
+
+        $this->be($user);
+        $this->get('search?t=label-trees')
+            ->assertStatus(200)
+            ->assertDontSeeText('random name');
     }
 }

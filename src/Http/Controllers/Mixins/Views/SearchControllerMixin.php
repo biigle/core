@@ -18,18 +18,12 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        $queryBuilder = LabelTree::accessibleBy($user);
+        $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
         if ($query) {
-            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-                $operator = 'ilike';
-            } else {
-                $operator = 'like';
-            }
-
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query, $operator) {
-                $q->where('label_trees.name', $operator, "%{$query}%")
-                    ->orWhere('label_trees.description', $operator, "%{$query}%");
+            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
+                $q->where('label_trees.name', 'ilike', "%{$query}%")
+                    ->orWhere('label_trees.description', 'ilike', "%{$query}%");
             });
         }
 

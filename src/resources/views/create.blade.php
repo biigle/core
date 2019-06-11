@@ -13,7 +13,7 @@
         <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/label-trees') }}">
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}">
+                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" autofocus required>
                 @if($errors->has('name'))
                     <span class="help-block">{{ $errors->first('name') }}</span>
                 @endif
@@ -21,7 +21,7 @@
 
             <div class="form-group{{ $errors->has('visibility_id') ? ' has-error' : '' }}">
                 <label for="visibility_id">Visibility</label>
-                <select class="form-control" name="visibility_id">
+                <select class="form-control" name="visibility_id" required>
                     @foreach($visibilities as $visibility)
                         <option value="{{$visibility->id}}" @if($selectedVisibility === $visibility->id) selected @endif>{{$visibility->name}}</option>
                     @endforeach

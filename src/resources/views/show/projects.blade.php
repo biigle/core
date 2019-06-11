@@ -1,5 +1,9 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Projects using this label tree</div>
+    @if (isset($version))
+        <div class="panel-heading">Projects using this label tree version</div>
+    @else
+        <div class="panel-heading">Projects using this label tree</div>
+    @endif
     <ul class="list-group list-group-restricted">
         @if (Route::has('project'))
             @foreach($projects as $project)
@@ -11,7 +15,11 @@
             @endforeach
         @endif
         @if ($projects->count() === 0)
-            <li class="list-group-item">This label tree is not used by any of your projects.</li>
+            @if (isset($version))
+                <li class="list-group-item">This label tree version is not used by any of your projects.</li>
+            @else
+                <li class="list-group-item">This label tree is not used by any of your projects.</li>
+            @endif
         @endif
     </ul>
 </div>

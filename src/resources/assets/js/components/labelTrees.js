@@ -7,11 +7,11 @@ biigle.$component('labelTrees.components.labelTrees', {
     template: '<div class="label-trees">' +
         '<div v-if="typeahead || clearable" class="label-trees__head">' +
             '<button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>' +
-            '<typeahead v-if="typeahead" :items="labels" @select="handleSelect" placeholder="Label name"></typeahead>' +
+            '<typeahead v-if="typeahead" :items="labels" :template="typeaheadTemplate" @select="handleSelect" placeholder="Label name"></typeahead>' +
         '</div>' +
         '<div class="label-trees__body">' +
             '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-            '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
@@ -21,6 +21,7 @@ biigle.$component('labelTrees.components.labelTrees', {
     data: function () {
         return {
             favourites: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.tree.versionedName"></small>',
         };
     },
     props: {
@@ -123,7 +124,9 @@ biigle.$component('labelTrees.components.labelTrees', {
     },
     methods: {
         handleSelect: function (label) {
-            this.$emit('select', label);
+            if (label) {
+                this.$emit('select', label);
+            }
         },
         handleDeselect: function (label) {
             this.$emit('deselect', label);
@@ -157,6 +160,24 @@ biigle.$component('labelTrees.components.labelTrees', {
             if (this.favourites[index]) {
                 this.handleSelect(this.favourites[index]);
             }
+        },
+    },
+    watch: {
+        trees: {
+            immediate: true,
+            handler: function (trees) {
+                trees.forEach(function (tree) {
+                    if (tree.version) {
+                        tree.versionedName = tree.name + ' @ ' + tree.version.name;
+                    } else {
+                        tree.versionedName = tree.name;
+                    }
+
+                    tree.labels.forEach(function (label) {
+                        label.tree = tree;
+                    });
+                }, this);
+            },
         },
     },
     mounted: function () {
