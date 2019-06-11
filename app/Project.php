@@ -4,6 +4,7 @@ namespace Biigle;
 
 use DB;
 use Cache;
+use Biigle\Jobs\DeleteVolume;
 use Biigle\Modules\Videos\Video;
 use Illuminate\Database\Eloquent\Model;
 
@@ -194,7 +195,7 @@ class Project extends Model
                 abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
             }
 
-            $volume->delete();
+            DeleteVolume::dispatch($volume);
         }
 
         // if the volume still belongs to other projects, just detach it
