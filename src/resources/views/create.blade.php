@@ -24,7 +24,7 @@
       <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
          <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label for="name">Volume name</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" required>
+            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
             @if($errors->has('name'))
                <span class="help-block">{{ $errors->first('name') }}</span>
             @endif

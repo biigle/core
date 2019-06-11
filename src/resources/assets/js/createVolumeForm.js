@@ -130,5 +130,9 @@ biigle.$viewModel('create-volume-form', function (element) {
                 this.storageDisk = disks[0];
             }
         },
+        mounted: function () {
+            // Vue disables the autofocus attribute somehow, so set focus manually here.
+            this.$refs.nameInput.focus();
+        },
     });
 });
