@@ -9,7 +9,7 @@
 		<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects') }}">
 			<div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
 				<label for="name">Project name</label>
-				<input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}">
+				<input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" autofocus required>
 				@if($errors->has('name'))
 					<span class="help-block">{{ $errors->first('name') }}</span>
 				@endif
@@ -17,7 +17,7 @@
 
 			<div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
 				<label for="description">Project description</label>
-                <input type="text" class="form-control" name="description" id="description" value="{{ old('description') }}">
+                <input type="text" class="form-control" name="description" id="description" value="{{ old('description') }}" required>
 				@if($errors->has('description'))
 					<span class="help-block">{{ $errors->first('description') }}</span>
 				@endif
