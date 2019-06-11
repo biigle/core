@@ -56,7 +56,13 @@ biigle.$viewModel('export-container', function (element) {
                 });
             },
             labelTrees: function () {
-                return this.entities.labelTrees;
+                return this.entities.labelTrees.map(function (tree) {
+                    if (tree.version) {
+                        tree.name = tree.name + ' @ ' + tree.version.name;
+                    }
+
+                    return tree;
+                });
             },
             users: function () {
                 return this.entities.users.map(function (user) {

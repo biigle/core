@@ -22,6 +22,7 @@ use Biigle\Tests\ProjectTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
@@ -375,6 +376,32 @@ class VolumeImportTest extends TestCase
         $this->assertNotNull($tree);
         $this->assertEquals($newTree->id, $map['labelTrees'][$tree->id]);
         $this->assertEquals(2, $newTree->labels()->count());
+    }
+
+    public function testPerformVersionedLabelTree()
+    {
+        $version = LabelTreeVersionTest::create();
+        LabelTest::create(['label_tree_id' => $version->labelTree->id]);
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $tree = $imageLabel->label->tree;
+        $tree->version_id = $version->id;
+        $tree->save();
+        $parent = LabelTest::create(['label_tree_id' => $tree->id]);
+        $imageLabel->label->parent_id = $parent->id;
+        $imageLabel->label->save();
+        $import = $this->getDefaultImport();
+        $imageLabel->delete();
+        $tree->delete();
+        $version->labelTree->delete();
+        $map = $import->perform($project, $project->creator);
+        $this->assertCount(2, $map['labelTrees']);
+        $newTree = LabelTree::where('uuid', $tree->uuid)->first();
+        $this->assertNotNull($tree);
+        $this->assertEquals($newTree->id, $map['labelTrees'][$tree->id]);
+        $this->assertEquals(2, $newTree->labels()->count());
+        $masterTree = LabelTree::where('uuid', $version->labelTree->uuid)->first();
+        $this->assertEquals(1, $masterTree->labels()->count());
     }
 
     public function testPerformLabel()
