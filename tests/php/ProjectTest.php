@@ -242,6 +242,15 @@ class ProjectTest extends ModelTestCase
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 
+    public function testDefaultLabelTreesWithoutVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $project = self::create();
+        $ids = $project->labelTrees()->pluck('id')->all();
+        $this->assertEquals([$version->labelTree->id], $ids);
+    }
+
     public function testGetThumbnailUrlAttributeNull()
     {
         $this->assertEquals(null, $this->model->thumbnailUrl);

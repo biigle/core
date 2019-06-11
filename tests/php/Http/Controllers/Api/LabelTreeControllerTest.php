@@ -10,6 +10,7 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelTreeControllerTest extends ApiTestCase
 {
@@ -19,13 +20,14 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beUser();
         $tree = $this->labelTree();
-        $this->get('/api/v1/label-trees')->assertJsonFragment([
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
-        ]);
+            'version' => null,
+        ]]);
     }
 
     public function testIndexPrivate()
@@ -37,13 +39,33 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beUser();
         $this->get('/api/v1/label-trees')->assertExactJson([]);
         $this->beGlobalAdmin();
-        $this->get('/api/v1/label-trees')->assertJsonFragment([
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
-        ]);
+            'version' => null,
+        ]]);
+    }
+
+    public function testIndexVersion()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/label-trees');
+
+        $this->beUser();
+        $version = LabelTreeVersionTest::create();
+        $tree = $this->labelTree();
+        $tree->version_id = $version->id;
+        $tree->save();
+        $this->get('/api/v1/label-trees')->assertJsonFragment([[
+            'id' => $tree->id,
+            'name' => $tree->name,
+            'description' => $tree->description,
+            'created_at' => (string) $tree->created_at,
+            'updated_at' => (string) $tree->updated_at,
+            'version' => $version->toArray(),
+        ]]);
     }
 
     public function testShow()
@@ -74,6 +96,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
+            'version' => null,
+            'versions' => [],
         ])
         ->assertJsonFragment([
             'id' => $label->id,
@@ -191,8 +215,25 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => strval(Visibility::privateId()),
         ]);
 
-        // the IDs may be strings when testing with sqlite
-        $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+        $this->assertEquals($authorized->id, $tree->projects()->pluck('id')->first());
+    }
+
+    public function testUpdatePropagateVisibility()
+    {
+        $master = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
+        $tree = LabelTreeTest::create([
+            'version_id' => $version->id,
+            'visibility_id' => Visibility::privateId(),
+        ]);
+        $master->addMember($this->admin(), Role::admin());
+        $this->beAdmin();
+        $this->putJson("/api/v1/label-trees/{$master->id}", [
+                'visibility_id' => Visibility::publicId(),
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals(Visibility::publicId(), $tree->fresh()->visibility_id);
     }
 
     public function testStore()
@@ -384,5 +425,26 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertNull($tree->fresh());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('deleted', true);
+    }
+
+    public function testDestroyVersion()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$tree->id}")
+            ->assertStatus(403);
+    }
+
+    public function testDestroyVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$version->labelTree->id}")
+            ->assertStatus(200);
+        $this->assertNull($tree->fresh());
     }
 }
