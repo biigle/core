@@ -39,9 +39,9 @@
             @forelse ($labelTrees as $tree)
                 <li class="list-group-item">
                     @if(Route::has('label-trees'))
-                        <a href="{{route('label-trees', $tree->id)}}">{{$tree->name}}</a>
+                        <a href="{{route('label-trees', $tree->id)}}">{{$tree->versionedName}}</a>
                     @else
-                        {{$tree->name}}
+                        {{$tree->versionedName}}
                     @endif
                     @if ($tree->description)
                         <br><small>{{$tree->description}}</small>
