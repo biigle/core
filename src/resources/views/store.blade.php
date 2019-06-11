@@ -17,7 +17,7 @@
       <form id="create-video-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/videos') }}" v-on:submit="startLoading">
          <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label for="name">Video name</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new video" required>
+            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new video" ref="nameInput" autofocus required>
             @if($errors->has('name'))
                <span class="help-block">{{ $errors->first('name') }}</span>
             @endif
