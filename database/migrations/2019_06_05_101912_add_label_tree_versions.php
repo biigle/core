@@ -17,7 +17,7 @@ class AddLabelTreeVersions extends Migration
             $table->increments('id');
             $table->string('name', 256);
 
-            $table->integer('label_tree_id')->unsigned();
+            $table->integer('label_tree_id')->unsigned()->index();
             $table->foreign('label_tree_id')
                   ->references('id')
                   ->on('label_trees')
