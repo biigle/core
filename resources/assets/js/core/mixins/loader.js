@@ -32,5 +32,8 @@ biigle.$component('core.mixins.loader', {
                 this.instancesLoading -= 1;
             }
         },
+        handleErrorResponse: function (response) {
+            return biigle.$require('messages.store').handleErrorResponse(response);
+        },
     },
 });
