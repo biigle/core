@@ -9,6 +9,12 @@
     <a href="{{route('manual-tutorials', ['label-trees', 'manage-labels'])}}">Manage Labels</a>
 </h4>
 <p>
-    Larn how to create, modify or delete labels of a label tree.
+    Learn how to create, modify or delete labels of a label tree.
+</p>
+<h4>
+    <a href="{{route('manual-tutorials', ['label-trees', 'label-tree-versions'])}}">Label Tree Versions</a>
+</h4>
+<p>
+    Everything you need to know about versioned label trees.
 </p>
 @mixin('labelTreesManual')

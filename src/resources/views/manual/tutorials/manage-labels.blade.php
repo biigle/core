@@ -4,7 +4,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Larn how to create, modify or delete labels of a label tree.
+            Learn how to create, modify or delete labels of a label tree.
         </p>
         <p>
             Each label consists of a name and a color. The label colors help you to identify the labels both in the label tree(s) and in the annotation tool, as annotations are colored according to the labels that are attached to them. In addition to that, a label can have a <em>parent</em> label, too. This allows you to arrange labels in a tree-like structure, the label tree.
@@ -90,6 +90,10 @@
 
         <p>
             The parent of existing labels cannot be modified in the user interface at this time. However, you can use the <a href="/doc/api/index.html#api-Labels-UpdateLabels">endpoint</a> of the REST API.
+        </p>
+
+        <p>
+            Continue to learn more about versioned label trees in the <a href="{{route('manual-tutorials', ['label-trees', 'label-tree-versions'])}}">next section</a>.
         </p>
 
     </div>

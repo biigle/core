@@ -61,7 +61,7 @@
             As a label tree admin you cannot modify yourself as a label tree member in the members panel. If you want to have another role in the label tree, ask another admin to change it. If you want to leave the label tree, click the <button class="btn btn-default btn-xs">Leave</button> button. Note that you can only leave a label tree if it has at least one other admin to manage it.
         </p>
         <p>
-            Finally, label tree admins can delete a label tree with a click on the <button class="btn btn-default btn-xs">Delete</button> button. This will detach all projects from the label tree and attempt to delete all labels. If a label is still attached to an annotation or an image, it (and therefore its label tree) cannot be deleted.
+            Finally, label tree admins can delete a label tree with a click on the <button class="btn btn-default btn-xs">Delete</button> button. This will detach all projects from the label tree and attempt to delete all labels. If a label that belongs to the label tree (or any of its <a href="{{route('manual-tutorials', ['label-trees', 'label-tree-versions'])}}">versions</a>) is still attached to an annotation or an image, it (and therefore its label tree) cannot be deleted.
         </p>
         <p>
             To learn more on how to create, modify or delete labels of a label tree, continue <a href="{{route('manual-tutorials', ['label-trees', 'manage-labels'])}}">here</a>.
