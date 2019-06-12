@@ -195,6 +195,13 @@ class LabelTreeController extends Controller
                 }
             }
 
+            if ($tree->isDirty('name')) {
+                // Propoagate the name change to all versions of the label tree.
+                LabelTree::join('label_tree_versions', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                    ->where('label_tree_versions.label_tree_id', $tree->id)
+                    ->update(['name' => $tree->name]);
+            }
+
             $tree->save();
         });
 

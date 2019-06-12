@@ -236,6 +236,24 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(Visibility::publicId(), $tree->fresh()->visibility_id);
     }
 
+    public function testUpdatePropagateName()
+    {
+        $master = LabelTreeTest::create(['name' => 'My Tree']);
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
+        $tree = LabelTreeTest::create([
+            'version_id' => $version->id,
+            'name' => 'My Tree',
+        ]);
+        $master->addMember($this->admin(), Role::admin());
+        $this->beAdmin();
+        $this->putJson("/api/v1/label-trees/{$master->id}", [
+                'name' => 'My Cool Tree',
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals('My Cool Tree', $tree->fresh()->name);
+    }
+
     public function testStore()
     {
         $this->doTestApiRoute('POST', '/api/v1/label-trees');
