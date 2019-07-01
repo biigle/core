@@ -60,7 +60,7 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             </div>
         </div>
         <p>
-            The simplest method to prevent unauthorized access to the images of your remote location is to keep the URL secret. This way only authorized BIIGLE users know and have access to the location. Although <em>theoretically</em> anyone has access to the images, the probability of someone accidentally stumbling on the correct URL can be kept as low as someone accidentally (or by brute force) guessing a correct password.
+            A method to prevent unauthorized access to the images of your remote location is to keep the URL secret. This way only authorized BIIGLE users know and have access to the location. Although <em>theoretically</em> anyone has access to the images, the probability of someone accidentally stumbling on the correct URL can be kept as low as someone accidentally (or by brute force) guessing a correct password.
         </p>
         <p>
             One way to keep this probability low is to use long random names for the image directory and/or the image files. If your remote location URL is <code>https://your-institute.com/images</code>, the directory name is an easy guess. But with <code>https://your-institute.com/4e29be7a-4bfa-4a5e-98c4-c99ce6a94226</code> it becomes almost impossible to guess the URL.
@@ -72,15 +72,7 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             <pre>{{\Ramsey\Uuid\Uuid::uuid4()}}</pre>
         @endif
         <p>
-            Another way is HTTP <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">basic access authentication</a>. With basic auth you can specify a username and password that has to be supplied in order to access the remote location. Let's say you have set up basic auth with the username "admin" and the password "eiYie8ou". To create a remote volume that uses these basic auth credentials, just format the volume URL like this: <code>https://admin:eiYie8ou@your-institute.com</code>. That is <code>https://&lt;username>:&lt;password>@&lt;domain></code>.
-        </p>
-        <div class="panel panel-warning">
-            <div class="panel-body text-warning">
-                Never use basic auth without HTTP encryption. If you cannot access your remote location via an <code>https</code> URL, then you should not use basic auth.
-            </div>
-        </div>
-        <p>
-            It is also important to note, that HTTP basic auth credentials are always stored and sent in clear text. This basically means that basic auth is <strong>not</strong> more secure than the method with a long random directory name described previously! Every BIIGLE user who has access to the remote volume will see the basic auth credentials.
+            In addition to a URL that is hard to guess, you should make sure to use encrypted HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs.
         </p>
     </div>
 @endsection
