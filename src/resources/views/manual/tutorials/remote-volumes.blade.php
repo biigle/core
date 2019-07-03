@@ -43,11 +43,11 @@
             To set up CORS for the images of your remote source, you have to update the configuration of the webserver that serves the images. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
         </p>
 <pre>
-Access-Control-Allow-Origin "https://biigle.de, https://www.biigle.de"
+Access-Control-Allow-Origin "*"
 Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
 </pre>
         <p>
-            That's all. BIIGLE detects if CORS is properly configured for remote images and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
+            In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the images. BIIGLE detects if CORS is properly configured for remote images and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
         </p>
         <ul>
             @mixin('volumesManualRemoteVolumes')
@@ -72,7 +72,7 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             <pre>{{\Ramsey\Uuid\Uuid::uuid4()}}</pre>
         @endif
         <p>
-            In addition to a URL that is hard to guess, you should make sure to use encrypted HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs.
+            In addition to a URL that is hard to guess, you should make sure to use secure HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs.
         </p>
     </div>
 @endsection
