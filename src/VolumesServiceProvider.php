@@ -39,7 +39,6 @@ class VolumesServiceProvider extends ServiceProvider
                 'adminMenu',
                 'adminIndex',
                 'manualTutorial',
-                'dashboardStyles',
                 'dashboardScripts',
                 'adminShowUser',
                 'searchTab',
