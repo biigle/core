@@ -1,9 +1,22 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.3-fpm-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
-RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
+RUN apk add --no-cache \
+        openssl \
+        postgresql-dev \
+        libxml2-dev \
+        libzip-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql json zip fileinfo exif mbstring soap
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        json \
+        zip \
+        fileinfo \
+        exif \
+        mbstring \
+        soap
 
 ADD .docker/app-php.ini /usr/local/etc/php/conf.d/php.ini
 
