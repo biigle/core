@@ -111,6 +111,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
+        ],
+
     ],
 
 ];
