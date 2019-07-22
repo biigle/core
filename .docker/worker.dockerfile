@@ -28,7 +28,7 @@ ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # the thumbnail orientation is correct again.
 # Install libvips and the vips PHP extension in one go so the *-dev dependencies are
 # reused.
-ARG LIBVIPS_VERSION=8.5.7
+ARG LIBVIPS_VERSION=8.8.1
 ARG PHP_VIPS_EXT_VERSION=1.0.7
 RUN apk add --no-cache --virtual .build-deps \
         autoconf \

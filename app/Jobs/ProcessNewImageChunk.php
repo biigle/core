@@ -165,7 +165,10 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
             $prefix = fragment_uuid_path($image->uuid);
             $format = config('thumbnails.format');
             $buffer = VipsImage::thumbnail($path, $this->width, [
-                    'height' => $this->height
+                    'height' => $this->height,
+                    // Do not auto rotate thumbnails based on EXIF information because
+                    // the orientation of AUV captured images is not reliable.
+                    'no_rotate' => true,
                 ])
                 ->writeToBuffer(".{$format}");
 
