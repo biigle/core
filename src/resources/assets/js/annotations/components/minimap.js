@@ -53,7 +53,13 @@ biigle.$component('annotations.components.minimap', function () {
                 this.mapSize = e.target.getSize();
             },
             updateMapView: function (e) {
+                if (this.mapView) {
+                    this.mapView.un('change:center', this.updateViewport);
+                    this.mapView.un('change:resolution', this.updateViewport);
+                }
                 this.mapView = e.target.getView();
+                this.mapView.on('change:center', this.updateViewport);
+                this.mapView.on('change:resolution', this.updateViewport);
             },
             updateElementSize: function () {
                 var imageWidth = this.extent[2];
@@ -112,10 +118,11 @@ biigle.$component('annotations.components.minimap', function () {
             // would propagate this and make the whole Map instance reactive. This might
             // cause infinite loops in watchers and computed properties.
             this.mapSize = map.getSize();
-            this.mapView = map.getView();
-            map.on('postcompose', this.updateViewport);
+            this.updateMapView({target: map});
             map.on('change:size', this.updateMapSize);
             map.on('change:view', this.updateMapView);
+            // Initialize the viewport once.
+            map.once('postcompose', this.updateViewport);
 
             // Add the viewport layer now. Add the image layer later when it was
             // added to the map.
@@ -137,7 +144,8 @@ biigle.$component('annotations.components.minimap', function () {
         },
         beforeDestroy: function () {
             var map = this.$parent.map;
-            map.un('postcompose', this.updateViewport);
+            this.mapView.un('change:center', this.updateViewport);
+            this.mapView.un('change:resolution', this.updateViewport);
             map.un('change:size', this.updateMapSize);
             map.un('change:view', this.updateMapView);
             map.getLayers().un('add', this.refreshImageLayer);
