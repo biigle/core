@@ -35,6 +35,7 @@
                     <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
                 </control-button>
                 <control-button icon="icon-polygon" title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingPolygon" v-on:click="drawPolygon">
+                    <control-button v-cloak icon="fa-paint-brush" title="Draw a polygon using the brush tool" :active="isUsingPolygonBrush" v-on:click="togglePolygonBrush"></control-button>
                     <control-button v-if="crossOrigin" icon="fa-magic" title="The magic wand tool is not available for remote images without cross-origin resource sharing" :disabled="true"></control-button>
                     <control-button v-else v-cloak icon="fa-magic" title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
                 </control-button>
