@@ -69,6 +69,18 @@
                     <td>Select the magic wand annotation tool</td>
                 </tr>
                 <tr>
+                    <td><code>e</code></td>
+                    <td>Select the polygon brush tool</td>
+                </tr>
+                <tr>
+                    <td><code>r</code></td>
+                    <td>Select the polygon eraser tool</td>
+                </tr>
+                <tr>
+                    <td><code>t</code></td>
+                    <td>Select the polygon fill tool</td>
+                </tr>
+                <tr>
                     <td><code>m</code></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>
