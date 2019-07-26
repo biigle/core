@@ -178,5 +178,27 @@
         <p>
             The magic wand tool uses your current view of the image for reference and not the original image itself. This means that you can draw more detailed polygons when your view is zoomed in and less detailed polygons when your view is zoomed out. Also, the detected region can never get larger than your current viewport.
         </p>
+
+        <h4><a name="polygon-brush"></a><i class="fa fa-paint-brush"></i> Brush</h4>
+
+        <p>
+            The polygon brush tool allows you to "paint" polygons with a circular brush. The button to activate the polygon brush tool appears when you hover your cursor over the button of the polygon tool:
+        </p>
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_1.jpg')}}" width="33%"></a>
+        </p>
+        <p>
+            When activated, the outline of the circular brush is displayed beneath the cursor. You can change the radius of the brush by pressing <code>Shift</code> and using the mouse wheel. To paint a polygon, simply press and hold the left mouse button, then move the mouse. Release the mouse button to finish the new polygon.
+        </p>
+
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_2.jpg')}}" width="32%"></a>
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_3.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_3.jpg')}}" width="32%"></a>
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_4.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_4.jpg')}}" width="32%"></a>
+        </p>
+
+        <p>
+            Polygons that were drawn with the brush tool are best edited with the polygon eraser and fill tools. Head over to the <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">next manual section</a> to learn more.
+        </p>
     </div>
 @endsection

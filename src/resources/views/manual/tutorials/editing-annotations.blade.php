@@ -26,6 +26,37 @@
             <a href="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}" width="32%"></a>
         </p>
 
+        <p>
+            Complex polygon annotations that were drawn in freehand mode or with the polygon brush tool are hard to modify with the method described above. Use the polygon eraser and fill tools in this case.
+        </p>
+
+        <h4><a name="polygon-eraser"></a><i class="fa fa-eraser"></i> Eraser</h4>
+
+        <p>
+            The polygon eraser tool allows you to remove parts of polygons with a circular brush. The button to activate the polygon eraser tool appears when you hover your cursor over the button of the polygon tool:
+        </p>
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_eraser_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_eraser_1.jpg')}}" width="33%"></a>
+        </p>
+
+        <p>
+            The eraser works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>, only that sections of the polygon that are beneath the circular brush are erased. The eraser affects only selected polygon annotations. You can select annotations with <code>Shift</code>+<code>Mouse left</code> while the eraser tool is active. If you cut an annotation in two using the eraser, the smaller part of the annotation is deleted. You cannot erase an annotation completely. Instead, annotations that are smaller than the current brush size of the eraser are no longer affected. See <a href="#delete-annotations">below</a> on how to delete annotations completely.
+        </p>
+
+        <h4><a name="polygon-fill"></a><i class="fa fa-fill-drip"></i> Fill</h4>
+
+        <p>
+            The polygon fill tool allows you to extend existing polygons with a circular brush. The button to activate the polygon fill tool appears when you hover your cursor over the button of the polygon tool:
+        </p>
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_fill_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_fill_1.jpg')}}" width="33%"></a>
+        </p>
+
+        <p>
+            The fill tool works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>. The fill tool affects only selected polygon annotations. You can select annotations with <code>Shift</code>+<code>Mouse left</code> while the fill tool is active.
+        </p>
+
+
         <h3><a name="move-annotations"></a><i class="fa fa-arrows-alt"></i> Move Annotations</h3>
 
         <p>
