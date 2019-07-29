@@ -60,8 +60,6 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                     });
                     polygonBrushInteraction.on('drawend', this.handleNewFeature);
                     this.map.addInteraction(polygonBrushInteraction);
-                } else {
-                    this.requireSelectedLabel();
                 }
             },
             togglePolygonEraserInteraction: function (isUsingPolygonEraser) {

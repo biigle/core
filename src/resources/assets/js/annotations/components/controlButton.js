@@ -97,14 +97,16 @@ biigle.$component('annotations.components.controlButton', {
         }
     },
     watch: {
-        active: {
-            immediate: true,
-            handler: function (active) {
-                this.$parent.$emit('control-button-active', active);
-            },
+        active: function (active) {
+            this.$parent.$emit('control-button-active', active);
         },
     },
     created: function () {
         this.$on('control-button-active', this.updateActiveSubControls);
+    },
+    mounted: function () {
+        if (this.active) {
+            this.$parent.$emit('control-button-active', true);
+        }
     },
 });
