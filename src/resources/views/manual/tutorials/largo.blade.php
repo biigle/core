@@ -58,7 +58,7 @@
 
         <div class="panel panel-info">
             <div class="panel-body text-info">
-                To quickly dismiss or re-label consecutive annotations, press the <code>Shift</code> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
+                To quickly dismiss or re-label consecutive annotations, press the <kbd>Shift</kbd> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
             </div>
         </div>
 
