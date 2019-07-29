@@ -27,6 +27,8 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
             togglePolygonBrush: function () {
                 if (this.isUsingPolygonBrush) {
                     this.resetInteractionMode();
+                } else if (!this.hasSelectedLabel) {
+                    this.requireSelectedLabel();
                 } else if (this.canAdd) {
                     this.interactionMode = 'polygonBrush';
                 }

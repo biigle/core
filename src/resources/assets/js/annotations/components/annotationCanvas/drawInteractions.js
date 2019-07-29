@@ -34,7 +34,9 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
             draw: function (name) {
                 if (this['isDrawing' + name]) {
                     this.resetInteractionMode();
-                } else {
+                } else if (!this.hasSelectedLabel) {
+                    this.requireSelectedLabel();
+                } else if (this.canAdd) {
                     this.interactionMode = 'draw' + name;
                 }
             },
@@ -63,17 +65,13 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
                 }
 
                 if (this.isDrawing) {
-                    if (this.hasSelectedLabel) {
-                        drawInteraction = new ol.interaction.Draw({
-                            source: this.annotationSource,
-                            type: mode.slice(4), // remove 'draw' prefix
-                            style: this.styles.editing,
-                        });
-                        drawInteraction.on('drawend', this.handleNewFeature);
-                        this.map.addInteraction(drawInteraction);
-                    } else {
-                        this.requireSelectedLabel();
-                    }
+                    drawInteraction = new ol.interaction.Draw({
+                        source: this.annotationSource,
+                        type: mode.slice(4), // remove 'draw' prefix
+                        style: this.styles.editing,
+                    });
+                    drawInteraction.on('drawend', this.handleNewFeature);
+                    this.map.addInteraction(drawInteraction);
                 }
             },
         },
