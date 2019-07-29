@@ -42,7 +42,6 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-point"' +
                     ' title="Start a point annotation 𝗔"' +
-                    ' :disabled="hasNoSelectedLabel"' +
                     ' :hover="false"' +
                     ' :open="isDrawingPoint"' +
                     ' :active="isDrawingPoint"' +
@@ -64,7 +63,6 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-rectangle"' +
                     ' title="Start a rectangle annotation 𝗦"' +
-                    ' :disabled="hasNoSelectedLabel"' +
                     ' :hover="false"' +
                     ' :open="isDrawingRectangle"' +
                     ' :active="isDrawingRectangle"' +
@@ -80,7 +78,6 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-circle"' +
                     ' title="Start a circle annotation 𝗗"' +
-                    ' :disabled="hasNoSelectedLabel"' +
                     ' :hover="false"' +
                     ' :open="isDrawingCircle"' +
                     ' :active="isDrawingCircle"' +
@@ -102,7 +99,6 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-linestring"' +
                     ' title="Start a line annotation 𝗙"' +
-                    ' :disabled="hasNoSelectedLabel"' +
                     ' :hover="false"' +
                     ' :open="isDrawingLineString"' +
                     ' :active="isDrawingLineString"' +
@@ -118,7 +114,6 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-polygon"' +
                     ' title="Start a polygon annotation 𝗚"' +
-                    ' :disabled="hasNoSelectedLabel"' +
                     ' :hover="false"' +
                     ' :open="isDrawingPolygon"' +
                     ' :active="isDrawingPolygon"' +

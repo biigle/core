@@ -47,6 +47,10 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
             },
         },
         methods: {
+            requireSelectedLabel: function () {
+                biigle.$require('messages.store').info('Please select a label first.');
+                this.resetInteractionMode();
+            },
             initPendingAnnotationLayer: function (map) {
                 var styles = biigle.$require('annotations.stores.styles');
                 this.pendingAnnotationSource = new ol.source.Vector();
@@ -63,7 +67,9 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
             draw: function (name) {
                 if (this['isDrawing' + name]) {
                     this.resetInteractionMode();
-                } else if (this.canAdd && this.hasSelectedLabel) {
+                } else if (this.hasNoSelectedLabel) {
+                    this.requireSelectedLabel();
+                } else if (this.canAdd) {
                     this.interactionMode = 'draw' + name;
                 }
             },
