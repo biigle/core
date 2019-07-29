@@ -5,6 +5,7 @@
  */
 biigle.$component('annotations.components.annotationCanvas.polygonBrushInteraction', function () {
 
+    var brushRadius = 50;
     var polygonBrushInteraction;
     var shiftClickSelectInteraction;
     var polygonEraserInteraction;
@@ -46,13 +47,14 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
             },
             togglePolygonBrushInteraction: function (isUsingPolygonBrush) {
                 if (!isUsingPolygonBrush) {
+                    brushRadius = polygonBrushInteraction.getBrushRadius();
                     this.map.removeInteraction(polygonBrushInteraction);
                 } else if (this.hasSelectedLabel) {
                     polygonBrushInteraction = new ol.interaction.PolygonBrush({
                         map: this.map,
                         source: this.annotationSource,
                         style: this.styles.editing,
-                        brushRadius: 50,
+                        brushRadius: brushRadius,
                     });
                     polygonBrushInteraction.on('drawend', this.handleNewFeature);
                     this.map.addInteraction(polygonBrushInteraction);
@@ -62,6 +64,7 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
             },
             togglePolygonEraserInteraction: function (isUsingPolygonEraser) {
                 if (!isUsingPolygonEraser) {
+                    brushRadius = polygonEraserInteraction.getBrushRadius();
                     this.map.removeInteraction(polygonEraserInteraction);
                     this.map.removeInteraction(shiftClickSelectInteraction);
                 } else {
@@ -69,7 +72,7 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                         map: this.map,
                         features: this.selectInteraction.getFeatures(),
                         style: this.styles.editing,
-                        brushRadius: 50,
+                        brushRadius: brushRadius,
                         allowRemove: false,
                         addCondition: ol.events.condition.never,
                         subtractCondition: ol.events.condition.noModifierKeys,
@@ -82,6 +85,7 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
             },
             togglePolygonFillInteraction: function (isUsingPolygonFill) {
                 if (!isUsingPolygonFill) {
+                    brushRadius = polygonFillInteraction.getBrushRadius();
                     this.map.removeInteraction(polygonFillInteraction);
                     this.map.removeInteraction(shiftClickSelectInteraction);
                 } else {
@@ -89,7 +93,7 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                         map: this.map,
                         features: this.selectInteraction.getFeatures(),
                         style: this.styles.editing,
-                        brushRadius: 50,
+                        brushRadius: brushRadius,
                         addCondition: ol.events.condition.noModifierKeys,
                         subtractCondition: ol.events.condition.never,
                     });
