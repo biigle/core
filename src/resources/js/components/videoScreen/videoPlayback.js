@@ -45,10 +45,12 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 map.addLayer(this.videoLayer);
 
                 map.setView(new ol.View({
+                    // Center is required but will be updated immediately with fit().
+                    center: [0, 0],
                     projection: projection,
                     // zoomFactor: 2,
                     minResolution: this.minResolution,
-                    extent: this.extent
+                    extent: this.extent,
                 }));
 
                 map.getView().fit(this.extent);
