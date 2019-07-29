@@ -40,7 +40,7 @@
         </p>
 
         <p>
-            The eraser works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>, only that sections of the polygon that are beneath the circular brush are erased. The eraser affects only selected polygon annotations. You can select annotations with <code>Shift</code>+<code>Mouse left</code> while the eraser tool is active. If you cut an annotation in two using the eraser, the smaller part of the annotation is deleted. You cannot erase an annotation completely. Instead, annotations that are smaller than the current brush size of the eraser are no longer affected. See <a href="#delete-annotations">below</a> on how to delete annotations completely.
+            The eraser works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>, only that sections of the polygon that are beneath the circular brush are erased. The eraser affects only selected polygon annotations. You can select annotations with <kbd>Shift</kbd>+<kbd>Mouse left</kbd> while the eraser tool is active. If you cut an annotation in two using the eraser, the smaller part of the annotation is deleted. You cannot erase an annotation completely. Instead, annotations that are smaller than the current brush size of the eraser are no longer affected. See <a href="#delete-annotations">below</a> on how to delete annotations completely.
         </p>
 
         <h4><a name="polygon-fill"></a><i class="fa fa-fill-drip"></i> Fill</h4>
@@ -53,7 +53,7 @@
         </p>
 
         <p>
-            The fill tool works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>. The fill tool affects only selected polygon annotations. You can select annotations with <code>Shift</code>+<code>Mouse left</code> while the fill tool is active.
+            The fill tool works similar to the <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#polygon-brush">polygon brush tool</a>. The fill tool affects only selected polygon annotations. You can select annotations with <kbd>Shift</kbd>+<kbd>Mouse left</kbd> while the fill tool is active.
         </p>
 
 

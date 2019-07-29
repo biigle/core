@@ -159,7 +159,7 @@
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_5.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_5.jpg')}}" width="24%"></a>
         </p>
         <p>
-            To abort the process, move the cursor back to the point where you initially pressed the mouse button and an "&times;" symbol will appear. If you release the mouse button here, the detected region will be discarded. If you hold the <code>Shift</code> key while you move the cursor, the "&times;" symbol will not appear and the region will not be discarded no matter how close the cursor is to the initial point.
+            To abort the process, move the cursor back to the point where you initially pressed the mouse button and an "&times;" symbol will appear. If you release the mouse button here, the detected region will be discarded. If you hold the <kbd>Shift</kbd> key while you move the cursor, the "&times;" symbol will not appear and the region will not be discarded no matter how close the cursor is to the initial point.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_2.jpg')}}" width="24%"></a>
@@ -188,7 +188,7 @@
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_polygon_brush_1.jpg')}}" width="33%"></a>
         </p>
         <p>
-            When activated, the outline of the circular brush is displayed beneath the cursor. You can change the radius of the brush by pressing <code>Shift</code> and using the mouse wheel. To paint a polygon, simply press and hold the left mouse button, then move the mouse. Release the mouse button to finish the new polygon.
+            When activated, the outline of the circular brush is displayed beneath the cursor. You can change the radius of the brush by pressing <kbd>Shift</kbd> and using the mouse wheel. To paint a polygon, simply press and hold the left mouse button, then move the mouse. Release the mouse button to finish the new polygon.
         </p>
 
         <p class="text-center">
