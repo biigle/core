@@ -17,55 +17,55 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><code>Space</code></td>
+                    <td><kbd>Space</kbd></td>
                     <td>Play/pause the video</td>
                 </tr>
                 <tr>
-                    <td><code>1</code> - <code>9</code></td>
+                    <td><kbd>1</kbd> - <kbd>9</kbd></td>
                     <td>Select favourite label 1-9</td>
                 </tr>
                 <tr>
-                    <td><code>Tab</code></td>
+                    <td><kbd>Tab</kbd></td>
                     <td>Show/hide the current sidebar tab</td>
                 </tr>
                 <tr>
-                    <td><code>a</code></td>
+                    <td><kbd>a</kbd></td>
                     <td>Select the point annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>s</code></td>
+                    <td><kbd>s</kbd></td>
                     <td>Select the rectangle annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>d</code></td>
+                    <td><kbd>d</kbd></td>
                     <td>Select the circle annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>f</code></td>
+                    <td><kbd>f</kbd></td>
                     <td>Select the line string annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>g</code></td>
+                    <td><kbd>g</kbd></td>
                     <td>Select the polygon annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>m</code></td>
+                    <td><kbd>m</kbd></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>
                 <tr>
-                    <td><code>Enter</code></td>
+                    <td><kbd>Enter</kbd></td>
                     <td>Finish the video annotation that is currently drawn</td>
                 </tr>
                 <tr>
-                    <td><code>Shift</code>+<code>Mouse left</code></td>
+                    <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
                     <td>Select multiple annotation at the same time</td>
                 </tr>
                 <tr>
-                    <td><code>Del</code></td>
+                    <td><kbd>Del</kbd></td>
                     <td>Delete all selected annotations/keyframes</td>
                 </tr>
                 <tr>
-                    <td><code>Esc</code></td>
+                    <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
                 </tr>
             </tbody>

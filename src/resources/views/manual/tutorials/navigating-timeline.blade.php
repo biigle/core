@@ -31,7 +31,7 @@
             <a href="{{asset('vendor/videos/images/manual/navigating_the_timeline_5.jpg')}}"><img src="{{asset('vendor/videos/images/manual/navigating_the_timeline_5.jpg')}}" width="49%" style="border: 1px solid #111;"></a>
         </p>
         <p>
-            You can zoom along the time axis by holding the <code>Shift</code> key and using the mouse wheel. Move the zoomed-in timeline left and right by horizontal scrolling with the touchpad or grabbing and moving the timeline with the cursor.
+            You can zoom along the time axis by holding the <kbd>Shift</kbd> key and using the mouse wheel. Move the zoomed-in timeline left and right by horizontal scrolling with the touchpad or grabbing and moving the timeline with the cursor.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/videos/images/manual/navigating_the_timeline_6.jpg')}}"><img src="{{asset('vendor/videos/images/manual/navigating_the_timeline_6.jpg')}}" width="49%" style="border: 1px solid #111;"></a>
@@ -53,7 +53,7 @@
             <a href="{{asset('vendor/videos/images/manual/navigating_the_timeline_10.jpg')}}"><img src="{{asset('vendor/videos/images/manual/navigating_the_timeline_10.jpg')}}" width="100%"></a>
         </p>
         <p>
-            Annotations can be selected by clicking on them in the timeline. This automatically sets the current time of the video to the time at the position where the annotation was selected. If a keyframe is selected, the current time jumps to the time of the frame. Multiple annotations can be selected at the same time by pressing the <code>Shift</code> key and clicking on the annotation.
+            Annotations can be selected by clicking on them in the timeline. This automatically sets the current time of the video to the time at the position where the annotation was selected. If a keyframe is selected, the current time jumps to the time of the frame. Multiple annotations can be selected at the same time by pressing the <kbd>Shift</kbd> key and clicking on the annotation.
         </p>
         <p>
             Read on and learn how to <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">edit video annotations</a>.
