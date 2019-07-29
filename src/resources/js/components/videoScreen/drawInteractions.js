@@ -110,7 +110,7 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
                 }
             },
             finishDrawAnnotation: function () {
-                if (this.isDrawing) {
+                if (this.isDrawing || this.isUsingPolygonBrush) {
                     if (this.hasPendingAnnotation) {
                         this.$emit('create-annotation', this.pendingAnnotation);
                     }

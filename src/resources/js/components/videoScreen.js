@@ -6,6 +6,7 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.modifyInteractions'),
         biigle.$require('videos.components.videoScreen.tooltips'),
         biigle.$require('videos.components.videoScreen.indicators'),
+        biigle.$require('videos.components.videoScreen.polygonBrushInteractions'),
     ],
     template: '<div class="video-screen">' +
         '<minimap' +
@@ -114,16 +115,34 @@ biigle.$component('videos.components.videoScreen', {
                 '<control-button' +
                     ' icon="icon-polygon"' +
                     ' title="Start a polygon annotation 𝗚"' +
-                    ' :hover="false"' +
                     ' :open="isDrawingPolygon"' +
                     ' :active="isDrawingPolygon"' +
                     ' @click="drawPolygon"' +
                     '>' +
                         '<control-button' +
+                            ' v-if="isDrawingPolygon || isUsingPolygonBrush"' +
                             ' icon="fa-check"' +
                             ' title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"' +
                             ' :disabled="cantFinishDrawAnnotation"' +
                             ' @click="finishDrawAnnotation"' +
+                            '></control-button>' +
+                        '<control-button' +
+                            ' icon="fa-paint-brush"' +
+                            ' title="Draw a polygon using the brush tool 𝗘"' +
+                            ' :active="isUsingPolygonBrush"' +
+                            ' @click="togglePolygonBrush"' +
+                            '></control-button>' +
+                        '<control-button' +
+                            ' icon="fa-eraser"' +
+                            ' title="Modify selected polygons using the eraser tool 𝗥"' +
+                            ' :active="isUsingPolygonEraser"' +
+                            ' @click="togglePolygonEraser"' +
+                            '></control-button>' +
+                        '<control-button' +
+                            ' icon="fa-fill-drip"' +
+                            ' title="Modify selected polygons using the fill tool 𝗧"' +
+                            ' :active="isUsingPolygonFill"' +
+                            ' @click="togglePolygonFill"' +
                             '></control-button>' +
                 '</control-button>' +
             '</div>' +
