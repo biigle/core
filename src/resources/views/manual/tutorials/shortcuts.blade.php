@@ -49,6 +49,18 @@
                     <td>Select the polygon annotation tool</td>
                 </tr>
                 <tr>
+                    <td><kbd>e</kbd></td>
+                    <td>Select the polygon brush tool</td>
+                </tr>
+                <tr>
+                    <td><kbd>r</kbd></td>
+                    <td>Select the polygon eraser tool</td>
+                </tr>
+                <tr>
+                    <td><kbd>t</kbd></td>
+                    <td>Select the polygon fill tool</td>
+                </tr>
+                <tr>
                     <td><kbd>m</kbd></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>
