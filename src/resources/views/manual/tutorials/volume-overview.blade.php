@@ -25,27 +25,27 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><code>W</code>, <code>Arrow up</code></td>
+                    <td><kbd>W</kbd>, <kbd>Arrow up</kbd></td>
                     <td>Move one row up</td>
                 </tr>
                 <tr>
-                    <td><code>S</code>, <code>Arrow down</code></td>
+                    <td><kbd>S</kbd>, <kbd>Arrow down</kbd></td>
                     <td>Move one row down</td>
                 </tr>
                 <tr>
-                    <td><code>A</code>, <code>Arrow left</code>, <code>Page up</code></td>
+                    <td><kbd>A</kbd>, <kbd>Arrow left</kbd>, <kbd>Page up</kbd></td>
                     <td>Move one page up</td>
                 </tr>
                 <tr>
-                    <td><code>D</code>, <code>Arrow right</code>, <code>Page down</code></td>
+                    <td><kbd>D</kbd>, <kbd>Arrow right</kbd>, <kbd>Page down</kbd></td>
                     <td>Move one page down</td>
                 </tr>
                 <tr>
-                    <td><code>Home</code></td>
+                    <td><kbd>Home</kbd></td>
                     <td>Move up to the first row</td>
                 </tr>
                 <tr>
-                    <td><code>End</code></td>
+                    <td><kbd>End</kbd></td>
                     <td>Move down to the last row</td>
                 </tr>
             </tbody>
