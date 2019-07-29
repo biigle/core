@@ -99,7 +99,26 @@ biigle.$declare('keyboard', new Vue({
             }
 
             this.pressedKeysArray.push(e.key.toLowerCase());
+            // Sometimes a modifier key is still pressed when the page is loaded (e.g.
+            // if the user travelled back in browser history using the keys). Check for
+            // meta keys on each keypress to get the correct set of pressed keys in these
+            // cases.
+            this.maybeInjectModifierKeys(e);
             this.handleKeyEvents(e, this.pressedKeys);
+        },
+        maybeInjectModifierKeys: function (e) {
+            if (e.altKey && this.pressedKeysArray.indexOf('alt') === -1) {
+                this.pressedKeysArray.push('alt');
+            }
+            if (e.ctrlKey && this.pressedKeysArray.indexOf('control') === -1) {
+                this.pressedKeysArray.push('control');
+            }
+            if (e.metaKey && this.pressedKeysArray.indexOf('meta') === -1) {
+                this.pressedKeysArray.push('meta');
+            }
+            if (e.shiftKey && this.pressedKeysArray.indexOf('shift') === -1) {
+                this.pressedKeysArray.push('shift');
+            }
         },
         handleKeyUp: function (e) {
             var index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
