@@ -5,10 +5,10 @@
                 <button class="btn btn-default" type="button" :disabled="loading" title="Delete this label tree version" v-on:click="deleteVersion">Delete</button>
             </span>
         @endcan
-        @if ($private)
-            <span class="text-muted fa fa-lock" aria-hidden="true" title="This label tree is private"></span>
-        @endif
         {{$tree->name}}&nbsp;@&nbsp;{{$version->name}}
+        @if ($private)
+            <small class="label label-default label-hollow" title="This label tree is private">Private</small>
+        @endif
         @if($tree->description)
             <br><small>{{$tree->description}}</small>
         @endif
