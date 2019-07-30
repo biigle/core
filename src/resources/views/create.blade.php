@@ -10,10 +10,15 @@
         @else
             <h2>New label tree</h2>
         @endif
+        @if ($upstreamLabelTree)
+            <p>
+                The new label tree will be forked from <a href="{{route('label-trees', $upstreamLabelTree->id)}}">{{$upstreamLabelTree->versionedName}}</a>.
+            </p>
+        @endif
         <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/label-trees') }}">
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Name</label>
-                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" autofocus required>
+                <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $upstreamLabelTree ? $upstreamLabelTree->name : '') }}" autofocus required>
                 @if($errors->has('name'))
                     <span class="help-block">{{ $errors->first('name') }}</span>
                 @endif
@@ -33,7 +38,7 @@
 
             <div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
                 <label for="description">Description (optional)</label>
-                <input class="form-control" type="text" name="description" id="description" value="{{ old('description') }}">
+                <input class="form-control" type="text" name="description" id="description" value="{{ old('description', $upstreamLabelTree ? $upstreamLabelTree->description : '') }}">
                 @if($errors->has('description'))
                     <span class="help-block">{{ $errors->first('description') }}</span>
                 @endif
@@ -50,7 +55,12 @@
                 </div>
             @endif
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="submit" class="btn btn-success pull-right" value="Create">
+            @if ($upstreamLabelTree)
+                <input class="form-control" type="hidden" name="upstream_label_tree_id" id="upstream_label_tree_id" value="{{ $upstreamLabelTree->id }}">
+                <input type="submit" class="btn btn-success pull-right" value="Create fork">
+            @else
+                <input type="submit" class="btn btn-success pull-right" value="Create">
+            @endif
             <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
         </form>
     </div>

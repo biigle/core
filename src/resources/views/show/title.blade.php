@@ -5,6 +5,7 @@
             <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
         </span>
         <span class="pull-right label-tree-buttons" v-else>
+            <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
             <button class="btn btn-default" v-on:click="startEditing" :disabled="loading" title="Edit this label tree">Edit</button>
             <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading" title="Delete this label tree">Delete</button>
             @if ($members->pluck('id')->contains($user->id))
@@ -33,11 +34,12 @@
         </h2>
     @else
         <h2>
-            @if ($members->pluck('id')->contains($user->id))
-                <span class="pull-right">
+            <span class="pull-right">
+                <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
+                @if ($members->pluck('id')->contains($user->id))
                     <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
-                </span>
-            @endif
+                @endif
+            </span>
             {{$tree->name}}
             @if ($private)
                 <small class="label label-default label-hollow" title="This label tree is private">Private</small>

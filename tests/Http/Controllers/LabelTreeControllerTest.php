@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\LabelTrees\Http\Controllers;
 
+use Cache;
 use TestCase;
 use Biigle\Role;
 use Biigle\Visibility;
@@ -97,6 +98,39 @@ class LabelTreeControllerTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->get('label-trees/create?project=999');
+        $response->assertStatus(404);
+    }
+
+    public function testCreateProject()
+    {
+        $user = UserTest::create(['role_id' => Role::editorId()]);
+        $this->be($user);
+        $project = ProjectTest::create();
+        $response = $this->get('label-trees/create?project='.$project->id);
+        $response->assertStatus(403);
+
+        $this->be($project->creator);
+        $response = $this->get('label-trees/create?project='.$project->id);
+        $response->assertStatus(200);
+
+        $response = $this->get('label-trees/create?project=999');
+        $response->assertStatus(404);
+    }
+
+    public function testCreateFork()
+    {
+        $user = UserTest::create(['role_id' => Role::editorId()]);
+        $this->be($user);
+        $labelTree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
+        $response->assertStatus(403);
+
+        $labelTree->addMember($user, Role::editor());
+        Cache::clear();
+        $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
+        $response->assertStatus(200);
+
+        $response = $this->get('label-trees/create?upstream_label_tree=999');
         $response->assertStatus(404);
     }
 }

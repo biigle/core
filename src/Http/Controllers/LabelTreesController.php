@@ -82,12 +82,20 @@ class LabelTreesController extends Controller
             $project = null;
         }
 
+        if ($request->filled('upstream_label_tree')) {
+            $upstreamLabelTree = LabelTree::findOrFail($request->input('upstream_label_tree'));
+            $this->authorize('access', $upstreamLabelTree);
+        } else {
+            $upstreamLabelTree = null;
+        }
+
         $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
 
         return view('label-trees::create', compact(
             'visibilities',
             'selectedVisibility',
-            'project'
+            'project',
+            'upstreamLabelTree'
         ));
     }
 
