@@ -16,6 +16,13 @@ class StoreLabelTree extends FormRequest
     public $project;
 
     /**
+     * The upstream label tree that should be forked (if any)
+     *
+     * @var LabelTree
+     */
+    public $upstreamLabelTree;
+
+    /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -36,6 +43,7 @@ class StoreLabelTree extends FormRequest
             'name' => 'required|max:256',
             'visibility_id' => 'required|integer|exists:visibilities,id',
             'project_id' => 'integer|exists:projects,id',
+            'upstream_label_tree_id' => 'integer|exists:label_trees,id',
         ];
     }
 
@@ -53,6 +61,14 @@ class StoreLabelTree extends FormRequest
 
                 if (!$this->project || !$this->user()->can('update', $this->project)) {
                     $validator->errors()->add('project_id', 'You have no permission to create a label tree for this project.');
+                }
+            }
+
+            if ($this->filled('upstream_label_tree_id')) {
+                $this->upstreamLabelTree = LabelTree::find($this->input('upstream_label_tree_id'));
+
+                if (!$this->upstreamLabelTree || !$this->user()->can('access', $this->upstreamLabelTree)) {
+                    $validator->errors()->add('upstream_label_tree_id', 'You have no permission to fork this label tree.');
                 }
             }
         });

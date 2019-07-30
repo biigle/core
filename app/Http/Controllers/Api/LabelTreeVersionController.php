@@ -57,7 +57,7 @@ class LabelTreeVersionController extends Controller
             $versionTree->authorizedProjects()
                 ->sync($request->tree->authorizedProjects()->pluck('id'));
 
-            $this->replicateLabels($request->tree, $versionTree);
+            $versionTree->replicateLabelsOf($request->tree);
 
             return $version;
         });
@@ -91,39 +91,6 @@ class LabelTreeVersionController extends Controller
             return $this->fuzzyRedirect()
                 ->with('message', 'Label tree version deleted.')
                 ->with('messageType', 'success');
-        }
-    }
-
-    /**
-     * Replicate all labels of one label tree to another.
-     *
-     * @param LabelTree $oldTree
-     * @param LabelTree $newTree
-     */
-    protected function replicateLabels(LabelTree $oldTree, LabelTree $newTree)
-    {
-        $oldLabels = $oldTree->labels;
-        $newLabels = $oldLabels->map(function ($label) use ($newTree) {
-            $label = $label->replicate(['parent_id']);
-            $label->label_tree_id = $newTree->id;
-            $label->uuid = Uuid::uuid4();
-
-            return $label;
-        });
-
-        $parents = $oldLabels->pluck('parent_id');
-        $idMap = [];
-
-        foreach ($newLabels as $index => $label) {
-            $label->save();
-            $idMap[$oldLabels[$index]->id] = $label->id;
-        }
-
-        foreach ($parents as $index => $id) {
-            if (!is_null($id)) {
-                $newLabels[$index]->parent_id = $idMap[$id];
-                $newLabels[$index]->save();
-            }
         }
     }
 }

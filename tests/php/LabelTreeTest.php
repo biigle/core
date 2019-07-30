@@ -309,4 +309,22 @@ class LabelTreeTest extends ModelTestCase
         $this->assertEquals('master tree', $version->labelTree->versionedName);
         $this->assertEquals('versioned tree @ v1.0', $this->model->versionedName);
     }
+
+    public function testReplicateLabelsOf()
+    {
+        $parent = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $child = LabelTest::create([
+            'label_tree_id' => $this->model->id,
+            'parent_id' => $parent->id,
+        ]);
+
+        $tree = static::create();
+        $tree->replicateLabelsOf($this->model);
+
+        $newParent = $tree->labels()->where('name', $parent->name)->first();
+        $this->assertNotNull($newParent);
+        $newChild = $tree->labels()->where('name', $child->name)->first();
+        $this->assertNotNull($newChild);
+        $this->assertEquals($newParent->id, $newChild->parent_id);
+    }
 }

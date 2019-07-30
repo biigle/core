@@ -4,6 +4,7 @@ namespace Biigle;
 
 use DB;
 use Exception;
+use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Model;
 use Biigle\Modules\Videos\VideoAnnotationLabel;
 
@@ -323,5 +324,37 @@ class LabelTree extends Model
         }
 
         return "{$this->name} @ {$this->version->name}";
+    }
+
+    /**
+     * Replicate all labels of one label tree to this one.
+     *
+     * @param LabelTree $tree
+     */
+    public function replicateLabelsOf(LabelTree $tree)
+    {
+        $oldLabels = $tree->labels;
+        $newLabels = $oldLabels->map(function ($label) {
+            $label = $label->replicate(['parent_id']);
+            $label->label_tree_id = $this->id;
+            $label->uuid = Uuid::uuid4();
+
+            return $label;
+        });
+
+        $parents = $oldLabels->pluck('parent_id');
+        $idMap = [];
+
+        foreach ($newLabels as $index => $label) {
+            $label->save();
+            $idMap[$oldLabels[$index]->id] = $label->id;
+        }
+
+        foreach ($parents as $index => $id) {
+            if (!is_null($id)) {
+                $newLabels[$index]->parent_id = $idMap[$id];
+                $newLabels[$index]->save();
+            }
+        }
     }
 }

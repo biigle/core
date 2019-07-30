@@ -118,6 +118,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam (Optional attributes) {String} description Description of the new label tree.
      * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
+     * @apiParam (Optional attributes) {Number} upstream_label_tree_id ID of a label tree to fork. All labels of the upstream label tree will be copied to the new label tree.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -135,18 +136,27 @@ class LabelTreeController extends Controller
      */
     public function store(StoreLabelTree $request)
     {
-        $tree = new LabelTree;
-        $tree->name = $request->input('name');
-        $tree->visibility_id = $request->input('visibility_id');
-        $tree->description = $request->input('description');
-        $tree->uuid = Uuid::uuid4();
-        $tree->save();
-        $tree->addMember($request->user(), Role::admin());
+        $tree = DB::transaction(function () use ($request) {
+            $tree = new LabelTree;
+            $tree->name = $request->input('name');
+            $tree->visibility_id = $request->input('visibility_id');
+            $tree->description = $request->input('description');
+            $tree->uuid = Uuid::uuid4();
+            $tree->save();
+            $tree->addMember($request->user(), Role::admin());
 
-        if (isset($request->project)) {
-            $tree->projects()->attach($request->project);
-            $tree->authorizedProjects()->attach($request->project);
-        }
+            if (isset($request->project)) {
+                $tree->projects()->attach($request->project);
+                $tree->authorizedProjects()->attach($request->project);
+            }
+
+            if (isset($request->upstreamLabelTree)) {
+                $tree->replicateLabelsOf($request->upstreamLabelTree);
+                $tree->load('labels');
+            }
+
+            return $tree;
+        });
 
         if ($this->isAutomatedRequest()) {
             return $tree;
