@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use Cache;
 use Biigle\Role;
 use ApiTestCase;
 use Biigle\LabelTree;
@@ -388,6 +389,62 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(2, LabelTree::count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('newTree');
+    }
+
+    public function testStoreFork()
+    {
+        $baseTree = LabelTreeTest::create([
+            'visibility_id' => Visibility::privateId(),
+        ]);
+        $baseParent = LabelTest::create(['label_tree_id' => $baseTree->id]);
+        $baseChild = LabelTest::create([
+            'label_tree_id' => $baseTree->id,
+            'parent_id' => $baseParent->id,
+        ]);
+
+        $this->beEditor();
+        $this->postJson('/api/v1/label-trees', [
+                'upstream_label_tree_id' => $baseTree->id,
+                'name' => 'abc',
+                'visibility_id' => Visibility::publicId(),
+                'description' => 'my description',
+            ])
+            // No access to private label tree.
+            ->assertStatus(422);
+
+        $baseTree->addMember($this->editor(), Role::editor());
+        Cache::flush();
+
+        $this->postJson('/api/v1/label-trees', [
+                'upstream_label_tree_id' => $baseTree->id,
+                'name' => 'abc',
+                'visibility_id' => Visibility::publicId(),
+                'description' => 'my description',
+            ])
+            // Members can fork private trees.
+            ->assertStatus(200);
+
+        $this->beGuest();
+        $baseTree->visibility_id = Visibility::publicId();
+        $baseTree->save();
+        $this->postJson('/api/v1/label-trees', [
+                'upstream_label_tree_id' => $baseTree->id,
+                'name' => 'abc',
+                'visibility_id' => Visibility::publicId(),
+                'description' => 'my description',
+            ])
+            // Everybody can fork public trees.
+            ->assertStatus(200);
+
+        $tree = LabelTree::orderBy('id', 'desc')->first();
+        $this->assertEquals('abc', $tree->name);
+        $this->assertEquals('my description', $tree->description);
+        $this->assertTrue($tree->members()->where('id', $this->guest()->id)->exists());
+        $parent = $tree->labels()->where('name', $baseParent->name)->first();
+        $this->assertNotNull($parent);
+        $child = $tree->labels()->where('name', $baseChild->name)->first();
+        $this->assertNotNull($child);
+        $this->assertEquals($parent->id, $child->parent_id);
     }
 
     public function testDestroy()
