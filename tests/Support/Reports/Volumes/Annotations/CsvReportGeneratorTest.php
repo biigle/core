@@ -33,6 +33,7 @@ class CsvReportGeneratorTest extends TestCase
         'shape_name',
         'points',
         'attributes',
+        'annotation_id',
     ];
 
     public function testProperties()
@@ -90,6 +91,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
                 json_encode(['image' => 'attrs']),
+                $al->annotation->id,
             ]);
 
         $mock->shouldReceive('close')
@@ -170,6 +172,7 @@ class CsvReportGeneratorTest extends TestCase
                 $annotation->shape->name,
                 json_encode($annotation->points),
                 null,
+                $annotation->id,
             ]);
 
         $mock->shouldReceive('put')
@@ -190,6 +193,7 @@ class CsvReportGeneratorTest extends TestCase
                 $annotation->shape->name,
                 json_encode($annotation->points),
                 null,
+                $annotation->id,
             ]);
 
         $mock->shouldReceive('close')

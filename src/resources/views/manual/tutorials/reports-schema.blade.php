@@ -168,6 +168,7 @@ Animalia
                     The additional attributes of the image are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the operations performed on the image (e.g. a laser point detection to calculate the area of an image).
                 </p>
             </li>
+            <li><strong>Annotation ID</strong></li>
         </ol>
 
         <h3>Image label reports</h3>
@@ -235,6 +236,7 @@ Animalia
                         The key frames are encoded as a JSON array. Each key frame represents a time that corresponds to the ponts array at the same index. <code>null</code> menas there is a gap in the video annotation.
                     </p>
                 </li>
+                <li><strong>Video annotation ID</strong></li>
             </ol>
         @endif
     </div>

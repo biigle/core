@@ -31,6 +31,7 @@ class CsvReportGeneratorTest extends TestCase
         'shape_name',
         'points',
         'frames',
+        'video_annotation_id',
     ];
 
     public function setUp()
@@ -91,6 +92,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
                 json_encode($al->annotation->frames),
+                $al->annotation->id,
             ]);
 
         $mock->shouldReceive('close')
@@ -167,6 +169,7 @@ class CsvReportGeneratorTest extends TestCase
                 $annotation->shape->name,
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
+                $annotation->id,
             ]);
 
         $mock->shouldReceive('put')
@@ -185,6 +188,7 @@ class CsvReportGeneratorTest extends TestCase
                 $annotation->shape->name,
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
+                $annotation->id,
             ]);
 
         $mock->shouldReceive('close')

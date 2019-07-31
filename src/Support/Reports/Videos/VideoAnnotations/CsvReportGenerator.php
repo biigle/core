@@ -139,6 +139,7 @@ class CsvReportGenerator extends ReportGenerator
                 'shapes.name as shape_name',
                 'video_annotations.points',
                 'video_annotations.frames',
+                'video_annotations.id as video_annotation_id',
             ])
             ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
@@ -171,6 +172,7 @@ class CsvReportGenerator extends ReportGenerator
             'shape_name',
             'points',
             'frames',
+            'video_annotation_id',
         ]);
 
         foreach ($rows as $row) {
@@ -188,6 +190,7 @@ class CsvReportGenerator extends ReportGenerator
                 $row->shape_name,
                 $row->points,
                 $row->frames,
+                $row->video_annotation_id,
             ]);
         }
 
