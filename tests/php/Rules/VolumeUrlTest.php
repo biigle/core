@@ -37,11 +37,19 @@ class VolumeUrlTest extends TestCase
         $this->assertContains("Unable to access 'dir'", $validator->message());
     }
 
-    public function testOk()
+    public function testOkFile()
     {
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('dir');
         Storage::disk('test')->put('dir/file.txt', 'abc');
+        $validator = new VolumeUrl;
+        $this->assertTrue($validator->passes(null, 'test://dir'));
+    }
+
+    public function testOkDirectory()
+    {
+        Storage::fake('test');
+        Storage::disk('test')->makeDirectory('dir/dir2');
         $validator = new VolumeUrl;
         $this->assertTrue($validator->passes(null, 'test://dir'));
     }

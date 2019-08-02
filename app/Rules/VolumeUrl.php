@@ -106,7 +106,8 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (empty(Storage::disk($url[0])->files($url[1]))) {
+        $disk = Storage::disk($url[0]);
+        if (empty($disk->files($url[1])) && empty($disk->directories($url[1]))) {
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
             return false;
