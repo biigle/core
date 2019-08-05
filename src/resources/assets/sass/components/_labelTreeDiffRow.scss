@@ -1,0 +1,45 @@
+.label-tree-diff-row {
+    border-bottom: 1px solid $table-border-color;
+    display: flex;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+    }
+
+    &.label-tree-diff-row--to-add {
+        background-color: $state-success-bg;
+    }
+
+    &.label-tree-diff-row--to-remove {
+        background-color: $state-danger-bg;
+    }
+
+    .label-tree-label__name:hover {
+        color: inherit;
+        cursor: default;
+        background-color: inherit;
+    }
+
+    .label-tree-diff-row__button {
+        width: 32px;
+    }
+
+    .label-tree-diff-row__left, .label-tree-diff-row__right {
+        padding-left: $padding-small-horizontal;
+        flex: 1;
+    }
+
+    &.label-tree-diff-row--added {
+        .label-tree-diff-row__left {
+            color: $state-success-text;
+        }
+    }
+
+    &.label-tree-diff-row--removed {
+        .label-tree-diff-row__left {
+            color: $state-danger-text;
+            text-decoration: line-through;
+        }
+    }
+}
