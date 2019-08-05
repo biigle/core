@@ -28,7 +28,10 @@
             @if ($query)
                 matching '{{$query}}'.
             @else
-                for you. Why don't you <a href="{{route('projects-create')}}" title="Create a new project">create</a> one?
+                for you.
+                @can('create', \Biigle\Project::class)
+                    Why don't you <a href="{{route('projects-create')}}" title="Create a new project">create</a> one?
+                @endcan
             @endif
         </p>
     @endif
