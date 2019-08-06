@@ -5,15 +5,41 @@
  */
 biigle.$component('labelTrees.components.labelTreeDiff', {
     template: '<div class="label-tree-diff">' +
-        '<div class="label-tree-diff__names">' +
-            '<span class="h3" v-text="leftName"></span>' +
-            '<span class="h3" v-text="rightName"></span>' +
+        '<div>' +
+            '<button ' +
+                'class="btn btn-default" ' +
+                'title="Set all merge items as resolved" ' +
+                ':disabled="cannotResolveAll" ' +
+                '@click="resolveAll" ' +
+                '>' +
+                    'Resolve all' +
+            '</button>' +
+            ' ' +
+            '<button ' +
+                'class="btn btn-default" ' +
+                'title="Set all merge items as unresolved" ' +
+                ':disabled="cannotResolveNone" ' +
+                '@click="resolveNone" ' +
+                '>' +
+                    'Resolve none' +
+            '</button>' +
         '</div>' +
-        '<label-tree-diff-row ' +
-            'v-for="item in diff" ' +
-            ':item="item" '+
-            '@resolved="handleResolved" ' +
-            '></label-tree-diff-row>' +
+        '<table class="table table-hover">' +
+            '<thead>' +
+                '<tr>' +
+                    '<th></th>' +
+                    '<th v-text="leftName"></th>' +
+                    '<th v-text="rightName"></th>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>' +
+                '<label-tree-diff-row ' +
+                    'v-for="item in diff" ' +
+                    ':item="item" '+
+                    '@resolved="handleResolved" ' +
+                    '></label-tree-diff-row>' +
+            '</tbody>' +
+        '</table>' +
     '</div>',
     components: {
         labelTreeDiffRow: biigle.$require('labelTrees.components.labelTreeDiffRow'),
@@ -40,6 +66,10 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             type: String,
             default: '',
         },
+        usedLabels: {
+            type: Array,
+            default: [],
+        },
     },
     computed: {
         leftLabelsAsTree: function () {
@@ -51,6 +81,32 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             var childMap = this.generateChildMap(this.rightLabels);
 
             return this.generateLabelsAsTree(childMap[null], childMap);
+        },
+        usedLabelMap: function () {
+            var map = {};
+            this.usedLabels.forEach(function (id) {
+                map[id] = null;
+            });
+
+            return map;
+        },
+        cannotResolveAll: function () {
+            return this.diff.reduce(function (carry, row) {
+                if (row.resolvable) {
+                    return carry && row.resolved;
+                }
+
+                return carry;
+            }, true);
+        },
+        cannotResolveNone: function () {
+            return this.diff.reduce(function (carry, row) {
+                if (row.resolvable) {
+                    return carry && !row.resolved;
+                }
+
+                return carry;
+            }, true);
         },
     },
     methods: {
@@ -94,7 +150,6 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     rightLabels.shift();
                     diff.push({
                         level: level,
-                        resolved: false,
                         collapsible: left.children.length > 0 || right.children.length > 0,
                         left: left,
                         right: right,
@@ -105,6 +160,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     diff.push({
                         level: level,
                         resolved: false,
+                        resolvable: !this.usedLabelMap.hasOwnProperty(left.id),
                         collapsible: left.children.length > 0,
                         left: left,
                         right: null,
@@ -115,6 +171,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     diff.push({
                         level: level,
                         resolved: false,
+                        resolvable: true,
                         collapsible: right.children.length > 0,
                         left: null,
                         right: right,
@@ -128,6 +185,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     diff.push({
                         level: level,
                         resolved: false,
+                        resolvable: !this.usedLabelMap.hasOwnProperty(left.id),
                         collapsible: label.children.length > 0,
                         left: label,
                         right: null,
@@ -141,6 +199,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     diff.push({
                         level: level,
                         resolved: false,
+                        resolvable: true,
                         collapsible: label.children.length > 0,
                         left: null,
                         right: label,
@@ -181,7 +240,39 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             });
         },
         handleResolved: function (row) {
-            row.resolved = !row.resolved;
+            if (row.resolvable) {
+                if (row.resolved) {
+                    if (row.left === null) {
+                        this.$emit('cancel-add', row.right);
+                    } else if (row.right === null) {
+                        this.$emit('cancel-remove', row.left);
+                    }
+
+                    row.resolved = false;
+                } else {
+                    if (row.left === null) {
+                        this.$emit('add', row.right);
+                    } else if (row.right === null) {
+                        this.$emit('remove', row.left);
+                    }
+
+                    row.resolved = true;
+                }
+            }
+        },
+        resolveAll: function () {
+            this.diff.forEach(function (row) {
+                if (!row.resolved) {
+                    this.handleResolved(row);
+                }
+            }, this);
+        },
+        resolveNone: function () {
+            this.diff.forEach(function (row) {
+                if (row.resolved) {
+                    this.handleResolved(row);
+                }
+            }, this);
         },
     },
     created: function () {

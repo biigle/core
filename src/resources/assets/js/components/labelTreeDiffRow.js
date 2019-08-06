@@ -4,8 +4,8 @@
  * @type {Object}
  */
 biigle.$component('labelTrees.components.labelTreeDiffRow', {
-    template: '<div class="label-tree-diff-row" :class="classObject">' +
-        '<div class="label-tree-diff-row__button">' +
+    template: '<tr class="label-tree-diff-row" :class="classObject">' +
+        '<td class="label-tree-diff-row__button">' +
             '<button ' +
                 'v-if="labelToAdd" ' +
                 'class="btn btn-sm btn-default" ' +
@@ -19,13 +19,14 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 'v-if="labelToRemove" ' +
                 'class="btn btn-sm btn-default" ' +
                 ':class="removeButtonClass" ' +
-                'title="Remove the label from the left tree" ' +
+                ':title="removeTitle" ' +
                 '@click="emitResolved" ' +
+                ':disabled="!resolvable" ' +
                 '>' +
                     '<i class="fa fa-minus"></i>' +
             '</button>' +
-        '</div>' +
-        '<div class="label-tree-diff-row__left">' +
+        '</td>' +
+        '<td class="label-tree-diff-row__left">' +
             '<div v-if="hasLeft" class="label-tree-label" :style="labelStyle">' +
                 '<div class="label-tree-label__name">' +
                     '<span class="label-tree-label__color" :style="leftColorStyle"></span>' +
@@ -38,16 +39,16 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                     '<span v-text="rightLabel.name"></span>' +
                 '</div>' +
             '</div>' +
-        '</div>' +
-        '<div class="label-tree-diff-row__right">' +
+        '</td>' +
+        '<td class="label-tree-diff-row__right">' +
             '<div class="label-tree-label" :style="labelStyle">' +
                 '<div v-if="hasRight" class="label-tree-label__name">' +
                     '<span class="label-tree-label__color" :style="rightColorStyle"></span>' +
                     '<span v-text="rightLabel.name"></span>' +
                 '</div>' +
             '</div>' +
-        '</div>' +
-    '</div>',
+        '</td>' +
+    '</tr>',
     data: function () {
         return {
             //
@@ -93,9 +94,9 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
         classObject: function () {
             return {
-                'label-tree-diff-row--to-add': this.labelToAdd && !this.resolved,
+                'success': this.labelToAdd && !this.resolved,
                 'label-tree-diff-row--added': this.labelToAdd && this.resolved,
-                'label-tree-diff-row--to-remove': this.labelToRemove && !this.resolved,
+                'danger': this.labelToRemove && !this.resolved,
                 'label-tree-diff-row--removed': this.labelToRemove && this.resolved,
             };
         },
@@ -117,8 +118,18 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         resolved: function () {
             return this.item.resolved;
         },
+        resolvable: function () {
+            return this.item.resolvable;
+        },
         labelAdded: function () {
             return this.labelToAdd && this.resolved;
+        },
+        removeTitle: function () {
+            if (this.resolvable) {
+                return 'Remove the label from the left tree';
+            }
+
+            return 'This label cannot be removed because it is used';
         },
     },
     methods: {

@@ -1,18 +1,18 @@
 .label-tree-diff-row {
-    border-bottom: 1px solid $table-border-color;
-    display: flex;
-
-    &:hover {
-        color: white;
-        background-color: $gray-lighter;
+    td {
+        padding: 0;
     }
 
-    &.label-tree-diff-row--to-add {
-        background-color: $state-success-bg;
+    &.success, &.success + & {
+        td {
+            border-color: $state-success-border;
+        }
     }
 
-    &.label-tree-diff-row--to-remove {
-        background-color: $state-danger-bg;
+    &.danger, &.danger + & {
+        td {
+            border-color: $state-danger-border;
+        }
     }
 
     .label-tree-label__name:hover {
@@ -23,11 +23,11 @@
 
     .label-tree-diff-row__button {
         width: 32px;
+        padding: 0;
     }
 
     .label-tree-diff-row__left, .label-tree-diff-row__right {
-        padding-left: $padding-small-horizontal;
-        flex: 1;
+        padding: 0 0 0 $padding-small-horizontal;
     }
 
     &.label-tree-diff-row--added {
