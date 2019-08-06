@@ -12,6 +12,21 @@ use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelTreeMergeControllerTest extends TestCase
 {
+    public function testIndex()
+    {
+        $baseTree = LabelTreeTest::create();
+        $editor = UserTest::create();
+
+        $this->be($editor);
+        $this->get("label-trees/{$baseTree->id}/merge")
+            ->assertStatus(403);
+        $baseTree->addMember($editor, Role::editorId());
+        Cache::flush();
+
+        $this->get("label-trees/{$baseTree->id}/merge")
+            ->assertStatus(200);
+    }
+
     public function testShow()
     {
         $baseTree = LabelTreeTest::create();

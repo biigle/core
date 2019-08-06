@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', "Merge '{$mergeTree->name}' into '{$baseTree->name}'")
+@section('title', "Merge '{$mergeTree->versionedName}' into '{$baseTree->versionedName}'")
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">

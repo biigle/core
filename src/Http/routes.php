@@ -16,6 +16,11 @@ $router->group(['middleware' => 'auth'], function ($router) {
         'uses' => 'LabelTreesController@show',
     ]);
 
+    $router->get('label-trees/{id}/merge', [
+        'as'   => 'label-trees-merge-index',
+        'uses' => 'LabelTreeMergeController@index',
+    ]);
+
     $router->get('label-trees/{id}/merge/{id2}', [
         'as'   => 'label-trees-merge',
         'uses' => 'LabelTreeMergeController@show',

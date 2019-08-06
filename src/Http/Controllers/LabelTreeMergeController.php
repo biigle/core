@@ -14,6 +14,30 @@ use Biigle\Modules\Videos\VideoAnnotationLabel;
 class LabelTreeMergeController extends Controller
 {
     /**
+     * Show the label tree merge index page.
+     *
+     * @param Request $request
+     * @param int $id1 ID of the base label tree
+     *
+     * @return mixed
+     */
+    public function index(Request $request, $id)
+    {
+        $tree = LabelTree::findOrFail($id);
+        $this->authorize('createLabel', $tree);
+        $mergeCandidates = LabelTree::accessibleBy($request->user())
+            ->where('id', '!=', $tree->id)
+            ->select('id', 'name', 'description', 'version_id')
+            ->with('version')
+            ->get();
+
+        return view('label-trees::merge.index', [
+            'tree' => $tree,
+            'mergeCandidates' => $mergeCandidates,
+        ]);
+    }
+
+    /**
      * Show the label tree merge page.
      *
      * @param int $id1 ID of the base label tree
