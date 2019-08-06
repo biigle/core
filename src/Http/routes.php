@@ -41,4 +41,16 @@ $router->group(['middleware' => 'auth'], function ($router) {
         'middleware' => 'can:sudo',
         'uses' => 'LabelTreesController@admin',
     ]);
+
+});
+
+$router->group([
+        'middleware' => 'auth:web,api',
+        'prefix' => 'api/v1',
+        'namespace' => 'Api',
+    ], function ($router) {
+        $router->resource('label-trees.merge-labels', 'LabelTreeMergeController', [
+            'only' => ['store'],
+            'parameters' => ['label-trees' => 'id'],
+        ]);
 });
