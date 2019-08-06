@@ -72,6 +72,14 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         },
     },
     computed: {
+        leftLabelsById: function () {
+            var map = {};
+            this.leftLabels.forEach(function (label) {
+                map[label.id] = label;
+            });
+
+            return map;
+        },
         leftLabelsAsTree: function () {
             var childMap = this.generateChildMap(this.leftLabels);
 
@@ -85,8 +93,12 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         usedLabelMap: function () {
             var map = {};
             this.usedLabels.forEach(function (id) {
-                map[id] = null;
-            });
+                // Also add all parent labels as "used".
+                do {
+                    map[id] = null;
+                    id = this.leftLabelsById[id].parent_id;
+                } while (id !== null);
+            }, this);
 
             return map;
         },
@@ -150,7 +162,6 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     rightLabels.shift();
                     diff.push({
                         level: level,
-                        collapsible: left.children.length > 0 || right.children.length > 0,
                         left: left,
                         right: right,
                     });
@@ -161,7 +172,6 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                         level: level,
                         resolved: false,
                         resolvable: !this.usedLabelMap.hasOwnProperty(left.id),
-                        collapsible: left.children.length > 0,
                         left: left,
                         right: null,
                     });
@@ -172,7 +182,6 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                         level: level,
                         resolved: false,
                         resolvable: true,
-                        collapsible: right.children.length > 0,
                         left: null,
                         right: right,
                     });
@@ -185,8 +194,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     diff.push({
                         level: level,
                         resolved: false,
-                        resolvable: !this.usedLabelMap.hasOwnProperty(left.id),
-                        collapsible: label.children.length > 0,
+                        resolvable: !this.usedLabelMap.hasOwnProperty(label.id),
                         left: label,
                         right: null,
                     });
@@ -200,7 +208,6 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                         level: level,
                         resolved: false,
                         resolvable: true,
-                        collapsible: label.children.length > 0,
                         left: null,
                         right: label,
                     });
@@ -242,23 +249,39 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         handleResolved: function (row) {
             if (row.resolvable) {
                 if (row.resolved) {
+                    this.cancelResolved(row);
                     if (row.left === null) {
-                        this.$emit('cancel-add', row.right);
+                        this.resolveCancelAddAllChildren(row);
                     } else if (row.right === null) {
-                        this.$emit('cancel-remove', row.left);
+                        this.resolveCancelDeleteAllParents(row);
                     }
-
-                    row.resolved = false;
                 } else {
+                    this.setResolved(row);
                     if (row.left === null) {
-                        this.$emit('add', row.right);
+                        this.resolveAddAllParents(row);
                     } else if (row.right === null) {
-                        this.$emit('remove', row.left);
+                        this.resolveDeleteAllChildren(row);
                     }
-
-                    row.resolved = true;
                 }
             }
+        },
+        cancelResolved: function (row) {
+            if (row.left === null) {
+                this.$emit('cancel-add', row.right);
+            } else if (row.right === null) {
+                this.$emit('cancel-remove', row.left);
+            }
+
+            row.resolved = false;
+        },
+        setResolved: function (row) {
+            if (row.left === null) {
+                this.$emit('add', row.right);
+            } else if (row.right === null) {
+                this.$emit('remove', row.left);
+            }
+
+            row.resolved = true;
         },
         resolveAll: function () {
             this.diff.forEach(function (row) {
@@ -273,6 +296,54 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     this.handleResolved(row);
                 }
             }, this);
+        },
+        doForAllChildren: function (row, callback) {
+            var level = row.level + 1;
+            var index = this.diff.indexOf(row) + 1;
+            while (this.diff[index].level >= level) {
+                callback.call(this, this.diff[index]);
+                index += 1;
+            }
+        },
+        doForAllParents: function (row, callback) {
+            var level = row.level;
+            var index = this.diff.indexOf(row) - 1;
+            while (level > 0 && index >= 0) {
+                if (this.diff[index].level < level) {
+                    level = this.diff[index].level;
+                    callback.call(this, this.diff[index]);
+                }
+
+                index -= 1;
+            }
+        },
+        resolveDeleteAllChildren: function (row) {
+            this.doForAllChildren(row, function (child) {
+                if (child.right === null) {
+                    this.setResolved(child);
+                }
+            });
+        },
+        resolveCancelAddAllChildren: function (row) {
+            this.doForAllChildren(row, function (child) {
+                if (child.left === null) {
+                    this.cancelResolved(child);
+                }
+            });
+        },
+        resolveAddAllParents: function (row) {
+            this.doForAllParents(row, function (child) {
+                if (child.left === null) {
+                    this.setResolved(child);
+                }
+            });
+        },
+        resolveCancelDeleteAllParents: function (row) {
+            this.doForAllParents(row, function (child) {
+                if (child.right === null) {
+                    this.cancelResolved(child);
+                }
+            });
         },
     },
     created: function () {

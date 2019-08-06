@@ -34,7 +34,7 @@
                 ></label-tree-diff>
             <div class="pull-right">
                 <a href="{{route('label-trees', $baseTree->id)}}" class="btn btn-default" title="Back to {{$baseTree->versionedName}}">Cancel</a>
-                <button class="btn btn-success" title="Perform the merge" v-on:click="submitMerge" v-bind:disabled="cannotMerge">Merge</button>
+                <button class="btn btn-success" title="Merge the resolved differences into {{$baseTree->versionedName}}" v-on:click="submitMerge" v-bind:disabled="cannotMerge">Merge into {{$baseTree->versionedName}}</button>
             </div>
         </div>
     </div>

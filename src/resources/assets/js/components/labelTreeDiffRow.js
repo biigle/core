@@ -10,7 +10,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 'v-if="labelToAdd" ' +
                 'class="btn btn-sm btn-default" ' +
                 ':class="addButtonClass" ' +
-                'title="Add the label to the left tree" ' +
+                'title="Mark the addition as resolved" ' +
                 '@click="emitResolved" ' +
                 '>' +
                     '<i class="fa fa-plus"></i>' +
@@ -126,10 +126,10 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
         removeTitle: function () {
             if (this.resolvable) {
-                return 'Remove the label from the left tree';
+                return 'Mark the deletion as resolved';
             }
 
-            return 'This label cannot be removed because it is used';
+            return 'This label cannot be removed because it or one of its child labels is used';
         },
     },
     methods: {
