@@ -217,33 +217,30 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             return diff;
         },
-        filterCollapsedItems: function (diff) {
+        filterRelevantItems: function (diff) {
             var isDifferent = [];
 
             diff.forEach(function (row, index) {
-                row.relevant = row.level !== 0;
                 if (row.left === null || row.right === null) {
                     isDifferent.push(index);
                 }
             });
 
             isDifferent.forEach(function (index) {
-                if (diff[index].relevant) {
-                    diff[index].relevant = false;
-                    var currentLevel = diff[index].level;
-                    var currentIndex = index;
-                    while (currentIndex >= 0 && currentLevel > 0) {
-                        if (diff[currentIndex].level < currentLevel) {
-                            diff[currentIndex].relevant = false;
-                            currentLevel = diff[currentIndex].level;
-                        }
-                        currentIndex -= 1;
+                diff[index].relevant = true;
+                var currentLevel = diff[index].level;
+                var currentIndex = index;
+                while (currentIndex >= 0 && currentLevel > 0) {
+                    if (diff[currentIndex].level < currentLevel) {
+                        diff[currentIndex].relevant = true;
+                        currentLevel = diff[currentIndex].level;
                     }
+                    currentIndex -= 1;
                 }
             });
 
             return diff.filter(function (row) {
-                return !row.relevant;
+                return row.relevant;
             });
         },
         handleResolved: function (row) {
@@ -300,7 +297,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         doForAllChildren: function (row, callback) {
             var level = row.level + 1;
             var index = this.diff.indexOf(row) + 1;
-            while (this.diff[index].level >= level) {
+            while (this.diff[index] && this.diff[index].level >= level) {
                 callback.call(this, this.diff[index]);
                 index += 1;
             }
@@ -347,7 +344,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         },
     },
     created: function () {
-        this.diff = this.filterCollapsedItems(
+        this.diff = this.filterRelevantItems(
             this.generateTreeDiff(
                 this.leftLabelsAsTree,
                 this.rightLabelsAsTree
