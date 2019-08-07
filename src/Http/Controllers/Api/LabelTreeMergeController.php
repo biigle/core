@@ -2,6 +2,9 @@
 
 namespace Biigle\Modules\LabelTrees\Http\Controllers\Api;
 
+use DB;
+use Biigle\Label;
+use Ramsey\Uuid\Uuid;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\LabelTrees\Http\Requests\StoreMerge;
 
@@ -44,25 +47,36 @@ class LabelTreeMergeController extends Controller
      */
     public function store(StoreMerge $request)
     {
-        // if ($request->filled('label_source_id')) {
-        //     $source = LabelSource::findOrFail($request->input('label_source_id'));
-        //     $labels = $source->getAdapter()->create($request->tree->id, $request);
-        // } else {
-        //     $label = new Label;
-        //     $label->name = $request->input('name');
-        //     $label->color = $request->input('color');
-        //     $label->parent_id = $request->input('parent_id');
-        //     $label->label_tree_id = $request->tree->id;
-        //     $label->uuid = Uuid::uuid4();
-        //     $label->save();
+        DB::transaction(function () use ($request) {
+            $newIds = [];
+            foreach ($request->create as $label) {
+                // Parent labels are always created before their children so their IDs
+                // were already added to $newIds.
+                if (array_key_exists('parent_index', $label)) {
+                    $label['parent_id'] = $newIds[$label['parent_index']];
+                    unset($label['parent_index']);
+                }
 
-        //     $labels = [$label];
-        // }
+                $l = new Label;
+                $l->name = $label['name'];
+                $l->color = $label['color'];
+                if (array_key_exists('parent_id', $label)) {
+                    $l->parent_id = $label['parent_id'];
+                }
+                $l->label_tree_id = $request->tree->id;
+                $l->uuid = Uuid::uuid4();
+                $l->save();
+                $newIds[] = $l->id;
+            }
 
-        // if ($this->isAutomatedRequest()) {
-        //     return $labels;
-        // }
+            $request->tree->labels()
+                ->whereIn('id', $request->remove)
+                ->delete();
+        });
 
-        // return $this->fuzzyRedirect()->with('saved', true);
+
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', true);
+        }
     }
 }
