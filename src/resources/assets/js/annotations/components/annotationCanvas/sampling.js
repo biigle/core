@@ -56,8 +56,8 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 var locations = [];
 
-                for (var i = this.regularSamplingColumns - 1; i >= 0; i--) {
-                    for (var j = this.regularSamplingRows - 1; j >= 0; j--) {
+                for (var i = this.regularSamplingRows - 1; i >= 0; i--) {
+                    for (var j = this.regularSamplingColumns - 1; j >= 0; j--) {
                         locations.unshift([
                             start[0] + j * stepSize[0],
                             start[1] + i * stepSize[1],
