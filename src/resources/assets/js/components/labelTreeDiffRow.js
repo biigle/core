@@ -11,7 +11,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 'class="btn btn-sm btn-default" ' +
                 ':class="addButtonClass" ' +
                 ':disabled="disabled" ' +
-                'title="Mark the addition as resolved" ' +
+                'title="Accept the addition" ' +
                 '@click="emitResolved" ' +
                 '>' +
                     '<i class="fa fa-plus"></i>' +
@@ -22,7 +22,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 ':class="removeButtonClass" ' +
                 ':title="removeTitle" ' +
                 '@click="emitResolved" ' +
-                ':disabled="!resolvable || disabled" ' +
+                ':disabled="!acceptable || disabled" ' +
                 '>' +
                     '<i class="fa fa-minus"></i>' +
             '</button>' +
@@ -99,10 +99,10 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
         classObject: function () {
             return {
-                'success': this.labelToAdd && !this.resolved,
-                'label-tree-diff-row--added': this.labelToAdd && this.resolved,
-                'danger': this.labelToRemove && !this.resolved,
-                'label-tree-diff-row--removed': this.labelToRemove && this.resolved,
+                'success': this.labelToAdd && !this.accepted,
+                'label-tree-diff-row--added': this.labelToAdd && this.accepted,
+                'danger': this.labelToRemove && !this.accepted,
+                'label-tree-diff-row--removed': this.labelToRemove && this.accepted,
             };
         },
         labelStyle: function () {
@@ -112,34 +112,34 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
         addButtonClass: function () {
             return {
-                'btn-success': this.resolved,
+                'btn-success': this.accepted,
             };
         },
         removeButtonClass: function () {
             return {
-                'btn-danger': this.resolved,
+                'btn-danger': this.accepted,
             };
         },
-        resolved: function () {
-            return this.item.resolved;
+        accepted: function () {
+            return this.item.accepted;
         },
-        resolvable: function () {
-            return this.item.resolvable;
+        acceptable: function () {
+            return this.item.acceptable;
         },
         labelAdded: function () {
-            return this.labelToAdd && this.resolved;
+            return this.labelToAdd && this.accepted;
         },
         removeTitle: function () {
-            if (this.resolvable) {
-                return 'Mark the deletion as resolved';
+            if (this.acceptable) {
+                return 'Accept the deletion';
             }
 
-            return 'This label cannot be removed because it or one of its child labels is used';
+            return 'This label cannot be deleted because it or one of its child labels is used';
         },
     },
     methods: {
         emitResolved: function () {
-            this.$emit('resolved', this.item);
+            this.$emit('accepted', this.item);
         },
     },
 });
