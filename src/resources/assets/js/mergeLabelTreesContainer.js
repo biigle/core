@@ -6,7 +6,7 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
     var baseTree = biigle.$require('labelTrees.baseTree');
     var mergeTree = biigle.$require('labelTrees.mergeTree');
     var usedLabels = biigle.$require('labelTrees.usedLabels');
-    var labelTreeApi = biigle.$require('api.labelTree');
+    var mergeLabelTreesApi = biigle.$require('labelTrees.api.mergeLabelTrees');
 
     new Vue({
         el: element,
@@ -22,10 +22,14 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
             usedLabels: usedLabels,
             toAdd: [],
             toRemove: [],
+            merged: false,
         },
         computed: {
             cannotMerge: function () {
                 return this.loading || (this.toAdd.length === 0 && this.toRemove.length === 0);
+            },
+            disableDiff: function () {
+                return this.loading || this.merged;
             },
         },
         methods: {
@@ -51,10 +55,68 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
                     this.toRemove.splice(index, 1);
                 }
             },
+            bundleToAdd: function (toAdd) {
+                var toAddMap = {};
+                toAdd.forEach(function (label) {
+                    toAddMap[label.id] = {
+                        name: label.name,
+                        color: label.color,
+                        parent_id: label.parent_id,
+                        left_parent_id: label.left_parent_id,
+                    };
+                });
+
+                var bundled = [];
+                Object.keys(toAddMap).forEach(function (id) {
+                    var label = toAddMap[id];
+                    // The label should be added to the list of child labels of one of
+                    // the labels that should also be created.
+                    if (label.parent_id && toAddMap.hasOwnProperty(label.parent_id)) {
+                        if (toAddMap[label.parent_id].children) {
+                            toAddMap[label.parent_id].children.push(label);
+                        } else {
+                            toAddMap[label.parent_id].children = [label];
+                        }
+                        delete label.parent_id;
+                        delete label.left_parent_id;
+                    } else {
+                        delete label.parent_id;
+                        // If left_parent_id is set, the label should be inserted in some
+                        // deeper level of the left label tree. Else it should be
+                        // inserted as root label.
+                        if (label.left_parent_id) {
+                            label.parent_id = label.left_parent_id;
+                        }
+                        delete label.left_parent_id;
+
+                        bundled.push(label);
+                    }
+                });
+
+                return bundled;
+            },
+            bundleToRemove: function (toRemove) {
+                return toRemove.map(function (label) {
+                    return label.id;
+                });
+            },
             submitMerge: function () {
                 this.startLoading();
-                console.log('add', this.toAdd);
-                console.log('remove', this.toRemove);
+                var bundledToAdd = this.bundleToAdd(this.toAdd);
+                var bundledToRemove = this.bundleToRemove(this.toRemove);
+
+                mergeLabelTreesApi.save({id: baseTree.id}, {
+                        create: bundledToAdd,
+                        remove: bundledToRemove,
+                    })
+                    .then(this.handleMergeSuccess, this.handleMergeError);
+            },
+            handleMergeError: function (response) {
+                this.finishLoading();
+                messages.handleResponseError(response);
+            },
+            handleMergeSuccess: function () {
+                this.merged = true;
             },
         },
     });

@@ -5,7 +5,7 @@
  */
 biigle.$component('labelTrees.components.labelTreeDiff', {
     template: '<div class="label-tree-diff">' +
-        '<div>' +
+        '<div v-if="hasDiff">' +
             '<button ' +
                 'class="btn btn-default" ' +
                 'title="Set all merge items as resolved" ' +
@@ -24,7 +24,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     'Resolve none' +
             '</button>' +
         '</div>' +
-        '<table class="table table-hover">' +
+        '<table v-if="hasDiff" class="table table-hover">' +
             '<thead>' +
                 '<tr>' +
                     '<th></th>' +
@@ -36,10 +36,14 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 '<label-tree-diff-row ' +
                     'v-for="item in diff" ' +
                     ':item="item" '+
+                    ':disabled="disabled" '+
                     '@resolved="handleResolved" ' +
                     '></label-tree-diff-row>' +
             '</tbody>' +
         '</table>' +
+        '<div v-else class="text-center lead">' +
+            'The label trees are identical.' +
+        '</div>' +
     '</div>',
     components: {
         labelTreeDiffRow: biigle.$require('labelTrees.components.labelTreeDiffRow'),
@@ -69,6 +73,10 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         usedLabels: {
             type: Array,
             default: [],
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {
@@ -103,7 +111,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             return map;
         },
         cannotResolveAll: function () {
-            return this.diff.reduce(function (carry, row) {
+            return this.disabled || this.diff.reduce(function (carry, row) {
                 if (row.resolvable) {
                     return carry && row.resolved;
                 }
@@ -112,13 +120,16 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             }, true);
         },
         cannotResolveNone: function () {
-            return this.diff.reduce(function (carry, row) {
+            return this.disabled || this.diff.reduce(function (carry, row) {
                 if (row.resolvable) {
                     return carry && !row.resolved;
                 }
 
                 return carry;
             }, true);
+        },
+        hasDiff: function () {
+            return this.diff.length > 0;
         },
     },
     methods: {
@@ -145,7 +156,12 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     return label;
                 }, this)
                 .sort(function (a, b) {
-                    return a.name <= b.name ? -1 : 1;
+                    // Sort by name and color to correctly handle labels with the same
+                    // name but different color.
+                    var aCompare = a.name + '-' + a.color;
+                    var bCompare = b.name + '-' + b.color;
+
+                    return aCompare <= bCompare ? -1 : 1;
                 });
         },
         generateTreeDiff: function (leftLabels, rightLabels, diff, level) {
@@ -342,13 +358,28 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 }
             });
         },
+        setLeftParentIds: function (diff) {
+            var rightToLeftMap = {};
+            diff.forEach(function (row) {
+                if (row.right && row.left) {
+                    rightToLeftMap[row.right.id] = row.left.id;
+                }
+            });
+
+            diff.forEach(function (row) {
+                if (row.right && row.right.parent_id) {
+                    row.right.left_parent_id = rightToLeftMap[row.right.parent_id];
+                }
+            });
+
+            return diff;
+        },
     },
     created: function () {
-        this.diff = this.filterRelevantItems(
-            this.generateTreeDiff(
-                this.leftLabelsAsTree,
-                this.rightLabelsAsTree
-            )
-        );
+        var diff = this.generateTreeDiff(this.leftLabelsAsTree, this.rightLabelsAsTree);
+        diff = this.filterRelevantItems(diff);
+        // THe left parent IDs are required to bundle the data for the API later.
+        diff = this.setLeftParentIds(diff);
+        this.diff = diff;
     },
 });

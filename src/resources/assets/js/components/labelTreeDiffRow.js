@@ -10,6 +10,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 'v-if="labelToAdd" ' +
                 'class="btn btn-sm btn-default" ' +
                 ':class="addButtonClass" ' +
+                ':disabled="disabled" ' +
                 'title="Mark the addition as resolved" ' +
                 '@click="emitResolved" ' +
                 '>' +
@@ -21,7 +22,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 ':class="removeButtonClass" ' +
                 ':title="removeTitle" ' +
                 '@click="emitResolved" ' +
-                ':disabled="!resolvable" ' +
+                ':disabled="!resolvable || disabled" ' +
                 '>' +
                     '<i class="fa fa-minus"></i>' +
             '</button>' +
@@ -58,6 +59,10 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         item: {
             type: Object,
             required: true,
+        },
+        disabled: {
+            type: Boolean,
+            required: false,
         },
     },
     computed: {
