@@ -73,5 +73,9 @@
             If you have access to a (public) label tree and want to modify it but are not a member of the label tree, you can fork it. A fork is a full copy of a label tree with all of its labels that belongs to you, the creator of the fork. Since you are now a member of the forked label tree, you can freely edit it and update its labels. To fork a label tree, visit the overview page of the label tree and click <button class="btn btn-default btn-xs">Fork</button> to the right of the label tree name. You can now choose a new name, description or visibility for the fork. Finally, click <button class="btn btn-success btn-xs">Create fork</button> to create the fork.
         </p>
 
+        <p>
+            If you want to apply the changes that you have done to a forked label tree to the original label tree, you can ask the owner of the original label tree to perform a <a href="{{route('manual-tutorials', ['label-trees', 'merge-label-trees'])}}">merge</a>.
+        </p>
+
     </div>
 @endsection
