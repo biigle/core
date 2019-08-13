@@ -17,4 +17,10 @@
 <p>
     Everything you need to know about versioned label trees.
 </p>
+<h4>
+    <a href="{{route('manual-tutorials', ['label-trees', 'merge-label-trees'])}}">Merge Label Trees</a>
+</h4>
+<p>
+    View and resolve differences between label trees.
+</p>
 @mixin('labelTreesManual')

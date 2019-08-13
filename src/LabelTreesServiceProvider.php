@@ -44,6 +44,7 @@ class LabelTreesServiceProvider extends ServiceProvider
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
     }
 

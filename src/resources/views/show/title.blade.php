@@ -5,6 +5,7 @@
             <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
         </span>
         <span class="pull-right label-tree-buttons" v-else>
+            <a href="{{route('label-trees-merge-index', $tree->id)}}" class="btn btn-default" title="Merge another label tree into this one">Merge</a>
             <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
             <button class="btn btn-default" v-on:click="startEditing" :disabled="loading" title="Edit this label tree">Edit</button>
             <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading" title="Delete this label tree">Delete</button>
@@ -35,6 +36,9 @@
     @else
         <h2>
             <span class="pull-right">
+                @can('create-label', $tree)
+                    <a href="{{route('label-trees-merge-index', $tree->id)}}" class="btn btn-default" title="Merge another label tree into this one">Merge</a>
+                @endcan
                 <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
                 @if ($members->pluck('id')->contains($user->id))
                     <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>

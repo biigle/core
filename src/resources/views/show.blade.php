@@ -17,8 +17,6 @@
     biigle.$declare('labelTrees.redirectUrl', '{{route('home')}}');
     biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
 
-    biigle.$declare('labelTrees.userId', {!! $user->id !!});
-
     @can('update', $tree)
         biigle.$declare('labelTrees.authorizedProjects', {!! $authorizedProjects !!});
         biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});
