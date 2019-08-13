@@ -17,49 +17,49 @@
 	</p>
 
 	<p>
-		But before writing any production code, there always comes the testing. If you never heard of Test Driven Development, go <a href="http://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd">ask Uncle Bob</a> and come back afterwards. Having a server application with restricted access and sensitive data thoroughly tested is always essential!
+		But before writing any production code, there always comes the testing. If you never heard of Test Driven Development, go <a href="https://web.archive.org/web/20190510110550/butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd">ask Uncle Bob</a> and come back afterwards. Having a server application with restricted access and sensitive data thoroughly tested is always essential!
 	</p>
 
 	<h3><a name="testing"></a>Testing</h3>
 
 	<p>
-		Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/php</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
+		Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/php</code>. All you have to do is run <code>composer test</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
 	</p>
 	<p>
 		As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/php</code> directory of the core application to the new <code>tests</code> directory of our package:
 	</p>
 <pre>
-cd tests/php
-ln -s ../../vendor/biigle/quotes/tests/ quotes-module
+ln -s ../../../vendor/biigle/quotes/tests/ tests/php/Modules/Quotes
 </pre>
 	<p>
-		Now the tests of our package are just like any other part of the core application and will be run with <code>phpunit</code> as well. Let's try testing a new test! Create a new test class in <code>vendor/biigle/quotes/tests</code> called <code>QuotesServiceProvider.php</code> with the following content:
+		Now the tests of our package are just like any other part of the core application and will be run with <code>composer test</code> as well. Let's try testing a new test! Create a new test class in <code>vendor/biigle/quotes/tests</code> called <code>QuotesServiceProviderTest.php</code> with the following content:
 	</p>
 <pre>
 &lt;?php
+
+namespace Biigle\Tests\Modules\Quotes;
+
+use TestCase;
+use Biigle\Modules\Quotes\QuotesServiceProvider;
 
 class QuotesServiceProviderTest extends TestCase {
 
    public function testServiceProvider()
    {
-      $this->assertTrue(
-         class_exists('Biigle\Modules\Quotes\QuotesServiceProvider')
-      );
+      $this->assertTrue(class_exists(QuotesServiceProvider::class));
    }
 }
 </pre>
 	<p>
-		You see, the test class looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.4/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
+		You see, the test class is located in the <code>Biigle\Tests</code> namespace and looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.5/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
 	</p>
 <pre>
-> phpunit --filter QuotesServiceProviderTest
-PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
+> composer testf QuotesServiceProviderTest
+PHPUnit 7.5.13 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/biigle/phpunit.xml
+.                                                        1 / 1 (100%)
 
-.
-
-Time: 380 ms, Memory: 24.50Mb
+Time: 760 ms, Memory: 42.00 MB
 
 OK (1 test, 1 assertion)
 </pre>
@@ -70,20 +70,62 @@ OK (1 test, 1 assertion)
 	<h3><a name="a-new-route"></a>A new route</h3>
 
 	<p>
-		Usually, when creating a new view, we also need to create a new route. Routes are all possible URLs your web application can respond to; all RESTful API endpoints are routes, for example, and even the URL of this simple tutorial view is a route, too. What we would like to create is a <code>quotes</code> route, like <code>{{ url('quotes') }}</code>. Additionally only logged in users should be allowed to visit this route.
+		Usually, when creating a new view, we also need to create a new route. Routes are all possible URLs your web application can respond to; all RESTful API endpoints are routes, for example, and even the URL of this simple tutorial view is a route, too. What we would like to create is a <code>quotes</code> route, like <code>{{ url('quotes') }}</code>. Additionally, only logged in users should be allowed to visit this route.
 	</p>
 
 	<h4><a name="adding-routes-with-a-custom-package"></a>Adding routes with a custom package</h4>
 
 	<p>
-		All routes of the core application are declared in the <code>app/Http/routes.php</code> file. If you take a look at this file, you'll see that route definition can get quite complex. Fortunately being able to add routes with custom packages, too, is a great way of keeping things organized.
+		All routes of the core application are declared in the <code>routes</code> directory. If you take a look at the files in this directory, you'll see that route definitions can get quite complex. Fortunately being able to add routes with custom packages is a great way of keeping things organized.
 	</p>
 	<p>
-		So just like the core application, we'll create a new <code>src/Http</code> directory for our package and add an empty <code>routes.php</code> file to it. For Laravel to load the routes declared in this file, we have to extend the <code>boot</code> method of our <code>QuotesServiceProvider</code> yet again and add the following line:
+		So just like the core application, we'll create a new <code>src/Http</code> directory for our package and add an empty <code>routes.php</code> file to it. For Laravel to load the routes declared in this file, we have to extend the <code>boot</code> method of our <code>QuotesServiceProvider</code> yet again:
 	</p>
 <pre>
-include __DIR__.'/Http/routes.php';
+&lt;?php
+
+namespace Biigle\Modules\Quotes;
+
+use Biigle\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+
+class QuotesServiceProvider extends ServiceProvider {
+
+   /**
+   * Bootstrap the application events.
+   *
+   * @param Modules $modules
+   * @param  Router  $router
+   * @return  void
+   */
+   public function boot(Modules $modules, Router $router)
+   {
+      $this->loadViewsFrom(__DIR__.'/resources/views', 'quotes');
+      $router->group([
+            'namespace' => 'Biigle\Modules\Quotes\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
+      $modules->register('quotes', ['viewMixins' => ['dashboardMain']]);
+   }
+
+   /**
+   * Register the service provider.
+   *
+   * @return  void
+   */
+   public function register()
+   {
+      //
+   }
+}
+
 </pre>
+    <p>
+        The new addition injects the <code>$router</code> object into the <code>boot</code> method. We then use this object to declare a new group of routes that will use the <code>Biigle\Modules\Quotes\Http\Controllers</code> namespace and are defined in the <code>src/Http/routes.php</code> file.
+    </p>
 	<p>
 		Now we can start implementing our first route.
 	</p>
@@ -91,44 +133,43 @@ include __DIR__.'/Http/routes.php';
 	<h4><a name="implementing-a-new-route"></a>Implementing a new route</h4>
 
 	<p>
-		But first come the tests! Since it is very handy to have the tests for routes, controllers and views in one place (those three always belong together), we'll create a new test class already called <code>tests/QuotesControllerTest.php</code> looking like this:
+		But first come the tests! Since it is very handy to have the tests for routes, controllers and views in one place (those three always belong together), we'll create a new test class already called <code>tests/Http/Controllers/QuotesControllerTest.php</code> looking like this:
 	</p>
 <pre>
 &lt;?php
+
+namespace Biigle\Tests\Modules\Quotes\Http\Controllers;
+
+use TestCase;
 
 class QuotesControllerTest extends TestCase {
 
    public function testRoute()
    {
-      $this->call('GET', 'quotes');
-      $this->assertStatus(200);
+      $this->get('quotes')->assertStatus(200);
    }
 }
+
 </pre>
 	<p>
-		With the single test function, we call the <code>quotes</code> route, we intend to implement, and check if the response is HTTP <code>200</code>. Let's check what PHPunit has to say about this:
+		Note how the directory structure always matches the namespace of the PHP class. With the single test function, we call the <code>quotes</code> route we intend to implement, and check if the response is HTTP <code>200</code>. Let's check what PHPunit has to say about this:
 	</p>
 <pre>
-> phpunit --filter QuotesControllerTest
-PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
+> composer testf QuotesControllerTest
+PHPUnit 7.5.13 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/biigle/phpunit.xml
+F                                                                   1 / 1 (100%)
 
-F
-
-Time: 437 ms, Memory: 26.50Mb
+Time: 759 ms, Memory: 42.00 MB
 
 There was 1 failure:
 
-1) QuotesControllerTest::testRoutes
-Expected status code 200, got 404
+1) Biigle\Tests\Modules\Quotes\Http\Controllers\QuotesControllerTest::testRoute
+Expected status code 200 but received 404.
 Failed asserting that false is true.
 
-/your/local/path/to/biigle/vendor/laravel/framework/src/Illuminate/Foundation/Testing/AssertionsTrait.php:17
-/your/local/path/to/biigle/vendor/biigle/quotes/tests/QuotesControllerTest.php:7
-
-FAILURES!
-Tests: 1, Assertions: 1, Failures: 1.
+/var/www/vendor/laravel/framework/src/Illuminate/Foundation/Testing/TestResponse.php:78
+/var/www/vendor/biigle/quotes/tests/Http/Controllers/QuotesControllerTest.php:11
 </pre>
 	<p>
 		Of course the test fails with a <code>404</code> since we haven't implemented the route yet and it can't be found by Laravel. But that's the spirit of developing TDD-like! To create the route, populate the new <code>routes.php</code> with the following content:
@@ -136,23 +177,24 @@ Tests: 1, Assertions: 1, Failures: 1.
 <pre>
 &lt;?php
 
-Route::get('quotes', array(
-   'as'   => 'quotes',
-   'uses' => '\Biigle\Modules\Quotes\Http\Controllers\QuotesController@index'
-));
+$router->get('quotes', [
+   'as' => 'quotes',
+   'uses' => 'QuotesController@index',
+]);
+
 </pre>
 	<p>
-		Here we tell Laravel that the <code>index</code> method of the <code>QuotesController</code> class of our package is responsible to handle <code>GET</code> requests to the <code>{{ url('quotes') }}</code> route. We also give the route the name <code>quotes</code> which will come in handy when we want to create links to it. Let's run the test again:
+		Here we tell Laravel that the <code>index</code> method of the <code>QuotesController</code> class of our package is responsible to handle <code>GET</code> requests to the <code>{{ url('quotes') }}</code> route. The router automatically looks for the class in the <code>Biigle\Modules\Quotes\Http\Controllers</code> namespace, since we defined it that way in the service provider. We also give the route the name <code>quotes</code> which will come in handy when we want to create links to it. Let's run the test again:
 	</p>
 <pre>
 [...]
 1) QuotesControllerTest::testRoute
-Expected status code 200, got 500
+Expected status code 200 but received 500.
 Failed asserting that false is true.
 [...]
 </pre>
 	<p>
-		Now we get a <code>500</code>; that's an improvement, isn't it? You might have already guessed why we get the internal server error here: The controller for handling the request is still missing.
+		Now we get a <code>500</code>, that's an improvement, isn't it? You might have already guessed why we get the internal server error here: The controller for handling the request is still missing.
 	</p>
 
 	<h3><a name="a-new-controller"></a>A new controller</h3>
@@ -167,7 +209,9 @@ Failed asserting that false is true.
 		Let's create the controller by adding a new <code>QuotesController.php</code> to the <code>Controllers</code> directory, containing:
 	</p>
 <pre>
-&lt;?php namespace Biigle\Modules\Quotes\Http\Controllers;
+&lt;?php
+
+namespace Biigle\Modules\Quotes\Http\Controllers;
 
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -187,14 +231,12 @@ class QuotesController extends Controller {
 		The controller already extends the <code>Controller</code> class of the BIIGLE core application instead of the default Laravel controller, which will come in handy in a next tutorial. Let's have a look at our test:
 	</p>
 <pre>
-> phpunit --filter QuotesControllerTest
-PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
+> composer testf QuotesControllerTest
+PHPUnit 7.5.13 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/biigle/phpunit.xml
+.                                                        1 / 1 (100%)
 
-.
-
-Time: 529 ms, Memory: 26.50Mb
+Time: 762 ms, Memory: 42.00 MB
 
 OK (1 test, 1 assertion)
 </pre>
@@ -202,16 +244,27 @@ OK (1 test, 1 assertion)
 		Neat! You can now call the <code>quotes</code> route in your BIIGLE application whithout causing any errors. But wait, shouldn't the route have restricted access? If the user is not logged in, they should be redirected to the login page instead of seeing the quotes. Let's adjust our test:
 	</p>
 <pre>
-$user = UserTest::create();
-$user->save();
+&lt;?php
 
-$this->call('GET', 'quotes');
-// redirect to login page
-$this->assertStatus(302);
+namespace Biigle\Tests\Modules\Quotes\Http\Controllers;
 
-$this->be($user);
-$this->call('GET', 'quotes');
-$this->assertStatus(200);
+use TestCase;
+use Biigle\Tests\UserTest;
+
+class QuotesControllerTest extends TestCase {
+
+   public function testRoute()
+   {
+      $user = UserTest::create();
+
+      // Redirect to login page.
+      $this->get('quotes')->assertStatus(302);
+
+      $this->be($user);
+      $this->get('quotes')->assertStatus(200);
+   }
+}
+
 </pre>
 	<p>
 		We first create a new test user (the <code>UserTest</code> class takes care of this), save them to the testing database and check if the route is only available if the user is authenticated. Now the test should fail again because the route is public:
@@ -219,24 +272,24 @@ $this->assertStatus(200);
 <pre>
 [...]
 1) QuotesControllerTest::testRoute
-Failed asserting that 200 matches expected 302.
+Expected status code 302 but received 200.
 [...]
 </pre>
 
 	<h4><a name="middleware"></a>Middleware</h4>
 
 	<p>
-		Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.4/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
+		Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.5/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
 	</p>
 	<p>
 		In BIIGLE, user authentication is checked by the <code>auth</code> middleware. To add the <code>auth</code> middleware to our route, we extend the route definition:
 	</p>
 <pre>
-Route::get('quotes', array(
+$router->get('quotes', [
    'middleware' => 'auth',
-   'as'         => 'quotes',
-   'uses'       => '\Biigle\Modules\Quotes\Http\Controllers\QuotesController@index'
-));
+   'as' => 'quotes',
+   'uses' => 'QuotesController@index',
+]);
 </pre>
 	<p>
 		That was it. The <code>auth</code> middleware takes care of checking for authentication and redirecting to the login page if needed. Run the test and see it pass to confirm this for yourself.
@@ -265,7 +318,7 @@ public function index()
 		Here, the <code>quotes::</code> view namespace is used which we defined in the <code>boot</code> method of our service provider in the previous tutorial. If we didn't use it, Laravel would look for the <code>index</code> view of the core application. Now you can call the route and see the quote.
 	</p>
 	<p>
-		Pretty ugly, isn't it? The view doesn't look like the other BIIGLE views at all and, in fact, isn't even valid HTML. It displays only the code we defined in the view template and nothing else. This is where view inheritance comes in.
+		Pretty ugly, isn't it? The view doesn't look like the other BIIGLE views at all. It displays only the code we defined in the view template and nothing else. This is where view inheritance comes in.
 	</p>
 
 	<h4><a name="inheriting-views"></a>Inheriting views</h4>
@@ -274,7 +327,7 @@ public function index()
 		The BIIGLE core application has an <code>app</code> view template containing all the scaffolding of a HTML page and loading the default assets. This <code>app</code> template is what makes all BIIGLE views look alike.
 	</p>
 	</p>
-		The Blade templating engine allows for view inheritance so you can create new views, building upon existing ones. When inheriting a view, you need to specify view <em>sections</em>, defining which part of the new view should be inserted into which part of the parent view. Let's see this in action by applying it to the <code>index.blade.php</code> view of our package:
+		The Blade templating engine allows for view inheritance so you can create new views, building upon existing ones. When inheriting a view, you need to specify view <em>sections</em>, defining which part of the new view should be inserted into which part of the parent view. Let's see this in action by applying it to the <code>index.blade.php</code> view of our module:
 	</p>
 <pre>
 &#64;extends('app')
