@@ -21,7 +21,10 @@
             @if ($query)
                 matching '{{$query}}'.
             @else
-                for you. Why don't you <a href="{{route('label-trees-create')}}" title="Create a new label tree">create</a> one?
+                for you.
+                @can('create', \Biigle\LabelTree::class)
+                    Why don't you <a href="{{route('label-trees-create')}}" title="Create a new label tree">create</a> one?
+                @endcan
             @endif
         </p>
     @endif

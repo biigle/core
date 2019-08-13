@@ -6,7 +6,7 @@
 <div class="container">
     <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
         <h2>New version of {{$tree->name}}</h2>
-        <form class="clearfix" role="form" method="POST" action="{{ url("api/v1/label-trees/{$tree->id}/versions") }}">
+        <form class="clearfix" role="form" method="POST" action="{{ url("api/v1/label-trees/{$tree->id}/versions") }}" onsubmit="this.submitButton.disabled = true;">
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Name</label>
                 <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="v1.0" autofocus required>
@@ -28,7 +28,7 @@
             <input type="hidden" name="label_tree_id" value="{{ $tree->id }}">
 
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="submit" class="btn btn-success pull-right" value="Create">
+            <input type="submit" name="submitButton" class="btn btn-success pull-right" value="Create">
             <a href="{{ route('label-trees', $tree->id) }}" class="btn btn-link">Cancel</a>
         </form>
     </div>
