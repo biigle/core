@@ -42,7 +42,7 @@
             @mixin('manualReferences')
         </div>
         <div class="row">
-            <h2>Developer Documentation</h2>
+            <h2><a name="developer-documentation"></a>Developer Documentation</h2>
         </div>
         <div class="row">
             <h3>RESTful API</h3>
@@ -72,7 +72,7 @@
             </p>
         </div>
         <div class="row">
-            <h3>Developer Tutorials</h3>
+            <h3><a name="developer-tutorials">Developer Tutorials</h3>
             <h4><a href="{{ route('manual-documentation', 'package-development') }}">Package development</a></h4>
             <p>
                 Learn about PHP package development and how to add custom functionality to your BIIGLE installation by developing your own modules.
