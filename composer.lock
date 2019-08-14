@@ -57,9 +57,9 @@
                 },
                 {
                     "name": "Jens Hausdorf",
+                    "role": "Maintainer",
                     "email": "mail@jens-hausdorf.de",
-                    "homepage": "https://jens-hausdorf.de",
-                    "role": "Maintainer"
+                    "homepage": "https://jens-hausdorf.de"
                 }
             ],
             "description": "A set of tools to build binary drivers",
@@ -471,12 +471,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/maia.git",
-                "reference": "5cb27dcc46aa07aa96cf69328c736add1b60ea1d"
+                "reference": "31a9b76927e5d42394963cdfded0df3648e391cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/5cb27dcc46aa07aa96cf69328c736add1b60ea1d",
-                "reference": "5cb27dcc46aa07aa96cf69328c736add1b60ea1d",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/31a9b76927e5d42394963cdfded0df3648e391cb",
+                "reference": "31a9b76927e5d42394963cdfded0df3648e391cb",
                 "shasum": ""
             },
             "require": {
@@ -500,10 +500,10 @@
             ],
             "description": "Perform the Machine Learning Assisted Image Annotation method in BIIGLE",
             "support": {
-                "source": "https://github.com/biigle/maia/tree/v1.6.0",
+                "source": "https://github.com/biigle/maia/tree/master",
                 "issues": "https://github.com/biigle/maia/issues"
             },
-            "time": "2019-06-11T14:33:53+00:00"
+            "time": "2019-08-14T13:07:41+00:00"
         },
         {
             "name": "biigle/projects",
@@ -604,12 +604,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/videos.git",
-                "reference": "a30b1ada9e4b912d2adda89eb7991d8aa7389bbc"
+                "reference": "71769334b4f1a0aa4aadf57e4038602d1daf6cdd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/a30b1ada9e4b912d2adda89eb7991d8aa7389bbc",
-                "reference": "a30b1ada9e4b912d2adda89eb7991d8aa7389bbc",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/71769334b4f1a0aa4aadf57e4038602d1daf6cdd",
+                "reference": "71769334b4f1a0aa4aadf57e4038602d1daf6cdd",
                 "shasum": ""
             },
             "require": {
@@ -635,10 +635,10 @@
             ],
             "description": "Create, edit and explore video annotations",
             "support": {
-                "source": "https://github.com/biigle/videos/tree/v1.9.0",
+                "source": "https://github.com/biigle/videos/tree/master",
                 "issues": "https://github.com/biigle/videos/issues"
             },
-            "time": "2019-06-11T14:32:28+00:00"
+            "time": "2019-08-14T13:19:46+00:00"
         },
         {
             "name": "biigle/volumes",
