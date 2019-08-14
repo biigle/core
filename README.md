@@ -1,20 +1,17 @@
 # BIIGLE Videos Module
 
-Create, edit and explore video annotations.
+This is the BIIGLE module to create, edit and explore video annotations.
 
 ## Installation
 
-```bash
-composer config repositories.videos vcs https://github.com/biigle/videos
-composer require biigle/videos
-```
-
-Take a look at the [`requirements.txt`](requirements.txt) for the Python dependencies of this module. Install the requirements with `pip install -r requirements.txt`. In addition to that, `ffmpeg` needs to be installed.
-
-1. Add `Biigle\Modules\Video\VideoServiceProvider::class` to the `providers` array in `config/app.php`.
-2. Run `php artisan videos:publish` to refresh the public assets of this package. Do this for every update of the package.
-3. Run `php artisan migrate` to create the new database tables.
-4. Configure a storage disk for the video thumbnails and set the `VIDEOS_THUMBNAIL_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. The content of the storage disk should be publicly accessible. Example for a local disk:
+1. Run `composer config repositories.videos vcs git@github.com:biigle/videos.git`
+2. Run `composer require biigle/videos`.
+3. Add `Biigle\Modules\Videos\VideosServiceProvider::class` to the `providers` array in `config/app.php`.
+4. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
+5. Run `docker-compose exec app php artisan migrate` to create the new database tables.
+6. Run `pip install -r requirements.txt` to install the Python requirements.
+7. Install `ffmpeg`.
+8. Configure a storage disk for the video thumbnails and set the `VIDEOS_THUMBNAIL_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. The content of the storage disk should be publicly accessible. Example for a local disk:
     ```php
     'video-thumbs' => [
         'driver' => 'local',
@@ -24,3 +21,13 @@ Take a look at the [`requirements.txt`](requirements.txt) for the Python depende
     ],
     ```
     This requires the link `storage -> ../storage/app/public` in the `public` directory.
+
+## Developing
+
+Take a look at the [development guide](https://github.com/biigle/core/blob/master/DEVELOPING.md) of the core repository to get started with the development setup.
+
+Want to develop a new module? Head over to the [biigle/module](https://github.com/biigle/module) template repository.
+
+## Contributions and bug reports
+
+Contributions to BIIGLE are always welcome. Check out the [contribution guide](https://github.com/biigle/core/blob/master/CONTRIBUTING.md) to get started.
