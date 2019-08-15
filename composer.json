@@ -1,5 +1,13 @@
 {
     "name": "biigle/volumes",
+    "description": "BIIGLE module to create, edit and explore image volumes.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/volumes",
+        "issues": "https://github.com/biigle/volumes/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
@@ -9,8 +17,6 @@
     "require": {
         "biigle/projects": "~1.4",
         "biigle/label-trees": "~1.3"
-    },
-    "require-dev": {
     },
     "autoload": {
         "psr-4": {
