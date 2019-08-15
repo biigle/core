@@ -1,12 +1,7 @@
 {
   "name": "biigle-label-trees",
   "version": "0.0.1",
-  "directories": {
-    "test": "tests"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git#v1.1.0"

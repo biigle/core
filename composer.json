@@ -1,5 +1,13 @@
 {
     "name": "biigle/label-trees",
+    "description": "BIIGLE module to create, edit and manage label trees.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/label-trees",
+        "issues": "https://github.com/biigle/label-trees/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
@@ -9,8 +17,6 @@
     "require": {
         "ext-soap": "*",
         "ramsey/uuid": "^3.5"
-    },
-    "require-dev": {
     },
     "autoload": {
         "psr-4": {
