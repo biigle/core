@@ -1,16 +1,22 @@
 {
     "name": "biigle/annotations",
+    "description": "BIIGLE module to create, edit and explore image annotations.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+      "source": "https://github.com/biigle/annotations",
+      "issues": "https://github.com/biigle/annotations/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
-        {
-            "name": "Martin Zurowietz",
-            "email": "martin@cebitec.uni-bielefeld.de"
-        }
+      {
+         "name": "Martin Zurowietz",
+         "email": "martin@cebitec.uni-bielefeld.de"
+      }
     ],
     "require": {
         "biigle/volumes": "^2.0",
         "biigle/label-trees": "~1.3"
-    },
-    "require-dev": {
     },
     "autoload": {
         "psr-4": {
