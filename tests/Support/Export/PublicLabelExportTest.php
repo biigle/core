@@ -13,7 +13,7 @@ class PublicLabelExportTest extends TestCase
 {
     public function testGetContent()
     {
-        $parent = LabelTest::create();
+        $parent = LabelTest::create(['source_id' => 'abcdef']);
         $child = LabelTest::create([
             'label_tree_id' => $parent->label_tree_id,
             'parent_id' => $parent->id,
@@ -30,8 +30,7 @@ class PublicLabelExportTest extends TestCase
             "{$parent->parent_id}",
             "{$parent->color}",
             "{$parent->label_tree_id}",
-            "{$parent->label_source_id}",
-            "{$parent->uuid}",
+            "{$parent->source_id}",
         ];
         $this->assertEquals($expectParent, $file->fgetcsv());
 
@@ -41,8 +40,7 @@ class PublicLabelExportTest extends TestCase
             "{$child->parent_id}",
             "{$child->color}",
             "{$child->label_tree_id}",
-            "{$child->label_source_id}",
-            "{$child->uuid}",
+            "{$child->source_id}",
         ];
         $this->assertEquals($expectChild, $file->fgetcsv());
     }

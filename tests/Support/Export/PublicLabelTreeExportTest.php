@@ -75,8 +75,7 @@ class PublicLabelTreeExportTest extends TestCase
             "{$label->parent_id}",
             "{$label->color}",
             "{$label->label_tree_id}",
-            "{$label->label_source_id}",
-            "{$label->uuid}",
+            "{$label->source_id}",
         ];
         $this->assertEquals($expect, $file->fgetcsv());
     }

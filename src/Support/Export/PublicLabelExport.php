@@ -31,8 +31,7 @@ class PublicLabelExport extends Export
             'parent_id',
             'color',
             'label_tree_id',
-            'label_source_id',
-            'uuid',
+            'source_id',
         ];
         $csv->fputcsv($columns);
 
@@ -46,8 +45,7 @@ class PublicLabelExport extends Export
                         $row->parent_id,
                         $row->color,
                         $row->label_tree_id,
-                        $row->label_source_id,
-                        $row->uuid,
+                        $row->source_id,
                     ]);
                 }
             });
