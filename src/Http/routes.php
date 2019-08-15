@@ -15,6 +15,17 @@ $router->group([
 });
 
 $router->group([
+    'namespace' => 'Api',
+    'prefix' => 'api/v1',
+    'middleware' => ['auth:web,api'],
+], function ($router) {
+    $router->get('public-export/label-trees/{id}', [
+        'as' => 'get-public-label-tree-export',
+        'uses' => 'Export\PublicLabelTreeExportController@show',
+    ]);
+});
+
+$router->group([
     'namespace' => 'Views',
     'middleware' => ['auth', 'can:sudo'],
 ], function ($router) {
