@@ -1,5 +1,13 @@
 {
     "name": "biigle/largo",
+    "description": "BIIGLE module to review image annotations in a regular grid.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/largo",
+        "issues": "https://github.com/biigle/largo/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
