@@ -1,8 +1,13 @@
 {
     "name": "biigle/core",
-    "description": "Core of the BIIGLE web application.",
-    "keywords": ["BIIGLE", "core"],
-    "license": "proprietary",
+    "description": "Application core of BIIGLE, the image and video annotation tool.",
+    "keywords": ["biigle", "image-annotation", "video-annotation"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/core",
+        "issues": "https://github.com/biigle/core/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
