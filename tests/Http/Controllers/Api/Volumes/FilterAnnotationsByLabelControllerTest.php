@@ -133,6 +133,36 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             ]);
     }
 
+    public function testIndexAnnotationSessionEdgeCaseHideOther()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $id]);
+        $a1 = AnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+        ]);
+        $l2 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->admin()->id,
+        ]);
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->users()->attach($this->editor());
+
+        $this->beEditor();
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l2->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([]);
+    }
+
     public function testIndexDuplicate()
     {
         $id = $this->volume()->id;

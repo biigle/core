@@ -45,6 +45,11 @@ class FilterAnnotationsByLabelController extends Controller
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $vid)
             ->where('annotation_labels.label_id', $lid)
+            ->when($session, function ($query) use ($session, $request) {
+                if ($session->hide_other_users_annotations) {
+                    $query->where('annotation_labels.user_id', $request->user()->id);
+                }
+            })
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
