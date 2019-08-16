@@ -6,10 +6,8 @@
 biigle.$component('annotations.components.annotationCanvas.polygonBrushInteraction', function () {
 
     var brushRadius = 50;
-    var polygonBrushInteraction;
     var shiftClickSelectInteraction;
-    var polygonEraserInteraction;
-    var polygonFillInteraction;
+    var currentInteraction;
 
     return {
         computed: {
@@ -47,28 +45,24 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                     this.interactionMode = 'polygonFill';
                 }
             },
-            togglePolygonBrushInteraction: function (isUsingPolygonBrush) {
-                if (!isUsingPolygonBrush) {
-                    brushRadius = polygonBrushInteraction.getBrushRadius();
-                    this.map.removeInteraction(polygonBrushInteraction);
-                } else if (this.hasSelectedLabel) {
-                    polygonBrushInteraction = new ol.interaction.PolygonBrush({
+            toggleCurrentInteraction: function (mode) {
+                if (currentInteraction) {
+                    brushRadius = currentInteraction.getBrushRadius();
+                    this.map.removeInteraction(currentInteraction);
+                    currentInteraction = null;
+                }
+
+                if (this.canAdd && mode === 'polygonBrush') {
+                    currentInteraction = new ol.interaction.PolygonBrush({
                         map: this.map,
                         source: this.annotationSource,
                         style: this.styles.editing,
                         brushRadius: brushRadius,
                     });
-                    polygonBrushInteraction.on('drawend', this.handleNewFeature);
-                    this.map.addInteraction(polygonBrushInteraction);
-                }
-            },
-            togglePolygonEraserInteraction: function (isUsingPolygonEraser) {
-                if (!isUsingPolygonEraser) {
-                    brushRadius = polygonEraserInteraction.getBrushRadius();
-                    this.map.removeInteraction(polygonEraserInteraction);
-                    this.map.removeInteraction(shiftClickSelectInteraction);
-                } else {
-                    polygonEraserInteraction = new ol.interaction.ModifyPolygonBrush({
+                    currentInteraction.on('drawend', this.handleNewFeature);
+                    this.map.addInteraction(currentInteraction);
+                } else if (this.canModify && mode === 'polygonEraser') {
+                    currentInteraction = new ol.interaction.ModifyPolygonBrush({
                         map: this.map,
                         features: this.selectInteraction.getFeatures(),
                         style: this.styles.editing,
@@ -77,19 +71,12 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                         addCondition: ol.events.condition.never,
                         subtractCondition: ol.events.condition.noModifierKeys,
                     });
-                    polygonEraserInteraction.on('modifystart', this.handleFeatureModifyStart);
-                    polygonEraserInteraction.on('modifyend', this.handleFeatureModifyEnd);
-                    this.map.addInteraction(polygonEraserInteraction);
+                    currentInteraction.on('modifystart', this.handleFeatureModifyStart);
+                    currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
+                    this.map.addInteraction(currentInteraction);
                     this.map.addInteraction(shiftClickSelectInteraction);
-                }
-            },
-            togglePolygonFillInteraction: function (isUsingPolygonFill) {
-                if (!isUsingPolygonFill) {
-                    brushRadius = polygonFillInteraction.getBrushRadius();
-                    this.map.removeInteraction(polygonFillInteraction);
-                    this.map.removeInteraction(shiftClickSelectInteraction);
-                } else {
-                    polygonFillInteraction = new ol.interaction.ModifyPolygonBrush({
+                } else if (this.canModify && mode === 'polygonFill') {
+                    currentInteraction = new ol.interaction.ModifyPolygonBrush({
                         map: this.map,
                         features: this.selectInteraction.getFeatures(),
                         style: this.styles.editing,
@@ -97,9 +84,9 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                         addCondition: ol.events.condition.noModifierKeys,
                         subtractCondition: ol.events.condition.never,
                     });
-                    polygonFillInteraction.on('modifystart', this.handleFeatureModifyStart);
-                    polygonFillInteraction.on('modifyend', this.handleFeatureModifyEnd);
-                    this.map.addInteraction(polygonFillInteraction);
+                    currentInteraction.on('modifystart', this.handleFeatureModifyStart);
+                    currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
+                    this.map.addInteraction(currentInteraction);
                     this.map.addInteraction(shiftClickSelectInteraction);
                 }
             },
@@ -107,14 +94,15 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
         created: function () {
             if (this.canAdd) {
                 biigle.$require('keyboard').on('e', this.togglePolygonBrush, 0, this.listenerSet);
-                this.$watch('isUsingPolygonBrush', this.togglePolygonBrushInteraction);
             }
 
             if (this.canModify) {
                 biigle.$require('keyboard').on('r', this.togglePolygonEraser, 0, this.listenerSet);
                 biigle.$require('keyboard').on('t', this.togglePolygonFill, 0, this.listenerSet);
-                this.$watch('isUsingPolygonEraser', this.togglePolygonEraserInteraction);
-                this.$watch('isUsingPolygonFill', this.togglePolygonFillInteraction);
+            }
+
+            if (this.canAdd || this.canModify) {
+                this.$watch('interactionMode', this.toggleCurrentInteraction);
             }
         },
         mounted: function () {
