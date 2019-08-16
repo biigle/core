@@ -24,3 +24,7 @@ Take a look at [`DEVELOPING.md`](DEVELOPING.md) for a detailed explanation on ho
 ## Contributions and bug reports
 
 Contributions to BIIGLE are always welcome. Check out [`CONTRIBUTING.md`](CONTRIBUTING.md) to get started.
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within BIIGLE, please send an email to the BIIGLE team via <info@biigle.de>. All security vulnerabilities will be promptly addressed.
