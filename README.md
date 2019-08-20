@@ -13,9 +13,7 @@ BIIGLE is available at [biigle.de](https://biigle.de).
 
 ### For Production
 
-Run `./build.sh` to build the `biigle/app`, `biigle/web` and `biigle/worker` Docker images.
-
-Now head over to [biigle/distribution](https://github.com/biigle/distribution) to configure and build your production setup.
+Head over to [biigle/distribution](https://github.com/biigle/distribution) to configure and build your production setup.
 
 ### For Development
 
