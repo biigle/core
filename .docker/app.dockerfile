@@ -48,8 +48,5 @@ RUN mkdir -p /var/www/storage/framework/views
 RUN php composer.phar dump-autoload -o \
     && rm composer.phar
 
-# Make this writable for whatever user the app is running as.
-RUN chmod o+w /var/www/bootstrap/cache
-
 ARG BIIGLE_VERSION
 ENV BIIGLE_VERSION=${BIIGLE_VERSION}
