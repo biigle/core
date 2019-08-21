@@ -41,7 +41,6 @@ $router->group(['middleware' => 'auth'], function ($router) {
         'middleware' => 'can:sudo',
         'uses' => 'LabelTreesController@admin',
     ]);
-
 });
 
 $router->group([
@@ -53,4 +52,4 @@ $router->group([
             'only' => ['store'],
             'parameters' => ['label-trees' => 'id'],
         ]);
-});
+    });
