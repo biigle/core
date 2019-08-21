@@ -6,10 +6,7 @@ BIIGLE is available at [biigle.de](https://biigle.de).
 
 ## Installation
 
-### Requirements
-
-- [Docker](https://docs.docker.com/install/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+BIIGLE requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to run.
 
 ### For Production
 
@@ -18,6 +15,10 @@ Head over to [biigle/distribution](https://github.com/biigle/distribution) to co
 ### For Development
 
 Take a look at [`DEVELOPING.md`](DEVELOPING.md) for a detailed explanation on how to develop BIIGLE.
+
+### Versions
+
+Although BIIGLE versions and BIIGLE module versions look like [semantic versioning](https://semver.org/), they are not. Only the most recent versions are compatible with each other. Patch versions are mostly backwards compatible, though.
 
 ## References
 
