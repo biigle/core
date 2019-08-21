@@ -15,6 +15,7 @@ use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 
 class ArchiveManagerTest extends TestCase
 {
@@ -126,6 +127,24 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertContains('Volume imports are not allowed', $e->getMessage());
+        }
+    }
+
+    public function testStorePublicLabelTreeExport()
+    {
+        $tree = LabelTreeTest::create();
+        $export = new PublicLabelTreeExport([$tree->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+
+        $token = (new ArchiveManager)->store($file);
+        $path = config('sync.import_storage')."/{$token}";
+        try {
+            $this->assertTrue(File::isDirectory($path));
+            $this->assertTrue(File::exists($path.'/label_tree.json'));
+        } finally {
+            File::deleteDirectory($path);
         }
     }
 

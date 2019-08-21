@@ -23,6 +23,10 @@ $router->group([
         'as' => 'get-public-label-tree-export',
         'uses' => 'Export\PublicLabelTreeExportController@show',
     ]);
+
+    $router->post('label-trees/import', [
+        'uses' => 'Import\PublicLabelTreeImportController@store',
+    ]);
 });
 
 $router->group([
@@ -42,5 +46,15 @@ $router->group([
     $router->get('admin/import/{token}', [
         'as' => 'admin-import-show',
         'uses' => 'ImportAdminController@show',
+    ]);
+});
+
+$router->group([
+    'namespace' => 'Views',
+    'middleware' => ['auth'],
+], function ($router) {
+    $router->get('label-trees/import', [
+        'as' => 'label-tree-import-index',
+        'uses' => 'PublicLabelTreeImportController@index',
     ]);
 });

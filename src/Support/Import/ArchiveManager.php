@@ -34,6 +34,7 @@ class ArchiveManager
             UserImport::class,
             LabelTreeImport::class,
             VolumeImport::class,
+            PublicLabelTreeImport::class,
         ];
     }
 

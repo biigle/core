@@ -91,19 +91,25 @@ class Import
      *
      * @param string $file File name under $this->path
      * @param array $expectation Expected keys.
+     * @param bool $array Specifies if the file to validate contains an array or not.
      *
      * @throws Exception If keys are missing.
      */
-    protected function expectKeysInJson($file, $expectation)
+    protected function expectKeysInJson($file, $expectation, $array = true)
     {
         $content = $this->collectJson($file);
-
-        foreach ($content as $item) {
+        $validate = function ($item) use ($file, $expectation) {
             $diff = array_diff($expectation, array_keys($item));
             if (!empty($diff)) {
                 $keys = implode(', ', $diff);
                 throw new Exception("Items in the {$file} file are missing keys: {$keys}.");
             }
+        };
+
+        if ($array) {
+            $content->each($validate);
+        } else {
+            $validate($content->toArray());
         }
     }
 
