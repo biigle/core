@@ -5,11 +5,16 @@
 @section('content')
 <div class="container">
     <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
-        @if ($project)
-            <h2>New label tree for {{$project->name}}</h2>
-        @else
-            <h2>New label tree</h2>
-        @endif
+        <h2>
+            <span class="pull-right">
+                @mixin('newLabelTreeButtons')
+            </span>
+            @if ($project)
+                New label tree for {{$project->name}}
+            @else
+                New label tree
+            @endif
+        </h2>
         @if ($upstreamLabelTree)
             <p>
                 The new label tree will be forked from <a href="{{route('label-trees', $upstreamLabelTree->id)}}">{{$upstreamLabelTree->versionedName}}</a>.
