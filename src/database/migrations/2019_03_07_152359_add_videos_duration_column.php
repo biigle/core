@@ -1,6 +1,6 @@
 <?php
 
-Use Biigle\Modules\Videos\Video;
+use Biigle\Modules\Videos\Video;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;

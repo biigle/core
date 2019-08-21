@@ -48,6 +48,5 @@ class DashboardControllerMixinTest extends ApiTestCase
         VideoTest::create(['creator_id' => $user->id]);
         $items = $controller->activityItems($user, 3);
         $this->assertCount(4, $items);
-
     }
 }
