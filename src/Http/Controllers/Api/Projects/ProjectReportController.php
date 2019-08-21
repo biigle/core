@@ -49,7 +49,7 @@ class ProjectReportController extends ReportController
             if (!$hasVideo) {
                 throw ValidationException::withMessages(['type_id' => ['The project must contain videos.']]);
             }
-        } else if (!$project->volumes()->exists()) {
+        } elseif (!$project->volumes()->exists()) {
             throw ValidationException::withMessages(['type_id' => ['The project must contain volumes.']]);
         }
 
