@@ -18,7 +18,9 @@ class ModulesTest extends TestCase
 
     public function testGetControllerMixins()
     {
-        $func = function () {};
+        $func = function () {
+            //
+        };
         Modules::registerControllerMixin('myModule', 'dashboard', $func);
 
         $this->assertEmpty(Modules::getControllerMixins('nonexistent'));
@@ -27,7 +29,9 @@ class ModulesTest extends TestCase
 
     public function testRegister()
     {
-        $func = function () {};
+        $func = function () {
+            //
+        };
 
         Modules::register('myModule', [
             'viewMixins' => ['dashboard', 'settings'],
