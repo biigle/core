@@ -22,6 +22,18 @@ This is the BIIGLE module to create, edit and explore video annotations.
     ```
     This requires the link `storage -> ../storage/app/public` in the `public` directory.
 
+## References
+
+Reference publications that you should cite if you use video object tracking for one of your studies.
+
+- **BIIGLE 2.0**
+    [Langenkämper, D., Zurowietz, M., Schoening, T., & Nattkemper, T. W. (2017). Biigle 2.0-browsing and annotating large marine image collections.](https://doi.org/10.3389/fmars.2017.00083)
+    Frontiers in Marine Science, 4, 83. doi: `10.3389/fmars.2017.00083`
+
+- **Video Object Tracking**
+    [Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.](https://doi.org/10.1109/CVPR.2017.515)
+    In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: `10.1109/CVPR.2017.515`
+
 ## Developing
 
 Take a look at the [development guide](https://github.com/biigle/core/blob/master/DEVELOPING.md) of the core repository to get started with the development setup.
