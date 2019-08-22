@@ -36,6 +36,7 @@ class SyncServiceProvider extends ServiceProvider
                 'adminMenu',
                 'labelTreesShowToolbar',
                 'newLabelTreeButtons',
+                'labelTreesManual',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
