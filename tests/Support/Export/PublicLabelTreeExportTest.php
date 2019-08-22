@@ -49,6 +49,7 @@ class PublicLabelTreeExportTest extends TestCase
             'version' => [
                 'id' => $version->id,
                 'name' => $version->name,
+                'doi' => $version->doi,
             ],
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,

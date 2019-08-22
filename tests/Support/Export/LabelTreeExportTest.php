@@ -68,6 +68,7 @@ class LabelTreeExportTest extends TestCase
                     'id' => $version->id,
                     'name' => $version->name,
                     'label_tree_id' => $version->label_tree_id,
+                    'doi' => $version->doi,
                 ],
                 'labels' => [],
                 'members' => [],

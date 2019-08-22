@@ -41,7 +41,7 @@
             <code>uuid</code>: The globally unique identifier of the label tree (UUID4).
         </li>
         <li>
-            <code>version</code>: An object that contains the <code>id</code> and <code>name</code> of the version of the label tree. This is <code>null</code> if the label tree has no version.
+            <code>version</code>: An object that contains the <code>id</code>, <code>name</code> and <code>doi</code> of the version of the label tree. This is <code>null</code> if the label tree has no version.
         </li>
     </ul>
     <p>
@@ -57,7 +57,8 @@
     "uuid": "620b4105-124e-43a8-af43-16964a9fa192",
     "version": {
         "id": 122,
-        "name": "v1.4"
+        "name": "v1.4",
+        "doi": "10.5281/zenodo.3374162"
     }
 }
 </pre>
