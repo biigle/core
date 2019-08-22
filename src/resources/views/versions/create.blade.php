@@ -25,6 +25,14 @@
                 @endif
             </div>
 
+            <div class="form-group{{ $errors->has('doi') ? ' has-error' : '' }}">
+                <label for="doi">DOI</label>
+                <input class="form-control" type="text" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.1000/xyz123">
+                @if($errors->has('doi'))
+                    <span class="help-block">{{ $errors->first('doi') }}</span>
+                @endif
+            </div>
+
             <input type="hidden" name="label_tree_id" value="{{ $tree->id }}">
 
             <input type="hidden" name="_token" value="{{ csrf_token() }}">

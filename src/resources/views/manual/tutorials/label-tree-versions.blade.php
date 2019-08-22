@@ -20,6 +20,10 @@
         </p>
 
         <p>
+            You can also specify a <a href="https://www.doi.org/">DOI</a> for a new label tree version. This comes in handy if you have published the label tree version elsewhere. You can also create the label tree version first, then publish it to get a DOI and update the label tree version with the DOI later. @if(class_exists(\Biigle\Modules\Sync\SyncServiceProvider::class)) To publish a label tree version you can <a href="{{route('manual-tutorials', ['sync', 'label-trees'])}}">download it</a> and use the label tree export file for publishing. @endif
+        </p>
+
+        <p>
             All available versions of a label tree can be displayed with a click on the <button class="btn btn-default btn-xs">Version: <strong>latest</strong> <span class="caret"></span></button> button below the label tree name. Click on the name of a version in the dropdown to be redirected to that version. A specific version of a label tree is indicated by the label tree name followed by an "@" and the version name (e.g. "My Labels @ v1.0").
         </p>
 
