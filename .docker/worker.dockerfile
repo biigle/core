@@ -1,4 +1,4 @@
-FROM biigle/app as intermediate
+FROM docker.pkg.github.com/biigle/core/app as intermediate
 
 FROM php:7.3-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
