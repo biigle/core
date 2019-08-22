@@ -35,13 +35,7 @@ class UpdateLabelTreeVersion extends FormRequest
     public function rules()
     {
         return [
-            'name' => [
-                'required',
-                'max:256',
-                Rule::unique('label_tree_versions')->where(function ($query) {
-                    return $query->where('label_tree_id', $this->version->label_tree_id);
-                }),
-            ],
+            'doi' => 'required|min:10',
         ];
     }
 }

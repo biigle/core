@@ -25,6 +25,7 @@ class LabelTreeVersionController extends Controller
      * @apiParam (Required attributes) {String} name Name of the new label tree version.
      *
      * @apiParam (Optional attributes) {String} description Description of the new label tree version. If empty, the description of the master label tree will be taken.
+     * @apiParam (Optional attributes) {String} doi DOI that should be associated with the new label tree version.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -32,6 +33,7 @@ class LabelTreeVersionController extends Controller
      *    "id": 1,
      *    "name": "v1.0",
      *    "description": "First version of the label tree.",
+     *    "doi": null,
      *    "label_tree_id": 1
      * }
      *
@@ -43,6 +45,7 @@ class LabelTreeVersionController extends Controller
         $version = DB::transaction(function () use ($request) {
             $version = new LabelTreeVersion;
             $version->name = $request->input('name');
+            $version->doi = $request->input('doi');
             $version->label_tree_id = $request->tree->id;
             $version->save();
 
@@ -67,6 +70,27 @@ class LabelTreeVersionController extends Controller
                 ->with('message', 'Label tree version created.')
                 ->with('messageType', 'success');
         }
+    }
+
+    /**
+     * Update the specified label tree version.
+     *
+     * @api {put} label-tree-versions/:id Update a label tree version
+     * @apiGroup Label Trees
+     * @apiName UpdateLabelTreeVersionss
+     * @apiPermission labelTreeAdmin
+     *
+     * @apiParam {Number} id The label tree version ID.
+     *
+     * @apiParam (Required attributes) {String} doi DOI that should be associated with the new label tree version.
+     *
+     * @param UpdateLabelTreeVersion $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateLabelTreeVersion $request)
+    {
+        $request->version->doi = $request->input('doi');
+        $request->version->save();
     }
 
     /**

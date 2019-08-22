@@ -43,6 +43,7 @@ class StoreLabelTreeVersion extends FormRequest
                     return $query->where('label_tree_id', $this->tree->id);
                 }),
             ],
+            'doi' => 'filled|min:10',
         ];
     }
 }
