@@ -76,6 +76,8 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
             stopRenderLoop: function () {
                 window.cancelAnimationFrame(this.animationFrameId);
                 this.animationFrameId = null;
+                // Make sure the video frame that belongs to the currentTime is drawn.
+                this.renderVideo();
             },
             setPlaying: function () {
                 this.playing = true;
