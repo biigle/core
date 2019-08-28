@@ -92,5 +92,5 @@
                 Image filtering, sorting and your current scroll position in the image grid are remembered for each volume. When you leave the volume overview and return sometime later, you will find everything exactly as you left it. However, the filtering information is not updated in the meantime. You might want to reapply filter rules to include the most recent state of the images (e.g. newly attached image labels).
             </div>
         </div>
-
+    </div>
 @endsection
