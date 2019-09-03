@@ -40,12 +40,15 @@ class ProjectReportsController extends Controller
             ->whereNotNull('attrs->export_area')
             ->exists();
 
+        $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
+
         return view('reports::projectReports', [
             'project' => $project,
             'reportTypes' => $types,
             'hasExportArea' => $hasExportArea,
             'hasVolume' => $hasVolume,
             'hasVideo' => $hasVideo,
+            'labelTrees' => $labelTrees,
         ]);
     }
 }

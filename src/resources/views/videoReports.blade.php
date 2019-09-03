@@ -3,15 +3,19 @@
 @section('title', "Reports for {$video->name}")
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
-    <script type="text/javascript">
-        biigle.$declare('reports.videoId', {!! $video->id !!});
-        biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
-    </script>
+<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
+<script type="text/javascript">
+    biigle.$declare('reports.videoId', {!! $video->id !!});
+    biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
+    biigle.$declare('reports.labelTrees', {!! $labelTrees !!});
+</script>
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/reports/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('navbar')
@@ -48,6 +52,7 @@
                         Annotations belonging to different label trees will be separated to different files.
                     </div>
                 </div>
+                @include('reports::partials.restrictLabels')
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('video', $video->id)}}" title="Back to {{$video->name}}" class="alert-link">go back</a> to the video.
                 </div>

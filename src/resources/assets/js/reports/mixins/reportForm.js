@@ -5,21 +5,38 @@
  */
 biigle.$component('reports.mixins.reportForm', {
     mixins: [biigle.$require('core.mixins.loader')],
+    components: {
+        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+    },
     data: {
         allowedOptions: {},
         selectedType: '',
         selectedVariant: '',
+        reportTypes: [],
+        labelTrees: [],
+        hasOnlyLabels: false,
         success: false,
         errors: {},
         options: {
             export_area: false,
             newest_label: false,
             separate_label_trees: false,
+            only_labels: [],
         },
     },
     computed: {
-        reportTypes: function () {
-            return biigle.$require('reports.reportTypes');
+        flatLabels: function () {
+            var labels = [];
+            this.labelTrees.forEach(function (tree) {
+                Array.prototype.push.apply(labels, tree.labels);
+            });
+
+            return labels;
+        },
+        selectedLabels: function () {
+            return this.flatLabels.filter(function (label) {
+                return label.selected;
+            });
         },
         variants: function () {
             var variants = {};
@@ -100,8 +117,24 @@ biigle.$component('reports.mixins.reportForm', {
             return this.selectedType === type && this.selectedVariant === variant;
         },
     },
+    watch: {
+        selectedLabels: function (labels) {
+            this.options.only_labels = labels.map(function (label) {
+                return label.id;
+            });
+        },
+        hasOnlyLabels: function (has) {
+            if (!has) {
+                this.flatLabels.forEach(function (label) {
+                    label.selected = false;
+                });
+            }
+        },
+    },
     created: function () {
+        this.reportTypes = biigle.$require('reports.reportTypes');
         this.selectedType = Object.keys(this.variants)[0];
         this.selectedVariant = this.availableVariants[0];
+        this.labelTrees = biigle.$require('reports.labelTrees');
     },
 });

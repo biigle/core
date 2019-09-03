@@ -1,0 +1,14 @@
+.request-labels-list {
+    min-height: 34px;
+    height: auto;
+
+    > span:not(:first-child):before {
+        content: ', ';
+    }
+}
+
+.request-labels-well {
+    // Set absolute height so the flex positioning and scroll of the label trees
+    // component works (fixed search field and scrollable label trees list).
+    height: 300px;
+}
