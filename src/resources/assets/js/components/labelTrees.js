@@ -11,7 +11,7 @@ biigle.$component('labelTrees.components.labelTrees', {
         '</div>' +
         '<div class="label-trees__body">' +
             '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
@@ -41,6 +41,10 @@ biigle.$component('labelTrees.components.labelTrees', {
             default: true,
         },
         multiselect: {
+            type: Boolean,
+            default: false,
+        },
+        allowSelectSiblings: {
             type: Boolean,
             default: false,
         },
@@ -123,13 +127,13 @@ biigle.$component('labelTrees.components.labelTrees', {
         },
     },
     methods: {
-        handleSelect: function (label) {
+        handleSelect: function (label, e) {
             if (label) {
-                this.$emit('select', label);
+                this.$emit('select', label, e);
             }
         },
-        handleDeselect: function (label) {
-            this.$emit('deselect', label);
+        handleDeselect: function (label, e) {
+            this.$emit('deselect', label, e);
         },
         clear: function () {
             this.$emit('clear');

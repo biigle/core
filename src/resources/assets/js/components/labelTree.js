@@ -47,17 +47,23 @@ biigle.$component('labelTrees.components.labelTree', {
             type: Boolean,
             default: true,
         },
-        // Indicated whether multiple labels can be selected at the same time.
+        // Indicates whether multiple labels can be selected at the same time.
         multiselect: {
             type: Boolean,
             default: false,
         },
-        // Indicated whether labels can be edited.
+        // Indicates whether labels can be selected with Crtl to select all sibling
+        // labels, too.
+        allowSelectSiblings: {
+            type: Boolean,
+            default: false,
+        },
+        // Indicates whether labels can be edited.
         editable: {
             type: Boolean,
             default: false,
         },
-        // Indicated whether labels can be selected as favourites.
+        // Indicates whether labels can be selected as favourites.
         showFavourites: {
             type: Boolean,
             default: false,
@@ -135,11 +141,20 @@ biigle.$component('labelTrees.components.labelTree', {
 
             return parents;
         },
-        emitSelect: function (label) {
-            this.$emit('select', label);
+        getSiblings: function (label) {
+            if (label.parent_id === null) {
+                return this.rootLabels;
+            }
+
+            var parent = this.getLabel(label.parent_id);
+
+            return parent.children;
         },
-        emitDeselect: function (label) {
-            this.$emit('deselect', label);
+        emitSelect: function (label, e) {
+            this.$emit('select', label, e);
+        },
+        emitDeselect: function (label, e) {
+            this.$emit('deselect', label, e);
         },
         emitSave: function (label, reject) {
             this.$emit('save', label, reject);
@@ -147,7 +162,7 @@ biigle.$component('labelTrees.components.labelTree', {
         emitDelete: function (label) {
             this.$emit('delete', label);
         },
-        selectLabel: function (label) {
+        selectLabel: function (label, e) {
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
@@ -158,16 +173,27 @@ biigle.$component('labelTrees.components.labelTree', {
                 label.selected = true;
                 this.collapsed = false;
                 if (!this.flat) {
-                    var parents = this.getParents(label);
-                    for (var i = parents.length - 1; i >= 0; i--) {
-                        this.getLabel(parents[i]).open = true;
+                    this.getParents(label).forEach(function (id) {
+                        this.getLabel(id).open = true;
+                    }, this);
+
+                    if (this.allowSelectSiblings && e.ctrlKey) {
+                        this.getSiblings(label).forEach(function (label) {
+                            label.selected = true;
+                        });
                     }
                 }
             }
         },
-        deselectLabel: function (label) {
+        deselectLabel: function (label, e) {
             if (this.hasLabel(label.id)) {
                 label.selected = false;
+
+                if (this.allowSelectSiblings && e.ctrlKey) {
+                    this.getSiblings(label).forEach(function (label) {
+                        label.selected = false;
+                    });
+                }
             }
         },
         clearSelectedLabels: function () {

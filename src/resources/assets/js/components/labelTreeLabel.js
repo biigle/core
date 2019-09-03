@@ -105,13 +105,14 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
     },
     methods: {
-        toggleSelect: function () {
+        toggleSelect: function (e) {
             if (this.editing) return;
 
+            e.preventDefault();
             if (this.label.selected) {
-                this.$emit('deselect', this.label);
+                this.$emit('deselect', this.label, e);
             } else {
-                this.$emit('select', this.label);
+                this.$emit('select', this.label, e);
             }
         },
         editThis: function () {
@@ -159,11 +160,11 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
                 this.emitRemoveFavourite(this.label);
             }
         },
-        emitSelect: function (label) {
-            this.$emit('select', label);
+        emitSelect: function (label, e) {
+            this.$emit('select', label, e);
         },
-        emitDeselect: function (label) {
-            this.$emit('deselect', label);
+        emitDeselect: function (label, e) {
+            this.$emit('deselect', label, e);
         },
         emitDelete: function (label) {
             this.$emit('delete', label);
