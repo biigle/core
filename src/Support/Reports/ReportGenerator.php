@@ -246,4 +246,24 @@ class ReportGenerator
     {
         return $this->options->get('separateLabelTrees', false);
     }
+
+    /**
+     * Returns the array of label ids to which this report should be restricted.
+     *
+     * @return array
+     */
+    protected function getOnlyLabels()
+    {
+        return $this->options->get('onlyLabels', []);
+    }
+
+    /**
+     * Determines if this report is restricted to a subset of labels.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToLabels()
+    {
+        return !empty($this->getOnlyLabels());
+    }
 }

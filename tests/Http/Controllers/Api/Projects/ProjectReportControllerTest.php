@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\Tests\LabelTest;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
@@ -83,6 +84,27 @@ class ProjectReportControllerTest extends ApiTestCase
 
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::videoAnnotationsCsvId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreOnlyLabels()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $projectId = $this->project()->id;
+        // Create the volume by calling it.
+        $this->volume();
+        $typeId = ReportType::first()->id;
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [999],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [$label->id],
             ])
             ->assertStatus(200);
     }

@@ -62,13 +62,19 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
+        array_map(function ($a) {
+            AnnotationLabelTest::create(['annotation_id' => $a->id]);
+        }, $annotations);
+
         $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
         $outside = [$annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
 
-        $generator = new AnnotationReportGenerator;
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+        ]);
         $generator->setSource($volume);
 
-        $ids = Annotation::when(true, [$generator, 'restrictToExportAreaQuery'])->pluck('id')->toArray();
+        $ids = $generator->initQuery(['annotations.id'])->pluck('id')->toArray();
         $ids = array_map('intval', $ids);
 
         sort($inside);
@@ -146,6 +152,7 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $a = AnnotationTest::create();
         $a->image->volume_id = $session->volume_id;
+        $a->image->save();
 
         $al1 = AnnotationLabelTest::create([
             'created_at' => '2016-10-04',
@@ -168,9 +175,8 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotationSession' => $session->id,
         ]);
         $generator->setSource($session->volume);
-        $results = AnnotationLabel::when(true, [$generator, 'restrictToAnnotationSessionQuery'])->get();
-
-        $this->assertEquals(1, count($results));
+        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
         $this->assertEquals($al2->id, $results[0]->id);
     }
 
@@ -199,9 +205,25 @@ class AnnotationReportGeneratorTest extends TestCase
             'newestLabel' => true,
         ]);
         $generator->setSource($a->image->volume);
-        $results = AnnotationLabel::when(true, [$generator, 'restrictToNewestLabelQuery'])->get();
-
-        $this->assertEquals(1, count($results));
+        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
         $this->assertEquals($al3->id, $results[0]->id);
+    }
+
+    public function testRestrictToLabels()
+    {
+        $a1 = AnnotationTest::create();
+        $al1 = AnnotationLabelTest::create(['annotation_id' => $a1->id]);
+
+        $a2 = AnnotationTest::create(['image_id' => $a1->image_id]);
+        $al2 = AnnotationLabelTest::create(['annotation_id' => $a2->id]);
+
+        $generator = new AnnotationReportGenerator([
+            'onlyLabels' => [$al1->label_id],
+        ]);
+        $generator->setSource($a1->image->volume);
+        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($al1->id, $results[0]->id);
     }
 }

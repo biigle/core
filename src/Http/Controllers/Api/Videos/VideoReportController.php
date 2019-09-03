@@ -25,6 +25,7 @@ class VideoReportController extends ReportController
      * @apiParam (Required arguments) {Number} type_id The report type ID.
      *
      * @apiParam (Optional arguments) {Boolean} separate_label_trees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
+     * @apiParam (Optional arguments) {Number[]} only_labels Array of label IDs to restrict the report to. Omit or leave empty to take all labels.
      *
      * @apiPermission projectMember
      *

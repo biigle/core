@@ -21,12 +21,15 @@ class ReportController extends Controller
             'separate_label_trees' => 'nullable|boolean',
             'export_area' => 'nullable|boolean',
             'newest_label' => 'nullable|boolean',
+            'only_labels' => 'nullable|array',
+            'only_labels.*' => 'exists:labels,id',
         ]);
 
         return [
             'separateLabelTrees' => (bool) $request->input('separate_label_trees', false),
             'exportArea' => (bool) $request->input('export_area', false),
             'newestLabel' => (bool) $request->input('newest_label', false),
+            'onlyLabels' => $request->input('only_labels', []),
         ];
     }
 }

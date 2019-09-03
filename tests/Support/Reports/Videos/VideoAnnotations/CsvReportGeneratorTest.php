@@ -224,4 +224,25 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($video);
         $generator->generateReport('my/path');
     }
+
+    public function testRestrictToLabels()
+    {
+        $video = VideoTest::create();
+        $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'video_annotation_id' => $annotation->id,
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'video_annotation_id' => $annotation->id,
+        ]);
+
+        $generator = new CsvReportGenerator([
+            'onlyLabels' => [$al1->label_id],
+        ]);
+        $generator->setSource($video);
+        $results = $generator->initQuery(['video_annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($al1->id, $results[0]->id);
+    }
 }

@@ -82,6 +82,40 @@ class CsvReportGenerator extends ReportGenerator
     }
 
     /**
+     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToLabelsQuery($query)
+    {
+        return $query->whereIn('video_annotation_labels.label_id', $this->getOnlyLabels());
+    }
+
+    /**
+     * Assembles the part of the DB query that is the same for all annotation reports.
+     *
+     * @param mixed $columns The columns to select
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function initQuery($columns = [])
+    {
+        $query = DB::table('video_annotation_labels')
+            ->join('video_annotations', 'video_annotation_labels.video_annotation_id', '=', 'video_annotations.id')
+            ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
+            ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
+            ->where('videos.id', $this->source->id)
+            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->select($columns);
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->addSelect('labels.label_tree_id');
+        }
+
+        return $query;
+    }
+
+    /**
      * Get all labels that are attached to the volume of this report (through project label trees).
      *
      * @return \Illuminate\Support\Collection
@@ -95,28 +129,6 @@ class CsvReportGenerator extends ReportGenerator
                     ->where('project_id', $this->source->project_id);
             })
             ->get();
-    }
-
-    /**
-     * Assembles the part of the DB query that is the same for all annotation reports.
-     *
-     * @param mixed $columns The columns to select
-     * @return \Illuminate\Database\Query\Builder
-     */
-    protected function initQuery($columns = [])
-    {
-        $query = DB::table('video_annotation_labels')
-            ->join('video_annotations', 'video_annotation_labels.video_annotation_id', '=', 'video_annotations.id')
-            ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
-            ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
-            ->where('videos.id', $this->source->id)
-            ->select($columns);
-
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->addSelect('labels.label_tree_id');
-        }
-
-        return $query;
     }
 
     /**

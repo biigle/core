@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Tests\LabelTest;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
@@ -61,5 +62,24 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
             ->assertStatus(422);
+    }
+
+    public function testStoreOnlyLabels()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::first()->id;
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [999],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [$label->id],
+            ])
+            ->assertStatus(200);
     }
 }
