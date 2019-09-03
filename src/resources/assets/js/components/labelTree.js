@@ -177,7 +177,7 @@ biigle.$component('labelTrees.components.labelTree', {
                         this.getLabel(id).open = true;
                     }, this);
 
-                    if (this.allowSelectSiblings && e.ctrlKey) {
+                    if (this.multiselect && this.allowSelectSiblings && e.ctrlKey) {
                         this.getSiblings(label).forEach(function (label) {
                             label.selected = true;
                         });
