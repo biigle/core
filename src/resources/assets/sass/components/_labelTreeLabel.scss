@@ -27,15 +27,17 @@
 
     .label-tree-label__chevron {
         top: 6px;
-        text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
+        text-shadow:
+            -1.5px 0 white,
+            1.5px 0 white,
+            0 -1.5px white,
+            0 1.5px white;
 
         &:before {
             position: relative;
             top: 1px;
             display: inline-block;
             font-family: 'Font Awesome 5 Free';
-            font-style: normal;
-            font-weight: 900;
             line-height: 1;
         }
 
@@ -48,7 +50,6 @@
             // fontawesome fa-chevron-down
             content: "\f078";
         }
-
     }
 
     .label-tree-label__name {

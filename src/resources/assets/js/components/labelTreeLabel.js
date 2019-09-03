@@ -13,8 +13,8 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             '</span>' +
             '<span v-else>' +
                 '<span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>' +
-                '<span v-if="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>' +
-                '<span v-if="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>' +
+                '<span v-show="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>' +
+                '<span v-show="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>' +
                 '<span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>' +
             '</span>' +
             '<span class="label-tree-label__buttons">' +
