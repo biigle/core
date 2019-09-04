@@ -12,7 +12,7 @@ return [
     */
     'scripts' => [
         'basic_report' => __DIR__.'/../resources/scripts/basic_report.py',
-        'extended_report' => __DIR__.'/../resources/scripts/extended_report.py',
+        'csvs_to_xlsx' => __DIR__.'/../resources/scripts/csvs_to_xlsx.py',
         'full_report' => __DIR__.'/../resources/scripts/full_report.py',
     ],
 

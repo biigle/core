@@ -49,7 +49,7 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name);
         }
 
-        $this->executeScript('extended_report', $path);
+        $this->executeScript('csvs_to_xlsx', $path);
     }
 
     /**
