@@ -38,6 +38,9 @@ biigle.$component('reports.mixins.reportForm', {
                 return label.selected;
             });
         },
+        selectedLabelsCount: function () {
+            return this.selectedLabels.length;
+        },
         variants: function () {
             var variants = {};
             this.reportTypes.forEach(function (type) {
