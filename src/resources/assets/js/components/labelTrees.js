@@ -11,7 +11,7 @@ biigle.$component('labelTrees.components.labelTrees', {
         '</div>' +
         '<div class="label-trees__body">' +
             '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
@@ -45,6 +45,10 @@ biigle.$component('labelTrees.components.labelTrees', {
             default: false,
         },
         allowSelectSiblings: {
+            type: Boolean,
+            default: false,
+        },
+        allowSelectChildren: {
             type: Boolean,
             default: false,
         },

@@ -143,14 +143,14 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         deleteThis: function () {
             this.emitDelete(this.label);
         },
-        toggleOpen: function () {
+        toggleOpen: function (e) {
             if (this.editing) return;
 
             // If the label cannot be opened, it will be selected here instead.
             if (this.expandable) {
                 this.label.open = !this.label.open;
             } else {
-                this.toggleSelect();
+                this.toggleSelect(e);
             }
         },
         toggleFavourite: function () {

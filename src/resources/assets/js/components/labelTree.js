@@ -52,9 +52,15 @@ biigle.$component('labelTrees.components.labelTree', {
             type: Boolean,
             default: false,
         },
-        // Indicates whether labels can be selected with Crtl to select all sibling
+        // Indicates whether labels can be selected with Alt to select all sibling
         // labels, too.
         allowSelectSiblings: {
+            type: Boolean,
+            default: false,
+        },
+        // Indicates whether labels can be selected with Crtl to select all child
+        // labels, too.
+        allowSelectChildren: {
             type: Boolean,
             default: false,
         },
@@ -150,6 +156,32 @@ biigle.$component('labelTrees.components.labelTree', {
 
             return parent.children;
         },
+        selectSiblings: function (label) {
+            this.getSiblings(label).forEach(function (label) {
+                label.selected = true;
+            });
+        },
+        deselectSiblings: function (label) {
+            this.getSiblings(label).forEach(function (label) {
+                label.selected = false;
+            });
+        },
+        selectChildren: function (label) {
+            if (label.children) {
+                label.children.forEach(function (child) {
+                    child.selected = true;
+                    this.selectChildren(child);
+                }, this);
+            }
+        },
+        deselectChildren: function (label) {
+            if (label.children) {
+                label.children.forEach(function (child) {
+                    child.selected = false;
+                    this.deselectChildren(child);
+                }, this);
+            }
+        },
         emitSelect: function (label, e) {
             this.$emit('select', label, e);
         },
@@ -161,6 +193,12 @@ biigle.$component('labelTrees.components.labelTree', {
         },
         emitDelete: function (label) {
             this.$emit('delete', label);
+        },
+        conditionSelectSiblings: function (e) {
+            return this.allowSelectSiblings && e.altKey;
+        },
+        conditionSelectChildren: function (e) {
+            return this.allowSelectChildren && e.ctrlKey;
         },
         selectLabel: function (label, e) {
             if (!this.multiselect) {
@@ -177,10 +215,18 @@ biigle.$component('labelTrees.components.labelTree', {
                         this.getLabel(id).open = true;
                     }, this);
 
-                    if (this.multiselect && this.allowSelectSiblings && e.ctrlKey) {
-                        this.getSiblings(label).forEach(function (label) {
-                            label.selected = true;
-                        });
+                    if (this.multiselect) {
+                        if (this.conditionSelectSiblings(e)) {
+                            this.selectSiblings(label);
+                        }
+
+                        if (this.conditionSelectChildren(e)) {
+                            this.selectChildren(label);
+
+                            if (this.conditionSelectSiblings(e)) {
+                                this.getSiblings(label).forEach(this.selectChildren);
+                            }
+                        }
                     }
                 }
             }
@@ -189,10 +235,16 @@ biigle.$component('labelTrees.components.labelTree', {
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
-                if (this.allowSelectSiblings && e.ctrlKey) {
-                    this.getSiblings(label).forEach(function (label) {
-                        label.selected = false;
-                    });
+                if (this.conditionSelectSiblings(e)) {
+                    this.deselectSiblings(label);
+                }
+
+                if (this.conditionSelectChildren(e)) {
+                    this.deselectChildren(label);
+
+                    if (this.conditionSelectSiblings(e)) {
+                        this.getSiblings(label).forEach(this.deselectChildren);
+                    }
                 }
             }
         },
