@@ -285,4 +285,14 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     {
         return $this->options->get('newestLabel', false);
     }
+
+    /**
+     * Determines if this report should aggregate child labels.
+     *
+     * @return bool
+     */
+    protected function shouldAggregateChildLabels()
+    {
+        return $this->options->get('aggregateChildLabels', false);
+    }
 }

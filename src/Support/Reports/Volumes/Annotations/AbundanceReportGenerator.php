@@ -89,6 +89,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $rows = $rows->groupBy('filename');
 
+        if ($this->shouldAggregateChildLabels()) {
+            [$rows, $labels] = $this->aggregateChildLabels($rows, $labels);
+        }
+
+        $labels = $labels->sortBy('id');
+
         $csv = CsvFile::makeTmp();
         $csv->put([$title]);
 
@@ -97,7 +103,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $columns[] = $label->name;
         }
         $csv->put($columns);
-
 
         foreach ($rows as $filename => $annotations) {
             $row = [$filename];
@@ -116,5 +121,84 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $csv->close();
 
         return $csv;
+    }
+
+    /**
+     * Aggregate the number of child labels to the number of the highest parent label
+     * and remove the child labels from the list.
+     *
+     * @param \Illuminate\Support\Collection $rows
+     * @param \Illuminate\Support\Collection $labels
+     *
+     * @return array
+     */
+    protected function aggregateChildLabels($rows, $labels)
+    {
+        $parentIdMap = $labels->pluck('parent_id', 'id')
+            ->when($this->isRestrictedToLabels(), function ($labels) {
+                $onlyLabels = $this->getOnlyLabels();
+
+                return $labels->map(function ($value) use ($onlyLabels) {
+                    // Act as if excluded parent labels do not exist.
+                    return in_array($value, $onlyLabels) ? $value : null;
+                });
+            })
+            ->filter(function ($value) {
+                return !is_null($value);
+            });
+
+        // Determine the highest parent label for all child labels.
+        do {
+            $hoistedParentLabel = false;
+            foreach ($parentIdMap as $id => $parentId) {
+                if ($parentIdMap->has($parentId)) {
+                    $parentIdMap[$id] = $parentIdMap[$parentId];
+                    $hoistedParentLabel = true;
+                }
+            }
+        } while ($hoistedParentLabel);
+
+        // Remove all labels that should be aggregated to their parent.
+        $labels = $labels->reject(function ($label) use ($parentIdMap) {
+            return $parentIdMap->has($label->id);
+        });
+
+        // Add all labels that are parents of existing labels but were not included
+        // because there are no annotations with these labels.
+        $missingLabels = $parentIdMap->values()
+            ->unique()
+            ->diff($labels->pluck('id'));
+
+        $labels = $labels->concat(Label::whereIn('id', $missingLabels)->get());
+
+        foreach ($rows as $filename => $annotations) {
+            // Aggregate the number of annotations of child labels to the number of their
+            // parent.
+            $annotations = $annotations->keyBy('label_id');
+            foreach ($annotations as $labelId => $annotation) {
+                $parentId = $parentIdMap->get($labelId);
+                if ($parentId) {
+                    if ($annotations->has($parentId)) {
+                        $annotations[$parentId]->count += $annotation->count;
+                    } else {
+                        // Add a new entry for a parent label which has no "own"
+                        // annotations.
+                        $annotations[$parentId] = (object) [
+                            'count' => $annotation->count,
+                            'label_id' => $parentId,
+                            'filename' => $filename,
+                        ];
+                    }
+                }
+            }
+
+            // Remove rows of child labels so they are not counted twice.
+            $rows[$filename] = $annotations->values()
+                ->filter(function ($annotation) use ($parentIdMap) {
+                    return !$parentIdMap->has($annotation->label_id);
+                });
+        }
+
+        return [$rows, $labels];
     }
 }
