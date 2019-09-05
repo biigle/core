@@ -36,14 +36,14 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
 
-        $al1 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => AnnotationTest::create(['image_id' => $i1->id])->id,
             'label_id' => $root->id,
         ]);
 
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
 
-        $al2 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $child->id,
         ]);
@@ -96,11 +96,11 @@ class AbundanceReportGeneratorTest extends TestCase
             'image_id' => $image->id,
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
@@ -165,19 +165,19 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
 
-        $al1 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => AnnotationTest::create(['image_id' => $i1->id])->id,
             'label_id' => $child->id,
         ]);
 
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
 
-        $al3 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $child->id,
         ]);
 
-        $al3 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $childchild->id,
         ]);
