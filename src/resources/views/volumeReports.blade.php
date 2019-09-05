@@ -94,6 +94,17 @@
                             Only the newest label of each annotation will be included in the report.
                         </div>
                     </div>
+                    <div v-if="wantsVariant('Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels
+                            </label>
+                        </div>
+                        <div v-if="errors.aggregate_child_labels" v-cloak class="help-block" v-text="getError('aggregate_child_labels')"></div>
+                        <div v-else class="help-block">
+                            Aggregate the abundance of child labels to their parent label.
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="checkbox">

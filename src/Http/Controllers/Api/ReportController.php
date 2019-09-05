@@ -23,6 +23,7 @@ class ReportController extends Controller
             'newest_label' => 'nullable|boolean',
             'only_labels' => 'nullable|array',
             'only_labels.*' => 'exists:labels,id',
+            'aggregate_child_labels' => "nullable|boolean",
         ]);
 
         return [
@@ -30,6 +31,7 @@ class ReportController extends Controller
             'exportArea' => (bool) $request->input('export_area', false),
             'newestLabel' => (bool) $request->input('newest_label', false),
             'onlyLabels' => $request->input('only_labels', []),
+            'aggregateChildLabels' => (bool) $request->input('aggregate_child_labels', false),
         ];
     }
 }

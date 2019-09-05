@@ -22,6 +22,7 @@ biigle.$component('reports.mixins.reportForm', {
             newest_label: false,
             separate_label_trees: false,
             only_labels: [],
+            aggregate_child_labels: false,
         },
     },
     computed: {
@@ -110,6 +111,13 @@ biigle.$component('reports.mixins.reportForm', {
         wantsType: function (type) {
             return this.selectedType === type;
         },
+        wantsVariant: function (variant) {
+            if (Array.isArray(variant)) {
+                return variant.indexOf(this.selectedVariant) !== -1;
+            }
+
+            return this.selectedVariant === variant;
+        },
         hasError: function (key) {
             return this.errors.hasOwnProperty(key);
         },
@@ -117,7 +125,7 @@ biigle.$component('reports.mixins.reportForm', {
             return this.errors[key] ? this.errors[key].join(' ') : '';
         },
         wantsCombination: function (type, variant) {
-            return this.selectedType === type && this.selectedVariant === variant;
+            return this.wantsType(type) && this.wantsVariant(variant);
         },
     },
     watch: {

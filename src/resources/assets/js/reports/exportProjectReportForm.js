@@ -14,6 +14,7 @@ biigle.$viewModel('project-report-form', function (element) {
                     'newest_label',
                     'separate_label_trees',
                     'only_labels',
+                    'aggregate_child_labels',
                 ],
                 'ImageLabels': [
                     'separate_label_trees',
