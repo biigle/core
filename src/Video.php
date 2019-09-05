@@ -80,11 +80,12 @@ class Video extends Model implements FileContract
             return $query;
         }
 
-        return $query->whereExists(function ($query) use ($user) {
-            $query->select(DB::raw(1))
+        return $query->whereIn('id', function ($query) use ($user) {
+            $query->select('videos.id')
                 ->from('videos')
                 ->join('project_user', 'project_user.project_id', '=', 'videos.project_id')
-                ->where('project_user.user_id', $user->id);
+                ->where('project_user.user_id', $user->id)
+                ->distinct();
         });
     }
 
