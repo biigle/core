@@ -131,10 +131,6 @@ class Image extends Model implements FileContract
      */
     public function getFile()
     {
-        if ($this->volume->isRemote()) {
-            return Response::redirectTo($this->url);
-        }
-
         if ($this->tiled === true) {
             $response = [
                 'id' => $this->id,
@@ -149,6 +145,10 @@ class Image extends Model implements FileContract
             TileCache::get($this);
 
             return $response;
+        }
+
+        if ($this->volume->isRemote()) {
+            return Response::redirectTo($this->url);
         }
 
         try {
