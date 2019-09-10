@@ -100,7 +100,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/file.txt', 'abc');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+        Storage::disk('test')->put('images/2.jpg', 'abc');
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -165,7 +166,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     public function testStoreJsonAttrs()
     {
         Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/file.txt', 'abc');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
@@ -202,6 +203,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     {
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
+        Storage::disk('test')->put('images/2.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
@@ -210,6 +212,32 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'test://images',
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreFilesExist()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => '1.jpg, 2.jpg',
+            ])
+            ->assertStatus(422);
+
+        Storage::disk('test')->put('images/2.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => '1.jpg, 2.jpg',
             ])
             ->assertStatus(200);
     }
