@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use File;
+use Queue;
 use Storage;
 use TestCase;
 use Biigle\Tests\AnnotationTest;
@@ -22,5 +23,21 @@ class RemoveAnnotationPatchesTest extends TestCase
         $args = [$annotation->id => $annotation->image->uuid];
         (new RemoveAnnotationPatches($args))->handle();
         $this->assertFalse(Storage::disk('test')->exists($path));
+    }
+
+    public function testHandleChunk()
+    {
+        Queue::fake();
+        Storage::fake('test');
+        config(['largo.patch_storage_disk' => 'test']);
+        $annotation = AnnotationTest::create();
+        $annotation2 = AnnotationTest::create();
+
+        $args = [
+            $annotation->id => $annotation->image->uuid,
+            $annotation2->id => $annotation2->image->uuid,
+        ];
+        (new RemoveAnnotationPatches($args, 1))->handle();
+        Queue::assertPushed(RemoveAnnotationPatches::class, 2);
     }
 }
