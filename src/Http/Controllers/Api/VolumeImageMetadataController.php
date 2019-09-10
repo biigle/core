@@ -166,6 +166,10 @@ class VolumeImageMetadataController extends Controller
             }
 
             $toFill = array_combine($columns, $data);
+            // Remove empty cells, except filename, lng and lat.
+            $toFill = array_filter($toFill, function ($value, $key) {
+                return in_array($key, ['filename', 'lng', 'lat']) || $value;
+            }, ARRAY_FILTER_USE_BOTH);
             $filename = $toFill['filename'];
 
             if (!$images->has($filename)) {

@@ -160,4 +160,19 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->assertEquals(52.220, $image->fresh()->lng);
         $this->assertEquals(28.123, $image->fresh()->lat);
     }
+
+    public function testStoreEmptyCells()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-emptycells.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(52.220, $image->fresh()->lng);
+        $this->assertEquals(28.123, $image->fresh()->lat);
+    }
 }
