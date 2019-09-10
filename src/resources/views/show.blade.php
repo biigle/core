@@ -82,12 +82,19 @@
             v-on:attach="handleAttachLabel"
             v-on:delete="handleDeleteAnnotations"
             v-on:measuring="fetchImagesArea"
+            v-on:requires-selected-label="handleRequiresSelectedLabel"
             ref="canvas"
             inline-template>
             @include('annotations::show.annotationCanvas')
         </annotation-canvas>
     </div>
-    <sidebar :open-tab="openTab" :toggle-on-keyboard="true" v-on:open="handleOpenedTab" v-on:close="handleClosedTab" v-cloak>
+    <sidebar
+        ref="sidebar"
+        :open-tab="openTab"
+        :toggle-on-keyboard="true"
+        v-on:open="handleOpenedTab"
+        v-on:close="handleClosedTab"
+        v-cloak>
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')

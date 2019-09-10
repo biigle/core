@@ -21,7 +21,7 @@ biigle.$viewModel('annotator-container', function (element) {
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
         components: {
-            sidebar: biigle.$require('annotations.components.sidebar'),
+            sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             annotationsTab: biigle.$require('annotations.components.siaAnnotationsTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
@@ -491,6 +491,10 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             setImagesArea: function (response) {
                 this.imagesArea = response.body;
+            },
+            handleRequiresSelectedLabel: function () {
+                messages.info('Please select a label first.');
+                this.$refs.sidebar.$emit('open', 'labels');
             },
         },
         watch: {

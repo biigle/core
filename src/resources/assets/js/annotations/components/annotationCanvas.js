@@ -457,8 +457,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             }
         },
         requireSelectedLabel: function () {
-            biigle.$require('events').$emit('sidebar.open', 'labels');
-            biigle.$require('messages.store').info('Please select a label first.');
+            this.$emit('requires-selected-label');
             this.resetInteractionMode();
         },
         render: function () {
