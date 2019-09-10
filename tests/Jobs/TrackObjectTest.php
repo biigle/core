@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Videos\Jobs;
 
 use File;
+use Storage;
 use TestCase;
 use Exception;
 use Biigle\Shape;
@@ -13,6 +14,13 @@ use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
 
 class TrackObjectTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        Storage::fake('test');
+        Storage::disk('test')->put('my-video.mp4', 'abc');
+    }
+
     public function testHandle()
     {
         config(['videos.keyframe_distance' => 123]);
