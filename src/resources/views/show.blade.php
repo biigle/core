@@ -17,23 +17,24 @@
     <div class="sidebar-container__content">
         @include('videos::show.content')
     </div>
-        <sidebar
-            v-cloak
-            :toggle-on-keyboard="true"
-            :open-tab="openTab"
-            v-on:open="handleOpenedTab"
-            v-on:close="handleClosedTab"
-            >
-                @include('videos::show.sidebar-annotations')
-                @can('edit-in', $video)
-                    @include('videos::show.sidebar-labels')
-                @endcan
-                @mixin('videosSidebar')
-                @include('videos::show.sidebar-settings')
-                @can('update', $video)
-                    @include('videos::show.sidebar-edit')
-                @endcan
-        </sidebar>
+    <sidebar
+        v-cloak
+        ref="sidebar"
+        :toggle-on-keyboard="true"
+        :open-tab="openTab"
+        v-on:open="handleOpenedTab"
+        v-on:close="handleClosedTab"
+        >
+            @include('videos::show.sidebar-annotations')
+            @can('edit-in', $video)
+                @include('videos::show.sidebar-labels')
+            @endcan
+            @mixin('videosSidebar')
+            @include('videos::show.sidebar-settings')
+            @can('update', $video)
+                @include('videos::show.sidebar-edit')
+            @endcan
+    </sidebar>
 </div>
 @endsection
 

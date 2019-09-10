@@ -48,7 +48,7 @@ biigle.$component('videos.components.videoScreen.drawInteractions', function () 
         },
         methods: {
             requireSelectedLabel: function () {
-                biigle.$require('messages.store').info('Please select a label first.');
+                this.$emit('requires-selected-label');
                 this.resetInteractionMode();
             },
             initPendingAnnotationLayer: function (map) {

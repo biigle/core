@@ -291,6 +291,10 @@ biigle.$viewModel('video-container', function (element) {
                 }
                 this.activeAnnotationFilter = null;
             },
+            handleRequiresSelectedLabel: function () {
+                MSG.info('Please select a label first.');
+                this.$refs.sidebar.$emit('open', 'labels');
+            },
         },
         watch: {
             'settings.playbackRate': function (rate) {

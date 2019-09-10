@@ -24,6 +24,7 @@
       v-on:modify="modifyAnnotations"
       v-on:delete="deleteAnnotationsOrKeyframes"
       v-on:moveend="updateMapUrlParams"
+      v-on:requires-selected-label="handleRequiresSelectedLabel"
       ></video-screen>
 <video-timeline
       :annotations="filteredAnnotations"
