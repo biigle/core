@@ -36,7 +36,12 @@ class StoreVolumeImage extends FormRequest
         $this->volume = Volume::findOrFail($this->route('id'));
 
         return [
-            'images' => ['required', 'array', new VolumeImages, new VolumeImageUnique($this->volume)],
+            'images' => [
+                'required',
+                'array',
+                new VolumeImages($this->volume->url),
+                new VolumeImageUnique($this->volume)
+            ],
             'images.*' => ['max:512'],
         ];
     }
