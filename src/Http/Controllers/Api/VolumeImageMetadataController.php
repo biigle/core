@@ -6,6 +6,7 @@ use File;
 use Exception;
 use Biigle\Image;
 use Biigle\Volume;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
@@ -223,8 +224,12 @@ class VolumeImageMetadataController extends Controller
         }
 
         // Catch both a malformed date (false) and the zero date (negative integer).
-        if (array_key_exists('taken_at', $toFill) && !(strtotime($toFill['taken_at']) > 0)) {
-            throw new Exception("'{$toFill['taken_at']}' is no valid date for image {$image->filename}.");
+        if (array_key_exists('taken_at', $toFill)) {
+            if (!(strtotime($toFill['taken_at']) > 0)) {
+                throw new Exception("'{$toFill['taken_at']}' is no valid date for image {$image->filename}.");
+            }
+
+            $toFill['taken_at'] = Carbon::parse($toFill['taken_at'])->toDateTimeString();
         }
 
         try {
