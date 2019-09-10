@@ -121,4 +121,18 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
             ->assertStatus(422);
     }
+
+    public function testStoreCaseInsensitive()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-case-insensitive.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(-1500, $image->fresh()->metadata['gps_altitude']);
+    }
 }

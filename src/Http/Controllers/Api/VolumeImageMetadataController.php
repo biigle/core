@@ -82,6 +82,8 @@ class VolumeImageMetadataController extends Controller
             ]);
         }
 
+        $columns = array_map('strtolower', $columns);
+
         if (!in_array('filename', $columns)) {
             throw ValidationException::withMessages([
                 'file' => 'The filename column is required.',
