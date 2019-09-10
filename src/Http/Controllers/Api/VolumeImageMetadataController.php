@@ -36,6 +36,18 @@ class VolumeImageMetadataController extends Controller
     ];
 
     /**
+     * Column name synonyms.
+     *
+     * @var array
+     */
+    protected $columnSynonyms = [
+        'file' => 'filename',
+        'lon' => 'lng',
+        'longitude' => 'lng',
+        'latitude' => 'lat',
+    ];
+
+    /**
      * Add or update image metadata for a volume.
      *
      * @api {post} volumes/:id/images/metadata Add image metadata
@@ -82,7 +94,17 @@ class VolumeImageMetadataController extends Controller
             ]);
         }
 
+        // Column names should be case insensitive.
         $columns = array_map('strtolower', $columns);
+
+        // Apply column name synonyms.
+        $columns = array_map(function ($column) {
+            if (array_key_exists($column, $this->columnSynonyms)) {
+                return $this->columnSynonyms[$column];
+            }
+
+            return $column;
+        }, $columns);
 
         if (!in_array('filename', $columns)) {
             throw ValidationException::withMessages([
