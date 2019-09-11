@@ -164,7 +164,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'points' => [[10, 11]],
                 'frames' => [0.0],
             ])
-            ->assertStatus(200)
+            ->assertSuccessful()
             ->assertJsonFragment(['frames' => [0.0]])
             ->assertJsonFragment(['points' => [[10, 11]]])
             ->assertJsonFragment(['name' => $label->name])
@@ -230,7 +230,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0],
                 'track' => true,
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
         Queue::assertPushedOn('high', TrackObject::class);
     }
 
@@ -258,7 +258,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0],
                 'track' => true,
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testStoreAndTrackLineString()

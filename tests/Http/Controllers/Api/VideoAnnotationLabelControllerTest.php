@@ -39,7 +39,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         $this->postJson("api/v1/video-annotations/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
             ])
-            ->assertStatus(200)
+            ->assertSuccessful()
             ->assertJsonFragment(['label_id' => $this->labelRoot()->id]);
 
         $label = $annotation->labels()->first();
