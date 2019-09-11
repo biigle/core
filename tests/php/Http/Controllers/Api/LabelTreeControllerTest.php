@@ -290,7 +290,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::publicId(),
         ]);
         // description is optional
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $this->assertEquals(1, LabelTree::count());
 
@@ -300,7 +300,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => ''.Visibility::publicId(),
             'description' => 'my description',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $this->assertEquals(2, LabelTree::count());
 
@@ -326,13 +326,13 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::publicId(),
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::publicId(),
-        ])->assertStatus(200);
+        ])->assertSuccessful();
     }
 
     public function testStoreTargetProject()
@@ -363,7 +363,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => 'my description',
             'project_id' => $this->project()->id,
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $tree = LabelTree::first();
         $this->assertEquals($this->project()->id, $tree->projects()->first()->id);
         $this->assertEquals($this->project()->id, $tree->authorizedProjects()->first()->id);
@@ -422,7 +422,7 @@ class LabelTreeControllerTest extends ApiTestCase
                 'description' => 'my description',
             ])
             // Members can fork private trees.
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $this->beGuest();
         $baseTree->visibility_id = Visibility::publicId();
@@ -434,7 +434,7 @@ class LabelTreeControllerTest extends ApiTestCase
                 'description' => 'my description',
             ])
             // Everybody can fork public trees.
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
         $this->assertEquals('abc', $tree->name);

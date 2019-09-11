@@ -109,7 +109,7 @@ class ProjectControllerTest extends ApiTestCase
             'description' => 'my test project',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
@@ -129,13 +129,13 @@ class ProjectControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
     }
 
     public function testDestroy()

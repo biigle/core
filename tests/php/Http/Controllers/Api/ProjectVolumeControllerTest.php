@@ -149,7 +149,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertEquals($count + 1, $this->project()->volumes()->count());
         $this->assertStringStartsWith('{', $content);
@@ -213,7 +213,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => ['1.jpg', '2.jpg'],
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testStoreFilesExist()
@@ -239,7 +239,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => '1.jpg, 2.jpg',
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testAttach()

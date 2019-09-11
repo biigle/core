@@ -23,6 +23,8 @@ class StoreVolumeImage extends FormRequest
      */
     public function authorize()
     {
+        $this->volume = Volume::findOrFail($this->route('id'));
+
         return $this->user()->can('update', $this->volume);
     }
 
@@ -33,8 +35,6 @@ class StoreVolumeImage extends FormRequest
      */
     public function rules()
     {
-        $this->volume = Volume::findOrFail($this->route('id'));
-
         return [
             'images' => [
                 'required',

@@ -60,7 +60,7 @@ class ApiTokenControllerTest extends ApiTestCase
         $response = $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
             ->assertJsonFragment(['purpose' => 'abc']);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertEquals(2, $token->owner->apiTokens()->count());
         $this->assertContains('"token":"', $response->getContent());
 
@@ -76,11 +76,11 @@ class ApiTokenControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testDestroy()

@@ -184,7 +184,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'points' => [10, 11],
         ]);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $response->assertJsonFragment(['points' => [10, 11]]);
         $response->assertJsonFragment(['name' => $label->name]);

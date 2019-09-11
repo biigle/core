@@ -201,7 +201,7 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request)
     {
-        $user = $request->user;
+        $user = $request->updateUser;
 
         if ($user->id === $request->user()->id) {
             throw ValidationException::withMessages([
@@ -257,7 +257,7 @@ class UserController extends Controller
      */
     public function updateOwn(UpdateOwnUser $request)
     {
-        $user = $request->user;
+        $user = $request->updateUser;
 
         if ($request->filled('super_user_mode')) {
             $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
@@ -371,7 +371,7 @@ class UserController extends Controller
      */
     public function destroy(DestroyUser $request)
     {
-        $user = $request->user;
+        $user = $request->destroyUser;
         if ($user->id === $request->user()->id) {
             throw ValidationException::withMessages([
                 'id' => ['The own user cannot be updated using this endpoint.'],
@@ -403,7 +403,7 @@ class UserController extends Controller
         auth()->logout();
         // delete the user AFTER logging them out, otherwise logout would save
         // them again
-        $request->user->delete();
+        $request->destroyUser->delete();
 
         if (!$this->isAutomatedRequest()) {
             return redirect('login');
