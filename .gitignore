@@ -2,7 +2,6 @@ vendor
 public/vendor
 node_modules
 public/hot
-.idea
 tmp
 storage/largo_patches
 

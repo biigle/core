@@ -1,5 +1,6 @@
 <?php
 
+ use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
 /*
@@ -20,7 +21,7 @@ $factory->define(Biigle\User::class, function (Faker $faker) {
         // 'password'
         'password' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
         'email' => $faker->unique()->email(),
-        'remember_token' => str_random(10),
+        'remember_token' => Str::random(10),
         'uuid' => $faker->unique()->uuid(),
         'affiliation' => $faker->company(),
         'role_id' => Biigle\Role::editorId(),

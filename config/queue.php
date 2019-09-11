@@ -11,9 +11,11 @@ return [
     | API, giving you convenient access to each back-end using the same
     | syntax for every one. Here you may define a default connection.
     |
+    | QUEUE_DRIVER for backwards compatibility of Laravel 5.6.
+    |
     */
 
-    'default' => env('QUEUE_DRIVER', 'sync'),
+    'default' => env('QUEUE_CONNECTION', env('QUEUE_DRIVER', 'sync')),
 
     /*
     |--------------------------------------------------------------------------
@@ -60,7 +62,7 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'default',
+            'queue' => env('REDIS_QUEUE', 'default'),
             'retry_after' => 1800,
             'block_for' => null,
         ],

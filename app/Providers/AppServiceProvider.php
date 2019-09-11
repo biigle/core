@@ -10,6 +10,30 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton('modules', function () {
+            return new \Biigle\Services\Modules;
+        });
+        // Use the singleton in any instances where the modules service should be used
+        // via dependency injection.
+        $this->app->alias('modules', \Biigle\Services\Modules::class);
+
+        $this->app->bind('vips-image', function () {
+            return new \Jcupitt\Vips\Image(null);
+        });
+
+        $this->app->bind('tile-cache', function () {
+            return new \Biigle\Services\TileCache;
+        });
+    }
+
     /**
      * Bootstrap any application services.
      *
@@ -38,28 +62,5 @@ class AppServiceProvider extends ServiceProvider
 
         // Backwards compytibility after upgrade from Laravel 5.5 to 5.6.
         Paginator::useBootstrapThree();
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('modules', function () {
-            return new \Biigle\Services\Modules;
-        });
-        // Use the singleton in any instances where the modules service should be used
-        // via dependency injection.
-        $this->app->alias('modules', \Biigle\Services\Modules::class);
-
-        $this->app->bind('vips-image', function () {
-            return new \Jcupitt\Vips\Image(null);
-        });
-
-        $this->app->bind('tile-cache', function () {
-            return new \Biigle\Services\TileCache;
-        });
     }
 }
