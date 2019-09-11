@@ -26,7 +26,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $labelTree = LabelTreeTest::create();
         $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
 
-        $wrongFile = new UploadedFile($path, 'file.txt', 0, 'text/plain', null, true);
+        $wrongFile = new UploadedFile($path, 'file.txt', 'text/plain', null, true);
 
         $this->doTestApiRoute('POST', '/api/v1/label-trees/import');
 
@@ -60,11 +60,11 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $labelTree = LabelTreeTest::create();
         $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
 
-        $file = new UploadedFile($path, 'label-tree.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'label-tree.zip', 'application/zip', null, true);
 
         $this->beUser();
         $this->postJson('/api/v1/label-trees/import', ['archive' => $file])
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $hasMember = $newTree->members()
             ->where('id', $this->user()->id)

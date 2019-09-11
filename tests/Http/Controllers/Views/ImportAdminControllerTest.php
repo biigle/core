@@ -33,7 +33,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new UserExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 
@@ -54,7 +54,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new LabelTreeExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 
@@ -75,7 +75,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new VolumeExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 

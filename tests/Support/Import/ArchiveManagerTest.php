@@ -31,7 +31,7 @@ class ArchiveManagerTest extends TestCase
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
@@ -50,7 +50,7 @@ class ArchiveManagerTest extends TestCase
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         try {
             $token = (new ArchiveManager)->store($file);
@@ -66,7 +66,7 @@ class ArchiveManagerTest extends TestCase
         $export = new LabelTreeExport([$tree->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
@@ -85,7 +85,7 @@ class ArchiveManagerTest extends TestCase
         $export = new LabelTreeExport([$tree->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         try {
             $token = (new ArchiveManager)->store($file);
@@ -101,7 +101,7 @@ class ArchiveManagerTest extends TestCase
         $export = new VolumeExport([$volume->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
@@ -120,7 +120,7 @@ class ArchiveManagerTest extends TestCase
         $export = new VolumeExport([$volume->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
 
         try {
             $token = (new ArchiveManager)->store($file);
@@ -136,7 +136,7 @@ class ArchiveManagerTest extends TestCase
         $export = new PublicLabelTreeExport([$tree->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
@@ -152,7 +152,7 @@ class ArchiveManagerTest extends TestCase
     {
         $path = tempnam(sys_get_temp_dir(), 'corrupt_zip');
         File::put($path, 'abc123');
-        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
 
         try {
             (new ArchiveManager)->store($file);
@@ -174,7 +174,7 @@ class ArchiveManagerTest extends TestCase
         $zip->deleteName('users.json');
         $zip->close();
 
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         try {
             $token = (new ArchiveManager)->store($file);
@@ -190,7 +190,7 @@ class ArchiveManagerTest extends TestCase
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
@@ -209,7 +209,7 @@ class ArchiveManagerTest extends TestCase
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
@@ -223,7 +223,7 @@ class ArchiveManagerTest extends TestCase
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
 
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
