@@ -23,7 +23,7 @@ class LabelTreeImportTest extends TestCase
 {
     protected $destination;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -36,7 +36,7 @@ class LabelTreeImportTest extends TestCase
         $this->labelTree->addMember($this->member, Role::editor());
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();

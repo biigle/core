@@ -19,7 +19,7 @@ use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 
 class ArchiveManagerTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         config(['sync.import_storage' => sys_get_temp_dir()]);

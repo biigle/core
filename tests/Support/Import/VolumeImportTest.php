@@ -32,14 +32,14 @@ class VolumeImportTest extends TestCase
 {
     protected $destination;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->volume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
         $this->image = ImageTest::create(['volume_id' => $this->volume->id]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();

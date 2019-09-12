@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserImportTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -35,7 +35,7 @@ class UserImportTest extends TestCase
         $zip->close();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();

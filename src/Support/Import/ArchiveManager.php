@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
+use Str;
 use File;
 use Exception;
 use ZipArchive;
@@ -139,7 +140,7 @@ class ArchiveManager
      */
     protected function generateToken()
     {
-        return hash_hmac('sha256', str_random(40), config('app.key'));
+        return hash_hmac('sha256', Str::random(40), config('app.key'));
     }
 
     /**
