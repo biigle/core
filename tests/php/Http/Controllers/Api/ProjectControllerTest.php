@@ -17,8 +17,8 @@ class ProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testIndexGlobalAdmin()
@@ -50,8 +50,8 @@ class ProjectControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testUpdate()
@@ -113,7 +113,7 @@ class ProjectControllerTest extends ApiTestCase
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"name":"test project"', $content);
+        $this->assertStringContainsString('"name":"test project"', $content);
         $this->assertEquals(2, Project::count());
     }
 

@@ -45,11 +45,11 @@ class AnnotationControllerTest extends ApiTestCase
         $response = $this->get("api/v1/annotations/{$id}")
             ->assertJsonFragment(['points' => [10, 10, 20, 20]]);
         // the labels should be fetched separately
-        $this->assertNotContains('labels', $response->getContent());
+        $this->assertStringNotContainsString('labels', $response->getContent());
         // image and volume objects from projectIds() call shouldn't be
         // included in the output
-        $this->assertNotContains('"image"', $response->getContent());
-        $this->assertNotContains('volume', $response->getContent());
+        $this->assertStringNotContainsString('"image"', $response->getContent());
+        $this->assertStringNotContainsString('volume', $response->getContent());
     }
 
     public function testShowAnnotationSession()

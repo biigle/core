@@ -46,7 +46,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // response should not be an empty array
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testStore()

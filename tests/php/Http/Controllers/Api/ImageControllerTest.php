@@ -38,7 +38,7 @@ class ImageControllerTest extends ApiTestCase
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"volume"', $content);
+        $this->assertStringContainsString('"volume"', $content);
     }
 
     public function testShowFile()

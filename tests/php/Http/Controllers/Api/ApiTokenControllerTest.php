@@ -62,7 +62,7 @@ class ApiTokenControllerTest extends ApiTestCase
 
         $response->assertSuccessful();
         $this->assertEquals(2, $token->owner->apiTokens()->count());
-        $this->assertContains('"token":"', $response->getContent());
+        $this->assertStringContainsString('"token":"', $response->getContent());
 
         $response = $this->post('/api/v1/api-tokens', ['purpose' => 'def'])
             ->assertSessionHas('token');

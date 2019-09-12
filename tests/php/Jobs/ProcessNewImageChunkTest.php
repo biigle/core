@@ -36,8 +36,8 @@ class ProcessNewImageChunkTest extends TestCase
         $image = $image->fresh();
 
         $this->assertEquals('2011-12-31 17:07:29', (string) $image->taken_at);
-        $this->assertEquals(12.486211944, $image->lng, '', 0.000001);
-        $this->assertEquals(41.8898575, $image->lat, '', 0.000001);
+        $this->assertEqualsWithDelta(12.486211944, $image->lng, 0.000001);
+        $this->assertEqualsWithDelta(41.8898575, $image->lat, 0.000001);
         $this->assertEquals(56.819, $image->metadata['gps_altitude']);
         $this->assertEquals(500, $image->width);
         $this->assertEquals(375, $image->height);
@@ -96,7 +96,7 @@ class ProcessNewImageChunkTest extends TestCase
             (new ProcessNewImageChunk([$image->id]))->handle();
             $this->assertFalse(true);
         } catch (VipsException $e) {
-            $this->assertContains('not a known file format', $e->getMessage());
+            $this->assertStringContainsString('not a known file format', $e->getMessage());
         }
     }
 
