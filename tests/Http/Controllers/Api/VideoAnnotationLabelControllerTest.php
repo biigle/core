@@ -10,7 +10,7 @@ use Biigle\Tests\Modules\Videos\VideoAnnotationLabelTest;
 
 class VideoAnnotationLabelControllerTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->video = VideoTest::create(['project_id' => $this->project()->id]);

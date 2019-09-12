@@ -15,7 +15,7 @@ use Biigle\Tests\Modules\Videos\VideoAnnotationLabelTest;
 
 class VideoAnnotationPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->project = ProjectTest::create();

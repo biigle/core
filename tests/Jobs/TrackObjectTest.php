@@ -14,7 +14,7 @@ use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
 
 class TrackObjectTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Storage::fake('test');
