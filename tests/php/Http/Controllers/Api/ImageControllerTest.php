@@ -12,7 +12,7 @@ class ImageControllerTest extends ApiTestCase
 {
     private $image;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();

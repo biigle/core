@@ -57,10 +57,10 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('mixin', function ($name) {
             // Used code from:
             // Illuminate\View\Compilers\Concerns\CompilesIncludes::compileInclude
-            return "<?php foreach (app('modules')->getViewMixins({$name}) as \$module => \$nestedMixins): ?><?php echo \$__env->make(\$module.'::'.{$name}, ['mixins' => \$nestedMixins], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?><?php endforeach; ?>";
+            return "<?php foreach (app('modules')->getViewMixins({$name}) as \$module => \$nestedMixins): ?><?php echo \$__env->make(\$module.'::'.{$name}, ['mixins' => \$nestedMixins], \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?><?php endforeach; ?>";
         });
 
-        // Backwards compytibility after upgrade from Laravel 5.5 to 5.6.
+        // Backwards compatibility after upgrade from Laravel 5.5 to 5.6.
         Paginator::useBootstrapThree();
     }
 }

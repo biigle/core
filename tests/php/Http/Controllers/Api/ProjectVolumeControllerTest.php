@@ -22,7 +22,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 {
     private $volume;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->volume = VolumeTest::create();

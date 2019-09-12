@@ -10,7 +10,7 @@ use Biigle\Tests\ApiTokenTest;
 
 class ApiTokenPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);

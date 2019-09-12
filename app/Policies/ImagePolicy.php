@@ -39,7 +39,7 @@ class ImagePolicy extends CachedPolicy
     public function access(User $user, Image $image)
     {
         // put this to permanent cache for rapid querying of image thumbnails
-        return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
+        return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 30, function () use ($user, $image) {
             // check if user is member of one of the projects, the image belongs to
             return DB::table('project_user')
                 ->where('user_id', $user->id)

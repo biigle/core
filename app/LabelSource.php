@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Str;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,7 +29,7 @@ class LabelSource extends Model
      */
     public function getAdapter()
     {
-        $name = studly_case($this->name);
+        $name = Str::studly($this->name);
 
         return app()->make("Biigle\Services\LabelSourceAdapters\\{$name}Adapter");
     }

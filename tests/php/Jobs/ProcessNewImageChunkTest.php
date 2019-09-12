@@ -16,7 +16,7 @@ use Jcupitt\Vips\Exception as VipsException;
 
 class ProcessNewImageChunkTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Storage::fake(config('thumbnails.storage_disk'));

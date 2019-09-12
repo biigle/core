@@ -304,7 +304,7 @@ class Volume extends Model
     {
         // We can cache this for 1 hour because it's unlikely to change as long as the
         // volume exists.
-        return Cache::remember("volume-thumbnails-{$this->id}", 60, function () {
+        return Cache::remember("volume-thumbnails-{$this->id}", 3600, function () {
             $number = 10;
             $total = $this->images()->count();
             $query = $this->orderedImages();
@@ -346,7 +346,7 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("volume-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("volume-{$this->id}-has-geo-info", 3600, function () {
             return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
         });
     }
@@ -444,7 +444,7 @@ class Volume extends Model
     public function hasTiledImages()
     {
         // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 1, function () {
+        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, function () {
             return $this->images()->where('tiled', true)->exists();
         });
     }

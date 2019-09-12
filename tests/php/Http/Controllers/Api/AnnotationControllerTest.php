@@ -15,7 +15,7 @@ class AnnotationControllerTest extends ApiTestCase
 {
     private $annotation;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();

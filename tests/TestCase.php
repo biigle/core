@@ -16,7 +16,7 @@ class TestCase extends BaseTestCase
     /**
      * Default preparation for each test.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -42,7 +42,7 @@ class TestCase extends BaseTestCase
         ]]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $database = $this->app->make('db');
         $database->connection(null)->rollBack();

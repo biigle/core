@@ -1,6 +1,8 @@
 <?php
 
- use Illuminate\Support\Str;
+use Biigle\User;
+use Biigle\Role;
+use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
 /*
@@ -14,7 +16,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(Biigle\User::class, function (Faker $faker) {
+$factory->define(User::class, function (Faker $faker) {
     return [
         'firstname' => $faker->firstName(),
         'lastname' => $faker->lastName(),
@@ -24,6 +26,6 @@ $factory->define(Biigle\User::class, function (Faker $faker) {
         'remember_token' => Str::random(10),
         'uuid' => $faker->unique()->uuid(),
         'affiliation' => $faker->company(),
-        'role_id' => Biigle\Role::editorId(),
+        'role_id' => Role::editorId(),
     ];
 });
