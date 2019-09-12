@@ -21,10 +21,8 @@ class TestCase extends BaseTestCase
         parent::setUp();
 
         // Reuse connection, else too many tests will reach the connection limit.
-        // Also migrate/refresh the database only the first time.
         if (!static::$pdo) {
             static::$pdo = DB::getPdo();
-            $this->artisan('migrate:refresh');
         } else {
             DB::setPdo(static::$pdo);
         }

@@ -43,7 +43,7 @@ class SystemMessagePolicy
     public function destroy(User $user, SystemMessage $systemMessage)
     {
         if ($systemMessage->published_at !== null) {
-            $this->deny('Published system messages cannot be deleted.');
+            return $this->deny('Published system messages cannot be deleted.');
         }
 
         return $user->can('sudo');

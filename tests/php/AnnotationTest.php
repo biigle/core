@@ -234,7 +234,9 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a1->id, $a3->id], $ids);
+        $this->assertCount(2, $ids);
+        $this->assertContains($a1->id, $ids);
+        $this->assertContains($a3->id, $ids);
     }
 
     public function testAllowedBySessionScopeHideBoth()

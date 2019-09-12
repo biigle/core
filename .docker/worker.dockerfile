@@ -21,6 +21,14 @@ RUN apk add --no-cache \
         soap \
         pcntl
 
+ARG PHPREDIS_VERSION=5.0.0
+RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
+    && tar -xzf /tmp/redis.tar.gz \
+    && rm /tmp/redis.tar.gz \
+    && mkdir -p /usr/src/php/ext \
+    && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
+    && docker-php-ext-install redis
+
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # Install vips from source because the edge package does not have libgsf support.
 # I've ommitted libexif on purpose because the EXIF orientation of images captured by

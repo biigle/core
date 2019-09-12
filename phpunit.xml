@@ -18,6 +18,9 @@
             <directory suffix=".php">./app</directory>
         </whitelist>
     </filter>
+    <extensions>
+        <extension class="Biigle\Tests\Bootstrap"/>
+    </extensions>
     <php>
         <server name="APP_ENV" value="testing"/>
         <server name="BCRYPT_ROUNDS" value="4"/>
@@ -30,6 +33,11 @@
         <server name="DB_HOST" value="database_testing"/>
         <server name="DB_USERNAME" value="biigle"/>
         <server name="DB_PASSWORD" value="secret"/>
+        <server name="APP_CONFIG_CACHE" value="bootstrap/cache/config.phpunit.php"/>
+        <server name="APP_SERVICES_CACHE" value="bootstrap/cache/services.phpunit.php"/>
+        <server name="APP_PACKAGES_CACHE" value="bootstrap/cache/packages.phpunit.php"/>
+        <server name="APP_ROUTES_CACHE" value="bootstrap/cache/routes.phpunit.php"/>
+        <server name="APP_EVENTS_CACHE" value="bootstrap/cache/events.phpunit.php"/>
     </php>
     <listeners>
         <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener">
