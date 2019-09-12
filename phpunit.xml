@@ -32,6 +32,14 @@
         <server name="DB_PASSWORD" value="secret"/>
     </php>
     <listeners>
-        <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener" />
+        <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener">
+            <arguments>
+                <array>
+                    <element key="slowThreshold">
+                        <integer>600</integer>
+                    </element>
+                </array>
+            </arguments>
+        </listener>
     </listeners>
 </phpunit>

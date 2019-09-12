@@ -78,7 +78,7 @@
             "@php artisan key:generate --ansi"
         ],
         "test": [
-            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always"
+            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
         ],
         "testf": [
             "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
