@@ -56,7 +56,7 @@ class ArchiveManagerTest extends TestCase
             $token = (new ArchiveManager)->store($file);
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('User imports are not allowed', $e->getMessage());
+            $this->assertStringContainsString('User imports are not allowed', $e->getMessage());
         }
     }
 
@@ -91,7 +91,7 @@ class ArchiveManagerTest extends TestCase
             $token = (new ArchiveManager)->store($file);
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('Label tree imports are not allowed', $e->getMessage());
+            $this->assertStringContainsString('Label tree imports are not allowed', $e->getMessage());
         }
     }
 
@@ -126,7 +126,7 @@ class ArchiveManagerTest extends TestCase
             $token = (new ArchiveManager)->store($file);
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('Volume imports are not allowed', $e->getMessage());
+            $this->assertStringContainsString('Volume imports are not allowed', $e->getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ class ArchiveManagerTest extends TestCase
             (new ArchiveManager)->store($file);
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('Could not open import archive', $e->getMessage());
+            $this->assertStringContainsString('Could not open import archive', $e->getMessage());
         } finally {
             File::delete($path);
         }
@@ -180,7 +180,7 @@ class ArchiveManagerTest extends TestCase
             $token = (new ArchiveManager)->store($file);
             $this->assertTrue(false);
         } catch (Exception $e) {
-            $this->assertContains('not a valid import archive', $e->getMessage());
+            $this->assertStringContainsString('not a valid import archive', $e->getMessage());
         }
     }
 

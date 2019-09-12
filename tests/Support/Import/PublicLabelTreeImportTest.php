@@ -67,7 +67,7 @@ class PublicLabelTreeImportTest extends TestCase
             $import->validateFiles();
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('are missing keys: uuid', $e->getMessage());
+            $this->assertStringContainsString('are missing keys: uuid', $e->getMessage());
         }
     }
 
