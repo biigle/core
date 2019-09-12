@@ -10,7 +10,7 @@ use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class LargoControllerTestBase extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->url = $this->getUrl();
