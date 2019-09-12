@@ -13,6 +13,7 @@
                 @if ($errors->has('archive'))
                    <span class="help-block">{{ $errors->first('archive') }}</span>
                 @endif
+                <span class="help-block">You can find a description of the import archive format in the <a href="{{route('manual-tutorials', ['sync', 'label-trees'])}}">manual</a>.</span>
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-success pull-right">Import</button>
