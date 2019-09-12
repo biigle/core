@@ -73,4 +73,21 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $this->assertTrue($hasMember);
     }
 
+    public function testStoreValidationException()
+    {
+        $mock = Mockery::mock(ArchiveManager::class);
+        $mock->shouldReceive('store')->once()->andThrow(Exception::class);
+        $this->app->bind(ArchiveManager::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $labelTree = LabelTreeTest::create();
+        $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
+
+        $file = new UploadedFile($path, 'label-tree.zip', filesize($path), 'application/zip', null, true);
+
+        $this->beUser();
+        $this->postJson('/api/v1/label-trees/import', ['archive' => $file])
+            ->assertStatus(422);
+        }
 }

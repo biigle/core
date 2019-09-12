@@ -32,23 +32,25 @@ class PublicLabelTreeImportController extends Controller
         $this->authorize('create', LabelTree::class);
         $this->validate($request, ['archive' => 'required|file|mimes:zip']);
 
-        $token = $manager->store($request->file('archive'));
-
         try {
-            $import = $manager->get($token);
-            if ($import->treeExists()) {
-                throw new Exception('The label tree already exists.');
-            }
-            $tree = DB::transaction(function () use ($import, $request) {
-                $tree = $import->perform();
-                $tree->addMember($request->user(), Role::admin());
+            $token = $manager->store($request->file('archive'));
 
-                return $tree;
-            });
+            try {
+                $import = $manager->get($token);
+                if ($import->treeExists()) {
+                    throw new Exception('The label tree already exists.');
+                }
+                $tree = DB::transaction(function () use ($import, $request) {
+                    $tree = $import->perform();
+                    $tree->addMember($request->user(), Role::admin());
+
+                    return $tree;
+                });
+            } finally {
+                $manager->delete($token);
+            }
         } catch (Exception $e) {
             throw ValidationException::withMessages(['archive' => [$e->getMessage()]]);
-        } finally {
-            $manager->delete($token);
         }
 
         if ($this->isAutomatedRequest()) {
