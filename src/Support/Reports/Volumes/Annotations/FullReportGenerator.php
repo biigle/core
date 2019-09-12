@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use DB;
+use Arr;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
 
@@ -112,7 +113,7 @@ class FullReportGenerator extends AnnotationReportGenerator
     {
         $attrs = json_decode($attrs, true);
         if (is_array($attrs)) {
-            return array_get($attrs, 'laserpoints.area');
+            return Arr::get($attrs, 'laserpoints.area');
         }
     }
 }
