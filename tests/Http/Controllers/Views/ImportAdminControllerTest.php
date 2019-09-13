@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Views;
 
+use Storage;
 use ApiTestCase;
 use Illuminate\Http\UploadedFile;
 use Biigle\Modules\Sync\Support\Export\UserExport;
@@ -11,6 +12,13 @@ use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 
 class ImportAdminControllerTest extends ApiTestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        config(['sync.import_storage_disk' => 'test']);
+        Storage::fake('test');
+    }
+
     public function testIndex()
     {
         $this->beAdmin();
@@ -23,8 +31,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowUserImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 
@@ -44,8 +50,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowLabelTreeImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 
@@ -65,8 +69,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowVolumeImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 

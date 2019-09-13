@@ -8,7 +8,14 @@ This is the BIIGLE module to transfer data between application instances.
 2. Run `composer require biigle/sync`.
 3. Add `Biigle\Modules\Sync\SyncServiceProvider::class` to the `providers` array in `config/app.php`.
 4. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
-5. Add a daily scheduled command to prune old uploaded import files to `app/Console/Kernel.php`:
+5. Configure a storage disk for the uploaded import files and set the `SYNC_IMPORT_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. Example for a local disk:
+    ```php
+    'imports' => [
+        'driver' => 'local',
+        'root' => storage_path('imports'),
+    ],
+    ```
+6. Add a daily scheduled command to prune old uploaded import files to `app/Console/Kernel.php`:
    ```php
    $schedule->command('sync:prune')->daily();
    ```

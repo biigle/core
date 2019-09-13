@@ -16,9 +16,10 @@ return [
     ],
 
     /*
-    | Directory to store import files to while the import is being performed.
+    | Storage disk where the import files will be stored while the import is being
+    | performed.
     */
-    'import_storage' => storage_path('imports'),
+    'import_storage_disk' => env('SYNC_IMPORT_STORAGE_DISK', 'imports'),
 
     /*
     | Set which imports should be allowed for this instance.
