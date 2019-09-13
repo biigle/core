@@ -111,9 +111,9 @@ return [
             'visibility' => 'public',
         ],
 
-        'reports' => [
+        'imports' => [
             'driver' => 'local',
-            'root' => storage_path('reports'),
+            'root' => storage_path('imports'),
         ],
 
     ],
