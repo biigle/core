@@ -386,6 +386,12 @@ biigle.$component('videos.components.videoScreen', {
                 view.setCenter(this.initialCenter);
             }
         },
+        updateSize: function () {
+            var map = this.map;
+            this.$nextTick(function () {
+                map.updateSize();
+            });
+        },
     },
     watch: {
         selectedAnnotations: function (annotations) {
@@ -425,13 +431,6 @@ biigle.$component('videos.components.videoScreen', {
         // if (this.canAdd) {
         //     kb.on('b', this.emitCreateBookmark);
         // }
-
-        var self = this;
-        biigle.$require('events').$on('sidebar.toggle', function () {
-            self.$nextTick(function () {
-                self.map.updateSize();
-            });
-        });
     },
     mounted: function () {
         this.map.setTarget(this.$el);

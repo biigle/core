@@ -205,6 +205,9 @@ biigle.$viewModel('video-container', function (element) {
             handleClosedTab: function () {
                 this.settingsStore.delete('openTab');
             },
+            handleToggledTab: function () {
+                this.$refs.videoScreen.updateSize();
+            },
             removeAnnotation: function (annotation) {
                 var index = this.annotations.indexOf(annotation);
                 if (index !== -1) {

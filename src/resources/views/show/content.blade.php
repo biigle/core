@@ -1,5 +1,6 @@
 <loader-block :active="loading"></loader-block>
 <video-screen
+      ref="videoScreen"
       :annotations="filteredAnnotations"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
