@@ -7,28 +7,41 @@ biigle.$viewModel('messages-display', function (element) {
     var store = biigle.$require('messages.store');
 
     var message = {
-        props: ['message'],
+        props: {
+            id: {
+                type: Number,
+                required: true,
+            },
+            text: {
+                type: String,
+                required: true,
+            },
+            type: {
+                type: String,
+                default: 'info',
+            },
+        },
         computed: {
             typeClass: function () {
-                if (this.message.type) {
-                    return 'alert-' + this.message.type;
-                }
-
-                return 'alert-info';
-            }
+                return 'alert-' + this.type;
+            },
         },
         methods: {
             close: function () {
-                if (this.message) {
-                    store.close(this.message.id);
-                } else {
-                    // This is for popup messages pushed from the server directly into
-                    // the HTML. Since these messages are not present in the message
-                    // store, we simply remove the DOM element.
-                    this.$el.remove();
+                store.close(this.id);
+            },
+            cancelTimeout: function () {
+                if (this.closeTimeoutId) {
+                    window.clearTimeout(this.closeTimeoutId);
+                    this.closeTimeoutId = null;
                 }
             }
-        }
+        },
+        mounted: function () {
+            if (this.type !== 'danger') {
+                this.closeTimeoutId = window.setTimeout(this.close, 15000);
+            }
+        },
     };
 
     new Vue({
@@ -38,6 +51,15 @@ biigle.$viewModel('messages-display', function (element) {
         },
         data: {
             messages: store.all
-        }
+        },
+        created: function () {
+            var message = biigle.$require('staticMessage');
+            if (message.text && message.type) {
+                // Wait for nextTick so the message animation works.
+                this.$nextTick(function () {
+                    store.post(message.type, message.text);
+                });
+            }
+        },
     });
 });
