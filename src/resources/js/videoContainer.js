@@ -48,6 +48,11 @@ biigle.$viewModel('video-container', function (element) {
             initialMapResolution: 0,
             annotationFilters: [],
             activeAnnotationFilter: null,
+            resizingTimeline: false,
+            timelineOffsetReference: 0,
+            timelineHeightReference: 0,
+            fixedTimelineOffset: 0,
+            currentTimelineOffset: 0,
         },
         computed: {
             shapes: function () {
@@ -76,6 +81,19 @@ biigle.$viewModel('video-container', function (element) {
             hasActiveAnnotationFilter: function () {
                 return this.activeAnnotationFilter !== null;
             },
+            timelineHeightOffset: function () {
+                return this.fixedTimelineOffset + this.currentTimelineOffset;
+            },
+            screenHeightOffset: function () {
+                return -1 * this.timelineHeightOffset;
+            },
+            classObject: function () {
+                if (this.resizingTimeline) {
+                    return 'resizing-timeline';
+                }
+
+                return '';
+            }
         },
         methods: {
             prepareAnnotation: function (annotation) {
@@ -297,6 +315,32 @@ biigle.$viewModel('video-container', function (element) {
             handleRequiresSelectedLabel: function () {
                 MSG.info('Please select a label first.');
                 this.$refs.sidebar.$emit('open', 'labels');
+            },
+            startUpdateTimelineHeight: function (e) {
+                e.preventDefault();
+                this.resizingTimeline = true;
+                this.timelineOffsetReference = e.clientY;
+                this.timelineHeightReference = this.$refs.videoTimeline.$el.offsetHeight;
+            },
+            updateTimelineHeight: function (e) {
+                if (this.resizingTimeline) {
+                    e.preventDefault();
+                    this.currentTimelineOffset = this.timelineOffsetReference - e.clientY;
+                }
+            },
+            finishUpdateTimelineHeight: function (e) {
+                if (this.resizingTimeline) {
+                    this.resizingTimeline = false;
+                    // Use the actual element height to calculate the new offset because
+                    // the height is restricted with percent values in CSS. The value in
+                    // currentTimelineOffset is not restricted. Even if the element
+                    // height would be correct, the next resize attempt may not work as
+                    // expected because fixedTimelineOffset is too small/large and the
+                    // mouse would have to move a bit to reach the threshold that is set
+                    // via CSS.
+                    this.fixedTimelineOffset = this.fixedTimelineOffset + this.$refs.videoTimeline.$el.offsetHeight - this.timelineHeightReference;
+                    this.currentTimelineOffset = 0;
+                }
             },
         },
         watch: {

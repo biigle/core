@@ -17,17 +17,22 @@ biigle.$component('videos.components.scrollStrip', {
                         ' :element-width="elementWidth"' +
                         ' @seek="emitSeek"' +
                         '></video-progress>' +
-                    '<annotation-tracks' +
-                        ' :tracks="tracks"' +
-                        ' :duration="duration"' +
-                        ' :element-width="elementWidth"' +
-                        ' @select="emitSelect"' +
-                        ' @deselect="emitDeselect"' +
-                        ' @scroll-y="emitScrollY"' +
-                        ' @drag-x="handleDragX"' +
-                        ' @overflow-top="updateOverflowTop"' +
-                        ' @overflow-bottom="updateOverflowBottom"' +
-                        '></annotation-tracks>' +
+                    '<div class="annotation-tracks-wrapper">' +
+                        '<annotation-tracks' +
+                            ' ref="annotationTracks"' +
+                            ' :tracks="tracks"' +
+                            ' :duration="duration"' +
+                            ' :element-width="elementWidth"' +
+                            ' @select="emitSelect"' +
+                            ' @deselect="emitDeselect"' +
+                            ' @scroll-y="emitScrollY"' +
+                            ' @drag-x="handleDragX"' +
+                            ' @overflow-top="updateOverflowTop"' +
+                            ' @overflow-bottom="updateOverflowBottom"' +
+                            '></annotation-tracks>' +
+                        '<div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>' +
+                        '<div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>' +
+                    '</div>' +
                     '<span' +
                         ' class="time-indicator"' +
                         ' :class="timeIndicatorClass"' +
@@ -39,8 +44,6 @@ biigle.$component('videos.components.scrollStrip', {
                         ' v-show="showHoverTime"' +
                         '></span>' +
             '</div>' +
-            '<div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>' +
-            '<div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>' +
             '<div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>' +
             '<div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>' +
     '</div>',
@@ -195,6 +198,9 @@ biigle.$component('videos.components.scrollStrip', {
         },
         handleDragX: function (delta) {
             this.updateScrollLeft(this.scrollLeft + delta);
+        },
+        updateHeight: function () {
+            this.$refs.annotationTracks.updateClientHeight();
         },
     },
     watch: {

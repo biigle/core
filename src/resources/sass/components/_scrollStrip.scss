@@ -7,8 +7,12 @@
         border-bottom: 1px solid $legend-border-color;
     }
 
-    .annotation-tracks {
+    // Use the wrapper so the overflow-shadow (top, bottom) elements do not overflow the
+    // video-timeline element.
+    .annotation-tracks-wrapper {
+        position: relative;
         flex: 1;
+        overflow: hidden;
     }
 
     .time-indicator {
@@ -79,7 +83,6 @@
     }
 
     .overflow-shadow--top {
-        top: 34px;
         box-shadow: inset 0 10px 5px -5px rgba(black, 0.75);
     }
 

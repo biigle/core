@@ -1,5 +1,10 @@
 biigle.$component('videos.components.videoTimeline', {
-    template: '<div class="video-timeline">' +
+    template: '<div class="video-timeline"' +
+        ' :style="styleObject"' +
+        '>' +
+        '<div class="grab-border"' +
+            ' @mousedown="emitStartResize"' +
+            '></div>' +
         '<div class="static-strip">' +
             '<current-time' +
                 ' :current-time="currentTime"' +
@@ -12,6 +17,7 @@ biigle.$component('videos.components.videoTimeline', {
                 '></track-headers>' +
         '</div>' +
         '<scroll-strip' +
+            ' ref="scrollStrip"' +
             ' :tracks="annotationTracks"' +
             ' :duration="duration"' +
             ' :current-time="currentTime"' +
@@ -49,6 +55,10 @@ biigle.$component('videos.components.videoTimeline', {
         seeking: {
             type: Boolean,
             default: false,
+        },
+        heightOffset: {
+            type: Number,
+            default: 0,
         },
     },
     data: function () {
@@ -94,6 +104,13 @@ biigle.$component('videos.components.videoTimeline', {
                     lanes: this.getAnnotationTrackLanes(map[labelId])
                 };
             }, this);
+        },
+        styleObject: function () {
+            if (this.heightOffset !== 0) {
+                return 'height: calc(35% + ' + this.heightOffset + 'px);';
+            }
+
+            return '';
         },
     },
     methods: {
@@ -173,9 +190,14 @@ biigle.$component('videos.components.videoTimeline', {
         updateHoverTime: function (time) {
             this.hoverTime = time;
         },
+        emitStartResize: function (e) {
+            this.$emit('start-resize', e);
+        },
     },
     watch: {
-        //
+        heightOffset: function () {
+            this.$refs.scrollStrip.updateHeight();
+        },
     },
     created: function () {
         // this.video.addEventListener('timeupdate', this.updateCurrentTime);

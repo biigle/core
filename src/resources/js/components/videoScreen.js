@@ -8,7 +8,9 @@ biigle.$component('videos.components.videoScreen', {
         biigle.$require('videos.components.videoScreen.indicators'),
         biigle.$require('videos.components.videoScreen.polygonBrushInteractions'),
     ],
-    template: '<div class="video-screen">' +
+    template: '<div class="video-screen"' +
+        ' :style="styleObject"' +
+        '>' +
         '<minimap' +
             ' v-if="showMinimap"' +
             ' :extent="extent"' +
@@ -267,6 +269,10 @@ biigle.$component('videos.components.videoScreen', {
             type: HTMLVideoElement,
             required: true,
         },
+        heightOffset: {
+            type: Number,
+            default: 0,
+        },
     },
     data: function () {
         return {
@@ -287,6 +293,13 @@ biigle.$component('videos.components.videoScreen', {
         },
         isDefaultInteractionMode: function () {
             return this.interactionMode === 'default';
+        },
+        styleObject: function () {
+            if (this.heightOffset !== 0) {
+                return 'height: calc(65% + ' + this.heightOffset + 'px);';
+            }
+
+            return '';
         },
     },
     methods: {
@@ -415,6 +428,9 @@ biigle.$component('videos.components.videoScreen', {
             if (this.annotationLayer) {
                 this.annotationLayer.setOpacity(opactiy);
             }
+        },
+        heightOffset: function () {
+            this.updateSize();
         },
     },
     created: function () {

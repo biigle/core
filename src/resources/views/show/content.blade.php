@@ -15,6 +15,7 @@
       :show-minimap="settings.showMinimap"
       :show-mouse-position="settings.showMousePosition"
       :video="video"
+      :height-offset="screenHeightOffset"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
@@ -28,11 +29,14 @@
       v-on:requires-selected-label="handleRequiresSelectedLabel"
       ></video-screen>
 <video-timeline
+      ref="videoTimeline"
       :annotations="filteredAnnotations"
       :bookmarks="bookmarks"
       :video="video"
       :seeking="seeking"
+      :height-offset="timelineHeightOffset"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"
+      v-on:start-resize="startUpdateTimelineHeight"
       ></video-timeline>
