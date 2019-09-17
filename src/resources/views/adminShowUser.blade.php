@@ -1,17 +1,16 @@
-<div class="col-xs-12">
-    <p>
-        <?php $count = Biigle\AnnotationLabel::where('user_id', $shownUser->id)->count(); ?>
-        @if ($count > 0)
-            <?php
-                $annotationCount = Biigle\Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                    ->where('annotation_labels.user_id', $shownUser->id)
-                    ->distinct()
-                    ->count('annotations.id');
-                $average = round($count / $annotationCount, 2);
-            ?>
-            Attached <strong>{{$count}}</strong> {{$count === 1 ? 'label' : 'labels'}} ({{ round($count / Biigle\AnnotationLabel::count() * 100, 2)}} %) to <strong>{{$annotationCount}}</strong> {{$annotationCount === 1 ? 'annotation' : 'annotations'}} ({{ round($annotationCount / Biigle\Annotation::count() * 100, 2)}} %). That's an average of {{$average}} {{$average === 1.0 ? 'label' : 'labels'}} per annotation.
-        @else
-            Created no annotations yet.
-        @endif
-    </p>
+<div class="col-xs-6">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @if ($totalAnnotationLabels > 0)
+                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ str_plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> {{ str_plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ str_plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
+            @else
+                Created no annotations yet.
+            @endif
+        </div>
+        <ul class="list-group user-stats-list-group">
+            @foreach ($recentAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @endforeach
+        </ul>
+    </div>
 </div>
