@@ -150,25 +150,29 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $session->users()->attach($user);
 
-        $a = AnnotationTest::create();
-        $a->image->volume_id = $session->volume_id;
-        $a->image->save();
+        $a1 = AnnotationTest::create([
+            'created_at' => '2016-10-04',
+        ]);
+        $a1->image->volume_id = $session->volume_id;
+        $a1->image->save();
 
         $al1 = AnnotationLabelTest::create([
-            'created_at' => '2016-10-04',
-            'annotation_id' => $a->id,
+            'annotation_id' => $a1->id,
             'user_id' => $user->id,
         ]);
 
-        $al2 = AnnotationLabelTest::create([
+        $a2 = AnnotationTest::create([
+            'image_id' => $a1->image_id,
             'created_at' => '2016-10-05',
-            'annotation_id' => $a->id,
+        ]);
+
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
             'user_id' => $user->id,
         ]);
 
         $al3 = AnnotationLabelTest::create([
-            'created_at' => '2016-10-05',
-            'annotation_id' => $a->id,
+            'annotation_id' => $a2->id,
         ]);
 
         $generator = new AnnotationReportGenerator([

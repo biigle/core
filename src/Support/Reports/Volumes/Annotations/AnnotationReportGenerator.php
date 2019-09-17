@@ -101,9 +101,9 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         $session = $this->getAnnotationSession();
 
         return $query->where(function ($query) use ($session) {
-            // take only annotation labels that belong to the time span...
-            $query->where('annotation_labels.created_at', '>=', $session->starts_at)
-                ->where('annotation_labels.created_at', '<', $session->ends_at)
+            // take only annotations that belong to the time span...
+            $query->where('annotations.created_at', '>=', $session->starts_at)
+                ->where('annotations.created_at', '<', $session->ends_at)
                 // ...and to the users of the session
                 ->whereIn('annotation_labels.user_id', function ($query) use ($session) {
                     $query->select('user_id')
