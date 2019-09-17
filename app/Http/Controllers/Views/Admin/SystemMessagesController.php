@@ -17,7 +17,7 @@ class SystemMessagesController extends Controller
     {
         $messages = SystemMessage::orderBy('published_at', 'desc')
             ->with('type')
-            ->get();
+            ->paginate(20);
 
         return view('admin.system-messages.index', [
             'messages' => $messages,

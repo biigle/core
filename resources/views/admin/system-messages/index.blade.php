@@ -35,4 +35,7 @@
         @endforelse
     </tbody>
 </table>
+<nav class="text-center">
+    {{$messages->links()}}
+</nav>
 @endsection
