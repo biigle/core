@@ -125,7 +125,6 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
             });
             var metadataPromise = new Vue.Promise(function (resolve, reject) {
                 self.video.addEventListener('loadedmetadata', resolve);
-                self.video.addEventListener('error', reject);
             });
             Vue.Promise.all([mapPromise, metadataPromise])
                 .then(this.initVideoLayer)

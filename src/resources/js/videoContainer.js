@@ -357,8 +357,12 @@ biigle.$viewModel('video-container', function (element) {
         created: function () {
             this.restoreUrlParams();
             this.video.muted = true;
-            this.video.addEventListener('error', function () {
-                MSG.danger('Error while loading video file.');
+            this.video.addEventListener('error', function (e) {
+                if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+                    MSG.danger('The video codec is not supported by your browser.');
+                } else {
+                    MSG.danger('Error while loading video file.');
+                }
             });
             this.video.addEventListener('seeked', this.handleVideoSeeked);
             this.video.addEventListener('pause', this.updateVideoUrlParams);
@@ -367,7 +371,6 @@ biigle.$viewModel('video-container', function (element) {
             var self = this;
             var videoPromise = new Vue.Promise(function (resolve, reject) {
                 self.video.addEventListener('canplay', resolve);
-                self.video.addEventListener('error', reject);
             });
             var annotationPromise = ANNOTATION_API.query({id: VIDEO_ID});
             annotationPromise.then(this.setAnnotations, MSG.handleResponseError)
