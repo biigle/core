@@ -34,4 +34,7 @@
         @endforeach
     </tbody>
 </table>
+<nav class="text-center">
+    {{$volumes->links()}}
+</nav>
 @endsection
