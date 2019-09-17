@@ -125,6 +125,34 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
 
+    public function testGetImageAnnotationsHideOwnDifferentCreatedAt()
+    {
+        $ownUser = UserTest::create();
+        $image = ImageTest::create();
+
+        $a = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+            'points' => [20, 30, 40],
+        ]);
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-08',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $image->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $annotations = $session->getImageAnnotations($image, $ownUser);
+        $this->assertNotEmpty($annotations->first()->labels);
+    }
+
     public function testGetImageAnnotationsHideOther()
     {
         $ownUser = UserTest::create();
