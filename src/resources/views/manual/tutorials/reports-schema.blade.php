@@ -80,7 +80,7 @@ Animalia
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
-            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². If a laser point detection was performed, the width and height in m and the area in m² is included as well.
+            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well.
         </p>
         <div class="panel panel-danger">
             <div class="panel-body text-danger">
@@ -105,8 +105,8 @@ Animalia
             <li><strong>Label names</strong> comma separated list of names of all labels that are attached to the annotation</li>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
-            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Ellipse: Length of the major axis. Polygon: width of the minimum (non-rotated) bounding rectangle.</li>
-            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Ellipse: Length of the minor axis. Polygon: height of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Ellipse: Length of the major axis. Polygon: width of the minimum (non-rotated) bounding rectangle. Line string: total length.</li>
+            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Ellipse: Length of the minor axis. Polygon: height of the minimum (non-rotated) bounding rectangle. Line string: always 0.</li>
             <li><strong>Annotation area (m²)</strong></li>
             <li><strong>Annotation width (px)</strong> See the width in m for the interpretation of this value for different shapes.</li>
             <li><strong>Annotation height (px)</strong> See the height in m for the interpretation of this value for different shapes.</li>

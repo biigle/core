@@ -440,4 +440,60 @@ class AreaReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+
+    public function testGenerateReportLineString()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        // It's a simple open box so the length can be easily calculated manually.
+        $a = AnnotationTest::create([
+            'shape_id' => Shape::lineId(),
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 200, 200, 200, 200, 100],
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$volume->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $a->id,
+                Shape::lineId(), 'LineString',
+                $al->label_id, $al->label->name,
+                $image->id, $image->filename,
+                '', '', '',
+                300, 0, 0,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
 }
