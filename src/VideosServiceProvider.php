@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Biigle\Modules\Videos\Listeners\PrepareDeleteVideoThumbnails;
 use Biigle\Modules\Videos\Http\Controllers\Mixins\SearchControllerMixin;
 use Biigle\Modules\Videos\Http\Controllers\Mixins\DashboardControllerMixin;
+use Biigle\Modules\Videos\Http\Controllers\Mixins\Admin\UsersControllerMixin;
 
 class VideosServiceProvider extends ServiceProvider
 {
@@ -47,11 +48,13 @@ class VideosServiceProvider extends ServiceProvider
                 'searchTab',
                 'searchTabContent',
                 'adminIndex',
+                'adminShowUser',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
                 'dashboardActivityItems' => DashboardControllerMixin::class.'@activityItems',
+                'adminShowUser' => UsersControllerMixin::class.'@show',
             ],
         ]);
 
