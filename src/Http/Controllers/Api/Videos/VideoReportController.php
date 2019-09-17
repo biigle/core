@@ -53,19 +53,4 @@ class VideoReportController extends ReportController
 
         GenerateReportJob::dispatch($report)->onQueue('high');
     }
-
-    /**
-     * Get the options of the requested report.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function getOptions(Request $request)
-    {
-        $options = parent::getOptions($request);
-
-        return array_merge($options, [
-            'annotationSession' => $request->input('annotation_session_id'),
-        ]);
-    }
 }
