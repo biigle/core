@@ -47,4 +47,7 @@
         @endforeach
     </tbody>
 </table>
+<nav class="text-center">
+    {{$users->links()}}
+</nav>
 @endsection

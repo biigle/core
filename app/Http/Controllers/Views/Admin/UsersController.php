@@ -21,7 +21,7 @@ class UsersController extends Controller
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(100);
 
         $roleNames = [
             Role::adminId() => 'Admin',
