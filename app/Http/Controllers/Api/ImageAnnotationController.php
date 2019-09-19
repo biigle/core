@@ -29,28 +29,29 @@ class ImageAnnotationController extends Controller
      * @apiSuccessExample {json} Success response:
      * [
      *    {
-     *       "created_at": "2015-02-18 11:45:00",
      *       "id": 1,
      *       "image_id": 1,
      *       "shape_id": 1,
+     *       "created_at": "2015-02-18 11:45:00",
      *       "updated_at": "2015-02-18 11:45:00",
      *       "points": [100, 200],
      *       "labels": [
      *          {
-     *             "confidence": 1,
      *             "id": 1,
+     *             "annotation_id": 1,
+     *             "label_id": 3,
+     *             "user_id": 4,
      *             "label": {
      *                "color": "bada55",
      *                "id": 3,
      *                "name": "My label",
      *                "parent_id": null,
-     *                "project_id": null
+     *                "label_tree_id": 1,
      *             },
      *             "user": {
      *                "id": 4,
      *                "firstname": "Graham",
      *                "lastname": "Hahn",
-     *                "role_id": 2
      *             }
      *          }
      *       ]
@@ -72,7 +73,16 @@ class ImageAnnotationController extends Controller
             return $session->getImageAnnotations($image, $user);
         }
 
-        return $image->annotations()->with('labels')->get();
+        return $image->annotations()
+            ->with(
+                // Hide confidence.
+                'labels:id,annotation_id,label_id,user_id',
+                // Hide label_source_id and source_id.
+                'labels.label:id,name,parent_id,color,label_tree_id',
+                // Hide role_id.
+                'labels.user:id,firstname,lastname'
+            )
+            ->get();
     }
 
     /**
