@@ -21,7 +21,6 @@ class ProjectsServiceProvider extends ServiceProvider
     public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'projects');
-        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'projects');
 
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/projects'),
