@@ -21,7 +21,7 @@ class ProcessNewVideoTest extends TestCase
 
         $job->handle();
         $this->assertEquals(10, $video->fresh()->duration);
-        $this->assertEquals([0, 5, 9], $job->times);
+        $this->assertEquals([0.5, 5, 9.5], $job->times);
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);

@@ -139,17 +139,17 @@ class ProcessNewVideo extends Job implements ShouldQueue
             return [$duration / 2];
         }
 
-        $step = $duration / floatval($count - 1);
-        $range = range(0, $duration, $step);
+        // Start from 0.5 and stop at $duration - 0.5 because FFMpeg sometimes does not
+        // extract frames from a time code that is equal to 0 or $duration.
+        $step = ($duration - 1) / floatval($count - 1);
+        $start = 0.5;
+        $end = $duration - 0.5;
+        $range = range($start, $end, $step);
 
         // Sometimes there is one entry too few due to rounding errors.
         if (count($range) < $count) {
-            $range[] = $duration;
+            $range[] = $end;
         }
-
-        // Subtract 1 s from the last frame because FFMpeg sometimes does not extract
-        // frames from a time code that is equal to the duration.
-        $range[count($range) - 1] -= 1;
 
         return $range;
     }
