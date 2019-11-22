@@ -117,6 +117,21 @@ $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
 ]);
 
+$router->get(
+    'projects/pinned',
+    'UserPinnedProjectController@index'
+);
+
+$router->post(
+    'projects/{id}/pin',
+    'UserPinnedProjectController@store'
+);
+
+$router->delete(
+    'projects/{id}/pin',
+    'UserPinnedProjectController@destroy'
+);
+
 $router->post(
     'projects/{id}/volumes/{id2}',
     'ProjectVolumeController@attach'
