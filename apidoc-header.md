@@ -13,10 +13,12 @@ Authorization: Basic am9lQHVzZXIuY29tOndaSXJuYzJXRU5uSlNkT25EUnM0bkcxNGN0OTg2Rzd
 Where the stuff after `Basic` is the base 64 encoded string `username:token`.
 
 
-Most HTTP libraries should support Basic Auth out of the box. A cURL request might look like this:
+Most HTTP libraries should support Basic Auth out of the box. For automated processing it's important to set the `Accept` header to `application/json` so the response can be parsed. A cURL request might look like this:
 
 ```
-curl -u joe@user.com:wZIrnc2WENnJSdOnDRs4nG14ct986G7H biigle.de/api/v1/api-tokens
+curl -u joe@user.com:wZIrnc2WENnJSdOnDRs4nG14ct986G7H \
+   -H "Accept: application/json" \
+   https://biigle.de/api/v1/api-tokens
 ```
 
 Most API endpoints require authentication either via session cookie or API token. Some endpoints are restricted to authentication with a session cookie (e.g. manupulation of user credentials).
