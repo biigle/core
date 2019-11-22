@@ -5,9 +5,14 @@
             <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
         </span>
         <span class="pull-right project-buttons" v-else>
+            @if ($isMember)
+                @include('projects::partials.pinButton')
+            @endif
             <button class="btn btn-default" v-on:click="startEditing" :disabled="loading">Edit</button>
             <button class="btn btn-default" v-on:click="deleteProject" :disabled="loading">Delete</button>
-            <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
+            @if ($isMember)
+                <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
+            @endif
         </span>
         <form v-if="editing" v-cloak class="form-inline project-info-form" v-on:submit.prevent="saveChanges">
             <div class="form-group">
@@ -18,16 +23,25 @@
             </div>
         </form>
         <h2 v-else>
+            @if ($isPinned)
+                <i class="fa fa-thumbtack text-muted" title="This project is pinned to the dashboard"></i>
+            @endif
             <span v-text="name">{{$project->name}}</span>
-            <span v-if="hasDescription" @if(!$project->description) v-cloak @endif>
+            <span v-if="hasDescription" @if (!$project->description) v-cloak @endif>
                 <br><small v-text="description">{{$project->description}}</small>
             </span>
         </h2>
     @else
         <h2>
-            <span class="pull-right">
-                <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
-            </span>
+            @if ($isMember)
+                @include('projects::partials.pinButton')
+                <span class="pull-right">
+                    <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
+                </span>
+            @endif
+            @if ($isPinned)
+                <i class="fa fa-thumbtack text-muted" title="This project is pinned to the dashboard"></i>
+            @endif
             {{$project->name}}
             @if($project->description)
                 <br><small>{{$project->description}}</small>

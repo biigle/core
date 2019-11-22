@@ -4,6 +4,7 @@ namespace Biigle\Modules\Projects\Http\Controllers;
 
 use Biigle\Role;
 use Biigle\Project;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
@@ -23,10 +24,11 @@ class ProjectsController extends Controller
     /**
      * Shows the project show page.
      *
+     * @param Request $request
      * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
@@ -58,12 +60,23 @@ class ProjectsController extends Controller
             ->orderBy('project_user.project_role_id', 'asc')
             ->get();
 
+        $userProject = $request->user()->projects()->where('id', $id)->first();
+        $isMember = $userProject !== null;
+        $isPinned = $isMember && $userProject->pivot->pinned;
+        $canPin = $isMember && 3 > $request->user()
+            ->projects()
+            ->wherePivot('pinned', true)
+            ->count();
+
         return view('projects::show', [
             'project' => $project,
             'roles' => $roles,
             'labelTrees' => $labelTrees,
             'volumes' => $volumes,
             'members' => $members,
+            'isMember' => $isMember,
+            'isPinned' => $isPinned,
+            'canPin' => $canPin,
         ]);
     }
 

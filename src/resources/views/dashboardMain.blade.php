@@ -4,6 +4,9 @@
        <div class="row dashboard-project">
 
             <h4 class="col-xs-12">
+                @if ($project->pivot->pinned)
+                    <i class="fa fa-thumbtack text-muted" title="This project has been pinned to the dashboard"></i>
+                @endif
                 <a href="{{route('project', $project->id)}}" title="Show project {{$project->name}}">
                     {{$project->name}}
                 </a>
