@@ -1,5 +1,13 @@
 {
     "name": "biigle/sync",
+    "description": "BIIGLE module to transfer data between application instances.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/sync",
+        "issues": "https://github.com/biigle/sync/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
@@ -8,8 +16,6 @@
     ],
     "require": {
         "ramsey/uuid": "^3.5"
-    },
-    "require-dev": {
     },
     "autoload": {
         "psr-4": {
