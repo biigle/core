@@ -24,6 +24,8 @@ class SplitVideoAnnotation extends FormRequest
      */
     public function authorize()
     {
+        $this->annotation = VideoAnnotation::findOrFail($this->route('id'));
+
         return $this->user()->can('update', $this->annotation);
     }
 
@@ -34,7 +36,6 @@ class SplitVideoAnnotation extends FormRequest
      */
     public function rules()
     {
-        $this->annotation = VideoAnnotation::findOrFail($this->route('id'));
         $frames = $this->annotation->frames;
         $startFrame = $frames[0];
         $endFrame = end($frames);

@@ -73,7 +73,7 @@ class ProjectVideoControllerTest extends ApiTestCase
                 'gis_link' => 'gis',
                 'doi' => '123',
             ])
-            ->assertStatus(200)
+            ->assertSuccessful()
             ->assertJson([
                 'name' => 'my video no. 1',
                 'url' => 'test://video.mp4',
@@ -113,7 +113,7 @@ class ProjectVideoControllerTest extends ApiTestCase
                 'name' => 'my video no. 2',
                 'url' => 'https://domain.tdl/video.mp4',
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $video = $project->videos()->first();
         $this->assertNotNull($video);

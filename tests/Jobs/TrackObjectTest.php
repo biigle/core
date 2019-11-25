@@ -14,7 +14,7 @@ use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
 
 class TrackObjectTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Storage::fake('test');
@@ -39,7 +39,7 @@ class TrackObjectTest extends TestCase
         $this->assertEquals(0.5, $input['start_time']);
         $this->assertEquals(123, $input['keyframe_distance']);
         $this->assertArrayHasKey('video_path', $input);
-        $this->assertContains('my-video.mp4', $input['video_path']);
+        $this->assertStringContainsString('my-video.mp4', $input['video_path']);
 
         foreach ($job->paths as $path) {
             $this->assertFalse(File::exists($path));

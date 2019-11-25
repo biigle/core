@@ -20,14 +20,14 @@ class VideoUrlTest extends TestCase
     {
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'test'));
-        $this->assertContains('Unable to identify storage disk', $validator->message());
+        $this->assertStringContainsString('Unable to identify storage disk', $validator->message());
     }
 
     public function testUnknownDisk()
     {
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'abc://dir'));
-        $this->assertContains("Storage disk 'abc' does not exist", $validator->message());
+        $this->assertStringContainsString("Storage disk 'abc' does not exist", $validator->message());
     }
 
     public function testDiskNotThere()
@@ -35,7 +35,7 @@ class VideoUrlTest extends TestCase
         Storage::fake('test');
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'test://dir'));
-        $this->assertContains("Unable to access 'dir'", $validator->message());
+        $this->assertStringContainsString("Unable to access 'dir'", $validator->message());
     }
 
     public function testDiskMime()
@@ -44,7 +44,7 @@ class VideoUrlTest extends TestCase
         Storage::disk('test')->put('file.txt', 'abc');
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'test://file.txt'));
-        $this->assertContains("Videos of type 'text/plain' are not supported", $validator->message());
+        $this->assertStringContainsString("Videos of type 'text/plain' are not supported", $validator->message());
     }
 
     public function testDiskOk()
@@ -68,7 +68,7 @@ class VideoUrlTest extends TestCase
         });
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains('The remote video URL does not seem to exist', $validator->message());
+        $this->assertStringContainsString('The remote video URL does not seem to exist', $validator->message());
     }
 
     public function testRemoteNotReadable()
@@ -82,7 +82,7 @@ class VideoUrlTest extends TestCase
         });
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains('The remote video URL returned an error response', $validator->message());
+        $this->assertStringContainsString('The remote video URL returned an error response', $validator->message());
     }
 
     public function testRemoteClientError()
@@ -96,7 +96,7 @@ class VideoUrlTest extends TestCase
         });
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains('The remote video URL returned an error response', $validator->message());
+        $this->assertStringContainsString('The remote video URL returned an error response', $validator->message());
     }
 
     public function testRemoteMimeNotSupported()
@@ -116,7 +116,7 @@ class VideoUrlTest extends TestCase
 
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains("Videos of type 'text/plain' are not supported", $validator->message());
+        $this->assertStringContainsString("Videos of type 'text/plain' are not supported", $validator->message());
     }
 
     public function testRemoteOk()
@@ -148,6 +148,6 @@ class VideoUrlTest extends TestCase
 
         $validator = new VideoUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains("disk 'http' does not exist", $validator->message());
+        $this->assertStringContainsString("disk 'http' does not exist", $validator->message());
     }
 }

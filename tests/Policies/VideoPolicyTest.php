@@ -10,7 +10,7 @@ use Biigle\Tests\Modules\Videos\VideoTest;
 
 class VideoPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $project = ProjectTest::create();

@@ -113,13 +113,13 @@ class VideoTest extends ModelTestCase
     public function testGetThumbnailAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnail);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnail);
     }
 
     public function testGetThumbnailUrlAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnailUrl);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnailUrl);
     }
 
     public function testGetThumbnailsAttribute()
@@ -133,8 +133,8 @@ class VideoTest extends ModelTestCase
     public function testGetThumbnailsUrlAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertContains("{$this->model->uuid}/0", $this->model->thumbnailsUrl[0]);
-        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnailsUrl[1]);
-        $this->assertContains("{$this->model->uuid}/2", $this->model->thumbnailsUrl[2]);
+        $this->assertStringContainsString("{$this->model->uuid}/0", $this->model->thumbnailsUrl[0]);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnailsUrl[1]);
+        $this->assertStringContainsString("{$this->model->uuid}/2", $this->model->thumbnailsUrl[2]);
     }
 }
