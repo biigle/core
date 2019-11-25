@@ -77,12 +77,12 @@ class UserControllerTest extends ApiTestCase
 
         $this->beGuest();
         $response = $this->get('/api/v1/users/my');
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $this->beGlobalAdmin();
         $response = $this->get('/api/v1/users/my');
         $content = $response->getContent();
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
     }
@@ -431,7 +431,7 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new@email.me',
             'affiliation' => 'My Company',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $newUser = User::find(User::max('id'));
         $this->assertEquals('jack', $newUser->firstname);
@@ -479,7 +479,7 @@ class UserControllerTest extends ApiTestCase
             'lastname' => 'jackson',
             'email' => 'new@email.me',
             'uuid' => '',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $user = User::where('email', 'new@email.me')->first();
         $this->assertNotNull($user->uuid);
@@ -490,7 +490,7 @@ class UserControllerTest extends ApiTestCase
             'lastname' => 'jackson',
             'email' => 'new2@email.me',
             'uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $user = User::where('email', 'new2@email.me')->first();
         $this->assertEquals('c796ccec-c746-308f-8009-9f1f68e2aa62', $user->uuid);
@@ -528,7 +528,7 @@ class UserControllerTest extends ApiTestCase
             'lastname' => 'jackson',
             'email' => 'Test2@Test.com',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertTrue(User::where('email', 'test2@test.com')->exists());
     }
 

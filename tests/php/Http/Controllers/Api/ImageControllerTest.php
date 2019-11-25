@@ -12,7 +12,7 @@ class ImageControllerTest extends ApiTestCase
 {
     private $image;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();
@@ -38,7 +38,7 @@ class ImageControllerTest extends ApiTestCase
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"volume"', $content);
+        $this->assertStringContainsString('"volume"', $content);
     }
 
     public function testShowFile()

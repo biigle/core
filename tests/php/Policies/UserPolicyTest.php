@@ -9,7 +9,7 @@ use Biigle\Tests\UserTest;
 
 class UserPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->guest = UserTest::create(['role_id' => Role::guestId()]);

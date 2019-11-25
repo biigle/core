@@ -22,7 +22,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 {
     private $volume;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->volume = VolumeTest::create();
@@ -46,7 +46,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // response should not be an empty array
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testStore()
@@ -149,7 +149,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertEquals($count + 1, $this->project()->volumes()->count());
         $this->assertStringStartsWith('{', $content);
@@ -213,7 +213,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => ['1.jpg', '2.jpg'],
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testStoreFilesExist()
@@ -239,7 +239,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => '1.jpg, 2.jpg',
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
     }
 
     public function testAttach()

@@ -448,7 +448,7 @@ class VolumeTest extends ModelTestCase
         ]);
 
         $this->model->flushThumbnailCache();
-        $this->assertContains($i->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($i->uuid, $this->model->thumbnailUrl);
     }
 
     public function testGetThumbnailsUrlAttribute()
@@ -461,6 +461,6 @@ class VolumeTest extends ModelTestCase
         ]);
 
         $this->model->flushThumbnailCache();
-        $this->assertContains($i->uuid, $this->model->thumbnailsUrl[0]);
+        $this->assertStringContainsString($i->uuid, $this->model->thumbnailsUrl[0]);
     }
 }

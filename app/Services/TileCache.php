@@ -8,7 +8,7 @@ use Exception;
 use ZipArchive;
 use Biigle\Image;
 use Symfony\Component\Finder\Finder;
-use League\Flysystem\FileNotFoundException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 /**
  * The image tile cache.
