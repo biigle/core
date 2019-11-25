@@ -16,8 +16,11 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
 
+    - name: Fetch worker image
+      run: docker pull docker.pkg.github.com/biigle/core/worker:latest
+
     - name: Build the stack
-      run: docker-compose up -d
+      run: docker-compose up worker database_testing -d
 
     - name: Run tests
       run: composer run-script test
