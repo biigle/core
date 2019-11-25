@@ -1,7 +1,13 @@
 {
     "name": "biigle/videos",
-    "description": "Create, edit and explore video annotations",
-    "type": "library",
+    "description": "BIIGLE module to create, edit and explore video annotations.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/videos",
+        "issues": "https://github.com/biigle/videos/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
         {
             "name": "Martin Zurowietz",
