@@ -11,7 +11,7 @@
         "jcupitt/vips": "^1.0",
         "biigle/label-trees": "^1.3 | dev-master",
         "biigle/volumes": "^2.0 | dev-master",
-        "biigle/laravel-file-cache": "^2.0"
+        "biigle/laravel-file-cache": "^2.0 | ^3.0"
     },
     "autoload": {
         "psr-4": {
