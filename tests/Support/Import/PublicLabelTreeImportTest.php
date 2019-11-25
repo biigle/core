@@ -23,7 +23,7 @@ class PublicLabelTreeImportTest extends TestCase
 {
     protected $destination;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -36,7 +36,7 @@ class PublicLabelTreeImportTest extends TestCase
         $this->labelTree->addMember($this->member, Role::editor());
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();
@@ -67,7 +67,7 @@ class PublicLabelTreeImportTest extends TestCase
             $import->validateFiles();
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('are missing keys: uuid', $e->getMessage());
+            $this->assertStringContainsString('are missing keys: uuid', $e->getMessage());
         }
     }
 

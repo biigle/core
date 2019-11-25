@@ -20,7 +20,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $response = $this->get('/api/v1/export/volumes')
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/zip')
-            ->assertHeader('content-disposition', 'attachment; filename="biigle_volume_export.zip"');
+            ->assertHeader('content-disposition', 'attachment; filename=biigle_volume_export.zip');
 
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());

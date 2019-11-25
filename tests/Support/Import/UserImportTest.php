@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserImportTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -35,7 +35,7 @@ class UserImportTest extends TestCase
         $zip->close();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();
@@ -63,7 +63,7 @@ class UserImportTest extends TestCase
             $import->validateFiles();
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('are missing keys: uuid', $e->getMessage());
+            $this->assertStringContainsString('are missing keys: uuid', $e->getMessage());
         }
     }
 
@@ -104,7 +104,7 @@ class UserImportTest extends TestCase
             $import->perform();
             $this->assertFalse(true);
         } catch (UnprocessableEntityHttpException $e) {
-            $this->assertContains('users exist according to their email address but the UUIDs do not match', $e->getMessage());
+            $this->assertStringContainsString('users exist according to their email address but the UUIDs do not match', $e->getMessage());
         }
     }
 
