@@ -4,14 +4,13 @@ This is the BIIGLE module to create, edit and explore video annotations.
 
 ## Installation
 
-1. Run `composer config repositories.videos vcs git@github.com:biigle/videos.git`
-2. Run `composer require biigle/videos`.
-3. Add `Biigle\Modules\Videos\VideosServiceProvider::class` to the `providers` array in `config/app.php`.
-4. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
-5. Run `docker-compose exec app php artisan migrate` to create the new database tables.
-6. Run `pip install -r requirements.txt` to install the Python requirements.
-7. Install `ffmpeg`.
-8. Configure a storage disk for the video thumbnails and set the `VIDEOS_THUMBNAIL_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. The content of the storage disk should be publicly accessible. Example for a local disk:
+1. Run `composer require biigle/videos`.
+2. Add `Biigle\Modules\Videos\VideosServiceProvider::class` to the `providers` array in `config/app.php`.
+3. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
+4. Run `docker-compose exec app php artisan migrate` to create the new database tables.
+5. Run `pip install -r requirements.txt` to install the Python requirements.
+6. Install `ffmpeg`.
+7. Configure a storage disk for the video thumbnails and set the `VIDEOS_THUMBNAIL_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. The content of the storage disk should be publicly accessible. Example for a local disk:
     ```php
     'video-thumbs' => [
         'driver' => 'local',
