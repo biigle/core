@@ -12,7 +12,7 @@ use Biigle\Tests\AnnotationLabelTest;
 
 class AnnotationLabelPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();

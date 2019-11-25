@@ -53,7 +53,7 @@ class SystemMessageControllerTest extends ApiTestCase
                 'title' => 'my title',
                 'body' => 'my body',
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $message = SystemMessage::first();
         $this->assertEquals(SystemMessageType::typeInfoId(), $message->type_id);
@@ -66,7 +66,7 @@ class SystemMessageControllerTest extends ApiTestCase
                 'type_id' => SystemMessageType::typeImportantId(),
                 'publish' => true,
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
 
         $message = SystemMessage::first();
         $this->assertEquals(SystemMessageType::typeImportantId(), $message->type_id);

@@ -22,7 +22,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 {
     private $volume;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->volume = VolumeTest::create();
@@ -46,7 +46,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // response should not be an empty array
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testStore()
@@ -100,7 +100,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/file.txt', 'abc');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+        Storage::disk('test')->put('images/2.jpg', 'abc');
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -148,7 +149,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertEquals($count + 1, $this->project()->volumes()->count());
         $this->assertStringStartsWith('{', $content);
@@ -165,7 +166,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     public function testStoreJsonAttrs()
     {
         Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/file.txt', 'abc');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
@@ -202,6 +203,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     {
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
+        Storage::disk('test')->put('images/2.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
@@ -211,7 +213,33 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type_id' => MediaType::timeSeriesId(),
                 'images' => ['1.jpg', '2.jpg'],
             ])
-            ->assertStatus(200);
+            ->assertSuccessful();
+    }
+
+    public function testStoreFilesExist()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => '1.jpg, 2.jpg',
+            ])
+            ->assertStatus(422);
+
+        Storage::disk('test')->put('images/2.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type_id' => MediaType::timeSeriesId(),
+                'images' => '1.jpg, 2.jpg',
+            ])
+            ->assertSuccessful();
     }
 
     public function testAttach()

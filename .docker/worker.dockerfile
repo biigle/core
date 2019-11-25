@@ -1,4 +1,4 @@
-FROM biigle/app as intermediate
+FROM docker.pkg.github.com/biigle/core/app as intermediate
 
 FROM php:7.3-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
@@ -20,6 +20,14 @@ RUN apk add --no-cache \
         mbstring \
         soap \
         pcntl
+
+ARG PHPREDIS_VERSION=5.0.0
+RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
+    && tar -xzf /tmp/redis.tar.gz \
+    && rm /tmp/redis.tar.gz \
+    && mkdir -p /usr/src/php/ext \
+    && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
+    && docker-php-ext-install redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # Install vips from source because the edge package does not have libgsf support.
@@ -89,7 +97,7 @@ RUN apk add --no-cache \
     && pip install --no-cache-dir \
         numpy==1.8.2 \
         scikit-learn==0.14.1 \
-        Pillow==2.6.0 \
+        Pillow==6.2.0 \
         scipy==0.13.3 \
         PyExcelerate==0.6.7 \
     # Matplotlib requires numpy but tries to install another version if it is installed

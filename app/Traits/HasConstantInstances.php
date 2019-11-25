@@ -2,6 +2,7 @@
 
 namespace Biigle\Traits;
 
+use Str;
 use Cache;
 
 /**
@@ -36,7 +37,7 @@ trait HasConstantInstances
     public static function __callStatic($key, $arguments)
     {
         if (is_array(static::INSTANCES)) {
-            $wantsId = ends_with($key, 'Id');
+            $wantsId = Str::endsWith($key, 'Id');
             if ($wantsId) {
                 $key = substr($key, 0, -2);
             }

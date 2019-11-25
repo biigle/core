@@ -11,7 +11,7 @@ use Biigle\Tests\ProjectTest;
 
 class ImagePolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();

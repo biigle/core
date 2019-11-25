@@ -14,7 +14,7 @@ abstract class ModelTestCase extends TestCase
 
     protected $model;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->model = static::create();

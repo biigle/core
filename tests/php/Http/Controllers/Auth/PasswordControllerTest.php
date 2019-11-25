@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Auth;
 
 use DB;
+use Str;
 use Hash;
 use TestCase;
 use Faker\Factory;
@@ -57,7 +58,7 @@ class PasswordControllerTest extends TestCase
     public function testGetReset()
     {
         // token must be provided
-        $response = $this->get('password/reset/'.str_random(40))->assertViewHas('token');
+        $response = $this->get('password/reset/'.Str::random(40))->assertViewHas('token');
     }
 
     public function testPostReset()

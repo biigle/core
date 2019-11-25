@@ -71,6 +71,45 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->assertNull($versionLabels[1]->parent_id);
     }
 
+    public function testStoreDoi()
+    {
+        $master = $this->labelTree();
+        $master->addMember($this->admin(), Role::adminId());
+        $this->beAdmin();
+        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+                'name' => 'v1.0',
+                'doi' => 'https://doi.org/10.5281/zenodo.xxxxxxx',
+            ])
+            ->assertStatus(200);
+        $version = $master->versions()->first();
+        $this->assertEquals('10.5281/zenodo.xxxxxxx', $version->doi);
+    }
+
+    public function testUpdate()
+    {
+        $tree = $this->labelTree();
+        $tree->addMember($this->editor(), Role::editorId());
+        $tree->addMember($this->admin(), Role::adminId());
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $tree->id]);
+
+        $this->doTestApiRoute('PUT', "/api/v1/label-tree-versions/{$version->id}");
+
+        $this->beEditor();
+        $this->putJson("/api/v1/label-tree-versions/{$version->id}")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/label-tree-versions/{$version->id}")
+            ->assertStatus(422);
+
+        $this->putJson("/api/v1/label-tree-versions/{$version->id}", [
+                'doi' => 'https://doi.org/10.5281/zenodo.xxxxxxx',
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals('10.5281/zenodo.xxxxxxx', $version->fresh()->doi);
+    }
+
     public function testDestroy()
     {
         $version = LabelTreeVersionTest::create();

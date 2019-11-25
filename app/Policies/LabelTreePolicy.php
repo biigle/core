@@ -80,13 +80,12 @@ class LabelTreePolicy extends CachedPolicy
     public function createLabel(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-create-label-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-
             if (is_null($tree->version_id)) {
                 return $user->can('sudo') || DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->whereIn('role_id', [Role::adminId(), Role::editorId()])
-                ->exists();
+                    ->where('label_tree_id', $tree->id)
+                    ->where('user_id', $user->id)
+                    ->whereIn('role_id', [Role::adminId(), Role::editorId()])
+                    ->exists();
             }
 
             return false;

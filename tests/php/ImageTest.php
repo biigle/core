@@ -124,6 +124,22 @@ class ImageTest extends ModelTestCase
         $this->assertEquals($expect, $this->model->getFile());
     }
 
+    public function testGetFileTiledRemote()
+    {
+        $this->model->volume->url = 'http://localhost';
+        $this->model->tiled = true;
+        $this->model->width = 6000;
+        $this->model->height = 7000;
+        $expect = [
+            'id' => $this->model->id,
+            'uuid' => $this->model->uuid,
+            'tiled' => true,
+            'width' => 6000,
+            'height' => 7000,
+        ];
+        $this->assertEquals($expect, $this->model->getFile());
+    }
+
     public function testImagesDeletedEventOnDelete()
     {
         Event::fake([ImagesDeleted::class]);

@@ -38,6 +38,12 @@ Before you can start using or developing BIIGLE, you need to perform a few initi
 
 Run the tests with `composer test`. The first time might fail since the testing database container needs to start up. To run only a subset of the tests, use `composer testf [pattern]` with `[pattern]` being a string that matches the test class or function that you want to run.
 
+## Publish the Docker images
+
+To publish a new version of the `biigle/app`, `biigle/web` and `biigle/worker` Docker images, create a new version as Git tag, first. This can be done on GitHub, too. Pull the new version tag with `git pull --tags`. If you do not set a version tag, only the `latest` Docker images will be built.
+
+To build the Docker images, run `./build.sh`. The script asks you if you want to publish the new images to the GitHub package registry. Before you can do this, you have to [configure Docker](https://help.github.com/en/articles/configuring-docker-for-use-with-github-package-registry) to use the package registry and you obviously need package write permissions in this repository.
+
 ## Develop a module
 
 The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applied in the running development instance.

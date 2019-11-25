@@ -58,6 +58,7 @@ class DashboardController extends Controller
             ->take(4);
 
         $projects = $user->projects()
+            ->orderBy('pivot_pinned', 'desc')
             ->orderBy('updated_at', 'desc')
             ->take($items->isEmpty() ? 4 : 3)
             ->get();

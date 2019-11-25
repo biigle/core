@@ -11,7 +11,7 @@ use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfTokenTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

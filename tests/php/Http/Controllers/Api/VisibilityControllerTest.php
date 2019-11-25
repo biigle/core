@@ -29,6 +29,6 @@ class VisibilityControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('public', $content);
+        $this->assertStringContainsString('public', $content);
     }
 }

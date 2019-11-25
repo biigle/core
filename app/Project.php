@@ -255,7 +255,7 @@ class Project extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return Cache::remember("project-thumbnail-url-{$this->id}", 60, function () {
+        return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
                 ->select('id')
                 ->orderBy('id')
@@ -282,15 +282,15 @@ class Project extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("project-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("project-{$this->id}-has-geo-info", 3600, function () {
             return Image::whereIn('volume_id', function ($query) {
-                    return $query->select('volume_id')
-                        ->from('project_volume')
-                        ->where('project_id', $this->id);
-                })
-                ->whereNotNull('lng')
-                ->whereNotNull('lat')
-                ->exists();
+                return $query->select('volume_id')
+                    ->from('project_volume')
+                    ->where('project_id', $this->id);
+            })
+            ->whereNotNull('lng')
+            ->whereNotNull('lat')
+            ->exists();
         });
     }
 

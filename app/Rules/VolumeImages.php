@@ -2,7 +2,10 @@
 
 namespace Biigle\Rules;
 
+use FileCache;
+use Exception;
 use Biigle\Volume;
+use Biigle\FileCache\GenericFile;
 use Illuminate\Contracts\Validation\Rule;
 
 class VolumeImages implements Rule
@@ -15,11 +18,30 @@ class VolumeImages implements Rule
     protected $message;
 
     /**
-     * Create a new instance.
+     * The volume URL to check the image files.
+     *
+     * @var string
      */
-    public function __construct()
+    protected $url;
+
+    /**
+     * Number of sample images to check for existence.
+     *
+     * @var int
+     */
+    protected $sampleCount;
+
+    /**
+     * Create a new instance.
+     *
+     * @param string $url
+     * @param int $sampleCount
+     */
+    public function __construct($url, $sampleCount = 5)
     {
         $this->message = 'The volume images are invalid.';
+        $this->url = $url;
+        $this->sampleCount = $sampleCount;
     }
 
     /**
@@ -54,6 +76,12 @@ class VolumeImages implements Rule
             return false;
         }
 
+        if (!$this->sampleImagesExist($value)) {
+            $this->message = 'Some images could not be accessed. Please make sure all image files exist.';
+
+            return false;
+        }
+
         return true;
     }
 
@@ -65,5 +93,32 @@ class VolumeImages implements Rule
     public function message()
     {
         return $this->message;
+    }
+
+    /**
+     * Check a random sample of the image files for existence.
+     *
+     * @param array $images
+     *
+     * @return bool
+     */
+    protected function sampleImagesExist($images)
+    {
+        $samples = collect($images)
+            ->shuffle()
+            ->take($this->sampleCount)
+            ->map(function ($file) {
+                return new GenericFile("{$this->url}/{$file}");
+            });
+
+        try {
+            FileCache::batchOnce($samples->toArray(), function ($files, $paths) {
+                // Do nothing.
+            });
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

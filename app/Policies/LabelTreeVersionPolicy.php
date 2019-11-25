@@ -50,6 +50,18 @@ class LabelTreeVersionPolicy extends CachedPolicy
     }
 
     /**
+     * Determine if the given label tree version can be updated by the user.
+     *
+     * @param  User  $user
+     * @param  LabelTreeVersion  $version
+     * @return bool
+     */
+    public function update(User $user, LabelTreeVersion $version)
+    {
+        return $user->can('update', $version->labelTree);
+    }
+
+    /**
      * Determine if the given label tree version can be deleted by the user.
      *
      * @param  User  $user

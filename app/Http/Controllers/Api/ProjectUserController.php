@@ -57,7 +57,7 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the project member.
      *
-     * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member.
+     * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member. Users with the global guest role cannot become project admins.
      *
      * @param UpdateProjectUser $request
      * @return \Illuminate\Http\Response

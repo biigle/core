@@ -20,7 +20,7 @@ class LabelTreeVersionPolicyTest extends TestCase
     private $admin;
     private $globalAdmin;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->version = LabelTreeVersionTest::create();
@@ -67,6 +67,14 @@ class LabelTreeVersionPolicyTest extends TestCase
         $project->labelTrees()->attach($this->version->labelTree);
         Cache::flush();
         $this->assertTrue($project->creator->can('access', $this->version));
+    }
+
+    public function testUpdate()
+    {
+        $this->assertFalse($this->user->can('update', $this->version));
+        $this->assertFalse($this->editor->can('update', $this->version));
+        $this->assertTrue($this->admin->can('update', $this->version));
+        $this->assertTrue($this->globalAdmin->can('update', $this->version));
     }
 
     public function testDestroy()

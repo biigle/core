@@ -53,7 +53,6 @@ class StoreAnnotations extends FormRequest
         return $this->images->reduce(function ($carry, $image) {
             return $carry && $this->user()->can('add-annotation', $image);
         }, true);
-
     }
 
     /**

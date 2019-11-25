@@ -17,6 +17,7 @@ class LabelTreeVersionTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->name);
         $this->assertNotNull($this->model->labelTree);
+        $this->assertNotNull($this->model->doi);
     }
 
     public function testVesionIdUnique()
@@ -33,5 +34,18 @@ class LabelTreeVersionTest extends ModelTestCase
             'name' => $this->model->name,
             'label_tree_id' => $this->model->label_tree_id,
         ]);
+    }
+
+    public function testDoiNullable()
+    {
+        $this->model->doi = null;
+        $this->model->save();
+        $this->assertNull($this->model->fresh()->doi);
+    }
+
+    public function testNormalizeDoi()
+    {
+        $this->model->doi = 'https://doi.org/10.5281/zenodo.xxxxxxx';
+        $this->assertEquals('10.5281/zenodo.xxxxxxx', $this->model->doi);
     }
 }

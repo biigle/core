@@ -30,6 +30,9 @@ class UpdateProjectUser extends FormRequest
      */
     public function authorize()
     {
+        $this->project = Project::findOrFail($this->route('id'));
+        $this->user = $this->project->users()->findOrFail($this->route('id2'));
+
         return $this->user()->can('update', $this->project);
     }
 
@@ -40,9 +43,6 @@ class UpdateProjectUser extends FormRequest
      */
     public function rules()
     {
-        $this->project = Project::findOrFail($this->route('id'));
-        $this->user = $this->project->users()->findOrFail($this->route('id2'));
-
         if ($this->user->role_id === Role::guestId()) {
             $roles = [
                 Role::guestId(),

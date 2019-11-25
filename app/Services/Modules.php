@@ -2,6 +2,7 @@
 
 namespace Biigle\Services;
 
+use Arr;
 use App;
 use File;
 
@@ -75,8 +76,8 @@ class Modules
      */
     public function registerViewMixin($module, $view)
     {
-        if (!array_has($this->viewMixins, "{$view}.{$module}")) {
-            array_set($this->viewMixins, "{$view}.{$module}", []);
+        if (!Arr::has($this->viewMixins, "{$view}.{$module}")) {
+            Arr::set($this->viewMixins, "{$view}.{$module}", []);
         }
     }
 
@@ -96,7 +97,7 @@ class Modules
      */
     public function getViewMixins($view)
     {
-        return array_get($this->viewMixins, $view, []);
+        return Arr::get($this->viewMixins, $view, []);
     }
 
     /**
@@ -116,7 +117,7 @@ class Modules
      */
     public function registerControllerMixin($module, $controller, $mixin)
     {
-        array_set($this->controllerMixins, "{$controller}.{$module}", $mixin);
+        Arr::set($this->controllerMixins, "{$controller}.{$module}", $mixin);
     }
 
     /**
@@ -127,7 +128,7 @@ class Modules
      */
     public function getControllerMixins($controller)
     {
-        return array_get($this->controllerMixins, $controller, []);
+        return Arr::get($this->controllerMixins, $controller, []);
     }
 
     /**

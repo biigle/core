@@ -16,15 +16,13 @@ class TestCase extends BaseTestCase
     /**
      * Default preparation for each test.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         // Reuse connection, else too many tests will reach the connection limit.
-        // Also migrate/refresh the database only the first time.
         if (!static::$pdo) {
             static::$pdo = DB::getPdo();
-            $this->artisan('migrate:refresh');
         } else {
             DB::setPdo(static::$pdo);
         }
@@ -42,7 +40,7 @@ class TestCase extends BaseTestCase
         ]]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $database = $this->app->make('db');
         $database->connection(null)->rollBack();

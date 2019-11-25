@@ -3,7 +3,7 @@ version: '2.2'
 services:
   # The application
   app:
-    image: biigle/app
+    image: docker.pkg.github.com/biigle/core/app
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - cache
@@ -20,7 +20,7 @@ services:
       - "REDIS_HOST=cache"
 
   worker:
-    image: biigle/worker
+    image: docker.pkg.github.com/biigle/core/worker
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - app
@@ -39,7 +39,7 @@ services:
 
   # The web server
   web:
-    image: biigle/web
+    image: docker.pkg.github.com/biigle/core/web
     depends_on:
       - app
     build:

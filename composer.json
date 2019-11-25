@@ -8,48 +8,48 @@
         "issues": "https://github.com/biigle/core/issues"
     },
     "homepage": "https://biigle.de",
+    "type": "project",
     "authors": [
         {
             "name": "Martin Zurowietz",
             "email": "martin@cebitec.uni-bielefeld.de"
         }
     ],
-    "type": "project",
     "require": {
-        "php": ">=7.1",
+        "php": "^7.2",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
-        "biigle/laravel-file-cache": "^2.0",
+        "biigle/laravel-file-cache": "^3.0",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
-        "fideloper/proxy": "~3.3",
+        "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",
-        "laravel/framework": "5.5.*",
+        "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "msurguy/honeypot": "^1.0",
-        "predis/predis": "^1.1",
         "ramsey/uuid": "^3.5",
         "ramsey/uuid-doctrine": "^1.2"
     },
     "require-dev": {
-        "filp/whoops": "~2.0",
-        "fzaninotto/faker": "~1.4",
+        "beyondcode/laravel-dump-server": "^1.0",
+        "filp/whoops": "^2.0",
+        "fzaninotto/faker": "^1.4",
         "johnkary/phpunit-speedtrap": "^3.0",
-        "mockery/mockery": "~1.0",
-        "nunomaduro/collision": "^2.0",
-        "phpunit/phpunit": "^7.0"
+        "mockery/mockery": "^1.0",
+        "nunomaduro/collision": "^3.0",
+        "phpunit/phpunit": "^8.0"
     },
     "autoload": {
+        "psr-4": {
+            "Biigle\\": "app/"
+        },
         "classmap": [
             "database/seeds",
             "database/factories"
         ],
-        "psr-4": {
-            "Biigle\\": "app/"
-        },
         "files": [
             "app/Support/helpers.php"
         ]
@@ -62,28 +62,28 @@
             "tests/TestCase.php",
             "tests/ApiTestCase.php",
             "tests/ModelTestCase.php",
-            "tests/CreatesApplication.php"
+            "tests/CreatesApplication.php",
+            "tests/Bootstrap.php"
         ]
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan key:generate --ansi"
         ],
         "test": [
-            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always"
+            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
         ],
         "testf": [
             "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"

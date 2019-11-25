@@ -263,7 +263,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addVolumeId($i1->volume_id);
         $this->model->addVolumeId($i2->volume_id);
 
-        $this->assertContains($i1->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($i1->uuid, $this->model->thumbnailUrl);
     }
 
     public function testGetVideoThumbnailUrlAttribute()
@@ -274,7 +274,7 @@ class ProjectTest extends ModelTestCase
 
         $video = VideoTest::create(['project_id' => $this->model->id]);
 
-        $this->assertContains($video->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($video->uuid, $this->model->thumbnailUrl);
     }
 
     public function testHasGeoInfo()
