@@ -4,10 +4,9 @@ This is the BIIGLE module to create, edit and manage projects.
 
 ## Installation
 
-1. Run `composer config repositories.projects vcs git@github.com:biigle/projects.git`
-2. Run `composer require biigle/projects`.
-3. Add `Biigle\Modules\Projects\ProjectsServiceProvider::class` to the `providers` array in `config/app.php`.
-4. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
+1. Run `composer require biigle/projects`.
+2. Add `Biigle\Modules\Projects\ProjectsServiceProvider::class` to the `providers` array in `config/app.php`.
+3. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
 
 ## Developing
 
