@@ -26,12 +26,12 @@ jobs:
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
 
-    - name: Build updated images
-      run: |
-        docker-compose build app worker
+    # - name: Build updated images
+    #   run: |
+    #     docker-compose build app worker
 
     - name: Build the stack
-      run: docker-compose up -d worker database_testing
+      run: docker-compose up -d --no-build worker database_testing
       env:
         USER_ID: 1000
         GROUP_ID: 1000
