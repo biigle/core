@@ -4,6 +4,7 @@ namespace Biigle\Modules\Sync\Support\Import;
 
 use Str;
 use File;
+use Storage;
 use Exception;
 use ZipArchive;
 use Carbon\Carbon;
@@ -12,14 +13,21 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class ArchiveManager
 {
     /**
-     * Base path to the import archive storage directory.
+     * Storage disk for uploaded import archives.
      *
      * @var string
      */
-    protected $path;
+    protected $disk;
 
     /**
-     * CLass names of available imports.
+     * Base path to the temporary directory to store extracted imports.
+     *
+     * @var string
+     */
+    protected $tmpPath;
+
+    /**
+     * Class names of available imports.
      *
      * @var array
      */
@@ -30,7 +38,8 @@ class ArchiveManager
      */
     public function __construct()
     {
-        $this->path = config('sync.import_storage');
+        $this->disk = Storage::disk(config('sync.import_storage_disk'));
+        $this->tmpPath = config('sync.tmp_storage');
         $this->importTypes = [
             UserImport::class,
             LabelTreeImport::class,
@@ -49,23 +58,12 @@ class ArchiveManager
      */
     public function store(UploadedFile $file)
     {
-        $zip = new ZipArchive;
-        $success = $zip->open($file->getPathName());
-        if ($success !== true) {
-            throw new Exception('Could not open import archive. Is it a valid ZIP?');
-        }
         $token = $this->generateToken();
-        $destination = $this->path."/{$token}";
-        $success = $zip->extractTo($destination);
-        if ($success !== true) {
-            throw new Exception('Could not extract import archive.');
-        }
-        $zip->close();
-
+        $this->disk->putFileAs('', $file, $token);
         try {
             $this->validate($token);
         } catch (Exception $e) {
-            File::deleteDirectory($destination);
+            $this->delete($token);
             throw $e;
         }
 
@@ -81,7 +79,7 @@ class ArchiveManager
      */
     public function has($token)
     {
-        return File::isDirectory("{$this->path}/{$token}");
+        return $this->disk->has($token);
     }
 
     /**
@@ -93,9 +91,37 @@ class ArchiveManager
      */
     public function get($token)
     {
+        $tmpDestination = "{$this->tmpPath}/{$token}";
+        $tmpDestinationZip = "{$tmpDestination}.zip";
+
+        if (File::isDirectory($tmpDestination)) {
+            File::deleteDirectory($tmpDestination);
+        }
+
         if ($this->has($token)) {
+            File::put($tmpDestinationZip, $this->disk->readStream($token));
+            $zip = new ZipArchive;
+
+            try {
+                $success = $zip->open($tmpDestinationZip);
+                if ($success !== true) {
+                    throw new Exception('Could not open import archive. Is it a valid ZIP?');
+                }
+
+                try {
+                    $success = $zip->extractTo($tmpDestination);
+                    if ($success !== true) {
+                        throw new Exception('Could not extract import archive.');
+                    }
+                } finally {
+                    $zip->close();
+                }
+            } finally {
+                File::delete($tmpDestinationZip);
+            }
+
             foreach ($this->importTypes as $type) {
-                $import = new $type("{$this->path}/{$token}");
+                $import = new $type($tmpDestination);
                 if ($import->filesMatch()) {
                     $import->validateFiles();
 
@@ -104,7 +130,7 @@ class ArchiveManager
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -115,7 +141,7 @@ class ArchiveManager
     public function delete($token)
     {
         if ($this->has($token)) {
-            File::deleteDirectory("{$this->path}/{$token}");
+            $this->disk->delete($token);
         }
     }
 
@@ -124,11 +150,11 @@ class ArchiveManager
      */
     public function prune()
     {
-        $directories = File::directories($this->path);
+        $files = $this->disk->listContents();
         $limit = Carbon::now()->subWeek()->getTimestamp();
-        foreach ($directories as $directory) {
-            if (File::lastModified($directory) < $limit) {
-                File::deleteDirectory($directory);
+        foreach ($files as $metadata) {
+            if ($metadata['timestamp'] < $limit) {
+                $this->disk->delete($metadata['path']);
             }
         }
     }

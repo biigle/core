@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
 use File;
+use Storage;
 use TestCase;
 use Exception;
 use ZipArchive;
@@ -22,7 +23,8 @@ class ArchiveManagerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        config(['sync.import_storage' => sys_get_temp_dir()]);
+        config(['sync.import_storage_disk' => 'test']);
+        Storage::fake('test');
     }
 
     public function testStoreUserExport()
@@ -34,13 +36,7 @@ class ArchiveManagerTest extends TestCase
         $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
-        $path = config('sync.import_storage')."/{$token}";
-        try {
-            $this->assertTrue(File::isDirectory($path));
-            $this->assertTrue(File::exists($path.'/users.json'));
-        } finally {
-            File::deleteDirectory($path);
-        }
+        $this->assertTrue(Storage::disk('test')->has($token));
     }
 
     public function testStoreUserExportNotAllowed()
@@ -57,6 +53,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('User imports are not allowed', $e->getMessage());
+            $this->assertEmpty(Storage::disk('test')->listContents());
         }
     }
 
@@ -69,13 +66,7 @@ class ArchiveManagerTest extends TestCase
         $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
-        $path = config('sync.import_storage')."/{$token}";
-        try {
-            $this->assertTrue(File::isDirectory($path));
-            $this->assertTrue(File::exists($path.'/label_trees.json'));
-        } finally {
-            File::deleteDirectory($path);
-        }
+        $this->assertTrue(Storage::disk('test')->has($token));
     }
 
     public function testStoreLabelTreeExportNotAllowed()
@@ -92,6 +83,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('Label tree imports are not allowed', $e->getMessage());
+            $this->assertEmpty(Storage::disk('test')->listContents());
         }
     }
 
@@ -104,13 +96,7 @@ class ArchiveManagerTest extends TestCase
         $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
-        $path = config('sync.import_storage')."/{$token}";
-        try {
-            $this->assertTrue(File::isDirectory($path));
-            $this->assertTrue(File::exists($path.'/volumes.json'));
-        } finally {
-            File::deleteDirectory($path);
-        }
+        $this->assertTrue(Storage::disk('test')->has($token));
     }
 
     public function testStoreVolumeExportNotAllowed()
@@ -127,6 +113,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('Volume imports are not allowed', $e->getMessage());
+            $this->assertEmpty(Storage::disk('test')->listContents());
         }
     }
 
@@ -139,13 +126,7 @@ class ArchiveManagerTest extends TestCase
         $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
 
         $token = (new ArchiveManager)->store($file);
-        $path = config('sync.import_storage')."/{$token}";
-        try {
-            $this->assertTrue(File::isDirectory($path));
-            $this->assertTrue(File::exists($path.'/label_tree.json'));
-        } finally {
-            File::deleteDirectory($path);
-        }
+        $this->assertTrue(Storage::disk('test')->has($token));
     }
 
     public function testStoreInvalidArchive()
@@ -194,13 +175,13 @@ class ArchiveManagerTest extends TestCase
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
-        $path = config('sync.import_storage')."/{$token}";
+        $path = Storage::disk('test')->getAdapter()->applyPathPrefix($token);
 
         $manager->prune();
-        $this->assertTrue(File::exists($path));
+        $this->assertTrue($manager->has($token));
         touch($path, Carbon::now()->subDays(8)->getTimestamp());
         $manager->prune();
-        $this->assertFalse(File::exists($path));
+        $this->assertFalse($manager->has($token));
     }
 
     public function testHas()
