@@ -10,7 +10,7 @@ use Biigle\Tests\ProjectTest;
 
 class ProjectPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->project = ProjectTest::create();

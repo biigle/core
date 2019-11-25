@@ -14,12 +14,12 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        // \Biigle\Http\Middleware\TrustProxies::class,
+        \Biigle\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Biigle\Http\Middleware\TrimStrings::class,
         \Biigle\Http\Middleware\UpdateUserActivity::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        // \Biigle\Http\Middleware\TrustProxies::class,
     ];
 
     /**
@@ -52,7 +52,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth' => \Biigle\Http\Middleware\Authenticate::class,
         // 'auth.api' => \Biigle\Http\Middleware\AuthenticateAPI::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -60,5 +60,22 @@ class Kernel extends HttpKernel
         'guest' => \Biigle\Http\Middleware\RedirectIfAuthenticated::class,
         'session' => \Biigle\Http\Middleware\SessionOnly::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    ];
+
+    /**
+     * The priority-sorted list of middleware.
+     *
+     * This forces non-global middleware to always be in the given order.
+     *
+     * @var array
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Biigle\Http\Middleware\Authenticate::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 }

@@ -10,6 +10,7 @@ use Notification;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreUser;
+ use Illuminate\Support\Facades\Hash;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Biigle\Notifications\RegistrationConfirmation;
@@ -89,7 +90,7 @@ class RegisterController extends Controller
         $user->lastname = $data['lastname'];
         $user->affiliation = $data['affiliation'];
         $user->email = $data['email'];
-        $user->password = bcrypt($data['password']);
+        $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
         if ($this->isAdminConfirmationEnabled()) {
             $user->role_id = Role::guestId();

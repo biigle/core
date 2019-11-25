@@ -15,7 +15,7 @@ use Biigle\Notifications\RegistrationConfirmation;
 
 class RegisterControllerTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         config(['biigle.user_registration' => true]);

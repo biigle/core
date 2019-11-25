@@ -20,21 +20,21 @@ class VolumeImagesTest extends TestCase
     {
         $validator = new VolumeImagesStub('');
         $this->assertFalse($validator->passes(null, ['1.jpg', '2.bmp']));
-        $this->assertContains('Only JPEG, PNG or TIFF', $validator->message());
+        $this->assertStringContainsString('Only JPEG, PNG or TIFF', $validator->message());
     }
 
     public function testDupes()
     {
         $validator = new VolumeImagesStub('');
         $this->assertFalse($validator->passes(null, ['1.jpg', '1.jpg']));
-        $this->assertContains('must not have the same image twice', $validator->message());
+        $this->assertStringContainsString('must not have the same image twice', $validator->message());
     }
 
     public function testEmpty()
     {
         $validator = new VolumeImagesStub('');
         $this->assertFalse($validator->passes(null, []));
-        $this->assertContains('No images', $validator->message());
+        $this->assertStringContainsString('No images', $validator->message());
     }
 
     public function testAllowQueryParams()

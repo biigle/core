@@ -12,7 +12,7 @@ use Biigle\Tests\ImageLabelTest;
 
 class ImageLabelPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();

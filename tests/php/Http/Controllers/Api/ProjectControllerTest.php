@@ -17,8 +17,8 @@ class ProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testIndexGlobalAdmin()
@@ -50,8 +50,8 @@ class ProjectControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testUpdate()
@@ -109,11 +109,11 @@ class ProjectControllerTest extends ApiTestCase
             'description' => 'my test project',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"name":"test project"', $content);
+        $this->assertStringContainsString('"name":"test project"', $content);
         $this->assertEquals(2, Project::count());
     }
 
@@ -129,13 +129,13 @@ class ProjectControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
     }
 
     public function testDestroy()

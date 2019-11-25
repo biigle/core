@@ -19,14 +19,14 @@ class VolumeUrlTest extends TestCase
     {
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'test'));
-        $this->assertContains('Unable to identify storage disk', $validator->message());
+        $this->assertStringContainsString('Unable to identify storage disk', $validator->message());
     }
 
     public function testUnknownDisk()
     {
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'abc://dir'));
-        $this->assertContains("Storage disk 'abc' does not exist", $validator->message());
+        $this->assertStringContainsString("Storage disk 'abc' does not exist", $validator->message());
     }
 
     public function testNotThere()
@@ -34,7 +34,7 @@ class VolumeUrlTest extends TestCase
         Storage::fake('test');
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'test://dir'));
-        $this->assertContains("Unable to access 'dir'", $validator->message());
+        $this->assertStringContainsString("Unable to access 'dir'", $validator->message());
     }
 
     public function testOkFile()
@@ -66,7 +66,7 @@ class VolumeUrlTest extends TestCase
         });
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains('The remote volume URL does not seem to exist', $validator->message());
+        $this->assertStringContainsString('The remote volume URL does not seem to exist', $validator->message());
     }
 
     public function testRemoteNotReadable()
@@ -80,7 +80,7 @@ class VolumeUrlTest extends TestCase
         });
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains('The remote volume URL returned an error response', $validator->message());
+        $this->assertStringContainsString('The remote volume URL returned an error response', $validator->message());
     }
 
     public function testRemoteOk()
@@ -114,6 +114,6 @@ class VolumeUrlTest extends TestCase
 
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertContains("disk 'http' does not exist", $validator->message());
+        $this->assertStringContainsString("disk 'http' does not exist", $validator->message());
     }
 }
