@@ -12,7 +12,7 @@ use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 
 class ImportAdminControllerTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         config(['sync.import_storage_disk' => 'test']);
