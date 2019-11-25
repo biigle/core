@@ -33,10 +33,7 @@ jobs:
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
 
     - name: Build the stack
-      run: docker-compose up -d --no-build worker database_testing
+      run: docker-compose up -d --no-build database_testing
 
     - name: Run tests
-      # run: docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
-      run: |
-        docker-compose run --rm worker ls -la bootstrap/cache
-        exit 1
+      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
