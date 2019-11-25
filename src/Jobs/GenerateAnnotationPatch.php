@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Str;
 use Storage;
 use Exception;
 use VipsImage;
@@ -275,9 +276,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $message = $e->getMessage();
         return $this->attempts() < 3 && (
             // The remote source might be available again after a while.
-            str_contains($message, 'The source resource could not be established') ||
+            Str::contains($message, 'The source resource could not be established') ||
             // This error presumably occurs due to worker concurrency.
-            str_contains($message, 'Impossible to create the root directory')
+            Str::contains($message, 'Impossible to create the root directory')
         );
     }
 }
