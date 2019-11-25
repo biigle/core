@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f2fbafc5c2917bb83f28e81256c4dab",
+    "content-hash": "99189b1fe3e59efc19e15213e5b84ec6",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -74,7 +74,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/ananas.git",
+                "url": "https://github.com/biigle/ananas.git",
                 "reference": "b93fb2a2784331af9da5631c76f2e48853d52c4c"
             },
             "dist": {
@@ -109,7 +109,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/annotations.git",
+                "url": "https://github.com/biigle/annotations.git",
                 "reference": "3e351ca11343d24a2316051acbd506658a96d7ab"
             },
             "dist": {
@@ -150,7 +150,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/color-sort.git",
+                "url": "https://github.com/biigle/color-sort.git",
                 "reference": "69d558d7d13cc86fa37658ca180a1ffbfab7db83"
             },
             "dist": {
@@ -191,7 +191,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/demo.git",
+                "url": "https://github.com/biigle/demo.git",
                 "reference": "d4d2d35794b4d12770ae3bec7916b65ee25354c9"
             },
             "dist": {
@@ -226,7 +226,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/geo.git",
+                "url": "https://github.com/biigle/geo.git",
                 "reference": "24dbf13e018f03e27e5ce82b3fb956aabc916980"
             },
             "dist": {
@@ -262,7 +262,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/label-trees.git",
+                "url": "https://github.com/biigle/label-trees.git",
                 "reference": "7b86f02bd5abc931fee4522ea7bd4fbc630f42a4"
             },
             "dist": {
@@ -457,7 +457,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/largo.git",
+                "url": "https://github.com/biigle/largo.git",
                 "reference": "93246c9a74036b00fb1a2580f09739dd9ed77961"
             },
             "dist": {
@@ -496,7 +496,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/laserpoints.git",
+                "url": "https://github.com/biigle/laserpoints.git",
                 "reference": "2d822eb11110ef6dd05b474ffb17197a610f71a0"
             },
             "dist": {
@@ -533,7 +533,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/maia.git",
+                "url": "https://github.com/biigle/maia.git",
                 "reference": "fa24c33154ecf166f64454dc3143271bfbfff95e"
             },
             "dist": {
@@ -573,7 +573,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/projects.git",
+                "url": "https://github.com/biigle/projects.git",
                 "reference": "51973a1d12515be8beecf9e35eaf61979dc036f2"
             },
             "dist": {
@@ -610,7 +610,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/reports.git",
+                "url": "https://github.com/biigle/reports.git",
                 "reference": "9641a5915cb51337059a324c24c63850a4ce58b1"
             },
             "dist": {
@@ -647,7 +647,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/sync.git",
+                "url": "https://github.com/biigle/sync.git",
                 "reference": "f4103b0bbf3af0d303705829e98476751e428dd0"
             },
             "dist": {
@@ -682,7 +682,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/videos.git",
+                "url": "https://github.com/biigle/videos.git",
                 "reference": "b7bfbc7ac9cf0ef7dace145be1ea2406063d7622"
             },
             "dist": {
@@ -724,7 +724,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/volumes.git",
+                "url": "https://github.com/biigle/volumes.git",
                 "reference": "3fa64f4ee127658242d4d84232895f9c311d702a"
             },
             "dist": {
