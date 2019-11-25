@@ -13,8 +13,14 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+
+    - name: Generate key
+      run: php artisan key:generate
 
     - name: Docker login
       run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
