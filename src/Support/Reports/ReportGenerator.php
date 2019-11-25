@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Reports\Support\Reports;
 
+use Str;
 use File;
 use Exception;
 use Biigle\Label;
@@ -73,7 +74,7 @@ class ReportGenerator
     {
         if (class_exists($sourceClass)) {
             $reflect = new ReflectionClass($sourceClass);
-            $sourceClass = str_plural($reflect->getShortName());
+            $sourceClass = Str::plural($reflect->getShortName());
             $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
 
             if (class_exists($fullClass)) {

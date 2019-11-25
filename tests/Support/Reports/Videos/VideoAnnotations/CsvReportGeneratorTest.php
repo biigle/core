@@ -34,7 +34,7 @@ class CsvReportGeneratorTest extends TestCase
         'video_annotation_id',
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if (!class_exists(VideosServiceProvider::class)) {

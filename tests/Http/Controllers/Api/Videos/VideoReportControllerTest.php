@@ -10,7 +10,7 @@ use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class VideoReportControllerTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if (!class_exists(VideoTest::class)) {

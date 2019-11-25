@@ -95,23 +95,23 @@ class AnnotationReportGeneratorTest extends TestCase
             'exportArea' => true,
         ]);
 
-        $this->assertContains('restricted to export area', $generator->getName());
-        $this->assertContains('restricted_to_export_area', $generator->getFilename());
+        $this->assertStringContainsString('restricted to export area', $generator->getName());
+        $this->assertStringContainsString('restricted_to_export_area', $generator->getFilename());
 
         $generator = new AnnotationReportGenerator([
             'annotationSession' => $session->id,
         ]);
 
-        $this->assertContains('restricted to annotation session', $generator->getName());
-        $this->assertContains($session->name, $generator->getName());
-        $this->assertContains('restricted_to_annotation_session', $generator->getFilename());
+        $this->assertStringContainsString('restricted to annotation session', $generator->getName());
+        $this->assertStringContainsString($session->name, $generator->getName());
+        $this->assertStringContainsString('restricted_to_annotation_session', $generator->getFilename());
 
         $generator = new AnnotationReportGenerator([
             'newestLabel' => true,
         ]);
 
-        $this->assertContains('restricted to newest label of each annotation', $generator->getName());
-        $this->assertContains('restricted_to_newest_label', $generator->getFilename());
+        $this->assertStringContainsString('restricted to newest label of each annotation', $generator->getName());
+        $this->assertStringContainsString('restricted_to_newest_label', $generator->getFilename());
 
         $generator = new AnnotationReportGenerator([
             'exportArea' => true,
@@ -119,13 +119,13 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotationSession' => $session->id,
         ]);
 
-        $this->assertContains('export area', $generator->getName());
-        $this->assertContains('export_area', $generator->getFilename());
-        $this->assertContains('newest label', $generator->getName());
-        $this->assertContains('newest_label', $generator->getFilename());
-        $this->assertContains('annotation session', $generator->getName());
-        $this->assertContains($session->name, $generator->getName());
-        $this->assertContains('annotation_session', $generator->getFilename());
+        $this->assertStringContainsString('export area', $generator->getName());
+        $this->assertStringContainsString('export_area', $generator->getFilename());
+        $this->assertStringContainsString('newest label', $generator->getName());
+        $this->assertStringContainsString('newest_label', $generator->getFilename());
+        $this->assertStringContainsString('annotation session', $generator->getName());
+        $this->assertStringContainsString($session->name, $generator->getName());
+        $this->assertStringContainsString('annotation_session', $generator->getFilename());
 
         $session->delete();
 
@@ -133,10 +133,10 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotationSession' => $session->id,
         ]);
 
-        $this->assertContains('annotation session', $generator->getName());
-        $this->assertNotContains($session->name, $generator->getName());
-        $this->assertContains("{$session->id}", $generator->getName());
-        $this->assertContains('annotation_session', $generator->getFilename());
+        $this->assertStringContainsString('annotation session', $generator->getName());
+        $this->assertStringNotContainsString($session->name, $generator->getName());
+        $this->assertStringContainsString("{$session->id}", $generator->getName());
+        $this->assertStringContainsString('annotation_session', $generator->getFilename());
     }
 
     public function testRestrictToAnnotationSessionQuery()
