@@ -12,13 +12,17 @@ biigle.$viewModel('project-report-form', function (element) {
                 'Annotations': [
                     'export_area',
                     'newest_label',
-                    'separate_label_trees'
+                    'separate_label_trees',
+                    'only_labels',
+                    'aggregate_child_labels',
                 ],
                 'ImageLabels': [
-                    'separate_label_trees'
+                    'separate_label_trees',
+                    'only_labels',
                 ],
                 'VideoAnnotations': [
-                    'separate_label_trees'
+                    'separate_label_trees',
+                    'only_labels',
                 ],
             },
         },

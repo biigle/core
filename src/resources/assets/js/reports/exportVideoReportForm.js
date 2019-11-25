@@ -13,6 +13,7 @@ biigle.$viewModel('video-report-form', function (element) {
             allowedOptions: {
                 'VideoAnnotations': [
                     'separate_label_trees',
+                    'only_labels',
                 ],
             },
         },

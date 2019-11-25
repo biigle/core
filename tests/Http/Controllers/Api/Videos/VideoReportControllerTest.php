@@ -3,13 +3,14 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Tests\LabelTest;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class VideoReportControllerTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if (!class_exists(VideoTest::class)) {
@@ -68,5 +69,24 @@ class VideoReportControllerTest extends ApiTestCase
         $this->beGuest();
         $this->postJson("api/v1/videos/{$videoId}/reports", ['type_id' => $typeId])
             ->assertStatus(422);
+    }
+
+    public function testStoreOnlyLabels()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $videoId = VideoTest::create(['project_id' => $this->project()->id])->id;
+        $typeId = ReportType::videoAnnotationsCsvId();
+        $this->postJson("api/v1/videos/{$videoId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [999],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("api/v1/videos/{$videoId}/reports", [
+                'type_id' => $typeId,
+                'only_labels' => [$label->id],
+            ])
+            ->assertStatus(200);
     }
 }

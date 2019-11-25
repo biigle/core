@@ -8,6 +8,10 @@ h.paths.sass = 'src/resources/assets/sass/';
 h.paths.js = 'src/resources/assets/js/';
 h.paths.public = 'src/public/assets/';
 
+gulp.task('sass-main', function () {
+    h.sass('main.scss', 'main.css');
+});
+
 gulp.task('js-main', function (cb) {
     h.js('reports/**/*.js', 'main.js', cb);
 });
@@ -16,12 +20,15 @@ gulp.task('js-annotations', function (cb) {
     h.js('annotations/**/*.js', 'annotations.js', cb);
 });
 
+gulp.task('sass', ['sass-main']);
+
 gulp.task('js', ['js-main', 'js-annotations']);
 
 gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + 'reports/**/*.js', ['js-main']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
-gulp.task('default', ['js'], publish)
+gulp.task('default', ['sass', 'js'], publish)

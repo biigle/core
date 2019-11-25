@@ -25,6 +25,7 @@ class VideoReportController extends ReportController
      * @apiParam (Required arguments) {Number} type_id The report type ID.
      *
      * @apiParam (Optional arguments) {Boolean} separate_label_trees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
+     * @apiParam (Optional arguments) {Number[]} only_labels Array of label IDs to restrict the report to. Omit or leave empty to take all labels.
      *
      * @apiPermission projectMember
      *
@@ -51,20 +52,5 @@ class VideoReportController extends ReportController
         $report->save();
 
         GenerateReportJob::dispatch($report)->onQueue('high');
-    }
-
-    /**
-     * Get the options of the requested report.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function getOptions(Request $request)
-    {
-        $options = parent::getOptions($request);
-
-        return array_merge($options, [
-            'annotationSession' => $request->input('annotation_session_id'),
-        ]);
     }
 }

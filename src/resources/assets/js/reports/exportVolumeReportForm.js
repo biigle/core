@@ -14,11 +14,14 @@ biigle.$viewModel('volume-report-form', function (element) {
                     'newest_label',
                     'separate_label_trees',
                     'annotation_session_id',
+                    'only_labels',
+                    'aggregate_child_labels',
                 ],
                 'ImageLabels': [
                     'separate_label_trees',
                     'annotation_session_id',
-                ]
+                    'only_labels',
+                ],
             },
             options: {
                 annotation_session_id: null,

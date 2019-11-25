@@ -3,15 +3,19 @@
 @section('title', "Reports for {$project->name}")
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
-    <script type="text/javascript">
-        biigle.$declare('reports.projectId', {!! $project->id !!});
-        biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
-    </script>
+<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
+<script type="text/javascript">
+    biigle.$declare('reports.projectId', {!! $project->id !!});
+    biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
+    biigle.$declare('reports.labelTrees', {!! $labelTrees !!});
+</script>
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/reports/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('navbar')
@@ -89,6 +93,17 @@
                             Only the newest label of each annotation will be included in the report.
                         </div>
                     </div>
+                    <div v-if="wantsVariant('Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels
+                            </label>
+                        </div>
+                        <div v-if="errors.aggregate_child_labels" v-cloak class="help-block" v-text="getError('aggregate_child_labels')"></div>
+                        <div v-else class="help-block">
+                            Aggregate the abundance of child labels to their parent label.
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="checkbox">
@@ -101,6 +116,7 @@
                         Annotations belonging to different label trees will be separated to different files/sheets.
                     </div>
                 </div>
+                @include('reports::partials.restrictLabels')
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="alert-link">go back</a> to the project.
                 </div>

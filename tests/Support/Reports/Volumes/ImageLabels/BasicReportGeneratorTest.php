@@ -139,4 +139,19 @@ class BasicReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+
+    public function testRestrictToLabels()
+    {
+        $image = ImageTest::create();
+        $il1 = ImageLabelTest::create(['image_id' => $image->id]);
+        $il2 = ImageLabelTest::create(['image_id' => $image->id]);
+
+        $generator = new BasicReportGenerator([
+            'onlyLabels' => [$il1->label_id],
+        ]);
+        $generator->setSource($image->volume);
+        $results = $generator->query()->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($il1->label_id, $results[0]->label_id);
+    }
 }

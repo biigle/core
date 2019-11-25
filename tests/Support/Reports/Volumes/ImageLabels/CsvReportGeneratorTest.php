@@ -200,4 +200,19 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($image->volume);
         $generator->generateReport('my/path');
     }
+
+    public function testRestrictToLabels()
+    {
+        $image = ImageTest::create();
+        $il1 = ImageLabelTest::create(['image_id' => $image->id]);
+        $il2 = ImageLabelTest::create(['image_id' => $image->id]);
+
+        $generator = new CsvReportGenerator([
+            'onlyLabels' => [$il1->label_id],
+        ]);
+        $generator->setSource($image->volume);
+        $results = $generator->query()->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($il1->id, $results[0]->image_label_id);
+    }
 }

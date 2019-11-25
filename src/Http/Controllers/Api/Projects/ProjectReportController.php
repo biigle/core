@@ -27,6 +27,8 @@ class ProjectReportController extends ReportController
      * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the project.
      * @apiParam (Optional arguments) {Boolean} newest_label If `true`, restrict the report to the newest label of each annotation.
      * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
+     * @apiParam (Optional arguments) {Number[]} only_labels Array of label IDs to restrict the report to. Omit or leave empty to take all labels.
+     * @apiParam (Optional arguments) {Boolean} aggregate_child_labels If `true`, add the abundance of child labels to the abundance of their parent labels and omit the child labels. This is only valid for the Basic, Extended and Abundance reports. Labels that are excluded with `only_labels` are not counted.
      *
      * @apiPermission projectMember
      *
@@ -49,7 +51,7 @@ class ProjectReportController extends ReportController
             if (!$hasVideo) {
                 throw ValidationException::withMessages(['type_id' => ['The project must contain videos.']]);
             }
-        } else if (!$project->volumes()->exists()) {
+        } elseif (!$project->volumes()->exists()) {
             throw ValidationException::withMessages(['type_id' => ['The project must contain volumes.']]);
         }
 

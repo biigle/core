@@ -58,10 +58,29 @@ Animalia
             <li><strong>Label abundance</strong></li>
         </ol>
 
+        <h4><a name="annotation-abundance-report"></a>Abundance</h4>
+
+        <p>
+            Similar to the extended report, this report is an XLSX spreadsheet that contains the abundances of each label and image. In this report, there is one row for each image and one column for each label. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
+        </p>
+        <p>
+            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+        </p>
+        <ol>
+            <li><strong>Image filename</strong></li>
+            <li>label name 1</li>
+            <li>label name 2</li>
+            <li>...</li>
+        </ol>
+
+        <p>
+            If "aggregate child labels" was enabled for this report, the abundances of all child labels will be added to the abundance of the highest parent label and the child labels will be excluded from the report.
+        </p>
+
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
-            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². If a laser point detection was performed, the width and height in m and the area in m² is included as well.
+            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well.
         </p>
         <div class="panel panel-danger">
             <div class="panel-body text-danger">
@@ -86,8 +105,8 @@ Animalia
             <li><strong>Label names</strong> comma separated list of names of all labels that are attached to the annotation</li>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
-            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Ellipse: Length of the major axis. Polygon: width of the minimum (non-rotated) bounding rectangle.</li>
-            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Ellipse: Length of the minor axis. Polygon: height of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Ellipse: Length of the major axis. Polygon: width of the minimum (non-rotated) bounding rectangle. Line string: total length.</li>
+            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Ellipse: Length of the minor axis. Polygon: height of the minimum (non-rotated) bounding rectangle. Line string: always 0.</li>
             <li><strong>Annotation area (m²)</strong></li>
             <li><strong>Annotation width (px)</strong> See the width in m for the interpretation of this value for different shapes.</li>
             <li><strong>Annotation height (px)</strong> See the height in m for the interpretation of this value for different shapes.</li>

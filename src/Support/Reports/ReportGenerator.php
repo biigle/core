@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Reports\Support\Reports;
 
+use Str;
 use File;
 use Exception;
 use Biigle\Label;
@@ -73,7 +74,7 @@ class ReportGenerator
     {
         if (class_exists($sourceClass)) {
             $reflect = new ReflectionClass($sourceClass);
-            $sourceClass = str_plural($reflect->getShortName());
+            $sourceClass = Str::plural($reflect->getShortName());
             $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
 
             if (class_exists($fullClass)) {
@@ -245,5 +246,25 @@ class ReportGenerator
     protected function shouldSeparateLabelTrees()
     {
         return $this->options->get('separateLabelTrees', false);
+    }
+
+    /**
+     * Returns the array of label ids to which this report should be restricted.
+     *
+     * @return array
+     */
+    protected function getOnlyLabels()
+    {
+        return $this->options->get('onlyLabels', []);
+    }
+
+    /**
+     * Determines if this report is restricted to a subset of labels.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToLabels()
+    {
+        return !empty($this->getOnlyLabels());
     }
 }

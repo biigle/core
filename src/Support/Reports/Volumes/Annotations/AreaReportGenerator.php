@@ -65,7 +65,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name);
         }
 
-        $this->executeScript('extended_report', $path);
+        $this->executeScript('csvs_to_xlsx', $path);
     }
 
     /**
@@ -91,6 +91,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 Shape::rectangleId(),
                 Shape::polygonId(),
                 Shape::ellipseId(),
+                Shape::lineId(),
             ])
             ->orderBy('annotation_labels.id');
 
@@ -275,7 +276,19 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 // Divide by 4 because $a and $b each are double the lengths.
                 $annotation->area_sqpx = M_PI * $a * $b / 4;
                 break;
+            case Shape::lineId():
+                $totalPoints = count($points);
+                $length = 0;
 
+                for ($i = 3; $i < $totalPoints; $i += 2) {
+                    $length += sqrt(pow($points[$i - 3] - $points[$i - 1], 2) + pow($points[$i - 2] - $points[$i], 2));
+                }
+
+                // A line has no area so we just set the width to the total length.
+                $annotation->width_px = $length;
+                $annotation->height_px = 0;
+                $annotation->area_sqpx = 0;
+                break;
             default:
                 // We can't compute the area for this shape.
                 return;

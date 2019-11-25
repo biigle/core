@@ -101,9 +101,9 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         $session = $this->getAnnotationSession();
 
         return $query->where(function ($query) use ($session) {
-            // take only annotation labels that belong to the time span...
-            $query->where('annotation_labels.created_at', '>=', $session->starts_at)
-                ->where('annotation_labels.created_at', '<', $session->ends_at)
+            // take only annotations that belong to the time span...
+            $query->where('annotations.created_at', '>=', $session->starts_at)
+                ->where('annotations.created_at', '<', $session->ends_at)
                 // ...and to the users of the session
                 ->whereIn('annotation_labels.user_id', function ($query) use ($session) {
                     $query->select('user_id')
@@ -206,12 +206,23 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     }
 
     /**
+     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToLabelsQuery($query)
+    {
+        return $query->whereIn('annotation_labels.label_id', $this->getOnlyLabels());
+    }
+
+    /**
      * Assembles the part of the DB query that is the same for all annotation reports.
      *
      * @param mixed $columns The columns to select
      * @return \Illuminate\Database\Query\Builder
      */
-    protected function initQuery($columns = [])
+    public function initQuery($columns = [])
     {
         $query = DB::table('annotation_labels')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
@@ -221,6 +232,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->when($this->isRestrictedToNewestLabel(), [$this, 'restrictToNewestLabelQuery'])
+            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -272,5 +284,15 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     protected function isRestrictedToNewestLabel()
     {
         return $this->options->get('newestLabel', false);
+    }
+
+    /**
+     * Determines if this report should aggregate child labels.
+     *
+     * @return bool
+     */
+    protected function shouldAggregateChildLabels()
+    {
+        return $this->options->get('aggregateChildLabels', false);
     }
 }

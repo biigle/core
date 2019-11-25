@@ -2,7 +2,10 @@
     The basic annotation report contains graphical plots of abundances of the different annotation labels (as PDF). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-basic-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('Annotations', 'Extended')">
-    The extended annotation report lists the abundances of annotation labels for each image (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-extended-report">report schema</a>.
+    The extended annotation report lists the abundances of annotation labels for each image and label (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-extended-report">report schema</a>.
+</div>
+<div class="help-block" v-cloak v-if="wantsCombination('Annotations', 'Abundance')">
+    The abundance annotation report lists the abundances of annotation labels for each image (as XLSX). Abundances can be aggregated to parent labels. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-abundance-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('Annotations', 'Full')">
     The full annotation report lists the labels, shape and coordinates of all annotations (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-full-report">report schema</a>.
