@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Annotations\Http\Controllers\Api;
 
+use Arr;
 use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;
@@ -34,9 +35,9 @@ class VolumeImageAreaController extends Controller
         $images = $volume->images()->pluck('attrs', 'id');
 
         return $images->map(function ($attrs) {
-            if (array_has($attrs, 'metadata.area')) {
+            if (Arr::has($attrs, 'metadata.area')) {
                 return $attrs['metadata']['area'];
-            } elseif (array_has($attrs, 'laserpoints.area')) {
+            } elseif (Arr::has($attrs, 'laserpoints.area')) {
                 return $attrs['laserpoints']['area'];
             }
 
