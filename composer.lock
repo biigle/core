@@ -2509,86 +2509,24 @@
             "time": "2019-09-06T16:09:40+00:00"
         },
         {
-            "name": "mzur/flysystem-openstack-swift",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mzur/flysystem-openstack-swift.git",
-                "reference": "5cf504bf350def9dacd498ce752aa54faab6a9b1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mzur/flysystem-openstack-swift/zipball/5cf504bf350def9dacd498ce752aa54faab6a9b1",
-                "reference": "5cf504bf350def9dacd498ce752aa54faab6a9b1",
-                "shasum": ""
-            },
-            "require": {
-                "league/flysystem": "^1.0",
-                "php-opencloud/openstack": "^3.0"
-            },
-            "require-dev": {
-                "mikey179/vfsstream": "^1.6.4",
-                "mockery/mockery": "^0.9.5",
-                "phpunit/phpunit": "^5.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Nimbusoft\\Flysystem\\OpenStack\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nimbusoft Ltd",
-                    "email": "support@nimbusoft.co.uk"
-                },
-                {
-                    "name": "Chris Harvey",
-                    "email": "chris@nimbusoft.co.uk"
-                },
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@zurowietz.de"
-                }
-            ],
-            "description": "Flysystem adapter for OpenStack Swift",
-            "keywords": [
-                "Flysystem",
-                "Openstack",
-                "chrisnharvey",
-                "files",
-                "filesystem",
-                "filesystems",
-                "opencloud",
-                "storage",
-                "swift"
-            ],
-            "abandoned": "nimbusoft/flysystem-openstack-swift",
-            "time": "2019-09-17T10:50:50+00:00"
-        },
-        {
             "name": "mzur/laravel-openstack-swift",
-            "version": "v1.10.1",
+            "version": "v1.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mzur/laravel-openstack-swift.git",
-                "reference": "f4c77b5f07c752e96ecfaf8de91a4e70e9924a24"
+                "reference": "2ecc7ae6117bec2bd9cec5e4bb7b0e931d3e8bf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/f4c77b5f07c752e96ecfaf8de91a4e70e9924a24",
-                "reference": "f4c77b5f07c752e96ecfaf8de91a4e70e9924a24",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/2ecc7ae6117bec2bd9cec5e4bb7b0e931d3e8bf9",
+                "reference": "2ecc7ae6117bec2bd9cec5e4bb7b0e931d3e8bf9",
                 "shasum": ""
             },
             "require": {
                 "biigle/laravel-cached-openstack": "^1.0",
                 "illuminate/filesystem": "^5.1|^6.0",
                 "illuminate/support": "^5.1|^6.0",
-                "mzur/flysystem-openstack-swift": "^1.0"
+                "nimbusoft/flysystem-openstack-swift": "^0.3"
             },
             "type": "library",
             "extra": {
@@ -2613,8 +2551,8 @@
                     "email": "martin@zurowietz.de"
                 }
             ],
-            "description": "OpenStack Swift storage driver for Laravel 5.",
-            "time": "2019-09-12T12:20:31+00:00"
+            "description": "OpenStack Swift storage driver for Laravel/Lumen.",
+            "time": "2019-11-25T07:11:45+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -2777,6 +2715,63 @@
                 "php"
             ],
             "time": "2019-11-08T13:50:10+00:00"
+        },
+        {
+            "name": "nimbusoft/flysystem-openstack-swift",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nimbusoftltd/flysystem-openstack-swift.git",
+                "reference": "6c84652a600e1963a665489ad1be25a33087a03d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nimbusoftltd/flysystem-openstack-swift/zipball/6c84652a600e1963a665489ad1be25a33087a03d",
+                "reference": "6c84652a600e1963a665489ad1be25a33087a03d",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^1.0",
+                "php-opencloud/openstack": "^3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6.4",
+                "mockery/mockery": "^0.9.5",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nimbusoft\\Flysystem\\OpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nimbusoft Ltd",
+                    "email": "support@nimbusoft.co.uk"
+                },
+                {
+                    "name": "Chris Harvey",
+                    "email": "chris@nimbusoft.co.uk"
+                }
+            ],
+            "description": "Flysystem adapter for OpenStack Swift",
+            "keywords": [
+                "Flysystem",
+                "Openstack",
+                "chrisnharvey",
+                "files",
+                "filesystem",
+                "filesystems",
+                "opencloud",
+                "storage",
+                "swift"
+            ],
+            "time": "2019-11-17T17:43:04+00:00"
         },
         {
             "name": "opis/closure",
