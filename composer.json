@@ -1,15 +1,19 @@
 {
     "name": "biigle/projects",
+    "description": "BIIGLE module to create, edit and manage projects.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+      "source": "https://github.com/biigle/projects",
+      "issues": "https://github.com/biigle/projects/issues"
+    },
+    "homepage": "https://biigle.de",
     "authors": [
-        {
-            "name": "Martin Zurowietz",
-            "email": "martin@cebitec.uni-bielefeld.de"
-        }
+      {
+         "name": "Martin Zurowietz",
+         "email": "martin@cebitec.uni-bielefeld.de"
+      }
     ],
-    "require": {
-    },
-    "require-dev": {
-    },
     "autoload": {
         "psr-4": {
             "Biigle\\Modules\\Projects\\": "src"
