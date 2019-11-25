@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers\Api;
 
+use Arr;
 use File;
 use Exception;
 use Biigle\Image;
@@ -208,7 +209,7 @@ class VolumeImageMetadataController extends Controller
      */
     protected function fillImageAttributes(Image $image, array $toFill)
     {
-        $toFill = array_only($toFill, $this->allowedAttributes);
+        $toFill = Arr::only($toFill, $this->allowedAttributes);
         $image->fillable($this->allowedAttributes);
 
         if (array_key_exists('lng', $toFill)) {
@@ -247,7 +248,7 @@ class VolumeImageMetadataController extends Controller
      */
     protected function fillImageMetadata(Image $image, array $toFill)
     {
-        $toFill = array_only($toFill, $this->allowedMetadata);
+        $toFill = Arr::only($toFill, $this->allowedMetadata);
 
         $numeric = [
             'gps_altitude' => 'GPS altitude',
