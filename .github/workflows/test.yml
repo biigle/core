@@ -21,11 +21,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-    - name: Fetch worker image
-      run: docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+    - name: Fetch base images
+      run: |
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+
+    - name: Build updated images
+      run: |
+        docker-compose build app worker
 
     - name: Build the stack
       run: docker-compose up -d worker database_testing
+      env:
+        USER_ID: 1000
+        GROUP_ID: 1000
 
     - name: Run tests
       run: composer run-script test
