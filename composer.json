@@ -8,8 +8,8 @@
     ],
     "require": {
         "ext-zip": "*",
-        "biigle/projects": "~1.4",
-        "biigle/label-trees": "~1.27"
+        "biigle/projects": "^1.4 | dev-master",
+        "biigle/label-trees": "^1.27 | dev-master"
     },
     "autoload": {
         "psr-4": {
