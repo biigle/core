@@ -9,8 +9,8 @@
         }
     ],
     "require": {
-        "biigle/label-trees": "^1.19",
-        "biigle/annotations": "^3.9",
+        "biigle/label-trees": "^1.19 | dev-master",
+        "biigle/annotations": "^3.9 | dev-master",
         "ramsey/uuid": "^3.5",
         "guzzlehttp/guzzle": "^6.0",
         "php-ffmpeg/php-ffmpeg": "^0.13",
