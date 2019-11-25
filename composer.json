@@ -13,7 +13,7 @@
         "biigle/annotations": "^3.9 | dev-master",
         "ramsey/uuid": "^3.5",
         "guzzlehttp/guzzle": "^6.0",
-        "php-ffmpeg/php-ffmpeg": "^0.13",
+        "php-ffmpeg/php-ffmpeg": "^0.14",
         "ext-vips": "*",
         "jcupitt/vips": "^1.0"
     },
