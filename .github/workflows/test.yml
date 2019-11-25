@@ -32,12 +32,11 @@ jobs:
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
         docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
 
-    # - name: Build updated images
-    #   run: |
-    #     docker-compose build app worker
-
     - name: Build the stack
       run: docker-compose up -d --no-build worker database_testing
 
     - name: Run tests
-      run: composer run-script test
+      # run: docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
+      run: |
+        docker-compose run --rm worker ls -la bootstrap/cache
+        exit 1
