@@ -38,9 +38,6 @@ jobs:
 
     - name: Build the stack
       run: docker-compose up -d --no-build worker database_testing
-      env:
-        USER_ID: 1000
-        GROUP_ID: 1000
 
     - name: Run tests
       run: composer run-script test
