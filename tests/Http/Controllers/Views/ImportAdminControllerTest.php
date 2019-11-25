@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Views;
 
+use Storage;
 use ApiTestCase;
 use Illuminate\Http\UploadedFile;
 use Biigle\Modules\Sync\Support\Export\UserExport;
@@ -11,6 +12,13 @@ use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 
 class ImportAdminControllerTest extends ApiTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        config(['sync.import_storage_disk' => 'test']);
+        Storage::fake('test');
+    }
+
     public function testIndex()
     {
         $this->beAdmin();
@@ -23,8 +31,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowUserImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 
@@ -33,7 +39,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new UserExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 
@@ -44,8 +50,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowLabelTreeImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 
@@ -54,7 +58,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new LabelTreeExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 
@@ -65,8 +69,6 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowVolumeImport()
     {
-        config(['sync.import_storage' => sys_get_temp_dir()]);
-
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 
@@ -75,7 +77,7 @@ class ImportAdminControllerTest extends ApiTestCase
 
         $export = new VolumeExport([]);
         $path = $export->getArchive();
-        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', 'application/zip', null, true);
         $manager = new ArchiveManager;
         $token = $manager->store($file);
 

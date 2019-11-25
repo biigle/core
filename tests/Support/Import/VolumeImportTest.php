@@ -32,14 +32,14 @@ class VolumeImportTest extends TestCase
 {
     protected $destination;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->volume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
         $this->image = ImageTest::create(['volume_id' => $this->volume->id]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         File::deleteDirectory($this->destination);
         parent::tearDown();
@@ -85,7 +85,7 @@ class VolumeImportTest extends TestCase
             $import->validateFiles();
             $this->assertFalse(true);
         } catch (Exception $e) {
-            $this->assertContains('are missing keys: url', $e->getMessage());
+            $this->assertStringContainsString('are missing keys: url', $e->getMessage());
         }
     }
 
@@ -462,7 +462,7 @@ class VolumeImportTest extends TestCase
             $map = $import->perform($project, $project->creator);
             $this->assertFalse(true);
         } catch (UnprocessableEntityHttpException $e) {
-            $this->assertContains('Unresolved name conflict', $e->getMessage());
+            $this->assertStringContainsString('Unresolved name conflict', $e->getMessage());
         }
     }
 
@@ -478,7 +478,7 @@ class VolumeImportTest extends TestCase
             $map = $import->perform($project, $project->creator);
             $this->assertFalse(true);
         } catch (UnprocessableEntityHttpException $e) {
-            $this->assertContains('Unresolved parent conflict', $e->getMessage());
+            $this->assertStringContainsString('Unresolved parent conflict', $e->getMessage());
         }
     }
 
@@ -525,7 +525,7 @@ class VolumeImportTest extends TestCase
             $map = $import->perform($project, $project->creator);
             $this->assertFalse(true);
         } catch (UnprocessableEntityHttpException $e) {
-            $this->assertContains('UUIDs do not match', $e->getMessage());
+            $this->assertStringContainsString('UUIDs do not match', $e->getMessage());
         }
 
         $this->assertEquals(0, $project->volumes()->count());

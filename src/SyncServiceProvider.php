@@ -34,6 +34,9 @@ class SyncServiceProvider extends ServiceProvider
         $modules->register('sync', [
             'viewMixins' => [
                 'adminMenu',
+                'labelTreesShowToolbar',
+                'newLabelTreeButtons',
+                'labelTreesManual',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);

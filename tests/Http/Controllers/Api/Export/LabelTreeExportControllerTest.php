@@ -20,7 +20,7 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $response = $this->get('/api/v1/export/label-trees')
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/zip')
-            ->assertHeader('content-disposition', 'attachment; filename="biigle_label_tree_export.zip"');
+            ->assertHeader('content-disposition', 'attachment; filename=biigle_label_tree_export.zip');
 
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());

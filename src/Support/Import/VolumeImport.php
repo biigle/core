@@ -57,7 +57,6 @@ class VolumeImport extends Import
     public function perform(Project $project, User $creator, array $only = null, array $newUrls = [], array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         return DB::transaction(function () use ($project, $creator, $only, $newUrls, $nameConflictResolution, $parentConflictResolution) {
-
             $volumeCandidates = $this->getVolumeImportCandidates()
                 ->when(is_array($only), function ($collection) use ($only) {
                     return $collection->whereIn('id', $only);
@@ -94,7 +93,6 @@ class VolumeImport extends Import
                 'users' => $userIdMap,
             ];
         });
-
     }
 
     /**
@@ -393,7 +391,6 @@ class VolumeImport extends Import
                 if (!$validator->passes(null, $volume->url)) {
                     $message = "Volume '{$volume->name}' has an invalid URL: ".$validator->message();
                     throw new UnprocessableEntityHttpException($message);
-
                 }
 
                 $volume->media_type_id = $candidate['media_type_id'];

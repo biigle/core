@@ -54,19 +54,19 @@ class VolumeExportTest extends TestCase
         $this->assertEquals($imageLabel->label->label_tree_id, $labelTreeContent[1]['id']);
 
         $path = $exports[2]->getContent();
-        $this->assertContains('image_export', $path);
-        $this->assertContains($image->filename, File::get($path));
+        $this->assertStringContainsString('image_export', $path);
+        $this->assertStringContainsString($image->filename, File::get($path));
 
         $path = $exports[3]->getContent();
-        $this->assertContains('annotation_export', $path);
-        $this->assertContains("{$annotation->id}", File::get($path));
+        $this->assertStringContainsString('annotation_export', $path);
+        $this->assertStringContainsString("{$annotation->id}", File::get($path));
 
         $path = $exports[4]->getContent();
-        $this->assertContains('annotation_label_export', $path);
-        $this->assertContains("{$annotationLabel->annotation_id},{$annotationLabel->label_id}", File::get($path));
+        $this->assertStringContainsString('annotation_label_export', $path);
+        $this->assertStringContainsString("{$annotationLabel->annotation_id},{$annotationLabel->label_id}", File::get($path));
 
         $path = $exports[5]->getContent();
-        $this->assertContains('image_label_export', $path);
-        $this->assertContains("{$imageLabel->image_id},{$imageLabel->label_id}", File::get($path));
+        $this->assertStringContainsString('image_label_export', $path);
+        $this->assertStringContainsString("{$imageLabel->image_id},{$imageLabel->label_id}", File::get($path));
     }
 }

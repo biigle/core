@@ -42,7 +42,6 @@ class LabelTreeImport extends Import
     public function perform(array $onlyTrees = null, array $onlyLabels = null, array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         return DB::transaction(function () use ($onlyTrees, $onlyLabels, $nameConflictResolution, $parentConflictResolution) {
-
             $insertTrees = $this->getInsertLabelTrees($onlyTrees);
             $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
 

@@ -14,6 +14,9 @@
             "email": "martin@cebitec.uni-bielefeld.de"
         }
     ],
+    "require": {
+        "ramsey/uuid": "^3.5"
+    },
     "autoload": {
         "psr-4": {
             "Biigle\\Modules\\Sync\\": "src"
