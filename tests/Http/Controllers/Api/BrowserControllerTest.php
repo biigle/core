@@ -7,7 +7,7 @@ use ApiTestCase;
 
 class BrowserControllerTest extends ApiTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Storage::fake('test');

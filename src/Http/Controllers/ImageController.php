@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers;
 
+use Arr;
 use Biigle\Image;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -27,7 +28,7 @@ class ImageController extends Controller
         return view('volumes::images.index', [
             'image' => $image,
             'volume' => $image->volume,
-            'metadata' => array_only($image->metadata, array_keys($metadataMap)),
+            'metadata' => Arr::only($image->metadata, array_keys($metadataMap)),
             'metadataMap' => $metadataMap,
         ]);
     }

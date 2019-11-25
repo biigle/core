@@ -19,7 +19,7 @@ class AdminController extends Controller
                 $query->select('id', 'name');
             }])
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->paginate(100);
 
         return view('volumes::admin', compact('volumes'));
     }

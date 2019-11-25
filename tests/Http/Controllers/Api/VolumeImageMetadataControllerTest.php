@@ -121,4 +121,72 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
             ->assertStatus(422);
     }
+
+    public function testStoreCaseInsensitive()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-case-insensitive.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(-1500, $image->fresh()->metadata['gps_altitude']);
+    }
+
+    public function testStoreSynonyms()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-synonyms.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(52.220, $image->fresh()->lng);
+        $this->assertEquals(28.123, $image->fresh()->lat);
+
+        $image->lng = null;
+        $image->lat = null;
+        $image->save();
+
+        $csv = $this->getCsv('image-metadata-synonyms2.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(52.220, $image->fresh()->lng);
+        $this->assertEquals(28.123, $image->fresh()->lat);
+    }
+
+    public function testStoreEmptyCells()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-emptycells.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals(52.220, $image->fresh()->lng);
+        $this->assertEquals(28.123, $image->fresh()->lat);
+    }
+
+    public function testStoreDateParsing()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-dateparsing.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $this->assertEquals('2019-05-01 10:35:00', $image->fresh()->taken_at);
+    }
 }
