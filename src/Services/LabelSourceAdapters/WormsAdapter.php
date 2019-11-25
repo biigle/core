@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\LabelTrees\Services\LabelSourceAdapters;
 
+use Arr;
 use SoapClient;
 use Biigle\Label;
 use Ramsey\Uuid\Uuid;
@@ -189,7 +190,7 @@ class WormsAdapter implements LabelSourceAdapterContract
             // use array_filter to remove empty elements
             // and the outer array_values to reset array keys so it is not parsed as
             // object in the JSON output
-            'parents' => array_values(array_filter(array_values(array_only($item, [
+            'parents' => array_values(array_filter(array_values(Arr::only($item, [
                 'kingdom',
                 'phylum',
                 'class',
@@ -243,7 +244,7 @@ class WormsAdapter implements LabelSourceAdapterContract
         $parents[sizeof($parents) - 1]['name'] = $attributes['name'];
 
         // get parents that already exist in the label tree
-        $existing = Label::whereIn('source_id', array_pluck($parents, 'aphia_id'))
+        $existing = Label::whereIn('source_id', Arr::pluck($parents, 'aphia_id'))
             ->where('label_tree_id', $attributes['label_tree_id'])
             ->where('label_source_id', $attributes['label_source_id'])
             ->pluck('id', 'source_id')

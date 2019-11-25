@@ -16,7 +16,7 @@ class WormsAdapterTest extends TestCase
 {
     protected $wormsResponse;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->wormsResponse = [
