@@ -4,12 +4,11 @@ This is the BIIGLE module to generate reports for projects, volumes and videos.
 
 ## Installation
 
-1. Run `composer config repositories.reports vcs git@github.com:biigle/reports.git`
-2. Run `composer require biigle/reports`.
-3. Add `Biigle\Modules\Reports\ReportsServiceProvider::class` to the `providers` array in `config/app.php`.
-4. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
-5. Run `pip install -r vendor/biigle/reports/requirements.txt` to install the python requirements.
-6. Configure a storage disk for the report files and set the `REPORTS_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. Example for a local disk:
+1. Run `composer require biigle/reports`.
+2. Add `Biigle\Modules\Reports\ReportsServiceProvider::class` to the `providers` array in `config/app.php`.
+3. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
+4. Run `pip install -r vendor/biigle/reports/requirements.txt` to install the python requirements.
+5. Configure a storage disk for the report files and set the `REPORTS_STORAGE_DISK` variable to the name of this storage disk in the `.env` file. Example for a local disk:
     ```php
     'reports' => [
         'driver' => 'local',
