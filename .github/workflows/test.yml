@@ -3,7 +3,7 @@ name: Tests
 on: [push]
 
 jobs:
-  test-master:
+  test-current:
 
     runs-on: ubuntu-latest
 
