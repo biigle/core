@@ -15,8 +15,6 @@ class AnnotationLabelTest extends ModelTestCase
 
     public function testAttributes()
     {
-        throw new \Exception("Error Processing Request", 1);
-
         $this->assertNotNull($this->model->annotation);
         $this->assertNotNull($this->model->label);
         $this->assertNotNull($this->model->user);
