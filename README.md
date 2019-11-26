@@ -1,5 +1,7 @@
 # BIIGLE Reports Module
 
+[![Test status](https://github.com/biigle/reports/workflows/Tests/badge.svg)](https://github.com/biigle/reports/actions?query=workflow%3ATests)
+
 This is the BIIGLE module to generate reports for projects, volumes and videos.
 
 ## Installation
