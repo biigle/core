@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1229436b0d9dc2e4d101090f2df4916b",
+    "content-hash": "f43a4d1eea67489d54b034dba906c49d",
     "packages": [
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "407b0146c77247a3d6bf69fb75695505eab04ac5"
+                "reference": "bf24d2bb551e68904f92d822c86633ac44f4d395"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/407b0146c77247a3d6bf69fb75695505eab04ac5",
-                "reference": "407b0146c77247a3d6bf69fb75695505eab04ac5",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/bf24d2bb551e68904f92d822c86633ac44f4d395",
+                "reference": "bf24d2bb551e68904f92d822c86633ac44f4d395",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,7 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "time": "2019-09-12T09:24:39+00:00"
+            "time": "2019-11-26T13:20:12+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
