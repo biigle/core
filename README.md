@@ -1,5 +1,7 @@
 # BIIGLE Videos Module
 
+[![Test status](https://github.com/biigle/videos/workflows/Tests/badge.svg)](https://github.com/biigle/videos/actions?query=workflow%3ATests)
+
 This is the BIIGLE module to create, edit and explore video annotations.
 
 ## Installation
