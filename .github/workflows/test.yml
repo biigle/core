@@ -1,0 +1,76 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  test-master:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Docker login
+      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Fetch base images
+      run: |
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+
+    - name: Start test database
+      run: docker-compose up -d --no-build database_testing
+
+    - name: Run tests
+      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
+
+  test-modules:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: dev-modules
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Docker login
+      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Fetch base images
+      run: |
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
+        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+
+    - name: Start test database
+      run: docker-compose up -d --no-build database_testing
+
+    - name: Run tests
+      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
