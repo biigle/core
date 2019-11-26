@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99189b1fe3e59efc19e15213e5b84ec6",
+    "content-hash": "37146af7beffd03bb2d6d249234c683a",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "b93fb2a2784331af9da5631c76f2e48853d52c4c"
+                "reference": "c5d9588b29c4c13446c0facd136076a40cd97807"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/b93fb2a2784331af9da5631c76f2e48853d52c4c",
-                "reference": "b93fb2a2784331af9da5631c76f2e48853d52c4c",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/c5d9588b29c4c13446c0facd136076a40cd97807",
+                "reference": "c5d9588b29c4c13446c0facd136076a40cd97807",
                 "shasum": ""
             },
             "require": {
@@ -92,17 +92,23 @@
                     "Biigle\\Modules\\Ananas\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/ananas/tree/master",
-                "issues": "https://github.com/biigle/ananas/issues"
-            },
-            "time": "2019-11-25T06:24:11+00:00"
+            "description": "BIIGLE module to create annotation assistance requests.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:14:38+00:00"
         },
         {
             "name": "biigle/annotations",
@@ -110,12 +116,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/annotations.git",
-                "reference": "3e351ca11343d24a2316051acbd506658a96d7ab"
+                "reference": "bd012f0e143473ca82dc5cf318d10d5490c685cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/annotations/zipball/3e351ca11343d24a2316051acbd506658a96d7ab",
-                "reference": "3e351ca11343d24a2316051acbd506658a96d7ab",
+                "url": "https://api.github.com/repos/biigle/annotations/zipball/bd012f0e143473ca82dc5cf318d10d5490c685cc",
+                "reference": "bd012f0e143473ca82dc5cf318d10d5490c685cc",
                 "shasum": ""
             },
             "require": {
@@ -128,22 +134,23 @@
                     "Biigle\\Modules\\Annotations\\": "src"
                 }
             },
-            "scripts": {
-                "fix": [
-                    "php-cs-fixer --config-file='.php_cs' fix"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/annotations/tree/master",
-                "issues": "https://github.com/biigle/annotations/issues"
-            },
-            "time": "2019-11-25T06:46:46+00:00"
+            "description": "BIIGLE module to create, edit and explore image annotations.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-26T12:19:39+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -151,12 +158,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "69d558d7d13cc86fa37658ca180a1ffbfab7db83"
+                "reference": "15b04963b3e424c4e260fa60339d3cd293e030a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/69d558d7d13cc86fa37658ca180a1ffbfab7db83",
-                "reference": "69d558d7d13cc86fa37658ca180a1ffbfab7db83",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/15b04963b3e424c4e260fa60339d3cd293e030a6",
+                "reference": "15b04963b3e424c4e260fa60339d3cd293e030a6",
                 "shasum": ""
             },
             "require": {
@@ -169,22 +176,23 @@
                     "Biigle\\Modules\\ColorSort\\": "src"
                 }
             },
-            "scripts": {
-                "fix": [
-                    "php-cs-fixer --config-file='.php_cs' fix"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/color-sort/tree/master",
-                "issues": "https://github.com/biigle/color-sort/issues"
-            },
-            "time": "2019-11-25T06:54:05+00:00"
+            "description": "BIIGLE module to sort volume images by color.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:16:11+00:00"
         },
         {
             "name": "biigle/demo",
@@ -192,12 +200,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "d4d2d35794b4d12770ae3bec7916b65ee25354c9"
+                "reference": "3a2aa73e902c2435a539600d4ae53a9f0eab3e10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/d4d2d35794b4d12770ae3bec7916b65ee25354c9",
-                "reference": "d4d2d35794b4d12770ae3bec7916b65ee25354c9",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/3a2aa73e902c2435a539600d4ae53a9f0eab3e10",
+                "reference": "3a2aa73e902c2435a539600d4ae53a9f0eab3e10",
                 "shasum": ""
             },
             "require": {
@@ -209,17 +217,23 @@
                     "Biigle\\Modules\\Demo\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/demo/tree/master",
-                "issues": "https://github.com/biigle/demo/issues"
-            },
-            "time": "2019-11-25T06:52:05+00:00"
+            "description": "BIIGLE module to offer a demo project to new users.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:15:42+00:00"
         },
         {
             "name": "biigle/geo",
@@ -227,12 +241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "24dbf13e018f03e27e5ce82b3fb956aabc916980"
+                "reference": "7e3ad756b7aabc8dffa1940b475d7a1f33734ea2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/24dbf13e018f03e27e5ce82b3fb956aabc916980",
-                "reference": "24dbf13e018f03e27e5ce82b3fb956aabc916980",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/7e3ad756b7aabc8dffa1940b475d7a1f33734ea2",
+                "reference": "7e3ad756b7aabc8dffa1940b475d7a1f33734ea2",
                 "shasum": ""
             },
             "require": {
@@ -245,17 +259,23 @@
                     "Biigle\\Modules\\Geo\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/geo/tree/master",
-                "issues": "https://github.com/biigle/geo/issues"
-            },
-            "time": "2019-11-25T06:48:50+00:00"
+            "description": "BIIGLE module to explore images on a world map.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:14:00+00:00"
         },
         {
             "name": "biigle/label-trees",
@@ -263,12 +283,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/label-trees.git",
-                "reference": "7b86f02bd5abc931fee4522ea7bd4fbc630f42a4"
+                "reference": "fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/label-trees/zipball/7b86f02bd5abc931fee4522ea7bd4fbc630f42a4",
-                "reference": "7b86f02bd5abc931fee4522ea7bd4fbc630f42a4",
+                "url": "https://api.github.com/repos/biigle/label-trees/zipball/fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6",
+                "reference": "fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6",
                 "shasum": ""
             },
             "require": {
@@ -281,22 +301,23 @@
                     "Biigle\\Modules\\LabelTrees\\": "src"
                 }
             },
-            "scripts": {
-                "fix": [
-                    "php-cs-fixer --config-file='.php_cs' fix"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/label-trees/tree/master",
-                "issues": "https://github.com/biigle/label-trees/issues"
-            },
-            "time": "2019-11-25T06:24:37+00:00"
+            "description": "BIIGLE module to create, edit and manage label trees.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:16:33+00:00"
         },
         {
             "name": "biigle/laravel-cached-openstack",
@@ -337,16 +358,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "407b0146c77247a3d6bf69fb75695505eab04ac5"
+                "reference": "bf24d2bb551e68904f92d822c86633ac44f4d395"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/407b0146c77247a3d6bf69fb75695505eab04ac5",
-                "reference": "407b0146c77247a3d6bf69fb75695505eab04ac5",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/bf24d2bb551e68904f92d822c86633ac44f4d395",
+                "reference": "bf24d2bb551e68904f92d822c86633ac44f4d395",
                 "shasum": ""
             },
             "require": {
@@ -376,14 +397,7 @@
                     "Biigle\\FileCache\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\FileCache\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -394,11 +408,7 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "support": {
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v3.0.0",
-                "issues": "https://github.com/biigle/laravel-file-cache/issues"
-            },
-            "time": "2019-09-12T09:24:39+00:00"
+            "time": "2019-11-26T13:20:12+00:00"
         },
         {
             "name": "biigle/laravel-remote-queue",
@@ -458,12 +468,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "93246c9a74036b00fb1a2580f09739dd9ed77961"
+                "reference": "9befd8ba98afa5aabaed8be775fe008708cd55b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/93246c9a74036b00fb1a2580f09739dd9ed77961",
-                "reference": "93246c9a74036b00fb1a2580f09739dd9ed77961",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/9befd8ba98afa5aabaed8be775fe008708cd55b8",
+                "reference": "9befd8ba98afa5aabaed8be775fe008708cd55b8",
                 "shasum": ""
             },
             "require": {
@@ -479,17 +489,23 @@
                     "Biigle\\Modules\\Largo\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/largo/tree/master",
-                "issues": "https://github.com/biigle/largo/issues"
-            },
-            "time": "2019-11-25T06:54:40+00:00"
+            "description": "BIIGLE module to review image annotations in a regular grid.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:13:46+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -497,12 +513,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "2d822eb11110ef6dd05b474ffb17197a610f71a0"
+                "reference": "2f205ef09860812abfad4e91592ae218407c9ecc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/2d822eb11110ef6dd05b474ffb17197a610f71a0",
-                "reference": "2d822eb11110ef6dd05b474ffb17197a610f71a0",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/2f205ef09860812abfad4e91592ae218407c9ecc",
+                "reference": "2f205ef09860812abfad4e91592ae218407c9ecc",
                 "shasum": ""
             },
             "require": {
@@ -516,17 +532,23 @@
                     "Biigle\\Modules\\Laserpoints\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/laserpoints/tree/master",
-                "issues": "https://github.com/biigle/laserpoints/issues"
-            },
-            "time": "2019-11-25T06:55:07+00:00"
+            "description": "BIIGLE module to perform a heuristic laser point detection on images.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:15:55+00:00"
         },
         {
             "name": "biigle/maia",
@@ -534,12 +556,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "fa24c33154ecf166f64454dc3143271bfbfff95e"
+                "reference": "98f5f6344d420d510cf4cca150ccae37023c4d9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/fa24c33154ecf166f64454dc3143271bfbfff95e",
-                "reference": "fa24c33154ecf166f64454dc3143271bfbfff95e",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/98f5f6344d420d510cf4cca150ccae37023c4d9f",
+                "reference": "98f5f6344d420d510cf4cca150ccae37023c4d9f",
                 "shasum": ""
             },
             "require": {
@@ -555,18 +577,23 @@
                     "Biigle\\Modules\\Maia\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "description": "Perform the Machine Learning Assisted Image Annotation method in BIIGLE",
-            "support": {
-                "source": "https://github.com/biigle/maia/tree/master",
-                "issues": "https://github.com/biigle/maia/issues"
-            },
-            "time": "2019-11-25T06:56:35+00:00"
+            "description": "BIIGLE module module for the Machine Learning Assisted Image Annotation method.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:12:32+00:00"
         },
         {
             "name": "biigle/projects",
@@ -574,12 +601,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/projects.git",
-                "reference": "51973a1d12515be8beecf9e35eaf61979dc036f2"
+                "reference": "1a9181c5598ebec03dc617500c6371905d870993"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/projects/zipball/51973a1d12515be8beecf9e35eaf61979dc036f2",
-                "reference": "51973a1d12515be8beecf9e35eaf61979dc036f2",
+                "url": "https://api.github.com/repos/biigle/projects/zipball/1a9181c5598ebec03dc617500c6371905d870993",
+                "reference": "1a9181c5598ebec03dc617500c6371905d870993",
                 "shasum": ""
             },
             "type": "library",
@@ -588,22 +615,23 @@
                     "Biigle\\Modules\\Projects\\": "src"
                 }
             },
-            "scripts": {
-                "fix": [
-                    "php-cs-fixer --config-file='.php_cs' fix"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/projects/tree/master",
-                "issues": "https://github.com/biigle/projects/issues"
-            },
-            "time": "2019-11-22T14:27:34+00:00"
+            "description": "BIIGLE module to create, edit and manage projects.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:12:50+00:00"
         },
         {
             "name": "biigle/reports",
@@ -611,12 +639,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "9641a5915cb51337059a324c24c63850a4ce58b1"
+                "reference": "6c1dedf54c2349e11569a4af7f9fd30623ae1059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/9641a5915cb51337059a324c24c63850a4ce58b1",
-                "reference": "9641a5915cb51337059a324c24c63850a4ce58b1",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/6c1dedf54c2349e11569a4af7f9fd30623ae1059",
+                "reference": "6c1dedf54c2349e11569a4af7f9fd30623ae1059",
                 "shasum": ""
             },
             "require": {
@@ -630,17 +658,23 @@
                     "Biigle\\Modules\\Reports\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/reports/tree/master",
-                "issues": "https://github.com/biigle/reports/issues"
-            },
-            "time": "2019-11-25T06:50:31+00:00"
+            "description": "BIIGLE module to generate reports for projects, volumes and videos.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:13:09+00:00"
         },
         {
             "name": "biigle/sync",
@@ -648,12 +682,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/sync.git",
-                "reference": "f4103b0bbf3af0d303705829e98476751e428dd0"
+                "reference": "c772c30f6176a0dc454db1966191df1c1b744f21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/f4103b0bbf3af0d303705829e98476751e428dd0",
-                "reference": "f4103b0bbf3af0d303705829e98476751e428dd0",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/c772c30f6176a0dc454db1966191df1c1b744f21",
+                "reference": "c772c30f6176a0dc454db1966191df1c1b744f21",
                 "shasum": ""
             },
             "require": {
@@ -665,17 +699,23 @@
                     "Biigle\\Modules\\Sync\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/sync/tree/master",
-                "issues": "https://github.com/biigle/sync/issues"
-            },
-            "time": "2019-11-25T06:40:50+00:00"
+            "description": "BIIGLE module to transfer data between application instances.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-26T09:07:25+00:00"
         },
         {
             "name": "biigle/videos",
@@ -683,12 +723,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/videos.git",
-                "reference": "b7bfbc7ac9cf0ef7dace145be1ea2406063d7622"
+                "reference": "ff678af2a1ee697aae44babe71b748f49bf73e32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/b7bfbc7ac9cf0ef7dace145be1ea2406063d7622",
-                "reference": "b7bfbc7ac9cf0ef7dace145be1ea2406063d7622",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/ff678af2a1ee697aae44babe71b748f49bf73e32",
+                "reference": "ff678af2a1ee697aae44babe71b748f49bf73e32",
                 "shasum": ""
             },
             "require": {
@@ -706,18 +746,23 @@
                     "Biigle\\Modules\\Videos\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "description": "Create, edit and explore video annotations",
-            "support": {
-                "source": "https://github.com/biigle/videos/tree/master",
-                "issues": "https://github.com/biigle/videos/issues"
-            },
-            "time": "2019-11-25T07:00:59+00:00"
+            "description": "BIIGLE module to create, edit and explore video annotations.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-26T12:19:24+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -725,12 +770,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/volumes.git",
-                "reference": "3fa64f4ee127658242d4d84232895f9c311d702a"
+                "reference": "9f241363dbdfe2133f007542fce0e273b846d0d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/volumes/zipball/3fa64f4ee127658242d4d84232895f9c311d702a",
-                "reference": "3fa64f4ee127658242d4d84232895f9c311d702a",
+                "url": "https://api.github.com/repos/biigle/volumes/zipball/9f241363dbdfe2133f007542fce0e273b846d0d5",
+                "reference": "9f241363dbdfe2133f007542fce0e273b846d0d5",
                 "shasum": ""
             },
             "require": {
@@ -743,22 +788,23 @@
                     "Biigle\\Modules\\Volumes\\": "src"
                 }
             },
-            "scripts": {
-                "fix": [
-                    "php-cs-fixer --config-file='.php_cs' fix"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "support": {
-                "source": "https://github.com/biigle/volumes/tree/master",
-                "issues": "https://github.com/biigle/volumes/issues"
-            },
-            "time": "2019-11-25T06:51:20+00:00"
+            "description": "BIIGLE module to create, edit and explore image volumes.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-25T08:13:26+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",

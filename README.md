@@ -1,5 +1,7 @@
 # BIIGLE
 
+[![Test status](https://github.com/biigle/core/workflows/Tests/badge.svg)](https://github.com/biigle/core/actions?query=workflow%3ATests)
+
 The Bio-Image Indexing and Graphical Labelling Environment (BIIGLE) is a web service for the efficient and rapid annotation of still images and videos. Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="https://biigle.de/manual">the manual</a>.
 
 BIIGLE is available at [biigle.de](https://biigle.de).

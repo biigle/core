@@ -112,9 +112,11 @@ class VolumeImages implements Rule
             });
 
         try {
-            FileCache::batchOnce($samples->toArray(), function ($files, $paths) {
-                // Do nothing.
-            });
+            foreach ($samples as $file) {
+                if (!FileCache::exists($file)) {
+                    return false;
+                }
+            }
         } catch (Exception $e) {
             return false;
         }

@@ -36,7 +36,7 @@
         "biigle/sync": "dev-master",
         "biigle/videos": "dev-master",
         "biigle/volumes": "dev-master",
-        "biigle/laravel-file-cache": "^3.0",
+        "biigle/laravel-file-cache": "^3.1",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "^4.0",
