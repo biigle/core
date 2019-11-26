@@ -87,8 +87,8 @@ class UserImportTest extends TestCase
         DB::table('users')->delete();
         $map = $import->perform();
         $this->assertEquals(2, DB::table('users')->count());
-        $user = User::first();
-        $this->assertEquals($user->id, $map[$this->user->id]);
+        $user = User::find($map[$this->user->id]);
+        $this->assertNotNull($user);
         $this->assertNotNull($user->created_at);
         $this->assertNotNull($user->updated_at);
         $this->assertEquals(['ab' => 'cd'], $user->settings);
