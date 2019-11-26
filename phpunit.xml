@@ -38,6 +38,10 @@
         <server name="APP_PACKAGES_CACHE" value="bootstrap/cache/packages.phpunit.php"/>
         <server name="APP_ROUTES_CACHE" value="bootstrap/cache/routes.phpunit.php"/>
         <server name="APP_EVENTS_CACHE" value="bootstrap/cache/events.phpunit.php"/>
+        <server name="LARGO_PATCH_STORAGE_DISK" value="largo"/>
+        <server name="REPORTS_STORAGE_DISK" value="reports"/>
+        <server name="MAIA_TRAINING_PROPOSAL_STORAGE_DISK" value="maia-tp"/>
+        <server name="MAIA_ANNOTATION_CANDIDATE_STORAGE_DISK" value="maia-ac"/>
     </php>
     <listeners>
         <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener">
