@@ -1,5 +1,7 @@
 # BIIGLE Volumes Module
 
+[![Test status](https://github.com/biigle/volumes/workflows/Tests/badge.svg)](https://github.com/biigle/volumes/actions?query=workflow%3ATests)
+
 This is the BIIGLE module to create, edit and explore image volumes.
 
 ## Installation
