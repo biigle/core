@@ -43,7 +43,12 @@
         </div>
         <div class="row">
             <h2><a name="developer-documentation"></a>Developer Documentation</h2>
+
+            <p>
+                The source code of BIIGLE can be found at <a href="https://github.com/biigle">GitHub</a>.
+            </p>
         </div>
+
         <div class="row">
             <h3>RESTful API</h3>
             <p>
@@ -95,5 +100,9 @@
         </div>
     </div>
 </div>
-@include('partials.footer')
+@include('partials.footer', [
+    'links' => [
+        'GitHub' => 'https://github.com/biigle',
+    ],
+])
 @endsection
