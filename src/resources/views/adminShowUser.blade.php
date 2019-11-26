@@ -2,7 +2,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             @if ($totalAnnotationLabels > 0)
-                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ str_plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> {{ str_plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ str_plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
+                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ Str::plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> {{ Str::plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ Str::plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
             @else
                 Created no annotations yet.
             @endif
