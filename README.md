@@ -1,5 +1,7 @@
 # BIIGLE Label Trees Module
 
+[![Test status](https://github.com/biigle/label-trees/workflows/Tests/badge.svg)](https://github.com/biigle/label-trees/actions?query=workflow%3ATests)
+
 This is the BIIGLE module to create, edit and manage label trees.
 
 ## Installation
