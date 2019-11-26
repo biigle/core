@@ -1,5 +1,7 @@
 # BIIGLE Sync Module
 
+[![Test status](https://github.com/biigle/sync/workflows/Tests/badge.svg)](https://github.com/biigle/sync/actions?query=workflow%3ATests)
+
 This is the BIIGLE module to transfer data between application instances.
 
 ## Installation
