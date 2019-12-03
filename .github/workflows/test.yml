@@ -9,12 +9,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
 
     - name: Validate composer.json and composer.lock
       run: composer validate
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer
+        restore-keys: |
+          ${{ runner.os }}-composer
 
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
@@ -36,4 +50,4 @@ jobs:
       run: docker-compose up -d --no-build database_testing
 
     - name: Run tests
-      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order
+      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
