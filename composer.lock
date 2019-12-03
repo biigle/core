@@ -75,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "c5d9588b29c4c13446c0facd136076a40cd97807"
+                "reference": "5fb4cdd777a2b9edd709dc299c41304adb23cb93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/c5d9588b29c4c13446c0facd136076a40cd97807",
-                "reference": "c5d9588b29c4c13446c0facd136076a40cd97807",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/5fb4cdd777a2b9edd709dc299c41304adb23cb93",
+                "reference": "5fb4cdd777a2b9edd709dc299c41304adb23cb93",
                 "shasum": ""
             },
             "require": {
@@ -108,7 +108,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:14:38+00:00"
+            "time": "2019-11-27T09:49:01+00:00"
         },
         {
             "name": "biigle/annotations",
@@ -116,12 +116,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/annotations.git",
-                "reference": "bd012f0e143473ca82dc5cf318d10d5490c685cc"
+                "reference": "b611f87438ee6d8b0fa28b08a5f50705e040b615"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/annotations/zipball/bd012f0e143473ca82dc5cf318d10d5490c685cc",
-                "reference": "bd012f0e143473ca82dc5cf318d10d5490c685cc",
+                "url": "https://api.github.com/repos/biigle/annotations/zipball/b611f87438ee6d8b0fa28b08a5f50705e040b615",
+                "reference": "b611f87438ee6d8b0fa28b08a5f50705e040b615",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +150,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-26T12:19:39+00:00"
+            "time": "2019-11-27T09:39:13+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -158,12 +158,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "15b04963b3e424c4e260fa60339d3cd293e030a6"
+                "reference": "03eeebe02231dada1ee22c301d2399c6d28ad6aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/15b04963b3e424c4e260fa60339d3cd293e030a6",
-                "reference": "15b04963b3e424c4e260fa60339d3cd293e030a6",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/03eeebe02231dada1ee22c301d2399c6d28ad6aa",
+                "reference": "03eeebe02231dada1ee22c301d2399c6d28ad6aa",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:16:11+00:00"
+            "time": "2019-11-27T09:49:04+00:00"
         },
         {
             "name": "biigle/demo",
@@ -200,12 +200,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "3a2aa73e902c2435a539600d4ae53a9f0eab3e10"
+                "reference": "c36d33ab6d2faa6da8637eb6eb30e9cc128b2e01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/3a2aa73e902c2435a539600d4ae53a9f0eab3e10",
-                "reference": "3a2aa73e902c2435a539600d4ae53a9f0eab3e10",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/c36d33ab6d2faa6da8637eb6eb30e9cc128b2e01",
+                "reference": "c36d33ab6d2faa6da8637eb6eb30e9cc128b2e01",
                 "shasum": ""
             },
             "require": {
@@ -233,7 +233,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:15:42+00:00"
+            "time": "2019-11-27T09:49:08+00:00"
         },
         {
             "name": "biigle/geo",
@@ -241,12 +241,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "7e3ad756b7aabc8dffa1940b475d7a1f33734ea2"
+                "reference": "7bbf5f9477d4822ed45ddc9c59b9ce86ca398b10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/7e3ad756b7aabc8dffa1940b475d7a1f33734ea2",
-                "reference": "7e3ad756b7aabc8dffa1940b475d7a1f33734ea2",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/7bbf5f9477d4822ed45ddc9c59b9ce86ca398b10",
+                "reference": "7bbf5f9477d4822ed45ddc9c59b9ce86ca398b10",
                 "shasum": ""
             },
             "require": {
@@ -275,7 +275,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:14:00+00:00"
+            "time": "2019-11-27T09:49:12+00:00"
         },
         {
             "name": "biigle/label-trees",
@@ -283,12 +283,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/label-trees.git",
-                "reference": "fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6"
+                "reference": "1d6f3d15069c3bf5b7675b18936ec4707fd1ec46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/label-trees/zipball/fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6",
-                "reference": "fd2f0bf34d30d3259be1ce9e0661aa2caa4594a6",
+                "url": "https://api.github.com/repos/biigle/label-trees/zipball/1d6f3d15069c3bf5b7675b18936ec4707fd1ec46",
+                "reference": "1d6f3d15069c3bf5b7675b18936ec4707fd1ec46",
                 "shasum": ""
             },
             "require": {
@@ -317,7 +317,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:16:33+00:00"
+            "time": "2019-11-27T09:49:16+00:00"
         },
         {
             "name": "biigle/laravel-cached-openstack",
@@ -408,20 +408,20 @@
                 }
             ],
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "time": "2019-11-26T13:20:12+00:00"
+            "time": "2019-12-03T07:47:25+00:00"
         },
         {
             "name": "biigle/laravel-remote-queue",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-remote-queue.git",
-                "reference": "6a1f3373c48aa155d83b8679c6f9676e5824838e"
+                "reference": "5a3d60482244f31cf911b7fe93141bae40412a92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-remote-queue/zipball/6a1f3373c48aa155d83b8679c6f9676e5824838e",
-                "reference": "6a1f3373c48aa155d83b8679c6f9676e5824838e",
+                "url": "https://api.github.com/repos/biigle/laravel-remote-queue/zipball/5a3d60482244f31cf911b7fe93141bae40412a92",
+                "reference": "5a3d60482244f31cf911b7fe93141bae40412a92",
                 "shasum": ""
             },
             "require": {
@@ -460,7 +460,7 @@
                 }
             ],
             "description": "Submit jobs to and receive jobs from other Laravel or Lumen instances.",
-            "time": "2019-09-12T11:50:34+00:00"
+            "time": "2019-12-03T07:45:32+00:00"
         },
         {
             "name": "biigle/largo",
@@ -468,12 +468,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "9befd8ba98afa5aabaed8be775fe008708cd55b8"
+                "reference": "f15207422a0efb79de87a55b994bb327d90153c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/9befd8ba98afa5aabaed8be775fe008708cd55b8",
-                "reference": "9befd8ba98afa5aabaed8be775fe008708cd55b8",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/f15207422a0efb79de87a55b994bb327d90153c8",
+                "reference": "f15207422a0efb79de87a55b994bb327d90153c8",
                 "shasum": ""
             },
             "require": {
@@ -505,7 +505,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:13:46+00:00"
+            "time": "2019-11-27T09:49:20+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -513,12 +513,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "2f205ef09860812abfad4e91592ae218407c9ecc"
+                "reference": "470b53399da2893b4ebed9c675cd8b6accf8b844"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/2f205ef09860812abfad4e91592ae218407c9ecc",
-                "reference": "2f205ef09860812abfad4e91592ae218407c9ecc",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/470b53399da2893b4ebed9c675cd8b6accf8b844",
+                "reference": "470b53399da2893b4ebed9c675cd8b6accf8b844",
                 "shasum": ""
             },
             "require": {
@@ -548,7 +548,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:15:55+00:00"
+            "time": "2019-11-27T09:49:23+00:00"
         },
         {
             "name": "biigle/maia",
@@ -556,12 +556,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "98f5f6344d420d510cf4cca150ccae37023c4d9f"
+                "reference": "1e6133cb4c01f0581b6c6c6aaee3be0833d6e3e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/98f5f6344d420d510cf4cca150ccae37023c4d9f",
-                "reference": "98f5f6344d420d510cf4cca150ccae37023c4d9f",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/1e6133cb4c01f0581b6c6c6aaee3be0833d6e3e5",
+                "reference": "1e6133cb4c01f0581b6c6c6aaee3be0833d6e3e5",
                 "shasum": ""
             },
             "require": {
@@ -593,7 +593,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:12:32+00:00"
+            "time": "2019-11-27T09:49:27+00:00"
         },
         {
             "name": "biigle/projects",
@@ -601,12 +601,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/projects.git",
-                "reference": "1a9181c5598ebec03dc617500c6371905d870993"
+                "reference": "5a8af8a8490c484400e73dcc492848446718a680"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/projects/zipball/1a9181c5598ebec03dc617500c6371905d870993",
-                "reference": "1a9181c5598ebec03dc617500c6371905d870993",
+                "url": "https://api.github.com/repos/biigle/projects/zipball/5a8af8a8490c484400e73dcc492848446718a680",
+                "reference": "5a8af8a8490c484400e73dcc492848446718a680",
                 "shasum": ""
             },
             "type": "library",
@@ -631,7 +631,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:12:50+00:00"
+            "time": "2019-11-27T09:49:31+00:00"
         },
         {
             "name": "biigle/reports",
@@ -639,12 +639,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "6c1dedf54c2349e11569a4af7f9fd30623ae1059"
+                "reference": "7cadf526a0935cf33076c6471e953e7d7e4096ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/6c1dedf54c2349e11569a4af7f9fd30623ae1059",
-                "reference": "6c1dedf54c2349e11569a4af7f9fd30623ae1059",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/7cadf526a0935cf33076c6471e953e7d7e4096ff",
+                "reference": "7cadf526a0935cf33076c6471e953e7d7e4096ff",
                 "shasum": ""
             },
             "require": {
@@ -674,7 +674,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-25T08:13:09+00:00"
+            "time": "2019-11-27T09:49:35+00:00"
         },
         {
             "name": "biigle/sync",
@@ -682,12 +682,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/sync.git",
-                "reference": "c772c30f6176a0dc454db1966191df1c1b744f21"
+                "reference": "b4382b485254c65f2648b0ec4fedcd305d64f21a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/c772c30f6176a0dc454db1966191df1c1b744f21",
-                "reference": "c772c30f6176a0dc454db1966191df1c1b744f21",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/b4382b485254c65f2648b0ec4fedcd305d64f21a",
+                "reference": "b4382b485254c65f2648b0ec4fedcd305d64f21a",
                 "shasum": ""
             },
             "require": {
@@ -715,7 +715,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-26T09:07:25+00:00"
+            "time": "2019-11-27T09:49:38+00:00"
         },
         {
             "name": "biigle/videos",
@@ -723,12 +723,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/videos.git",
-                "reference": "ff678af2a1ee697aae44babe71b748f49bf73e32"
+                "reference": "390f5803115c8d09f59be9dca90b1f9a1580eddc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/ff678af2a1ee697aae44babe71b748f49bf73e32",
-                "reference": "ff678af2a1ee697aae44babe71b748f49bf73e32",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/390f5803115c8d09f59be9dca90b1f9a1580eddc",
+                "reference": "390f5803115c8d09f59be9dca90b1f9a1580eddc",
                 "shasum": ""
             },
             "require": {
@@ -762,7 +762,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-11-26T12:19:24+00:00"
+            "time": "2019-11-27T09:49:42+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -770,12 +770,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/volumes.git",
-                "reference": "9f241363dbdfe2133f007542fce0e273b846d0d5"
+                "reference": "9a3bbef48dd1da6b0bc604eca85f9e45994ff295"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/volumes/zipball/9f241363dbdfe2133f007542fce0e273b846d0d5",
-                "reference": "9f241363dbdfe2133f007542fce0e273b846d0d5",
+                "url": "https://api.github.com/repos/biigle/volumes/zipball/9a3bbef48dd1da6b0bc604eca85f9e45994ff295",
+                "reference": "9a3bbef48dd1da6b0bc604eca85f9e45994ff295",
                 "shasum": ""
             },
             "require": {
@@ -798,8 +798,13 @@
                     "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
-            "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
-            "time": "2019-12-03T07:47:25+00:00"
+            "description": "BIIGLE module to create, edit and explore image volumes.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-11-27T09:49:46+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2056,6 +2061,72 @@
             "time": "2019-09-26T15:34:52+00:00"
         },
         {
+            "name": "justinrainbow/json-schema",
+            "version": "5.2.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justinrainbow/json-schema.git",
+                "reference": "44c6787311242a979fa15c704327c20e7221a0e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/44c6787311242a979fa15c704327c20e7221a0e4",
+                "reference": "44c6787311242a979fa15c704327c20e7221a0e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2.2.20||~2.15.1",
+                "json-schema/json-schema-test-suite": "1.2.0",
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "bin": [
+                "bin/validate-json"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JsonSchema\\": "src/JsonSchema/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Prieto Reis",
+                    "email": "bruno.p.reis@gmail.com"
+                },
+                {
+                    "name": "Justin Rainbow",
+                    "email": "justin.rainbow@gmail.com"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Robert Schönthal",
+                    "email": "seroscho@googlemail.com"
+                }
+            ],
+            "description": "A library to validate a json schema.",
+            "homepage": "https://github.com/justinrainbow/json-schema",
+            "keywords": [
+                "json",
+                "schema"
+            ],
+            "time": "2019-09-25T14:49:45+00:00"
+        },
+        {
             "name": "laravel/framework",
             "version": "v6.6.0",
             "source": {
@@ -2350,16 +2421,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.0.1",
+            "version": "1.25.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "f9d56fd2f5533322caccdfcddbb56aedd622ef1c"
+                "reference": "d5e2fb341cb44f7e2ab639d12a1e5901091ec287"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f9d56fd2f5533322caccdfcddbb56aedd622ef1c",
-                "reference": "f9d56fd2f5533322caccdfcddbb56aedd622ef1c",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d5e2fb341cb44f7e2ab639d12a1e5901091ec287",
+                "reference": "d5e2fb341cb44f7e2ab639d12a1e5901091ec287",
                 "shasum": ""
             },
             "require": {
@@ -2424,7 +2495,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2019-11-13T10:27:43+00:00"
+            "time": "2019-11-13T10:00:05+00:00"
         },
         {
             "name": "msurguy/honeypot",
@@ -2592,10 +2663,51 @@
             "description": "An API extension for DateTime that supports 281 different languages.",
             "homepage": "http://carbon.nesbot.com",
             "keywords": [
-                "parser",
-                "php"
+                "date",
+                "datetime",
+                "time"
             ],
             "time": "2019-11-20T06:59:06+00:00"
+        },
+        {
+            "name": "neutron/temporary-filesystem",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/romainneutron/Temporary-Filesystem.git",
+                "reference": "694aa3885f653dd429584e825ffbab79441d285f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/romainneutron/Temporary-Filesystem/zipball/694aa3885f653dd429584e825ffbab79441d285f",
+                "reference": "694aa3885f653dd429584e825ffbab79441d285f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7.0",
+                "symfony/filesystem": "^2.3 || ^3.0 || ^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Neutron": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Neutron",
+                    "email": "imprec@gmail.com"
+                }
+            ],
+            "description": "Symfony filesystem extension to handle temporary files",
+            "time": "2018-02-07T21:11:57+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2612,19 +2724,67 @@
                 "shasum": ""
             },
             "require": {
-                "league/flysystem": "^1.0",
-                "php-opencloud/openstack": "^3.0"
+                "ext-tokenizer": "*",
+                "php": ">=7.0"
             },
             "require-dev": {
                 "ircmaxell/php-yacc": "0.0.5",
                 "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0"
             },
+            "bin": [
+                "bin/php-parse"
+            ],
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "4.3-dev"
                 }
             },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2019-11-08T13:50:10+00:00"
+        },
+        {
+            "name": "nimbusoft/flysystem-openstack-swift",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nimbusoftltd/flysystem-openstack-swift.git",
+                "reference": "6c84652a600e1963a665489ad1be25a33087a03d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nimbusoftltd/flysystem-openstack-swift/zipball/6c84652a600e1963a665489ad1be25a33087a03d",
+                "reference": "6c84652a600e1963a665489ad1be25a33087a03d",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^1.0",
+                "php-opencloud/openstack": "^3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6.4",
+                "mockery/mockery": "^0.9.5",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
             "autoload": {
                 "psr-4": {
                     "Nimbusoft\\Flysystem\\OpenStack\\": "src/"
@@ -2656,7 +2816,7 @@
                 "storage",
                 "swift"
             ],
-            "time": "2019-11-08T13:50:10+00:00"
+            "time": "2019-11-17T17:43:04+00:00"
         },
         {
             "name": "opis/closure",
@@ -3847,6 +4007,56 @@
                 "standards"
             ],
             "time": "2019-09-17T09:54:03+00:00"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "v4.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/filesystem.git",
+                "reference": "40c2606131d56eff6f193b6e2ceb92414653b591"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/40c2606131d56eff6f193b6e2ceb92414653b591",
+                "reference": "40c2606131d56eff6f193b6e2ceb92414653b591",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/polyfill-ctype": "~1.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Filesystem Component",
+            "homepage": "https://symfony.com",
+            "time": "2019-11-26T23:16:41+00:00"
         },
         {
             "name": "symfony/finder",
