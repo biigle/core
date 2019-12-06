@@ -3,8 +3,14 @@
  *
  * @type {Object}
  */
+
 biigle.$component('annotations.components.annotationCanvas.drawInteractions', function () {
     var drawInteraction;
+
+    var penOrShift = function(mapBrowserEvent) {
+      var pointerEvt = (mapBrowserEvent).pointerEvent;
+      return pointerEvt.pointerType === "pen" || pointerEvt.shiftKey;
+    };
 
     return {
         computed: {
@@ -69,6 +75,7 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
                         source: this.annotationSource,
                         type: mode.slice(4), // remove 'draw' prefix
                         style: this.styles.editing,
+                        freehandCondition: penOrShift
                     });
                     drawInteraction.on('drawend', this.handleNewFeature);
                     this.map.addInteraction(drawInteraction);
