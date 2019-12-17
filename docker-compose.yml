@@ -10,8 +10,6 @@ services:
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
-      args:
-        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
     working_dir: /var/www
     volumes:
       - ./:/var/www
