@@ -7,9 +7,16 @@
 biigle.$component('annotations.components.annotationCanvas.drawInteractions', function () {
     var drawInteraction;
 
+    // Custom OpenLayers freehandCondition that is true if a pen is used for input or
+    // if Shift is pressed otherwise.
     var penOrShift = function (mapBrowserEvent) {
-      var pointerEvt = mapBrowserEvent.pointerEvent;
-      return pointerEvt.pointerType === "pen" || pointerEvt.shiftKey;
+      var pointerEvent = mapBrowserEvent.pointerEvent;
+
+      if (pointerEvent && pointerEvent.pointerType === "pen") {
+        return true;
+      }
+
+      return ol.events.condition.shiftKeyOnly(mapBrowserEvent);
     };
 
     return {
@@ -75,7 +82,7 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
                         source: this.annotationSource,
                         type: mode.slice(4), // remove 'draw' prefix
                         style: this.styles.editing,
-                        freehandCondition: penOrShift
+                        freehandCondition: penOrShift,
                     });
                     drawInteraction.on('drawend', this.handleNewFeature);
                     this.map.addInteraction(drawInteraction);
