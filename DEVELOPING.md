@@ -36,13 +36,11 @@ Build the Docker images and start the application with `docker-compose up`. The 
 
 ### 3. Initialize the application
 
-Before you can start using or developing BIIGLE, you need to perform a few initialization steps:
+Before you can start using or developing BIIGLE, you need to perform these initialization steps:
 
 1. Apply the database migrations: `docker-compose exec app php artisan migrate`
 
-2. Publish the assets of the BIIGLE modules: `php artisan vendor:publish --tag public`
-
-3. Create the first user: `docker-compose exec app php artisan user:new`
+2. Create the first user: `docker-compose exec app php artisan user:new`
 
 Follow these steps to create a new project and volume with test images:
 
