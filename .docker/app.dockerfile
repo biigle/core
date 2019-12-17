@@ -34,7 +34,6 @@ COPY database /var/www/database
 
 WORKDIR /var/www
 
-ARG GITHUB_OAUTH_TOKEN
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 # Ignore platform reqs because the app image is stripped down to the essentials
@@ -44,8 +43,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
     && rm composer-setup.php \
-    && COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"${GITHUB_OAUTH_TOKEN}\"}}" \
-        php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
+    && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
     && rm -r ~/.composer
 
 COPY . /var/www

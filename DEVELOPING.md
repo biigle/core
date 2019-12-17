@@ -32,8 +32,6 @@ This will set up the project in the `dev-modules` branch of this repository. The
 
 ### 2. Build and run the application
 
-Configure `GITHUB_OAUTH_TOKEN` in the `.env` file with a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) of GitHub (with authorization for the **repo** scope).
-
 Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
 
 ### 3. Initialize the application
