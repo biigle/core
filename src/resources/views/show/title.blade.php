@@ -34,8 +34,8 @@
     @else
         <h2>
             @if ($isMember)
-                @include('projects::partials.pinButton')
                 <span class="pull-right">
+                    @include('projects::partials.pinButton')
                     <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
                 </span>
             @endif
