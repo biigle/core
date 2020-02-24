@@ -25,7 +25,7 @@ class ProjectVideoController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {String} name The name of the new video.
-     * @apiParam (Required attributes) {String} url The URL of the video files. Must be a path to a storage disk like `local://videos/1.mp4` or a remote URL like `https://myhost.tld/videos/1.mp4`. Supported video formats are WEBM, MP4 and MPEG.
+     * @apiParam (Required attributes) {String} url The URL of the video files. Must be a path to a storage disk like `local://videos/1.mp4` or a remote URL like `https://myhost.tld/videos/1.mp4`. Supported video formats are MP4 (H.264) and WebM.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this video.
      * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new video.
      *
