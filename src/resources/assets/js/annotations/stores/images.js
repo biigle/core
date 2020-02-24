@@ -103,9 +103,10 @@ biigle.$declare('annotations.stores.images', function () {
 
                 // Check supported drawing buffer size.
                 // see: https://github.com/biigle/annotations/issues/44
-                fxCanvas.width = image.width;
-                fxCanvas.height = image.height;
-                if (image.width !== fxCanvas._.gl.drawingBufferWidth || image.height !== fxCanvas._.gl.drawingBufferHeight) {
+                var tmpCanvas = fx.canvas();
+                tmpCanvas.width = image.width;
+                tmpCanvas.height = image.height;
+                if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
                     console.log('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
                     this.supportsColorAdjustment = false;
                     return;
