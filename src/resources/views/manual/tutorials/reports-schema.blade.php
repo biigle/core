@@ -252,7 +252,7 @@ Animalia
                 <li>
                     <strong>Video annotation key frames</strong>
                     <p>
-                        The key frames are encoded as a JSON array. Each key frame represents a time that corresponds to the ponts array at the same index. <code>null</code> menas there is a gap in the video annotation.
+                        The key frames are encoded as a JSON array. Each key frame represents a time in seconds that corresponds to the ponts array at the same index. <code>null</code> means there is a gap in the video annotation.
                     </p>
                 </li>
                 <li><strong>Video annotation ID</strong></li>
