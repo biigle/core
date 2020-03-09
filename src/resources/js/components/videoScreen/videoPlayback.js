@@ -55,15 +55,15 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
 
                 map.getView().fit(this.extent);
             },
-            renderVideo: function () {
+            renderVideo: function (force) {
                 // Drop animation frame if the time has not changed.
-                if (this.renderCurrentTime !== this.video.currentTime) {
+                if (force || this.renderCurrentTime !== this.video.currentTime) {
                     this.renderCurrentTime = this.video.currentTime;
                     this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
                     this.videoLayer.changed();
 
                     var now = Date.now();
-                    if (now - this.refreshLastTime >= this.refreshRate) {
+                    if (force || (now - this.refreshLastTime) >= this.refreshRate) {
                         this.$emit('refresh', this.video.currentTime);
                         this.refreshLastTime = now;
                     }
@@ -77,7 +77,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
                 window.cancelAnimationFrame(this.animationFrameId);
                 this.animationFrameId = null;
                 // Make sure the video frame that belongs to the currentTime is drawn.
-                this.renderVideo();
+                this.renderVideo(true);
             },
             setPlaying: function () {
                 this.playing = true;
@@ -97,6 +97,7 @@ biigle.$component('videos.components.videoScreen.videoPlayback', function () {
             },
             pause: function () {
                 this.video.pause();
+                this.renderVideo(true);
             },
             emitMapReady: function () {
                 this.$emit('map-ready', this.map);
