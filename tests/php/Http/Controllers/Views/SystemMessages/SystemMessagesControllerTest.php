@@ -6,7 +6,7 @@ use TestCase;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\SystemMessageTest;
 
-class SystemMessageControllerTest extends TestCase
+class SystemMessagesControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
