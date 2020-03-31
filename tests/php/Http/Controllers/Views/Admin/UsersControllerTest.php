@@ -94,7 +94,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::admin());
         $this->be($admin);
-        $response = $this->get('admin/users/delete/999')->assertStatus(404);
+        $this->get('admin/users/delete/0')->assertStatus(404);
     }
 
     public function testDeleteWhenLoggedIn()
