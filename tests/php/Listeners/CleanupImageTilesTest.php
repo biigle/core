@@ -10,7 +10,7 @@ use Biigle\Events\TiledImagesDeleted;
 use Biigle\Listeners\CleanupImageTiles;
 use Illuminate\Events\CallQueuedListener;
 
-class ListenersCleanupImageTilesTest extends TestCase
+class CleanupImageTilesTest extends TestCase
 {
     public function testHandle()
     {
