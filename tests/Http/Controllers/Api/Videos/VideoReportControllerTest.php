@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
+namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Videos;
 
 use ApiTestCase;
 use Biigle\Tests\LabelTest;
