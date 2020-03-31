@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\LabelTrees\Http\Api\Controllers;
+namespace Biigle\Tests\Modules\LabelTrees\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Role;
