@@ -83,14 +83,14 @@ class ProjectControllerTest extends ApiTestCase
         $response = $this->json('PUT', "/api/v1/projects/{$id}", [
             'name' => 'my test',
             'description' => 'this is my test',
-            'creator_id' => 5,
+            'creator_id' => 0,
         ]);
         $response->assertStatus(200);
 
         $project = $this->project()->fresh();
         $this->assertEquals('my test', $project->name);
         $this->assertEquals('this is my test', $project->description);
-        $this->assertNotEquals(5, $project->creator_id);
+        $this->assertNotEquals(0, $project->creator_id);
     }
 
     public function testStore()
