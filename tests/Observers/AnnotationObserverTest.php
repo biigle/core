@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Tests\Modules\Largo\Listeners;
+namespace Biigle\Tests\Modules\Largo\Observers;
 
 use TestCase;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
-class LargoModuleObserversAnnotationObserverTest extends TestCase
+class AnnotationObserverTest extends TestCase
 {
     public function testDeleting()
     {
