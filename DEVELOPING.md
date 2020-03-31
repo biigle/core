@@ -32,19 +32,15 @@ This will set up the project in the `dev-modules` branch of this repository. The
 
 ### 2. Build and run the application
 
-Configure `GITHUB_OAUTH_TOKEN` in the `.env` file with a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) of GitHub (with authorization for the **repo** scope).
-
 Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
 
 ### 3. Initialize the application
 
-Before you can start using or developing BIIGLE, you need to perform a few initialization steps:
+Before you can start using or developing BIIGLE, you need to perform these initialization steps:
 
 1. Apply the database migrations: `docker-compose exec app php artisan migrate`
 
-2. Publish the assets of the BIIGLE modules: `php artisan vendor:publish --tag public`
-
-3. Create the first user: `docker-compose exec app php artisan user:new`
+2. Create the first user: `docker-compose exec app php artisan user:new`
 
 Follow these steps to create a new project and volume with test images:
 
