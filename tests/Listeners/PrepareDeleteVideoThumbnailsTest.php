@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Maia\Listeners;
+namespace Biigle\Tests\Modules\Videos\Listeners;
 
 use Queue;
 use TestCase;
