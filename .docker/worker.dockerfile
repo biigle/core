@@ -97,7 +97,7 @@ RUN apk add --no-cache \
     && pip install --no-cache-dir \
         numpy==1.8.2 \
         scikit-learn==0.14.1 \
-        Pillow==6.2.0 \
+        Pillow==6.2.2 \
         scipy==0.13.3 \
         PyExcelerate==0.6.7 \
     # Matplotlib requires numpy but tries to install another version if it is installed
