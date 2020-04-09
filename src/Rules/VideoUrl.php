@@ -4,7 +4,10 @@ namespace Biigle\Modules\Videos\Rules;
 
 use App;
 use Storage;
+use FileCache;
+use FFMpeg\FFProbe;
 use GuzzleHttp\Client;
+use Biigle\FileCache\GenericFile;
 use Illuminate\Contracts\Validation\Rule;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
@@ -27,6 +30,13 @@ class VideoUrl implements Rule
     protected $allowedMimes;
 
     /**
+     * Allowed video codecs
+     *
+     * @var array
+     */
+    protected $allowedCodecs;
+
+    /**
      * Create a new instance.
      */
     public function __construct()
@@ -37,6 +47,12 @@ class VideoUrl implements Rule
             'video/mp4',
             'video/quicktime',
             'video/webm',
+        ];
+        $this->allowedCodecs = [
+            'h264',
+            'vp8',
+            'vp9',
+            'av1',
         ];
     }
 
@@ -97,7 +113,13 @@ class VideoUrl implements Rule
             return false;
         }
 
-        return $this->passesMimeType(Storage::disk($disk)->mimeType($path));
+        if (!$this->passesMimeType(Storage::disk($disk)->mimeType($path))) {
+            return false;
+        }
+
+        return FileCache::getOnce(new GenericFile($value), function ($file, $path) {
+            return $this->passesCodec($path);
+        });
     }
 
     /**
@@ -128,8 +150,11 @@ class VideoUrl implements Rule
         }
 
         $mime = explode(';', $response->getHeaderLine('Content-Type'))[0];
+        if (!$this->passesMimeType($mime)) {
+            return false;
+        }
 
-        return $this->passesMimeType($mime);
+        return $this->passesCodec($value);
     }
 
     /**
@@ -143,6 +168,26 @@ class VideoUrl implements Rule
     {
         if (!in_array($mime, $this->allowedMimes)) {
             $this->message = "Videos of type '{$mime}' are not supported.";
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate the codec of a video
+     *
+     * @param string $url URL/path to the video file
+     *
+     * @return bool
+     */
+    protected function passesCodec($url)
+    {
+        $codec = FFProbe::create()->streams($url)->videos()->first()->get('codec_name');
+
+        if (!in_array($codec, $this->allowedCodecs)) {
+            $this->message = "Videos with codec '{$codec}' are not supported.";
 
             return false;
         }

@@ -26,7 +26,7 @@
                     @if (config('biigle.offline_mode'))
                       The video file on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>).
                    @else
-                      The video file of a <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">remote video</a> (e.g. <code>https://my-domain.tld/videos/file.mp4</code>) or on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>).
+                      The video file of a <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">remote video</a> (e.g. <code>https://my-domain.tld/videos/file.mp4</code>) or on the BIIGLE server (e.g. <code>local://videos/file.mp4</code>). Supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
                    @endif
                 </p>
             @endif
