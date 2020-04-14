@@ -5,13 +5,13 @@ namespace Biigle\Modules\Videos\Rules;
 use App;
 use Storage;
 use FileCache;
-use FFMpeg\FFProbe;
 use GuzzleHttp\Client;
 use Biigle\FileCache\GenericFile;
 use Illuminate\Contracts\Validation\Rule;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use Biigle\Modules\Videos\Support\VideoCodecExtractor;
 
 class VideoUrl implements Rule
 {
@@ -184,7 +184,7 @@ class VideoUrl implements Rule
      */
     protected function passesCodec($url)
     {
-        $codec = FFProbe::create()->streams($url)->videos()->first()->get('codec_name');
+        $codec = App::make(VideoCodecExtractor::class)->extract($url);
 
         if (!in_array($codec, $this->allowedCodecs)) {
             $this->message = "Videos with codec '{$codec}' are not supported.";

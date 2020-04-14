@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 use Biigle\Modules\Videos\Rules\VideoUrl;
 use GuzzleHttp\Exception\RequestException;
+use Biigle\Modules\Videos\Support\VideoCodecExtractor;
 
 class VideoUrlTest extends TestCase
 {
@@ -132,6 +133,14 @@ class VideoUrlTest extends TestCase
         $client = new Client(['handler' => $handler]);
         $this->app->bind(Client::class, function () use ($client) {
             return $client;
+        });
+
+        $this->app->bind(VideoCodecExtractor::class, function () {
+            return new class {
+                public function extract($url) {
+                    return 'h264';
+                }
+            };
         });
 
         $validator = new VideoUrl;
