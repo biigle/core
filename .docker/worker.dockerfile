@@ -107,6 +107,8 @@ RUN apk add --no-cache \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
+RUN apk add --no-cache ffmpeg
+
 # Just copy from intermediate biigle/app so the installation of dependencies with
 # Composer doesn't have to run twice.
 COPY --from=intermediate /var/www /var/www
