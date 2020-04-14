@@ -14,6 +14,7 @@ use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\Project;
 use GuzzleHttp\Handler\MockHandler;
 use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
+use Biigle\Modules\Videos\Support\VideoCodecExtractor;
 
 class ProjectVideoControllerTest extends ApiTestCase
 {
@@ -106,12 +107,20 @@ class ProjectVideoControllerTest extends ApiTestCase
             return $client;
         });
 
+        $this->app->bind(VideoCodecExtractor::class, function () {
+            return new class {
+                public function extract($url) {
+                    return 'h264';
+                }
+            };
+        });
+
         $id = $this->project()->id;
         $project = Project::find($id);
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/videos", [
                 'name' => 'my video no. 2',
-                'url' => 'https://domain.tdl/video.mp4',
+                'url' => 'https://domain.tld/video.mp4',
             ])
             ->assertSuccessful();
 
