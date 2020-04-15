@@ -35,8 +35,8 @@ class StoreVideoAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|exists:labels,id',
-            'shape_id' => 'required|exists:shapes,id',
+            'label_id' => 'required|id|exists:labels,id',
+            'shape_id' => 'required|id|exists:shapes,id',
             'points' => 'required|array',
             'frames' => 'required|array',
             'track' => 'filled|boolean',
