@@ -8,7 +8,6 @@ use Biigle\Annotation;
 use FilesystemIterator;
 use InvalidArgumentException;
 use Illuminate\Console\Command;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class MigratePatchStorage extends Command
 {

@@ -15,10 +15,8 @@ class AnnotationObserver
      */
     public function saved(Annotation $annotation)
     {
-        GenerateAnnotationPatch::dispatch(
-                $annotation,
-                config('largo.patch_storage_disk')
-            )
+        GenerateAnnotationPatch::dispatch($annotation)
+            ->onQueue(config('largo.generate_annotation_patch_queue'))
             ->delay(config('largo.patch_generation_delay'));
     }
 
@@ -30,9 +28,8 @@ class AnnotationObserver
      */
     public function deleting(Annotation $annotation)
     {
-        RemoveAnnotationPatches::dispatch([
-            $annotation->id => $annotation->image->uuid,
-        ]);
+        RemoveAnnotationPatches::dispatch([$annotation->id => $annotation->image->uuid])
+            ->onQueue(config('largo.remove_annotation_patches_queue'));
 
         return true;
     }

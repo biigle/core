@@ -13,11 +13,17 @@ use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class GenerateAnnotationPatchTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        config(['largo.patch_storage_disk' => 'test']);
+    }
+
     public function testHandleSerialization()
     {
         $this->getImageMock(0);
         $annotation = AnnotationTest::create();
-        $job = serialize(new GenerateAnnotationPatchStub($annotation, 'test'));
+        $job = serialize(new GenerateAnnotationPatchStub($annotation));
         $annotation->delete();
         $job = unserialize($job);
         // This should throw no error and should not perform any processing.
@@ -29,7 +35,7 @@ class GenerateAnnotationPatchTest extends TestCase
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create();
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -46,6 +52,28 @@ class GenerateAnnotationPatchTest extends TestCase
         $this->assertEquals('abc123', $content);
     }
 
+    public function testHandleStorageConfigurableDisk()
+    {
+        Storage::fake('test2');
+        $image = $this->getImageMock();
+        $annotation = AnnotationTest::create();
+        $job = new GenerateAnnotationPatchStub($annotation, 'test2');
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->once()
+            ->andReturn($image);
+        $image->shouldReceive('writeToBuffer')
+            ->with('.jpg', ['Q' => 85])
+            ->once()
+            ->andReturn('abc123');
+
+        $job->handleImage($annotation->image, 'abc');
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.jpg");
+        $this->assertEquals('abc123', $content);
+    }
+
     public function testHandlePoint()
     {
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
@@ -55,7 +83,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [100, 100],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -79,7 +107,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [300.4, 300.4, 200],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -103,7 +131,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
             'shape_id' => Shape::rectangleId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -124,7 +152,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [0, 0],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -145,7 +173,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [1000, 750],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -169,7 +197,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [50, 50],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -190,7 +218,7 @@ class GenerateAnnotationPatchTest extends TestCase
             'points' => [60, 60, 10],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation, 'test');
+        $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -217,7 +245,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
-    public function __construct(Annotation $annotation, $targetDisk)
+    public function __construct(Annotation $annotation, $targetDisk = null)
     {
         parent::__construct($annotation, $targetDisk);
         $this->annotation = $annotation;

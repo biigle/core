@@ -54,14 +54,14 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Annotation $annotation, $targetDisk)
+    public function __construct(Annotation $annotation, $targetDisk = null)
     {
         // We do not use the SerializesModels trait because there is a good chance that
         // the annotation is deleted when this job should be executed. If this is the
         // case, this job should be ignored (see handle method).
         $this->annotationId = $annotation->getQueueableId();
         $this->annotationClass = get_class($annotation);
-        $this->targetDisk = $targetDisk;
+        $this->targetDisk = $targetDisk !== null ? $targetDisk : config('largo.patch_storage_disk');
     }
 
     /**

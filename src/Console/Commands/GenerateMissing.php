@@ -51,7 +51,6 @@ class GenerateMissing extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->disk = config('largo.patch_storage_disk');
         $this->format = config('largo.patch_format');
         $this->count = 0.0;
     }
@@ -82,7 +81,8 @@ class GenerateMissing extends Command
                 if (!$storage->exists("{$prefix}/{$annotation->id}.{$this->format}")) {
                     $this->count++;
                     if ($pushToQueue) {
-                        GenerateAnnotationPatch::dispatch($annotation, $this->disk);
+                        GenerateAnnotationPatch::dispatch($annotation)
+                            ->onQueue(config('largo.generate_annotation_patch_queue'));
                     }
                 }
             }
