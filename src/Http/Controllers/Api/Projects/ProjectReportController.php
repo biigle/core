@@ -39,7 +39,7 @@ class ProjectReportController extends ReportController
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->validate($request, ['type_id' => 'required|exists:report_types,id']);
+        $this->validate($request, ['type_id' => 'required|id|exists:report_types,id']);
 
         if (intval($request->input('type_id')) === ReportType::videoAnnotationsCsvId()) {
             $hasVideo = false;
