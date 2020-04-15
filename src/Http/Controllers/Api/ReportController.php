@@ -5,7 +5,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Biigle\Modules\Reports\Report;
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class ReportController extends Controller
 {

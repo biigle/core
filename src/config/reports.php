@@ -40,4 +40,9 @@ return [
         */
         'allow_user_settings' => true,
     ],
+
+    /*
+     | Specifies which queue should be used for which job.
+     */
+    'generate_report_queue' => env('REPORTS_GENERATE_REPORT_QUEUE', 'high'),
 ];

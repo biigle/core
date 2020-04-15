@@ -56,7 +56,8 @@ class VolumeReportController extends ReportController
         $report->options = $this->getOptions($request);
         $report->save();
 
-        GenerateReportJob::dispatch($report)->onQueue('high');
+        $queue = config('reports.generate_report_queue');
+        GenerateReportJob::dispatch($report)->onQueue($queue);
     }
 
     /**
