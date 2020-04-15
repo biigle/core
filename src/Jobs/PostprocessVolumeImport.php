@@ -52,7 +52,8 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
                 ->select('annotations.id')
                 ->chunkById(1000, function ($annotations) {
                     foreach ($annotations as $annotation) {
-                        GenerateAnnotationPatch::dispatch($annotation, config('largo.patch_storage_disk'));
+                        GenerateAnnotationPatch::dispatch($annotation)
+                            ->onQueue(config('largo.generate_annotation_patch_queue'));
                     }
                 }, 'annotations.id', 'id');
         }
