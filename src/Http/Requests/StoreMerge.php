@@ -90,7 +90,7 @@ class StoreMerge extends FormRequest
             $v = Validator::make($label, [
                 'name' => 'required|max:512',
                 'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-                'parent_id' => 'integer',
+                'parent_id' => 'id',
                 'children' => 'array',
             ]);
 
