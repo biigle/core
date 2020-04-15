@@ -169,7 +169,7 @@ class ImportController extends Controller
     protected function updateVolumeImport(VolumeImport $import, Request $request)
     {
         $this->validate($request, [
-            'project_id' => 'required|int|exists:projects,id',
+            'project_id' => 'required|id|exists:projects,id',
             'only' => 'filled|array',
             'only.*' => 'int',
             'new_urls' => 'array',
