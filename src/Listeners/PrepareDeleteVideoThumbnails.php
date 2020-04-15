@@ -16,6 +16,7 @@ class PrepareDeleteVideoThumbnails
       */
     public function handle(VideoDeleted $event)
     {
-        Queue::push(new DeleteVideoThumbnails($event->video));
+        $queue = config('videos.delete_video_thumbnails_queue');
+        Queue::pushOn($queue, new DeleteVideoThumbnails($event->video));
     }
 }

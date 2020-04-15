@@ -74,7 +74,8 @@ class ProjectVideoController extends Controller
             'doi' => $request->input('doi'),
         ];
         $video->save();
-        Queue::push(new ProcessNewVideo($video));
+        $queue = config('videos.process_new_video_queue');
+        Queue::pushOn($queue, new ProcessNewVideo($video));
 
         if ($this->isAutomatedRequest()) {
             return $video;
