@@ -38,7 +38,7 @@ class StoreVolume extends FormRequest
     {
         return [
             'name' => 'required|max:512',
-            'media_type_id' => 'required|exists:media_types,id',
+            'media_type_id' => 'required|id|exists:media_types,id',
             'url' => ['required', 'max:256', new VolumeUrl],
             'images' => ['required', 'array', new VolumeImages($this->input('url'))],
             'images.*' => ['max:512'],

@@ -7,6 +7,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -62,5 +63,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Backwards compatibility after upgrade from Laravel 5.5 to 5.6.
         Paginator::useBootstrapThree();
+
+        Validator::extend('id', function ($attribute, $value, $parameters, $validator) {
+            $int = intval($value);
+
+            return $int > 0 && $int < 2147483647;
+        });
     }
 }

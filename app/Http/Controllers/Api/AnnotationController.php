@@ -143,7 +143,7 @@ class AnnotationController extends Controller
         $annotation = Annotation::findOrFail($id);
         $this->authorize('update', $annotation);
         $request->validate([
-            'shape_id' => 'required_without:points|exists:shapes,id',
+            'shape_id' => 'required_without:points|id|exists:shapes,id',
             'points' => 'required_without:shape_id|array',
         ]);
 
