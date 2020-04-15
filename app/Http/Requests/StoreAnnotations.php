@@ -63,9 +63,9 @@ class StoreAnnotations extends FormRequest
     public function rules()
     {
         return [
-            '*.label_id' => 'required|exists:labels,id',
+            '*.label_id' => 'required|id|exists:labels,id',
             '*.confidence' => 'required|numeric|between:0,1',
-            '*.shape_id' => 'required|exists:shapes,id',
+            '*.shape_id' => 'required|id|exists:shapes,id',
             '*.points' => 'required|array',
         ];
     }

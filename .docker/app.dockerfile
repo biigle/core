@@ -26,6 +26,8 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
     && docker-php-ext-install redis
 
+RUN apk add --no-cache ffmpeg
+
 ADD .docker/app-php.ini /usr/local/etc/php/conf.d/php.ini
 
 COPY composer.lock composer.json /var/www/
