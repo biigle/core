@@ -29,4 +29,9 @@ return [
         'labelTrees',
         'users',
     ],
+
+    /*
+     | Specifies which queue should be used for which job.
+     */
+    'postprocess_volume_import_queue' => env('SYNC_POSTPROCESS_VOLUME_IMPORT_QUEUE', 'default'),
 ];

@@ -84,7 +84,8 @@ class VolumeImport extends Import
             $this->insertImageLabels($imageIdMap, $labelIdMap, $userIdMap);
             $this->insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
 
-            PostprocessVolumeImport::dispatch($volumes);
+            PostprocessVolumeImport::dispatch($volumes)
+                ->onQueue(config('sync.postprocess_volume_import_queue'));
 
             return [
                 'volumes' => $volumeIdMap,
