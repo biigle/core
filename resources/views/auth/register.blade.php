@@ -54,7 +54,7 @@
                         <div class="input-group-addon">
                             <i class="fa fa-building"></i>
                         </div>
-                        <input type="text" placeholder="Affiliation" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
+                        <input type="text" placeholder="Affiliation (institute, company, etc.)" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
                     </div>
                     @if($errors->has('affiliation'))
                         <span class="help-block">{{ $errors->first('affiliation') }}</span>

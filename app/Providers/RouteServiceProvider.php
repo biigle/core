@@ -31,7 +31,6 @@ class RouteServiceProvider extends ServiceProvider
         // Sometimes there are multiple IDs in the same route but they cannot have the
         // same name, hence id and id2.
         Route::patterns([
-            //
             'id' => '[0-9]{1,10}',
             'id2' => '[0-9]{1,10}',
         ]);
