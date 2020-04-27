@@ -41,7 +41,7 @@ docker pull \
     docker.pkg.github.com/biigle/core/worker:latest
 ```
 
-Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
+Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
