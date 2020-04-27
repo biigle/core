@@ -32,6 +32,15 @@ This will set up the project in the `dev-modules` branch of this repository. The
 
 ### 2. Build and run the application
 
+**Optional:** To speed up the build process, download the pre-built Docker images form GitHub. First [configure Docker](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) to authenticate to GitHub Packages. Then pull the images:
+
+```
+docker pull \
+    docker.pkg.github.com/biigle/core/app:latest \
+    docker.pkg.github.com/biigle/core/web:latest \
+    docker.pkg.github.com/biigle/core/worker:latest
+```
+
 Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
 
 ### 3. Initialize the application
