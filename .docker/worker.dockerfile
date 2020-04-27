@@ -1,6 +1,7 @@
 FROM docker.pkg.github.com/biigle/core/app as intermediate
 
-FROM php:7.3-alpine
+# 7.3-alpine
+FROM php@sha256:a698cc19c1650205f84d3c2067c248a0a5670cfa1e4cb78b75f50646720c01c2
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache \
