@@ -2,8 +2,10 @@
 
 namespace Biigle\Jobs;
 
+use Phar;
 use File;
 use Storage;
+use PharData;
 use VipsImage;
 use FileCache;
 use SplFileInfo;
@@ -47,7 +49,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}.zip";
+        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
     }
 
     /**
@@ -63,7 +65,7 @@ class TileSingleImage extends Job implements ShouldQueue
             $this->image->tiled = true;
             $this->image->save();
         } finally {
-            File::delete($this->tempPath);
+            File::delete("{$this->tempPath}.tar.gz");
         }
     }
 
@@ -77,9 +79,18 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $this->getVipsImage($path)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
-            'container' => 'zip',
+            'container' => 'fs',
             'strip' => true,
         ]);
+
+        try {
+            $archive = new PharData("{$this->tempPath}.tar");
+            $archive->buildFromDirectory($this->tempPath);
+            $archive->compress(Phar::GZ);
+        } finally {
+            File::deleteDirectory("{$this->tempPath}");
+            File::delete("{$this->tempPath}.tar");
+        }
     }
 
     /**
@@ -88,8 +99,8 @@ class TileSingleImage extends Job implements ShouldQueue
     public function uploadToStorage()
     {
         $directory = $this->image->uuid[0].$this->image->uuid[1].'/'.$this->image->uuid[2].$this->image->uuid[3];
-        $file = new SplFileInfo($this->tempPath);
-        Storage::disk(config('image.tiles.disk'))->putFileAs($directory, $file, $this->image->uuid);
+        $file = new SplFileInfo("{$this->tempPath}.tar.gz");
+        Storage::disk(config('image.tiles.disk'))->putFileAs($directory, $file, "{$this->image->uuid}.tar.gz");
     }
 
     /**

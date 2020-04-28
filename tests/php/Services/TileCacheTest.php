@@ -2,12 +2,13 @@
 
 namespace Biigle\Tests\Services;
 
+use Phar;
 use File;
 use Storage;
 use TestCase;
+use PharData;
 use TileCache;
 use Exception;
-use ZipArchive;
 use Biigle\Tests\ImageTest;
 
 class TileCacheTest extends TestCase
@@ -21,10 +22,9 @@ class TileCacheTest extends TestCase
         // Create some file so the fragment directory exists.
         $disk->put("{$fragment}.txt", '');
         $prefix = $disk->getDriver()->getAdapter()->getPathPrefix();
-        $zip = new ZipArchive;
-        $zip->open("{$prefix}/{$fragment}", ZipArchive::CREATE);
-        $zip->addFromString("{$image->uuid}/ImageProperties.xml", '<IMAGE_PROPERTIES/>');
-        $zip->close();
+        $archive = new PharData("{$prefix}/{$fragment}.tar");
+        $archive->addFromString("ImageProperties.xml", '<IMAGE_PROPERTIES/>');
+        $archive->compress(Phar::GZ);
 
         try {
             $path = TileCache::get($image);
@@ -40,8 +40,8 @@ class TileCacheTest extends TestCase
         $fragment = fragment_uuid_path($image->uuid);
         Storage::fake('local-tiles');
         $disk = Storage::disk('local-tiles');
-        // Create an invalid ZIP file.
-        $disk->put("{$fragment}", 'a');
+        // Create an invalid TAR file.
+        $disk->put("{$fragment}.tar.gz", 'a');
         $this->expectException(Exception::class);
         $path = TileCache::get($image);
     }
@@ -49,9 +49,7 @@ class TileCacheTest extends TestCase
     public function testGetNotFound()
     {
         $image = ImageTest::create();
-        $fragment = fragment_uuid_path($image->uuid);
         Storage::fake('local-tiles');
-        $disk = Storage::disk('local-tiles');
         $this->assertFalse(TileCache::get($image));
     }
 

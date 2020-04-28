@@ -4,8 +4,8 @@ namespace Biigle\Services;
 
 use File;
 use Storage;
+use PharData;
 use Exception;
-use ZipArchive;
 use Biigle\Image;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -51,22 +51,15 @@ class TileCache
             try {
                 $disk = Storage::disk(config('image.tiles.disk'));
                 try {
-                    File::put("{$cachedPath}.zip", $disk->readStream($fragment), LOCK_EX);
+                    File::put("{$cachedPath}.tar.gz", $disk->readStream("{$fragment}.tar.gz"), LOCK_EX);
                 } catch (FileNotFoundException $e) {
                     return false;
                 }
-                $zip = new ZipArchive;
-                $valid = $zip->open("{$cachedPath}.zip");
 
-                if ($valid !== true) {
-                    throw new Exception("Invalid ZIP file for image {$image->id}. Error code: {$valid}");
-                }
-
-                $dirs = substr($fragment, 0, 5);
-                $zip->extractTo("{$this->path}/{$dirs}");
-                $zip->close();
+                $archive = new PharData("{$cachedPath}.tar.gz");
+                $archive->extractTo($cachedPath);
             } finally {
-                File::delete("{$cachedPath}.zip");
+                File::delete("{$cachedPath}.tar.gz");
             }
         }
 

@@ -12,39 +12,25 @@ use Biigle\Jobs\TileSingleImage;
 
 class TileSingleImageTest extends TestCase
 {
-    public function testGenerateTiles()
+    public function testHandle()
     {
-        $image = ImageTest::create();
-        $job = new TileSingleImageStub($image);
+        $tmpDir = config('image.tiles.tmp_dir');
+        $disk = Storage::fake('local-tiles');
 
-        $mock = Mockery::mock(Image::class);
-        $mock->shouldReceive('dzsave')
-            ->once()
-            ->with($job->tempPath, [
-                'layout' => 'zoomify',
-                'container' => 'zip',
-                'strip' => true,
-            ]);
+        $image = ImageTest::create(['filename' => 'test-image.jpg']);
 
-        $job->mock = $mock;
+        $tmpPath = "{$tmpDir}/{$image->uuid}";
 
-        $job->generateTiles($image, '');
-    }
+        $job = new TileSingleImage($image);
+        $job->handle();
 
-    public function testUploadToStorage()
-    {
-        $image = ImageTest::create();
+        $this->assertFalse(File::exists($tmpPath));
+        $this->assertFalse(File::exists("{$tmpPath}.tar"));
+        $this->assertFalse(File::exists("{$tmpPath}.tar.gz"));
+
         $fragment = fragment_uuid_path($image->uuid);
-        $job = new TileSingleImageStub($image);
-        File::put($job->tempPath, 'test');
 
-        try {
-            Storage::fake('local-tiles');
-            $job->uploadToStorage();
-            Storage::disk('local-tiles')->assertExists($fragment);
-        } finally {
-            File::delete($job->tempPath);
-        }
+        $this->assertTrue($disk->exists("{$fragment}.tar.gz"));
     }
 }
 
