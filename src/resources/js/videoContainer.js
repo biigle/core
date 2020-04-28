@@ -360,7 +360,7 @@ biigle.$viewModel('video-container', function (element) {
             this.video.addEventListener('error', function (e) {
                 if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                     MSG.danger('The video codec is not supported by your browser.');
-                } else {
+                } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                     MSG.danger('Error while loading video file.');
                 }
             });
