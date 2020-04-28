@@ -186,6 +186,12 @@ class VideoUrl implements Rule
     {
         $codec = App::make(VideoCodecExtractor::class)->extract($url);
 
+        if ($codec === '') {
+            $this->message = 'The video codec could not be determined. Is the video file malformed?';
+
+            return false;
+        }
+
         if (!in_array($codec, $this->allowedCodecs)) {
             $this->message = "Videos with codec '{$codec}' are not supported.";
 

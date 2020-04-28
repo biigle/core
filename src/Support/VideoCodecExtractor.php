@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Videos\Support;
 
+use Throwable;
 use FFMpeg\FFProbe;
 
 class VideoCodecExtractor
@@ -26,6 +27,10 @@ class VideoCodecExtractor
             $this->ffprobe = FFProbe::create();
         }
 
-        return $this->ffprobe->streams($url)->videos()->first()->get('codec_name');
+        try {
+            return $this->ffprobe->streams($url)->videos()->first()->get('codec_name');
+        } catch (Throwable $e) {
+            return '';
+        }
     }
 }

@@ -63,6 +63,18 @@ class ProjectVideoControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
+        $file = new File(__DIR__.'/../../../files/test_malformed.mp4');
+        Storage::disk('test')->putFileAs('', $file, 'video.mp4');
+
+        // malformed video file
+        $this->json('POST', "/api/v1/projects/{$id}/videos", [
+                'name' => 'my video no. 1',
+                'url' => 'test://video.mp4',
+                'gis_link' => 'gis',
+                'doi' => '123',
+            ])
+            ->assertStatus(422);
+
         $file = new File(__DIR__.'/../../../files/test.mp4');
         Storage::disk('test')->putFileAs('', $file, 'video.mp4');
 
