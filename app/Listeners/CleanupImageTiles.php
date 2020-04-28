@@ -19,7 +19,7 @@ class CleanupImageTiles implements ShouldQueue
         $disk = Storage::disk(config('image.tiles.disk'));
 
         foreach ($event->uuids as $uuid) {
-            $disk->delete(fragment_uuid_path($uuid));
+            $disk->delete(fragment_uuid_path($uuid).'.tar.gz');
         }
     }
 }

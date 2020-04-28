@@ -17,11 +17,11 @@ class CleanupImageTilesTest extends TestCase
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
         Storage::fake('local-tiles');
-        Storage::disk('local-tiles')->put($fragment, 'test');
+        Storage::disk('local-tiles')->put("{$fragment}.tar.gz", 'test');
 
         with(new CleanupImageTiles)->handle(new TiledImagesDeleted([$image->uuid]));
 
-        Storage::disk('local-tiles')->assertMissing($fragment);
+        Storage::disk('local-tiles')->assertMissing("{$fragment}.tar.gz");
     }
 
     public function testListen()
