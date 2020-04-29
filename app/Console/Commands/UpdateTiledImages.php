@@ -6,6 +6,7 @@ use File;
 use Phar;
 use Storage;
 use PharData;
+use ZipArchive;
 use SplFileInfo;
 use Biigle\Image;
 use Illuminate\Console\Command;
@@ -85,7 +86,8 @@ class UpdateTiledImages extends Command
         $uuid = $image->uuid;
         $fragment = fragment_uuid_path($uuid);
         $directory = substr($fragment, 0, 5);
-        $path = sys_get_temp_dir()."/{$uuid}";
+        $tmpDir = sys_get_temp_dir();
+        $path = "{$tmpDir}/{$uuid}";
 
         if (!$this->disk->exists("{$fragment}.tar.gz")) {
             try {
@@ -95,8 +97,10 @@ class UpdateTiledImages extends Command
             }
 
             try {
-                $oldArchive = new PharData("{$path}.zip");
-                $oldArchive->extractTo($path);
+                $oldArchive = new ZipArchive;
+                $oldArchive->open("{$path}.zip");
+                $oldArchive->extractTo($tmpDir);
+                $oldArchive->close();
                 $archive = new PharData("{$path}.tar");
                 $archive->buildFromDirectory($path);
                 $archive->compress(Phar::GZ);
