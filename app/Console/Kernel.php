@@ -25,11 +25,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            TileCache::prune();
-        })->everyFiveMinutes();
+        $schedule->call(function () {TileCache::prune();})
+            ->everyFiveMinutes()
+            ->name('prune-tile-cache')
+            ->onOneServer();
 
-        $schedule->command('prune-notifications')->daily();
+        $schedule->command('prune-notifications')
+            ->daily()
+            ->onOneServer();
 
         // Insert scheduled tasks here.
     }

@@ -115,6 +115,10 @@ class TileCache
      */
     public function clear()
     {
+        if (!File::exists($this->path)) {
+            return;
+        }
+
         $files = Finder::create()
             ->directories()
             ->in($this->path)
