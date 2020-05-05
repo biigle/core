@@ -151,13 +151,13 @@ class ProcessNewImageChunkTest extends TestCase
 
     public function testHandleTileLargeImageSkip()
     {
-        config(['image.tiles.threshold' => 300]);
-        Storage::fake('local-tiles');
+        config(['image.tiles.threshold' => 300, 'image.tiles.disk' => 'tiles']);
+        Storage::fake('tiles');
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
         $fragment = fragment_uuid_path($image->uuid);
-        Storage::disk('local-tiles')->put($fragment, 'test');
+        Storage::disk('tiles')->put("{$fragment}/ImageProperties.xml", 'test');
 
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();

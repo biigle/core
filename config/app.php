@@ -242,7 +242,6 @@ return [
         'Honeypot' => Msurguy\Honeypot\HoneypotFacade::class,
         'Modules' => Biigle\Facades\Modules::class,
         'VipsImage' => Biigle\Facades\VipsImage::class,
-        'TileCache' => Biigle\Facades\TileCache::class,
         // Insert aliases here.
     ],
 
