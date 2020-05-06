@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Annotations\Http\Controllers\Views;
 
 use DB;
+use Storage;
 use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Image;
@@ -64,6 +65,8 @@ class AnnotationToolController extends Controller
             ->with('users')
             ->get();
 
+        $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
+
         return view('annotations::show', [
             'user' => $user,
             'image' => $image,
@@ -72,6 +75,7 @@ class AnnotationToolController extends Controller
             'labelTrees' => $trees,
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
+            'tilesUriTemplate' => $tilesUriTemplate,
         ]);
     }
 }
