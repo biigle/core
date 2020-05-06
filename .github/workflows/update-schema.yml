@@ -15,7 +15,7 @@ jobs:
     steps:
     - name: Trigger schema update
       run: |
-        curl -X POST \
+        curl -X POST --fail \
           -s "$GITHUB_ACTOR:$GITHUB_TOKEN" \
           -H "Content-Type: application/json" \
           --data '{"event_type": "build_application"}' \
