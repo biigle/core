@@ -16,9 +16,7 @@ jobs:
     - name: Trigger schema update
       run: |
         curl -X POST --fail \
-          -s "$GITHUB_ACTOR:$GITHUB_TOKEN" \
+          -H "Authorization: token ${{ secrets.TOKEN }}" \
           -H "Content-Type: application/json" \
           --data '{"event_type": "build_application"}' \
           https://api.github.com/repos/biigle/schema/dispatches
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
