@@ -2,8 +2,8 @@ name: Update Schema
 
 on:
   push:
-    branches:
-      - master
+    # branches:
+    #   - master
     paths:
       - 'database/migrations/**'
 
