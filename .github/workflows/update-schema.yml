@@ -12,6 +12,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    steps:
     - name: Trigger schema update
       run: |
         curl -X POST \
