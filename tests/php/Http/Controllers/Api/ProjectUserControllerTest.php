@@ -53,7 +53,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         // user doesn't exist
         $this->beAdmin();
-        $response = $this->put("/api/v1/projects/{$id}/users/999");
+        $response = $this->put("/api/v1/projects/{$id}/users/0");
         $response->assertStatus(404);
 
         // missing arguments

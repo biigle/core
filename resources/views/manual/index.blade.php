@@ -64,20 +64,29 @@
         <div class="row">
             <h3>Server</h3>
             <p>
-                The server application is written in PHP using the <a href="http://laravel.com/">Laravel</a> framework. Have a look at their <a href="http://laravel.com/docs/5.5">excellent documentation</a> for further information. For the class reference and API documentation, check out the link below.
+                The server application is written in PHP using the <a href="http://laravel.com/">Laravel</a> framework. Have a look at their <a href="http://laravel.com/docs/6.x">excellent documentation</a> for further information. For the class reference and API documentation, check out the link below.
             </p>
             <p>
                 Laravel allows a modular application design using custom packages (or modules). In fact, the core of this application doesn't provide much more than user and database management as well as the RESTful API. Any additional functionality is added by a new module.
             </p>
             <p>
-                We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/5.5/packages">Laravel documentation</a> but we have some tutorials here as well.
+                We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/6.x/packages">Laravel documentation</a> but we have some tutorials here as well.
             </p>
             <p>
                 <a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>
             </p>
         </div>
         <div class="row">
-            <h3><a name="developer-tutorials">Developer Tutorials</h3>
+            <h3>Database</h3>
+            <p>
+                The database schema documentation can be found in the BIIGLE GitHub organization.
+            </p>
+            <p>
+                <a class="btn btn-default btn-lg btn-block" href="https://biigle.github.io/schema/index.html">Database schema documentation</a>
+            </p>
+        </div>
+        <div class="row">
+            <h3><a name="developer-tutorials"></a>Developer Tutorials</h3>
             <h4><a href="{{ route('manual-documentation', 'package-development') }}">Package development</a></h4>
             <p>
                 Learn about PHP package development and how to add custom functionality to your BIIGLE installation by developing your own modules.

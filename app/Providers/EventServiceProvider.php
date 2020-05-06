@@ -19,9 +19,6 @@ class EventServiceProvider extends ServiceProvider
         \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
-        'cache:clearing' => [
-            \Biigle\Listeners\ClearTileCache::class,
-        ],
     ];
 
     /**

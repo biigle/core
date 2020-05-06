@@ -2,7 +2,6 @@
 
 namespace Biigle\Console;
 
-use TileCache;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -25,11 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {TileCache::prune();})
-            ->everyFiveMinutes()
-            ->name('prune-tile-cache')
-            ->onOneServer();
-
         $schedule->command('prune-notifications')
             ->daily()
             ->onOneServer();

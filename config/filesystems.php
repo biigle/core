@@ -50,9 +50,11 @@ return [
         ],
 
         // Default storage disk for image tiles.
-        'local-tiles' => [
+        'tiles' => [
             'driver' => 'local',
-            'root' => storage_path('tiles'),
+            'root' => storage_path('app/public/tiles'),
+            'url' => env('APP_URL').'/storage/tiles',
+            'visibility' => 'public',
         ],
 
         'thumbs' => [
