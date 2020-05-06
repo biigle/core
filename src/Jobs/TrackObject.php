@@ -28,6 +28,13 @@ class TrackObject extends Job implements ShouldQueue
     protected $annotation;
 
     /**
+     * Ignore this job if the annotation does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
+    /**
      * Create a new instance.
      *
      * @param VideoAnnotation $annotation The annotation that defines the initial object to track.
