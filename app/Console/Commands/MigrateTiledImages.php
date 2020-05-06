@@ -41,7 +41,7 @@ class MigrateTiledImages extends Command
 
         $query->eachById(function ($image) use ($dryRun, $bar, $disk) {
             if (!$dryRun) {
-                Queue::push(new MigrateTiledImages($image, $disk));
+                Queue::push(new MigrateTiledImage($image, $disk));
             }
             $bar->advance();
         });
