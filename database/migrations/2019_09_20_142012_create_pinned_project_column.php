@@ -14,7 +14,7 @@ class CreatePinnedProjectColumn extends Migration
     public function up()
     {
         Schema::table('project_user', function (Blueprint $table) {
-            $table->boolean('pinned')->default(false);
+            $table->boolean('pinned')->default(false)->comment('Test comment.');
         });
     }
 
