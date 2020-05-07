@@ -2,38 +2,19 @@
 
 namespace Biigle\Jobs;
 
+use File;
 use Storage;
-use Exception;
 use ZipArchive;
 use Biigle\Image;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class MigrateTiledImage extends Job implements ShouldQueue
+class MigrateTiledImage extends TileSingleImage
 {
-    use InteractsWithQueue, SerializesModels;
-
-    /**
-     * The image to migrate.
-     *
-     * @var Image
-     */
-    public $image;
-
     /**
      * Name of the storage disk that holds the ZIP files of tiled images.
      *
      * @var string
      */
     public $disk;
-
-    /**
-     * Ignore this job if the image does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -44,7 +25,7 @@ class MigrateTiledImage extends Job implements ShouldQueue
      */
     public function __construct(Image $image, $disk)
     {
-        $this->image = $image;
+        parent::__construct($image);
         $this->disk = $disk;
     }
 
@@ -55,24 +36,17 @@ class MigrateTiledImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $fragment = fragment_uuid_path($this->image->uuid);
-        $prefix = substr($fragment, 0, 5);
-        $tmpResource = tmpfile();
-        $zipResource = Storage::disk($this->disk)->readStream($fragment);
-        stream_copy_to_stream($zipResource, $tmpResource);
-        $tmpPath = stream_get_meta_data($tmpResource)['uri'];
-        $zip = new ZipArchive;
-        $zip->open($tmpPath);
-
         try {
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $name = $zip->getNameIndex($i);
-                Storage::disk(config('image.tiles.disk'))
-                    ->writeStream("{$prefix}/{$name}", $zip->getStream($name));
-            }
-        } catch (Exception $e) {
-            Storage::disk(config('image.tiles.disk'))->deleteDirectory($fragment);
-            throw $e;
+            $fragment = fragment_uuid_path($this->image->uuid);
+            $tmpResource = tmpfile();
+            $zipResource = Storage::disk($this->disk)->readStream($fragment);
+            stream_copy_to_stream($zipResource, $tmpResource);
+            $zip = new ZipArchive;
+            $zip->open(stream_get_meta_data($tmpResource)['uri']);
+            $zip->extractTo(config('image.tiles.tmp_dir'));
+            $this->uploadToStorage();
+        } finally {
+            File::deleteDirectory($this->tempPath);
         }
     }
 }
