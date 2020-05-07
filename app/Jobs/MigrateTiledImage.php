@@ -44,6 +44,8 @@ class MigrateTiledImage extends TileSingleImage
             $zip = new ZipArchive;
             $zip->open(stream_get_meta_data($tmpResource)['uri']);
             $zip->extractTo(config('image.tiles.tmp_dir'));
+            $zip->close();
+            fclose($tmpResource);
             $this->uploadToStorage();
         } finally {
             File::deleteDirectory($this->tempPath);
