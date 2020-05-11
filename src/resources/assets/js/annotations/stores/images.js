@@ -6,6 +6,18 @@ biigle.$declare('annotations.stores.images', function () {
 
     var fxCanvas;
 
+    // This canvas is used as workaround to the auto-rotation of images according to EXIF
+    // in Chrome (and maybe other browsers). The canvas and image need CSS
+    // "image-orientation: none" to disable auto-rotation. For the style to be applied,
+    // the elements need to be placed in the DOM. This single canvas is used for all
+    // images so each image does not have to append a new canvas to the DOM.
+    // See: https://bugs.chromium.org/p/chromium/issues/detail?id=158753#c114
+    var drawCanvas = document.createElement('canvas');
+    drawCanvas.style.imageOrientation = 'none';
+    drawCanvas.style.visibility = 'hidden';
+    drawCanvas.style.position = 'fixed';
+    document.body.appendChild(drawCanvas);
+
     if (window.hasOwnProperty('fx')) {
         try {
             // If fxCanvas is not initialized WebGL is not supported at all.
@@ -127,6 +139,13 @@ biigle.$declare('annotations.stores.images', function () {
                     crossOrigin: false,
                 };
 
+                // Disable auto-rotation. Otherwise the canvas element might use the
+                // wrong values for width/height.
+                img.style.imageOrientation = 'none';
+                img.style.visibility = 'hidden';
+                img.style.position = 'fixed';
+                document.body.appendChild(img);
+
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
                         imageWrapper.width = img.width;
@@ -137,6 +156,10 @@ biigle.$declare('annotations.stores.images', function () {
                     img.onerror = function () {
                         reject('Failed to load image ' + id + '!');
                     };
+                });
+
+                promise.finally(function () {
+                    document.body.removeChild(img);
                 });
 
                 // The image may be tiled, so we request the data from the endpoint and
@@ -173,18 +196,26 @@ biigle.$declare('annotations.stores.images', function () {
                     });
             },
             drawSimpleImage: function (image) {
+                drawCanvas.width = image.width;
+                drawCanvas.height = image.height;
+                drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+
                 image.canvas.width = image.width;
                 image.canvas.height = image.height;
-                image.canvas.getContext('2d').drawImage(image.source, 0, 0);
+                image.canvas.getContext('2d').drawImage(drawCanvas, 0, 0);
 
                 return image;
             },
             drawColorAdjustedImage: function (image) {
                 if (loadedImageTexture !== image.source.src) {
+                    drawCanvas.width = image.width;
+                    drawCanvas.height = image.height;
+                    drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+
                     if (fxTexture) {
-                        fxTexture.loadContentsOf(image.source);
+                        fxTexture.loadContentsOf(drawCanvas);
                     } else {
-                        fxTexture = fxCanvas.texture(image.source);
+                        fxTexture = fxCanvas.texture(drawCanvas);
                     }
                     loadedImageTexture = image.source.src;
                 }
