@@ -117,7 +117,8 @@ class LogManager
 
             return array_reduce($messages, function ($carry, $message) use ($days) {
                 return array_reduce($days, function ($carry, $day) use  ($message) {
-                    return $carry + substr_count($message, "\"datetime\":\"{$day}T");
+                    // There are two possible formates in which the time can be stored.
+                    return $carry + substr_count($message, "\"datetime\":\"{$day}T") + substr_count($message, "\"datetime\":{\"date\":\"{$day}");
                 }, $carry);
             }, 0);
         }
