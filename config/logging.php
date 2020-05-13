@@ -2,6 +2,7 @@
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use Biigle\Logging\CreateRedisLogger;
 
 return [
 
@@ -61,6 +62,12 @@ return [
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
             'level' => 'critical',
+        ],
+
+        'redis' => [
+            'driver' => 'custom',
+            'level' => 'debug',
+            'via' => CreateRedisLogger::class,
         ],
 
         'papertrail' => [
