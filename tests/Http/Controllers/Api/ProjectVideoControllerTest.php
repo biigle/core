@@ -13,11 +13,28 @@ use GuzzleHttp\Psr7\Response;
 use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Videos\Project;
 use GuzzleHttp\Handler\MockHandler;
+use Biigle\Tests\Modules\Videos\VideoTest;
 use Biigle\Modules\Videos\Jobs\ProcessNewVideo;
 use Biigle\Modules\Videos\Support\VideoCodecExtractor;
 
 class ProjectVideoControllerTest extends ApiTestCase
 {
+    public function testIndex()
+    {
+        $id = $this->project()->id;
+        $project = Project::find($id);
+        $video = VideoTest::create(['project_id' => $id]);
+        $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/videos");
+
+        $this->beUser();
+        $this->get("/api/v1/projects/{$id}/videos")->assertStatus(403);
+
+        $this->beGuest();
+        $this->get("/api/v1/projects/{$id}/videos")
+            ->assertStatus(200)
+            ->assertExactJson([$video->toArray()]);
+    }
+
     public function testStore()
     {
         $id = $this->project()->id;

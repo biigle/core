@@ -5,6 +5,7 @@ namespace Biigle\Modules\Videos\Http\Controllers\Api;
 use App;
 use Queue;
 use Storage;
+use Biigle\Project;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
 use Biigle\Modules\Videos\Video;
@@ -14,6 +15,44 @@ use Biigle\Modules\Videos\Http\Requests\StoreVideo;
 
 class ProjectVideoController extends Controller
 {
+    /**
+     * Shows a list of all videos belonging to the specified project.
+     *
+     * @api {get} projects/:id/videos Get all videos
+     * @apiGroup Projects
+     * @apiName IndexProjectVideos
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The project ID.
+     *
+     * @apiSuccessExample {json} Success response:
+     * [
+     *    {
+     *       "id": 1,
+     *       "uuid": "aa499e5b-6734-3148-82f2-7a16a8c6fb38",
+     *       "name": "video 1",
+     *       "project_id": 1,
+     *       "creator_id": 7,
+     *       "created_at": "2020-05-14 15:21:00",
+     *       "updated_at":"2020-05-14 15:21:00",
+     *       "url": "local://videos/1.mp4",
+     *       "duration": 60,
+     *       "gis_link": null,
+     *       "doi": null
+     *    }
+     * ]
+     *
+     * @param int $id Project ID
+     * @return \Illuminate\Http\Response
+     */
+    public function index($id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+
+        return Video::where('project_id', $project->id)->get();
+    }
+
     /**
      * Creates a new video associated to the specified project.
      *

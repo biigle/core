@@ -20,7 +20,7 @@ class VideoController extends Controller
      *
      * @apiParam {Number} id The video ID.
      *
-     * @apiParam (Attributes that can be updated) {String} name Name of the volume.
+     * @apiParam (Attributes that can be updated) {String} name Name of the video.
      * @apiParam (Attributes that can be updated) {String} url The URL of the video file. Can be a path to a storage disk like `local://videos/1.mp4` or a remote path like `https://example.com/videos/1.mp4`.
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this video.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new video.

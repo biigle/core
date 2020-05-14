@@ -14,7 +14,7 @@ $router->group([
     'prefix' => 'api/v1',
     ], function ($router) {
         $router->resource('projects.videos', 'ProjectVideoController', [
-            'only' => ['store'],
+            'only' => ['index', 'store'],
             'parameters' => ['projects' => 'id'],
         ]);
 
