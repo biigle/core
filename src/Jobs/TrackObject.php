@@ -35,6 +35,13 @@ class TrackObject extends Job implements ShouldQueue
     protected $deleteWhenMissingModels = true;
 
     /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * Create a new instance.
      *
      * @param VideoAnnotation $annotation The annotation that defines the initial object to track.
