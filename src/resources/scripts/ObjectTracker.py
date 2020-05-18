@@ -54,7 +54,7 @@ class ObjectTracker(object):
         current_time = current_frame / self.fps
 
         if self.debug:
-            x, y, w, h = map(int, box)
+            x, y, w, h = list(map(int, box))
             cv2.rectangle(frame, (x, y), (x + w, y + h), 255, 2)
             show_frame = cv2.resize(frame, (1024, 768))
             cv2.imshow("frame", show_frame)
