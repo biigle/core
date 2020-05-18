@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-alpine
+FROM php:7.4-fpm-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache \
@@ -15,7 +15,6 @@ RUN apk add --no-cache \
         zip \
         fileinfo \
         exif \
-        mbstring \
         soap
 
 ARG PHPREDIS_VERSION=5.0.0
