@@ -28,9 +28,49 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
     && docker-php-ext-install redis
 
+ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
+# Install vips from source because the apk package does not work with the vips PHP
+# extension. Install libvips and the vips PHP extension in one go so the *-dev
+# dependencies are reused.
+ARG LIBVIPS_VERSION=8.8.4
+ARG PHP_VIPS_EXT_VERSION=1.0.11
+RUN apk add --no-cache --virtual .build-deps \
+        autoconf \
+        automake \
+        build-base \
+        glib-dev \
+        tiff-dev \
+        libjpeg-turbo-dev \
+        libgsf-dev \
+        libpng-dev \
+        expat-dev \
+    && apk add --no-cache \
+        glib \
+        tiff \
+        libjpeg-turbo \
+        libgsf \
+        libpng \
+        expat \
+    && cd /tmp \
+    && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
+    && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
+    && cd vips-${LIBVIPS_VERSION} \
+    && ./configure \
+        --without-python \
+        --enable-debug=no \
+        --disable-dependency-tracking \
+        --disable-static \
+    && make -j $(nproc) \
+    && make -s install-strip \
+    && cd /tmp \
+    && curl -L https://github.com/libvips/php-vips-ext/raw/master/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && docker-php-ext-enable vips \
+    && rm -r /tmp/* \
+    && apk del --purge .build-deps \
+    && rm -rf /var/cache/apk/*
+
 RUN apk add --no-cache \
-    vips \
-    php7-pecl-vips \
     ffmpeg \
     python3 \
     py3-numpy \
