@@ -78,6 +78,7 @@ class ImageControllerTest extends ApiTestCase
                 'width' => 123,
                 'height' => 456,
                 'tiled' => true,
+                'tilingInProgress' => false,
             ]);
     }
 

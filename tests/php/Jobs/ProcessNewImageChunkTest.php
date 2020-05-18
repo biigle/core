@@ -128,6 +128,7 @@ class ProcessNewImageChunkTest extends TestCase
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
 
         Queue::assertNotPushed(TileSingleImage::class);
+        $this->assertFalse($image->tiled);
     }
 
     public function testHandleTileLargeImage()
@@ -147,6 +148,9 @@ class ProcessNewImageChunkTest extends TestCase
         Queue::assertPushed(TileSingleImage::class, function ($job) use ($image) {
             return $job->image->id === $image->id;
         });
+        $image->refresh();
+        $this->assertTrue($image->tiled);
+        $this->assertTrue($image->tilingInProgress);
     }
 
     public function testHandleTileLargeImageSkip()
@@ -162,6 +166,7 @@ class ProcessNewImageChunkTest extends TestCase
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
+        $this->assertFalse($image->tilingInProgress);
     }
 }
 

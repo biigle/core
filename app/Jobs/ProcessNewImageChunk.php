@@ -105,6 +105,9 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
 
                 // Do this after processing so the image has width and height attributes.
                 if ($this->shouldBeTiled($image)) {
+                    $image->tiled = true;
+                    $image->tilingInProgress = true;
+                    $image->save();
                     TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
