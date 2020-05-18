@@ -18,8 +18,8 @@ def addRow(x="", y="", label="", filename="", annotation_id="", shape="", area="
 for path in csvs:
     f = open(path, 'r')
     csv_file = csv.reader(f)
-    csv_title = csv_file.next()[0]
-    csv_column_labels = csv_file.next()
+    csv_title = next(csv_file)[0]
+    csv_column_labels = next(csv_file)
     rows = np.array(list(csv_file))
     f.close()
     if rows.shape[0] == 0:
@@ -39,7 +39,7 @@ for path in csvs:
             labels = ", ".join(curAnnotationData[:, 2])
             points = ast.literal_eval(curAnnotationData[:, 4][0])
             it = iter(points)
-            celldata.append(addRow(it.next(), it.next(), labels, img, annotation, curAnnotationData[0, 3], curAnnotationData[0, 5]))
+            celldata.append(addRow(next(it), next(it), labels, img, annotation, curAnnotationData[0, 3], curAnnotationData[0, 5]))
             try:
                 for x in it:
                     celldata.append(addRow(x, next(it)))
