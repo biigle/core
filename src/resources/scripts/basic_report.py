@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -30,15 +28,15 @@ def TitleSlide(text):
     return fig
 
 pdf = PdfPages(target_file)
-fig = TitleSlide("BIIGLE basic report for volume\n" + title.decode('UTF-8'))
+fig = TitleSlide("BIIGLE basic report for volume\n" + title)
 pdf.savefig(fig)
 width = 1.
 
 for path in data_csvs:
     f = open(path, 'r')
     data_csv = csv.reader(f)
-    plot_title = data_csv.next()
-    rows = np.array(list(data_csv))
+    plot_title = next(data_csv)
+    rows = np.array(list(data_csv), dtype=str)
     f.close()
     if rows.shape[0] == 0:
         continue
@@ -50,21 +48,20 @@ for path in data_csvs:
     fig.subplots_adjust(bottom=0.33)
 
     # '#'-characters to prepend to the hex color codes
-    hashes = np.chararray(rows.shape[0])
-    hashes[:] = '#'
+    hashes = np.full(rows.shape[0], '#', dtype=str)
 
-    ax.bar(ind, counts, width, color=np.core.defchararray.add(hashes, rows[:, 1]), log=counts.max() > 100)
+    ax.bar(ind, counts, width, color=np.char.add(hashes, rows[:, 1]), log=counts.max() > 100)
 
     ax.set_xticks(ind + width / 2)
-    labels = [label.decode('UTF-8') for label in rows[:, 0]]
+    labels = [label for label in rows[:, 0]]
     ax.set_xticklabels(labels, rotation=45, fontsize=8, ha = 'right')
     if plot_title:
-        plt.title(plot_title[0].decode('UTF-8'))
+        plt.title(plot_title[0])
     plt.xlim([0, ind.size])
     pdf.savefig()
 
 d = pdf.infodict()
-d['Title'] = "BIIGLE basic report for volume " + title.decode('UTF-8')
+d['Title'] = "BIIGLE basic report for volume " + title
 d['Author'] = 'Biodata Mining Group, Bielefeld University'
 d['Subject'] = 'Histogram of label distribution of the volume'
 d['Keywords'] = ''

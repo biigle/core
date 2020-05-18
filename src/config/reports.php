@@ -5,7 +5,7 @@ return [
     /*
     | Path to the Python executable.
     */
-    'python' => '/usr/bin/env python',
+    'python' => '/usr/bin/python3',
 
     /*
     | Paths to the python scripts.
