@@ -496,6 +496,11 @@ biigle.$viewModel('annotator-container', function (element) {
                 messages.info('Please select a label first.');
                 this.$refs.sidebar.$emit('open', 'labels');
             },
+            maybeShowTilingInProgressMessage: function() {
+                if (this.image.tilingInProgress) {
+                    messages.warning('This image is currently being processed. Please retry later.');
+                }
+            },
         },
         watch: {
             imageId: function (id) {
@@ -507,6 +512,7 @@ biigle.$viewModel('annotator-container', function (element) {
                         .then(this.updateUrlSlug)
                         .then(this.maybeUpdateAnnotationMode)
                         .then(this.emitImageChanged)
+                        .then(this.maybeShowTilingInProgressMessage)
                         // When everything is loaded, pre-fetch the data of the next and
                         // previous images so they can be switched fast.
                         .then(this.cachePreviousAndNext)
