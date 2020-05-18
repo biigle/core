@@ -10,7 +10,7 @@ return [
     /*
     | Path to the Python executable.
     */
-    'python' => '/usr/bin/python',
+    'python' => '/usr/bin/python3',
 
     /*
     | Path to the object tracking script.
