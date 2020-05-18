@@ -80,7 +80,11 @@ class Label extends Model
      */
     public function setColorAttribute($value)
     {
-        $this->attributes['color'] = ($value[0] === '#') ? substr($value, 1) : $value;
+        if (is_string($value) && $value[0] === '#') {
+            $value = substr($value, 1);
+        }
+
+        $this->attributes['color'] = $value;
     }
 
     /**

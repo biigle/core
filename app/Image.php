@@ -137,6 +137,7 @@ class Image extends Model implements FileContract
                 'width' => $this->width,
                 'height' => $this->height,
                 'tiled' => true,
+                'tilingInProgress' => $this->tilingInProgress,
             ];
 
             return $response;
@@ -242,5 +243,25 @@ class Image extends Model implements FileContract
     public function getMimetypeAttribute()
     {
         return $this->getJsonAttr('mimetype');
+    }
+
+    /**
+     * Set the tilingInProgress attribute.
+     *
+     * @param bool $value
+     */
+    public function setTilingInProgressAttribute($value)
+    {
+        $this->setJsonAttr('tilingInProgress', $value === true ? $value : null);
+    }
+
+    /**
+     * Get the tilingInProgress attribute.
+     *
+     * @return bool|null
+     */
+    public function getTilingInProgressAttribute()
+    {
+        return $this->getJsonAttr('tilingInProgress', false);
     }
 }

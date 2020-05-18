@@ -64,7 +64,7 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
             $this->uploadToStorage();
-            $this->image->tiled = true;
+            $this->image->tilingInProgress = false;
             $this->image->save();
         } finally {
             File::deleteDirectory($this->tempPath);

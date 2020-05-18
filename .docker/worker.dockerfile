@@ -1,7 +1,6 @@
 FROM docker.pkg.github.com/biigle/core/app as intermediate
 
-# 7.3-alpine
-FROM php@sha256:a698cc19c1650205f84d3c2067c248a0a5670cfa1e4cb78b75f50646720c01c2
+FROM php:7.4-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache \
@@ -18,7 +17,6 @@ RUN apk add --no-cache \
         zip \
         fileinfo \
         exif \
-        mbstring \
         soap \
         pcntl
 
@@ -31,14 +29,11 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && docker-php-ext-install redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-# Install vips from source because the edge package does not have libgsf support.
-# I've ommitted libexif on purpose because the EXIF orientation of images captured by
-# an AUV is not reliable. Without libexif, vipsthumbnail ignores the EXIF orientation and
-# the thumbnail orientation is correct again.
-# Install libvips and the vips PHP extension in one go so the *-dev dependencies are
-# reused.
-ARG LIBVIPS_VERSION=8.8.1
-ARG PHP_VIPS_EXT_VERSION=1.0.7
+# Install vips from source because the apk package does not work with the vips PHP
+# extension. Install libvips and the vips PHP extension in one go so the *-dev
+# dependencies are reused.
+ARG LIBVIPS_VERSION=8.8.4
+ARG PHP_VIPS_EXT_VERSION=1.0.11
 RUN apk add --no-cache --virtual .build-deps \
         autoconf \
         automake \
@@ -68,47 +63,37 @@ RUN apk add --no-cache --virtual .build-deps \
     && make -j $(nproc) \
     && make -s install-strip \
     && cd /tmp \
-    && curl -L https://github.com/libvips/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && curl -L https://github.com/libvips/php-vips-ext/raw/master/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && docker-php-ext-enable vips \
     && rm -r /tmp/* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
+RUN apk add --no-cache \
+    ffmpeg \
+    python3 \
+    py3-numpy \
+    py3-pillow \
+    py3-scipy
+
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
+    py3-scikit-learn
+
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
+    py3-matplotlib
+
 # Set this library path to the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
 ENV LIBRARY_PATH=/lib:/usr/lib
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
-RUN apk add --no-cache \
-        python \
-        freetype \
-        lapack \
-        libstdc++ \
-    && apk add --no-cache --virtual .build-deps \
-        build-base \
-        python-dev \
-        py-pip \
-        freetype-dev \
-        lapack-dev \
-        gfortran \
-        libjpeg-turbo-dev \
-        libpng-dev \
-        zlib-dev \
-    && pip install --no-cache-dir \
-        numpy==1.8.2 \
-        scikit-learn==0.14.1 \
-        Pillow==6.2.2 \
-        scipy==0.13.3 \
+RUN apk add --no-cache --virtual .build-deps \
+        py3-pip \
+    && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
-    # Matplotlib requires numpy but tries to install another version if it is installed
-    # at the same time than numpy, so it is installed in a second step.
-    && pip install --no-cache-dir \
-        matplotlib==1.5.3 \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
-
-RUN apk add --no-cache ffmpeg
 
 # Just copy from intermediate biigle/app so the installation of dependencies with
 # Composer doesn't have to run twice.
