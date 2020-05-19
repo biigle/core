@@ -12,6 +12,7 @@ class DashboardControllerMixin
      *
      * @param User $user
      * @param int $limit
+     * @param string $newerThan
      *
      * @return array
      */
