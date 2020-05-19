@@ -102,7 +102,6 @@ class ReportGenerator
      * Generate the report.
      *
      * @param mixed $source Source to generate the report for (e.g. a volume)
-     * @param string $path Path to write the report file to.
      *
      * @return string Path to the generated report file.
      */
