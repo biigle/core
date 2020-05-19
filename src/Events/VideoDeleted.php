@@ -16,7 +16,7 @@ class VideoDeleted
     /**
      * Create a new instance
      *
-     * @param Video $job
+     * @param Video $video
      */
     public function __construct(Video $video)
     {
