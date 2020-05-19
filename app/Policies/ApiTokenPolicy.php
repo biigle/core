@@ -26,7 +26,7 @@ class ApiTokenPolicy
      * Determine if the given token can be deleted by the user.
      *
      * @param  User  $user
-     * @param  ApiToken  $project
+     * @param  ApiToken  $token
      * @return bool
      */
     public function destroy(User $user, ApiToken $token)
