@@ -11,8 +11,8 @@ class DashboardControllerMixin
      * Get the most recently annotated images of a user.
      *
      * @param User $user
-     * @param string $newerThan
      * @param int $limit
+     * @param string $newerThan
      *
      * @return array
      */
