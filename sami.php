@@ -4,6 +4,10 @@ use Sami\Sami;
 use Sami\Parser\Filter\TrueFilter;
 use Symfony\Component\Finder\Finder;
 
+// Fix for PHP 7.4 compatibility.
+// See: https://github.com/dompdf/dompdf/issues/2003#issuecomment-561264764
+error_reporting(E_ALL ^ E_DEPRECATED);
+
 $iterator = Finder::create()
     ->files()
     ->name('*.php')
