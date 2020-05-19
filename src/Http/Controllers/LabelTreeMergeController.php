@@ -17,7 +17,7 @@ class LabelTreeMergeController extends Controller
      * Show the label tree merge index page.
      *
      * @param Request $request
-     * @param int $id1 ID of the base label tree
+     * @param int $id ID of the base label tree
      *
      * @return mixed
      */
