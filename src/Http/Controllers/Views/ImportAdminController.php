@@ -31,6 +31,7 @@ class ImportAdminController extends Controller
     /**
      * Shows the import admin page for a specific import which wasn't completed yet.
      *
+     * @param ArchiveManager $manager
      * @param string $token Import token
      *
      * @return \Illuminate\Http\Response

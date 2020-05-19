@@ -26,7 +26,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Annotation $annotation
+     * @param Collection $volumes
      *
      * @return void
      */
