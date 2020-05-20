@@ -8,7 +8,7 @@ import {require} from './utils';
  * @param  {Function} callback Function that instanciates the view model.
  */
 let viewModel = function (id, callback) {
-    console.warn('The biigle.$viewModel function is deprecated. Use the mount function instead.');
+    console.warn(`The biigle.$viewModel function is deprecated. Use the mount function instead. ID: ${id}`);
     window.addEventListener('load', function () {
         var element = document.getElementById(id);
         if (element) callback(element);
@@ -30,7 +30,7 @@ let viewModel = function (id, callback) {
  * @return Object
  */
 let component = function (namespace, declaration) {
-    console.warn('The biigle.$component function is deprecated. Use ES6 modules instead.');
+    console.warn(`The biigle.$component function is deprecated. Use ES6 modules instead. Namespace: ${namespace}`);
     var object = require(namespace);
 
     if (typeof declaration === 'function') {
