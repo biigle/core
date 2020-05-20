@@ -12,11 +12,11 @@ import UsersApi from './core/api/users';
 import VolumesApi from './core/api/volumes';
 import LoaderComponent from './core/components/loader';
 import LoaderBlockComponent from './core/components/loaderBlock';
-// import MembersPanelComponent from './core/components/membersPanel';
+import MembersPanelComponent from './core/components/membersPanel';
 import PowerToggleComponent from './core/components/powerToggle';
 import SidebarComponent from './core/components/sidebar';
 import SidebarTabComponent from './core/components/sidebarTab';
-// import TypeaheadComponent from './core/components/typeahead';
+import TypeaheadComponent from './core/components/typeahead';
 import Messages from './core/messages/store';
 import EditorMixin from './core/mixins/editor';
 import LoaderMixin from './core/mixins/loader';
@@ -46,11 +46,11 @@ biigle.$declare('api.users', UsersApi);
 biigle.$declare('api.volumes', VolumesApi);
 biigle.$declare('core.components.loader', LoaderComponent);
 biigle.$declare('core.components.loaderBlock', LoaderBlockComponent);
-// biigle.$declare('core.components.membersPanel', MembersPanelComponent);
+biigle.$declare('core.components.membersPanel', MembersPanelComponent);
 biigle.$declare('core.components.powerToggle', PowerToggleComponent);
 biigle.$declare('core.components.sidebar', SidebarComponent);
 biigle.$declare('core.components.sidebarTab', SidebarTabComponent);
-// biigle.$declare('core.components.typeahead', TypeaheadComponent);
+biigle.$declare('core.components.typeahead', TypeaheadComponent);
 biigle.$declare('messages', Messages);
 biigle.$declare('messages.store', Messages); // Legacy support.
 window.$biiglePostMessage = Messages.post; // Legacy support.

@@ -3,3 +3,5 @@
  * (c) 2014-2019 Evan You
  * Released under the MIT License.
  */
+
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */

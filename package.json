@@ -12,8 +12,8 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
     "bootstrap-sass": "^3.3.7",
-    "jsdoc": "~3.3.0-beta1",
     "cross-env": "^5.1",
+    "jsdoc": "~3.3.0-beta1",
     "laravel-mix": "^5.0.1",
     "raw-loader": "^4.0.0",
     "resolve-url-loader": "^3.1.0",
@@ -21,6 +21,7 @@
     "sass-loader": "^8.0.0",
     "vue": "^2.0.5",
     "vue-resource": "^1.0.3",
+    "vue-strap": "git://github.com/biigle/vue-strap.git#v2",
     "vue-template-compiler": "^2.6.11"
   }
 }
