@@ -15,7 +15,6 @@
     "cross-env": "^5.1",
     "jsdoc": "~3.3.0-beta1",
     "laravel-mix": "^5.0.1",
-    "raw-loader": "^4.0.0",
     "resolve-url-loader": "^3.1.0",
     "sass": "^1.15.2",
     "sass-loader": "^8.0.0",
