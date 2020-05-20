@@ -24,7 +24,7 @@ class VolumeImageUnique implements Rule
     /**
      * Create a new instance.
      *
-     * @param Volume $volum
+     * @param Volume $volume
      */
     public function __construct(Volume $volume)
     {

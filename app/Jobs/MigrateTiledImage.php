@@ -20,6 +20,7 @@ class MigrateTiledImage extends TileSingleImage
      * Create a new job instance.
      *
      * @param Image $image The image to generate tiles for.
+     * @param string $disk
      *
      * @return void
      */
