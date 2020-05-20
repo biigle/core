@@ -52,7 +52,8 @@ let declare = function (namespace, object) {
     namespace = namespace.split('.');
     let name = namespace.pop();
     let parent = require(namespace);
-    if (typeof object === 'function' && object.name !== 'VueComponent') {
+    // Exclude constructor functions that are returned by Vue.extend().
+    if (typeof object === 'function' && !object.extend) {
         parent[name] = object();
     } else {
         parent[name] = object;
