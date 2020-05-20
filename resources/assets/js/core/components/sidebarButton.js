@@ -3,11 +3,11 @@
  *
  * @type {Object}
  */
-biigle.$component('core.components.sidebarButton', {
-    template: '<a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">' +
-        '<span v-if="open" :class="chevronClass" aria-hidden="true"></span>' +
-        '<span v-else :class="iconClass" aria-hidden="true"></span>' +
-    '</a>',
+export default {
+    template: `<a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">
+        <span v-if="open" :class="chevronClass" aria-hidden="true"></span>
+        <span v-else :class="iconClass" aria-hidden="true"></span>
+    </a>`,
     props: {
         tab: {
             type: Object,
@@ -16,27 +16,27 @@ biigle.$component('core.components.sidebarButton', {
         direction: {
             type: String,
             default: 'right',
-            validator: function (value) {
+            validator(value) {
                 return value === 'left' || value === 'right';
             },
         },
     },
     computed: {
-        highlightClass: function () {
+        highlightClass() {
             if (typeof this.tab.highlight === 'string') {
-                return 'btn-' + this.tab.highlight;
+                return `btn-${this.tab.highlight}`;
             }
 
             return 'btn-info';
         },
-        iconClass: function () {
-            return 'fa fa-' + this.tab.icon;
+        iconClass() {
+            return `fa fa-${this.tab.icon}`;
         },
-        chevronClass: function () {
-            return 'fa fa-chevron-' + this.direction;
+        chevronClass() {
+            return `fa fa-chevron-${this.direction}`;
         },
-        classObject: function () {
-            var obj = {
+        classObject() {
+            let obj = {
                 active: this.open,
             };
 
@@ -46,18 +46,18 @@ biigle.$component('core.components.sidebarButton', {
 
             return obj;
         },
-        disabled: function () {
+        disabled() {
             return this.tab.disabled;
         },
-        href: function () {
+        href() {
             return this.disabled ? null : this.tab.href;
         },
-        open: function () {
+        open() {
             return this.tab.open;
         },
     },
     methods: {
-        toggle: function (e) {
+        toggle(e) {
             if (this.disabled || this.href) return;
 
             e.preventDefault();
@@ -66,6 +66,6 @@ biigle.$component('core.components.sidebarButton', {
             } else {
                 this.$parent.$emit('open', this.tab.name);
             }
-        }
+        },
     },
-});
+};

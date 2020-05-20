@@ -1,44 +1,49 @@
+import ListItem from './memberListItem';
+import Loader from './loader';
+import Typeahead from './typeahead';
+import EditorMixin from '../mixins/editor';
+import UsersApi from '../api/users';
+import Messages from '../messages/store';
+
 /**
  * A component managing members of an entity (project, label tree, ...)
  *
  * @type {Object}
  */
-biigle.$component('core.components.membersPanel', {
-    template: '<div class="panel panel-default" :class="classObject">' +
-        '<div class="panel-heading">' +
-            'Members' +
-            '<span class="pull-right">' +
-                '<loader :active="loading"></loader> ' +
-                '<button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>' +
-            '</span>' +
-        '</div>' +
-        '<div class="panel-body" v-if="editing">' +
-            '<form class="form-inline" @submit.prevent="attachMember">' +
-                '<div class="form-group">' +
-                    '<typeahead :items="availableUsers" placeholder="User name" @select="selectMember" :value="selectedMemberName" :template="typeaheadTemplate"></typeahead> ' +
-                    '<select class="form-control" title="Role of the new user" v-model="selectedRole">' +
-                        '<option v-for="role in roles" :value="role.id" v-text="role.name"></option>' +
-                    '</select> ' +
-                    '<button class="btn btn-default" type="submit" :disabled="!canAttachMember">Add</button>' +
-                '</div>' +
-            '</form>' +
-        '</div>' +
-        '<ul class="list-group list-group-restricted">' +
-            '<member-list-item v-for="member in members" :key="member.id" :member="member" :own-id="ownId" :editing="editing" :roles="roles" @update="updateMember" @remove="removeMember"></member-list-item>' +
-            '<li class="list-group-item list-group-item-info" v-if="!hasMembers">' +
-                '<slot></slot>' +
-            '</li>' +
-        '</ul>' +
-    '</div>',
-    mixins: [
-        biigle.$require('core.mixins.editor'),
-    ],
+export default {
+    template: `<div class="panel panel-default" :class="classObject">
+        <div class="panel-heading">
+            Members
+            <span class="pull-right">
+                <loader :active="loading"></loader>
+                <button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>
+            </span>
+        </div>
+        <div class="panel-body" v-if="editing">
+            <form class="form-inline" @submit.prevent="attachMember">
+                <div class="form-group">
+                    <typeahead :items="availableUsers" placeholder="User name" @select="selectMember" :value="selectedMemberName" :template="typeaheadTemplate"></typeahead>
+                    <select class="form-control" title="Role of the new user" v-model="selectedRole">
+                        <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
+                    </select>
+                    <button class="btn btn-default" type="submit" :disabled="!canAttachMember">Add</button>
+                </div>
+            </form>
+        </div>
+        <ul class="list-group list-group-restricted">
+            <member-list-item v-for="member in members" :key="member.id" :member="member" :own-id="ownId" :editing="editing" :roles="roles" @update="updateMember" @remove="removeMember"></member-list-item>
+            <li class="list-group-item list-group-item-info" v-if="!hasMembers">
+                <slot></slot>
+            </li>
+        </ul>
+    </div>`,
+    mixins: [EditorMixin],
     components: {
-        typeahead: biigle.$require('core.components.typeahead'),
-        memberListItem: biigle.$require('core.components.memberListItem'),
-        loader: biigle.$require('core.components.loader'),
+        typeahead: Typeahead,
+        memberListItem: ListItem,
+        loader: Loader,
     },
-    data: function () {
+    data() {
         return {
             selectedMember: null,
             selectedRole: null,
@@ -68,41 +73,35 @@ biigle.$component('core.components.membersPanel', {
         },
     },
     computed: {
-        usersApi: function () {
-            return biigle.$require('api.users');
-        },
-        messages: function () {
-            return biigle.$require('messages.store');
-        },
-        classObject: function () {
+        classObject() {
             return {
                 'panel-warning': this.editing
             };
         },
-        availableUsers: function () {
+        availableUsers() {
             return this.users.filter(this.isntMember);
         },
-        canAttachMember: function () {
+        canAttachMember() {
             return !this.loading && this.selectedMember && this.selectedRole;
         },
-        hasMembers: function () {
+        hasMembers() {
             return this.members.length > 0;
         },
-        selectedMemberName: function () {
+        selectedMemberName() {
             return this.selectedMember ? this.selectedMember.name : '';
         },
-        memberIds: function () {
+        memberIds() {
             return this.members.map(function (user) {
                 return user.id;
             });
         }
     },
     methods: {
-        selectMember: function (user) {
+        selectMember(user) {
             this.selectedMember = user;
         },
-        attachMember: function () {
-            var member = {
+        attachMember() {
+            let member = {
                 id: this.selectedMember.id,
                 role_id: this.selectedRole,
                 firstname: this.selectedMember.firstname,
@@ -111,16 +110,16 @@ biigle.$component('core.components.membersPanel', {
             this.$emit('attach', member);
             this.selectedMember = null;
         },
-        updateMember: function (user, props) {
+        updateMember(user, props) {
             this.$emit('update', user, props);
         },
-        removeMember: function (user) {
+        removeMember(user) {
             this.$emit('remove', user);
         },
-        loadUsers: function () {
-            this.usersApi.query().then(this.usersLoaded, this.messages.handleResponseError);
+        loadUsers() {
+            UsersApi.query().then(this.usersLoaded, Messages.handleResponseError);
         },
-        usersLoaded: function (response) {
+        usersLoaded(response) {
             response.data.forEach(function (user) {
                 // Assemble full username that can be used for searching in the
                 // typeahead.
@@ -128,11 +127,11 @@ biigle.$component('core.components.membersPanel', {
             });
             Vue.set(this, 'users', response.data);
         },
-        isntMember: function (user) {
+        isntMember(user) {
             return this.memberIds.indexOf(user.id) === -1;
         }
     },
-    created: function () {
+    created() {
         if (this.defaultRole) {
             this.selectedRole = this.defaultRole;
         } else {
@@ -141,4 +140,4 @@ biigle.$component('core.components.membersPanel', {
 
         this.$once('editing.start', this.loadUsers);
     },
-});
+};

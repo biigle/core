@@ -3,19 +3,19 @@
  *
  * @type {Object}
  */
-biigle.$component('core.components.typeahead', {
+export default {
     template:
-    '<typeahead' +
-        ' class="typeahead clearfix"' +
-        ' match-property="name"' +
-        ' ref="typeahead"' +
-        ' :data="items"' +
-        ' :disabled="disabled"' +
-        ' :on-hit="selectItem"' +
-        ' :placeholder="placeholder"' +
-        ' :template="template"' +
-        ' @clear="clear"' +
-        '></typeahead>',
+    `<typeahead
+        class="typeahead clearfix"
+        match-property="name"
+        ref="typeahead"
+        :data="items"
+        :disabled="disabled"
+        :on-hit="selectItem"
+        :placeholder="placeholder"
+        :template="template"
+        @clear="clear"
+        ></typeahead>`,
     components: {
         typeahead: VueStrap.typeahead,
     },
@@ -45,34 +45,34 @@ biigle.$component('core.components.typeahead', {
         },
     },
     methods: {
-        selectItem: function (item, typeahead) {
+        selectItem(item, typeahead) {
             if (!item) return;
             this.$emit('select', item);
 
             return this.clearOnSelect ? null : item.name;
         },
-        clear: function () {
+        clear() {
             this.$emit('select', undefined);
         },
-        updateValue: function () {
+        updateValue() {
             this.$refs.typeahead.setValue(this.value);
         },
-        emitFocus: function (e) {
+        emitFocus(e) {
             this.$emit('focus', e);
         },
-        emitBlur: function (e) {
+        emitBlur(e) {
             this.$emit('blur', e);
         },
     },
     watch: {
-        value: function () {
+        value() {
             this.updateValue();
         }
     },
-    mounted: function () {
+    mounted() {
         this.updateValue();
         // Monkey patch additional events to the input.
         this.$refs.typeahead.$el.firstChild.addEventListener('focus', this.emitFocus);
         this.$refs.typeahead.$el.firstChild.addEventListener('blur', this.emitBlur);
     },
-});
+};

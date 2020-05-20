@@ -3,9 +3,9 @@
  *
  * @type {Object}
  */
-biigle.$component('core.components.sidebarTab', {
+export default {
     template: '<div class="sidebar__tab" :class="classObject"><slot></slot></div>',
-    data: function () {
+    data() {
         return {
             open: false
         };
@@ -34,22 +34,21 @@ biigle.$component('core.components.sidebarTab', {
         },
     },
     computed: {
-        classObject: function () {
+        classObject() {
             return {
                 'sidebar__tab--open': this.open
             };
-        }
+        },
     },
-    beforeCreate: function () {
-        var self = this;
-        this.$parent.$on('open', function (name) {
-            self.open = name === self.name;
+    beforeCreate() {
+        this.$parent.$on('open', (name) => {
+            this.open = name === this.name;
         });
 
-        this.$parent.$on('close', function () {
-            self.open = false;
+        this.$parent.$on('close', () => {
+            this.open = false;
         });
 
         this.$parent.registerTab(this);
     },
-});
+};

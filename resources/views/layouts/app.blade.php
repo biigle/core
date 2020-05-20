@@ -26,18 +26,12 @@
     @include('partials.messages')
     @yield('content')
 
-    @if (app()->environment('local'))
-        <script src="{{ cachebust_asset('assets/scripts/vue.js') }}"></script>
-    @else
-        <script src="{{ cachebust_asset('assets/scripts/vue.min.js') }}"></script>
-    @endif
-    <script src="{{ cachebust_asset('assets/scripts/vue-resource.min.js') }}"></script>
-    <script src="{{ cachebust_asset('assets/scripts/vue-strap.min.js') }}"></script>
+    {{-- <script src="{{ cachebust_asset('assets/scripts/vue-strap.min.js') }}"></script> --}}
+    <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
         Vue.http.headers.common['X-CSRF-TOKEN'] = '{{csrf_token()}}';
     </script>
-    <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

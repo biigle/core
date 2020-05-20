@@ -1,39 +1,43 @@
+import LoaderComponent from '../components/loader';
+import LoaderBlockComponent from '../components/loaderBlock';
+import Messages from './../messages/store';
+
 /**
  * A mixin for view models that have a loading state
  *
  * @type {Object}
  */
-biigle.$component('core.mixins.loader', {
+export default {
     components: {
-        loader: biigle.$require('core.components.loader'),
-        loaderBlock: biigle.$require('core.components.loaderBlock'),
+        loader: LoaderComponent,
+        loaderBlock: LoaderBlockComponent,
     },
-    data: function () {
+    data() {
         return {
             instancesLoading: 0,
         };
     },
     computed: {
-        loading: function () {
+        loading() {
             return this.instancesLoading > 0;
         },
     },
     watch: {
-        loading: function (loading) {
+        loading(loading) {
             this.$emit('loading', loading);
         },
     },
     methods: {
-        startLoading: function () {
+        startLoading() {
             this.instancesLoading += 1;
         },
-        finishLoading: function () {
+        finishLoading() {
             if (this.instancesLoading > 0) {
                 this.instancesLoading -= 1;
             }
         },
-        handleErrorResponse: function (response) {
-            return biigle.$require('messages.store').handleErrorResponse(response);
+        handleErrorResponse(response) {
+            return Messages.handleErrorResponse(response);
         },
     },
-});
+};

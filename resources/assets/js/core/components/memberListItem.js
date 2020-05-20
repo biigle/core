@@ -3,23 +3,23 @@
  *
  * @type {Object}
  */
-biigle.$component('core.components.memberListItem', {
-    template: '<li class="list-group-item clearfix">' +
-        '<span class="pull-right">' +
-            '<span v-if="editing && !isOwnUser">' +
-                '<form class="form-inline">' +
-                    '<select class="form-control input-sm" :title="\'Change the role of \' + name" v-model="roleId" @change="changeRole">' +
-                        '<option v-for="role in roles" :value="role.id" v-text="role.name"></option>' +
-                    '</select> ' +
-                    '<button type="button" class="btn btn-default btn-sm" :title="\'Remove \' + name" @click="removeMember">Remove</button>' +
-                '</form>' +
-            '</span>' +
-            '<span v-else>' +
-                '<span class="text-muted" v-text="role.name"></span>' +
-            '</span>' +
-        '</span>' +
-        '<span v-text="name"></span> <span class="text-muted" v-if="isOwnUser">(you)</span>' +
-    '</li>',
+export default {
+    template: `<li class="list-group-item clearfix">
+        <span class="pull-right">
+            <span v-if="editing && !isOwnUser">
+                <form class="form-inline">
+                    <select class="form-control input-sm" :title="'Change the role of ' name" v-model="roleId" @change="changeRole">
+                        <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
+                    </select>
+                    <button type="button" class="btn btn-default btn-sm" :title="'Remove ' name" @click="removeMember">Remove</button>
+                </form>
+            </span>
+            <span v-else>
+                <span class="text-muted" v-text="role.name"></span>
+            </span>
+        </span>
+        <span v-text="name"></span> <span class="text-muted" v-if="isOwnUser">(you)</span>
+    </li>`,
     props: {
         member: {
             type: Object,
@@ -38,34 +38,33 @@ biigle.$component('core.components.memberListItem', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             roleId: null,
         };
     },
     computed: {
-        isOwnUser: function () {
+        isOwnUser() {
             return this.member.id === this.ownId;
         },
-        name: function () {
+        name() {
             return this.member.firstname + ' ' + this.member.lastname;
         },
-        role: function () {
-            var self = this;
-            return this.roles.find(function (role) {
-                return self.member.role_id === role.id;
+        role() {
+            return this.roles.find((role) => {
+                return this.member.role_id === role.id;
             });
         }
     },
     methods: {
-        removeMember: function () {
+        removeMember() {
             this.$emit('remove', this.member);
         },
-        changeRole: function () {
+        changeRole() {
             this.$emit('update', this.member, {role_id: this.roleId});
         }
     },
-    created: function () {
+    created() {
         this.roleId = this.member.role_id;
-    }
-});
+    },
+};

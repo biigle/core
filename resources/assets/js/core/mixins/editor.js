@@ -3,22 +3,22 @@
  *
  * @type {Object}
  */
-biigle.$component('core.mixins.editor', {
-    data: function () {
+export default {
+    data() {
         return {
             editing: false,
         };
     },
     methods: {
-        startEditing: function () {
+        startEditing() {
             this.editing = true;
             this.$emit('editing.start');
         },
-        finishEditing: function () {
+        finishEditing() {
             this.editing = false;
             this.$emit('editing.stop');
         },
-        toggleEditing: function () {
+        toggleEditing() {
             if (this.editing) {
                 this.finishEditing();
             } else {
@@ -26,4 +26,4 @@ biigle.$component('core.mixins.editor', {
             }
         },
     },
-});
+};

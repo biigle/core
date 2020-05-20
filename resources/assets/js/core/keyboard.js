@@ -3,7 +3,7 @@
  *
  * Usage:
  *
- * var kb = biigle.$require('keyboard');
+ * let kb = biigle.$require('keyboard');
  *
  * kb.on('Delete', function (event) {
  *     console.log('Something should be deleted but I never get called.');
@@ -21,7 +21,7 @@
  * // Now only the last event listener is active.
  * kb.setActiveSet('other-set');
  */
-biigle.$declare('keyboard', new Vue({
+export default new Vue({
     data: {
         activeListenerSetName: 'default',
         listenerSets: {
@@ -63,18 +63,18 @@ biigle.$declare('keyboard', new Vue({
         pressedKeysArray: [],
     },
     computed: {
-        activeListenerSet: function () {
+        activeListenerSet() {
             return this.listenerSets[this.activeListenerSetName] || {};
         },
-        pressedKeys: function () {
+        pressedKeys() {
             return this.pressedKeysArray.slice().sort().join('+');
         },
     },
     methods: {
-        isKeyIdentifier: function (key) {
+        isKeyIdentifier(key) {
             return typeof key === 'string' || key instanceof String;
         },
-        prepareKeys: function (keys) {
+        prepareKeys(keys) {
             if (!Array.isArray(keys)) {
                 keys = keys.split('+');
             }
@@ -82,17 +82,17 @@ biigle.$declare('keyboard', new Vue({
             return keys.slice()
                 .map(function (key) {
                     if (!this.isKeyIdentifier(key)) {
-                        throw key + ' is not a valid key.';
+                        throw `${key} is not a valid key.`;
                     }
 
                     return key.toLowerCase();
                 }, this)
                 .sort();
         },
-        shouldIgnoreTarget: function (e) {
+        shouldIgnoreTarget(e) {
             return this.ignoredTags.indexOf(e.target.tagName.toLowerCase()) !== -1;
         },
-        handleKeyDown: function (e) {
+        handleKeyDown(e) {
             e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
             if (this.shouldIgnoreTarget(e)) {
                 return;
@@ -106,7 +106,7 @@ biigle.$declare('keyboard', new Vue({
             this.maybeInjectModifierKeys(e);
             this.handleKeyEvents(e, this.pressedKeys);
         },
-        maybeInjectModifierKeys: function (e) {
+        maybeInjectModifierKeys(e) {
             if (e.altKey && this.pressedKeysArray.indexOf('alt') === -1) {
                 this.pressedKeysArray.push('alt');
             }
@@ -120,38 +120,38 @@ biigle.$declare('keyboard', new Vue({
                 this.pressedKeysArray.push('shift');
             }
         },
-        handleKeyUp: function (e) {
-            var index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
+        handleKeyUp(e) {
+            let index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
             if (index !== -1) {
                 this.pressedKeysArray.splice(index, 1);
             }
         },
-        handleKeyEvents: function (e, keys) {
+        handleKeyEvents(e, keys) {
             if (this.activeListenerSet.hasOwnProperty(keys)) {
                 this.executeCallbacks(this.activeListenerSet[keys], e);
             }
         },
-        clearPressedKeys: function () {
+        clearPressedKeys() {
             this.pressedKeysArray = [];
         },
-        executeCallbacks: function (list, e) {
+        executeCallbacks(list, e) {
             // Prevent default if there are any listeners.
             e.preventDefault();
             // Go from highest priority down.
-            for (var i = list.length - 1; i >= 0; i--) {
+            for (let i = list.length - 1; i >= 0; i--) {
                 // Callbacks can cancel further propagation.
                 if (list[i].callback(e) === false) {
                     return;
                 }
             }
         },
-        on: function (keys, callback, priority, set) {
+        on(keys, callback, priority, set) {
             keys = this.prepareKeys(keys);
-            var listenerKeys = keys.join('+');
+            let listenerKeys = keys.join('+');
 
             // Also register the listener for the keys of the compatibility map.
             this.compatibilityMaps.forEach(function (map) {
-                var compatKeys = keys.map(function (key) {
+                let compatKeys = keys.map(function (key) {
                     return map.hasOwnProperty(key) ? map[key] : key;
                 });
                 if (listenerKeys !== compatKeys.join('+')) {
@@ -160,7 +160,7 @@ biigle.$declare('keyboard', new Vue({
             }, this);
 
             priority = priority || 0;
-            var listener = {
+            let listener = {
                 callback: callback,
                 priority: priority
             };
@@ -171,11 +171,11 @@ biigle.$declare('keyboard', new Vue({
                 this.listenerSets[set] = {};
             }
 
-            var listeners = this.listenerSets[set];
+            let listeners = this.listenerSets[set];
 
             if (listeners.hasOwnProperty(listenerKeys)) {
-                var list = listeners[listenerKeys];
-                var i;
+                let list = listeners[listenerKeys];
+                let i;
 
                 for (i = 0; i < list.length; i++) {
                     if (list[i].priority >= priority) break;
@@ -191,12 +191,12 @@ biigle.$declare('keyboard', new Vue({
                 listeners[listenerKeys] = [listener];
             }
         },
-        off: function (keys, callback, set) {
+        off(keys, callback, set) {
             keys = this.prepareKeys(keys).join('+');
-            var listeners = this.listenerSets[set];
+            let listeners = this.listenerSets[set];
             if (listeners && listeners.hasOwnProperty(keys)) {
-                var list = listeners[keys];
-                for (var i = list.length - 1; i >= 0; i--) {
+                let list = listeners[keys];
+                for (let i = list.length - 1; i >= 0; i--) {
                     if (list[i].callback === callback) {
                         list.splice(i, 1);
                         break;
@@ -204,17 +204,15 @@ biigle.$declare('keyboard', new Vue({
                 }
             }
         },
-        setActiveSet: function (set) {
+        setActiveSet(set) {
             this.activeListenerSetName = set;
         },
     },
-    created: function () {
+    created() {
         // Use keydown because keypress does not fire for all keys that can be used in
         // shortcuts.
         document.body.addEventListener('keydown', this.handleKeyDown);
         document.body.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('focus', this.clearPressedKeys);
     },
-}));
-// Legacy support of old name.
-biigle.$declare('core.keyboard', biigle.$require('keyboard'));
+});

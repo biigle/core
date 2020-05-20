@@ -1,19 +1,23 @@
+import Button from './sidebarButton';
+import Events from '../events';
+import Keyboard from '../keyboard';
+
 /**
  * A collapsible sidebar that can show different content "tabs"
  *
  * @type {Object}
  */
-biigle.$component('core.components.sidebar', {
-    template: '<aside class="sidebar" :class="classObject">' +
-        '<div class="sidebar__buttons" v-if="showButtons">' +
-            '<sidebar-button v-for="tab in tabs" :tab="tab" :direction="direction"></sidebar-button>' +
-        '</div>' +
-        '<div class="sidebar__tabs"><slot></slot></div>' +
-    '</aside>',
+export default {
+    template: `<aside class="sidebar" :class="classObject">
+        <div class="sidebar__buttons" v-if="showButtons">
+            <sidebar-button v-for="tab in tabs" :tab="tab" :direction="direction"></sidebar-button>
+        </div>
+        <div class="sidebar__tabs"><slot></slot></div>
+    </aside>`,
     components: {
-        sidebarButton: biigle.$require('core.components.sidebarButton'),
+        sidebarButton: Button,
     },
-    data: function () {
+    data() {
         return {
             open: false,
             tabs: [],
@@ -32,7 +36,7 @@ biigle.$component('core.components.sidebar', {
         direction: {
             type: String,
             default: 'right',
-            validator: function (value) {
+            validator(value) {
                 return value === 'left' || value === 'right';
             },
         },
@@ -42,38 +46,35 @@ biigle.$component('core.components.sidebar', {
         },
     },
     computed: {
-        events: function () {
-            return biigle.$require('events');
-        },
-        classObject: function () {
+        classObject() {
             return {
                 'sidebar--open': this.open,
                 'sidebar--left': this.isLeft,
                 'sidebar--right': !this.isLeft,
             };
         },
-        isLeft: function () {
+        isLeft() {
             return this.direction === 'left';
         },
     },
     methods: {
-        registerTab: function (tab) {
+        registerTab(tab) {
             this.tabs.push(tab);
         },
-        handleOpenTab: function (name) {
+        handleOpenTab(name) {
             this.open = true;
             this.lastOpenedTab = name;
             this.$emit('toggle', name);
-            this.events.$emit('sidebar.toggle', name);
-            this.events.$emit('sidebar.open.' + name);
+            Events.$emit('sidebar.toggle', name);
+            Events.$emit(`sidebar.open.${name}`);
         },
-        handleCloseTab: function (name) {
+        handleCloseTab(name) {
             this.open = false;
             this.$emit('toggle', name);
-            this.events.$emit('sidebar.toggle', name);
-            this.events.$emit('sidebar.close.' + name);
+            Events.$emit('sidebar.toggle', name);
+            Events.$emit(`sidebar.close.${name}`);
         },
-        toggleLastOpenedTab: function (e) {
+        toggleLastOpenedTab(e) {
             if (this.open) {
                 e.preventDefault();
                 this.$emit('close', this.lastOpenedTab);
@@ -87,21 +88,21 @@ biigle.$component('core.components.sidebar', {
         },
     },
     watch: {
-        openTab: function (tab) {
+        openTab(tab) {
             this.$emit('open', tab);
         },
     },
-    created: function () {
+    created() {
         this.$on('open', this.handleOpenTab);
         this.$on('close', this.handleCloseTab);
 
         if (this.toggleOnKeyboard) {
-            biigle.$require('keyboard').on('Tab', this.toggleLastOpenedTab);
+            Keyboard.on('Tab', this.toggleLastOpenedTab);
         }
     },
-    mounted: function () {
+    mounted() {
         if (this.openTab) {
             this.$emit('open', this.openTab);
         }
     }
-});
+};

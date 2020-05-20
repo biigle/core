@@ -1,7 +1,9 @@
+import {exitFullscreen} from '../utils';
+
 /**
  * The popup message store.
  */
-biigle.$declare('messages.store', new Vue({
+export default new Vue({
     data: {
         // Maximum number of messages to display until the oldest is automatically
         // removed.
@@ -9,9 +11,9 @@ biigle.$declare('messages.store', new Vue({
         all: [],
     },
     methods: {
-        post: function (type, text) {
+        post(type, text) {
             // Exit fullscreen mode so the popup message is visible.
-            biigle.$require('utils.cb').exitFullscreen();
+            exitFullscreen();
 
             this.all.unshift({
                 id: Date.now(),
@@ -23,32 +25,32 @@ biigle.$declare('messages.store', new Vue({
                 this.all.pop();
             }
         },
-        danger: function (text) {
+        danger(text) {
             this.post('danger', text);
         },
-        warning: function (text) {
+        warning(text) {
             this.post('warning', text);
         },
-        success: function (text) {
+        success(text) {
             this.post('success', text);
         },
-        info: function (text) {
+        info(text) {
             this.post('info', text);
         },
-        close: function (id) {
-            for (var i = this.all.length - 1; i >= 0; i--) {
+        close(id) {
+            for (let i = this.all.length - 1; i >= 0; i--) {
                 if (this.all[i].id === id) {
                     this.all.splice(i, 1);
                 }
             }
         },
-        handleErrorResponse: function (response) {
-            var data = response.body;
+        handleErrorResponse(response) {
+            let data = response.body;
 
             if (data) {
                 if (response.status === 422 && data.errors) {
                     // validation response
-                    for (var key in data.errors) {
+                    for (let key in data.errors) {
                         this.danger(data.errors[key][0]);
                     }
                     return;
@@ -72,11 +74,8 @@ biigle.$declare('messages.store', new Vue({
             }
         },
         // I always mix this up...
-        handleResponseError: function (response) {
+        handleResponseError(response) {
             return this.handleErrorResponse(response);
         },
     },
-}));
-
-// To support the legacy AngularJS biigle.ui.messages msg service
-$biiglePostMessage = biigle.$require('messages.store.post');
+});

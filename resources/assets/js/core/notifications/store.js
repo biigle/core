@@ -3,40 +3,38 @@
  *
  * Stores information on InAppNotifications to be shared between multiple JS components.
  */
-biigle.$declare('notifications.store', new Vue({
+export default new Vue({
     data: {
-        _all: null,
+        all: [],
         initialized: false
     },
     computed: {
-        all: {
-            get: function () {
-                return this._all || [];
-            },
-            set: function (value) {
-                this.initialized = true;
-                this._all = value;
-            }
-        },
-        unread: function () {
+        unread() {
             return this.all.filter(function (item) {
                 return item.read_at === null;
             });
         },
-        count: function () {
+        count() {
             return this.all.length;
         },
-        countUnread: function () {
+        countUnread() {
             return this.unread.length;
         },
     },
     methods: {
-        remove: function (id) {
-            for (var i = this.all.length - 1; i >= 0; i--) {
+        remove(id) {
+            for (let i = this.all.length - 1; i >= 0; i--) {
                 if (this.all[i].id === id) {
                     this.all.splice(i, 1);
                 }
             }
-        }
-    }
-}));
+        },
+        initialize() {
+            if (!this.initialized) {
+                let initialNotifications = biigle.$require('initialNotifications');
+                this.all = initialNotifications || [];
+                this.initialized = true;
+            }
+        },
+    },
+});

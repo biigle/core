@@ -3,8 +3,8 @@
  *
  * @type {Object}
  */
-biigle.$component('core.components.loader', {
-    template: '<span class="loader" :class="{\'loader--active\': active, \'loader--fancy\': fancy}"></span>',
+export default {
+    template: '<span class="loader" :class="classObject"></span>',
     props: {
         active: {
             type: Boolean,
@@ -13,6 +13,14 @@ biigle.$component('core.components.loader', {
         fancy: {
             type: Boolean,
             default: false,
-        }
-    }
-});
+        },
+    },
+    computed: {
+        classObject() {
+            return {
+                'loader--active': this.active,
+                'loader--fancy': this.fancy,
+            };
+        },
+    },
+};
