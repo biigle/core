@@ -1,6 +1,6 @@
 window.Vue = require('vue');
 window.Vue.use(require('vue-resource'));
-window.VueStrap = require('./vue-strap/index');
+window.VueStrap = require('./vue-strap/index').default;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

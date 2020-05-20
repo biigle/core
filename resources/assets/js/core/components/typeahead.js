@@ -67,7 +67,7 @@ export default {
     watch: {
         value() {
             this.updateValue();
-        }
+        },
     },
     mounted() {
         this.updateValue();

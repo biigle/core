@@ -34,7 +34,7 @@ import tabs from 'vue-strap/src/Tabs.vue'
 // import tooltip from 'vue-strap/src/Tooltip.vue'
 import typeahead from 'vue-strap/src/Typeahead.vue'
 
-export default {
+const VueStrap = {
   directives: {
     ClickOutside,
     Scroll
@@ -73,3 +73,5 @@ export default {
   // tooltip,
   typeahead
 };
+
+export default VueStrap;
