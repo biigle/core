@@ -14,7 +14,9 @@ const mix = require('laravel-mix');
 mix.disableSuccessNotifications();
 
 mix.js('resources/assets/js/main.js', 'public/assets/scripts')
-    .sass('resources/assets/sass/main.scss', 'public/assets/styles');
+    .extract();
+
+mix.sass('resources/assets/sass/main.scss', 'public/assets/styles');
 
 if (mix.inProduction()) {
     mix.version();
