@@ -1,8 +1,6 @@
 import sys
-import numpy as np
 from pyexcelerate import Workbook, Style, Font
 import csv
-import ast
 import json
 
 target_file = sys.argv[2]
@@ -11,46 +9,52 @@ csvs = sys.argv[3:]
 workbook = Workbook()
 numSheets = 0
 
+def add_sheet(csv_path, index):
+    with open(csv_path, 'r') as f:
+        csv_reader = csv.reader(f)
 
-def addRow(x="", y="", label="", filename="", annotation_id="", shape="", area=""):
-    return [filename, annotation_id, shape, x, y, label, area]
+        csv_title = next(csv_reader)[0]
+        csv_column_labels = next(csv_reader)
 
-for path in csvs:
-    f = open(path, 'r')
-    csv_file = csv.reader(f)
-    csv_title = next(csv_file)[0]
-    csv_column_labels = next(csv_file)
-    rows = np.array(list(csv_file))
-    f.close()
-    if rows.shape[0] == 0:
-        continue
-    numSheets += 1
-    # rows have the content: image_filename, annotation_id, label_name, shape_name, points
+
+        images = {}
+
+        for row in csv_reader:
+            if row[0] not in images:
+                images[row[0]] = {
+                    'annotations': {},
+                    'area': row[5],
+                }
+
+            image = images[row[0]]
+
+            if row[1] not in image['annotations']:
+                image['annotations'][row[1]] = {
+                    'id': row[1],
+                    'shape': row[3],
+                    'points': json.loads(row[4]),
+                    'labels': [],
+                }
+
+            image['annotations'][row[1]]['labels'].append(row[2])
+
+    # rows have the content: image_filename, annotation_id, label_name, shape_name, points, image area
     celldata = [[csv_title], csv_column_labels]
 
-    uniqueimages = np.unique(rows[:, 0])
+    for filename in sorted(images):
+        image = images[filename]
+        for annotation_id, annotation in image['annotations'].items():
+            points = iter(annotation['points'])
+            labels = ' ,'.join(annotation['labels'])
+            celldata.append([filename, annotation_id, annotation['shape'], next(points), next(points), labels, image['area']])
+            for point in points:
+                celldata.append(['', '', '', point, next(points, ''), '', ''])
 
-    for img in uniqueimages:
-        curImgData = rows[rows[:, 0] == img]
-        uniqueannotations = np.unique(curImgData[:, 1])
-
-        for annotation in uniqueannotations:
-            curAnnotationData = curImgData[curImgData[:, 1] == annotation]
-            labels = ", ".join(curAnnotationData[:, 2])
-            points = ast.literal_eval(curAnnotationData[:, 4][0])
-            it = iter(points)
-            celldata.append(addRow(next(it), next(it), labels, img, annotation, curAnnotationData[0, 3], curAnnotationData[0, 5]))
-            try:
-                for x in it:
-                    celldata.append(addRow(x, next(it)))
-            except StopIteration:
-                pass
-            if len(points) % 2 == 1:
-                # add radius
-                celldata.append(addRow(points[-1], ""))
-
-    ws = workbook.new_sheet("sheet " + str(numSheets), data=celldata)
+    ws = workbook.new_sheet("sheet {}".format(index), data=celldata)
     ws.set_row_style(1, Style(font=Font(bold=True)))
     ws.set_row_style(2, Style(font=Font(bold=True)))
+
+for i, csv_path in enumerate(csvs):
+    add_sheet(csv_path, i)
 
 workbook.save(target_file)
