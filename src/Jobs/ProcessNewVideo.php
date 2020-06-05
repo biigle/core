@@ -121,7 +121,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
             ->save(null, false, true);
 
         return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
-            ->writeToBuffer(".{$format}");
+            ->writeToBuffer(".{$format}", [
+                'Q' => 85,
+                'strip' => true,
+            ]);
     }
 
     /**
