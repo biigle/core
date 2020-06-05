@@ -196,9 +196,11 @@ biigle.$declare('annotations.stores.images', function () {
                     });
             },
             drawSimpleImage: function (image) {
+                document.body.appendChild(image.source);
                 drawCanvas.width = image.width;
                 drawCanvas.height = image.height;
                 drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+                document.body.removeChild(image.source);
 
                 image.canvas.width = image.width;
                 image.canvas.height = image.height;
@@ -208,9 +210,11 @@ biigle.$declare('annotations.stores.images', function () {
             },
             drawColorAdjustedImage: function (image) {
                 if (loadedImageTexture !== image.source.src) {
+                    document.body.appendChild(image.source);
                     drawCanvas.width = image.width;
                     drawCanvas.height = image.height;
                     drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+                    document.body.removeChild(image.source);
 
                     if (fxTexture) {
                         fxTexture.loadContentsOf(drawCanvas);
