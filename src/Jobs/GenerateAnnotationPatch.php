@@ -115,7 +115,10 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $rect['height']
             )
             ->resize(floatval($thumbWidth) / $rect['width'])
-            ->writeToBuffer('.'.config('largo.patch_format'), ['Q' => 85]);
+            ->writeToBuffer('.'.config('largo.patch_format'), [
+                'Q' => 85,
+                'strip' => true,
+            ]);
 
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
     }
