@@ -74,6 +74,10 @@ class RegisterController extends Controller
             $additionalRules['privacy'] = 'required|accepted';
         }
 
+        if (View::exists('terms')) {
+            $additionalRules['terms'] = 'required|accepted';
+        }
+
         return Validator::make($data, array_merge($rules, $additionalRules));
     }
 
