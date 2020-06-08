@@ -31,6 +31,11 @@ $router->get('privacy', [
     'uses' => 'Views\\PrivacyController@show',
 ]);
 
+$router->get('terms', [
+    'as'   => 'terms',
+    'uses' => 'Views\\TermsController@show',
+]);
+
 $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory

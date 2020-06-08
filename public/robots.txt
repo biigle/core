@@ -10,5 +10,6 @@ Allow: /register
 Allow: /manual
 Allow: /imprint
 Allow: /privacy
+Allow: /terms
 
 Disallow: /

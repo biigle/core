@@ -65,6 +65,9 @@
                                     @if (View::exists('privacy'))
                                         <li><a href="{{route('privacy')}}" title="Privacy">Privacy</a></li>
                                     @endif
+                                    @if (View::exists('terms'))
+                                        <li><a href="{{route('terms')}}" title="Terms">Terms</a></li>
+                                    @endif
                                 </ul>
                             </li>
                         </ul>
