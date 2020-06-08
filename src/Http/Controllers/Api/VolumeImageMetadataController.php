@@ -35,6 +35,7 @@ class VolumeImageMetadataController extends Controller
         'gps_altitude',
         'distance_to_ground',
         'area',
+        'yaw',
     ];
 
     /**
@@ -47,6 +48,7 @@ class VolumeImageMetadataController extends Controller
         'lon' => 'lng',
         'longitude' => 'lng',
         'latitude' => 'lat',
+        'heading' => 'yaw',
     ];
 
     /**
@@ -254,11 +256,18 @@ class VolumeImageMetadataController extends Controller
             'gps_altitude' => 'GPS altitude',
             'distance_to_ground' => 'distance to ground',
             'area' => 'area',
+            'yaw' => 'yaw',
         ];
 
         foreach ($numeric as $key => $text) {
             if (array_key_exists($key, $toFill) && !is_numeric($toFill[$key])) {
                 throw new Exception("'{$toFill[$key]}' is no valid {$text} for image {$image->filename}.");
+            }
+        }
+
+        if (array_key_exists('yaw', $toFill)) {
+            if ($toFill['yaw'] < 0 || $toFill['yaw'] > 360) {
+                throw new Exception("'{$toFill['yaw']}' is no valid yaw for image {$image->filename}.");
             }
         }
 

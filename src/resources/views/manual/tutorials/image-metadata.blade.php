@@ -80,6 +80,15 @@
                         Example: 2.6
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <code>yaw</code>
+                    </td>
+                    <td>
+                        The yaw/heading in degrees of the underwater vehicle. 0° yaw should be north.
+                        Example: 180
+                    </td>
+                </tr>
             </tbody>
         </table>
         <div class="panel panel-info">

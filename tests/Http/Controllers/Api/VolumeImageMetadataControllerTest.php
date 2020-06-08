@@ -83,6 +83,7 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         // Import should update but not destroy existing metadata.
         $this->assertEquals(10, $jpg->metadata['distance_to_ground']);
         $this->assertEquals(4000, $jpg->metadata['water_depth']);
+        $this->assertEquals(180, $jpg->metadata['yaw']);
 
         $this->assertNull($png->taken_at);
         $this->assertNull($png->lng);
@@ -122,6 +123,19 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreInvalidYaw()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-invalid-yaw.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(422);
+    }
+
     public function testStoreCaseInsensitive()
     {
         $id = $this->volume()->id;
@@ -147,8 +161,10 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $csv = $this->getCsv('image-metadata-synonyms.csv');
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
             ->assertStatus(200);
-        $this->assertEquals(52.220, $image->fresh()->lng);
-        $this->assertEquals(28.123, $image->fresh()->lat);
+        $image->refresh();
+        $this->assertEquals(52.220, $image->lng);
+        $this->assertEquals(28.123, $image->lat);
+        $this->assertEquals(180, $image->metadata['yaw']);
 
         $image->lng = null;
         $image->lat = null;
@@ -157,8 +173,9 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $csv = $this->getCsv('image-metadata-synonyms2.csv');
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
             ->assertStatus(200);
-        $this->assertEquals(52.220, $image->fresh()->lng);
-        $this->assertEquals(28.123, $image->fresh()->lat);
+        $image->refresh();
+        $this->assertEquals(52.220, $image->lng);
+        $this->assertEquals(28.123, $image->lat);
     }
 
     public function testStoreEmptyCells()
