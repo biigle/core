@@ -23,6 +23,7 @@ class ImageController extends Controller
         $metadataMap = [
             'gps_altitude' => 'GPS Altitude',
             'distance_to_ground' => 'Distance to ground',
+            'yaw' => 'Yaw/Heading',
         ];
 
         return view('volumes::images.index', [
