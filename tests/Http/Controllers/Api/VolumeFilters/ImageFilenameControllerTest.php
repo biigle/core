@@ -55,4 +55,18 @@ class ImageFilenameControllerTest extends ApiTestCase
             ->assertExactJson([$image->id, $image2->id, $image3->id]);
         $response->assertStatus(200);
     }
+
+    public function testIndexEscape()
+    {
+        $vid = $this->volume()->id;
+
+        $image = ImageTest::create([
+            'volume_id' => $vid,
+            'filename' => 'abcde.jpg',
+        ]);
+        $this->beGuest();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/*cde*\\")
+            ->assertExactJson([]);
+        $response->assertStatus(200);
+    }
 }

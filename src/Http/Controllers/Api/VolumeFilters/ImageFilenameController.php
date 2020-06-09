@@ -30,14 +30,11 @@ class ImageFilenameController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
+        // Escape trailing backslashes, else there would be an error with ilike.
+        $pattern = preg_replace('/\\\\$/', '\\\\\\\\', $pattern);
 
         return $volume->images()
-            ->where('filename', $operator, str_replace('*', '%', $pattern))
+            ->where('filename', 'ilike', str_replace('*', '%', $pattern))
             ->pluck('id');
     }
 }
