@@ -40,9 +40,9 @@ biigle.$component('annotations.components.minimap', function () {
         },
         methods: {
             updateViewport: function () {
-                // The map size might be undefined if the minimap is created initially.
-                // This function will be called again once the map is ready.
-                if (this.mapSize) {
+                // The map size and center might be undefined if the minimap is created
+                // initially. This function will be called again once the map is ready.
+                if (this.mapSize && this.mapView.getCenter()) {
                     this.viewport.setGeometry(ol.geom.Polygon.fromExtent(this.mapView.calculateExtent(this.mapSize)));
                 }
             },
