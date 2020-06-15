@@ -13,8 +13,7 @@ const mix = require('laravel-mix');
 
 mix.disableSuccessNotifications();
 
-mix.js('resources/assets/js/main.js', 'public/assets/scripts')
-    .extract();
+mix.js('resources/assets/js/main.js', 'public/assets/scripts');
 
 mix.sass('resources/assets/sass/main.scss', 'public/assets/styles');
 

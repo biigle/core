@@ -26,8 +26,6 @@
     @include('partials.messages')
     @yield('content')
 
-    <script src="{{ cachebust_asset('assets/scripts/manifest.js') }}"></script>
-    <script src="{{ cachebust_asset('assets/scripts/vendor.js') }}"></script>
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
