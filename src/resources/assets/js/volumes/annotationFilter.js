@@ -1,16 +1,18 @@
+import VolumesApi from './api/volumes';
+import {FilterList} from './import';
+import {VolumeFilters} from './import';
+
 /**
  * Annotations filter for the volume overview filters.
  */
-if (Array.isArray(biigle.$require('volumes.stores.filters'))) {
-    biigle.$require('volumes.stores.filters').push({
+if (Array.isArray(VolumeFilters)) {
+    VolumeFilters.push({
         id: 'annotations',
         label: 'annotations',
         help: "All images that (don't) contain annotations.",
-        listComponent: biigle.$require('volumes.components.filterListComponent'),
-        getSequence: function (volumeId) {
-            return biigle.$require('annotations.api.volumes').queryImagesWithAnnotations({
-                id: volumeId,
-            });
-        }
+        listComponent: FilterList,
+        getSequence(volumeId) {
+            return VolumesApi.queryImagesWithAnnotations({id: volumeId});
+        },
     });
 }
