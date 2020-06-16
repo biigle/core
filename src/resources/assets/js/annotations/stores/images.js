@@ -166,17 +166,20 @@ biigle.$declare('annotations.stores.images', function () {
                 // check if it's an image or a JSON. If this is a cross origin request,
                 // the preflight request is automatically performed. If CORS is blocked,
                 // the catch() block below handles fallback loading of images.
-                return Vue.http.get(this.imageFileUri.replace(':id', id))
+                return Vue.http.get(this.imageFileUri.replace(':id', id), {responseType: 'blob'})
                     .then(function (response) {
-                        if (response.bodyBlob.type === 'application/json') {
+                        var type = response.headers.get('content-type');
+                        if (type === 'application/json') {
                             var uuid = response.body.uuid;
                             response.body.url = self.tilesUri.replace(':uuid', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
 
                             return response.body;
                         }
 
-                        var urlCreator = window.URL || window.webkitURL;
-                        img.src = urlCreator.createObjectURL(response.bodyBlob);
+                        response.blob().then(function (blob) {
+                            var urlCreator = window.URL || window.webkitURL;
+                            img.src = urlCreator.createObjectURL(blob);
+                        });
 
                         return promise;
                     })
