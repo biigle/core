@@ -22,7 +22,7 @@ var message = {
     },
     methods: {
         close() {
-            store.close(this.id);
+            Store.close(this.id);
         },
         cancelTimeout() {
             if (this.closeTimeoutId) {
