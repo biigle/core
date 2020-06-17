@@ -1,12 +1,26 @@
+import ScreenshotButton from './screenshotButton';
+import Settings from '../stores/settings';
+import {Keyboard} from '../import';
+import {PowerToggle} from '../import';
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsSettingsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+export let plugins = {};
+
 /**
  * The settings tab of the annotator
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.settingsTab', {
+export default {
     components: {
-        screenshotButton: biigle.$require('annotations.components.screenshotButton'),
-        powerToggle: biigle.$require('core.components.powerToggle'),
+        screenshotButton: ScreenshotButton,
+        powerToggle: PowerToggle,
     },
     props: {
         image: {
@@ -14,7 +28,7 @@ biigle.$component('annotations.components.settingsTab', {
             default: null,
         },
     },
-    data: function () {
+    data() {
         return {
             restoreKeys: [
                 'annotationOpacity',
@@ -37,62 +51,59 @@ biigle.$component('annotations.components.settingsTab', {
         };
     },
     computed: {
-        settings: function () {
-            return biigle.$require('annotations.stores.settings');
+        plugins() {
+            return plugins;
         },
-        plugins: function () {
-            return biigle.$require('annotations.components.settingsTabPlugins');
-        },
-        crossOrigin: function () {
+        crossOrigin() {
             return this.image && this.image.crossOrigin;
         },
     },
     methods: {
-        showMousePosition: function () {
+        showMousePosition() {
             this.mousePosition = true;
         },
-        hideMousePosition: function () {
+        hideMousePosition() {
             this.mousePosition = false;
         },
-        showZoomLevel: function () {
+        showZoomLevel() {
             this.zoomLevel = true;
         },
-        hideZoomLevel: function () {
+        hideZoomLevel() {
             this.zoomLevel = false;
         },
-        showScaleLine: function () {
+        showScaleLine() {
             this.scaleLine = true;
         },
-        hideScaleLine: function () {
+        hideScaleLine() {
             this.scaleLine = false;
         },
-        showLabelTooltip: function () {
+        showLabelTooltip() {
             this.labelTooltip = true;
             this.measureTooltip = false;
         },
-        hideLabelTooltip: function () {
+        hideLabelTooltip() {
             this.labelTooltip = false;
         },
-        showMeasureTooltip: function () {
+        showMeasureTooltip() {
             this.measureTooltip = true;
             this.labelTooltip = false;
         },
-        hideMeasureTooltip: function () {
+        hideMeasureTooltip() {
             this.measureTooltip = false;
         },
-        showMinimap: function () {
+        showMinimap() {
             this.minimap = true;
         },
-        hideMinimap: function () {
+        hideMinimap() {
             this.minimap = false;
         },
-        showProgressIndicator: function () {
+        showProgressIndicator() {
             this.progressIndicator = true;
         },
-        hideProgressIndicator: function () {
+        hideProgressIndicator() {
             this.progressIndicator = false;
         },
-        toggleAnnotationOpacity: function () {
+        toggleAnnotationOpacity() {
             if (this.annotationOpacity > 0) {
                 this.annotationOpacity = 0;
             } else {
@@ -101,44 +112,44 @@ biigle.$component('annotations.components.settingsTab', {
         },
     },
     watch: {
-        annotationOpacity: function (opacity) {
+        annotationOpacity(opacity) {
             opacity = parseFloat(opacity);
             this.$emit('change', 'annotationOpacity', opacity);
-            this.settings.set('annotationOpacity', opacity);
+            Settings.set('annotationOpacity', opacity);
         },
-        mousePosition: function (show) {
+        mousePosition(show) {
             this.$emit('change', 'mousePosition', show);
-            this.settings.set('mousePosition', show);
+            Settings.set('mousePosition', show);
         },
-        zoomLevel: function (show) {
+        zoomLevel(show) {
             this.$emit('change', 'zoomLevel', show);
-            this.settings.set('zoomLevel', show);
+            Settings.set('zoomLevel', show);
         },
-        scaleLine: function (show) {
+        scaleLine(show) {
             this.$emit('change', 'scaleLine', show);
-            this.settings.set('scaleLine', show);
+            Settings.set('scaleLine', show);
         },
-        labelTooltip: function (show) {
+        labelTooltip(show) {
             this.$emit('change', 'labelTooltip', show);
-            this.settings.set('labelTooltip', show);
+            Settings.set('labelTooltip', show);
         },
-        measureTooltip: function (show) {
+        measureTooltip(show) {
             this.$emit('change', 'measureTooltip', show);
-            this.settings.set('measureTooltip', show);
+            Settings.set('measureTooltip', show);
         },
-        minimap: function (show) {
+        minimap(show) {
             this.$emit('change', 'minimap', show);
-            this.settings.set('minimap', show);
+            Settings.set('minimap', show);
         },
-        progressIndicator: function (show) {
+        progressIndicator(show) {
             this.$emit('change', 'progressIndicator', show);
-            this.settings.set('progressIndicator', show);
+            Settings.set('progressIndicator', show);
         },
     },
-    created: function () {
-        this.restoreKeys.forEach(function (key) {
-            this[key] = this.settings.get(key);
-        }, this);
-        biigle.$require('keyboard').on('o', this.toggleAnnotationOpacity);
+    created() {
+        this.restoreKeys.forEach((key) => {
+            this[key] = Settings.get(key);
+        });
+        Keyboard.on('o', this.toggleAnnotationOpacity);
     },
-});
+};

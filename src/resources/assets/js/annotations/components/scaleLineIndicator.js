@@ -10,27 +10,27 @@ biigle.$component('annotations.components.scaleLineIndicator', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             targetWidth: 100,
             leadingDigits: [1, 2, 5],
         };
     },
     computed: {
-        scale: function () {
+        scale() {
             return this.targetWidth * this.scaleMultiplier;
         },
-        scalePowerOfTen: function () {
+        scalePowerOfTen() {
             return this.powerOfTen(this.scale);
         },
-        scaleMultiplier: function () {
+        scaleMultiplier() {
             if (this.hasArea) {
                 return this.resolution * this.pxWidthInMeter;
             }
 
             return this.resolution || 0;
         },
-        scaleNearest: function () {
+        scaleNearest() {
             var smallestIndex = 0;
             var smallestDistance = Infinity;
             for (var i = this.leadingDigits.length - 1; i >= 0; i--) {
@@ -43,7 +43,7 @@ biigle.$component('annotations.components.scaleLineIndicator', {
 
             return this.leadingDigits[smallestIndex] * this.scalePowerOfTen;
         },
-        unitNearest: function () {
+        unitNearest() {
             var smallestIndex = 0;
             var smallestDistance = Infinity;
             for (var i = this.unitMultipliers.length - 1; i >= 0; i--) {
@@ -55,13 +55,13 @@ biigle.$component('annotations.components.scaleLineIndicator', {
 
             return smallestIndex;
         },
-        width: function () {
+        width() {
             return Math.round(this.scaleNearest / this.scaleMultiplier);
         },
-        styleObject: function () {
+        styleObject() {
             return {width: this.width + 'px'};
         },
-        text: function () {
+        text() {
             if (this.hasArea) {
                 return Math.round(this.scaleNearest / this.unitMultipliers[this.unitNearest]) + ' ' + this.unitNames[this.unitNearest];
             }

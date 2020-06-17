@@ -43,13 +43,13 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         annotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
         selectedAnnotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -84,7 +84,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             default: 'default',
         },
     },
-    data: function () {
+    data() {
         return {
             initialized: false,
             // Options to use for the view.fit function.
@@ -103,14 +103,14 @@ biigle.$component('annotations.components.annotationCanvas', {
         };
     },
     computed: {
-        extent: function () {
+        extent() {
             if (this.image) {
                 return [0, 0, this.image.width, this.image.height];
             }
 
             return [0, 0, 0, 0];
         },
-        viewExtent: function () {
+        viewExtent() {
             // The view can't calculate the extent if the resolution is not set.
             // Also use this.initialized so this property is recomputed when the
             // map is set (because the map is no reactive object). See:
@@ -121,29 +121,29 @@ biigle.$component('annotations.components.annotationCanvas', {
 
             return [0, 0, 0, 0];
         },
-        projection: function () {
+        projection() {
             return new ol.proj.Projection({
                 code: 'biigle-image',
                 units: 'pixels',
                 extent: this.extent
             });
         },
-        selectedFeatures: function () {
+        selectedFeatures() {
             return this.selectInteraction ? this.selectInteraction.getFeatures() : [];
         },
-        isDefaultInteractionMode: function () {
+        isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
-        hasSelectedLabel: function () {
+        hasSelectedLabel() {
             return Boolean(this.selectedLabel);
         },
-        hasSelectedAnnotations: function () {
+        hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;
         },
-        hasLastCreatedAnnotation: function () {
+        hasLastCreatedAnnotation() {
             return this.lastCreatedAnnotation !== null;
         },
-        previousButtonTitle: function () {
+        previousButtonTitle() {
             switch (this.annotationMode) {
                 case 'volare':
                     return 'Previous annotation';
@@ -156,7 +156,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                     return 'Previous image';
             }
         },
-        nextButtonTitle: function () {
+        nextButtonTitle() {
             switch (this.annotationMode) {
                 case 'volare':
                     return 'Next annotation';
@@ -171,7 +171,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
     },
     methods: {
-        createMap: function () {
+        createMap() {
             var map = new ol.Map({
                 controls: [
                     new ol.control.Zoom(),
@@ -199,7 +199,7 @@ biigle.$component('annotations.components.annotationCanvas', {
 
             return map;
         },
-        declareNonReactiveProperties: function () {
+        declareNonReactiveProperties() {
             // Declare properties of this component that should *not* be reactive.
             // This is mostly OpenLayers stuff that should work as fast as possible
             // without being slowed down by Vue reactivity.
@@ -247,17 +247,17 @@ biigle.$component('annotations.components.annotationCanvas', {
                 });
             }
         },
-        updateMapSize: function () {
+        updateMapSize() {
             this.mapSize = this.map.getSize();
         },
-        updateMapView: function (e) {
+        updateMapView(e) {
             var view = e.target.getView();
             this.$emit('moveend', {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
         },
-        invertPointsYAxis: function (points) {
+        invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
             // the points. CAUTION: Modifies the array in place!
             // The y axis should be switched from "top to bottom" to "bottom to top"
@@ -270,12 +270,12 @@ biigle.$component('annotations.components.annotationCanvas', {
 
             return points;
         },
-        convertPointsFromOlToDb: function (points) {
+        convertPointsFromOlToDb(points) {
             // Merge the individual point arrays to a single array first.
             // [[x1, y1], [x2, y2]] -> [x1, y1, x2, y2]
             return this.invertPointsYAxis(Array.prototype.concat.apply([], points));
         },
-        convertPointsFromDbToOl: function (points) {
+        convertPointsFromDbToOl(points) {
             // Duplicate the points array because we don't want to modify the
             // original array.
             points = this.invertPointsYAxis(points.slice());
@@ -291,7 +291,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             return newPoints;
         },
         // Determines the OpenLayers geometry object for an annotation.
-        getGeometry: function (annotation) {
+        getGeometry(annotation) {
             var points = this.convertPointsFromDbToOl(annotation.points);
 
             switch (annotation.shape) {
@@ -315,7 +315,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             }
         },
         // Creates an OpenLayers feature object from an annotation.
-        createFeature: function (annotation) {
+        createFeature(annotation) {
             var feature = new ol.Feature(this.getGeometry(annotation));
 
             feature.setId(annotation.id);
@@ -326,12 +326,12 @@ biigle.$component('annotations.components.annotationCanvas', {
 
             return feature;
         },
-        handleFeatureModifyStart: function (e) {
+        handleFeatureModifyStart(e) {
             e.features.getArray().forEach(function (feature) {
                 this.featureRevisionMap[feature.getId()] = feature.getRevision();
             }, this);
         },
-        handleFeatureModifyEnd: function (e) {
+        handleFeatureModifyEnd(e) {
             var self = this;
             var annotations = e.features.getArray()
                 .filter(function (feature) {
@@ -349,7 +349,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.$emit('update', annotations);
             }
         },
-        focusAnnotation: function (annotation, fast, keepResolution) {
+        focusAnnotation(annotation, fast, keepResolution) {
             var feature = this.annotationSource.getFeatureById(annotation.id);
             if (feature) {
                 if (fast) {
@@ -367,29 +367,29 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
             }
         },
-        fitImage: function () {
+        fitImage() {
             this.map.getView().fit(this.extent, this.map.getSize());
         },
-        extractAnnotationFromFeature: function (feature) {
+        extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
-        handleFeatureSelect: function (event) {
+        handleFeatureSelect(event) {
             this.$emit('select',
                 event.selected.map(this.extractAnnotationFromFeature),
                 event.deselected.map(this.extractAnnotationFromFeature)
             );
         },
-        handlePrevious: function () {
+        handlePrevious() {
             this.$emit('previous');
         },
-        handleNext: function () {
+        handleNext() {
             this.$emit('next');
         },
-        resetInteractionMode: function () {
+        resetInteractionMode() {
             this.interactionMode = 'default';
         },
         // Assembles the points array depending on the OpenLayers geometry type.
-        getPoints: function (geometry) {
+        getPoints(geometry) {
             var points;
             switch (geometry.getType()) {
                 case 'Circle':
@@ -410,7 +410,7 @@ biigle.$component('annotations.components.annotationCanvas', {
 
             return this.convertPointsFromOlToDb(points);
         },
-        handleNewFeature: function (e) {
+        handleNewFeature(e) {
             if (this.hasSelectedLabel) {
                 var geometry = e.feature.getGeometry();
                 var self = this;
@@ -435,17 +435,17 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.annotationSource.removeFeature(e.feature);
             }
         },
-        deleteSelectedAnnotations: function () {
+        deleteSelectedAnnotations() {
             if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
                 this.$emit('delete', this.selectedAnnotations);
             }
         },
-        deleteLastCreatedAnnotation: function () {
+        deleteLastCreatedAnnotation() {
             if (this.hasLastCreatedAnnotation) {
                 this.$emit('delete', [this.lastCreatedAnnotation]);
             }
         },
-        createPointAnnotationAt: function (x, y) {
+        createPointAnnotationAt(x, y) {
             if (this.hasSelectedLabel) {
                 var feature = new ol.Feature(new ol.geom.Point([x, y]));
                 // Simulare a feature created event so we can reuse the apropriate
@@ -456,16 +456,16 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.requireSelectedLabel();
             }
         },
-        requireSelectedLabel: function () {
+        requireSelectedLabel() {
             this.$emit('requires-selected-label');
             this.resetInteractionMode();
         },
-        render: function () {
+        render() {
             if (this.map) {
                 this.map.render();
             }
         },
-        handleRegularImage: function (image, oldImage) {
+        handleRegularImage(image, oldImage) {
             if (!image) {
                 this.imageLayer.setSource(null);
             } else {
@@ -477,7 +477,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 }));
             }
         },
-        handleTiledImage: function (image, oldImage) {
+        handleTiledImage(image, oldImage) {
             if (!image) {
                 this.tiledImageLayer.setSource(null);
             } else {
@@ -491,10 +491,10 @@ biigle.$component('annotations.components.annotationCanvas', {
                 }));
             }
         },
-        updateMousePosition: function (e) {
+        updateMousePosition(e) {
             this.mousePosition = e.coordinate;
         },
-        refreshAnnotationSource: function (annotations, source) {
+        refreshAnnotationSource(annotations, source) {
             var annotationsMap = {};
             annotations.forEach(function (annotation) {
                 annotationsMap[annotation.id] = null;
@@ -532,7 +532,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
     },
     watch: {
-        image: function (image, oldImage) {
+        image(image, oldImage) {
             if (!image) {
                 this.map.removeLayer(this.tiledImageLayer);
                 this.map.removeLayer(this.imageLayer);
@@ -552,11 +552,11 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.handleRegularImage(image, oldImage);
             }
         },
-        annotations: function (annotations) {
+        annotations(annotations) {
             this.refreshAnnotationSource(annotations, this.annotationSource);
             this.resetHoveredAnnotations();
         },
-        selectedAnnotations: function (annotations) {
+        selectedAnnotations(annotations) {
             var source = this.annotationSource;
             var features = this.selectedFeatures;
             features.clear();
@@ -564,7 +564,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 features.push(source.getFeatureById(annotation.id));
             });
         },
-        extent: function (extent, oldExtent) {
+        extent(extent, oldExtent) {
             // The extent only truly changes if the width and height changed.
             // extent[0] and extent[1] are always 0.
             if (extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
@@ -601,17 +601,17 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.initialized = true;
             }
         },
-        annotationOpacity: function (opacity) {
+        annotationOpacity(opacity) {
             this.annotationLayer.setOpacity(opacity);
         },
-        isDefaultInteractionMode: function (defaultMode) {
+        isDefaultInteractionMode(defaultMode) {
             this.selectInteraction.setActive(defaultMode || this.isTranslating);
             if (this.canModify) {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
     },
-    created: function () {
+    created() {
         var self = this;
         this.declareNonReactiveProperties();
 
@@ -654,7 +654,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             kb.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
         }
     },
-    mounted: function () {
+    mounted() {
         this.map.setTarget(this.$el);
     },
 });

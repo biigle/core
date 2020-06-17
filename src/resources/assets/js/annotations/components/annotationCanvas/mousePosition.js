@@ -16,14 +16,14 @@ biigle.$component('annotations.components.annotationCanvas.mousePosition', funct
                 default: false,
             },
         },
-        data: function () {
+        data() {
             return {
                 // Mouse position in image coordinates.
                 mousePositionIC: [0, 0],
             };
         },
         watch: {
-            mousePosition: function (position) {
+            mousePosition(position) {
                 var self = this;
                 throttle(function () {
                     // Make sure to copy the array with slice before inverting the axis.

@@ -20,21 +20,21 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
             },
         },
         computed: {
-            showAnnotationTooltip: function () {
+            showAnnotationTooltip() {
                 return this.isDefaultInteractionMode && (this.showLabelTooltip || this.showMeasureTooltip);
             },
         },
-        data: function () {
+        data() {
             return {
                 // Used to determine when to notify watchers for hovered annotations.
                 hoveredFeaturesHash: '',
             };
         },
         methods: {
-            annotationLayerFilter: function (layer) {
+            annotationLayerFilter(layer) {
                 return layer.get('name') === 'annotations';
             },
-            updateHoveredAnnotations: function (e) {
+            updateHoveredAnnotations(e) {
                 var features = this.map.getFeaturesAtPixel(e.pixel, {layerFilter: this.annotationLayerFilter}) || [];
                 var hash = features.map(function (f) {return f.getId();}).join('-');
 
@@ -43,13 +43,13 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
                     this.$emit('hoverFeatures', features);
                 }
             },
-            resetHoveredAnnotations: function () {
+            resetHoveredAnnotations() {
                 this.hoveredFeaturesHash = '';
                 this.$emit('hoverFeatures', []);
             },
         },
         watch: {
-            showAnnotationTooltip: function (show) {
+            showAnnotationTooltip(show) {
                 if (show) {
                     this.map.on('pointermove', this.updateHoveredAnnotations);
                 } else {

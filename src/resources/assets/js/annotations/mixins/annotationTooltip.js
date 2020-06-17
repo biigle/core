@@ -22,21 +22,21 @@ biigle.$component('annotations.mixins.annotationTooltip', {
             default: 'top-left',
         },
     },
-    data: function () {
+    data() {
         return {
             annotations: [],
         };
     },
     computed: {
-        hasAnnotations: function () {
+        hasAnnotations() {
             return this.annotations.length > 0;
         },
-        showThis: function () {
+        showThis() {
             return this.show && this.hasAnnotations;
         },
     },
     methods: {
-        updateAnnotations: function (features) {
+        updateAnnotations(features) {
             this.annotations = features.map(function (feature) {
                 return feature.get('annotation');
             });
@@ -45,7 +45,7 @@ biigle.$component('annotations.mixins.annotationTooltip', {
     watch: {
         show: {
             immediate: true,
-            handler: function (show) {
+            handler(show) {
                 // Do NOT pass the features as prop of this component because this would
                 // make them reactive. As the features store a reference back to the map,
                 // EVERYTHING would be made reactive.
@@ -58,10 +58,10 @@ biigle.$component('annotations.mixins.annotationTooltip', {
 
             },
         },
-        position: function (position) {
+        position(position) {
             this.overlay.setPosition(position);
         },
-        showThis: function (show) {
+        showThis(show) {
             if (show) {
                 this.$parent.map.addOverlay(this.overlay);
             } else {
@@ -69,14 +69,14 @@ biigle.$component('annotations.mixins.annotationTooltip', {
             }
         },
     },
-    mounted: function () {
+    mounted() {
         this.overlay = new ol.Overlay({
             element: this.$el,
             offset: [15, 0],
             positioning: this.positioning,
         });
     },
-    beforeDestroy: function () {
+    beforeDestroy() {
         this.$parent.map.removeOverlay(this.overlay);
     },
 });

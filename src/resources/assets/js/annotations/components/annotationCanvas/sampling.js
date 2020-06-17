@@ -35,7 +35,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
     crosshairLayer.getSource().addFeature(crosshairFeature);
 
     return {
-        data: function () {
+        data() {
             return {
                 regularSamplingRows: null,
                 regularSamplingColumns: null,
@@ -47,7 +47,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
             };
         },
         computed: {
-            regularSamplingLocations: function () {
+            regularSamplingLocations() {
                 var stepSize = [
                     this.image.width / this.regularSamplingColumns,
                     this.image.height / this.regularSamplingRows
@@ -67,7 +67,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 return locations;
             },
-            randomSamplingLocations: function () {
+            randomSamplingLocations() {
                 if (!this.randomLocationMemory.hasOwnProperty(this.image.id)) {
                     var locations = [];
                     var width = this.image.width;
@@ -85,15 +85,15 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 return this.randomLocationMemory[this.image.id];
             },
-            samplingLocations: function () {
+            samplingLocations() {
                 return this[this.annotationMode + 'Locations'];
             },
-            isSamplingAnnotationMode: function () {
+            isSamplingAnnotationMode() {
                 return this.annotationMode.endsWith('Sampling');
             },
         },
         methods: {
-            setSamplingData: function (mode, data) {
+            setSamplingData(mode, data) {
                 if (mode === 'regularSampling') {
                     if (Array.isArray(data) && data[0] > 0 && data[1] > 0) {
                         this.regularSamplingRows = data[0];
@@ -105,22 +105,22 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
                     }
                 }
             },
-            updateShownSamplingLocation: function () {
+            updateShownSamplingLocation() {
                 var index = this.currentSamplingIndex;
                 if (index !== null && index >= 0 && index < this.samplingLocations.length) {
                     this.map.getView().setCenter(this.samplingLocations[index]);
                     crosshairFeature.getGeometry().setCoordinates(this.samplingLocations[index]);
                 }
             },
-            showFirstSamplingLocation: function () {
+            showFirstSamplingLocation() {
                 this.currentSamplingIndex = 0;
                 this.updateShownSamplingLocation();
             },
-            showLastSamplingLocation: function () {
+            showLastSamplingLocation() {
                 this.currentSamplingIndex = this.samplingLocations.length - 1;
                 this.updateShownSamplingLocation();
             },
-            showPreviousSamplingLocation: function () {
+            showPreviousSamplingLocation() {
                 var value = this.currentSamplingIndex - 1;
                 if (value < 0) {
                     return false;
@@ -131,7 +131,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 return true;
             },
-            showNextSamplingLocation: function () {
+            showNextSamplingLocation() {
                 var value = this.currentSamplingIndex + 1;
                 if (value >= this.samplingLocations.length) {
                     return false;
@@ -142,20 +142,20 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 return true;
             },
-            createSampledAnnotation: function () {
+            createSampledAnnotation() {
                 var location = this.samplingLocations[this.currentSamplingIndex];
                 this.createPointAnnotationAt(location[0], location[1]);
             },
         },
         watch: {
-            isSamplingAnnotationMode: function (is) {
+            isSamplingAnnotationMode(is) {
                 if (is) {
                     this.map.addLayer(crosshairLayer);
                 } else {
                     this.map.removeLayer(crosshairLayer);
                 }
             },
-            randomSamplingCount: function () {
+            randomSamplingCount() {
                 // Clear memory if sampling count changed. Compute new locations in this
                 // case.
                 this.randomLocationMemory = {};

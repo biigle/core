@@ -1,7 +1,10 @@
-biigle.$component('annotations.components.annotationsTab', {
+import Filters from './annotationsTabFilters';
+import LabelItem from './annotationsTabLabelItem';
+
+export default {
     components: {
-        filters: biigle.$require('annotations.components.annotationsTabFilters'),
-        labelItem: biigle.$require('annotations.components.annotationsTabLabelItem'),
+        filters: Filters,
+        labelItem: LabelItem,
     },
     props: {
         hasActiveFilter: {
@@ -10,13 +13,13 @@ biigle.$component('annotations.components.annotationsTab', {
         },
         annotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
         annotationFilters: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -30,21 +33,21 @@ biigle.$component('annotations.components.annotationsTab', {
         },
         selectedAnnotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
     },
-    data: function () {
+    data() {
         return {
             //
         };
     },
     computed: {
-        labelItems: function () {
-            var labels = {};
-            var annotations = {};
-            var uniqueMap = {};
+        labelItems() {
+            let labels = {};
+            let annotations = {};
+            let uniqueMap = {};
 
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (annotationLabel) {
@@ -56,7 +59,7 @@ biigle.$component('annotations.components.annotationsTab', {
                     // Make sure each annotation is added only once for each label item.
                     // This is important if the annotation has the same label attached by
                     // multiple users.
-                    var uniqueKey = annotation.id + '-' + annotationLabel.label_id;
+                    let uniqueKey = annotation.id + '-' + annotationLabel.label_id;
                     if (!uniqueMap.hasOwnProperty(uniqueKey)) {
                         uniqueMap[uniqueKey] = null;
                         annotations[annotationLabel.label_id].push(annotation);
@@ -78,42 +81,42 @@ biigle.$component('annotations.components.annotationsTab', {
         },
     },
     methods: {
-        handleSelect: function (annotation, shift) {
+        handleSelect(annotation, shift) {
             if (annotation.selected !== false && shift) {
                 this.$emit('deselect', annotation);
             } else {
                 this.$emit('select', annotation, shift);
             }
         },
-        emitDetach: function (annotation, annotationLabel) {
+        emitDetach(annotation, annotationLabel) {
             this.$emit('detach', annotation, annotationLabel);
         },
-        emitSelectFilter: function (filter) {
+        emitSelectFilter(filter) {
             this.$emit('select-filter', filter);
         },
-        emitUnselectFilter: function () {
+        emitUnselectFilter() {
             this.$emit('unselect-filter');
         },
-        emitFocus: function (annotation) {
+        emitFocus(annotation) {
             this.$emit('focus', annotation);
         },
         // If an annotation is selected on the map the respective annotation labels
         // should be visible in the annotations tab, too. This function adjusts the
         // scrollTop of the list so all selected annotation labels are visible (if
         // possible).
-        scrollIntoView: function (annotations) {
-            var scrollElement = this.$refs.scrollList;
-            var scrollTop = scrollElement.scrollTop;
-            var height = scrollElement.offsetHeight;
-            var top = Infinity;
-            var bottom = 0;
+        scrollIntoView(annotations) {
+            let scrollElement = this.$refs.scrollList;
+            let scrollTop = scrollElement.scrollTop;
+            let height = scrollElement.offsetHeight;
+            let top = Infinity;
+            let bottom = 0;
 
-            var element;
+            let element;
             annotations.forEach(function (annotation) {
-                var elements = scrollElement.querySelectorAll(
-                    '[data-annotation-id="' + annotation.id + '"]'
+                let elements = scrollElement.querySelectorAll(
+                    `[data-annotation-id="${annotation.id}"]`
                 );
-                for (var i = elements.length - 1; i >= 0; i--) {
+                for (let i = elements.length - 1; i >= 0; i--) {
                     element = elements[i];
                     top = Math.min(element.offsetTop, top);
                     bottom = Math.max(element.offsetTop + element.offsetHeight, bottom);
@@ -135,7 +138,7 @@ biigle.$component('annotations.components.annotationsTab', {
         },
     },
     watch: {
-        selectedAnnotations: function (annotations) {
+        selectedAnnotations(annotations) {
             if (annotations.length > 0) {
                 // Wait for the annotations list to be rendered so the offsetTop of each
                 // item can be determined.
@@ -145,4 +148,4 @@ biigle.$component('annotations.components.annotationsTab', {
             }
         },
     },
-});
+};

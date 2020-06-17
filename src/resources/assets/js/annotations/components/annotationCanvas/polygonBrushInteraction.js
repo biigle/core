@@ -11,18 +11,18 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
 
     return {
         computed: {
-            isUsingPolygonBrush: function () {
+            isUsingPolygonBrush() {
                 return this.interactionMode === 'polygonBrush';
             },
-            isUsingPolygonEraser: function () {
+            isUsingPolygonEraser() {
                 return this.interactionMode === 'polygonEraser';
             },
-            isUsingPolygonFill: function () {
+            isUsingPolygonFill() {
                 return this.interactionMode === 'polygonFill';
             },
         },
         methods: {
-            togglePolygonBrush: function () {
+            togglePolygonBrush() {
                 if (this.isUsingPolygonBrush) {
                     this.resetInteractionMode();
                 } else if (!this.hasSelectedLabel) {
@@ -31,21 +31,21 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                     this.interactionMode = 'polygonBrush';
                 }
             },
-            togglePolygonEraser: function () {
+            togglePolygonEraser() {
                 if (this.isUsingPolygonEraser) {
                     this.resetInteractionMode();
                 } else if (this.canModify) {
                     this.interactionMode = 'polygonEraser';
                 }
             },
-            togglePolygonFill: function () {
+            togglePolygonFill() {
                 if (this.isUsingPolygonFill) {
                     this.resetInteractionMode();
                 } else if (this.canModify) {
                     this.interactionMode = 'polygonFill';
                 }
             },
-            toggleCurrentInteraction: function (mode) {
+            toggleCurrentInteraction(mode) {
                 if (currentInteraction) {
                     brushRadius = currentInteraction.getBrushRadius();
                     this.map.removeInteraction(currentInteraction);
@@ -91,7 +91,7 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                 }
             },
         },
-        created: function () {
+        created() {
             if (this.canAdd) {
                 biigle.$require('keyboard').on('e', this.togglePolygonBrush, 0, this.listenerSet);
             }
@@ -105,10 +105,10 @@ biigle.$component('annotations.components.annotationCanvas.polygonBrushInteracti
                 this.$watch('interactionMode', this.toggleCurrentInteraction);
             }
         },
-        mounted: function () {
+        mounted() {
             if (this.canModify) {
                 shiftClickSelectInteraction = new ol.interaction.Select({
-                    condition: function (e) {
+                    condition(e) {
                         return ol.events.condition.click(e) && ol.events.condition.shiftKeyOnly(e);
                     },
                     style: this.styles.highlight,

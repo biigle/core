@@ -1,29 +1,29 @@
-biigle.$declare('annotations.models.ShapeAnnotationFilter', function () {
-    return Vue.extend({
-        mixins: [biigle.$require('annotations.mixins.annotationFilter')],
-        data: function () {
-            return {
-                name: 'shape',
-                shapes: [],
-                placeholder: 'shape name',
-            };
+import AnnotationFilter from '../mixins/annotationFilter';
+
+export default Vue.extend({
+    mixins: [AnnotationFilter],
+    data() {
+        return {
+            name: 'shape',
+            shapes: [],
+            placeholder: 'shape name',
+        };
+    },
+    computed: {
+        items() {
+            return Object.keys(this.shapes).map((id) => {
+                return {
+                    id: parseInt(id),
+                    name: this.shapes[id],
+                };
+            });
         },
-        computed: {
-            items: function () {
-                return Object.keys(this.shapes).map(function (id) {
-                    return {
-                        id: parseInt(id),
-                        name: this.shapes[id],
-                    };
-                }, this);
-            },
+    },
+    methods: {
+        filter(annotations) {
+            return annotations.filter((annotation) => {
+                return annotation.shape_id === this.selectedItem.id;
+            });
         },
-        methods: {
-            filter: function (annotations) {
-                return annotations.filter(function (annotation) {
-                    return annotation.shape_id === this.selectedItem.id;
-                }, this);
-            },
-        },
-    });
+    },
 });

@@ -77,7 +77,7 @@ biigle.$declare('annotations.stores.styles', function () {
 
     return {
         colors: colors,
-        features: function (feature, resolution) {
+        features(feature, resolution) {
             var color = feature.get('color');
             color = color ? ('#' + color) : colors.blue;
 

@@ -1,15 +1,4 @@
-/**
- * The specific implementation of the annotations tab for the still image annotation
- * tool.
- */
-biigle.$component('annotations.components.siaAnnotationsTab', {
-    mixins: [biigle.$require('annotations.components.annotationsTab')],
-    computed: {
-        plugins: function () {
-            return biigle.$require('annotations.components.annotationsTabPlugins');
-        },
-    },
-});
+import AnnotationsTab from './annotationsTab';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -18,4 +7,17 @@ biigle.$component('annotations.components.siaAnnotationsTab', {
  *
  * @type {Object}
  */
-biigle.$declare('annotations.components.annotationsTabPlugins', {});
+export let plugins = {};
+
+/**
+ * The specific implementation of the annotations tab for the still image annotation
+ * tool.
+ */
+export default {
+    mixins: [AnnotationsTab],
+    computed: {
+        plugins() {
+            return plugins;
+        },
+    },
+};

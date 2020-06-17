@@ -1,9 +1,9 @@
 import VolumesApi from './api/volumes';
 import {FilterList} from './import';
 import {FilterSelect} from './import';
-import {VolumeFilters} from './import';
+import {handleErrorResponse} from './import';
 import {LabelTypeahead} from './import';
-import {Messages} from './import';
+import {VolumeFilters} from './import';
 
 /**
  * Annotation label filter for the volume overview filters.
@@ -31,7 +31,7 @@ if (Array.isArray(VolumeFilters)) {
             },
             created() {
                 VolumesApi.queryAnnotationLabels({id: this.volumeId})
-                    .then(this.gotItems, Messages.handleErrorResponse);
+                    .then(this.gotItems, handleErrorResponse);
             },
         },
         getSequence(volumeId, label) {

@@ -8,34 +8,34 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
         measureInteraction;
 
     return {
-        data: function () {
+        data() {
             return {
                 hasMeasureFeature: false,
                 measureFeaturePosition: [0, 0],
             };
         },
         computed: {
-            isMeasuring: function () {
+            isMeasuring() {
                 return this.interactionMode === 'measure';
             },
         },
         methods: {
-            toggleMeasuring: function () {
+            toggleMeasuring() {
                 if (this.isMeasuring) {
                     this.resetInteractionMode();
                 } else {
                     this.interactionMode = 'measure';
                 }
             },
-            handleMeasureDrawStart: function (e) {
+            handleMeasureDrawStart(e) {
                 measureLayer.getSource().clear();
                 this.setMeasureFeature(e.feature);
             },
-            updateMeasureFeature: function (e) {
+            updateMeasureFeature(e) {
                 this.measureFeaturePosition = e.target.getGeometry().getLastCoordinate();
                 this.$emit('changeMeasureFeature', [e.target]);
             },
-            setMeasureFeature: function (feature) {
+            setMeasureFeature(feature) {
                 this.measureFeature = feature;
                 this.hasMeasureFeature = !!feature;
 
@@ -47,7 +47,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
             },
         },
         watch: {
-            isMeasuring: function (measuring) {
+            isMeasuring(measuring) {
                 if (measuring) {
                     this.map.addLayer(measureLayer);
                     this.map.addInteraction(measureInteraction);
@@ -59,7 +59,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                     this.map.removeInteraction(measureInteraction);
                 }
             },
-            image: function () {
+            image() {
                 if (this.isMeasuring) {
                     // Wait for the new image to be propagated down to the measureTooltip
                     // then update it. We have to do this manually since we don't want to
@@ -70,7 +70,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                 }
             },
         },
-        created: function () {
+        created() {
             measureLayer = new ol.layer.Vector({
                 source: new ol.source.Vector(),
                 style: biigle.$require('annotations.stores.styles').editing,

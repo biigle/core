@@ -10,7 +10,7 @@ biigle.$component('annotations.components.zoomLevelIndicator', {
         },
     },
     computed: {
-        zoomLevelText: function () {
+        zoomLevelText() {
             var level = Math.round(100 / this.resolution) / 100;
 
             // Level may be NaN if the resolution has not been initialized.

@@ -21,30 +21,30 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
 
     return {
         computed: {
-            isDrawing: function () {
+            isDrawing() {
                 return this.interactionMode.startsWith('draw');
             },
-            isDrawingPoint: function () {
+            isDrawingPoint() {
                 return this.interactionMode === 'drawPoint';
             },
-            isDrawingRectangle: function () {
+            isDrawingRectangle() {
                 return this.interactionMode === 'drawRectangle';
             },
-            isDrawingCircle: function () {
+            isDrawingCircle() {
                 return this.interactionMode === 'drawCircle';
             },
-            isDrawingLineString: function () {
+            isDrawingLineString() {
                 return this.interactionMode === 'drawLineString';
             },
-            isDrawingPolygon: function () {
+            isDrawingPolygon() {
                 return this.interactionMode === 'drawPolygon';
             },
-            isDrawingEllipse: function () {
+            isDrawingEllipse() {
                 return this.interactionMode === 'drawEllipse';
             },
         },
         methods: {
-            draw: function (name) {
+            draw(name) {
                 if (this['isDrawing' + name]) {
                     this.resetInteractionMode();
                 } else if (!this.hasSelectedLabel) {
@@ -53,25 +53,25 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
                     this.interactionMode = 'draw' + name;
                 }
             },
-            drawPoint: function () {
+            drawPoint() {
                 this.draw('Point');
             },
-            drawRectangle: function () {
+            drawRectangle() {
                 this.draw('Rectangle');
             },
-            drawCircle: function () {
+            drawCircle() {
                 this.draw('Circle');
             },
-            drawLineString: function () {
+            drawLineString() {
                 this.draw('LineString');
             },
-            drawPolygon: function () {
+            drawPolygon() {
                 this.draw('Polygon');
             },
-            drawEllipse: function () {
+            drawEllipse() {
                 this.draw('Ellipse');
             },
-            maybeUpdateDrawInteractionMode: function (mode) {
+            maybeUpdateDrawInteractionMode(mode) {
                 if (drawInteraction) {
                     this.map.removeInteraction(drawInteraction);
                     drawInteraction = undefined;
@@ -90,13 +90,13 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
             },
         },
         watch: {
-            selectedLabel: function (label) {
+            selectedLabel(label) {
                 if (this.isDrawing && !label) {
                     this.resetInteractionMode();
                 }
             },
         },
-        created: function () {
+        created() {
             if (this.canAdd) {
                 var kb = biigle.$require('keyboard');
                 kb.on('a', this.drawPoint, 0, this.listenerSet);

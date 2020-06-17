@@ -17,7 +17,7 @@ biigle.$component('annotations.components.mousePositionIndicator', {
         },
     },
     computed: {
-        positionText: function () {
+        positionText() {
             return this.position.join(' × ');
         },
     },

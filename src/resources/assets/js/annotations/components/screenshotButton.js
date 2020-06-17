@@ -1,17 +1,18 @@
+import FilenameTracker from '../mixins/imageFilenameTracker';
+import {Messages} from '../import';
+import {Events} from '../import';
+
 /**
  * A button that produces a screenshot of the map
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.screenshotButton', {
-    mixins: [biigle.$require('annotations.mixins.imageFilenameTracker')],
+export default {
+    mixins: [FilenameTracker],
     computed: {
-        messages: function () {
-            return biigle.$require('messages.store');
-        },
-        filename: function () {
+        filename() {
             if (this.currentImageFilename) {
-                var name = this.currentImageFilename.split('.');
+                let name = this.currentImageFilename.split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -24,13 +25,13 @@ biigle.$component('annotations.components.screenshotButton', {
     },
     methods: {
         // see: https://gist.github.com/remy/784508
-        trimCanvas: function (canvas) {
-            var ctx = canvas.getContext('2d');
-            var copy = document.createElement('canvas').getContext('2d');
-            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            var l = pixels.data.length;
-            var i, x, y;
-            var bound = {
+        trimCanvas(canvas) {
+            let ctx = canvas.getContext('2d');
+            let copy = document.createElement('canvas').getContext('2d');
+            let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let l = pixels.data.length;
+            let i, x, y;
+            let bound = {
                 top: null,
                 left: null,
                 right: null,
@@ -66,9 +67,9 @@ biigle.$component('annotations.components.screenshotButton', {
                 }
             }
 
-            var trimHeight = bound.bottom - bound.top;
-            var trimWidth = bound.right - bound.left;
-            var trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+            let trimHeight = bound.bottom - bound.top;
+            let trimWidth = bound.right - bound.left;
+            let trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
 
             copy.canvas.width = trimWidth;
             copy.canvas.height = trimHeight;
@@ -76,21 +77,21 @@ biigle.$component('annotations.components.screenshotButton', {
 
             return copy.canvas;
         },
-        makeBlob: function (canvas) {
+        makeBlob(canvas) {
             try {
                 canvas = this.trimCanvas(canvas);
             } catch (error) {
                 return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
 
-            var type = 'image/png';
+            let type = 'image/png';
             if (!HTMLCanvasElement.prototype.toBlob) {
                 // fallback if toBlob is not implemented see 'Polyfill':
                 // https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/toBlob
-                var binStr = atob(canvas.toDataURL(type).split(',')[1]);
-                var len = binStr.length;
-                var arr = new Uint8Array(len);
-                for (var i = 0; i < len; i++ ) {
+                let binStr = atob(canvas.toDataURL(type).split(',')[1]);
+                let len = binStr.length;
+                let arr = new Uint8Array(len);
+                for (let i = 0; i < len; i++ ) {
                     arr[i] = binStr.charCodeAt(i);
                 }
 
@@ -103,8 +104,8 @@ biigle.$component('annotations.components.screenshotButton', {
                 });
             }
         },
-        download: function (blob) {
-            var a = document.createElement('a');
+        download(blob) {
+            let a = document.createElement('a');
             a.style = 'display: none';
             a.download = this.filename;
             a.href = URL.createObjectURL(blob);
@@ -116,25 +117,24 @@ biigle.$component('annotations.components.screenshotButton', {
                 URL.revokeObjectURL(a.href);
             }, 100);
         },
-        capture: function () {
+        capture() {
             if (this.map) {
-                var self = this;
-                this.map.once('postcompose', function (e) {
-                    self.makeBlob(e.context.canvas)
-                        .then(self.download)
-                        .catch(self.handleError);
+                this.map.once('postcompose', (e) => {
+                    this.makeBlob(e.context.canvas)
+                        .then(this.download)
+                        .catch(this.handleError);
                 });
                 this.map.renderSync();
             }
         },
-        handleError: function (message) {
-            this.messages.danger(message);
+        handleError(message) {
+            Messages.danger(message);
         },
-        setMap: function (map) {
+        setMap(map) {
             this.map = map;
         },
     },
-    created: function () {
-        biigle.$require('events').$on('annotations.map.init', this.setMap);
+    created() {
+        Events.$on('annotations.map.init', this.setMap);
     },
-});
+};

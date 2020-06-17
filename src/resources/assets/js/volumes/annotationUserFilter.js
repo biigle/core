@@ -1,7 +1,7 @@
 import VolumesApi from './api/volumes';
 import {FilterList} from './import';
 import {FilterSelect} from './import';
-import {Messages} from './import';
+import {handleErrorResponse} from './import';
 import {VolumeFilters} from './import';
 import {VolumesApi as CoreVolumesApi} from './import';
 
@@ -29,7 +29,7 @@ if (Array.isArray(VolumeFilters)) {
             },
             created() {
                 CoreVolumesApi.queryUsers({id: this.volumeId})
-                    .then(this.parseUsernames, Messages.handleErrorResponse)
+                    .then(this.parseUsernames, handleErrorResponse)
                     .then(this.gotItems);
             },
         },

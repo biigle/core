@@ -1,10 +1,12 @@
+import {Events} from '../import';
+
 /**
  * A mixin that keeps track of the current image filename
  *
  * @type {Object}
  */
-biigle.$component('annotations.mixins.imageFilenameTracker', {
-    data: function () {
+export default {
+    data() {
         return {
             filenameMap: {},
             currentImageId: null,
@@ -12,24 +14,23 @@ biigle.$component('annotations.mixins.imageFilenameTracker', {
         };
     },
     computed: {
-        currentImageFilename: function () {
+        currentImageFilename() {
             return this.filenameMap[this.currentImageId] || this.defaultFilename;
         },
     },
     methods: {
-        updateImageId: function (id) {
+        updateImageId(id) {
             this.currentImageId = id;
         },
     },
-    created: function () {
-        var events = biigle.$require('events');
-        var imagesIds = biigle.$require('annotations.imagesIds');
-        var imagesFilenames = biigle.$require('annotations.imagesFilenames');
-        var map = this.filenameMap;
+    created() {
+        let imagesIds = biigle.$require('annotations.imagesIds');
+        let imagesFilenames = biigle.$require('annotations.imagesFilenames');
+        let map = this.filenameMap;
 
         imagesIds.forEach(function (id, index) {
             map[id] = imagesFilenames[index];
         });
-        events.$on('images.change', this.updateImageId);
+        Events.$on('images.change', this.updateImageId);
     },
-});
+};

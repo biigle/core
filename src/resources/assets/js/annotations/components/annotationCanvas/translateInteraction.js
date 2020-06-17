@@ -8,12 +8,12 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
 
     return {
         computed: {
-            isTranslating: function () {
+            isTranslating() {
                 return this.interactionMode === 'translate';
             },
         },
         methods: {
-            toggleTranslating: function () {
+            toggleTranslating() {
                 if (this.isTranslating) {
                     this.resetInteractionMode();
                 } else {
@@ -22,13 +22,13 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
             },
         },
         watch: {
-            isTranslating: function (translating) {
+            isTranslating(translating) {
                 if (this.canModify) {
                     translateInteraction.setActive(translating);
                 }
             },
         },
-        mounted: function () {
+        mounted() {
             // Initialize the translate interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             if (this.canModify) {

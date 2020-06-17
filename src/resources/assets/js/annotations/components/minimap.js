@@ -20,13 +20,13 @@ biigle.$component('annotations.components.minimap', function () {
                 default: 200,
             },
         },
-        data: function () {
+        data() {
             return {
                 //
             };
         },
         computed: {
-            minimap: function () {
+            minimap() {
                 return new ol.Map({
                     // remove controls
                     controls: [],
@@ -34,25 +34,25 @@ biigle.$component('annotations.components.minimap', function () {
                     interactions: []
                 });
             },
-            viewport: function () {
+            viewport() {
                 return new ol.Feature();
             },
         },
         methods: {
-            updateViewport: function () {
+            updateViewport() {
                 // The map size and center might be undefined if the minimap is created
                 // initially. This function will be called again once the map is ready.
                 if (this.mapSize && this.mapView.getCenter()) {
                     this.viewport.setGeometry(ol.geom.Polygon.fromExtent(this.mapView.calculateExtent(this.mapSize)));
                 }
             },
-            dragViewport: function (e) {
+            dragViewport(e) {
                 this.mapView.setCenter(e.coordinate);
             },
-            updateMapSize: function (e) {
+            updateMapSize(e) {
                 this.mapSize = e.target.getSize();
             },
-            updateMapView: function (e) {
+            updateMapView(e) {
                 if (this.mapView) {
                     this.mapView.un('change:center', this.updateViewport);
                     this.mapView.un('change:resolution', this.updateViewport);
@@ -61,7 +61,7 @@ biigle.$component('annotations.components.minimap', function () {
                 this.mapView.on('change:center', this.updateViewport);
                 this.mapView.on('change:resolution', this.updateViewport);
             },
-            updateElementSize: function () {
+            updateElementSize() {
                 var imageWidth = this.extent[2];
                 var imageHeight = this.extent[3];
 
@@ -82,7 +82,7 @@ biigle.$component('annotations.components.minimap', function () {
                 this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
                 this.minimap.updateSize();
             },
-            refreshImageLayer: function (e) {
+            refreshImageLayer(e) {
                 // Set or refresh the layer that displays the image. This is done after
                 // the minimap element was created. The annotationCanvas can display
                 // either a regular image or a tiled image. If the type changes we have
@@ -97,7 +97,7 @@ biigle.$component('annotations.components.minimap', function () {
                     }
                 }
             },
-            initImageLayer: function (layers) {
+            initImageLayer(layers) {
                 layers.getArray().forEach(function (layer) {
                     this.refreshImageLayer({element: layer});
                 }, this);
@@ -105,11 +105,11 @@ biigle.$component('annotations.components.minimap', function () {
         },
         watch: {
             // Refresh the view if the extent (i.e. image size) changed.
-            extent: function () {
+            extent() {
                 this.updateElementSize();
             },
         },
-        created: function () {
+        created() {
             var viewportSource = new ol.source.Vector();
             viewportSource.addFeature(this.viewport);
 
@@ -135,14 +135,14 @@ biigle.$component('annotations.components.minimap', function () {
             this.minimap.on('click', this.dragViewport);
             this.initImageLayer(map.getLayers());
         },
-        mounted: function () {
+        mounted() {
             this.updateElementSize();
             this.minimap.setTarget(this.$el);
             // Manually update the viewport in case the minimap was created/toggled when
             // the annotation map is already there.
             this.updateViewport();
         },
-        beforeDestroy: function () {
+        beforeDestroy() {
             var map = this.$parent.map;
             this.mapView.un('change:center', this.updateViewport);
             this.mapView.un('change:resolution', this.updateViewport);

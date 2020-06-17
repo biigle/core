@@ -16,7 +16,7 @@ biigle.$component('annotations.components.labelTooltip', {
         '</ul>' +
     '</div>',
     computed: {
-        annotationLabels: function () {
+        annotationLabels() {
             return this.annotations.map(function (annotation) {
                 return annotation.labels.map(function (annotationLabel) {
                     return annotationLabel.label.name;

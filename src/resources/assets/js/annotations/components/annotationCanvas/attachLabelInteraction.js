@@ -8,24 +8,24 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
 
     return {
         computed: {
-            isAttaching: function () {
+            isAttaching() {
                 return this.interactionMode === 'attach';
             },
         },
         methods: {
-            toggleAttaching: function () {
+            toggleAttaching() {
                 if (this.isAttaching) {
                     this.resetInteractionMode();
                 } else {
                     this.interactionMode = 'attach';
                 }
             },
-            handleAttachLabel: function (e) {
+            handleAttachLabel(e) {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
             },
         },
         watch: {
-            isAttaching: function (attaching) {
+            isAttaching(attaching) {
                 if (this.canAdd) {
                     if (attaching && !this.hasSelectedLabel) {
                         this.requireSelectedLabel();
@@ -34,13 +34,13 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
                     }
                 }
             },
-            selectedLabel: function (label) {
+            selectedLabel(label) {
                 if (!label && this.isAttaching) {
                     this.resetInteractionMode();
                 }
             },
         },
-        mounted: function () {
+        mounted() {
             // Initialize the attach interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             if (this.canAdd) {

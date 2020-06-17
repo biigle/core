@@ -13,20 +13,20 @@ biigle.$component('annotations.components.measureTooltip', {
         biigle.$require('annotations.mixins.annotationTooltip'),
         biigle.$require('annotations.mixins.measureComponent'),
     ],
-    data: function () {
+    data() {
         return {
             measuredGeometries: [],
         };
     },
     computed: {
-        areaUnitMultipliers: function () {
+        areaUnitMultipliers() {
             return this.unitMultipliers.map(function (multiplier) {
                 return Math.pow(multiplier, 2);
             });
         },
     },
     methods: {
-        updateGeometries: function (features) {
+        updateGeometries(features) {
             this.measuredGeometries = features.map(function (feature) {
                     return feature.getGeometry();
                 })
@@ -37,7 +37,7 @@ biigle.$component('annotations.components.measureTooltip', {
                     return this.measure(geom);
                 }, this);
         },
-        measure: function (geom) {
+        measure(geom) {
             if (geom.getArea) {
                 return this.formatArea(geom.getArea());
             } else if (geom.getLength) {
@@ -48,13 +48,13 @@ biigle.$component('annotations.components.measureTooltip', {
 
             return '';
         },
-        isAeraGeometry: function (geom) {
+        isAeraGeometry(geom) {
             return geom instanceof ol.geom.Polygon || geom instanceof ol.geom.Circle;
         },
-        isLengthGeometry: function (geom) {
+        isLengthGeometry(geom) {
             return geom instanceof ol.geom.LineString;
         },
-        formatArea: function (area) {
+        formatArea(area) {
             var unit = 'px²';
 
             if (this.hasArea) {
@@ -66,7 +66,7 @@ biigle.$component('annotations.components.measureTooltip', {
 
             return this.formatMeasurement(area, unit, 3);
         },
-        formatLength: function (length) {
+        formatLength(length) {
             var unit = 'px';
 
             if (this.hasArea) {
@@ -78,11 +78,11 @@ biigle.$component('annotations.components.measureTooltip', {
 
             return this.formatMeasurement(length, unit);
         },
-        formatMeasurement: function (measurement, unit, decimals) {
+        formatMeasurement(measurement, unit, decimals) {
             decimals = Math.pow(10, decimals || 1);
             return (Math.round(measurement * decimals) / decimals) + ' ' + unit;
         },
-        unitNearest: function (measurement, multipliers, min) {
+        unitNearest(measurement, multipliers, min) {
             if (measurement === 0) {
                 return multipliers.length - 1;
             }
@@ -100,7 +100,7 @@ biigle.$component('annotations.components.measureTooltip', {
         },
     },
     watch: {
-        show: function (show) {
+        show(show) {
             // Do NOT pass the features as prop of this component because this would make
             // them reactive. As the features store a reference back to the map,
             // EVERYTHING would be made reactive.

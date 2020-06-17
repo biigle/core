@@ -8,22 +8,22 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
 
     return {
         computed: {
-            crossOrigin: function () {
+            crossOrigin() {
                 return this.image && this.image.crossOrigin;
             },
-            isMagicWanding: function () {
+            isMagicWanding() {
                 return this.interactionMode === 'magicWand' && !this.crossOrigin;
             },
         },
         methods: {
-            toggleMagicWand: function () {
+            toggleMagicWand() {
                 if (this.isMagicWanding) {
                     this.resetInteractionMode();
                 } else if (magicWandInteraction) {
                     this.interactionMode = 'magicWand';
                 }
             },
-            maybeUpdateMagicWandSnapshot: function (image) {
+            maybeUpdateMagicWandSnapshot(image) {
                 // The magic wand interaction is unable to detect any change if the
                 // image is switched. So if the interaction is currently active we
                 // have to update it manually here.
@@ -31,7 +31,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
                     magicWandInteraction.updateSnapshot();
                 }
             },
-            maybeSetMagicWandLayer: function (image, oldImage) {
+            maybeSetMagicWandLayer(image, oldImage) {
                 // Swap source layers for the magic wand interaction if image types
                 // change.
                 if (image && !this.crossOrigin) {
@@ -46,7 +46,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
                     }
                 }
             },
-            toggleMagicWandInteraction: function (isMagicWanding) {
+            toggleMagicWandInteraction(isMagicWanding) {
                 if (!isMagicWanding) {
                     magicWandInteraction.setActive(false);
                 } else if (this.hasSelectedLabel) {
@@ -56,7 +56,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
                 }
             }
         },
-        created: function () {
+        created() {
             if (this.canAdd) {
                 biigle.$require('keyboard').on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
                 this.$watch('image', this.maybeUpdateMagicWandSnapshot);
@@ -64,7 +64,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
                 this.$watch('isMagicWanding', this.toggleMagicWandInteraction);
             }
         },
-        mounted: function () {
+        mounted() {
             // Initialize the magic wand interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             // The magic wand interaction is not available for remote images.

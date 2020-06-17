@@ -1,31 +1,45 @@
+import {LabelTrees} from '../import';
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsLabelsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+export let plugins = {};
+
 /**
  * The labels tab of the annotator
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.labelsTab', {
+export default {
     components: {
-        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+        labelTrees: LabelTrees,
     },
-    data: function () {
+    data() {
         return {
-            labelTrees: biigle.$require('annotations.labelTrees'),
+            labelTrees: [],
             selectedLabel: null,
         };
     },
     computed: {
-        plugins: function () {
-            return biigle.$require('annotations.components.labelsTabPlugins');
+        plugins() {
+            return plugins;
         },
     },
     methods: {
-        handleSelectedLabel: function (label) {
+        handleSelectedLabel(label) {
             this.selectedLabel = label;
             this.$emit('select', label);
         },
-        handleDeselectedLabel: function (label) {
+        handleDeselectedLabel(label) {
             this.selectedLabel = null;
             this.$emit('select', null);
         },
+    },
+    created() {
+        this.labelTrees = biigle.$require('annotations.labelTrees');
     }
-});
+};

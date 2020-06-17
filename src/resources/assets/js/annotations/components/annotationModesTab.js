@@ -1,13 +1,19 @@
+import Settings from '../stores/settings';
+import {Events} from '../import';
+import {Keyboard} from '../import';
+import {PowerToggle} from '../import';
+import {UrlParams} from '../import';
+
 /**
  * The annotation modes tab of the annotator
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.annotationModesTab', {
+export default {
     components: {
-        powerToggle: biigle.$require('core.components.powerToggle'),
+        powerToggle: PowerToggle,
     },
-    data: function () {
+    data() {
         return {
             mode: 'default',
             modes: [
@@ -28,72 +34,66 @@ biigle.$component('annotations.components.annotationModesTab', {
         };
     },
     computed: {
-        keyboard: function () {
-            return biigle.$require('keyboard');
-        },
-        isVolareActive: function () {
+        isVolareActive() {
             return this.mode === 'volare';
         },
-        isLawnmowerActive: function () {
+        isLawnmowerActive() {
             return this.mode === 'lawnmower';
         },
-        isRandomSamplingActive: function () {
+        isRandomSamplingActive() {
             return this.mode === 'randomSampling';
         },
-        isRegularSamplingActive: function () {
+        isRegularSamplingActive() {
             return this.mode === 'regularSampling';
-        },
-        settings: function () {
-            return biigle.$require('annotations.stores.settings');
         },
     },
     methods: {
-        startVolare: function () {
+        startVolare() {
             this.setMode('volare');
         },
-        startLawnmower: function () {
+        startLawnmower() {
             this.setMode('lawnmower');
         },
-        startRandomSampling: function () {
+        startRandomSampling() {
             this.setMode('randomSampling');
         },
-        startRegularSampling: function () {
+        startRegularSampling() {
             this.setMode('regularSampling');
         },
-        setMode: function (mode) {
+        setMode(mode) {
             if (this.modes.indexOf(mode) !== -1) {
                 this.mode = mode;
             }
         },
-        resetMode: function () {
+        resetMode() {
             this.mode = 'default';
         },
-        emitAttachLabel: function () {
+        emitAttachLabel() {
             this.$emit('attach-label');
         },
-        emitCreateSample: function () {
+        emitCreateSample() {
             this.$emit('create-sample');
         },
     },
     watch: {
-        mode: function (mode, oldMode) {
+        mode(mode, oldMode) {
             switch (oldMode) {
                 case 'volare':
-                    this.keyboard.off('Enter', this.emitAttachLabel);
+                    Keyboard.off('Enter', this.emitAttachLabel);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
-                    this.keyboard.off('Enter', this.emitCreateSample);
+                    Keyboard.off('Enter', this.emitCreateSample);
                     break;
             }
 
             switch (mode) {
                 case 'volare':
-                    this.keyboard.on('Enter', this.emitAttachLabel);
+                    Keyboard.on('Enter', this.emitAttachLabel);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
-                    this.keyboard.on('Enter', this.emitCreateSample);
+                    Keyboard.on('Enter', this.emitCreateSample);
                     break;
             }
 
@@ -109,27 +109,26 @@ biigle.$component('annotations.components.annotationModesTab', {
                     this.$emit('change', mode);
             }
         },
-        randomSamplingNumber: function (number) {
-            this.settings.set('randomSamplingNumber', number);
+        randomSamplingNumber(number) {
+            Settings.set('randomSamplingNumber', number);
         },
-        regularSamplingRows: function (number) {
-            this.settings.set('regularSamplingRows', number);
+        regularSamplingRows(number) {
+            Settings.set('regularSamplingRows', number);
         },
-        regularSamplingColumns: function (number) {
-            this.settings.set('regularSamplingColumns', number);
+        regularSamplingColumns(number) {
+            Settings.set('regularSamplingColumns', number);
         },
     },
-    created: function () {
-        this.restoreKeys.forEach(function (key) {
-            this[key] = this.settings.get(key);
-        }, this);
+    created() {
+        this.restoreKeys.forEach((key) => {
+            this[key] = Settings.get(key);
+        });
 
-        var mode = biigle.$require('urlParams').get('annotationMode');
+        let mode = UrlParams.get('annotationMode');
         if (mode) {
-            var self = this;
-            biigle.$require('events').$once('images.change', function () {
-                self.setMode(mode);
+            Events.$once('images.change', () => {
+                this.setMode(mode);
             });
         }
     },
-});
+};

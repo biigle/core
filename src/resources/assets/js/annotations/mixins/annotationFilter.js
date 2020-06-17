@@ -1,15 +1,16 @@
-biigle.$component('annotations.mixins.annotationFilter', {
-    template:
-    '<typeahead' +
-        ' :items="items"' +
-        ' :placeholder="placeholder"' +
-        ' :value="selectedItemName"' +
-        ' @select="select"' +
-        '></typeahead>',
+import {Typeahead} from '../import';
+
+export default {
+    template: `<typeahead
+            :items="items"
+            :placeholder="placeholder"
+            :value="selectedItemName"
+            @select="select"
+        ></typeahead>`,
     components: {
-        typeahead: biigle.$require('core.components.typeahead'),
+        typeahead: Typeahead,
     },
-    data: function () {
+    data() {
         return {
             name: '',
             placeholder: '',
@@ -17,26 +18,26 @@ biigle.$component('annotations.mixins.annotationFilter', {
         };
     },
     computed: {
-        items: function () {
+        items() {
             return [];
         },
-        selectedItemName: function () {
+        selectedItemName() {
             return this.selectedItem ? this.selectedItem.name : '';
         },
     },
     methods: {
-        select: function (item) {
+        select(item) {
             this.selectedItem = item;
             this.$emit('select', this);
         },
-        filter: function (annotations) {
+        filter(annotations) {
             return annotations;
         },
-        reset: function () {
+        reset() {
             this.selectedItem = null;
         },
     },
-    created: function () {
+    created() {
         this.$mount();
     },
-});
+};

@@ -38,7 +38,7 @@ biigle.$component('annotations.components.controlButton', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             mouseOver: false,
             timeout: null,
@@ -46,49 +46,49 @@ biigle.$component('annotations.components.controlButton', {
         };
     },
     computed: {
-        classObject: function () {
+        classObject() {
             return {
                 active: this.active,
                 'control-button--open': this.showSubControls,
             };
         },
-        iconClass: function () {
+        iconClass() {
             if (this.icon.startsWith('fa-')) {
                 return 'fa fa-fw ' + this.icon;
             }
 
             return 'icon icon-white ' + this.icon;
         },
-        hasSubControls: function () {
+        hasSubControls() {
             return this.$slots.hasOwnProperty('default');
         },
-        showSubControls: function () {
+        showSubControls() {
             return this.mouseOver || this.hasActiveSubControl || this.open;
         },
-        hasActiveSubControl: function () {
+        hasActiveSubControl() {
             return this.activeSubControls > 0;
         },
     },
     methods: {
-        handleClick: function () {
+        handleClick() {
             if (!this.disabled) {
                 this.$emit('click');
             }
         },
-        handleMouseEnter: function () {
+        handleMouseEnter() {
             if (!this.disabled && this.hover) {
                 this.mouseOver = true;
             }
             window.clearTimeout(this.timeout);
         },
-        handleMouseLeave: function () {
+        handleMouseLeave() {
             var self = this;
             window.clearTimeout(this.timeout);
             this.timeout = window.setTimeout(function () {
                 self.mouseOver = false;
             }, 200);
         },
-        updateActiveSubControls: function (active) {
+        updateActiveSubControls(active) {
             if (active) {
                 this.activeSubControls += 1;
             } else {
@@ -97,14 +97,14 @@ biigle.$component('annotations.components.controlButton', {
         }
     },
     watch: {
-        active: function (active) {
+        active(active) {
             this.$parent.$emit('control-button-active', active);
         },
     },
-    created: function () {
+    created() {
         this.$on('control-button-active', this.updateActiveSubControls);
     },
-    mounted: function () {
+    mounted() {
         if (this.active) {
             this.$parent.$emit('control-button-active', true);
         }

@@ -3,8 +3,8 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.colorAdjustmentTab', {
-    data: function () {
+export default {
+    data() {
         return {
             isBrightnessRgbActive: false,
             colorAdjustment: {
@@ -16,7 +16,7 @@ biigle.$component('annotations.components.colorAdjustmentTab', {
         };
     },
     methods: {
-        resetType: function (type, index) {
+        resetType(type, index) {
             if (index !== undefined) {
                 // Use splice so Vue is able to detect the change.
                 this.colorAdjustment[type].splice(index, 1, 0);
@@ -26,14 +26,14 @@ biigle.$component('annotations.components.colorAdjustmentTab', {
                 });
             }
         },
-        reset: function () {
-            for (var type in this.colorAdjustment) {
+        reset() {
+            for (let type in this.colorAdjustment) {
                 if (this.colorAdjustment.hasOwnProperty(type)) {
                     this.resetType(type);
                 }
             }
         },
-        toggleBrightnessRgb: function () {
+        toggleBrightnessRgb() {
             if (this.isBrightnessRgbActive) {
                 this.resetType('brightnessRGB');
             } else {
@@ -44,10 +44,10 @@ biigle.$component('annotations.components.colorAdjustmentTab', {
     },
     watch: {
         colorAdjustment: {
-            handler: function () {
+            handler() {
                 this.$emit('change', this.colorAdjustment);
             },
             deep: true,
         },
     },
-});
+};
