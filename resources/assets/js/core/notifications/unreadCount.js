@@ -5,10 +5,10 @@ import Store from './store';
  *
  * Shows the number of unread notifications.
  */
-export default new Vue({
+export default {
     computed: {
         count() {
             return Store.countUnread;
         },
     },
-});
+};

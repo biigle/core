@@ -7,7 +7,7 @@ import Store from './store';
  * are available.
  */
 
-export default new Vue({
+export default {
     computed: {
         unread() {
             // When on the notifications view, update unread state "live"
@@ -28,4 +28,4 @@ export default new Vue({
             return `You have ${this.unreadText} unread notification(s)`;
         },
     }
-});
+};

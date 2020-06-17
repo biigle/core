@@ -55,7 +55,7 @@ let notification = {
     },
 };
 
-export default new Vue({
+export default {
     components: {
         notification: notification
     },
@@ -70,8 +70,8 @@ export default new Vue({
             return Store.countUnread > 0;
         },
     },
-    mounted() {
+    created() {
         Store.initialize();
         this.notifications = Store.all;
     },
-});
+};

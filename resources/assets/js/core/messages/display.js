@@ -43,7 +43,7 @@ var message = {
  *
  * Shows and handles closing of new popup messages.
  */
-export default new Vue({
+export default {
     components: {
         message: message,
     },
@@ -59,4 +59,4 @@ export default new Vue({
             });
         }
     },
-});
+};

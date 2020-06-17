@@ -6,7 +6,7 @@
 // support initial inline data although we want to have it from a possible failed
 // validation.
 
-export default new Vue({
+export default {
     data: {
         body: '',
     },
@@ -17,4 +17,4 @@ export default new Vue({
             this.body = textarea.value;
         }
     },
-});
+};
