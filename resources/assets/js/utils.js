@@ -8,6 +8,10 @@ let mount = function (id, vm) {
     window.addEventListener('load', function () {
         let element = document.getElementById(id);
         if (element) {
+            if (!(vm instanceof Vue)) {
+                vm = new Vue(vm);
+            }
+
             vm.$mount(element);
         }
     });
