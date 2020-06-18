@@ -11,12 +11,13 @@
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "devDependencies": {
+    "@biigle/ol": "^5.3.0",
     "cross-env": "^5.1",
     "laravel-mix": "^5.0.1",
+    "laravel-mix-artisan-publish": "git://github.com/mzur/laravel-mix-artisan-publish.git",
     "resolve-url-loader": "^3.1.0",
     "sass": "^1.15.2",
     "sass-loader": "^8.0.0",
-    "vue-template-compiler": "^2.6.11",
-    "laravel-mix-artisan-publish": "git://github.com/mzur/laravel-mix-artisan-publish.git"
+    "vue-template-compiler": "^2.6.11"
   }
 }
