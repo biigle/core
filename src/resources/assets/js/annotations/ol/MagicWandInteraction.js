@@ -1,15 +1,20 @@
+import Feature from '@biigle/ol/Feature';
+import MagicWand from 'magic-wand-tool';
+import Point from '@biigle/ol/geom/Point';
+import PointerInteraction from '@biigle/ol/interaction/Pointer';
+import Polygon from '@biigle/ol/geom/Polygon';
+import RegularShape from '@biigle/ol/style/RegularShape';
+import Stroke from '@biigle/ol/style/Stroke';
+import Style from '@biigle/ol/style/Style';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
+
 /**
  * Control for drawing polygons using fuzzy matching of colors.
  */
-biigle.$declare('annotations.ol.MagicWandInteraction', function () {
-    function MagicWandInteraction(options) {
-        ol.interaction.Pointer.call(this, {
-            handleUpEvent: this.handleUpEvent,
-            handleDownEvent: this.handleDownEvent,
-            handleMoveEvent: this.handleMoveEvent,
-            handleDragEvent: this.handleDragEvent,
-        });
-
+class MagicWandInteraction extends PointerInteraction {
+    constructor(options) {
+        super(options);
         this.on('change:active', this.toggleActive);
 
         // The image layer to use as source for the magic wand tool.
@@ -58,8 +63,8 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
         this.sketchSource = options.source;
 
         if (this.sketchSource === undefined) {
-            this.sketchSource = new ol.source.Vector();
-            this.map.addLayer(new ol.layer.Vector({
+            this.sketchSource = new VectorSource();
+            this.map.addLayer(new VectorLayer({
                 source: this.sketchSource,
                 zIndex: 200,
             }));
@@ -69,21 +74,21 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
 
         // The point that indicates the downPoint where drawing of the sketch started.
         this.isShowingPoint = false;
-        this.indicatorPoint = new ol.Feature(new ol.geom.Point([20, 20]));
+        this.indicatorPoint = new Feature(new Point([20, 20]));
         if (options.indicatorPointStyle !== undefined) {
             this.indicatorPoint.setStyle(options.indicatorPointStyle);
         }
         // The "x" that indicates that the current sketch will be discarded because the
         // mouse is near the downPoint.
         this.isShowingCross = false;
-        this.indicatorCross = new ol.Feature(new ol.geom.Point([100, 100]));
+        this.indicatorCross = new Feature(new Point([100, 100]));
         if (options.indicatorCrossStyle !== undefined) {
             this.indicatorCross.setStyle(options.indicatorCrossStyle);
         } else {
             this.indicatorCross.setStyle([
-                new ol.style.Style({
-                    image: new ol.style.RegularShape({
-                        stroke: new ol.style.Stroke({
+                new Style({
+                    image: new RegularShape({
+                        stroke: new Stroke({
                             color: [0, 153, 255, 1],
                             width: 3,
                         }),
@@ -93,9 +98,9 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                         angle: Math.PI / 4
                     })
                 }),
-                new ol.style.Style({
-                    image: new ol.style.RegularShape({
-                        stroke: new ol.style.Stroke({
+                new Style({
+                    image: new RegularShape({
+                        stroke: new Stroke({
                             color: [255, 255, 255, 0.75],
                             width: 1.5,
                         }),
@@ -107,8 +112,8 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                 }),
             ]);
         }
-        this.indicatorSource = new ol.source.Vector();
-        this.map.addLayer(new ol.layer.Vector({
+        this.indicatorSource = new VectorSource();
+        this.map.addLayer(new VectorLayer({
             source: this.indicatorSource,
             zIndex: 200,
         }));
@@ -117,8 +122,6 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
         this.toggleActive();
     }
 
-    ol.inherits(MagicWandInteraction, ol.interaction.Pointer);
-
     /**
      * Scaling factor of high DPI displays. The snapshot will be by a factor of
      * 'scaling' larger than the map so we have to include this factor in the
@@ -126,7 +129,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      *
      * @return {Float}
      */
-    MagicWandInteraction.prototype.getHighDpiScaling = function () {
+    getHighDpiScaling() {
         return this.snapshot.height / this.map.getSize()[1];
     };
 
@@ -137,10 +140,10 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      *
      * @return {Array}
      */
-    MagicWandInteraction.prototype.toSnapshotCoordinates = function (points) {
-        var extent = this.map.getView().calculateExtent(this.map.getSize());
-        var height = this.snapshot.height;
-        var factor = this.getHighDpiScaling() / this.map.getView().getResolution();
+    toSnapshotCoordinates(points) {
+        let extent = this.map.getView().calculateExtent(this.map.getSize());
+        let height = this.snapshot.height;
+        let factor = this.getHighDpiScaling() / this.map.getView().getResolution();
 
         return points.map(function (point) {
             return [
@@ -157,10 +160,10 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      *
      * @return {Array}
      */
-    MagicWandInteraction.prototype.fromSnapshotCoordinates = function (points) {
-        var extent = this.map.getView().calculateExtent(this.map.getSize());
-        var height = this.snapshot.height;
-        var factor = this.map.getView().getResolution() / this.getHighDpiScaling();
+    fromSnapshotCoordinates(points) {
+        let extent = this.map.getView().calculateExtent(this.map.getSize());
+        let height = this.snapshot.height;
+        let factor = this.map.getView().getResolution() / this.getHighDpiScaling();
 
         return points.map(function (point) {
             return [
@@ -177,7 +180,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      *
      * @return {Array}
      */
-    MagicWandInteraction.prototype.fromMagicWandCoordinates = function (points) {
+    fromMagicWandCoordinates(points) {
         return points.map(function (point) {
             return [point.x, point.y];
         });
@@ -186,7 +189,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Finish drawing of a sketch.
      */
-    MagicWandInteraction.prototype.handleUpEvent = function (e) {
+    handleUpEvent(e) {
         this.currentThreshold = this.colorThreshold;
 
         if (this.isShowingCross) {
@@ -207,7 +210,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Start drawing of a sketch.
      */
-    MagicWandInteraction.prototype.handleDownEvent = function (e) {
+    handleDownEvent(e) {
         this.downPoint[0] = Math.round(e.coordinate[0]);
         this.downPoint[1] = Math.round(e.coordinate[1]);
         this.drawSketch();
@@ -224,20 +227,20 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update the currently drawn sketch.
      */
-    MagicWandInteraction.prototype.handleDragEvent = function (e) {
-        var coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
-        var x = Math.round(coordinate[0]);
-        var y = Math.round(coordinate[1]);
-        var point = this.toSnapshotCoordinates([this.downPoint]).shift();
-        var px = point[0];
-        var py = point[1];
+    handleDragEvent(e) {
+        let coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
+        let x = Math.round(coordinate[0]);
+        let y = Math.round(coordinate[1]);
+        let point = this.toSnapshotCoordinates([this.downPoint]).shift();
+        let px = point[0];
+        let py = point[1];
 
         // Color threshold calculation. Inspired by the MagicWand example:
         // http://jsfiddle.net/Tamersoul/dr7Dw/
         if (x !== px || y !== py) {
-            var dx = x - px;
-            var dy = y - py;
-            var len = Math.sqrt(dx * dx + dy * dy);
+            let dx = x - px;
+            let dy = y - py;
+            let len = Math.sqrt(dx * dx + dy * dy);
             // Ignore the discard radius if the shift key is pressed.
             // see: https://github.com/biigle/annotations/issues/116
             if (len <= this.discardRadius && !e.originalEvent.shiftKey) {
@@ -254,7 +257,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                 this.isShowingPoint = true;
             }
 
-            var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
+            let thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
             if (thres != this.currentThreshold) {
                 this.currentThreshold = thres;
                 this.drawSketch();
@@ -265,7 +268,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update the target point.
      */
-    MagicWandInteraction.prototype.handleMoveEvent = function (e) {
+    handleMoveEvent(e) {
         if (!this.isShowingPoint) {
             this.indicatorSource.clear();
             this.indicatorSource.addFeature(this.indicatorPoint);
@@ -278,7 +281,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update event listeners depending on the active state of the interaction.
      */
-    MagicWandInteraction.prototype.toggleActive = function () {
+    toggleActive() {
         if (this.getActive()) {
             this.map.on(['moveend', 'change:size'], this.updateSnapshot.bind(this));
             this.updateSnapshot();
@@ -297,7 +300,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update the snapshot of the image layer.
      */
-    MagicWandInteraction.prototype.updateSnapshot = function () {
+    updateSnapshot() {
         if (!this.updatingSnapshot && this.layer) {
             this.layer.once('postcompose', this.updateSnapshotCanvas.bind(this));
             // Set flag to avoid infinite recursion since renderSync will trigger the
@@ -311,7 +314,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update the snapshot canvas.
      */
-    MagicWandInteraction.prototype.updateSnapshotCanvas = function (e) {
+    updateSnapshotCanvas(e) {
         this.snapshotCanvas.width = e.context.canvas.width;
         this.snapshotCanvas.height = e.context.canvas.height;
         this.snapshotContext.drawImage(e.context.canvas, 0, 0);
@@ -322,16 +325,16 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     /**
      * Update the layer to get the image information from.
      */
-    MagicWandInteraction.prototype.setLayer = function (layer) {
+    setLayer(layer) {
         this.layer = layer;
     };
 
     /**
      * Recompute the currently drawn sketch.
      */
-    MagicWandInteraction.prototype.drawSketch = function () {
-        var point = this.toSnapshotCoordinates([this.downPoint]).shift();
-        var sketch = MagicWand.floodFill(this.snapshot, point[0], point[1], this.currentThreshold);
+    drawSketch() {
+        let point = this.toSnapshotCoordinates([this.downPoint]).shift();
+        let sketch = MagicWand.floodFill(this.snapshot, point[0], point[1], this.currentThreshold);
 
         if (this.blurRadius > 0) {
             sketch = MagicWand.gaussBlurOnlyBorder(sketch, this.blurRadius);
@@ -339,16 +342,16 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
 
         // Crop the detected region of the sketch to the actual image extent. Wherever
         // the snapshot is transparent, there should not be a detected region.
-        var sketchData = sketch.data;
-        var snapshotData = this.snapshot.data;
-        for (var i = sketchData.length - 1; i >= 0; i--) {
+        let sketchData = sketch.data;
+        let snapshotData = this.snapshot.data;
+        for (let i = sketchData.length - 1; i >= 0; i--) {
             if (snapshotData[i * 4] === 0) {
                 sketchData[i] = 0;
             }
         }
 
         // Take only the outer contour.
-        var contour = MagicWand.traceContours(sketch)
+        let contour = MagicWand.traceContours(sketch)
             .filter(function (c) {
                 return !c.innner;
             })
@@ -359,12 +362,12 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                 contour = MagicWand.simplifyContours([contour], this.simplifyTolerant, this.simplifyCount).shift();
             }
 
-            var points = this.fromSnapshotCoordinates(this.fromMagicWandCoordinates(contour.points));
+            let points = this.fromSnapshotCoordinates(this.fromMagicWandCoordinates(contour.points));
 
             if (this.sketchFeature) {
                 this.sketchFeature.getGeometry().setCoordinates([points]);
             } else {
-                this.sketchFeature = new ol.Feature(new ol.geom.Polygon([points]));
+                this.sketchFeature = new Feature(new Polygon([points]));
                 if (this.sketchStyle) {
                     this.sketchFeature.setStyle(this.sketchStyle);
                 }
@@ -372,6 +375,6 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             }
         }
     };
+};
 
-    return MagicWandInteraction;
-});
+export default MagicWandInteraction;

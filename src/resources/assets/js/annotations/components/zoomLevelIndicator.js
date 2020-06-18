@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.zoomLevelIndicator', {
+export default {
     props: {
         resolution: {
             required: true,
@@ -11,10 +11,10 @@ biigle.$component('annotations.components.zoomLevelIndicator', {
     },
     computed: {
         zoomLevelText() {
-            var level = Math.round(100 / this.resolution) / 100;
+            let level = Math.round(100 / this.resolution) / 100;
 
             // Level may be NaN if the resolution has not been initialized.
             return (level || 0) + 'x';
         },
     },
-});
+};

@@ -3,13 +3,24 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.controlButton', {
-    template: '<span class="control-button btn" :title="title" :class="classObject" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :disabled="disabled">' +
-        '<i :class="iconClass" aria-hidden="true"></i>' +
-        '<span v-if="hasSubControls" @click.stop class="control-button__sub-controls btn-group">' +
-            '<slot></slot>' +
-        '</span>' +
-    '</span>',
+export default {
+    template: `<span
+        class="control-button btn"
+        :title="title"
+        :class="classObject"
+        :disabled="disabled"
+        @click="handleClick"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
+        >
+        <i :class="iconClass" aria-hidden="true"></i>
+        <span
+            v-if="hasSubControls"
+            @click.stop class="control-button__sub-controls btn-group"
+            >
+            <slot></slot>
+        </span>
+    </span>`,
     props: {
         title: {
             type: String,
@@ -82,10 +93,9 @@ biigle.$component('annotations.components.controlButton', {
             window.clearTimeout(this.timeout);
         },
         handleMouseLeave() {
-            var self = this;
             window.clearTimeout(this.timeout);
-            this.timeout = window.setTimeout(function () {
-                self.mouseOver = false;
+            this.timeout = window.setTimeout(() => {
+                this.mouseOver = false;
             }, 200);
         },
         updateActiveSubControls(active) {
@@ -109,4 +119,4 @@ biigle.$component('annotations.components.controlButton', {
             this.$parent.$emit('control-button-active', true);
         }
     },
-});
+};

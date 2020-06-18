@@ -1,10 +1,12 @@
+import MeasureComponent from '../mixins/measureComponent';
+
 /**
  * The scale line indicator of the canvas element
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.scaleLineIndicator', {
-    mixins: [biigle.$require('annotations.mixins.measureComponent')],
+export default {
+    mixins: [MeasureComponent],
     props: {
         resolution: {
             required: true,
@@ -31,10 +33,10 @@ biigle.$component('annotations.components.scaleLineIndicator', {
             return this.resolution || 0;
         },
         scaleNearest() {
-            var smallestIndex = 0;
-            var smallestDistance = Infinity;
-            for (var i = this.leadingDigits.length - 1; i >= 0; i--) {
-                var check = this.leadingDigits[i] * this.scalePowerOfTen;
+            let smallestIndex = 0;
+            let smallestDistance = Infinity;
+            for (let i = this.leadingDigits.length - 1; i >= 0; i--) {
+                let check = this.leadingDigits[i] * this.scalePowerOfTen;
                 if (Math.abs(this.scale - check) < smallestDistance) {
                     smallestIndex = i;
                     smallestDistance = Math.abs(this.scale - check);
@@ -44,9 +46,9 @@ biigle.$component('annotations.components.scaleLineIndicator', {
             return this.leadingDigits[smallestIndex] * this.scalePowerOfTen;
         },
         unitNearest() {
-            var smallestIndex = 0;
-            var smallestDistance = Infinity;
-            for (var i = this.unitMultipliers.length - 1; i >= 0; i--) {
+            let smallestIndex = 0;
+            let smallestDistance = Infinity;
+            for (let i = this.unitMultipliers.length - 1; i >= 0; i--) {
                 if (Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen) < smallestDistance) {
                     smallestIndex = i;
                     smallestDistance = Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen);
@@ -69,4 +71,4 @@ biigle.$component('annotations.components.scaleLineIndicator', {
             return Math.round(this.scaleNearest) + ' px';
         },
     },
-});
+};

@@ -14,5 +14,6 @@ export let PowerToggle = biigle.$require('core.components.powerToggle');
 export let Settings = biigle.$require('core.models.Settings');
 export let Sidebar = biigle.$require('core.components.sidebar');
 export let SidebarTab = biigle.$require('core.components.sidebarTab');
+export let throttle = biigle.$require('utils.throttle');
 export let Typeahead = biigle.$require('core.components.typeahead');
 export let UrlParams = biigle.$require('utils.urlParams');

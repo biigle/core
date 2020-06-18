@@ -3,10 +3,10 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.labelIndicator', {
+export default {
     props: {
         label: {
             required: true,
         },
     },
-});
+};

@@ -19,6 +19,7 @@ import AnnotationModesTab from './components/annotationModesTab';
 import ColorAdjustmentTab from './components/colorAdjustmentTab';
 import ImageLabelTab from './components/imageLabelTab';
 import SettingsTab from './components/settingsTab';
+import AnnotationCanvas from './components/annotationCanvas';
 
 /**
  * View model for the annotator container
@@ -35,8 +36,7 @@ export default {
         colorAdjustmentTab: ColorAdjustmentTab,
         imageLabelTab: ImageLabelTab,
         settingsTab: SettingsTab,
-        // TODO CONTINUE HERE
-        annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
+        annotationCanvas: AnnotationCanvas,
     },
     data: {
         allImagesIds: [],
@@ -78,9 +78,7 @@ export default {
             return this.annotationFilter !== null;
         },
         filteredAnnotations() {
-            let annotations = this.annotations.filter(function (a) {
-                return !a.markedForDeletion;
-            });
+            let annotations = this.annotations.filter((a) => !a.markedForDeletion);
 
             if (this.annotationFilter) {
                 return this.annotationFilter.filter(annotations);
@@ -89,9 +87,7 @@ export default {
             return annotations;
         },
         selectedAnnotations() {
-            return this.filteredAnnotations.filter(function (annotation) {
-                return annotation.selected;
-            });
+            return this.filteredAnnotations.filter((a) => a.selected);
         },
         supportsColorAdjustment() {
             return ImagesStore.supportsColorAdjustment;
@@ -126,9 +122,7 @@ export default {
                 imagesIds.forEach(function (id) {
                     map[id] = null;
                 });
-                return JSON.parse(storedSequence).filter(function (id) {
-                    return map.hasOwnProperty(id);
-                });
+                return JSON.parse(storedSequence).filter((id) => map.hasOwnProperty(id));
             }
 
             return imagesIds;
@@ -431,10 +425,9 @@ export default {
             if (this.lastCreatedAnnotationTimeout) {
                 window.clearTimeout(this.lastCreatedAnnotationTimeout);
             }
-            let self = this;
             this.lastCreatedAnnotation = annotation;
-            this.lastCreatedAnnotationTimeout = window.setTimeout(function() {
-                self.lastCreatedAnnotation = null;
+            this.lastCreatedAnnotationTimeout = window.setTimeout(() => {
+                this.lastCreatedAnnotation = null;
             }, 10000);
         },
         updateColorAdjustment(params) {
@@ -607,12 +600,11 @@ export default {
 
         if (UrlParams.get('annotation')) {
             let id = parseInt(UrlParams.get('annotation'));
-            let self = this;
-            Events.$once('images.change', function () {
-                let annotations = self.annotations;
+            Events.$once('images.change', () => {
+                let annotations = this.annotations;
                 for (let i = annotations.length - 1; i >= 0; i--) {
                     if (annotations[i].id === id) {
-                        self.selectAndFocusAnnotation(annotations[i]);
+                        this.selectAndFocusAnnotation(annotations[i]);
                         return;
                     }
                 }

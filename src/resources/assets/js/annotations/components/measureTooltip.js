@@ -1,17 +1,23 @@
+import AnnotationTooltip from '../mixins/annotationTooltip';
+import MeasureComponent from '../mixins/measureComponent';
+import Polygon from '@biigle/ol/geom/Polygon';
+import Circle from '@biigle/ol/geom/Circle';
+import LineString from '@biigle/ol/geom/LineString';
+
 /**
  * Tooltip showing length/area of the hovered annotations.
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.measureTooltip', {
-    template: '<div class="annotation-tooltip">' +
-        '<ul class="annotation-tooltip__annotations">' +
-            '<li v-for="measure in measuredGeometries" v-text="measure"></li>' +
-        '</ul>' +
-    '</div>',
+export default {
+    template: `<div class="annotation-tooltip">
+        <ul class="annotation-tooltip__annotations">
+            <li v-for="measure in measuredGeometries" v-text="measure"></li>
+        </ul>
+    </div>`,
     mixins: [
-        biigle.$require('annotations.mixins.annotationTooltip'),
-        biigle.$require('annotations.mixins.measureComponent'),
+        AnnotationTooltip,
+        MeasureComponent,
     ],
     data() {
         return {
@@ -30,12 +36,12 @@ biigle.$component('annotations.components.measureTooltip', {
             this.measuredGeometries = features.map(function (feature) {
                     return feature.getGeometry();
                 })
-                .filter(function (geom) {
+                .filter((geom) => {
                     return this.isAeraGeometry(geom) || this.isLengthGeometry(geom);
-                }, this)
-                .map(function (geom) {
+                })
+                .map((geom) => {
                     return this.measure(geom);
-                }, this);
+                });
         },
         measure(geom) {
             if (geom.getArea) {
@@ -49,17 +55,17 @@ biigle.$component('annotations.components.measureTooltip', {
             return '';
         },
         isAeraGeometry(geom) {
-            return geom instanceof ol.geom.Polygon || geom instanceof ol.geom.Circle;
+            return geom instanceof Polygon || geom instanceof Circle;
         },
         isLengthGeometry(geom) {
-            return geom instanceof ol.geom.LineString;
+            return geom instanceof LineString;
         },
         formatArea(area) {
-            var unit = 'px²';
+            let unit = 'px²';
 
             if (this.hasArea) {
                 area *= Math.pow(this.pxWidthInMeter, 2);
-                var index = this.unitNearest(area, this.areaUnitMultipliers, 1e-3);
+                let index = this.unitNearest(area, this.areaUnitMultipliers, 1e-3);
                 unit = this.unitNames[index] + '²';
                 area = area / this.areaUnitMultipliers[index];
             }
@@ -67,11 +73,11 @@ biigle.$component('annotations.components.measureTooltip', {
             return this.formatMeasurement(area, unit, 3);
         },
         formatLength(length) {
-            var unit = 'px';
+            let unit = 'px';
 
             if (this.hasArea) {
                 length = length * this.pxWidthInMeter;
-                var index = this.unitNearest(length, this.unitMultipliers);
+                let index = this.unitNearest(length, this.unitMultipliers);
                 unit = this.unitNames[index];
                 length = length / this.unitMultipliers[index];
             }
@@ -88,8 +94,8 @@ biigle.$component('annotations.components.measureTooltip', {
             }
 
             min = min || 1;
-            var tmpMeasurement;
-            for (var i = multipliers.length - 1; i >= 0 ; i--) {
+            let tmpMeasurement;
+            for (let i = multipliers.length - 1; i >= 0 ; i--) {
                 tmpMeasurement = measurement / multipliers[i];
                 if (tmpMeasurement >= min && tmpMeasurement < 1000) {
                     break;
@@ -112,4 +118,4 @@ biigle.$component('annotations.components.measureTooltip', {
             }
         },
     }
-});
+};

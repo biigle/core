@@ -1,9 +1,11 @@
+import Overlay from '@biigle/ol/Overlay';
+
 /**
  * Tooltip showing information on the hovered annotations.
  *
  * @type {Object}
  */
-biigle.$component('annotations.mixins.annotationTooltip', {
+export default {
     props: {
         watch: {
             required: true,
@@ -70,7 +72,7 @@ biigle.$component('annotations.mixins.annotationTooltip', {
         },
     },
     mounted() {
-        this.overlay = new ol.Overlay({
+        this.overlay = new Overlay({
             element: this.$el,
             offset: [15, 0],
             positioning: this.positioning,
@@ -79,4 +81,4 @@ biigle.$component('annotations.mixins.annotationTooltip', {
     beforeDestroy() {
         this.$parent.map.removeOverlay(this.overlay);
     },
-});
+};

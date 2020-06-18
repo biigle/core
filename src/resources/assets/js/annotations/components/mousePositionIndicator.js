@@ -3,13 +3,12 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.mousePositionIndicator', {
-    template:
-    '<div' +
-        ' class="mouse-position-indicator"' +
-        ' title="Mouse position in the image"' +
-        ' v-text="positionText"' +
-        '></div>',
+export default {
+    template: `<div
+        class="mouse-position-indicator"
+        title="Mouse position in the image"
+        v-text="positionText"
+        ></div>`,
     props: {
         position: {
             type: Array,
@@ -21,4 +20,4 @@ biigle.$component('annotations.components.mousePositionIndicator', {
             return this.position.join(' × ');
         },
     },
-});
+};

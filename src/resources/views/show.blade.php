@@ -6,9 +6,6 @@
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/magic-wand-min.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     @can('add-annotation', $image)
@@ -33,7 +30,6 @@
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 @mixin('annotationsStyles')
 @endpush

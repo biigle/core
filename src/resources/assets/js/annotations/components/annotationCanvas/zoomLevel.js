@@ -1,18 +1,18 @@
+import ZoomLevelIndicator from '../zoomLevelIndicator';
+
 /**
  * Mixin for the annotationCanvas component that contains logic for the zoom level indicator.
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.annotationCanvas.zoomLevel', function () {
-    return {
-        components: {
-            zoomLevelIndicator: biigle.$require('annotations.components.zoomLevelIndicator'),
+export default {
+    components: {
+        zoomLevelIndicator: ZoomLevelIndicator,
+    },
+    props: {
+        showZoomLevel: {
+            type: Boolean,
+            default: false,
         },
-        props: {
-            showZoomLevel: {
-                type: Boolean,
-                default: false,
-            },
-        },
-    };
-});
+    },
+};

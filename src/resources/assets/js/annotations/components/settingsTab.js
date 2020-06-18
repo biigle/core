@@ -57,6 +57,9 @@ export default {
         crossOrigin() {
             return this.image && this.image.crossOrigin;
         },
+        settings() {
+            return Settings;
+        },
     },
     methods: {
         showMousePosition() {
@@ -115,40 +118,40 @@ export default {
         annotationOpacity(opacity) {
             opacity = parseFloat(opacity);
             this.$emit('change', 'annotationOpacity', opacity);
-            Settings.set('annotationOpacity', opacity);
+            this.settings.set('annotationOpacity', opacity);
         },
         mousePosition(show) {
             this.$emit('change', 'mousePosition', show);
-            Settings.set('mousePosition', show);
+            this.settings.set('mousePosition', show);
         },
         zoomLevel(show) {
             this.$emit('change', 'zoomLevel', show);
-            Settings.set('zoomLevel', show);
+            this.settings.set('zoomLevel', show);
         },
         scaleLine(show) {
             this.$emit('change', 'scaleLine', show);
-            Settings.set('scaleLine', show);
+            this.settings.set('scaleLine', show);
         },
         labelTooltip(show) {
             this.$emit('change', 'labelTooltip', show);
-            Settings.set('labelTooltip', show);
+            this.settings.set('labelTooltip', show);
         },
         measureTooltip(show) {
             this.$emit('change', 'measureTooltip', show);
-            Settings.set('measureTooltip', show);
+            this.settings.set('measureTooltip', show);
         },
         minimap(show) {
             this.$emit('change', 'minimap', show);
-            Settings.set('minimap', show);
+            this.settings.set('minimap', show);
         },
         progressIndicator(show) {
             this.$emit('change', 'progressIndicator', show);
-            Settings.set('progressIndicator', show);
+            this.settings.set('progressIndicator', show);
         },
     },
     created() {
         this.restoreKeys.forEach((key) => {
-            this[key] = Settings.get(key);
+            this[key] = this.settings.get(key);
         });
         Keyboard.on('o', this.toggleAnnotationOpacity);
     },

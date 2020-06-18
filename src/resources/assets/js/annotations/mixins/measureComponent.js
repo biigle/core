@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.mixins.measureComponent', {
+export default {
     props: {
         image: {
             required: true,
@@ -38,4 +38,4 @@ biigle.$component('annotations.mixins.measureComponent', {
             return Math.pow(10, Math.floor(Math.log10(input)));
         },
     },
-});
+};

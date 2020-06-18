@@ -1,28 +1,75 @@
+import AnnotationTooltip from './annotationCanvas/annotationTooltip';
+import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
+import CanvasSource from '@biigle/ol/source/Canvas';
+import Circle from '@biigle/ol/geom/Circle';
+import Collection from '@biigle/ol/Collection';
+import ControlButton from './controlButton';
+import DrawInteractions from './annotationCanvas/drawInteractions';
+import Ellipse from '@biigle/ol/geom/Ellipse';
+import Feature from '@biigle/ol/Feature';
+import ImageLayer from '@biigle/ol/layer/Image';
+import LabelIndicator from './labelIndicator';
+import Lawnmower from './annotationCanvas/lawnmower';
+import LineString from '@biigle/ol/geom/LineString';
+import MagicWandInteraction from './annotationCanvas/magicWandInteraction';
+import Map from '@biigle/ol/Map';
+import MeasureInteraction from './annotationCanvas/measureInteraction';
+import Minimap from './minimap';
+import ModifyInteraction from '@biigle/ol/interaction/Modify';
+import MousePosition from './annotationCanvas/mousePosition';
+import Point from '@biigle/ol/geom/Point';
+import Polygon from '@biigle/ol/geom/Polygon';
+import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
+import Projection from '@biigle/ol/proj/Projection';
+import Rectangle from '@biigle/ol/geom/Rectangle';
+import Sampling from './annotationCanvas/sampling';
+import ScaleLine from './annotationCanvas/scaleLine';
+import SelectInteraction from '@biigle/ol/interaction/Select';
+import Styles from '../stores/styles';
+import TileLayer from '@biigle/ol/layer/Tile';
+import TranslateInteraction from './annotationCanvas/translateInteraction';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
+import View from '@biigle/ol/View';
+import ZoomControl from '@biigle/ol/control/Zoom';
+import ZoomifySource from '@biigle/ol/source/Zoomify';
+import ZoomLevel from './annotationCanvas/zoomLevel';
+import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
+import ZoomToNativeControl from '../ol/ZoomToNativeControl';
+import {click as clickCondition} from '@biigle/ol/events/condition';
+import {defaults as defaultInteractions} from '@biigle/ol/interaction'
+import {Events} from '../import';
+import {getCenter} from '@biigle/ol/extent';
+import {Keyboard} from '../import';
+import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+
+
 /**
  * The annotator canvas
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.annotationCanvas', {
+export default {
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
-        biigle.$require('annotations.components.annotationCanvas.drawInteractions'),
-        biigle.$require('annotations.components.annotationCanvas.magicWandInteraction'),
-        biigle.$require('annotations.components.annotationCanvas.polygonBrushInteraction'),
-        biigle.$require('annotations.components.annotationCanvas.translateInteraction'),
-        biigle.$require('annotations.components.annotationCanvas.attachLabelInteraction'),
-        biigle.$require('annotations.components.annotationCanvas.measureInteraction'),
-        biigle.$require('annotations.components.annotationCanvas.lawnmower'),
-        biigle.$require('annotations.components.annotationCanvas.mousePosition'),
-        biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
-        biigle.$require('annotations.components.annotationCanvas.annotationTooltip'),
-        biigle.$require('annotations.components.annotationCanvas.sampling'),
-        biigle.$require('annotations.components.annotationCanvas.scaleLine'),
+        AnnotationTooltip,
+        AttachLabelInteraction,
+        DrawInteractions,
+        Lawnmower,
+        MagicWandInteraction,
+        MeasureInteraction,
+        MousePosition,
+        PolygonBrushInteraction,
+        Sampling,
+        ScaleLine,
+        TranslateInteraction,
+        ZoomLevel,
     ],
     components: {
-        minimap: biigle.$require('annotations.components.minimap'),
-        labelIndicator: biigle.$require('annotations.components.labelIndicator'),
-        controlButton: biigle.$require('annotations.components.controlButton'),
+        minimap: Minimap,
+        labelIndicator: LabelIndicator,
+        controlButton: ControlButton,
     },
     props: {
         canAdd: {
@@ -122,7 +169,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             return [0, 0, 0, 0];
         },
         projection() {
-            return new ol.proj.Projection({
+            return new Projection({
                 code: 'biigle-image',
                 units: 'pixels',
                 extent: this.extent
@@ -172,16 +219,16 @@ biigle.$component('annotations.components.annotationCanvas', {
     },
     methods: {
         createMap() {
-            var map = new ol.Map({
+            let map = new Map({
                 controls: [
-                    new ol.control.Zoom(),
-                    new ol.control.ZoomToExtent({
+                    new ZoomControl(),
+                    new ZoomToExtentControl({
                         tipLabel: 'Zoom to show whole image',
                         // fontawesome compress icon
                         label: '\uf066'
                     }),
                 ],
-                interactions: ol.interaction.defaults({
+                interactions: defaultInteractions({
                     altShiftDragRotate: false,
                     doubleClickZoom: false,
                     keyboard: false,
@@ -191,7 +238,6 @@ biigle.$component('annotations.components.annotationCanvas', {
                 }),
             });
 
-            var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
             map.addControl(new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
@@ -204,28 +250,27 @@ biigle.$component('annotations.components.annotationCanvas', {
             // This is mostly OpenLayers stuff that should work as fast as possible
             // without being slowed down by Vue reactivity.
             this.map = this.createMap();
-            this.styles = biigle.$require('annotations.stores.styles');
-            this.imageLayer = new ol.layer.Image();
-            this.tiledImageLayer = new ol.layer.Tile();
+            this.imageLayer = new ImageLayer();
+            this.tiledImageLayer = new TileLayer();
 
-            this.annotationFeatures = new ol.Collection();
-            this.annotationSource = new ol.source.Vector({
+            this.annotationFeatures = new Collection();
+            this.annotationSource = new VectorSource({
                 features: this.annotationFeatures
             });
-            this.annotationLayer = new ol.layer.Vector({
+            this.annotationLayer = new VectorLayer({
                 source: this.annotationSource,
                 zIndex: 100,
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
-                style: this.styles.features,
+                style: Styles.features,
             });
 
-            this.selectInteraction = new ol.interaction.Select({
+            this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want
                 // it to be as fast as possible.
-                condition: ol.events.condition.click,
-                style: this.styles.highlight,
+                condition: clickCondition,
+                style: Styles.highlight,
                 layers: [this.annotationLayer],
                 // enable selecting multiple overlapping features at once
                 multi: true
@@ -235,14 +280,13 @@ biigle.$component('annotations.components.annotationCanvas', {
                 // Map to detect which features were changed between modifystart and
                 // modifyend events of the modify interaction.
                 this.featureRevisionMap = {};
-                this.modifyInteraction = new ol.interaction.Modify({
+                this.modifyInteraction = new ModifyInteraction({
                     features: this.selectInteraction.getFeatures(),
                     // The Shift key must be pressed to delete vertices, so that new
                     // vertices can be drawn at the same position of existing
                     // vertices.
-                    deleteCondition: function(event) {
-                        return ol.events.condition.shiftKeyOnly(event) &&
-                            ol.events.condition.singleClick(event);
+                    deleteCondition: function (event) {
+                        return shiftKeyOnlyCondition(event) && singleClickCondition(event);
                     },
                 });
             }
@@ -251,7 +295,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             this.mapSize = this.map.getSize();
         },
         updateMapView(e) {
-            var view = e.target.getView();
+            let view = e.target.getView();
             this.$emit('moveend', {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
@@ -263,8 +307,8 @@ biigle.$component('annotations.components.annotationCanvas', {
             // The y axis should be switched from "top to bottom" to "bottom to top"
             // or vice versa. Our database expects ttb, OpenLayers expects btt.
 
-            var height = this.extent[3];
-            for (var i = 1; i < points.length; i += 2) {
+            let height = this.extent[3];
+            for (let i = 1; i < points.length; i += 2) {
                 points[i] = height - points[i];
             }
 
@@ -279,8 +323,8 @@ biigle.$component('annotations.components.annotationCanvas', {
             // Duplicate the points array because we don't want to modify the
             // original array.
             points = this.invertPointsYAxis(points.slice());
-            var newPoints = [];
-            for (var i = 0; i < points.length; i += 2) {
+            let newPoints = [];
+            for (let i = 0; i < points.length; i += 2) {
                 newPoints.push([
                     points[i],
                     // Circles have no fourth point so we take 0.
@@ -292,22 +336,22 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         // Determines the OpenLayers geometry object for an annotation.
         getGeometry(annotation) {
-            var points = this.convertPointsFromDbToOl(annotation.points);
+            let points = this.convertPointsFromDbToOl(annotation.points);
 
             switch (annotation.shape) {
                 case 'Point':
-                    return new ol.geom.Point(points[0]);
+                    return new Point(points[0]);
                 case 'Rectangle':
-                    return new ol.geom.Rectangle([points]);
+                    return new Rectangle([points]);
                 case 'Polygon':
-                    return new ol.geom.Polygon([points]);
+                    return new Polygon([points]);
                 case 'LineString':
-                    return new ol.geom.LineString(points);
+                    return new LineString(points);
                 case 'Circle':
                     // radius is the x value of the second point of the circle
-                    return new ol.geom.Circle(points[0], points[1][0]);
+                    return new Circle(points[0], points[1][0]);
                 case 'Ellipse':
-                    return new ol.geom.Ellipse([points]);
+                    return new Ellipse([points]);
                 default:
                     // unsupported shapes are ignored
                     console.error('Unknown annotation shape: ' + annotation.shape);
@@ -316,7 +360,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         // Creates an OpenLayers feature object from an annotation.
         createFeature(annotation) {
-            var feature = new ol.Feature(this.getGeometry(annotation));
+            let feature = new Feature(this.getGeometry(annotation));
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
@@ -332,16 +376,15 @@ biigle.$component('annotations.components.annotationCanvas', {
             }, this);
         },
         handleFeatureModifyEnd(e) {
-            var self = this;
-            var annotations = e.features.getArray()
-                .filter(function (feature) {
-                    return self.featureRevisionMap[feature.getId()] !== feature.getRevision();
+            let annotations = e.features.getArray()
+                .filter((feature) => {
+                    return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
-                .map(function (feature) {
+                .map((feature) => {
                     return {
                         id: feature.getId(),
                         image_id: feature.get('annotation').image_id,
-                        points: self.getPoints(feature.getGeometry()),
+                        points: this.getPoints(feature.getGeometry()),
                     };
                 });
 
@@ -350,7 +393,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             }
         },
         focusAnnotation(annotation, fast, keepResolution) {
-            var feature = this.annotationSource.getFeatureById(annotation.id);
+            let feature = this.annotationSource.getFeatureById(annotation.id);
             if (feature) {
                 if (fast) {
                     delete this.viewFitOptions.duration;
@@ -390,7 +433,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         // Assembles the points array depending on the OpenLayers geometry type.
         getPoints(geometry) {
-            var points;
+            let points;
             switch (geometry.getType()) {
                 case 'Circle':
                     // radius is the x value of the second point of the circle
@@ -412,15 +455,14 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         handleNewFeature(e) {
             if (this.hasSelectedLabel) {
-                var geometry = e.feature.getGeometry();
-                var self = this;
+                let geometry = e.feature.getGeometry();
                 e.feature.set('color', this.selectedLabel.color);
 
                 // This callback is called when saving the annotation succeeded or
                 // failed, to remove the temporary feature.
-                var removeCallback = function () {
+                let removeCallback = () => {
                     try {
-                        self.annotationSource.removeFeature(e.feature);
+                        this.annotationSource.removeFeature(e.feature);
                     } catch (e) {
                         // If this failed, the feature was already removed.
                         // Do nothing in this case.
@@ -447,7 +489,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         createPointAnnotationAt(x, y) {
             if (this.hasSelectedLabel) {
-                var feature = new ol.Feature(new ol.geom.Point([x, y]));
+                let feature = new Feature(new Point([x, y]));
                 // Simulare a feature created event so we can reuse the apropriate
                 // function.
                 this.annotationSource.addFeature(feature);
@@ -469,7 +511,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             if (!image) {
                 this.imageLayer.setSource(null);
             } else {
-                this.imageLayer.setSource(new ol.source.Canvas({
+                this.imageLayer.setSource(new CanvasSource({
                     canvas: image.canvas,
                     projection: this.projection,
                     canvasExtent: this.extent,
@@ -481,7 +523,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             if (!image) {
                 this.tiledImageLayer.setSource(null);
             } else {
-                this.tiledImageLayer.setSource(new ol.source.Zoomify({
+                this.tiledImageLayer.setSource(new ZoomifySource({
                     url: image.url,
                     size: [image.width, image.height],
                     // Set the extent like this instead of default so static images
@@ -495,14 +537,14 @@ biigle.$component('annotations.components.annotationCanvas', {
             this.mousePosition = e.coordinate;
         },
         refreshAnnotationSource(annotations, source) {
-            var annotationsMap = {};
+            let annotationsMap = {};
             annotations.forEach(function (annotation) {
                 annotationsMap[annotation.id] = null;
             });
 
-            var oldFeaturesMap = {};
-            var oldFeatures = source.getFeatures();
-            var removedFeatures = oldFeatures.filter(function (feature) {
+            let oldFeaturesMap = {};
+            let oldFeatures = source.getFeatures();
+            let removedFeatures = oldFeatures.filter(function (feature) {
                 oldFeaturesMap[feature.getId()] = null;
                 return !annotationsMap.hasOwnProperty(feature.getId());
             });
@@ -517,11 +559,10 @@ biigle.$component('annotations.components.annotationCanvas', {
                 // undefined ID here. These will be removed asynchronously through
                 // their removeCallback when they were saved (or failed to be).
                 // see: https://github.com/biigle/annotations/issues/82
-                removedFeatures.filter(function (feature) {
-                        return feature.getId() !== undefined;
-                    }).forEach(function (feature) {
+                removedFeatures.filter((feature) => feature.getId() !== undefined)
+                    .forEach(function (feature) {
                         source.removeFeature(feature);
-                    }, this);
+                    });
 
                 annotations = annotations.filter(function (annotation) {
                     return !oldFeaturesMap.hasOwnProperty(annotation.id);
@@ -557,8 +598,8 @@ biigle.$component('annotations.components.annotationCanvas', {
             this.resetHoveredAnnotations();
         },
         selectedAnnotations(annotations) {
-            var source = this.annotationSource;
-            var features = this.selectedFeatures;
+            let source = this.annotationSource;
+            let features = this.selectedFeatures;
             features.clear();
             annotations.forEach(function (annotation) {
                 features.push(source.getFeatureById(annotation.id));
@@ -571,7 +612,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 return;
             }
 
-            var center = ol.extent.getCenter(extent);
+            let center = getCenter(extent);
 
             // Only use this.center once on initialization. If the extent changes
             // afterwards, the center should be reset.
@@ -579,7 +620,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 center = this.center || center;
             }
 
-            this.map.setView(new ol.View({
+            this.map.setView(new View({
                 projection: this.projection,
                 center: center,
                 resolution: this.resolution,
@@ -612,7 +653,6 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
     },
     created() {
-        var self = this;
         this.declareNonReactiveProperties();
 
         // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
@@ -623,10 +663,10 @@ biigle.$component('annotations.components.annotationCanvas', {
         this.imageLayer.set('name', 'imageRegular');
         this.tiledImageLayer.set('name', 'imageTile');
 
-        biigle.$require('events').$on('sidebar.toggle', function () {
+        Events.$on('sidebar.toggle', () => {
             // This needs to be wrapped in a function so it is called without arguments.
-            self.$nextTick(function () {
-                self.map.updateSize();
+            this.$nextTick(() => {
+                this.map.updateSize();
             });
         });
 
@@ -637,11 +677,10 @@ biigle.$component('annotations.components.annotationCanvas', {
         this.selectInteraction.on('select', this.handleFeatureSelect);
         this.map.addInteraction(this.selectInteraction);
 
-        var kb = biigle.$require('keyboard');
-        kb.on(' ', this.handleNext, 0, this.listenerSet);
-        kb.on('ArrowRight', this.handleNext, 0, this.listenerSet);
-        kb.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
-        kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
+        Keyboard.on(' ', this.handleNext, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.handleNext, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
+        Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
         if (this.canModify) {
             this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
@@ -650,11 +689,11 @@ biigle.$component('annotations.components.annotationCanvas', {
         }
 
         if (this.canDelete) {
-            kb.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-            kb.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+            Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
         }
     },
     mounted() {
         this.map.setTarget(this.$el);
     },
-});
+};
