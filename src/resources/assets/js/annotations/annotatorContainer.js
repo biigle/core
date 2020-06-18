@@ -1,11 +1,18 @@
+import AnnotationCanvas from './components/annotationCanvas';
+import AnnotationModesTab from './components/annotationModesTab';
 import AnnotationsStore from './stores/annotations';
 import AnnotationsTab from './components/siaAnnotationsTab';
+import ColorAdjustmentTab from './components/colorAdjustmentTab';
+import ImageLabelTab from './components/imageLabelTab';
 import ImagesStore from './stores/images';
 import LabelFilter from './models/LabelAnnotationFilter';
+import LabelsTab from './components/labelsTab';
 import SessionFilter from './models/SessionAnnotationFilter';
 import Settings from './stores/settings';
+import SettingsTab from './components/settingsTab';
 import ShapeFilter from './models/ShapeAnnotationFilter';
 import UserFilter from './models/UserAnnotationFilter';
+import VolumeImageAreaApi from './api/volumes';
 import {debounce} from './import';
 import {Events} from './import';
 import {handleErrorResponse} from './import';
@@ -14,12 +21,6 @@ import {Messages} from './import';
 import {SidebarTab} from './import';
 import {Sidebar} from './import';
 import {UrlParams} from './import';
-import LabelsTab from './components/labelsTab';
-import AnnotationModesTab from './components/annotationModesTab';
-import ColorAdjustmentTab from './components/colorAdjustmentTab';
-import ImageLabelTab from './components/imageLabelTab';
-import SettingsTab from './components/settingsTab';
-import AnnotationCanvas from './components/annotationCanvas';
 
 /**
  * View model for the annotator container
@@ -482,8 +483,7 @@ export default {
         fetchImagesArea() {
             if (!this.imagesArea) {
                 this.imagesArea = {};
-                biigle.$require('annotations.api.volumeImageArea')
-                    .get({id: this.volumeId})
+                VolumeImageAreaApi.get({id: this.volumeId})
                     .then(this.setImagesArea, handleErrorResponse);
             }
         },
