@@ -58,10 +58,10 @@ biigle.$declare('core.mixins.editor', EditorMixin);
 biigle.$declare('core.mixins.loader', LoaderMixin);
 biigle.$declare('core.models.Settings', SettingsModel);
 
-biigle.$declare('utils.debounce', debounce);
+biigle.$declare('utils.debounce', () => debounce);
 biigle.$declare('utils.urlParams', urlParams);
 biigle.$declare('urlParams', urlParams); // Legacy support.
-biigle.$declare('utils.throttle', throttle);
+biigle.$declare('utils.throttle', () => throttle);
 
 biigle.$declare('events', Events);
 biigle.$declare('keyboard', Keyboard);
