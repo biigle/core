@@ -3,6 +3,7 @@ import {Events} from '../import';
 /**
 * Store for the images of the annotation tool
 */
+let fx = require('../vendor/glfx');
 let fxCanvas;
 
 // This canvas is used as workaround to the auto-rotation of images according to EXIF
@@ -17,15 +18,13 @@ drawCanvas.style.visibility = 'hidden';
 drawCanvas.style.position = 'fixed';
 document.body.appendChild(drawCanvas);
 
-if (window.hasOwnProperty('fx')) {
-    try {
-        // If fxCanvas is not initialized WebGL is not supported at all.
-        fxCanvas = fx.canvas();
-        var fxTexture = null;
-        var loadedImageTexture = null;
-    } catch (error) {
-        console.log('WebGL not supported. Color adjustment disabled.');
-    }
+try {
+    // If fxCanvas is not initialized WebGL is not supported at all.
+    fxCanvas = fx.canvas();
+    var fxTexture = null;
+    var loadedImageTexture = null;
+} catch (error) {
+    console.log('WebGL not supported. Color adjustment disabled.');
 }
 
 window.addEventListener('beforeunload', function (e) {
