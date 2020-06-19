@@ -13,14 +13,12 @@ let exitFullscreen = function () {
     }
 }
 
-let debounce = function () {
-    let debounceTimeouts = {};
-    return function (callback, wait, id) {
-        if (debounceTimeouts.hasOwnProperty(id)) {
-            window.clearTimeout(debounceTimeouts[id]);
-        }
-        debounceTimeouts[id] = window.setTimeout(callback, wait);
-    };
+let debounceTimeouts = {};
+let debounce = function (callback, wait, id) {
+    if (debounceTimeouts.hasOwnProperty(id)) {
+        window.clearTimeout(debounceTimeouts[id]);
+    }
+    debounceTimeouts[id] = window.setTimeout(callback, wait);
 };
 
 let urlParams = new Vue({
@@ -89,19 +87,16 @@ let urlParams = new Vue({
     },
 });
 
-let throttle = function () {
-    let throttleTimeouts = {};
-    let throttleFunctions = {};
-
-    return function (callback, wait, id) {
-        throttleFunctions[id] = callback;
-        if (!throttleTimeouts.hasOwnProperty(id)) {
-            throttleTimeouts[id] = window.setTimeout(function () {
-                throttleFunctions[id]();
-                delete throttleTimeouts[id];
-            }, wait);
-        }
-    };
+let throttleTimeouts = {};
+let throttleFunctions = {};
+let throttle = function (callback, wait, id) {
+    throttleFunctions[id] = callback;
+    if (!throttleTimeouts.hasOwnProperty(id)) {
+        throttleTimeouts[id] = window.setTimeout(function () {
+            throttleFunctions[id]();
+            delete throttleTimeouts[id];
+        }, wait);
+    }
 };
 
 export {exitFullscreen, debounce, urlParams, throttle};
