@@ -165,6 +165,11 @@ export default {
                 if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
                     this.focussedAnnotationIndex++;
                     return;
+                } else if (this.focussedAnnotationIndex === Infinity) {
+                    // This may happen if the volume has only one image and we can't
+                    // switch to the next image. Here, we want to go to the second
+                    // annotation of the image.
+                    this.focussedAnnotationIndex = Math.min(1, this.filteredAnnotations.length - 1);
                 } else {
                     // Show the first annotation of the next image in this case, so
                     // don't return.
@@ -201,6 +206,11 @@ export default {
                 if (this.focussedAnnotationIndex > 0) {
                     this.focussedAnnotationIndex--;
                     return;
+                } else if (this.focussedAnnotationIndex === -Infinity) {
+                    // This may happen if the volume has only one image and we can't
+                    // switch to the next image. Here, we want to go to the second to
+                    // last annotation of the image.
+                    this.focussedAnnotationIndex = Math.max(this.filteredAnnotations.length - 2, 0);
                 } else {
                     // Show the last annotation of the previous image in this case,
                     // so don't return.
