@@ -115,12 +115,8 @@ export default {
         },
     },
     created() {
-        this.$parent.$watch('open', (open) => {
-            this.open = open;
-        });
-    },
-    created() {
         this.userId = biigle.$require('annotations.userId');
         this.isAdmin = biigle.$require('annotations.isAdmin');
+        this.$parent.$watch('open', (open) => this.open = open);
     },
 };
