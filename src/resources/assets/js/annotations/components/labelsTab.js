@@ -41,5 +41,5 @@ export default {
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');
-    }
+    },
 };
