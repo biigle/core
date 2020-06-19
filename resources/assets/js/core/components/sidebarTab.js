@@ -7,7 +7,8 @@ export default {
     template: '<div class="sidebar__tab" :class="classObject"><slot></slot></div>',
     data() {
         return {
-            open: false
+            id: null,
+            open: false,
         };
     },
     props: {

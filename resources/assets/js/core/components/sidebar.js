@@ -10,7 +10,12 @@ import Keyboard from '../keyboard';
 export default {
     template: `<aside class="sidebar" :class="classObject">
         <div class="sidebar__buttons" v-if="showButtons">
-            <sidebar-button v-for="tab in tabs" :tab="tab" :direction="direction"></sidebar-button>
+            <sidebar-button
+                v-for="tab in tabs"
+                :tab="tab"
+                :key="tab.id"
+                :direction="direction"
+                ></sidebar-button>
         </div>
         <div class="sidebar__tabs"><slot></slot></div>
     </aside>`,
@@ -22,6 +27,7 @@ export default {
             open: false,
             tabs: [],
             lastOpenedTab: null,
+            tabIdSequence: 0,
         };
     },
     props: {
@@ -59,6 +65,7 @@ export default {
     },
     methods: {
         registerTab(tab) {
+            tab.id = this.tabIdSequence++;
             this.tabs.push(tab);
         },
         handleOpenTab(name) {
