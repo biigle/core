@@ -25,6 +25,7 @@ export default {
             <ul class="annotations-tab-item__list list-unstyled" v-show="isSelected">
                 <annotation-item
                     v-for="item in annotationItems"
+                    :key="item.annotationLabel.id"
                     :annotation="item.annotation"
                     :annotation-label="item.annotationLabel"
                     :can-detach="item.canDetach"
