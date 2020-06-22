@@ -1,3 +1,3 @@
-require('./annotationFilter');
-require('./annotationLabelFilter');
-require('./annotationUserFilter');
+import './annotationFilter';
+import './annotationLabelFilter';
+import './annotationUserFilter';
