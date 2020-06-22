@@ -1,4 +1,4 @@
-require('./bootstrap');
-require('./export');
-require('./mounts');
-require('./core/heartbeat');
+import './bootstrap';
+import './export';
+import './mounts';
+import './core/heartbeat';
