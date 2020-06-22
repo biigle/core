@@ -10,12 +10,12 @@ biigle.$viewModel('label-tree-version-title', function (element) {
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
         methods: {
-            deleteVersion: function () {
+            deleteVersion() {
                 this.startLoading();
                 labelTreeVersionApi.delete({id: version.id})
                     .then(this.deleteSuccess, this.handleErrorResponse);
             },
-            deleteSuccess: function () {
+            deleteSuccess() {
                 messages.success('The label tree version was deleted. Redirecting...');
                 setTimeout(function () {
                     location.href = biigle.$require('labelTrees.redirectUrl');

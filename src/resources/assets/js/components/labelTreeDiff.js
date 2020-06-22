@@ -48,7 +48,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
     components: {
         labelTreeDiffRow: biigle.$require('labelTrees.components.labelTreeDiffRow'),
     },
-    data: function () {
+    data() {
         return {
             diff: [],
         };
@@ -80,7 +80,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         },
     },
     computed: {
-        leftLabelsById: function () {
+        leftLabelsById() {
             var map = {};
             this.leftLabels.forEach(function (label) {
                 map[label.id] = label;
@@ -88,17 +88,17 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             return map;
         },
-        leftLabelsAsTree: function () {
+        leftLabelsAsTree() {
             var childMap = this.generateChildMap(this.leftLabels);
 
             return this.generateLabelsAsTree(childMap[null], childMap);
         },
-        rightLabelsAsTree: function () {
+        rightLabelsAsTree() {
             var childMap = this.generateChildMap(this.rightLabels);
 
             return this.generateLabelsAsTree(childMap[null], childMap);
         },
-        usedLabelMap: function () {
+        usedLabelMap() {
             var map = {};
             this.usedLabels.forEach(function (id) {
                 // Also add all parent labels as "used".
@@ -110,7 +110,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             return map;
         },
-        cannotResolveAll: function () {
+        cannotResolveAll() {
             return this.disabled || this.diff.reduce(function (carry, row) {
                 if (row.acceptable) {
                     return carry && row.accepted;
@@ -119,7 +119,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 return carry;
             }, true);
         },
-        cannotResolveNone: function () {
+        cannotResolveNone() {
             return this.disabled || this.diff.reduce(function (carry, row) {
                 if (row.acceptable) {
                     return carry && !row.accepted;
@@ -128,12 +128,12 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 return carry;
             }, true);
         },
-        hasDiff: function () {
+        hasDiff() {
             return this.diff.length > 0;
         },
     },
     methods: {
-        generateChildMap: function (labels) {
+        generateChildMap(labels) {
             var childMap = {};
             labels.forEach(function (label) {
                 if (childMap.hasOwnProperty(label.parent_id)) {
@@ -145,7 +145,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             return childMap;
         },
-        generateLabelsAsTree: function (labels, childMap) {
+        generateLabelsAsTree(labels, childMap) {
             return labels.map(function (label) {
                     if (childMap.hasOwnProperty(label.id)) {
                         label.children = this.generateLabelsAsTree(childMap[label.id], childMap);
@@ -164,7 +164,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     return aCompare <= bCompare ? -1 : 1;
                 });
         },
-        generateTreeDiff: function (leftLabels, rightLabels, diff, level) {
+        generateTreeDiff(leftLabels, rightLabels, diff, level) {
             leftLabels = leftLabels.slice();
             rightLabels = rightLabels.slice();
             diff = diff || [];
@@ -233,7 +233,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             return diff;
         },
-        filterRelevantItems: function (diff) {
+        filterRelevantItems(diff) {
             var isDifferent = [];
 
             diff.forEach(function (row, index) {
@@ -259,7 +259,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 return row.relevant;
             });
         },
-        handleResolved: function (row) {
+        handleResolved(row) {
             if (row.acceptable) {
                 if (row.accepted) {
                     this.cancelResolved(row);
@@ -278,7 +278,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 }
             }
         },
-        cancelResolved: function (row) {
+        cancelResolved(row) {
             if (row.left === null) {
                 this.$emit('cancel-add', row.right);
             } else if (row.right === null) {
@@ -287,7 +287,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             row.accepted = false;
         },
-        setResolved: function (row) {
+        setResolved(row) {
             if (row.left === null) {
                 this.$emit('add', row.right);
             } else if (row.right === null) {
@@ -296,21 +296,21 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             row.accepted = true;
         },
-        acceptAll: function () {
+        acceptAll() {
             this.diff.forEach(function (row) {
                 if (!row.accepted) {
                     this.handleResolved(row);
                 }
             }, this);
         },
-        acceptNone: function () {
+        acceptNone() {
             this.diff.forEach(function (row) {
                 if (row.accepted) {
                     this.handleResolved(row);
                 }
             }, this);
         },
-        doForAllChildren: function (row, callback) {
+        doForAllChildren(row, callback) {
             var level = row.level + 1;
             var index = this.diff.indexOf(row) + 1;
             while (this.diff[index] && this.diff[index].level >= level) {
@@ -318,7 +318,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 index += 1;
             }
         },
-        doForAllParents: function (row, callback) {
+        doForAllParents(row, callback) {
             var level = row.level;
             var index = this.diff.indexOf(row) - 1;
             while (level > 0 && index >= 0) {
@@ -330,35 +330,35 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 index -= 1;
             }
         },
-        acceptDeleteAllChildren: function (row) {
+        acceptDeleteAllChildren(row) {
             this.doForAllChildren(row, function (child) {
                 if (child.right === null) {
                     this.setResolved(child);
                 }
             });
         },
-        acceptCancelAddAllChildren: function (row) {
+        acceptCancelAddAllChildren(row) {
             this.doForAllChildren(row, function (child) {
                 if (child.left === null) {
                     this.cancelResolved(child);
                 }
             });
         },
-        acceptAddAllParents: function (row) {
+        acceptAddAllParents(row) {
             this.doForAllParents(row, function (child) {
                 if (child.left === null) {
                     this.setResolved(child);
                 }
             });
         },
-        acceptCancelDeleteAllParents: function (row) {
+        acceptCancelDeleteAllParents(row) {
             this.doForAllParents(row, function (child) {
                 if (child.right === null) {
                     this.cancelResolved(child);
                 }
             });
         },
-        setLeftParentIds: function (diff) {
+        setLeftParentIds(diff) {
             var rightToLeftMap = {};
             diff.forEach(function (row) {
                 if (row.right && row.left) {
@@ -375,7 +375,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             return diff;
         },
     },
-    created: function () {
+    created() {
         var diff = this.generateTreeDiff(this.leftLabelsAsTree, this.rightLabelsAsTree);
         diff = this.filterRelevantItems(diff);
         // THe left parent IDs are required to bundle the data for the API later.

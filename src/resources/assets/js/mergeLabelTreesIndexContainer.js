@@ -14,10 +14,10 @@ biigle.$viewModel('merge-label-trees-index-container', function (element) {
             chosenCandidate: null,
         },
         computed: {
-            cannotContinue: function () {
+            cannotContinue() {
                 return this.chosenCandidate === null;
             },
-            continueUrl: function () {
+            continueUrl() {
                 if (this.chosenCandidate) {
                     return mergeUrlTemplate.replace(':id', this.chosenCandidate.id);
                 }
@@ -26,18 +26,18 @@ biigle.$viewModel('merge-label-trees-index-container', function (element) {
             },
         },
         methods: {
-            parseLabelTreeVersionedName: function (tree) {
+            parseLabelTreeVersionedName(tree) {
                 if (tree.version) {
                     tree.name = tree.name + ' @ ' + tree.version.name;
                 }
 
                 return tree;
             },
-            chooseCandidate: function (tree) {
+            chooseCandidate(tree) {
                 this.chosenCandidate = tree;
             },
         },
-        created: function () {
+        created() {
             this.mergeCandidates = biigle.$require('labelTrees.mergeCandidates')
                 .map(this.parseLabelTreeVersionedName);
         },

@@ -22,24 +22,24 @@ biigle.$viewModel('label-trees-title', function (element) {
             visibility_id: labelTree.visibility_id,
         },
         computed: {
-            isPrivate: function () {
+            isPrivate() {
                 return this.labelTree.visibility_id === privateId;
             },
-            hasDescription: function () {
+            hasDescription() {
                 return !!this.description;
             },
-            isChanged: function () {
+            isChanged() {
                 return this.name !== this.labelTree.name || this.description !== this.labelTree.description || parseInt(this.visibility_id) !== this.labelTree.visibility_id;
             },
         },
         methods: {
-            discardChanges: function () {
+            discardChanges() {
                 this.finishEditing();
                 this.name = this.labelTree.name;
                 this.description = this.labelTree.description;
                 this.visibility_id = this.labelTree.visibility_id;
             },
-            leaveTree: function () {
+            leaveTree() {
                 var confirmed = confirm('Do you really want to revoke your membership of label tree "' + this.labelTree.name + '"?');
 
                 if (confirmed) {
@@ -52,7 +52,7 @@ biigle.$viewModel('label-trees-title', function (element) {
                     .finally(this.finishLoading);
                 }
             },
-            treeLeft: function () {
+            treeLeft() {
                 if (this.isPrivate) {
                     messages.success('You left the label tree. Redirecting...');
                     setTimeout(function () {
@@ -62,7 +62,7 @@ biigle.$viewModel('label-trees-title', function (element) {
                     location.reload();
                 }
             },
-            deleteTree: function () {
+            deleteTree() {
                 var confirmed = confirm('Do you really want to delete the label tree ' + this.labelTree.name + '?');
 
                 if (confirmed) {
@@ -72,13 +72,13 @@ biigle.$viewModel('label-trees-title', function (element) {
                         .finally(this.finishLoading);
                 }
             },
-            treeDeleted: function () {
+            treeDeleted() {
                 messages.success('The label tree was deleted. Redirecting...');
                 setTimeout(function () {
                     location.href = biigle.$require('labelTrees.redirectUrl');
                  }, 2000);
             },
-            saveChanges: function () {
+            saveChanges() {
                 this.startLoading();
                 labelTreeApi.update({id: this.labelTree.id}, {
                         name: this.name,
@@ -88,7 +88,7 @@ biigle.$viewModel('label-trees-title', function (element) {
                     .then(this.changesSaved, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            changesSaved: function () {
+            changesSaved() {
                 this.labelTree.name = this.name;
                 this.labelTree.description = this.description;
                 this.labelTree.visibility_id = parseInt(this.visibility_id);

@@ -50,7 +50,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
             '</div>' +
         '</td>' +
     '</tr>',
-    data: function () {
+    data() {
         return {
             //
         };
@@ -66,38 +66,38 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
     },
     computed: {
-        leftLabel: function () {
+        leftLabel() {
             return this.item.left;
         },
-        rightLabel: function () {
+        rightLabel() {
             return this.item.right;
         },
-        hasLeft: function () {
+        hasLeft() {
             return this.leftLabel !== null;
         },
-        hasRight: function () {
+        hasRight() {
             return this.rightLabel !== null;
         },
-        labelToAdd: function () {
+        labelToAdd() {
             return !this.hasLeft && this.hasRight;
         },
-        labelToRemove: function () {
+        labelToRemove() {
             return this.hasLeft && !this.hasRight;
         },
-        labelsSame: function () {
+        labelsSame() {
             return this.hasLeft && this.hasRight;
         },
-        leftColorStyle: function () {
+        leftColorStyle() {
             return {
                 'background-color': '#' + this.leftLabel.color,
             };
         },
-        rightColorStyle: function () {
+        rightColorStyle() {
             return {
                 'background-color': '#' + this.rightLabel.color,
             };
         },
-        classObject: function () {
+        classObject() {
             return {
                 'success': this.labelToAdd && !this.accepted,
                 'label-tree-diff-row--added': this.labelToAdd && this.accepted,
@@ -105,31 +105,31 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
                 'label-tree-diff-row--removed': this.labelToRemove && this.accepted,
             };
         },
-        labelStyle: function () {
+        labelStyle() {
             return {
                 'padding-left': (this.item.level * 22) + 'px',
             };
         },
-        addButtonClass: function () {
+        addButtonClass() {
             return {
                 'btn-success': this.accepted,
             };
         },
-        removeButtonClass: function () {
+        removeButtonClass() {
             return {
                 'btn-danger': this.accepted,
             };
         },
-        accepted: function () {
+        accepted() {
             return this.item.accepted;
         },
-        acceptable: function () {
+        acceptable() {
             return this.item.acceptable;
         },
-        labelAdded: function () {
+        labelAdded() {
             return this.labelToAdd && this.accepted;
         },
-        removeTitle: function () {
+        removeTitle() {
             if (this.acceptable) {
                 return 'Accept the deletion';
             }
@@ -138,7 +138,7 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
         },
     },
     methods: {
-        emitResolved: function () {
+        emitResolved() {
             this.$emit('accepted', this.item);
         },
     },

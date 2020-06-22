@@ -1,32 +1,38 @@
+import LabelFormComponent from '../mixins/labelFormComponent';
+import WormsResultItem from './wormsResultItem';
+import {handleErrorResponse} from '../import';
+import {LabelSourceApi} from '../import';
+
 /**
  * A component for a form to manually create a new label for a label tree
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.wormsLabelForm', {
-    mixins: [biigle.$require('labelTrees.mixins.labelFormComponent')],
+export default {
+    mixins: [LabelFormComponent],
     components: {
-        wormsResultItem: biigle.$require('labelTrees.components.wormsResultItem'),
+        wormsResultItem: WormsResultItem,
     },
-    data: function () {
+    data() {
         return {
             results: [],
             recursive: false,
             hasSearched: false,
             unaccepted: false,
+            worms: null,
         };
     },
     computed: {
-        hasResults: function () {
+        hasResults() {
             return this.results.length > 0;
         },
-        recursiveButtonClass: function () {
+        recursiveButtonClass() {
             return {
                 active: this.recursive,
                 'btn-info': this.recursive,
             };
         },
-        unacceptedButtonClass: function () {
+        unacceptedButtonClass() {
             return {
                 active: this.unaccepted,
                 'btn-info': this.unaccepted,
@@ -34,37 +40,31 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
         },
     },
     methods: {
-        findName: function () {
-            var worms = biigle.$require('labelTrees.wormsLabelSource');
-            var labelSource = biigle.$require('api.labelSource');
-            var messages = biigle.$require('messages.store');
-            var self = this;
+        findName() {
             this.$emit('load-start');
 
-            var query = {id: worms.id, query: this.selectedName};
+            let query = {id: this.worms.id, query: this.selectedName};
 
             if (this.unaccepted) {
                 query.unaccepted = 'true';
             }
 
-            labelSource.query(query)
-                .then(this.updateResults, messages.handleErrorResponse)
-                .finally(function () {
-                    self.hasSearched = true;
-                    self.$emit('load-finish');
+            LabelSourceApi.query(query)
+                .then(this.updateResults, handleErrorResponse)
+                .finally(() => {
+                    this.hasSearched = true;
+                    this.$emit('load-finish');
                 });
         },
-        updateResults: function (response) {
+        updateResults(response) {
             this.results = response.data;
         },
-        importItem: function (item) {
-            var worms = biigle.$require('labelTrees.wormsLabelSource');
-
-            var label = {
+        importItem(item) {
+            let label = {
                 name: item.name,
                 color: this.selectedColor,
                 source_id: item.aphia_id,
-                label_source_id: worms.id,
+                label_source_id: this.worms.id,
             };
 
             if (this.recursive) {
@@ -75,11 +75,14 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
 
             this.$emit('submit', label);
         },
-        toggleRecursive: function () {
+        toggleRecursive() {
             this.recursive = !this.recursive;
         },
-        toggleUnaccepted: function () {
+        toggleUnaccepted() {
             this.unaccepted = !this.unaccepted;
         },
     },
-});
+    created() {
+        this.worms = biigle.$require('labelTrees.wormsLabelSource');
+    },
+};

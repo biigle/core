@@ -1,29 +1,31 @@
+import LabelTreeLabel from './labelTreeLabel';
+
 /**
  * A component that displays a label tree. The labels can be searched and selected.
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTree', {
-    template: '<div class="label-tree">' +
-        '<h4 class="label-tree__title" v-if="showTitle">' +
-            '<button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">' +
-                '<span v-if="collapsed" class="fa fa-chevron-down" aria-hidden="true"></span>' +
-                '<span v-else class="fa fa-chevron-up" aria-hidden="true"></span>' +
-            '</button>' +
-            '{{name}}' +
-        '</h4>' +
-        '<ul v-if="!collapsed" class="label-tree__list">' +
-            '<label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
-            '<li v-if="hasNoLabels" class="text-muted">No labels</li>' +
-        '</ul>' +
-    '</div>',
-    data: function () {
+export default {
+    template: `<div class="label-tree">
+        <h4 class="label-tree__title" v-if="showTitle">
+            <button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">
+                <span v-if="collapsed" class="fa fa-chevron-down" aria-hidden="true"></span>
+                <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
+            </button>
+            {{name}}
+        </h4>
+        <ul v-if="!collapsed" class="label-tree__list">
+            <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <li v-if="hasNoLabels" class="text-muted">No labels</li>
+        </ul>
+    </div>`,
+    data() {
         return {
             collapsed: false
         };
     },
     components: {
-        labelTreeLabel: biigle.$require('labelTrees.components.labelTreeLabel'),
+        labelTreeLabel: LabelTreeLabel,
     },
     props: {
         name: {
@@ -81,17 +83,17 @@ biigle.$component('labelTrees.components.labelTree', {
         },
     },
     computed: {
-        labelMap: function () {
-            var map = {};
-            for (var i = this.labels.length - 1; i >= 0; i--) {
+        labelMap() {
+            let map = {};
+            for (let i = this.labels.length - 1; i >= 0; i--) {
                 map[this.labels[i].id] = this.labels[i];
             }
 
             return map;
         },
-        compiledLabels: function () {
-            var compiled = {null: []};
-            var i;
+        compiledLabels() {
+            let compiled = {null: []};
+            let i;
 
             if (this.flat) {
                 this.labels.forEach(function (label) {
@@ -121,25 +123,25 @@ biigle.$component('labelTrees.components.labelTree', {
 
             return compiled;
         },
-        rootLabels: function () {
+        rootLabels() {
             return this.compiledLabels[null];
         },
-        collapseTitle: function () {
+        collapseTitle() {
             return this.collapsed ? 'Expand' : 'Collapse';
         },
-        hasNoLabels: function () {
+        hasNoLabels() {
             return this.rootLabels.length === 0;
         },
     },
     methods: {
-        hasLabel: function (id) {
+        hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
         },
-        getLabel: function (id) {
+        getLabel(id) {
             return this.labelMap[id];
         },
-        getParents: function (label) {
-            var parents = [];
+        getParents(label) {
+            let parents = [];
             while (label.parent_id !== null) {
                 label = this.getLabel(label.parent_id);
                 parents.unshift(label.id);
@@ -147,60 +149,60 @@ biigle.$component('labelTrees.components.labelTree', {
 
             return parents;
         },
-        getSiblings: function (label) {
+        getSiblings(label) {
             if (label.parent_id === null) {
                 return this.rootLabels;
             }
 
-            var parent = this.getLabel(label.parent_id);
+            let parent = this.getLabel(label.parent_id);
 
             return parent.children;
         },
-        selectSiblings: function (label) {
+        selectSiblings(label) {
             this.getSiblings(label).forEach(function (label) {
                 label.selected = true;
             });
         },
-        deselectSiblings: function (label) {
+        deselectSiblings(label) {
             this.getSiblings(label).forEach(function (label) {
                 label.selected = false;
             });
         },
-        selectChildren: function (label) {
+        selectChildren(label) {
             if (label.children) {
-                label.children.forEach(function (child) {
+                label.children.forEach((child) => {
                     child.selected = true;
                     this.selectChildren(child);
-                }, this);
+                });
             }
         },
-        deselectChildren: function (label) {
+        deselectChildren(label) {
             if (label.children) {
-                label.children.forEach(function (child) {
+                label.children.forEach((child) => {
                     child.selected = false;
                     this.deselectChildren(child);
-                }, this);
+                });
             }
         },
-        emitSelect: function (label, e) {
+        emitSelect(label, e) {
             this.$emit('select', label, e);
         },
-        emitDeselect: function (label, e) {
+        emitDeselect(label, e) {
             this.$emit('deselect', label, e);
         },
-        emitSave: function (label, reject) {
+        emitSave(label, reject) {
             this.$emit('save', label, reject);
         },
-        emitDelete: function (label) {
+        emitDelete(label) {
             this.$emit('delete', label);
         },
-        conditionSelectSiblings: function (e) {
+        conditionSelectSiblings(e) {
             return this.allowSelectSiblings && e.altKey;
         },
-        conditionSelectChildren: function (e) {
+        conditionSelectChildren(e) {
             return this.allowSelectChildren && e.ctrlKey;
         },
-        selectLabel: function (label, e) {
+        selectLabel(label, e) {
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
@@ -211,9 +213,9 @@ biigle.$component('labelTrees.components.labelTree', {
                 label.selected = true;
                 this.collapsed = false;
                 if (!this.flat) {
-                    this.getParents(label).forEach(function (id) {
+                    this.getParents(label).forEach((id) => {
                         this.getLabel(id).open = true;
-                    }, this);
+                    });
 
                     if (this.multiselect) {
                         if (this.conditionSelectSiblings(e)) {
@@ -231,7 +233,7 @@ biigle.$component('labelTrees.components.labelTree', {
                 }
             }
         },
-        deselectLabel: function (label, e) {
+        deselectLabel(label, e) {
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
@@ -248,16 +250,16 @@ biigle.$component('labelTrees.components.labelTree', {
                 }
             }
         },
-        clearSelectedLabels: function () {
+        clearSelectedLabels() {
             this.labels.forEach(function (label) {
                 label.selected = false;
             });
         },
-        collapse: function () {
+        collapse() {
             if (this.collapsed) {
                 this.collapsed = false;
             } else {
-                var hadExpandedLabels = false;
+                let hadExpandedLabels = false;
                 // Collapse all labels if there are any expanded.
                 this.labels.forEach(function (label) {
                     hadExpandedLabels |= label.open;
@@ -268,24 +270,24 @@ biigle.$component('labelTrees.components.labelTree', {
                 this.collapsed = !hadExpandedLabels;
             }
         },
-        emitAddFavourite: function (label) {
+        emitAddFavourite(label) {
             this.$emit('add-favourite', label);
         },
-        emitRemoveFavourite: function (label) {
+        emitRemoveFavourite(label) {
             this.$emit('remove-favourite', label);
         },
-        addFavouriteLabel: function (label) {
+        addFavouriteLabel(label) {
             if (this.hasLabel(label.id)) {
                 label.favourite = true;
             }
         },
-        removeFavouriteLabel: function (label) {
+        removeFavouriteLabel(label) {
             if (this.hasLabel(label.id)) {
                 label.favourite = false;
             }
         },
     },
-    created: function () {
+    created() {
         // Set the reactive label properties
         this.labels.forEach(function (label) {
             if (!label.hasOwnProperty('open')) {
@@ -316,5 +318,5 @@ biigle.$component('labelTrees.components.labelTree', {
             this.$parent.$on('add-favourite', this.addFavouriteLabel);
             this.$parent.$on('remove-favourite', this.removeFavouriteLabel);
         }
-    }
-});
+    },
+};

@@ -1,13 +1,15 @@
+import {Typeahead} from '../import';
+
 /**
  * A component that displays a single label of a label tree.
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTypeahead', {
-    mixins: [biigle.$require('core.components.typeahead')],
+export default {
+    mixins: [Typeahead],
     props: {
         template: {
-            default: '<span class="label-typeahead-item"><span v-if="item.color" :style="{\'background-color\': \'#\' + item.color}" class="label-color"></span><span v-text="item.name"></span></span>',
+            default: `<span class="label-typeahead-item"><span v-if="item.color" :style="{'background-color': '#' + item.color}" class="label-color"></span><span v-text="item.name"></span></span>`,
         },
     },
-});
+};

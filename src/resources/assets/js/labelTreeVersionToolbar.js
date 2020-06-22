@@ -14,23 +14,23 @@ biigle.$viewModel('label-tree-version-toolbar', function (element) {
             doiSaved: false,
         },
         computed: {
-            doiUrl: function () {
+            doiUrl() {
                 return 'https://doi.org/' + this.doi;
             },
-            doiTitle: function () {
+            doiTitle() {
                 return 'DOI: ' + this.doi;
             },
         },
         methods: {
-            cleanDoi: function (doi) {
+            cleanDoi(doi) {
                 return doi.replace(/^https?\:\/\/doi\.org\//, '');
             },
-            saveDoi: function () {
+            saveDoi() {
                 this.doi = this.cleanDoi(this.doi);
                 labelTreeVersionApi.update({id: version.id}, {doi: this.doi})
                     .then(this.handleDoiSaved, messages.handleErrorResponse);
             },
-            handleDoiSaved: function () {
+            handleDoiSaved() {
                 this.doiSaved = true;
             },
         }

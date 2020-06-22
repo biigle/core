@@ -25,37 +25,37 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
             merged: false,
         },
         computed: {
-            cannotMerge: function () {
+            cannotMerge() {
                 return this.loading || (this.toAdd.length === 0 && this.toRemove.length === 0);
             },
-            disableDiff: function () {
+            disableDiff() {
                 return this.loading || this.merged;
             },
         },
         methods: {
-            handleAdd: function (label) {
+            handleAdd(label) {
                 if (this.toAdd.indexOf(label) === -1) {
                     this.toAdd.push(label);
                 }
             },
-            handleRemove: function (label) {
+            handleRemove(label) {
                 if (this.toRemove.indexOf(label) === -1) {
                     this.toRemove.push(label);
                 }
             },
-            handleCancelAdd: function (label) {
+            handleCancelAdd(label) {
                 var index = this.toAdd.indexOf(label);
                 if (index !== -1) {
                     this.toAdd.splice(index, 1);
                 }
             },
-            handleCancelRemove: function (label) {
+            handleCancelRemove(label) {
                 var index = this.toRemove.indexOf(label);
                 if (index !== -1) {
                     this.toRemove.splice(index, 1);
                 }
             },
-            bundleToAdd: function (toAdd) {
+            bundleToAdd(toAdd) {
                 var toAddMap = {};
                 toAdd.forEach(function (label) {
                     toAddMap[label.id] = {
@@ -95,12 +95,12 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
 
                 return bundled;
             },
-            bundleToRemove: function (toRemove) {
+            bundleToRemove(toRemove) {
                 return toRemove.map(function (label) {
                     return label.id;
                 });
             },
-            submitMerge: function () {
+            submitMerge() {
                 this.startLoading();
                 var bundledToAdd = this.bundleToAdd(this.toAdd);
                 var bundledToRemove = this.bundleToRemove(this.toRemove);
@@ -111,11 +111,11 @@ biigle.$viewModel('merge-label-trees-container', function (element) {
                     })
                     .then(this.handleMergeSuccess, this.handleMergeError);
             },
-            handleMergeError: function (response) {
+            handleMergeError(response) {
                 this.finishLoading();
                 messages.handleResponseError(response);
             },
-            handleMergeSuccess: function () {
+            handleMergeSuccess() {
                 this.merged = true;
             },
         },

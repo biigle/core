@@ -1,9 +1,12 @@
+import LabelTypeahead from '../components/labelTypeahead';
+import {randomColor} from '../utils';
+
 /**
  * A mixin for components that create new labels
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.mixins.labelFormComponent', {
+export default {
     props: {
         labels: {
             type: Array,
@@ -23,47 +26,47 @@ biigle.$component('labelTrees.mixins.labelFormComponent', {
         },
     },
     components: {
-        typeahead: biigle.$require('labelTrees.components.labelTypeahead'),
+        typeahead: LabelTypeahead,
     },
     computed: {
         selectedColor: {
-            get: function () {
+            get() {
                 return this.color;
             },
-            set: function (color) {
+            set(color) {
                 this.$emit('color', color);
-            }
+            },
         },
         selectedName: {
-            get: function () {
+            get() {
                 return this.name;
             },
-            set: function (name) {
+            set(name) {
                 this.$emit('name', name);
             }
         },
-        selectedParent: function () {
+        selectedParent() {
             return this.parent ? this.parent.name : '';
         },
-        hasNoLabels: function () {
+        hasNoLabels() {
             return this.labels.length === 0;
         },
-        hasNoParent: function () {
+        hasNoParent() {
             return !this.parent;
         },
-        hasNoName: function () {
+        hasNoName() {
             return !this.name;
-        }
+        },
     },
     methods: {
-        refreshColor: function () {
-            this.selectedColor = biigle.$require('labelTrees.randomColor')();
+        refreshColor() {
+            this.selectedColor = randomColor();
         },
-        resetParent: function () {
+        resetParent() {
             this.$emit('parent', null);
         },
-        selectLabel: function (label) {
+        selectLabel(label) {
             this.$emit('parent', label);
         },
     },
-});
+};
