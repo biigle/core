@@ -24,7 +24,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
             typeahead: biigle.$require('core.components.typeahead')
         },
         computed: {
-            filteredVolumes: function () {
+            filteredVolumes() {
                 if (this.hasFiltering) {
                     var filterString = this.filterString.toLowerCase();
 
@@ -35,16 +35,16 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
 
                 return this.volumes;
             },
-            hasFiltering: function () {
+            hasFiltering() {
                 return this.filterString.length > 0;
             },
-            filterInputClass: function () {
+            filterInputClass() {
                 return this.hasFiltering ? 'panel-filter--active' : '';
             },
-            hasVolumes: function () {
+            hasVolumes() {
                 return this.volumes.length > 0;
             },
-            panelStyle: function () {
+            panelStyle() {
                 if (this.hasFiltering) {
                     return {
                         height: this.fullHeight + 'px',
@@ -53,12 +53,12 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
 
                 return {};
             },
-            hasNoMatchingVolumes: function () {
+            hasNoMatchingVolumes() {
                 return this.hasVolumes && this.filteredVolumes.length === 0;
             },
         },
         methods: {
-            removeVolume: function (id) {
+            removeVolume(id) {
                 var self = this;
                 this.startLoading();
                 projectsApi.detachVolume({id: this.project.id, volume_id: id})
@@ -75,7 +75,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
                     })
                     .finally(this.finishLoading);
             },
-            forceRemoveVolume: function (id) {
+            forceRemoveVolume(id) {
                 var self = this;
                 this.startLoading();
                 projectsApi.detachVolume({id: this.project.id, volume_id: id}, {force: true})
@@ -84,7 +84,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
                     }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            volumeRemoved: function (id) {
+            volumeRemoved(id) {
                 for (var i = this.volumes.length - 1; i >= 0; i--) {
                     if (this.volumes[i].id === id) {
                         this.attachableVolumes.unshift(this.volumes[i]);
@@ -94,7 +94,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
 
                 this.$nextTick(this.updateFullHeight);
             },
-            hasVolume: function (id) {
+            hasVolume(id) {
                 for (var i = this.volumes.length - 1; i >= 0; i--) {
                     if (this.volumes[i].id === id) {
                         return true;
@@ -103,7 +103,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
 
                 return false;
             },
-            attachVolume: function (volume) {
+            attachVolume(volume) {
                 if (volume && !this.hasVolume(volume.id)) {
                     var self = this;
                     this.startLoading();
@@ -114,7 +114,7 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
                         .finally(this.finishLoading);
                 }
             },
-            volumeAttached: function (volume) {
+            volumeAttached(volume) {
                 this.volumes.unshift(volume);
                 for (var i = this.attachableVolumes.length - 1; i >= 0; i--) {
                     if (this.attachableVolumes[i].id === volume.id) {
@@ -124,24 +124,24 @@ biigle.$viewModel('projects-show-volume-list', function (element) {
 
                 this.$nextTick(this.updateFullHeight);
             },
-            fetchAttachableVolumes: function () {
+            fetchAttachableVolumes() {
                 attachableVolumes.get({id: this.project.id})
                     .then(this.attachableVolumesFetched, messages.handleErrorResponse);
             },
-            attachableVolumesFetched: function (response) {
+            attachableVolumesFetched(response) {
                 this.attachableVolumes = response.data;
             },
-            clearFiltering: function () {
+            clearFiltering() {
                 this.filterString = '';
             },
-            updateFullHeight: function () {
+            updateFullHeight() {
                 this.fullHeight = this.$el.offsetHeight;
             },
         },
-        created: function () {
+        created() {
             this.$once('editing.start', this.fetchAttachableVolumes);
         },
-        mounted: function () {
+        mounted() {
             this.updateFullHeight();
         },
     });

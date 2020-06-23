@@ -4,42 +4,42 @@
  *
  * @type {Object}
  */
-biigle.$component('projects.components.previewThumbnail', {
+export default {
     template:
-    '<figure ' +
-        'class="preview-thumbnail" ' +
-        '@mousemove="updateIndex($event)" ' +
-        '@mouseenter="updateHovered" ' +
-        '>' +
-            '<i ' +
-                'v-if="icon" ' +
-                'class="preview-thumbnail__icon fas fa-lg"' +
-                ':class="iconClass" '+
-                '></i>' +
-            '<span ' +
-                'v-if="removable" ' +
-                'class="preview-thumbnail__close close" ' +
-                '@click.prevent="remove" ' +
-                ':title="removeTitle" ' +
-                '>&times;</span>' +
-            '<div class="preview-thumbnail__images" v-if="showPreview">' +
-                '<img ' +
-                    'v-for="(uri, i) in uris" ' +
-                    'v-show="thumbShown(i)" ' +
-                    '@error="failed(i)" ' +
-                    ':src="uri" ' +
-                    '>' +
-            '</div>' +
-            '<div v-else class="preview-thumbnail__fallback">' +
-                '<slot></slot>' +
-            '</div>' +
-            '<slot name="caption"></slot>' +
-            '<span ' +
-                'v-show="someLoaded" ' +
-                'class="preview-thumbnail__progress" ' +
-                ':style="{width: progress}" ' +
-                '></span>' +
-    '</figure>',
+    `<figure
+        class="preview-thumbnail"
+        @mousemove="updateIndex($event)"
+        @mouseenter="updateHovered"
+        >
+            <i
+                v-if="icon"
+                class="preview-thumbnail__icon fas fa-lg"
+                :class="iconClass"
+                ></i>
+            <span
+                v-if="removable"
+                class="preview-thumbnail__close close"
+                @click.prevent="remove"
+                :title="removeTitle"
+                >&times;</span>
+            <div class="preview-thumbnail__images" v-if="showPreview">
+                <img
+                    v-for="(uri, i) in uris"
+                    v-show="thumbShown(i)"
+                    @error="failed(i)"
+                    :src="uri"
+                    >
+            </div>
+            <div v-else class="preview-thumbnail__fallback">
+                <slot></slot>
+            </div>
+            <slot name="caption"></slot>
+            <span
+                v-show="someLoaded"
+                class="preview-thumbnail__progress"
+                :style="{width: progress}"
+                ></span>
+    </figure>`,
     props: {
         id: {
             type: Number,
@@ -61,7 +61,7 @@ biigle.$component('projects.components.previewThumbnail', {
             type: String,
         },
     },
-    data: function () {
+    data() {
         return {
             index: 0,
             uris: [],
@@ -70,47 +70,45 @@ biigle.$component('projects.components.previewThumbnail', {
     },
     computed: {
         // Width of the progress bar.
-        progress: function () {
+        progress() {
             return (100 * this.index / (this.uris.length - 1)) + '%';
         },
-        showFallback: function () {
+        showFallback() {
             return this.uris[this.index] === false;
         },
-        showPreview: function () {
+        showPreview() {
             return this.hovered && this.someLoaded;
         },
-        someLoaded: function () {
-            return this.uris.reduce(function (carry, item) {
-                return carry || item !== false;
-            }, false);
+        someLoaded() {
+            return this.uris.reduce((carry, item) => carry || item !== false, false);
         },
-        iconClass: function () {
+        iconClass() {
             return this.icon ? 'fa-' + this.icon : '';
         },
     },
     methods: {
-        thumbShown: function (i) {
+        thumbShown(i) {
             return this.index === i && !this.failed[i];
         },
-        updateIndex: function (event) {
-            var rect = this.$el.getBoundingClientRect();
+        updateIndex(event) {
+            let rect = this.$el.getBoundingClientRect();
             this.index = Math.max(0, Math.floor(this.uris.length * (event.clientX - rect.left) / (rect.width)));
         },
-        remove: function () {
+        remove() {
             this.$emit('remove', this.id);
         },
         failed: function(i) {
             this.uris.splice(i, 1, false);
         },
-        updateHovered: function () {
+        updateHovered() {
             this.hovered = true;
         },
     },
-    created: function () {
+    created() {
         if (Array.isArray(this.thumbUris)) {
             this.uris = this.thumbUris.slice();
         } else {
             this.uris = this.thumbUris.split(',');
         }
-    }
-});
+    },
+};

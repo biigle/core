@@ -20,20 +20,20 @@ biigle.$viewModel('projects-title', function (element) {
             description: project.description,
         },
         computed: {
-            hasDescription: function () {
+            hasDescription() {
                 return !!this.description.length;
             },
-            isChanged: function () {
+            isChanged() {
                 return this.name !== this.project.name || this.description !== this.project.description;
             },
         },
         methods: {
-            discardChanges: function () {
+            discardChanges() {
                 this.name = this.project.name;
                 this.description = this.project.description;
                 this.finishEditing();
             },
-            leaveProject: function () {
+            leaveProject() {
                 var confirmed = confirm('Do you really want to revoke your membership of project "' + this.project.name + '"?');
 
                 if (confirmed) {
@@ -46,13 +46,13 @@ biigle.$viewModel('projects-title', function (element) {
                     .finally(this.finishLoading);
                 }
             },
-            projectLeft: function () {
+            projectLeft() {
                 messages.success('You left the project. Redirecting...');
                 setTimeout(function () {
                     location.href = biigle.$require('projects.redirectUrl');
                  }, 2000);
             },
-            deleteProject: function () {
+            deleteProject() {
                 var confirmed = confirm('Do you really want to delete the project ' + this.project.name + '?');
 
                 if (confirmed) {
@@ -62,7 +62,7 @@ biigle.$viewModel('projects-title', function (element) {
                         .finally(this.finishLoading);
                 }
             },
-            maybeForceDeleteProject: function (response) {
+            maybeForceDeleteProject(response) {
                 if (response.status === 400) {
                     var confirmed = confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?');
                     if (confirmed) {
@@ -75,13 +75,13 @@ biigle.$viewModel('projects-title', function (element) {
                     messages.handleErrorResponse(response);
                 }
             },
-            projectDeleted: function () {
+            projectDeleted() {
                 messages.success('The project was deleted. Redirecting...');
                 setTimeout(function () {
                     location.href = biigle.$require('projects.redirectUrl');
                  }, 2000);
             },
-            saveChanges: function () {
+            saveChanges() {
                 this.startLoading();
                 projectsApi.update({id: this.project.id}, {
                         name: this.name,
@@ -90,7 +90,7 @@ biigle.$viewModel('projects-title', function (element) {
                     .then(this.changesSaved, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            changesSaved: function () {
+            changesSaved() {
                 this.project.name = this.name;
                 this.project.description = this.description;
                 this.finishEditing();

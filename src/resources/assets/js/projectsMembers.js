@@ -21,7 +21,7 @@ biigle.$viewModel('projects-members', function (element) {
         computed: {
         },
         methods: {
-            attachMember: function (user) {
+            attachMember(user) {
                 this.startLoading();
                 var self = this;
                 projectsApi.addUser({id: project.id, user_id: user.id}, {
@@ -32,10 +32,10 @@ biigle.$viewModel('projects-members', function (element) {
                     }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            memberAttached: function (user) {
+            memberAttached(user) {
                 this.members.push(user);
             },
-            updateMember: function (user, props) {
+            updateMember(user, props) {
                 this.startLoading();
                 var self = this;
                 projectsApi.updateUser({id: project.id, user_id: user.id}, {
@@ -46,10 +46,10 @@ biigle.$viewModel('projects-members', function (element) {
                     }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            memberUpdated: function (user, props) {
+            memberUpdated(user, props) {
                 user.role_id = props.role_id;
             },
-            removeMember: function (user) {
+            removeMember(user) {
                 this.startLoading();
                 var self = this;
                 projectsApi.removeUser({id: project.id, user_id: user.id})
@@ -58,7 +58,7 @@ biigle.$viewModel('projects-members', function (element) {
                     }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            memberRemoved: function (user) {
+            memberRemoved(user) {
                 for (var i = this.members.length - 1; i >= 0; i--) {
                     if (this.members[i].id === user.id) {
                         this.members.splice(i, 1);
