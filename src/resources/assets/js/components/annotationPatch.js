@@ -1,10 +1,12 @@
+import AnnotationPatch from '../mixins/annotationPatch';
+
 /**
  * An example annotation patch image.
  *
  * @type {Object}
  */
-biigle.$component('largo.components.annotationPatch', {
-    mixins: [biigle.$require('largo.mixins.annotationPatch')],
+export default {
+    mixins: [AnnotationPatch],
     props: {
         id: {
             type: String,
@@ -27,25 +29,25 @@ biigle.$component('largo.components.annotationPatch', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             url: '',
         };
     },
     computed: {
-        title: function () {
+        title() {
             return 'Example annotation for label ' + this.label.name;
         },
-        src: function () {
+        src() {
             return this.url || this.emptySrc;
         },
     },
     methods: {
-        showEmptyImage: function () {
+        showEmptyImage() {
             this.url = '';
         },
     },
-    created: function () {
+    created() {
         this.url = this.getUrl();
     },
-});
+};

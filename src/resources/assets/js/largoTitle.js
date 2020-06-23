@@ -1,46 +1,43 @@
+import {Events} from './import';
+
 /**
  * The dynamic part of the Largo breadcrumbs in the navbar
  */
-biigle.$viewModel('largo-title', function (element) {
-    var events = biigle.$require('events');
+export default {
+    data: {
+        step: 0,
+        count: 0,
+        dismissedCount: 0,
+    },
+    computed: {
+        shownCount() {
+            if (this.isInDismissStep) {
+                return this.count;
+            }
 
-    new Vue({
-        el: element,
-        data: {
-            step: 0,
-            count: 0,
-            dismissedCount: 0,
+            return this.dismissedCount;
         },
-        computed: {
-            shownCount: function () {
-                if (this.isInDismissStep) {
-                    return this.count;
-                }
-
-                return this.dismissedCount;
-            },
-            isInDismissStep: function () {
-                return this.step === 0;
-            },
-            isInRelabelStep: function () {
-                return this.step === 1;
-            },
+        isInDismissStep() {
+            return this.step === 0;
         },
-        methods: {
-            updateStep: function (step) {
-                this.step = step;
-            },
-            updateCount: function (count) {
-                this.count = count;
-            },
-            updateDismissedCount: function (count) {
-                this.dismissedCount = count;
-            },
+        isInRelabelStep() {
+            return this.step === 1;
         },
-        created: function () {
-            events.$on('annotations-count', this.updateCount);
-            events.$on('dismissed-annotations-count', this.updateDismissedCount);
-            events.$on('step', this.updateStep);
-        }
-    });
-});
+    },
+    methods: {
+        updateStep(step) {
+            this.step = step;
+        },
+        updateCount(count) {
+            this.count = count;
+        },
+        updateDismissedCount(count) {
+            this.dismissedCount = count;
+        },
+    },
+    created() {
+        Events.$on('annotations-count', this.updateCount);
+        Events.$on('dismissed-annotations-count', this.updateDismissedCount);
+        Events.$on('step', this.updateStep);
+    },
+};

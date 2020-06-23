@@ -1,15 +1,26 @@
+import DismissImageGrid from '../components/dismissImageGrid';
+import RelabelImageGrid from '../components/relabelImageGrid';
+import {Events} from '../import';
+import {handleErrorResponse} from '../import';
+import {LabelTrees} from '../import';
+import {LoaderMixin} from '../import';
+import {Messages} from '../import';
+import {PowerToggle} from '../import';
+import {SidebarTab} from '../import';
+import {Sidebar} from '../import';
+
 /**
  * Mixin for largo view models
  */
-biigle.$declare('largo.mixins.largoContainer', {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
-        sidebar: biigle.$require('core.components.sidebar'),
-        sidebarTab: biigle.$require('core.components.sidebarTab'),
-        powerToggle: biigle.$require('core.components.powerToggle'),
-        dismissImageGrid: biigle.$require('largo.components.dismissImageGrid'),
-        relabelImageGrid: biigle.$require('largo.components.relabelImageGrid'),
+        labelTrees: LabelTrees,
+        sidebar: Sidebar,
+        sidebarTab: SidebarTab,
+        powerToggle: PowerToggle,
+        dismissImageGrid: DismissImageGrid,
+        relabelImageGrid: RelabelImageGrid,
     },
     data: {
         labelTrees: [],
@@ -20,49 +31,49 @@ biigle.$declare('largo.mixins.largoContainer', {
         forceChange: false,
     },
     computed: {
-        isInDismissStep: function () {
+        isInDismissStep() {
             return this.step === 0;
         },
-        isInRelabelStep: function () {
+        isInRelabelStep() {
             return this.step === 1;
         },
-        annotations: function () {
+        annotations() {
             if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 return this.annotationsCache[this.selectedLabel.id];
             }
 
             return [];
         },
-        allAnnotations: function () {
-            var annotations = [];
-            for (var id in this.annotationsCache) {
+        allAnnotations() {
+            let annotations = [];
+            for (let id in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(id)) continue;
                 Array.prototype.push.apply(annotations, this.annotationsCache[id]);
             }
 
             return annotations;
         },
-        hasNoAnnotations: function () {
+        hasNoAnnotations() {
             return this.selectedLabel && !this.loading && this.annotations.length === 0;
         },
-        dismissedAnnotations: function () {
+        dismissedAnnotations() {
             return this.allAnnotations.filter(function (item) {
                 return item.dismissed;
             });
         },
-        annotationsWithNewLabel: function () {
+        annotationsWithNewLabel() {
             return this.dismissedAnnotations.filter(function (item) {
                 return !!item.newLabel;
             });
         },
-        hasDismissedAnnotations: function () {
+        hasDismissedAnnotations() {
             return this.dismissedAnnotations.length > 0;
         },
-        dismissedToSave: function () {
-            var annotations = this.dismissedAnnotations;
-            var dismissed = {};
+        dismissedToSave() {
+            let annotations = this.dismissedAnnotations;
+            let dismissed = {};
 
-            for (var i = annotations.length - 1; i >= 0; i--) {
+            for (let i = annotations.length - 1; i >= 0; i--) {
                 if (dismissed.hasOwnProperty(annotations[i].label_id)) {
                     dismissed[annotations[i].label_id].push(annotations[i].id);
                 } else {
@@ -72,11 +83,11 @@ biigle.$declare('largo.mixins.largoContainer', {
 
             return dismissed;
         },
-        changedToSave: function () {
-            var annotations = this.annotationsWithNewLabel;
-            var changed = {};
+        changedToSave() {
+            let annotations = this.annotationsWithNewLabel;
+            let changed = {};
 
-            for (var i = annotations.length - 1; i >= 0; i--) {
+            for (let i = annotations.length - 1; i >= 0; i--) {
                 if (changed.hasOwnProperty(annotations[i].newLabel.id)) {
                     changed[annotations[i].newLabel.id].push(annotations[i].id);
                 } else {
@@ -86,31 +97,25 @@ biigle.$declare('largo.mixins.largoContainer', {
 
             return changed;
         },
-        toDeleteCount: function () {
+        toDeleteCount() {
             return this.dismissedAnnotations.length - this.annotationsWithNewLabel.length;
         },
-        events: function () {
-            return biigle.$require('events');
-        },
-        saveButtonClass: function () {
+        saveButtonClass() {
             return this.forceChange ? 'btn-danger' : 'btn-success';
         },
     },
     methods: {
-        getAnnotations: function (label) {
+        getAnnotations(label) {
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
-                var self = this;
                 // Load only once
-                Vue.set(self.annotationsCache, label.id, []);
+                Vue.set(this.annotationsCache, label.id, []);
                 this.startLoading();
                 this.queryAnnotations(label)
-                    .then(function (response) {
-                        self.gotAnnotations(label, response.data);
-                    }, biigle.$require('messages.store').handleErrorResponse)
+                    .then((response) => this.gotAnnotations(label, response.data), handleErrorResponse)
                     .finally(this.finishLoading);
             }
         },
-        gotAnnotations: function (label, annotations) {
+        gotAnnotations(label, annotations) {
             // This is the object that we will use to store information for each
             // annotation patch.
             annotations = Object.keys(annotations)
@@ -130,17 +135,17 @@ biigle.$declare('largo.mixins.largoContainer', {
 
             Vue.set(this.annotationsCache, label.id, annotations);
         },
-        handleSelectedLabel: function (label) {
+        handleSelectedLabel(label) {
             this.selectedLabel = label;
 
             if (this.isInDismissStep) {
                 this.getAnnotations(label);
             }
         },
-        handleDeselectedLabel: function () {
+        handleDeselectedLabel() {
             this.selectedLabel = null;
         },
-        handleSelectedImageDismiss: function (image, event) {
+        handleSelectedImageDismiss(image, event) {
             if (image.dismissed) {
                 image.dismissed = false;
                 image.newLabel = null;
@@ -153,18 +158,18 @@ biigle.$declare('largo.mixins.largoContainer', {
                 }
             }
         },
-        goToRelabel: function () {
+        goToRelabel() {
             this.step = 1;
             this.lastSelectedImage = null;
         },
-        goToDismiss: function () {
+        goToDismiss() {
             this.step = 0;
             this.lastSelectedImage = null;
             if (this.selectedLabel) {
                 this.getAnnotations(this.selectedLabel);
             }
         },
-        handleSelectedImageRelabel: function (image, event) {
+        handleSelectedImageRelabel(image, event) {
             if (image.newLabel) {
                 // If a new label is selected, swap the label instead of removing it.
                 if (this.selectedLabel && image.newLabel.id !== this.selectedLabel.id) {
@@ -181,8 +186,8 @@ biigle.$declare('largo.mixins.largoContainer', {
                 }
             }
         },
-        save: function () {
-            if (this.loading || (this.toDeleteCount > 0 && !confirm('This might delete ' + this.toDeleteCount + ' annotation(s). Continue?'))) {
+        save() {
+            if (this.loading || (this.toDeleteCount > 0 && !confirm(`This might delete ${this.toDeleteCount} annotation(s). Continue?`))) {
                 return;
             }
 
@@ -192,72 +197,71 @@ biigle.$declare('largo.mixins.largoContainer', {
                     changed: this.changedToSave,
                     force: this.forceChange,
                 })
-                .then(this.saved, biigle.$require('messages.store').handleErrorResponse)
+                .then(this.saved, handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        saved: function () {
-            biigle.$require('messages.store').success('Saved. You can now start a new re-evaluation session.');
+        saved() {
+            Messages.success('Saved. You can now start a new re-evaluation session.');
             this.step = 0;
-            for (var key in this.annotationsCache) {
+            for (let key in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(key)) continue;
                 delete this.annotationsCache[key];
             }
             this.handleSelectedLabel(this.selectedLabel);
         },
-        performOnAllImagesBetween: function (image1, image2, callback) {
-            var index1 = this.allAnnotations.indexOf(image1);
-            var index2 = this.allAnnotations.indexOf(image2);
+        performOnAllImagesBetween(image1, image2, callback) {
+            let index1 = this.allAnnotations.indexOf(image1);
+            let index2 = this.allAnnotations.indexOf(image2);
             if (index2 < index1) {
-                var tmp = index2;
+                let tmp = index2;
                 index2 = index1;
                 index1 = tmp;
             }
 
-            for (var i = index1 + 1; i < index2; i++) {
+            for (let i = index1 + 1; i < index2; i++) {
                 callback(this.allAnnotations[i]);
             }
 
         },
-        dismissAllImagesBetween: function (image1, image2) {
+        dismissAllImagesBetween(image1, image2) {
             this.performOnAllImagesBetween(image1, image2, function (image) {
                 image.dismissed = true;
             });
         },
-        relabelAllImagesBetween: function (image1, image2) {
-            var label = this.selectedLabel;
+        relabelAllImagesBetween(image1, image2) {
+            let label = this.selectedLabel;
             this.performOnAllImagesBetween(image1, image2, function (image) {
                 if (image.dismissed) {
                     image.newLabel = label;
                 }
             });
         },
-        enableForceChange: function () {
+        enableForceChange() {
             this.forceChange = true;
         },
-        disableForceChange: function () {
+        disableForceChange() {
             this.forceChange = false;
         },
     },
     watch: {
-        annotations: function (annotations) {
-            this.events.$emit('annotations-count', annotations.length);
+        annotations(annotations) {
+            Events.$emit('annotations-count', annotations.length);
         },
-        dismissedAnnotations: function (annotations) {
-            this.events.$emit('dismissed-annotations-count', annotations.length);
+        dismissedAnnotations(annotations) {
+            Events.$emit('dismissed-annotations-count', annotations.length);
         },
-        step: function (step) {
-            this.events.$emit('step', step);
+        step(step) {
+            Events.$emit('step', step);
         },
-        selectedLabel: function () {
+        selectedLabel() {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
             }
         },
     },
-    created: function () {
-        var self = this;
-        window.addEventListener('beforeunload', function (e) {
-            if (self.hasDismissedAnnotations) {
+    created() {
+        window.addEventListener('beforeunload', (e) => {
+            if (this.hasDismissedAnnotations) {
                 e.preventDefault();
                 e.returnValue = '';
 
@@ -265,4 +269,4 @@ biigle.$declare('largo.mixins.largoContainer', {
             }
         });
     },
-});
+};

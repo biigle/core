@@ -15,7 +15,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('largo.api.volumes', Vue.resource('api/v1/volumes{/id}/largo', {}, {
+export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
     queryAnnotations: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/filter/label{/label_id}',
@@ -24,4 +24,4 @@ biigle.$declare('largo.api.volumes', Vue.resource('api/v1/volumes{/id}/largo', {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/examples{/label_id}',
     },
-}));
+});

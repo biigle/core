@@ -8,8 +8,8 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('largo.api.labels', Vue.resource('api/v1/labels{/id}/annotations', {}, {
+export default Vue.resource('api/v1/labels{/id}/annotations', {}, {
     queryAnnotations: {
         method: 'GET',
     },
-}));
+});

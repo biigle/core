@@ -1,11 +1,14 @@
+import {ImageGrid} from '../import';
+import Image from './catalogImageGridImage';
+
 /**
  * A variant of the image grid used for the annotation catalog
  *
  * @type {Object}
  */
-biigle.$component('largo.components.catalogImageGrid', {
-    mixins: [biigle.$require('volumes.components.imageGrid')],
+export default {
+    mixins: [ImageGrid],
     components: {
-        imageGridImage: biigle.$require('largo.components.catalogImageGridImage'),
+        imageGridImage: Image,
     },
-});
+};

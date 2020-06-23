@@ -1,11 +1,14 @@
+import {ImageGrid} from '../import';
+import Image from './relabelImageGridImage';
+
 /**
  * A variant of the image grid used for the relabel step of Largo
  *
  * @type {Object}
  */
-biigle.$component('largo.components.relabelImageGrid', {
-    mixins: [biigle.$require('volumes.components.imageGrid')],
+export default {
+    mixins: [ImageGrid],
     components: {
-        imageGridImage: biigle.$require('largo.components.relabelImageGridImage'),
+        imageGridImage: Image,
     },
-});
+};

@@ -1,32 +1,44 @@
+import {ImageGridImage} from '../import';
+import AnnotationPatch from '../mixins/annotationPatch';
+
 /**
  * A variant of the image grid image used for the annotation catalog
  *
  * @type {Object}
  */
-biigle.$component('largo.components.catalogImageGridImage', {
+export default {
     mixins: [
-        biigle.$require('volumes.components.imageGridImage'),
-        biigle.$require('largo.mixins.annotationPatch'),
+        ImageGridImage,
+        AnnotationPatch,
     ],
-    template: '<figure class="image-grid__image image-grid__image--catalog" :class="classObject">' +
-        '<a v-if="showAnnotationLink" :href="showAnnotationLink" target="_blank" title="Show the annotation in the annotation tool">' +
-            '<img :src="url || emptyUrl" @error="showEmptyImage">' +
-        '</a>' +
-        '<img v-else :src="url || emptyUrl" @error="showEmptyImage">' +
-    '</figure>',
+    template: `<figure class="image-grid__image image-grid__image--catalog" :class="classObject">
+        <a v-if="showAnnotationLink" :href="showAnnotationLink" target="_blank" title="Show the annotation in the annotation tool">
+            <img :src="url || emptyUrl" @error="showEmptyImage">
+        </a>
+        <img v-else :src="url || emptyUrl" @error="showEmptyImage">
+    </figure>`,
+    data() {
+        return {
+            showAnnotationRoute: null,
+        };
+    },
     computed: {
-        showAnnotationLink: function () {
-            var route = biigle.$require('annotationCatalog.showAnnotationRoute');
-            return route ? (route + this.image.id) : '';
+        showAnnotationLink() {
+            return this.showAnnotationRoute ? (this.showAnnotationRoute + this.image.id) : '';
         },
-        id: function () {
+        id() {
             return this.image.id;
         },
-        uuid: function () {
+        uuid() {
             return this.image.uuid;
         },
-        urlTemplate: function () {
+        urlTemplate() {
+            // Usually this would be set in the created function but in this special
+            // case this is not possible.
             return biigle.$require('largo.patchUrlTemplate');
         },
     },
-});
+    created() {
+        this.showAnnotationRoute = biigle.$require('annotationCatalog.showAnnotationRoute');
+    },
+};
