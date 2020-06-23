@@ -3,58 +3,53 @@
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTreeDiffRow', {
-    template: '<tr class="label-tree-diff-row" :class="classObject">' +
-        '<td class="label-tree-diff-row__button">' +
-            '<button ' +
-                'v-if="labelToAdd" ' +
-                'class="btn btn-sm btn-default" ' +
-                ':class="addButtonClass" ' +
-                ':disabled="disabled" ' +
-                'title="Accept the addition" ' +
-                '@click="emitResolved" ' +
-                '>' +
-                    '<i class="fa fa-plus"></i>' +
-            '</button>' +
-            '<button ' +
-                'v-if="labelToRemove" ' +
-                'class="btn btn-sm btn-default" ' +
-                ':class="removeButtonClass" ' +
-                ':title="removeTitle" ' +
-                '@click="emitResolved" ' +
-                ':disabled="!acceptable || disabled" ' +
-                '>' +
-                    '<i class="fa fa-minus"></i>' +
-            '</button>' +
-        '</td>' +
-        '<td class="label-tree-diff-row__left">' +
-            '<div v-if="hasLeft" class="label-tree-label" :style="labelStyle">' +
-                '<div class="label-tree-label__name">' +
-                    '<span class="label-tree-label__color" :style="leftColorStyle"></span>' +
-                    '<span v-text="leftLabel.name"></span>' +
-                '</div>' +
-            '</div>' +
-            '<div v-if="labelAdded" class="label-tree-label" :style="labelStyle">' +
-                '<div class="label-tree-label__name">' +
-                    '<span class="label-tree-label__color" :style="rightColorStyle"></span>' +
-                    '<span v-text="rightLabel.name"></span>' +
-                '</div>' +
-            '</div>' +
-        '</td>' +
-        '<td class="label-tree-diff-row__right">' +
-            '<div class="label-tree-label" :style="labelStyle">' +
-                '<div v-if="hasRight" class="label-tree-label__name">' +
-                    '<span class="label-tree-label__color" :style="rightColorStyle"></span>' +
-                    '<span v-text="rightLabel.name"></span>' +
-                '</div>' +
-            '</div>' +
-        '</td>' +
-    '</tr>',
-    data() {
-        return {
-            //
-        };
-    },
+export default {
+    template: `<tr class="label-tree-diff-row" :class="classObject">
+        <td class="label-tree-diff-row__button">
+            <button
+                v-if="labelToAdd"
+                class="btn btn-sm btn-default"
+                :class="addButtonClass"
+                :disabled="disabled"
+                title="Accept the addition"
+                @click="emitResolved"
+                >
+                    <i class="fa fa-plus"></i>
+            </button>
+            <button
+                v-if="labelToRemove"
+                class="btn btn-sm btn-default"
+                :class="removeButtonClass"
+                :title="removeTitle"
+                @click="emitResolved"
+                :disabled="!acceptable || disabled"
+                >
+                    <i class="fa fa-minus"></i>
+            </button>
+        </td>
+        <td class="label-tree-diff-row__left">
+            <div v-if="hasLeft" class="label-tree-label" :style="labelStyle">
+                <div class="label-tree-label__name">
+                    <span class="label-tree-label__color" :style="leftColorStyle"></span>
+                    <span v-text="leftLabel.name"></span>
+                </div>
+            </div>
+            <div v-if="labelAdded" class="label-tree-label" :style="labelStyle">
+                <div class="label-tree-label__name">
+                    <span class="label-tree-label__color" :style="rightColorStyle"></span>
+                    <span v-text="rightLabel.name"></span>
+                </div>
+            </div>
+        </td>
+        <td class="label-tree-diff-row__right">
+            <div class="label-tree-label" :style="labelStyle">
+                <div v-if="hasRight" class="label-tree-label__name">
+                    <span class="label-tree-label__color" :style="rightColorStyle"></span>
+                    <span v-text="rightLabel.name"></span>
+                </div>
+            </div>
+        </td>
+    </tr>`,
     props: {
         item: {
             type: Object,
@@ -142,4 +137,4 @@ biigle.$component('labelTrees.components.labelTreeDiffRow', {
             this.$emit('accepted', this.item);
         },
     },
-});
+};

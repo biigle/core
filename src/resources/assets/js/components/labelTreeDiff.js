@@ -1,52 +1,55 @@
+import Row from './labelTreeDiffRow';
+
 /**
  * A component that displays a single label of a label tree.
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTreeDiff', {
-    template: '<div class="label-tree-diff">' +
-        '<div v-if="hasDiff">' +
-            '<button ' +
-                'class="btn btn-default" ' +
-                'title="Accept all merge items" ' +
-                ':disabled="cannotResolveAll" ' +
-                '@click="acceptAll" ' +
-                '>' +
-                    'Accept all' +
-            '</button>' +
-            ' ' +
-            '<button ' +
-                'class="btn btn-default" ' +
-                'title="Set all merge items as not accepted" ' +
-                ':disabled="cannotResolveNone" ' +
-                '@click="acceptNone" ' +
-                '>' +
-                    'Accept none' +
-            '</button>' +
-        '</div>' +
-        '<table v-if="hasDiff" class="table table-hover">' +
-            '<thead>' +
-                '<tr>' +
-                    '<th></th>' +
-                    '<th v-text="leftName"></th>' +
-                    '<th v-text="rightName"></th>' +
-                '</tr>' +
-            '</thead>' +
-            '<tbody>' +
-                '<label-tree-diff-row ' +
-                    'v-for="item in diff" ' +
-                    ':item="item" '+
-                    ':disabled="disabled" '+
-                    '@accepted="handleResolved" ' +
-                    '></label-tree-diff-row>' +
-            '</tbody>' +
-        '</table>' +
-        '<div v-else class="text-center lead">' +
-            'The label trees are identical.' +
-        '</div>' +
-    '</div>',
+export default {
+    template: `<div class="label-tree-diff">
+        <div v-if="hasDiff">
+            <button
+                class="btn btn-default"
+                title="Accept all merge items"
+                :disabled="cannotResolveAll"
+                @click="acceptAll"
+                >
+                    Accept all
+            </button>
+
+            <button
+                class="btn btn-default"
+                title="Set all merge items as not accepted"
+                :disabled="cannotResolveNone"
+                @click="acceptNone"
+                >
+                    Accept none
+            </button>
+        </div>
+        <table v-if="hasDiff" class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th v-text="leftName"></th>
+                    <th v-text="rightName"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <label-tree-diff-row
+                    v-for="item in diff"
+                    :key="item.id"
+                    :item="item"
+                    :disabled="disabled"
+                    @accepted="handleResolved"
+                    ></label-tree-diff-row>
+            </tbody>
+        </table>
+        <div v-else class="text-center lead">
+            The label trees are identical.
+        </div>
+    </div>`,
     components: {
-        labelTreeDiffRow: biigle.$require('labelTrees.components.labelTreeDiffRow'),
+        labelTreeDiffRow: Row,
     },
     data() {
         return {
@@ -81,7 +84,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
     },
     computed: {
         leftLabelsById() {
-            var map = {};
+            let map = {};
             this.leftLabels.forEach(function (label) {
                 map[label.id] = label;
             });
@@ -89,24 +92,24 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             return map;
         },
         leftLabelsAsTree() {
-            var childMap = this.generateChildMap(this.leftLabels);
+            let childMap = this.generateChildMap(this.leftLabels);
 
             return this.generateLabelsAsTree(childMap[null], childMap);
         },
         rightLabelsAsTree() {
-            var childMap = this.generateChildMap(this.rightLabels);
+            let childMap = this.generateChildMap(this.rightLabels);
 
             return this.generateLabelsAsTree(childMap[null], childMap);
         },
         usedLabelMap() {
-            var map = {};
-            this.usedLabels.forEach(function (id) {
+            let map = {};
+            this.usedLabels.forEach((id) => {
                 // Also add all parent labels as "used".
                 do {
                     map[id] = null;
                     id = this.leftLabelsById[id].parent_id;
                 } while (id !== null);
-            }, this);
+            });
 
             return map;
         },
@@ -134,7 +137,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
     },
     methods: {
         generateChildMap(labels) {
-            var childMap = {};
+            let childMap = {};
             labels.forEach(function (label) {
                 if (childMap.hasOwnProperty(label.parent_id)) {
                     childMap[label.parent_id].push(label);
@@ -146,7 +149,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             return childMap;
         },
         generateLabelsAsTree(labels, childMap) {
-            return labels.map(function (label) {
+            return labels.map((label) => {
                     if (childMap.hasOwnProperty(label.id)) {
                         label.children = this.generateLabelsAsTree(childMap[label.id], childMap);
                     } else {
@@ -154,12 +157,12 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                     }
 
                     return label;
-                }, this)
+                })
                 .sort(function (a, b) {
                     // Sort by name and color to correctly handle labels with the same
                     // name but different color.
-                    var aCompare = a.name + '-' + a.color;
-                    var bCompare = b.name + '-' + b.color;
+                    let aCompare = a.name + '-' + a.color;
+                    let bCompare = b.name + '-' + b.color;
 
                     return aCompare <= bCompare ? -1 : 1;
                 });
@@ -171,12 +174,13 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             level = level || 0;
 
             while (leftLabels.length > 0 && rightLabels.length > 0) {
-                var left = leftLabels[0];
-                var right = rightLabels[0];
+                let left = leftLabels[0];
+                let right = rightLabels[0];
                 if (left.name === right.name) {
                     leftLabels.shift();
                     rightLabels.shift();
                     diff.push({
+                        id: left.id,
                         level: level,
                         left: left,
                         right: right,
@@ -185,6 +189,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 } else if (left.name < right.name) {
                     leftLabels.shift();
                     diff.push({
+                        id: left.id,
                         level: level,
                         accepted: false,
                         acceptable: !this.usedLabelMap.hasOwnProperty(left.id),
@@ -195,6 +200,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                 } else {
                     rightLabels.shift();
                     diff.push({
+                        id: right.id,
                         level: level,
                         accepted: false,
                         acceptable: true,
@@ -206,8 +212,9 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             }
 
             if (leftLabels.length > 0) {
-                leftLabels.forEach(function (label) {
+                leftLabels.forEach((label) => {
                     diff.push({
+                        id: label.id,
                         level: level,
                         accepted: false,
                         acceptable: !this.usedLabelMap.hasOwnProperty(label.id),
@@ -215,12 +222,13 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                         right: null,
                     });
                     this.generateTreeDiff(label.children, [], diff, level + 1);
-                }, this);
+                });
             }
 
             if (rightLabels.length > 0) {
-                rightLabels.forEach(function (label) {
+                rightLabels.forEach((label) => {
                     diff.push({
+                        id: label.id,
                         level: level,
                         accepted: false,
                         acceptable: true,
@@ -228,13 +236,13 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
                         right: label,
                     });
                     this.generateTreeDiff([], label.children, diff, level + 1);
-                }, this);
+                });
             }
 
             return diff;
         },
         filterRelevantItems(diff) {
-            var isDifferent = [];
+            let isDifferent = [];
 
             diff.forEach(function (row, index) {
                 if (row.left === null || row.right === null) {
@@ -244,8 +252,8 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
 
             isDifferent.forEach(function (index) {
                 diff[index].relevant = true;
-                var currentLevel = diff[index].level;
-                var currentIndex = index;
+                let currentLevel = diff[index].level;
+                let currentIndex = index;
                 while (currentIndex >= 0 && currentLevel > 0) {
                     if (diff[currentIndex].level < currentLevel) {
                         diff[currentIndex].relevant = true;
@@ -297,30 +305,30 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             row.accepted = true;
         },
         acceptAll() {
-            this.diff.forEach(function (row) {
+            this.diff.forEach((row) => {
                 if (!row.accepted) {
                     this.handleResolved(row);
                 }
-            }, this);
+            });
         },
         acceptNone() {
-            this.diff.forEach(function (row) {
+            this.diff.forEach((row) => {
                 if (row.accepted) {
                     this.handleResolved(row);
                 }
-            }, this);
+            });
         },
         doForAllChildren(row, callback) {
-            var level = row.level + 1;
-            var index = this.diff.indexOf(row) + 1;
+            let level = row.level + 1;
+            let index = this.diff.indexOf(row) + 1;
             while (this.diff[index] && this.diff[index].level >= level) {
                 callback.call(this, this.diff[index]);
                 index += 1;
             }
         },
         doForAllParents(row, callback) {
-            var level = row.level;
-            var index = this.diff.indexOf(row) - 1;
+            let level = row.level;
+            let index = this.diff.indexOf(row) - 1;
             while (level > 0 && index >= 0) {
                 if (this.diff[index].level < level) {
                     level = this.diff[index].level;
@@ -359,7 +367,7 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
             });
         },
         setLeftParentIds(diff) {
-            var rightToLeftMap = {};
+            let rightToLeftMap = {};
             diff.forEach(function (row) {
                 if (row.right && row.left) {
                     rightToLeftMap[row.right.id] = row.left.id;
@@ -376,10 +384,10 @@ biigle.$component('labelTrees.components.labelTreeDiff', {
         },
     },
     created() {
-        var diff = this.generateTreeDiff(this.leftLabelsAsTree, this.rightLabelsAsTree);
+        let diff = this.generateTreeDiff(this.leftLabelsAsTree, this.rightLabelsAsTree);
         diff = this.filterRelevantItems(diff);
         // THe left parent IDs are required to bundle the data for the API later.
         diff = this.setLeftParentIds(diff);
         this.diff = diff;
     },
-});
+};
