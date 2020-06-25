@@ -1,12 +1,16 @@
+import {handleErrorResponse} from '../import';
+import {LabelTrees} from '../import';
+import {LoaderMixin} from '../import';
+
 /**
  * A mixin for a report form
  *
  * @type {Object}
  */
-biigle.$component('reports.mixins.reportForm', {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+        labelTrees: LabelTrees,
     },
     data: {
         allowedOptions: {},
@@ -35,9 +39,7 @@ biigle.$component('reports.mixins.reportForm', {
             return labels;
         },
         selectedLabels() {
-            return this.flatLabels.filter(function (label) {
-                return label.selected;
-            });
+            return this.flatLabels.filter((label) => label.selected);
         },
         selectedLabelsCount() {
             return this.selectedLabels.length;
@@ -73,9 +75,9 @@ biigle.$component('reports.mixins.reportForm', {
         },
         selectedOptions() {
             let options = {};
-            this.allowedOptions[this.selectedType].forEach(function (allowed) {
+            this.allowedOptions[this.selectedType].forEach((allowed) => {
                 options[allowed] = this.options[allowed];
-            }, this);
+            });
 
             options.type_id = this.selectedReportTypeId;
 
@@ -99,7 +101,7 @@ biigle.$component('reports.mixins.reportForm', {
             if (response.status === 422) {
                 this.errors = response.data;
             } else {
-                biigle.$require('messages.store').handleErrorResponse(response);
+                handleErrorResponse(response);
             }
         },
         selectType(type) {
@@ -130,9 +132,7 @@ biigle.$component('reports.mixins.reportForm', {
     },
     watch: {
         selectedLabels(labels) {
-            this.options.only_labels = labels.map(function (label) {
-                return label.id;
-            });
+            this.options.only_labels = labels.map((label) => label.id);
         },
         hasOnlyLabels(has) {
             if (!has) {
@@ -148,4 +148,4 @@ biigle.$component('reports.mixins.reportForm', {
         this.selectedVariant = this.availableVariants[0];
         this.labelTrees = biigle.$require('reports.labelTrees');
     },
-});
+};

@@ -12,4 +12,4 @@
  * }).then(...)
  *
  */
-biigle.$declare('reports.api.projectReports', Vue.resource('/api/v1/projects{/id}/reports'));
+export default Vue.resource('/api/v1/projects{/id}/reports');
