@@ -1,5 +1,5 @@
-import {LoaderMixin} from '../import';
 import EntityChooser from '../components/entityChooser';
+import {LoaderMixin} from '../import';
 
 /**
  * A mixin for the import view models
