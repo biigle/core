@@ -1,3 +1,4 @@
+import './export';
 import Dashboard from './dashboard';
 import LabelTreesPanel from './labelTreesPanel';
 import MembersPanel from './membersPanel';
