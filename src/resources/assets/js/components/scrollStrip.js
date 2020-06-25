@@ -54,13 +54,13 @@ biigle.$component('videos.components.scrollStrip', {
     props: {
         tracks: {
             type: Array,
-            required: function () {
+            required() {
                 return [];
             },
         },
         bookmarks: {
             type: Array,
-            required: function () {
+            required() {
                 return [];
             },
         },
@@ -77,7 +77,7 @@ biigle.$component('videos.components.scrollStrip', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             zoom: 1,
             // Zoom amount to add/substract per vertical scroll event.
@@ -93,67 +93,67 @@ biigle.$component('videos.components.scrollStrip', {
         };
     },
     computed: {
-        currentTimePosition: function () {
+        currentTimePosition() {
             if (this.duration > 0) {
                 return this.elementWidth * this.currentTime / this.duration;
             }
 
             return 0;
         },
-        timeIndicatorClass: function () {
+        timeIndicatorClass() {
             return {
                 'time-indicator--seeking': this.seeking,
             };
         },
-        timeIndicatorStyle: function () {
+        timeIndicatorStyle() {
             return 'transform: translateX(' + this.currentTimePosition + 'px);';
         },
-        hoverTimeIndicatorStyle: function () {
+        hoverTimeIndicatorStyle() {
             return 'transform: translateX(' + this.hoverPosition + 'px);';
         },
-        scrollerStyle: function () {
+        scrollerStyle() {
             return {
                 width: (this.zoom * 100) + '%',
                 left: this.scrollLeft + 'px',
             };
         },
-        elementWidth: function () {
+        elementWidth() {
             return this.initialElementWidth * this.zoom;
         },
-        hoverPosition: function () {
+        hoverPosition() {
             if (this.duration > 0) {
                 return this.elementWidth * this.hoverTime / this.duration;
             }
 
             return 0;
         },
-        showHoverTime: function () {
+        showHoverTime() {
             return this.hoverTime !== 0;
         },
-        hasOverflowLeft: function () {
+        hasOverflowLeft() {
             return this.scrollLeft < 0;
         },
-        hasOverflowRight: function () {
+        hasOverflowRight() {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
     },
     methods: {
-        updateInitialElementWidth: function () {
+        updateInitialElementWidth() {
             this.initialElementWidth = this.$el.clientWidth;
         },
-        emitSeek: function (time) {
+        emitSeek(time) {
             this.$emit('seek', time);
         },
-        emitSelect: function (annotation, time, shift) {
+        emitSelect(annotation, time, shift) {
             this.$emit('select', annotation, time, shift);
         },
-        emitDeselect: function (annotation) {
+        emitDeselect(annotation) {
             this.$emit('deselect', annotation);
         },
-        emitScrollY: function (scrollTop) {
+        emitScrollY(scrollTop) {
             this.$emit('scroll-y', scrollTop);
         },
-        handleWheel: function (e) {
+        handleWheel(e) {
             if (e.shiftKey) {
                 if (e.deltaY !== 0) {
                     this.updateZoom(e);
@@ -166,56 +166,56 @@ biigle.$component('videos.components.scrollStrip', {
                 }
             }
         },
-        updateZoom: function (e) {
-            var xRel = e.clientX - this.$el.getBoundingClientRect().left;
-            var xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
-            var xPercent = xAbs / this.elementWidth;
+        updateZoom(e) {
+            let xRel = e.clientX - this.$el.getBoundingClientRect().left;
+            let xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
+            let xPercent = xAbs / this.elementWidth;
 
-            var factor = e.deltaY < 0 ? this.zoomFactor : -1 * this.zoomFactor;
+            let factor = e.deltaY < 0 ? this.zoomFactor : -1 * this.zoomFactor;
             this.zoom = Math.max(1, this.zoom + factor);
 
             this.$nextTick(function () {
-                var newXAbs = xPercent * this.elementWidth;
+                let newXAbs = xPercent * this.elementWidth;
                 // Update scroll position so the cursor position stays fixed while
                 // zooming.
                 this.updateScrollLeft(xRel - newXAbs);
             });
         },
-        handleHideHoverTime: function () {
+        handleHideHoverTime() {
             this.hoverTime = 0;
         },
-        handleUpdateHoverTime: function (e) {
+        handleUpdateHoverTime(e) {
             this.hoverTime = (e.clientX - this.$refs.scroller.getBoundingClientRect().left) / this.elementWidth * this.duration;
         },
-        updateScrollLeft: function (value) {
+        updateScrollLeft(value) {
             this.scrollLeft = Math.max(Math.min(0, value), this.initialElementWidth - this.elementWidth);
         },
-        updateOverflowTop: function (has) {
+        updateOverflowTop(has) {
             this.hasOverflowTop = has;
         },
-        updateOverflowBottom: function (has) {
+        updateOverflowBottom(has) {
             this.hasOverflowBottom = has;
         },
-        handleDragX: function (delta) {
+        handleDragX(delta) {
             this.updateScrollLeft(this.scrollLeft + delta);
         },
-        updateHeight: function () {
+        updateHeight() {
             this.$refs.annotationTracks.updateClientHeight();
         },
     },
     watch: {
-        hoverTime: function (time) {
+        hoverTime(time) {
           this.$emit('hover-time', time);
         },
-        initialElementWidth: function (newWidth, oldWidth) {
+        initialElementWidth(newWidth, oldWidth) {
             // Make sure the left position stays the same if the browser resizes or the
             // sidebar open state is toggled.
             this.updateScrollLeft(this.scrollLeft * newWidth / oldWidth);
         },
     },
-    created: function () {
+    created() {
         window.addEventListener('resize', this.updateInitialElementWidth);
-        var self = this;
+        let self = this;
         biigle.$require('events').$on('sidebar.toggle', function () {
             self.$nextTick(self.updateInitialElementWidth);
         });
@@ -225,7 +225,7 @@ biigle.$component('videos.components.scrollStrip', {
             e.preventDefault();
         });
     },
-    mounted: function () {
+    mounted() {
         this.$nextTick(this.updateInitialElementWidth);
     },
 });

@@ -1,12 +1,21 @@
-biigle.$component('videos.components.videoScreen', {
+import AnnotationPlayback from './videoScreen/annotationPlayback';
+import VideoPlayback from './videoScreen/videoPlayback';
+import DrawInteractions from './videoScreen/drawInteractions';
+import ModifyInteractions from './videoScreen/modifyInteractions';
+import Tooltips from './videoScreen/tooltips';
+import Indicators from './videoScreen/indicators';
+import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
+
+export default {
     mixins: [
-        biigle.$require('videos.components.videoScreen.videoPlayback'),
-        biigle.$require('videos.components.videoScreen.annotationPlayback'),
-        biigle.$require('videos.components.videoScreen.drawInteractions'),
-        biigle.$require('videos.components.videoScreen.modifyInteractions'),
-        biigle.$require('videos.components.videoScreen.tooltips'),
-        biigle.$require('videos.components.videoScreen.indicators'),
-        biigle.$require('videos.components.videoScreen.polygonBrushInteractions'),
+        VideoPlayback,
+        AnnotationPlayback,
+        DrawInteractions,
+        ModifyInteractions,
+        Tooltips,
+        Indicators,
+        PolygonBrushInteractions,
+        // TODO continue here
     ],
     template: '<div class="video-screen"' +
         ' :style="styleObject"' +
@@ -208,7 +217,7 @@ biigle.$component('videos.components.videoScreen', {
     props: {
         annotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -246,7 +255,7 @@ biigle.$component('videos.components.videoScreen', {
         },
         selectedAnnotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -274,7 +283,7 @@ biigle.$component('videos.components.videoScreen', {
             default: 0,
         },
     },
-    data: function () {
+    data() {
         return {
             interactionMode: 'default',
             // Mouse position in OpenLayers coordinates.
@@ -282,19 +291,19 @@ biigle.$component('videos.components.videoScreen', {
         };
     },
     computed: {
-        showModifyBar: function () {
+        showModifyBar() {
             return this.canModify || this.canDelete;
         },
-        hasSelectedAnnotations: function () {
+        hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;
         },
-        hasNoSelectedAnnotations: function () {
+        hasNoSelectedAnnotations() {
             return !this.hasSelectedAnnotations;
         },
-        isDefaultInteractionMode: function () {
+        isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
-        styleObject: function () {
+        styleObject() {
             if (this.heightOffset !== 0) {
                 return 'height: calc(65% + ' + this.heightOffset + 'px);';
             }
@@ -303,8 +312,8 @@ biigle.$component('videos.components.videoScreen', {
         },
     },
     methods: {
-        createMap: function () {
-            var map = new ol.Map({
+        createMap() {
+            let map = new ol.Map({
                 controls: [
                     new ol.control.Zoom(),
                     new ol.control.ZoomToExtent({
@@ -323,7 +332,7 @@ biigle.$component('videos.components.videoScreen', {
                 }),
             });
 
-            var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
+            let ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
             map.addControl(new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
@@ -331,8 +340,8 @@ biigle.$component('videos.components.videoScreen', {
 
             return map;
         },
-        initLayersAndInteractions: function (map) {
-            var styles = biigle.$require('annotations.stores.styles');
+        initLayersAndInteractions(map) {
+            let styles = biigle.$require('annotations.stores.styles');
 
             this.annotationFeatures = new ol.Collection();
 
@@ -363,34 +372,34 @@ biigle.$component('videos.components.videoScreen', {
             map.addInteraction(this.selectInteraction);
         },
 
-        emitCreateBookmark: function () {
+        emitCreateBookmark() {
             this.$emit('create-bookmark', this.video.currentTime);
         },
-        resetInteractionMode: function () {
+        resetInteractionMode() {
             this.interactionMode = 'default';
         },
-        extractAnnotationFromFeature: function (feature) {
+        extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
-        handleFeatureSelect: function (e) {
+        handleFeatureSelect(e) {
             this.$emit('select',
                 e.selected.map(this.extractAnnotationFromFeature),
                 e.deselected.map(this.extractAnnotationFromFeature),
                 this.video.currentTime
             );
         },
-        updateMousePosition: function (e) {
+        updateMousePosition(e) {
             this.mousePosition = e.coordinate;
         },
-        emitTrack: function () {
+        emitTrack() {
             this.$emit('track');
         },
-        emitMoveend: function (e) {
-            var view = e.target.getView();
+        emitMoveend(e) {
+            let view = e.target.getView();
             this.$emit('moveend', view.getCenter(), view.getResolution());
         },
-        initInitialCenterAndResolution: function (map) {
-            var view = map.getView();
+        initInitialCenterAndResolution(map) {
+            let view = map.getView();
             if (this.initialResolution !==0) {
                 view.setResolution(Math.min(view.getMaxResolution(), Math.max(view.getMinResolution(), this.initialResolution)));
             }
@@ -399,19 +408,19 @@ biigle.$component('videos.components.videoScreen', {
                 view.setCenter(this.initialCenter);
             }
         },
-        updateSize: function () {
-            var map = this.map;
+        updateSize() {
+            let map = this.map;
             this.$nextTick(function () {
                 map.updateSize();
             });
         },
     },
     watch: {
-        selectedAnnotations: function (annotations) {
-            var source = this.annotationSource;
-            var features = this.selectedFeatures;
+        selectedAnnotations(annotations) {
+            let source = this.annotationSource;
+            let features = this.selectedFeatures;
             if (source && features) {
-                var feature;
+                let feature;
                 features.clear();
                 annotations.forEach(function (annotation) {
                     feature = source.getFeatureById(annotation.id);
@@ -421,19 +430,19 @@ biigle.$component('videos.components.videoScreen', {
                 });
             }
         },
-        isDefaultInteractionMode: function (isDefault) {
+        isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
         },
-        annotationOpacity: function (opactiy) {
+        annotationOpacity(opactiy) {
             if (this.annotationLayer) {
                 this.annotationLayer.setOpacity(opactiy);
             }
         },
-        heightOffset: function () {
+        heightOffset() {
             this.updateSize();
         },
     },
-    created: function () {
+    created() {
         this.$once('map-ready', this.initLayersAndInteractions);
         this.$once('map-ready', this.initInitialCenterAndResolution);
         this.map = this.createMap();
@@ -441,14 +450,14 @@ biigle.$component('videos.components.videoScreen', {
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 
-        var kb = biigle.$require('keyboard');
+        let kb = biigle.$require('keyboard');
         kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
         // if (this.canAdd) {
         //     kb.on('b', this.emitCreateBookmark);
         // }
     },
-    mounted: function () {
+    mounted() {
         this.map.setTarget(this.$el);
     },
-});
+};

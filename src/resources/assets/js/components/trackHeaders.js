@@ -19,7 +19,7 @@ biigle.$component('videos.components.trackHeaders', {
             default: 0,
         },
     },
-    data: function () {
+    data() {
         return {
             //
         };
@@ -31,7 +31,7 @@ biigle.$component('videos.components.trackHeaders', {
         //
     },
     watch: {
-        scrollTop: function (scrollTop) {
+        scrollTop(scrollTop) {
             this.$el.scrollTop = scrollTop;
         },
     },

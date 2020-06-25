@@ -4,7 +4,7 @@
 biigle.$component('videos.components.viaAnnotationsTab', {
     mixins: [biigle.$require('annotations.components.annotationsTab')],
     methods: {
-        handleSelect: function (annotation, shift) {
+        handleSelect(annotation, shift) {
             if (annotation.isSelected && shift) {
                 this.$emit('deselect', annotation);
             } else {

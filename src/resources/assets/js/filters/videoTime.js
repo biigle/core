@@ -1,5 +1,5 @@
 (function () {
-    var date = new Date(0);
+    let date = new Date(0);
     Vue.filter('videoTime', function (time) {
         // setTime expects milliseconds, time is in seconds.
         date.setTime(time * 1000);

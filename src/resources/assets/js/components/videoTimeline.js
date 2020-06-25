@@ -38,7 +38,7 @@ biigle.$component('videos.components.videoTimeline', {
     props: {
         annotations: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -48,7 +48,7 @@ biigle.$component('videos.components.videoTimeline', {
         },
         bookmarks: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -61,7 +61,7 @@ biigle.$component('videos.components.videoTimeline', {
             default: 0,
         },
     },
-    data: function () {
+    data() {
         return {
             animationFrameId: null,
             // Refresh the current time only every x ms.
@@ -74,8 +74,8 @@ biigle.$component('videos.components.videoTimeline', {
         };
     },
     computed: {
-        labelMap: function () {
-            var map = {};
+        labelMap() {
+            let map = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
@@ -86,8 +86,8 @@ biigle.$component('videos.components.videoTimeline', {
 
             return map;
         },
-        annotationTracks: function () {
-            var map = {};
+        annotationTracks() {
+            let map = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
@@ -105,7 +105,7 @@ biigle.$component('videos.components.videoTimeline', {
                 };
             }, this);
         },
-        styleObject: function () {
+        styleObject() {
             if (this.heightOffset !== 0) {
                 return 'height: calc(35% + ' + this.heightOffset + 'px);';
             }
@@ -114,52 +114,52 @@ biigle.$component('videos.components.videoTimeline', {
         },
     },
     methods: {
-        startUpdateLoop: function () {
-            var now = Date.now();
+        startUpdateLoop() {
+            let now = Date.now();
             if (now - this.refreshLastTime >= this.refreshRate) {
                 this.updateCurrentTime();
                 this.refreshLastTime = now;
             }
             this.animationFrameId = window.requestAnimationFrame(this.startUpdateLoop);
         },
-        stopUpdateLoop: function () {
+        stopUpdateLoop() {
             this.updateCurrentTime();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         },
-        updateCurrentTime: function () {
+        updateCurrentTime() {
             this.currentTime = this.video.currentTime;
         },
-        setDuration: function () {
+        setDuration() {
             this.duration = this.video.duration;
         },
-        emitSeek: function (time) {
+        emitSeek(time) {
             this.$emit('seek', time);
         },
-        emitSelect: function (annotation, time, shift) {
+        emitSelect(annotation, time, shift) {
             this.$emit('select', annotation, time, shift);
         },
-        emitDeselect: function (annotation) {
+        emitDeselect(annotation) {
             this.$emit('deselect', annotation);
         },
-        handleScrollY: function (scrollTop) {
+        handleScrollY(scrollTop) {
             this.scrollTop = scrollTop;
         },
-        getAnnotationTrackLanes: function (annotations) {
-            var timeRanges = [[]];
-            var lanes = [[]];
+        getAnnotationTrackLanes(annotations) {
+            let timeRanges = [[]];
+            let lanes = [[]];
 
             annotations.forEach(function (annotation) {
-                var range = [annotation.startFrame, annotation.endFrame];
-                var lane = 0;
-                var set = false;
+                let range = [annotation.startFrame, annotation.endFrame];
+                let lane = 0;
+                let set = false;
 
                 outerloop: while (!set) {
                     if (!lanes[lane]) {
                         timeRanges[lane] = [];
                         lanes[lane] = [];
                     } else {
-                        for (var i = timeRanges[lane].length - 1; i >= 0; i--) {
+                        for (let i = timeRanges[lane].length - 1; i >= 0; i--) {
                             if (this.rangesCollide(timeRanges[lane][i], range)) {
                                 lane += 1;
                                 continue outerloop;
@@ -175,7 +175,7 @@ biigle.$component('videos.components.videoTimeline', {
 
             return lanes;
         },
-        rangesCollide: function (range1, range2) {
+        rangesCollide(range1, range2) {
             // Start of range1 overlaps with range2.
             return range1[0] >= range2[0] && range1[0] < range2[1] ||
                 // End of range1 overlaps with range2.
@@ -187,26 +187,26 @@ biigle.$component('videos.components.videoTimeline', {
                 // range1 equals range2.
                 range1[0] === range2[0] && range1[1] === range2[1];
         },
-        updateHoverTime: function (time) {
+        updateHoverTime(time) {
             this.hoverTime = time;
         },
-        emitStartResize: function (e) {
+        emitStartResize(e) {
             this.$emit('start-resize', e);
         },
     },
     watch: {
-        heightOffset: function () {
+        heightOffset() {
             this.$refs.scrollStrip.updateHeight();
         },
     },
-    created: function () {
+    created() {
         // this.video.addEventListener('timeupdate', this.updateCurrentTime);
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
         this.video.addEventListener('loadedmetadata', this.setDuration);
         this.video.addEventListener('seeked', this.updateCurrentTime);
     },
-    mounted: function () {
+    mounted() {
         //
     },
 });

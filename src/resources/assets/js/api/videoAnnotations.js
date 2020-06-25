@@ -1,7 +1,7 @@
 /**
  * Resource for video annotations.
  *
- * var resource = biigle.$require('videos.api.videoAnnotations');
+ * let resource = biigle.$require('videos.api.videoAnnotations');
  *
  * List annotations:
  * resource.query({id: videoId}).then(...);
@@ -32,7 +32,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annotations{/id}', {}, {
+export default Vue.resource('api/v1/video-annotations{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/videos{/id}/annotations',
@@ -57,4 +57,4 @@ biigle.$declare('videos.api.videoAnnotations', Vue.resource('api/v1/video-annota
         method: 'DELETE',
         url: 'api/v1/video-annotation-labels{/id}',
     },
-}));
+});

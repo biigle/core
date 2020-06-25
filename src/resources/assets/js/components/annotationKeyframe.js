@@ -25,23 +25,23 @@ biigle.$component('videos.components.annotationKeyframe', {
         },
     },
     computed: {
-        offset: function () {
+        offset() {
             return (this.frame.time - this.startFrame) / this.segmentDuration;
         },
-        style: function () {
+        style() {
             return {
                 left: (this.offset * 100) + '%',
                 'background-color': this.color,
             };
         },
-        classObj: function () {
+        classObj() {
             return {
                 'annotation-keyframe--selected': this.frame.selected,
             };
         },
     },
     methods: {
-        emitSelect: function (e) {
+        emitSelect(e) {
             this.$emit('select', this.frame, e.shiftKey);
         },
     },

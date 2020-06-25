@@ -1,7 +1,7 @@
 /**
  * Resource for videos.
  *
- * var resource = biigle.$require('videos.api.videos');
+ * let resource = biigle.$require('videos.api.videos');
  *
  * Create a video:
  * resource.save({id: projectId}, {url: 'local://videos', ...}).then(...)
@@ -11,9 +11,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('videos.api.videos', Vue.resource('api/v1/videos{/id}', {}, {
+export default Vue.resource('api/v1/videos{/id}', {}, {
     save: {
         method: 'POST',
         url: 'api/v1/projects{/id}/videos',
     },
-}));
+});

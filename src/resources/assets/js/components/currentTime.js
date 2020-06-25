@@ -27,25 +27,25 @@ biigle.$component('videos.components.currentTime', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             //
         };
     },
     computed: {
-        currentTimeText: function () {
+        currentTimeText() {
             return Vue.filter('videoTime')(this.currentTime);
         },
-        hoverTimeText: function () {
+        hoverTimeText() {
             return Vue.filter('videoTime')(this.hoverTime);
         },
-        classObject: function () {
+        classObject() {
             return {
                 'current-time--seeking': this.seeking,
                 'current-time--hover': this.showHoverTime,
             };
         },
-        showHoverTime: function () {
+        showHoverTime() {
             return this.hoverTime !== 0;
         },
     },

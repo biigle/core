@@ -5,7 +5,7 @@ biigle.$component('videos.components.settingsTab', {
     props: {
         //
     },
-    data: function () {
+    data() {
         return {
             restoreKeys: [
                 'annotationOpacity',
@@ -23,63 +23,63 @@ biigle.$component('videos.components.settingsTab', {
         };
     },
     computed: {
-        settings: function () {
-            return biigle.$require('videos.settings');
+        settings() {
+            return biigle.$require('videos.stores.settings');
         },
     },
     methods: {
-        handleShowMinimap: function () {
+        handleShowMinimap() {
             this.showMinimap = true;
         },
-        handleHideMinimap: function () {
+        handleHideMinimap() {
             this.showMinimap = false;
         },
-        handleShowLabelTooltip: function () {
+        handleShowLabelTooltip() {
             this.showLabelTooltip = true;
         },
-        handleHideLabelTooltip: function () {
+        handleHideLabelTooltip() {
             this.showLabelTooltip = false;
         },
-        handleShowMousePosition: function () {
+        handleShowMousePosition() {
             this.showMousePosition = true;
         },
-        handleHideMousePosition: function () {
+        handleHideMousePosition() {
             this.showMousePosition = false;
         },
     },
     watch: {
-        annotationOpacity: function (value) {
+        annotationOpacity(value) {
             value = parseFloat(value);
             if (!isNaN(value)) {
                 this.$emit('update', 'annotationOpacity', value);
                 this.settings.set('annotationOpacity', value);
             }
         },
-        showMinimap: function (show) {
+        showMinimap(show) {
             this.$emit('update', 'showMinimap', show);
             this.settings.set('showMinimap', show);
         },
-        autoplayDraw: function (value) {
+        autoplayDraw(value) {
             value = parseFloat(value);
             this.$emit('update', 'autoplayDraw', value);
             this.settings.set('autoplayDraw', value);
         },
-        showLabelTooltip: function (show) {
+        showLabelTooltip(show) {
             this.$emit('update', 'showLabelTooltip', show);
             this.settings.set('showLabelTooltip', show);
         },
-        showMousePosition: function (show) {
+        showMousePosition(show) {
             this.$emit('update', 'showMousePosition', show);
             this.settings.set('showMousePosition', show);
         },
-        playbackRate: function (value) {
+        playbackRate(value) {
             value = parseFloat(value);
             if (!isNaN(value)) {
                 this.$emit('update', 'playbackRate', value);
             }
         },
     },
-    created: function () {
+    created() {
         this.restoreKeys.forEach(function (key) {
             this[key] = this.settings.get(key);
         }, this);

@@ -21,7 +21,7 @@ biigle.$component('videos.components.videoProgress', {
         },
         bookmarks: {
             type: Array,
-            default: function () {
+            default() {
                 return [];
             },
         },
@@ -40,12 +40,12 @@ biigle.$component('videos.components.videoProgress', {
                 },
             },
             computed: {
-                style: function () {
+                style() {
                     return 'left: ' + (this.bookmark.time / this.$parent.duration * this.$parent.elementWidth) + 'px';
                 },
             },
             methods: {
-                emitSelect: function () {
+                emitSelect() {
                     this.$emit('select', this.bookmark);
                 },
             },
@@ -59,45 +59,45 @@ biigle.$component('videos.components.videoProgress', {
                 },
             },
             computed: {
-                style: function () {
+                style() {
                     return 'left: ' + (this.time / this.$parent.duration * this.$parent.elementWidth) + 'px';
                 },
-                text: function () {
+                text() {
                     return Vue.filter('videoTime')(this.time);
                 },
             },
         },
     },
-    data: function () {
+    data() {
         return {
             tickSpacing: 100,
         };
     },
     computed: {
-        tickCount: function () {
+        tickCount() {
             return Math.floor(this.elementWidth / this.tickSpacing);
         },
-        ticks: function () {
-            var step = this.duration / this.tickCount;
+        ticks() {
+            let step = this.duration / this.tickCount;
 
             return Array.apply(null, {length: this.tickCount})
                 .map(function (item, index) {
                     return step * index;
                 });
         },
-        hasTicks: function () {
+        hasTicks() {
             return this.tickCount > 0 && this.duration > 0;
         },
     },
     methods: {
-        emitSeek: function (e) {
+        emitSeek(e) {
             this.$emit('seek', (e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.duration);
         },
-        emitSelectBookmark: function (bookmark) {
+        emitSelectBookmark(bookmark) {
             this.$emit('seek', bookmark.time);
         },
     },
-    mounted: function () {
+    mounted() {
         //
     },
 });

@@ -32,7 +32,7 @@ biigle.$component('videos.components.annotationTrack', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             //
         };
@@ -41,10 +41,10 @@ biigle.$component('videos.components.annotationTrack', {
         //
     },
     methods: {
-        emitSelect: function (annotation, time, shift) {
+        emitSelect(annotation, time, shift) {
             this.$emit('select', annotation, time, shift);
         },
-        emitDeselect: function (annotation) {
+        emitDeselect(annotation) {
             this.$emit('deselect', annotation);
         },
     },

@@ -1,37 +1,30 @@
+import {MousePositionIndicator} from '../../import';
+import {throttle} from '../../import';
+
 /**
  * Mixin for the videoScreen component that contains logic for the indicators.
  *
  * @type {Object}
  */
-biigle.$component('videos.components.videoScreen.indicators', function () {
-    var throttle = biigle.$require('utils.throttle');
-
-    return {
-        components: {
-            mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
+export default {
+    components: {
+        mousePositionIndicator: MousePositionIndicator,
+    },
+    data() {
+        return {
+            // Mouse position in image coordinates.
+            mousePositionImageCoordinates: [0, 0],
+        };
+    },
+    methods: {
+        updateMousePositionImageCoordinates() {
+            // Make sure to copy the array with slice before inverting the axis.
+            this.mousePositionImageCoordinates = this.invertPointsYAxis(this.mousePosition.slice()).map(Math.round);
         },
-        data: function () {
-            return {
-                // Mouse position in image coordinates.
-                mousePositionImageCoordinates: [0, 0],
-            };
+    },
+    watch: {
+        mousePosition(position) {
+            throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
         },
-        computed: {
-            //
-        },
-        methods: {
-            updateMousePositionImageCoordinates: function () {
-                // Make sure to copy the array with slice before inverting the axis.
-                this.mousePositionImageCoordinates = this.invertPointsYAxis(this.mousePosition.slice()).map(Math.round);
-            },
-        },
-        watch: {
-            mousePosition: function (position) {
-                throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
-            },
-        },
-        created: function () {
-            //
-        },
-    };
-});
+    },
+};

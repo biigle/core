@@ -40,28 +40,28 @@ biigle.$component('videos.components.annotationSegment', {
         },
     },
     computed: {
-        startFrame: function () {
+        startFrame() {
             return this.frames[0];
         },
-        endFrame: function () {
+        endFrame() {
             return this.frames[this.frames.length - 1];
         },
-        segmentDuration: function () {
+        segmentDuration() {
             return this.endFrame - this.startFrame;
         },
-        classObject: function () {
+        classObject() {
             return {
                 'annotation-segment--gap': this.gap,
             };
         },
-        width: function () {
+        width() {
             return 100 * this.segmentDuration / this.clipDuration;
         },
-        color: function () {
+        color() {
             return '#' + (this.label.color || '000000');
         },
-        style: function () {
-            var style = {width: this.width + '%'};
+        style() {
+            let style = {width: this.width + '%'};
 
             if (this.gap) {
                 style['border-top-color'] = this.color;
@@ -71,12 +71,12 @@ biigle.$component('videos.components.annotationSegment', {
 
             return style;
         },
-        keyframes: function () {
+        keyframes() {
             if (this.gap) {
                 return [];
             }
 
-            var selected = this.annotation.selected;
+            let selected = this.annotation.selected;
 
             return this.frames.map(function (time) {
                 return {
@@ -87,7 +87,7 @@ biigle.$component('videos.components.annotationSegment', {
         },
     },
     methods: {
-        selectFrame: function (frame, shift) {
+        selectFrame(frame, shift) {
             this.$emit('select', frame.time, shift);
         },
     },

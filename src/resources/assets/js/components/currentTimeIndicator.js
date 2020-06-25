@@ -10,26 +10,26 @@ biigle.$component('videos.components.currentTimeIndicator', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             parentWidth: 0,
         };
     },
     computed: {
-        style: function () {
+        style() {
             if (this.duration > 0) {
-                var offset = this.parentWidth * this.currentTime / this.duration;
+                let offset = this.parentWidth * this.currentTime / this.duration;
 
                 return 'transform: translateX(' + offset + 'px);';
             }
         },
     },
     methods: {
-        updateParentWidth: function () {
+        updateParentWidth() {
             this.parentWidth = this.$el.parentElement.clientWidth;
         },
     },
-    mounted: function () {
+    mounted() {
         this.updateParentWidth();
     },
 });

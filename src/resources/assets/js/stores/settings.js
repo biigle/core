@@ -1,6 +1,6 @@
-biigle.$declare('videos.settings', function () {
-    var Settings = biigle.$require('core.models.Settings');
-    var defaults = {
+biigle.$declare('videos.stores.settings', function () {
+    let Settings = biigle.$require('core.models.Settings');
+    let defaults = {
         annotationOpacity: 1,
         showMinimap: true,
         autoplayDraw: 0,

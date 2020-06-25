@@ -37,20 +37,20 @@ biigle.$component('videos.components.annotationClip', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             //
         };
     },
     computed: {
-        startFrame: function () {
+        startFrame() {
             return this.annotation.startFrame;
         },
-        endFrame: function () {
+        endFrame() {
             return this.annotation.endFrame;
         },
-        offset: function () {
-            var offset = this.startFrame / this.duration * this.elementWidth;
+        offset() {
+            let offset = this.startFrame / this.duration * this.elementWidth;
 
             if (!this.annotation.isClip) {
                 // If this is a single frame annotation at the very end of the video,
@@ -61,25 +61,25 @@ biigle.$component('videos.components.annotationClip', {
 
             return offset;
         },
-        clipDuration: function () {
+        clipDuration() {
             return this.endFrame - this.startFrame;
         },
-        width: function () {
+        width() {
             return this.clipDuration / this.duration * this.elementWidth;
         },
-        style: function () {
+        style() {
             return {
                 left: this.offset + 'px',
                 width: this.width + 'px',
             };
         },
-        segments: function () {
-            var frames = [this.annotation.frames.slice()];
-            var gaps = [false];
-            var i = 0;
-            var gapIndex;
+        segments() {
+            let frames = [this.annotation.frames.slice()];
+            let gaps = [false];
+            let i = 0;
+            let gapIndex;
             while ((gapIndex = frames[i].indexOf(null)) !== -1) {
-                var oldFrames = frames[i];
+                let oldFrames = frames[i];
                 frames[i] = oldFrames.slice(0, gapIndex);
                 frames.push([oldFrames[gapIndex - 1], oldFrames[gapIndex + 1]]);
                 gaps.push(true);
@@ -95,10 +95,10 @@ biigle.$component('videos.components.annotationClip', {
                 };
             });
         },
-        selected: function () {
+        selected() {
             return this.annotation.isSelected;
         },
-        classObj: function () {
+        classObj() {
             return {
                 'annotation-clip--selected': this.selected,
                 'annotation-clip--compact': this.shouldBeCompact,
@@ -107,56 +107,56 @@ biigle.$component('videos.components.annotationClip', {
                 'annotation-clip--dark': this.annotation.tracking && this.hasDarkColor,
             };
         },
-        minTimeBetweenFrames: function () {
-            var min = Infinity;
-            var frames = this.annotation.frames.filter(function (value) {
+        minTimeBetweenFrames() {
+            let min = Infinity;
+            let frames = this.annotation.frames.filter(function (value) {
                 return value !== null;
             });
 
-            for (var i = frames.length - 1; i > 0; i--) {
+            for (let i = frames.length - 1; i > 0; i--) {
                 min = Math.min(min, frames[i] - frames[i - 1]);
             }
 
             return min;
         },
-        minDistanceBetweenFrames: function () {
-            var distanceInPercent = this.minTimeBetweenFrames / this.duration;
+        minDistanceBetweenFrames() {
+            let distanceInPercent = this.minTimeBetweenFrames / this.duration;
 
             return distanceInPercent * this.elementWidth;
         },
-        shouldBeCompact: function () {
+        shouldBeCompact() {
             // Twice the width of a regular keyframe element.
             return this.minDistanceBetweenFrames <= 18;
         },
-        shouldBeMoreCompact: function () {
+        shouldBeMoreCompact() {
             // Twice the width of a compact keyframe element.
             return this.minDistanceBetweenFrames <= 6;
         },
-        title: function () {
+        title() {
             return this.annotation.tracking ? 'Tracking in progress' : '';
         },
-        hasDarkColor: function () {
+        hasDarkColor() {
             // see: https://stackoverflow.com/a/12043228/1796523
-            var color = this.label.color || '000000';
-            var rgb = parseInt(color, 16);
-            var r = (rgb >> 16) & 0xff;
-            var g = (rgb >>  8) & 0xff;
-            var b = (rgb >>  0) & 0xff;
-            var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            let color = this.label.color || '000000';
+            let rgb = parseInt(color, 16);
+            let r = (rgb >> 16) & 0xff;
+            let g = (rgb >>  8) & 0xff;
+            let b = (rgb >>  0) & 0xff;
+            let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
             return luma < 128;
         },
     },
     methods: {
-        emitSelect: function (time, shift) {
+        emitSelect(time, shift) {
             if (this.selected && shift) {
                 this.$emit('deselect', this.annotation);
             } else {
                 this.$emit('select', this.annotation, time, shift);
             }
         },
-        select: function (e) {
-            var time = this.startFrame + ((e.clientX - this.$el.getBoundingClientRect().left) / this.$el.clientWidth * this.clipDuration);
+        select(e) {
+            let time = this.startFrame + ((e.clientX - this.$el.getBoundingClientRect().left) / this.$el.clientWidth * this.clipDuration);
             this.emitSelect(time, e.shiftKey);
         },
     },

@@ -35,7 +35,7 @@ biigle.$component('videos.components.annotationTracks', {
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             hasOverflowTop: false,
             hasOverflowBottom: false,
@@ -46,37 +46,37 @@ biigle.$component('videos.components.annotationTracks', {
         };
     },
     computed: {
-        hasOverflowTop: function () {
+        hasOverflowTop() {
             return this.scrollTop > 0;
         },
-        hasOverflowBottom: function () {
+        hasOverflowBottom() {
             // Subtract 1 because sometimes scrollHeight is off by 1 and the breakpoint
             // is not reached when the annotation tracks are scrolled all the way down.
-            var breakpoint = this.scrollHeight - this.clientHeight - 1;
+            let breakpoint = this.scrollHeight - this.clientHeight - 1;
 
             return breakpoint > 0 && this.scrollTop < breakpoint;
         },
     },
     methods: {
-        emitSelect: function (annotation, time, shift) {
+        emitSelect(annotation, time, shift) {
             this.$emit('select', annotation, time, shift);
         },
-        emitDeselect: function () {
+        emitDeselect() {
             this.$emit('deselect');
         },
-        emitDeselectAnnotation: function (annotation) {
+        emitDeselectAnnotation(annotation) {
             this.$emit('deselect', annotation);
         },
-        emitDragX: function (delta) {
+        emitDragX(delta) {
             this.$emit('drag-x', delta);
         },
-        startDragging: function (e) {
+        startDragging(e) {
             this.dragging = e.buttons === 1;
         },
-        stopDragging: function () {
+        stopDragging() {
             this.dragging = false;
         },
-        continueDragging: function (e) {
+        continueDragging(e) {
              if (this.dragging) {
                 if (e.buttons !== 1) {
                     // If the cursor left the element and the mouse button was released.
@@ -90,34 +90,34 @@ biigle.$component('videos.components.annotationTracks', {
                 }
             }
         },
-        updateScrollTop: function () {
+        updateScrollTop() {
             this.scrollTop = this.$el.scrollTop;
         },
-        updateScrollHeight: function () {
+        updateScrollHeight() {
             this.scrollHeight = this.$el.scrollHeight;
         },
-        updateClientHeight: function () {
+        updateClientHeight() {
             this.clientHeight = this.$el.clientHeight;
         },
     },
     watch: {
-        tracks: function () {
+        tracks() {
             this.$nextTick(this.updateScrollHeight);
         },
-        hasOverflowTop: function (has) {
+        hasOverflowTop(has) {
             this.$emit('overflow-top', has);
         },
-        hasOverflowBottom: function (has) {
+        hasOverflowBottom(has) {
             this.$emit('overflow-bottom', has);
         },
-        scrollTop: function (scrollTop) {
+        scrollTop(scrollTop) {
             this.$emit('scroll-y', scrollTop);
         },
     },
-    created: function () {
+    created() {
         window.addEventListener('resize', this.updateClientHeight);
     },
-    mounted: function () {
+    mounted() {
         this.$nextTick(this.updateClientHeight);
     },
 });
