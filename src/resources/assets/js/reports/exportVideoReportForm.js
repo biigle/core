@@ -2,7 +2,7 @@
  * The form for requesting a video report
  */
 biigle.$viewModel('video-report-form', function (element) {
-    var videoId = biigle.$require('reports.videoId');
+    let videoId = biigle.$require('reports.videoId');
 
     new Vue({
         el: element,
@@ -18,7 +18,7 @@ biigle.$viewModel('video-report-form', function (element) {
             },
         },
         methods: {
-            submit: function () {
+            submit() {
                 this.request(videoId, biigle.$require('reports.api.videoReports'));
             },
         },

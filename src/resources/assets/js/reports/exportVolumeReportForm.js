@@ -2,7 +2,7 @@
  * The form for requesting a volume report
  */
 biigle.$viewModel('volume-report-form', function (element) {
-    var volumeId = biigle.$require('reports.volumeId');
+    let volumeId = biigle.$require('reports.volumeId');
 
     new Vue({
         el: element,
@@ -28,7 +28,7 @@ biigle.$viewModel('volume-report-form', function (element) {
             },
         },
         methods: {
-            submit: function () {
+            submit() {
                 this.request(volumeId, biigle.$require('reports.api.volumeReports'));
             },
         },

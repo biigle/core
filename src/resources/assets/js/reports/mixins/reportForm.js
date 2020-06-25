@@ -26,26 +26,26 @@ biigle.$component('reports.mixins.reportForm', {
         },
     },
     computed: {
-        flatLabels: function () {
-            var labels = [];
+        flatLabels() {
+            let labels = [];
             this.labelTrees.forEach(function (tree) {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
             return labels;
         },
-        selectedLabels: function () {
+        selectedLabels() {
             return this.flatLabels.filter(function (label) {
                 return label.selected;
             });
         },
-        selectedLabelsCount: function () {
+        selectedLabelsCount() {
             return this.selectedLabels.length;
         },
-        variants: function () {
-            var variants = {};
+        variants() {
+            let variants = {};
             this.reportTypes.forEach(function (type) {
-                var fragments = type.name.split('\\');
+                let fragments = type.name.split('\\');
                 if (!variants.hasOwnProperty(fragments[0])) {
                     variants[fragments[0]] = [];
                 }
@@ -54,25 +54,25 @@ biigle.$component('reports.mixins.reportForm', {
 
             return variants;
         },
-        availableReportTypes: function () {
-            var types = {};
+        availableReportTypes() {
+            let types = {};
             this.reportTypes.forEach(function (type) {
                 types[type.name] = type.id;
             });
 
             return types;
         },
-        selectedReportTypeId: function () {
+        selectedReportTypeId() {
             return this.availableReportTypes[this.selectedType + '\\' + this.selectedVariant];
         },
-        availableVariants: function () {
+        availableVariants() {
             return this.variants[this.selectedType];
         },
-        onlyOneAvailableVariant: function () {
+        onlyOneAvailableVariant() {
             return this.availableVariants.length === 1;
         },
-        selectedOptions: function () {
-            var options = {};
+        selectedOptions() {
+            let options = {};
             this.allowedOptions[this.selectedType].forEach(function (allowed) {
                 options[allowed] = this.options[allowed];
             }, this);
@@ -83,7 +83,7 @@ biigle.$component('reports.mixins.reportForm', {
         },
     },
     methods: {
-        request: function (id, resource) {
+        request(id, resource) {
             if (this.loading) return;
             this.success = false;
             this.startLoading();
@@ -91,50 +91,50 @@ biigle.$component('reports.mixins.reportForm', {
                 .then(this.submitted, this.handleError)
                 .finally(this.finishLoading);
         },
-        submitted: function () {
+        submitted() {
             this.success = true;
             this.errors = {};
         },
-        handleError: function (response) {
+        handleError(response) {
             if (response.status === 422) {
                 this.errors = response.data;
             } else {
                 biigle.$require('messages.store').handleErrorResponse(response);
             }
         },
-        selectType: function (type) {
+        selectType(type) {
             this.selectedType = type;
             if (this.availableVariants.indexOf(this.selectedVariant) === -1) {
                 this.selectedVariant = this.availableVariants[0];
             }
         },
-        wantsType: function (type) {
+        wantsType(type) {
             return this.selectedType === type;
         },
-        wantsVariant: function (variant) {
+        wantsVariant(variant) {
             if (Array.isArray(variant)) {
                 return variant.indexOf(this.selectedVariant) !== -1;
             }
 
             return this.selectedVariant === variant;
         },
-        hasError: function (key) {
+        hasError(key) {
             return this.errors.hasOwnProperty(key);
         },
-        getError: function (key) {
+        getError(key) {
             return this.errors[key] ? this.errors[key].join(' ') : '';
         },
-        wantsCombination: function (type, variant) {
+        wantsCombination(type, variant) {
             return this.wantsType(type) && this.wantsVariant(variant);
         },
     },
     watch: {
-        selectedLabels: function (labels) {
+        selectedLabels(labels) {
             this.options.only_labels = labels.map(function (label) {
                 return label.id;
             });
         },
-        hasOnlyLabels: function (has) {
+        hasOnlyLabels(has) {
             if (!has) {
                 this.flatLabels.forEach(function (label) {
                     label.selected = false;
@@ -142,7 +142,7 @@ biigle.$component('reports.mixins.reportForm', {
             }
         },
     },
-    created: function () {
+    created() {
         this.reportTypes = biigle.$require('reports.reportTypes');
         this.selectedType = Object.keys(this.variants)[0];
         this.selectedVariant = this.availableVariants[0];

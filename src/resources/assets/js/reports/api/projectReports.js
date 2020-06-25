@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for projects
  *
- * var resource = biigle.$require('reports.api.projectReports');
+ * let resource = biigle.$require('reports.api.projectReports');
  *
  * Request a basic annotation report:
  *

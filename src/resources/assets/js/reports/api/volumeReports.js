@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for volumes
  *
- * var resource = biigle.$require('reports.api.volumeReports');
+ * let resource = biigle.$require('reports.api.volumeReports');
  *
  * Request a basic annotation report:
  *

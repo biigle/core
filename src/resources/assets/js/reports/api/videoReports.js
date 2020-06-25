@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for videos
  *
- * var resource = biigle.$require('reports.api.videoReports');
+ * let resource = biigle.$require('reports.api.videoReports');
  *
  * Request a CSV report:
  *

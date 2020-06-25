@@ -2,7 +2,7 @@
  * The form for requesting a project report
  */
 biigle.$viewModel('project-report-form', function (element) {
-    var projectId = biigle.$require('reports.projectId');
+    let projectId = biigle.$require('reports.projectId');
 
     new Vue({
         el: element,
@@ -27,7 +27,7 @@ biigle.$viewModel('project-report-form', function (element) {
             },
         },
         methods: {
-            submit: function () {
+            submit() {
                 this.request(projectId, biigle.$require('reports.api.projectReports'));
             }
         },
