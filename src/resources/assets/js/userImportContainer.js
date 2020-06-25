@@ -1,52 +1,52 @@
+import ImportApi from './api/import';
+import ImportContainer from './mixins/importContainer';
+import {handleErrorResponse} from './import';
+
 /**
  * View model for the user import container
  */
-biigle.$viewModel('user-import-container', function (element) {
-    var messages = biigle.$require('messages.store');
-    var importApi = biigle.$require('sync.api.import');
-    var importToken = biigle.$require('sync.importToken');
-
-    new Vue({
-        el: element,
-        mixins: [biigle.$require('sync.mixins.importContainer')],
-        data: {
-            importCandidates: biigle.$require('sync.importCandidates'),
-            chosenCandidates: [],
-        },
-        computed: {
-            users: function () {
-                return this.importCandidates.map(function (user) {
-                    user.name = user.firstname + ' ' + user.lastname;
-                    if (user.email) {
-                        user.description = user.email;
-                    }
-
-                    return user;
-                });
-            },
-            hasNoChosenUsers: function () {
-                return this.chosenCandidates.length === 0;
-            },
-            chosenCandidateIds: function () {
-                return this.chosenCandidates.map(function (user) {
-                    return user.id;
-                });
-            },
-        },
-        methods: {
-            handleChosenUsers: function (users) {
-                this.chosenCandidates = users;
-            },
-            performImport: function () {
-                this.startLoading();
-                var payload = {};
-                if (this.chosenCandidates.length < this.importCandidates.length) {
-                    payload.only = this.chosenCandidateIds;
+export default {
+    mixins: [ImportContainer],
+    data: {
+        importToken: null,
+        importCandidates: [],
+        chosenCandidates: [],
+    },
+    computed: {
+        users() {
+            return this.importCandidates.map(function (user) {
+                user.name = user.firstname + ' ' + user.lastname;
+                if (user.email) {
+                    user.description = user.email;
                 }
-                importApi.update({token: importToken}, payload)
-                    .then(this.importSuccess, messages.handleErrorResponse)
-                    .finally(this.finishLoading);
-            },
+
+                return user;
+            });
         },
-    });
-});
+        hasNoChosenUsers() {
+            return this.chosenCandidates.length === 0;
+        },
+        chosenCandidateIds() {
+            return this.chosenCandidates.map((user) => user.id);
+        },
+    },
+    methods: {
+        handleChosenUsers(users) {
+            this.chosenCandidates = users;
+        },
+        performImport() {
+            this.startLoading();
+            let payload = {};
+            if (this.chosenCandidates.length < this.importCandidates.length) {
+                payload.only = this.chosenCandidateIds;
+            }
+            ImportApi.update({token: this.importToken}, payload)
+                .then(this.importSuccess, handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+    },
+    created() {
+        this.importToken = biigle.$require('sync.importToken');
+        this.importCandidates = biigle.$require('sync.importCandidates');
+    },
+};

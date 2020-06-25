@@ -1,21 +1,24 @@
+import {LoaderMixin} from '../import';
+import EntityChooser from '../components/entityChooser';
+
 /**
  * A mixin for the import view models
  *
  * @type {Object}
  */
-biigle.$component('sync.mixins.importContainer', {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        entityChooser: biigle.$require('sync.components.entityChooser'),
+        entityChooser: EntityChooser,
     },
-    data: function () {
+    data() {
         return {
             success: false,
         };
     },
     methods: {
-        importSuccess: function () {
+        importSuccess() {
             this.success = true;
         },
     },
-});
+};

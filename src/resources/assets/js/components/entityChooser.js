@@ -1,31 +1,33 @@
+import List from './entityChooserList';
+
 /**
  * A component to choose entities like volumes or users for a list
  *
  * @type {Object}
  */
-biigle.$component('sync.components.entityChooser', {
-    template: '<div class="entity-chooser">' +
-        '<entity-chooser-list ' +
-            'class="entity-chooser-list--left" '+
-            ':entities="unchosenFilteredEntities" ' +
-            ':filtering="true" ' +
-            ':disabled="disabled" ' +
-            '@select="handleSelect" ' +
-            '@filter="handleFiltering" ' +
-        '></entity-chooser-list>' +
-        '<div class="entity-chooser-buttons">' +
-            '<button class="btn btn-default btn-block" @click="chooseAll" :disabled="disabled || hasNoUnchosenEntities" title="Select all">all</button>' +
-            '<button class="btn btn-default btn-block" @click="chooseNone" :disabled="disabled || hasNoChosenEntities" title="Select none">none</button>' +
-        '</div>' +
-        '<entity-chooser-list ' +
-            'class="entity-chooser-list--right" ' +
-            ':entities="chosenEntities" ' +
-            ':disabled="disabled" ' +
-            '@select="handleDeselect" ' +
-        '></entity-chooser-list>' +
-    '</div>',
+export default {
+    template: `<div class="entity-chooser">
+        <entity-chooser-list
+            class="entity-chooser-list--left"
+            :entities="unchosenFilteredEntities"
+            :filtering="true"
+            :disabled="disabled"
+            @select="handleSelect"
+            @filter="handleFiltering"
+        ></entity-chooser-list>
+        <div class="entity-chooser-buttons">
+            <button class="btn btn-default btn-block" @click="chooseAll" :disabled="disabled || hasNoUnchosenEntities" title="Select all">all</button>
+            <button class="btn btn-default btn-block" @click="chooseNone" :disabled="disabled || hasNoChosenEntities" title="Select none">none</button>
+        </div>
+        <entity-chooser-list
+            class="entity-chooser-list--right"
+            :entities="chosenEntities"
+            :disabled="disabled"
+            @select="handleDeselect"
+        ></entity-chooser-list>
+    </div>`,
     components: {
-        entityChooserList: biigle.$require('sync.components.entityChooserList'),
+        entityChooserList: List,
     },
     props: {
         entities: {
@@ -37,28 +39,26 @@ biigle.$component('sync.components.entityChooser', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             chosenIds: {},
             filterQuery: '',
         };
     },
     computed: {
-        unchosenEntities: function () {
-            return this.entities.filter(function (entity) {
-                return !this.chosenIds[entity.id];
-            }, this);
+        unchosenEntities() {
+            return this.entities.filter((entity) => !this.chosenIds[entity.id]);
         },
-        unchosenFilteredEntities: function () {
+        unchosenFilteredEntities() {
             // This is a very simple fuzzy matching. It splits the query string at the
             // spaces into "parts" and returns any entity whose name or description
             // contains all parts.
             // Example: "iv hau" matches the entity "Hausgarten IV PS62/161-3"
-            var query = this.filterQuery.trim();
+            let query = this.filterQuery.trim();
             if (query) {
-                var queryParts = query.toLowerCase().split(' ');
+                let queryParts = query.toLowerCase().split(' ');
                 return this.unchosenEntities.filter(function (entity) {
-                    var name = entity.name.toLowerCase();
+                    let name = entity.name.toLowerCase();
                     if (entity.description) {
                         name += ' ' + entity.description.toLowerCase();
                     }
@@ -70,38 +70,36 @@ biigle.$component('sync.components.entityChooser', {
 
             return this.unchosenEntities;
         },
-        chosenEntities: function () {
-            return this.entities.filter(function (entity) {
-                return this.chosenIds[entity.id];
-            }, this);
+        chosenEntities() {
+            return this.entities.filter((entity) => this.chosenIds[entity.id]);
         },
-        hasNoUnchosenEntities: function () {
+        hasNoUnchosenEntities() {
             return this.unchosenEntities.length === 0;
         },
-        hasNoChosenEntities: function () {
+        hasNoChosenEntities() {
             return this.chosenEntities.length === 0;
         },
     },
     methods: {
-        handleSelect: function (entity) {
+        handleSelect(entity) {
             Vue.set(this.chosenIds, entity.id, true);
         },
-        handleDeselect: function (entity) {
+        handleDeselect(entity) {
             this.chosenIds[entity.id] = false;
         },
-        chooseAll: function () {
+        chooseAll() {
             this.unchosenFilteredEntities.forEach(this.handleSelect);
         },
-        chooseNone: function () {
+        chooseNone() {
             this.chosenEntities.forEach(this.handleDeselect);
         },
-        handleFiltering: function (query) {
+        handleFiltering(query) {
             this.filterQuery = query;
         },
     },
     watch: {
-        chosenEntities: function (entities) {
+        chosenEntities(entities) {
             this.$emit('select', entities);
         },
     },
-});
+};

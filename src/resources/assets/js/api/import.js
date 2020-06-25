@@ -1,7 +1,7 @@
 /**
  * Resource for imports.
  *
- * var resource = biigle.$require('sync.api.import');
+ * let resource = biigle.$require('sync.api.import');
  *
  * Perform an import:
  * resource.update({token: '123abc'}, {only: [1,2,3,...], ...}).then(...);
@@ -11,4 +11,4 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('sync.api.import', Vue.resource('api/v1/import{/token}'));
+export default Vue.resource('api/v1/import{/token}');
