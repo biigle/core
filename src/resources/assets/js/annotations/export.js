@@ -18,11 +18,12 @@ import {plugins as labelsTabPlugins} from './components/labelsTab';
 import {plugins as settingsTabPlugins} from './components/settingsTab';
 
 biigle.$declare('annotations.components.annotationCanvas', AnnotationCanvas);
-biigle.$declare('annotations.components.annotationsTabPlugins', annotationsTabPlugins);
 biigle.$declare('annotations.components.annotationsTab', AnnotationsTab);
+biigle.$declare('annotations.components.annotationsTabPlugins', annotationsTabPlugins);
 biigle.$declare('annotations.components.controlButton', ControlButton);
 biigle.$declare('annotations.components.labelsTabPlugins', labelsTabPlugins);
 biigle.$declare('annotations.components.labelTooltip', LabelTooltip);
+biigle.$declare('annotations.components.minimap', Minimap);
 biigle.$declare('annotations.components.mousePositionIndicator', MousePositionIndicator);
 biigle.$declare('annotations.components.settingsTabPlugins', settingsTabPlugins);
 biigle.$declare('annotations.models.LabelAnnotationFilter', LabelAnnotationFilter);
