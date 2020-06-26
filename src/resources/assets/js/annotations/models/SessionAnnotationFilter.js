@@ -21,6 +21,10 @@ export default Vue.extend({
     },
     methods: {
         filter(annotations) {
+            if (!this.selectedItem) {
+                return annotations;
+            }
+
             let session = this.selectedItem;
             let userMap = {};
             session.users.forEach(function (user) {

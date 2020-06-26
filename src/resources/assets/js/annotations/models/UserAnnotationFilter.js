@@ -26,6 +26,10 @@ export default Vue.extend({
     },
     methods: {
         filter(annotations) {
+            if (!this.selectedItem) {
+                return annotations;
+            }
+
             let id = this.selectedItem.id;
 
             return annotations.filter(function (annotation) {

@@ -21,6 +21,10 @@ export default Vue.extend({
     },
     methods: {
         filter(annotations) {
+            if (!this.selectedItem) {
+                return annotations;
+            }
+
             return annotations.filter((annotation) => {
                 return annotation.shape_id === this.selectedItem.id;
             });

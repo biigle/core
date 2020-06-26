@@ -80,10 +80,12 @@ export default {
             if (oldFilter) {
                 this.$refs.filterElement.removeChild(oldFilter.$el);
                 oldFilter.$off('select', this.emitSelectFilter);
+                oldFilter.$off('unselect', this.emitUnselectFilter);
             }
 
             this.$refs.filterElement.appendChild(filter.$el);
             filter.$on('select', this.emitSelectFilter);
+            filter.$on('unselect', this.emitUnselectFilter);
         },
     },
 };

@@ -28,13 +28,21 @@ export default {
     methods: {
         select(item) {
             this.selectedItem = item;
-            this.$emit('select', this);
         },
         filter(annotations) {
             return annotations;
         },
         reset() {
             this.selectedItem = null;
+        },
+    },
+    watch: {
+        selectedItem(item) {
+            if (item) {
+                this.$emit('select', this);
+            } else {
+                this.$emit('unselect');
+            }
         },
     },
     created() {
