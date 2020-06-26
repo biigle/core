@@ -1,5 +1,6 @@
 import AnnotationCanvas from './components/annotationCanvas';
 import AnnotationsStore from './stores/annotations';
+import AnnotationsTab from './components/annotationsTab';
 import AttachLabelInteraction from './ol/AttachLabelInteraction';
 import ControlButton from './components/controlButton';
 import ImagesStore from './stores/images';
@@ -18,6 +19,7 @@ import {plugins as settingsTabPlugins} from './components/settingsTab';
 
 biigle.$declare('annotations.components.annotationCanvas', AnnotationCanvas);
 biigle.$declare('annotations.components.annotationsTabPlugins', annotationsTabPlugins);
+biigle.$declare('annotations.components.annotationsTab', AnnotationsTab);
 biigle.$declare('annotations.components.controlButton', ControlButton);
 biigle.$declare('annotations.components.labelsTabPlugins', labelsTabPlugins);
 biigle.$declare('annotations.components.labelTooltip', LabelTooltip);
