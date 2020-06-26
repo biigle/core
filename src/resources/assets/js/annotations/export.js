@@ -8,6 +8,7 @@ import Minimap from './components/minimap';
 import MousePositionIndicator from './components/mousePositionIndicator';
 import StylesStore from './stores/styles';
 import TranslateInteraction from './ol/TranslateInteraction';
+import ZoomToNativeControl from './ol/ZoomToNativeControl';
 import {plugins as annotationsTabPlugins} from './components/siaAnnotationsTab';
 import {plugins as labelsTabPlugins} from './components/labelsTab';
 import {plugins as settingsTabPlugins} from './components/settingsTab';
@@ -21,6 +22,7 @@ biigle.$declare('annotations.components.mousePositionIndicator', MousePositionIn
 biigle.$declare('annotations.components.settingsTabPlugins', settingsTabPlugins);
 biigle.$declare('annotations.ol.AttachLabelInteraction', () => AttachLabelInteraction);
 biigle.$declare('annotations.ol.TranslateInteraction', () => TranslateInteraction);
+biigle.$declare('annotations.ol.ZoomToNativeControl', () => ZoomToNativeControl);
 biigle.$declare('annotations.stores.annotations', AnnotationsStore); // required for SHERPA2BIIGLE
 biigle.$declare('annotations.stores.images', ImagesStore);
 biigle.$declare('annotations.stores.styles', StylesStore);
