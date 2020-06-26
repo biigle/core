@@ -1,18 +1,17 @@
-biigle.$component('videos.components.currentTime', {
-    template:
-    '<div' +
-        ' class="current-time"' +
-        ' :class="classObject"' +
-        '>' +
-            '<span' +
-                ' v-text="currentTimeText"' +
-                '></span> ' +
-            '<span' +
-                ' class="hover-time"' +
-                ' v-show="showHoverTime"' +
-                ' v-text="hoverTimeText"' +
-                '></span>' +
-    '</div>',
+export default {
+    template: `<div
+        class="current-time"
+        :class="classObject"
+        >
+            <span
+                v-text="currentTimeText"
+                ></span>
+            <span
+                class="hover-time"
+                v-show="showHoverTime"
+                v-text="hoverTimeText"
+                ></span>
+    </div>`,
     props: {
         currentTime: {
             type: Number,
@@ -26,11 +25,6 @@ biigle.$component('videos.components.currentTime', {
             type: Boolean,
             default: false,
         },
-    },
-    data() {
-        return {
-            //
-        };
     },
     computed: {
         currentTimeText() {
@@ -49,10 +43,4 @@ biigle.$component('videos.components.currentTime', {
             return this.hoverTime !== 0;
         },
     },
-    methods: {
-        //
-    },
-    watch: {
-        //
-    },
-});
+};

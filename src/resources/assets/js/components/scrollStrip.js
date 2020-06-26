@@ -1,55 +1,59 @@
-biigle.$component('videos.components.scrollStrip', {
-    template:
-    '<div' +
-        ' class="scroll-strip"' +
-        ' @wheel.stop="handleWheel"' +
-        ' @mouseleave="handleHideHoverTime"' +
-        '>' +
-            '<div' +
-                ' class="scroll-strip__scroller"' +
-                ' ref="scroller"' +
-                ' :style="scrollerStyle"' +
-                ' @mousemove="handleUpdateHoverTime"' +
-                '>' +
-                    '<video-progress' +
-                        ' :bookmarks="bookmarks"' +
-                        ' :duration="duration"' +
-                        ' :element-width="elementWidth"' +
-                        ' @seek="emitSeek"' +
-                        '></video-progress>' +
-                    '<div class="annotation-tracks-wrapper">' +
-                        '<annotation-tracks' +
-                            ' ref="annotationTracks"' +
-                            ' :tracks="tracks"' +
-                            ' :duration="duration"' +
-                            ' :element-width="elementWidth"' +
-                            ' @select="emitSelect"' +
-                            ' @deselect="emitDeselect"' +
-                            ' @scroll-y="emitScrollY"' +
-                            ' @drag-x="handleDragX"' +
-                            ' @overflow-top="updateOverflowTop"' +
-                            ' @overflow-bottom="updateOverflowBottom"' +
-                            '></annotation-tracks>' +
-                        '<div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>' +
-                        '<div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>' +
-                    '</div>' +
-                    '<span' +
-                        ' class="time-indicator"' +
-                        ' :class="timeIndicatorClass"' +
-                        ' :style="timeIndicatorStyle"' +
-                        '></span>' +
-                    '<span' +
-                        ' class="hover-time-indicator"' +
-                        ' :style="hoverTimeIndicatorStyle"' +
-                        ' v-show="showHoverTime"' +
-                        '></span>' +
-            '</div>' +
-            '<div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>' +
-            '<div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>' +
-    '</div>',
+import AnnotationTracks from './annotationTracks';
+import VideoProgress from './videoProgress';
+import {Events} from '../import';
+import {Keyboard} from '../import';
+
+export default {
+    template: `<div
+        class="scroll-strip"
+        @wheel.stop="handleWheel"
+        @mouseleave="handleHideHoverTime"
+        >
+            <div
+                class="scroll-strip__scroller"
+                ref="scroller"
+                :style="scrollerStyle"
+                @mousemove="handleUpdateHoverTime"
+                >
+                    <video-progress
+                        :bookmarks="bookmarks"
+                        :duration="duration"
+                        :element-width="elementWidth"
+                        @seek="emitSeek"
+                        ></video-progress>
+                    <div class="annotation-tracks-wrapper">
+                        <annotation-tracks
+                            ref="annotationTracks"
+                            :tracks="tracks"
+                            :duration="duration"
+                            :element-width="elementWidth"
+                            @select="emitSelect"
+                            @deselect="emitDeselect"
+                            @scroll-y="emitScrollY"
+                            @drag-x="handleDragX"
+                            @overflow-top="updateOverflowTop"
+                            @overflow-bottom="updateOverflowBottom"
+                            ></annotation-tracks>
+                        <div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>
+                        <div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>
+                    </div>
+                    <span
+                        class="time-indicator"
+                        :class="timeIndicatorClass"
+                        :style="timeIndicatorStyle"
+                        ></span>
+                    <span
+                        class="hover-time-indicator"
+                        :style="hoverTimeIndicatorStyle"
+                        v-show="showHoverTime"
+                        ></span>
+            </div>
+            <div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>
+            <div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>
+    </div>`,
     components: {
-        videoProgress: biigle.$require('videos.components.videoProgress'),
-        annotationTracks: biigle.$require('videos.components.annotationTracks'),
+        videoProgress: VideoProgress,
+        annotationTracks: AnnotationTracks,
     },
     props: {
         tracks: {
@@ -106,10 +110,10 @@ biigle.$component('videos.components.scrollStrip', {
             };
         },
         timeIndicatorStyle() {
-            return 'transform: translateX(' + this.currentTimePosition + 'px);';
+            return `transform: translateX(${this.currentTimePosition}px);`;
         },
         hoverTimeIndicatorStyle() {
-            return 'transform: translateX(' + this.hoverPosition + 'px);';
+            return `transform: translateX(${this.hoverPosition}px);`;
         },
         scrollerStyle() {
             return {
@@ -174,7 +178,7 @@ biigle.$component('videos.components.scrollStrip', {
             let factor = e.deltaY < 0 ? this.zoomFactor : -1 * this.zoomFactor;
             this.zoom = Math.max(1, this.zoom + factor);
 
-            this.$nextTick(function () {
+            this.$nextTick(() => {
                 let newXAbs = xPercent * this.elementWidth;
                 // Update scroll position so the cursor position stays fixed while
                 // zooming.
@@ -215,17 +219,16 @@ biigle.$component('videos.components.scrollStrip', {
     },
     created() {
         window.addEventListener('resize', this.updateInitialElementWidth);
-        let self = this;
-        biigle.$require('events').$on('sidebar.toggle', function () {
-            self.$nextTick(self.updateInitialElementWidth);
+        Events.$on('sidebar.toggle', () => {
+            this.$nextTick(this.updateInitialElementWidth);
         });
 
         // Do not scroll down when the Spacebar is pressed.
-        biigle.$require('keyboard').on(' ', function (e) {
+        Keyboard.on(' ', function (e) {
             e.preventDefault();
         });
     },
     mounted() {
         this.$nextTick(this.updateInitialElementWidth);
     },
-});
+};

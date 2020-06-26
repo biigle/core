@@ -1,11 +1,11 @@
-biigle.$component('videos.components.annotationKeyframe', {
+export default {
     template:
-    '<span' +
-        ' class="annotation-keyframe"' +
-        ' :style="style"' +
-        ' :class="classObj"' +
-        ' @click.stop="emitSelect"' +
-        '></span>',
+    `<span
+        class="annotation-keyframe"
+        :style="style"
+        :class="classObj"
+        @click.stop="emitSelect"
+        ></span>`,
     props: {
         frame: {
             type: Object,
@@ -45,4 +45,4 @@ biigle.$component('videos.components.annotationKeyframe', {
             this.$emit('select', this.frame, e.shiftKey);
         },
     },
-});
+};

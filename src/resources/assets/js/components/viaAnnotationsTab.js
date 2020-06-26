@@ -1,8 +1,10 @@
+import {AnnotationsTab} from '../import';
+
 /**
  * The specific implementation of the annotations tab for the video annotation tool.
  */
-biigle.$component('videos.components.viaAnnotationsTab', {
-    mixins: [biigle.$require('annotations.components.annotationsTab')],
+export default {
+    mixins: [AnnotationsTab],
     methods: {
         handleSelect(annotation, shift) {
             if (annotation.isSelected && shift) {
@@ -12,4 +14,4 @@ biigle.$component('videos.components.viaAnnotationsTab', {
             }
         },
     },
-});
+};

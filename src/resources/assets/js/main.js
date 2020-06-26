@@ -1,3 +1,4 @@
+import './filters/videoTime';
 import CreateForm from './createForm';
 import SearchResults from './searchResults';
 import VideoContainer from './videoContainer';

@@ -1,19 +1,60 @@
-biigle.$component('videos.components.videoProgress', {
-    template:
-    '<div' +
-        ' class="video-progress"' +
-        ' @click="emitSeek"' +
-        '>' +
-            '<bookmark v-for="mark in bookmarks"' +
-                ' :bookmark="mark"' +
-                ' @select="emitSelectBookmark"' +
-                '></bookmark>' +
-            '<tick' +
-                ' v-if="hasTicks"' +
-                ' v-for="time in ticks"' +
-                ' :time="time"' +
-                '></tick>' +
-    '</div>',
+let Bookmark = {
+    template: '<span class="bookmark" :style="style" @click.stop="emitSelect"></span>',
+    props: {
+        bookmark: {
+            type: Object,
+            required: true,
+        },
+    },
+    computed: {
+        style() {
+            let offset = this.bookmark.time / this.$parent.duration * this.$parent.elementWidth;
+
+            return `left: ${offset}px`;
+        },
+    },
+    methods: {
+        emitSelect() {
+            this.$emit('select', this.bookmark);
+        },
+    },
+};
+
+let Tick = {
+    template: '<span class="tick" :style="style" v-text="text"></span>',
+    props: {
+        time: {
+            type: Number,
+            required: true,
+        },
+    },
+    computed: {
+        style() {
+            let offset = this.time / this.$parent.duration * this.$parent.elementWidth;
+
+            return `left: ${offset}px`;
+        },
+        text() {
+            return Vue.filter('videoTime')(this.time);
+        },
+    },
+};
+
+export default {
+    template: `<div
+        class="video-progress"
+        @click="emitSeek"
+        >
+            <bookmark v-for="mark in bookmarks"
+                :bookmark="mark"
+                @select="emitSelectBookmark"
+                ></bookmark>
+            <tick
+                v-if="hasTicks"
+                v-for="time in ticks"
+                :time="time"
+                ></tick>
+    </div>`,
     props: {
         duration: {
             type: Number,
@@ -31,42 +72,8 @@ biigle.$component('videos.components.videoProgress', {
         },
     },
     components: {
-        bookmark: {
-            template: '<span class="bookmark" :style="style" @click.stop="emitSelect"></span>',
-            props: {
-                bookmark: {
-                    type: Object,
-                    required: true,
-                },
-            },
-            computed: {
-                style() {
-                    return 'left: ' + (this.bookmark.time / this.$parent.duration * this.$parent.elementWidth) + 'px';
-                },
-            },
-            methods: {
-                emitSelect() {
-                    this.$emit('select', this.bookmark);
-                },
-            },
-        },
-        tick: {
-            template: '<span class="tick" :style="style" v-text="text"></span>',
-            props: {
-                time: {
-                    type: Number,
-                    required: true,
-                },
-            },
-            computed: {
-                style() {
-                    return 'left: ' + (this.time / this.$parent.duration * this.$parent.elementWidth) + 'px';
-                },
-                text() {
-                    return Vue.filter('videoTime')(this.time);
-                },
-            },
-        },
+        bookmark: Bookmark,
+        tick: Tick,
     },
     data() {
         return {
@@ -81,9 +88,7 @@ biigle.$component('videos.components.videoProgress', {
             let step = this.duration / this.tickCount;
 
             return Array.apply(null, {length: this.tickCount})
-                .map(function (item, index) {
-                    return step * index;
-                });
+                .map((item, index) => step * index);
         },
         hasTicks() {
             return this.tickCount > 0 && this.duration > 0;
@@ -97,7 +102,4 @@ biigle.$component('videos.components.videoProgress', {
             this.$emit('seek', bookmark.time);
         },
     },
-    mounted() {
-        //
-    },
-});
+};

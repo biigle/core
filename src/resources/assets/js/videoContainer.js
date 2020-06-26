@@ -1,28 +1,38 @@
-import VideoAnnotationApi from './api/videoAnnotations';
-import {handleErrorResponse} from './import';
-import {Messages} from './import';
-import {LoaderMixin} from './import';
-import {UrlParams} from './import';
 import Annotation from './models/Annotation';
+import AnnotationsTab from './components/viaAnnotationsTab';
+import Settings from './stores/settings';
+import SettingsTab from './components/settingsTab';
+import VideoAnnotationApi from './api/videoAnnotations';
 import VideoScreen from './components/videoScreen';
+import VideoTimeline from './components/videoTimeline';
+import {handleErrorResponse} from './import';
+import {LabelAnnotationFilter} from './import';
+import {LabelTrees} from './import';
+import {LoaderMixin} from './import';
+import {Messages} from './import';
+import {ShapeAnnotationFilter} from './import';
+import {SidebarTab} from './import';
+import {Sidebar} from './import';
+import {UrlParams} from './import';
+import {UserAnnotationFilter} from './import';
 
 export default {
     mixins: [LoaderMixin],
     components: {
         videoScreen: VideoScreen,
-        videoTimeline: biigle.$require('videos.components.videoTimeline'),
-        sidebar: biigle.$require('core.components.sidebar'),
-        sidebarTab: biigle.$require('core.components.sidebarTab'),
-        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
-        settingsTab: biigle.$require('videos.components.settingsTab'),
-        annotationsTab: biigle.$require('videos.components.viaAnnotationsTab'),
+        videoTimeline: VideoTimeline,
+        sidebar: Sidebar,
+        sidebarTab: SidebarTab,
+        labelTrees: LabelTrees,
+        settingsTab: SettingsTab,
+        annotationsTab: AnnotationsTab,
     },
     data: {
         videoId: null,
         shapes: [],
-        canEdit: biigle.$require('videos.isEditor'),
-        video: document.createElement('video'),
-        labelTrees: biigle.$require('videos.labelTrees'),
+        canEdit: false,
+        video: null,
+        labelTrees: [],
         selectedLabel: null,
         bookmarks: [],
         annotations: [],
@@ -54,21 +64,8 @@ export default {
         currentTimelineOffset: 0,
     },
     computed: {
-        shapes() {
-            let map = {};
-            Object.keys(this.shapes).forEach((id) => {
-                map[this.shapes[id]] = parseInt(id);
-            });
-
-            return map;
-        },
         selectedAnnotations() {
-            return this.filteredAnnotations.filter(function (annotation) {
-                return annotation.isSelected;
-            });
-        },
-        settingsStore() {
-            return biigle.$require('videos.stores.settings');
+            return this.filteredAnnotations.filter((a) => a.isSelected);
         },
         filteredAnnotations() {
             if (this.activeAnnotationFilter) {
@@ -194,14 +191,9 @@ export default {
                     .catch(handleErrorResponse);
             } else {
                 annotation.delete()
-                    .then(this.deletedAnnotation(annotation))
+                    .then(() => this.removeAnnotation(annotation))
                     .catch(handleErrorResponse);
             }
-        },
-        deletedAnnotation(annotation) {
-            return (function () {
-                this.removeAnnotation(annotation);
-            }).bind(this);
         },
         handleVideoSeeked() {
             this.seeking = false;
@@ -217,10 +209,10 @@ export default {
             this.settings[key] = value;
         },
         handleOpenedTab(name) {
-            this.settingsStore.set('openTab', name);
+            Settings.set('openTab', name);
         },
         handleClosedTab() {
-            this.settingsStore.delete('openTab');
+            Settings.delete('openTab');
         },
         handleToggledTab() {
             this.$refs.videoScreen.updateSize();
@@ -232,12 +224,11 @@ export default {
             }
         },
         splitAnnotation(annotation, time) {
-            annotation.split(time)
-                .then(this.addCreatedAnnotation, handleErrorResponse);
+            annotation.split(time).then(this.addCreatedAnnotation, handleErrorResponse);
         },
         linkAnnotations(annotations) {
             annotations[0].link(annotations[1])
-                .then(this.deletedAnnotation(annotations[1]))
+                .then(() => this.removeAnnotation(annotations[1]))
                 .catch(handleErrorResponse);
         },
         updateMapUrlParams(center, resolution) {
@@ -269,10 +260,10 @@ export default {
                 return Vue.Promise.resolve();
             }
 
-            let promise = new Vue.Promise((function (resolve, reject) {
+            let promise = new Vue.Promise((resolve, reject) => {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
-            }).bind(this));
+            });
             this.seek(this.initialCurrentTime);
 
             return promise;
@@ -283,7 +274,7 @@ export default {
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
                 annotation.delete()
-                    .then(this.deletedAnnotation(annotation))
+                    .then(() => this.removeAnnotation(annotation))
                     .catch(handleErrorResponse);
             }
         },
@@ -292,14 +283,10 @@ export default {
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
-            let LabelFilter = biigle.$require('annotations.models.LabelAnnotationFilter');
-            let UserFilter = biigle.$require('annotations.models.UserAnnotationFilter');
-            let ShapeFilter = biigle.$require('annotations.models.ShapeAnnotationFilter');
-
             this.annotationFilters = [
-                new LabelFilter({data: {annotations: this.annotations}}),
-                new UserFilter({data: {annotations: this.annotations}}),
-                new ShapeFilter({data: {shapes: this.shapes}}),
+                new LabelAnnotationFilter({data: {annotations: this.annotations}}),
+                new UserAnnotationFilter({data: {annotations: this.annotations}}),
+                new ShapeAnnotationFilter({data: {shapes: this.shapes}}),
             ];
         },
         setActiveAnnotationFilter(filter) {
@@ -348,14 +335,22 @@ export default {
         },
         urlParams: {
             deep: true,
-            handler:function (params) {
+            handler(params) {
                 UrlParams.set(params);
             },
         },
     },
     created() {
+        let shapes = biigle.$require('videos.shapes');
+        let map = {};
+        Object.keys(shapes).forEach((id) => {
+            map[shapes[id]] = parseInt(id);
+        });
+        this.shapes = map;
+        this.video = document.createElement('video');
         this.videoId = biigle.$require('videos.id');
-        this.shapes = biigle.$require('videos.shapes');
+        this.canEdit = biigle.$require('videos.isEditor');
+        this.labelTrees = biigle.$require('videos.labelTrees');
 
         this.restoreUrlParams();
         this.video.muted = true;
@@ -370,9 +365,8 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
         this.startLoading();
-        let self = this;
-        let videoPromise = new Vue.Promise(function (resolve, reject) {
-            self.video.addEventListener('canplay', resolve);
+        let videoPromise = new Vue.Promise((resolve, reject) => {
+            this.video.addEventListener('canplay', resolve);
         });
         let annotationPromise = VideoAnnotationApi.query({id: this.videoId});
         annotationPromise.then(this.setAnnotations, handleErrorResponse)
@@ -382,8 +376,8 @@ export default {
             .then(this.maybeInitCurrentTime)
             .then(this.finishLoading);
 
-        if (this.settingsStore.has('openTab')) {
-            this.openTab = this.settingsStore.get('openTab');
+        if (Settings.has('openTab')) {
+            this.openTab = Settings.get('openTab');
         }
     },
     mounted() {

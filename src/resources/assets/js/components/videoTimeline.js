@@ -1,39 +1,41 @@
-biigle.$component('videos.components.videoTimeline', {
-    template: '<div class="video-timeline"' +
-        ' :style="styleObject"' +
-        '>' +
-        '<div class="grab-border"' +
-            ' @mousedown="emitStartResize"' +
-            '></div>' +
-        '<div class="static-strip">' +
-            '<current-time' +
-                ' :current-time="currentTime"' +
-                ' :hover-time="hoverTime"' +
-                ' :seeking="seeking"' +
-                '></current-time>' +
-            '<track-headers ref="trackheaders"' +
-                ' :tracks="annotationTracks"' +
-                ' :scroll-top="scrollTop"' +
-                '></track-headers>' +
-        '</div>' +
-        '<scroll-strip' +
-            ' ref="scrollStrip"' +
-            ' :tracks="annotationTracks"' +
-            ' :duration="duration"' +
-            ' :current-time="currentTime"' +
-            ' :bookmarks="bookmarks"' +
-            ' :seeking="seeking"' +
-            ' @seek="emitSeek"' +
-            ' @select="emitSelect"' +
-            ' @deselect="emitDeselect"' +
-            ' @scroll-y="handleScrollY"' +
-            ' @hover-time="updateHoverTime"' +
-        '></scroll-strip>' +
-    '</div>',
+import CurrentTime from './currentTime';
+import ScrollStrip from './scrollStrip';
+import TrackHeaders from './trackHeaders';
+
+export default {
+    template: `<div class="video-timeline" :style="styleObject">
+        <div class="grab-border"
+            @mousedown="emitStartResize"
+            ></div>
+        <div class="static-strip">
+            <current-time
+                :current-time="currentTime"
+                :hover-time="hoverTime"
+                :seeking="seeking"
+                ></current-time>
+            <track-headers ref="trackheaders"
+                :tracks="annotationTracks"
+                :scroll-top="scrollTop"
+                ></track-headers>
+        </div>
+        <scroll-strip
+            ref="scrollStrip"
+            :tracks="annotationTracks"
+            :duration="duration"
+            :current-time="currentTime"
+            :bookmarks="bookmarks"
+            :seeking="seeking"
+            @seek="emitSeek"
+            @select="emitSelect"
+            @deselect="emitDeselect"
+            @scroll-y="handleScrollY"
+            @hover-time="updateHoverTime"
+        ></scroll-strip>
+    </div>`,
     components: {
-        currentTime: biigle.$require('videos.components.currentTime'),
-        trackHeaders: biigle.$require('videos.components.trackHeaders'),
-        scrollStrip: biigle.$require('videos.components.scrollStrip'),
+        currentTime: CurrentTime,
+        trackHeaders: TrackHeaders,
+        scrollStrip: ScrollStrip,
     },
     props: {
         annotations: {
@@ -98,16 +100,16 @@ biigle.$component('videos.components.videoTimeline', {
                 });
             });
 
-            return Object.keys(map).map(function (labelId) {
+            return Object.keys(map).map((labelId) => {
                 return {
                     label: this.labelMap[labelId],
                     lanes: this.getAnnotationTrackLanes(map[labelId])
                 };
-            }, this);
+            });
         },
         styleObject() {
             if (this.heightOffset !== 0) {
-                return 'height: calc(35% + ' + this.heightOffset + 'px);';
+                return `height: calc(35% + ${this.heightOffset}px);`;
             }
 
             return '';
@@ -149,7 +151,7 @@ biigle.$component('videos.components.videoTimeline', {
             let timeRanges = [[]];
             let lanes = [[]];
 
-            annotations.forEach(function (annotation) {
+            annotations.forEach((annotation) => {
                 let range = [annotation.startFrame, annotation.endFrame];
                 let lane = 0;
                 let set = false;
@@ -171,7 +173,7 @@ biigle.$component('videos.components.videoTimeline', {
                     lanes[lane].push(annotation);
                     set = true;
                 }
-            }, this);
+            });
 
             return lanes;
         },
@@ -206,7 +208,4 @@ biigle.$component('videos.components.videoTimeline', {
         this.video.addEventListener('loadedmetadata', this.setDuration);
         this.video.addEventListener('seeked', this.updateCurrentTime);
     },
-    mounted() {
-        //
-    },
-});
+};

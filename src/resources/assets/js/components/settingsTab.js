@@ -1,9 +1,9 @@
-biigle.$component('videos.components.settingsTab', {
+import Settings from '../stores/settings';
+import {PowerToggle} from '../import';
+
+export default {
     components: {
-        powerToggle: biigle.$require('core.components.powerToggle'),
-    },
-    props: {
-        //
+        powerToggle: PowerToggle,
     },
     data() {
         return {
@@ -21,11 +21,6 @@ biigle.$component('videos.components.settingsTab', {
             showMousePosition: false,
             playbackRate: 1.0,
         };
-    },
-    computed: {
-        settings() {
-            return biigle.$require('videos.stores.settings');
-        },
     },
     methods: {
         handleShowMinimap() {
@@ -52,25 +47,25 @@ biigle.$component('videos.components.settingsTab', {
             value = parseFloat(value);
             if (!isNaN(value)) {
                 this.$emit('update', 'annotationOpacity', value);
-                this.settings.set('annotationOpacity', value);
+                Settings.set('annotationOpacity', value);
             }
         },
         showMinimap(show) {
             this.$emit('update', 'showMinimap', show);
-            this.settings.set('showMinimap', show);
+            Settings.set('showMinimap', show);
         },
         autoplayDraw(value) {
             value = parseFloat(value);
             this.$emit('update', 'autoplayDraw', value);
-            this.settings.set('autoplayDraw', value);
+            Settings.set('autoplayDraw', value);
         },
         showLabelTooltip(show) {
             this.$emit('update', 'showLabelTooltip', show);
-            this.settings.set('showLabelTooltip', show);
+            Settings.set('showLabelTooltip', show);
         },
         showMousePosition(show) {
             this.$emit('update', 'showMousePosition', show);
-            this.settings.set('showMousePosition', show);
+            Settings.set('showMousePosition', show);
         },
         playbackRate(value) {
             value = parseFloat(value);
@@ -80,8 +75,8 @@ biigle.$component('videos.components.settingsTab', {
         },
     },
     created() {
-        this.restoreKeys.forEach(function (key) {
-            this[key] = this.settings.get(key);
-        }, this);
+        this.restoreKeys.forEach((key) => {
+            this[key] = Settings.get(key);
+        });
     },
-});
+};

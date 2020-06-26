@@ -1,25 +1,26 @@
-biigle.$component('videos.components.annotationTracks', {
-    template:
-    '<div' +
-        ' class="annotation-tracks"' +
-        ' draggable="true"' +
-        ' @click="emitDeselect"' +
-        ' @mousedown="startDragging"' +
-        ' @mouseup="stopDragging"' +
-        ' @mousemove="continueDragging"' +
-        ' @scroll.stop="updateScrollTop"' +
-        '>' +
-            '<annotation-track v-for="track in tracks"' +
-                ' :label="track.label"' +
-                ' :lanes="track.lanes"' +
-                ' :duration="duration"' +
-                ' :element-width="elementWidth"' +
-                ' @select="emitSelect"' +
-                ' @deselect="emitDeselectAnnotation"' +
-                '></annotation-track>' +
-    '</div>',
+import AnnotationTrack from './annotationTrack';
+
+export default {
+    template: `<div
+        class="annotation-tracks"
+        draggable="true"
+        @click="emitDeselect"
+        @mousedown="startDragging"
+        @mouseup="stopDragging"
+        @mousemove="continueDragging"
+        @scroll.stop="updateScrollTop"
+        >
+            <annotation-track v-for="track in tracks"
+                :label="track.label"
+                :lanes="track.lanes"
+                :duration="duration"
+                :element-width="elementWidth"
+                @select="emitSelect"
+                @deselect="emitDeselectAnnotation"
+                ></annotation-track>
+    </div>`,
     components: {
-        annotationTrack: biigle.$require('videos.components.annotationTrack'),
+        annotationTrack: AnnotationTrack,
     },
     props: {
         tracks: {
@@ -37,8 +38,6 @@ biigle.$component('videos.components.annotationTracks', {
     },
     data() {
         return {
-            hasOverflowTop: false,
-            hasOverflowBottom: false,
             dragging: false,
             scrollTop: 0,
             scrollHeight: 0,
@@ -120,4 +119,4 @@ biigle.$component('videos.components.annotationTracks', {
     mounted() {
         this.$nextTick(this.updateClientHeight);
     },
-});
+};

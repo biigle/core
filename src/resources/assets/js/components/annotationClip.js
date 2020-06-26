@@ -1,23 +1,25 @@
-biigle.$component('videos.components.annotationClip', {
-    template: '<div class="annotation-clip"' +
-        ' v-show="duration > 0"' +
-        ' :style="style"' +
-        ' :class="classObj"' +
-        ' :title="title"' +
-        ' @click.stop="select($event)"' +
-        '>' +
-            '<segment' +
-                ' v-for="segment in segments"' +
-                ' :annotation="annotation"' +
-                ' :label="label"' +
-                ' :frames="segment.frames"' +
-                ' :gap="segment.gap"' +
-                ' :clip-duration="clipDuration"' +
-                ' @select="emitSelect"' +
-                '></segment>' +
-    '</div>',
+import Segment from './annotationSegment';
+
+export default {
+    template: `<div class="annotation-clip"
+        v-show="duration > 0"
+        :style="style"
+        :class="classObj"
+        :title="title"
+        @click.stop="select($event)"
+        >
+            <segment
+                v-for="segment in segments"
+                :annotation="annotation"
+                :label="label"
+                :frames="segment.frames"
+                :gap="segment.gap"
+                :clip-duration="clipDuration"
+                @select="emitSelect"
+                ></segment>
+    </div>`,
     components: {
-        segment: biigle.$require('videos.components.annotationSegment'),
+        segment: Segment,
     },
     props: {
         annotation: {
@@ -36,11 +38,6 @@ biigle.$component('videos.components.annotationClip', {
             type: Number,
             required: true,
         },
-    },
-    data() {
-        return {
-            //
-        };
     },
     computed: {
         startFrame() {
@@ -109,9 +106,7 @@ biigle.$component('videos.components.annotationClip', {
         },
         minTimeBetweenFrames() {
             let min = Infinity;
-            let frames = this.annotation.frames.filter(function (value) {
-                return value !== null;
-            });
+            let frames = this.annotation.frames.filter((value) => value !== null);
 
             for (let i = frames.length - 1; i > 0; i--) {
                 min = Math.min(min, frames[i] - frames[i - 1]);
@@ -160,4 +155,4 @@ biigle.$component('videos.components.annotationClip', {
             this.emitSelect(time, e.shiftKey);
         },
     },
-});
+};

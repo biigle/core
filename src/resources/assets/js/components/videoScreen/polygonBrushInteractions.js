@@ -113,14 +113,14 @@ export default {
             }
         },
         initShiftSelectInteraction(map) {
-            this.shiftClickSelectInteraction = SelectInteraction({
+            this.shiftClickSelectInteraction = new SelectInteraction({
                 condition(e) {
                     return clickCondition(e) && shiftKeyOnlyCondition(e);
                 },
                 style: Styles.highlight,
                 layers: [this.annotationLayer],
                 features: this.selectInteraction.getFeatures(),
-                multi: true
+                multi: true,
             });
             this.shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         },
@@ -132,7 +132,7 @@ export default {
         }
 
         if (this.canModify) {
-            this.$once('map-created', function () {
+            this.$once('map-created', () => {
                 this.$once('map-ready', this.initShiftSelectInteraction);
             });
 

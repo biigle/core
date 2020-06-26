@@ -1,21 +1,23 @@
-biigle.$component('videos.components.annotationSegment', {
+import Keyframe from './annotationKeyframe';
+
+export default {
     template:
-    '<div' +
-        ' class="annotation-segment"' +
-        ' :class="classObject"' +
-        ' :style="style"' +
-        '>' +
-        '<keyframe' +
-            ' v-for="frame in keyframes"' +
-            ' :frame="frame"' +
-            ' :start-frame="startFrame"' +
-            ' :segment-duration="segmentDuration"' +
-            ' :color="color"' +
-            ' @select="selectFrame"' +
-            '></keyframe>' +
-    '</div>',
+    `<div
+        class="annotation-segment"
+        :class="classObject"
+        :style="style"
+        >
+        <keyframe
+            v-for="frame in keyframes"
+            :frame="frame"
+            :start-frame="startFrame"
+            :segment-duration="segmentDuration"
+            :color="color"
+            @select="selectFrame"
+            ></keyframe>
+    </div>`,
     components: {
-        keyframe: biigle.$require('videos.components.annotationKeyframe'),
+        keyframe: Keyframe,
     },
     props: {
         annotation: {
@@ -91,4 +93,4 @@ biigle.$component('videos.components.annotationSegment', {
             this.$emit('select', frame.time, shift);
         },
     },
-});
+};

@@ -1,18 +1,21 @@
-biigle.$component('videos.components.annotationTrack', {
-    template: '<div class="annotation-track">' +
-        '<div class="annotation-lane" v-for="lane in lanes">' +
-            '<annotation-clip v-for="annotation in lane"' +
-                ' :annotation="annotation"' +
-                ' :element-width="elementWidth"' +
-                ' :label="label"' +
-                ' :duration="duration"' +
-                ' @select="emitSelect"' +
-                ' @deselect="emitDeselect"' +
-                '></annotation-clip>' +
-        '</div>' +
-    '</div>',
+import AnnotationClip from './annotationClip';
+
+export default {
+    template: `<div class="annotation-track">
+        <div class="annotation-lane" v-for="lane in lanes">
+            <annotation-clip v-for="annotation in lane"
+                :key="annotation.id"
+                :annotation="annotation"
+                :element-width="elementWidth"
+                :label="label"
+                :duration="duration"
+                @select="emitSelect"
+                @deselect="emitDeselect"
+                ></annotation-clip>
+        </div>
+    </div>`,
     components: {
-        annotationClip: biigle.$require('videos.components.annotationClip'),
+        annotationClip: AnnotationClip,
     },
     props: {
         label: {
@@ -32,14 +35,6 @@ biigle.$component('videos.components.annotationTrack', {
             required: true,
         },
     },
-    data() {
-        return {
-            //
-        };
-    },
-    computed: {
-        //
-    },
     methods: {
         emitSelect(annotation, time, shift) {
             this.$emit('select', annotation, time, shift);
@@ -48,7 +43,4 @@ biigle.$component('videos.components.annotationTrack', {
             this.$emit('deselect', annotation);
         },
     },
-    watch: {
-        //
-    },
-});
+};

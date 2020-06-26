@@ -163,7 +163,7 @@ export default {
     },
     created() {
         if (this.canModify) {
-            this.$once('map-created', function () {
+            this.$once('map-created', () => {
                 // Add the event listener after initLayersAndInteractions of
                 // videoScreen so the select interaction is created before the
                 // modify interaction.
