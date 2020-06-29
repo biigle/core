@@ -1,51 +1,52 @@
+import MetadataApi from './api/volumeImageMetadata';
+import {handleErrorResponse} from './import';
+import {LoaderMixin} from './import';
+
 /**
  * The metadata upload of the volume edit page.
  */
-biigle.$viewModel('volume-metadata-upload', function (element) {
-    var messages = biigle.$require('messages.store');
-    var resource = biigle.$require('api.volumeImageMetadata');
-    var volumeId = biigle.$require('volumes.id');
-
-    new Vue({
-        el: element,
-        mixins: [biigle.$require('core.mixins.loader')],
-        data: {
-            csv: undefined,
-            error: false,
-            success: false,
-            message: undefined
+export default {
+    mixins: [LoaderMixin],
+    data: {
+        volumeId: null,
+        csv: undefined,
+        error: false,
+        success: false,
+        message: undefined,
+    },
+    methods: {
+        handleSuccess() {
+            this.error = false;
+            this.success = true;
         },
-        methods: {
-            handleSuccess: function () {
-                this.error = false;
-                this.success = true;
-            },
-            handleError: function (response) {
-                this.success = false;
-                if (response.data.file) {
-                    if (Array.isArray(response.data.file)) {
-                        this.error = response.data.file[0];
-                    } else {
-                        this.error = response.data.file;
-                    }
+        handleError(response) {
+            this.success = false;
+            if (response.data.file) {
+                if (Array.isArray(response.data.file)) {
+                    this.error = response.data.file[0];
                 } else {
-                    messages.handleErrorResponse(response);
+                    this.error = response.data.file;
                 }
-            },
-            submit: function (e) {
-                if (!this.csv) return;
-
-                this.startLoading();
-                var data = new FormData();
-                data.append('file', this.csv);
-                resource.save({id: volumeId}, data)
-                    .bind(this)
-                    .then(this.handleSuccess, this.handleError)
-                    .finally(this.finishLoading);
-            },
-            setCsv: function (event) {
-                this.csv = event.target.files[0];
+            } else {
+                handleErrorResponse(response);
             }
+        },
+        submit(e) {
+            if (!this.csv) return;
+
+            this.startLoading();
+            let data = new FormData();
+            data.append('file', this.csv);
+            MetadataApi.save({id: this.volumeId}, data)
+                .bind(this)
+                .then(this.handleSuccess, this.handleError)
+                .finally(this.finishLoading);
+        },
+        setCsv(event) {
+            this.csv = event.target.files[0];
         }
-    });
-});
+    },
+    created() {
+        this.volumeId = biigle.$require('volumes.id');
+    },
+};

@@ -1,15 +1,17 @@
+import Item from './imageLabelListItem';
+
 /**
  * List of image labels.
  *
  * @type {Object}
  */
-biigle.$component('volumes.components.imageLabelList', {
-    template: '<ul class="image-label-list">' +
-        '<list-item v-for="item in imageLabels" :item="item" :deletable="canDelete(item)" @deleted="emitDeleted"></list-item>' +
-        '<li v-if="!hasImageLabels" class="text-muted">No image labels</li>' +
-    '</ul>',
+export default {
+    template: `<ul class="image-label-list">
+        <list-item v-for="item in imageLabels" :item="item" :deletable="canDelete(item)" @deleted="emitDeleted"></list-item>
+        <li v-if="!hasImageLabels" class="text-muted">No image labels</li>
+    </ul>`,
     components: {
-        listItem: biigle.$require('volumes.components.imageLabelListItem'),
+        listItem: Item,
     },
     props: {
         imageLabels: {
@@ -26,16 +28,16 @@ biigle.$component('volumes.components.imageLabelList', {
         },
     },
     computed: {
-        hasImageLabels: function () {
+        hasImageLabels() {
             return this.imageLabels.length > 0;
         },
     },
     methods: {
-        canDelete: function (item) {
+        canDelete(item) {
             return this.isAdmin === true || this.userId === item.user.id;
         },
-        emitDeleted: function (item) {
+        emitDeleted(item) {
             this.$emit('deleted', item);
         },
-    }
-});
+    },
+};

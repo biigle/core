@@ -1,8 +1,8 @@
 /**
  * Store for the image count
  */
-biigle.$declare('volumes.stores.image', new Vue({
+export default new Vue({
     data: {
         count: 0,
     },
-}));
+});

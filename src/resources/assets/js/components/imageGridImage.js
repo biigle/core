@@ -3,14 +3,14 @@
  *
  * @type {Object}
  */
-biigle.$component('volumes.components.imageGridImage', {
-    template: '<figure class="image-grid__image" :class="classObject">' +
-        '<div v-if="showIcon" class="image-icon">' +
-            '<i class="fas" :class="iconClass"></i>' +
-        '</div>' +
-        '<img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">' +
-    '</figure>',
-    data: function () {
+export default {
+    template: `<figure class="image-grid__image" :class="classObject">
+        <div v-if="showIcon" class="image-icon">
+            <i class="fas" :class="iconClass"></i>
+        </div>
+        <img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">
+    </figure>`,
+    data() {
         return {
             url: '',
             timeout: null,
@@ -43,7 +43,7 @@ biigle.$component('volumes.components.imageGridImage', {
         },
     },
     computed: {
-        classObject: function () {
+        classObject() {
             return {
                 'image-grid__image--selected': this.selected,
                 'image-grid__image--selectable': this.selectable,
@@ -51,32 +51,32 @@ biigle.$component('volumes.components.imageGridImage', {
                 'image-grid__image--small-icon': this.smallIcon,
             };
         },
-        selected: function () {
+        selected() {
             return false;
         },
-        iconClass: function () {
+        iconClass() {
             return 'fa-' + this.selectedIcon;
         },
-        showIcon: function () {
+        showIcon() {
             return this.selectable || this.selected;
         },
     },
     methods: {
-        toggleSelect: function (event) {
+        toggleSelect(event) {
             if (this.selectable) {
                 this.$emit('select', this.image, event);
             }
         },
-        gotBlob: function (response) {
-            var urlCreator = window.URL || window.webkitURL;
+        gotBlob(response) {
+            let urlCreator = window.URL || window.webkitURL;
             this.url = urlCreator.createObjectURL(response.body);
             this.image.blob = this.url;
         },
-        showEmptyImage: function () {
+        showEmptyImage() {
             this.url = this.emptyUrl;
         },
     },
-    created: function () {
+    created() {
         if (this.image.url) {
             this.url = this.image.url;
         } else if (this.image.blob) {
@@ -84,14 +84,11 @@ biigle.$component('volumes.components.imageGridImage', {
         } else if (this.getUrl) {
             this.url = this.getUrl();
         } else if (this.getBlob) {
-            var self = this;
             // use a timeout to skip requests when scrolling fast
-            this.timeout = setTimeout(function () {
-                self.getBlob().then(self.gotBlob);
-            }, 50);
+            this.timeout = setTimeout(() => this.getBlob().then(this.gotBlob), 50);
         }
     },
-    beforeDestroy: function () {
+    beforeDestroy() {
         clearTimeout(this.timeout);
     },
-});
+};

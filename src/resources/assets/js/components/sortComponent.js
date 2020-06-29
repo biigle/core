@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('volumes.mixins.sortComponent', {
+export default {
     template: '<button class="list-group-item" :title="title" @click="handleClick" :class="classObject" v-text="text"></button>',
     props: {
         activeSorter: {
@@ -12,25 +12,23 @@ biigle.$component('volumes.mixins.sortComponent', {
         },
     },
     computed: {
-        active: function () {
+        active() {
             return this.activeSorter === this.id;
         },
-        classObject: function () {
+        classObject() {
             return {
                 active: this.active,
             };
         },
     },
     methods: {
-        getSequence: function () {
-            return new Vue.Promise(function (resolve) {
-                resolve([]);
-            });
+        getSequence() {
+            return new Vue.Promise.resolve([]);
         },
-        handleClick: function () {
+        handleClick() {
             if (!this.active) {
                 this.$emit('select', this);
             }
         },
     },
-});
+};

@@ -1,14 +1,17 @@
+import ImageLabelsApi from '../api/imageLabels';
+import {handleErrorResponse} from '../import';
+
 /**
  * One item in the imageLabelList component.
  *
  * @type {Object}
  */
-biigle.$component('volumes.components.imageLabelListItem', {
-    template: '<li class="image-label" :class="classObject">' +
-        '<span class="image-label__color" :style="colorStyle"></span>' +
-        '<span v-text="label.name" :title="title"></span>' +
-        '<button v-if="!deleting && deletable" class="close image-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
-    '</li>',
+export default {
+    template: `<li class="image-label" :class="classObject">
+        <span class="image-label__color" :style="colorStyle"></span>
+        <span v-text="label.name" :title="title"></span>
+        <button v-if="!deleting && deletable" class="close image-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>
+    </li>`,
     props: {
         item: {
             type: Object,
@@ -19,44 +22,43 @@ biigle.$component('volumes.components.imageLabelListItem', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             deleting: false,
         };
     },
     computed: {
-        label: function () {
+        label() {
             return this.item.label;
         },
-        colorStyle: function () {
+        colorStyle() {
             return {
                 'background-color': '#' + this.label.color
             };
         },
-        deleteTitle: function () {
+        deleteTitle() {
             return 'Detach label ' + this.label.name;
         },
-        title: function () {
-            return 'Attached by ' + this.item.user.firstname + ' ' +this.item.user.lastname;
+        title() {
+            return `Attached by ${this.item.user.firstname} ${this.item.user.lastname}`;
         },
-        classObject: function () {
+        classObject() {
             return {
                 'image-label--deleting': this.deleting,
             };
         },
     },
     methods: {
-        deleteThis: function () {
+        deleteThis() {
             if (this.deleting) return;
 
-            var self = this;
             this.deleting = true;
-            biigle.$require('api.imageLabels').delete({id: this.item.id})
-                .then(this.deleted, biigle.$require('messages.store').handleErrorResponse)
-                .finally(function () {self.deleting = false;});
+            ImageLabelsApi.delete({id: this.item.id})
+                .then(this.deleted, handleErrorResponse)
+                .finally(() => this.deleting = false);
         },
-        deleted: function () {
+        deleted() {
             this.$emit('deleted', this.item);
         },
     }
-});
+};

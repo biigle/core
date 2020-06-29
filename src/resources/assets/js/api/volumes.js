@@ -1,7 +1,7 @@
 /**
- * Resource for volumes. This overrides api.volumes provided by biigle/core.
+ * Resource for volumes.
  *
- * var resource = biigle.$require('api.volumes');
+ * let resource = biigle.$require('api.volumes');
  *
  * Get IDs of all images of the volume that have image labels attached:
  * resource.queryImagesWithImageLabels({id: 1).then(...);
@@ -32,7 +32,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
+export default Vue.resource('api/v1/volumes{/id}', {}, {
     queryImagesWithImageLabels: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/images/filter/labels',
@@ -73,4 +73,4 @@ biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
         method: 'POST',
         url: 'api/v1/volumes{/id}/images',
     },
-}));
+});

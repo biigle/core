@@ -1,23 +1,25 @@
+import {Typeahead} from '../import';
+
 /**
  * Base component for a filter select element
  *
  * @type {Object}
  */
-biigle.$component('volumes.components.filterSelectComponent', {
-    template: '<div class="filter-select">' +
-        '<typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :template="typeaheadTemplate"></typeahead>' +
-        '<button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>' +
-    '</div>',
+export default {
+    template: `<div class="filter-select">
+        <typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :template="typeaheadTemplate"></typeahead>
+        <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
+    </div>`,
     components: {
-        typeahead: biigle.$require('core.components.typeahead'),
+        typeahead: Typeahead,
     },
     props: {
         volumeId: {
             type: Number,
             required: true,
-        }
+        },
     },
-    data: function () {
+    data() {
         return {
             items: [],
             placeholder: '',
@@ -26,27 +28,28 @@ biigle.$component('volumes.components.filterSelectComponent', {
         };
     },
     computed: {
-        value: function () {
+        value() {
             return this.selectedItem ? this.selectedItem.name : '';
         },
     },
     methods: {
-        select: function (item) {
+        select(item) {
             this.selectedItem = item;
         },
-        gotItems: function (response) {
+        gotItems(response) {
             this.items = response.data;
         },
-        parseUsernames: function (response) {
+        parseUsernames(response) {
             response.data = response.data.map(function (user) {
                 user.name = user.firstname + ' ' + user.lastname;
+
                 return user;
             });
 
             return response;
         },
-        submit: function () {
+        submit() {
             this.$emit('select', this.selectedItem);
         },
     },
-});
+};
