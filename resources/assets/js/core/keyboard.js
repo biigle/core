@@ -193,6 +193,7 @@ export default new Vue({
         },
         off(keys, callback, set) {
             keys = this.prepareKeys(keys).join('+');
+            set = set || 'default';
             let listeners = this.listenerSets[set];
             if (listeners && listeners.hasOwnProperty(keys)) {
                 let list = listeners[keys];
