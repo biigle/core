@@ -98,7 +98,7 @@ export default new Vue({
             let promise = AnnotationsApi.attachLabel({id: annotation.id}, label);
             promise.then(function (response) {
                 annotation.labels.unshift(response.data);
-            });
+            }, () => {/* ignore errors here */});
 
             return promise;
         },
