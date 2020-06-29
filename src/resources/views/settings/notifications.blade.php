@@ -22,37 +22,34 @@
 
 @push('scripts')
 <script type="text/javascript">
-    biigle.$viewModel('report-notification-settings', function (element) {
-        new Vue({
-            el: element,
-            mixins: [biigle.$require('core.mixins.loader')],
-            data: {
-                settings: '{!! $user->getSettings('report_notifications', config('reports.notifications.default_settings')) !!}',
-                saved: false,
-                error: false,
+    biigle.$mount('report-notification-settings', {
+        mixins: [biigle.$require('core.mixins.loader')],
+        data: {
+            settings: '{!! $user->getSettings('report_notifications', config('reports.notifications.default_settings')) !!}',
+            saved: false,
+            error: false,
+        },
+        methods: {
+            handleSuccess: function () {
+                this.saved = true;
+                this.error = false;
             },
-            methods: {
-                handleSuccess: function () {
-                    this.saved = true;
-                    this.error = false;
-                },
-                handleError: function (response) {
-                    this.saved = false;
-                    this.error = true;
-                    biigle.$require('messages.store').handleErrorResponse(response);
-                },
+            handleError: function (response) {
+                this.saved = false;
+                this.error = true;
+                biigle.$require('messages').handleErrorResponse(response);
             },
-            watch: {
-                settings: function (settings) {
-                    this.startLoading();
-                    this.$http.post('api/v1/users/my/settings/reports', {
-                            report_notifications: this.settings,
-                        })
-                        .then(this.handleSuccess, this.handleError)
-                        .finally(this.finishLoading);
-                },
+        },
+        watch: {
+            settings: function (settings) {
+                this.startLoading();
+                this.$http.post('api/v1/users/my/settings/reports', {
+                        report_notifications: this.settings,
+                    })
+                    .then(this.handleSuccess, this.handleError)
+                    .finally(this.finishLoading);
             },
-        });
+        },
     });
 </script>
 @endpush
