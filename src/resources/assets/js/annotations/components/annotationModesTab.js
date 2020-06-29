@@ -120,15 +120,11 @@ export default {
         },
     },
     created() {
-        this.restoreKeys.forEach((key) => {
-            this[key] = Settings.get(key);
-        });
+        this.restoreKeys.forEach((key) => this[key] = Settings.get(key));
 
         let mode = UrlParams.get('annotationMode');
         if (mode) {
-            Events.$once('images.change', () => {
-                this.setMode(mode);
-            });
+            Events.$once('images.change', () => this.setMode(mode));
         }
     },
 };

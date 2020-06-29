@@ -53,7 +53,7 @@ class AttachLabelInteraction extends PointerInteraction {
     featuresAtPixel(pixel, map) {
         let found = null;
 
-        let intersectingFeature = map.forEachFeatureAtPixel(pixel, function(feature) {
+        let intersectingFeature = map.forEachFeatureAtPixel(pixel, function (feature) {
             return feature;
         }, this);
 
