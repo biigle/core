@@ -50,11 +50,11 @@ export default Vue.extend({
         restoreFromUrlParams(keys) {
             let params = urlParams.params;
             keys = keys || Object.keys(params);
-            keys.forEach(function (key) {
+            keys.forEach((key) => {
                 if (params.hasOwnProperty(key)) {
                     Vue.set(this.data, key, params[key]);
                 }
-            }, this);
+            });
         },
         watch(key, callback) {
             return this.$watch(`data.${key}`, callback);

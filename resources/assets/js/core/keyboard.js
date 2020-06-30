@@ -80,13 +80,13 @@ export default new Vue({
             }
 
             return keys.slice()
-                .map(function (key) {
+                .map((key) => {
                     if (!this.isKeyIdentifier(key)) {
                         throw `${key} is not a valid key.`;
                     }
 
                     return key.toLowerCase();
-                }, this)
+                })
                 .sort();
         },
         shouldIgnoreTarget(e) {
@@ -150,14 +150,14 @@ export default new Vue({
             let listenerKeys = keys.join('+');
 
             // Also register the listener for the keys of the compatibility map.
-            this.compatibilityMaps.forEach(function (map) {
+            this.compatibilityMaps.forEach((map) => {
                 let compatKeys = keys.map(function (key) {
                     return map.hasOwnProperty(key) ? map[key] : key;
                 });
                 if (listenerKeys !== compatKeys.join('+')) {
                     this.on(compatKeys, callback, priority, set);
                 }
-            }, this);
+            });
 
             priority = priority || 0;
             let listener = {
