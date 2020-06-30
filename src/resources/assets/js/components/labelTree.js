@@ -93,7 +93,6 @@ export default {
         },
         compiledLabels() {
             let compiled = {null: []};
-            let i;
 
             if (this.flat) {
                 this.labels.forEach(function (label) {
