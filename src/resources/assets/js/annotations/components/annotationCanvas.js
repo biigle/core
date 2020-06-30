@@ -371,9 +371,9 @@ export default {
             return feature;
         },
         handleFeatureModifyStart(e) {
-            e.features.getArray().forEach(function (feature) {
+            e.features.getArray().forEach((feature) => {
                 this.featureRevisionMap[feature.getId()] = feature.getRevision();
-            }, this);
+            });
         },
         handleFeatureModifyEnd(e) {
             let annotations = e.features.getArray()

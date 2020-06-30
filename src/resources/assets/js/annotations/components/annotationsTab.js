@@ -116,7 +116,7 @@ export default {
                     top = Math.min(element.offsetTop, top);
                     bottom = Math.max(element.offsetTop + element.offsetHeight, bottom);
                 }
-            }, this);
+            });
 
             // Scroll scrollElement so all list items of selected annotations are
             // visible or scroll to the first list item if all items don't fit inside

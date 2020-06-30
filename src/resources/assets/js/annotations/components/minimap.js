@@ -106,9 +106,9 @@ export default {
             }
         },
         initImageLayer(layers) {
-            layers.getArray().forEach(function (layer) {
+            layers.getArray().forEach((layer) => {
                 this.refreshImageLayer({element: layer});
-            }, this);
+            });
         },
     },
     watch: {
