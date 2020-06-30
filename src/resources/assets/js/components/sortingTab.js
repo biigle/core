@@ -90,7 +90,7 @@ export default {
                 map[sequence[i]] = true;
             }
 
-            for (i = ids.length - 1; i >= 0; i--) {
+            for (let i = ids.length - 1; i >= 0; i--) {
                 if (!map.hasOwnProperty(ids[i])) {
                     return false;
                 }
