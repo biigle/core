@@ -38,11 +38,6 @@ export default {
             },
         },
     },
-    data() {
-        return {
-            //
-        };
-    },
     computed: {
         labelItems() {
             let labels = {};

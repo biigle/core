@@ -95,7 +95,8 @@ export default {
 
             min = min || 1;
             let tmpMeasurement;
-            for (let i = multipliers.length - 1; i >= 0 ; i--) {
+            let i;
+            for (i = multipliers.length - 1; i >= 0 ; i--) {
                 tmpMeasurement = measurement / multipliers[i];
                 if (tmpMeasurement >= min && tmpMeasurement < 1000) {
                     break;
