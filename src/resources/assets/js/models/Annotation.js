@@ -243,7 +243,8 @@ export default Vue.extend({
             if (index !== -1) {
                 this.points.splice(index, 1, points);
             } else {
-                for (let i = this.frames.length - 1; i >= 0; i--) {
+                let i = this.frames.length - 1;
+                for (; i >= 0; i--) {
                     if (this.frames[i] <= frame) {
                         break;
                     }
