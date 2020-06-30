@@ -3,7 +3,6 @@ import AnnotationTrack from './annotationTrack';
 export default {
     template: `<div
         class="annotation-tracks"
-        draggable="true"
         @click="emitDeselect"
         @mousedown="startDragging"
         @mouseup="stopDragging"
