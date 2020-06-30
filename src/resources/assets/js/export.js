@@ -2,10 +2,12 @@ import FilterListComponent from './components/filterListComponent';
 import FilterStore from './stores/filters';
 import ImageGrid from './components/imageGrid';
 import ImageGridImage from './components/imageGridImage';
+import ImageLabelsApi from './api/imageLabels';
 import LabelList from './components/imageLabelList';
 import SortComponent from './components/sortComponent';
 import SorterStore from './stores/sorters';
 
+biigle.$declare('api.imageLabels', ImageLabelsApi);
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);
 biigle.$declare('volumes.components.imageGrid', ImageGrid);
 biigle.$declare('volumes.components.imageGridImage', ImageGridImage);
