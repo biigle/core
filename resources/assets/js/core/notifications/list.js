@@ -31,7 +31,7 @@ let notification = {
         markRead() {
             this.isLoading = true;
             return NotificationsApi.markRead({id: this.item.id}, {})
-                .then((response) => {
+                .then(() => {
                     this.item.read_at = new Date();
                     if (this.removeItem) {
                         Store.remove(this.item.id);

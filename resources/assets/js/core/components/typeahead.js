@@ -45,7 +45,7 @@ export default {
         },
     },
     methods: {
-        selectItem(item, typeahead) {
+        selectItem(item) {
             if (!item) return;
             this.$emit('select', item);
 
