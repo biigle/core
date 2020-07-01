@@ -15,7 +15,8 @@
         "vue"
     ],
     "rules": {
-        "no-prototype-builtins": "off"
+        "no-prototype-builtins": "off",
+        "no-console": ["error", {"allow": ["warn", "error"]}]
     },
     "globals": {
         "biigle": "readonly",
