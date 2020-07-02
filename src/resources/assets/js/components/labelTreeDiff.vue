@@ -79,7 +79,9 @@ export default {
         },
         usedLabels: {
             type: Array,
-            default: [],
+            default() {
+                return [];
+            },
         },
         disabled: {
             type: Boolean,
