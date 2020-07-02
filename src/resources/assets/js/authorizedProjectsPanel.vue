@@ -1,3 +1,4 @@
+<script>
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
 import {LabelTreesApi} from './import';
@@ -13,13 +14,15 @@ export default {
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        labelTree: null,
-        ownProjects: [],
-        authorizedProjects: [],
-        authorizedOwnProjects: [],
-        typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
-        privateId: null,
+    data() {
+        return {
+            labelTree: null,
+            ownProjects: [],
+            authorizedProjects: [],
+            authorizedOwnProjects: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
+            privateId: null,
+        };
     },
     components: {
         typeahead: Typeahead,
@@ -98,3 +101,4 @@ export default {
         this.$once('editing.start', this.fetchOwnProjects);
     },
 };
+</script>

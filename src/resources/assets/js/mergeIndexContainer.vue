@@ -1,3 +1,4 @@
+<script>
 import {Typeahead} from './import';
 
 /**
@@ -7,11 +8,13 @@ export default {
     components: {
         typeahead: Typeahead,
     },
-    data: {
-        mergeUrlTemplate: null,
-        mergeCandidates: [],
-        typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
-        chosenCandidate: null,
+    data() {
+        return {
+            mergeUrlTemplate: null,
+            mergeCandidates: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
+            chosenCandidate: null,
+        };
     },
     computed: {
         cannotContinue() {
@@ -43,3 +46,4 @@ export default {
             .map(this.parseLabelTreeVersionedName);
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 /**
  * An item of the results list of a WoRMS search
  *
@@ -54,3 +55,4 @@ export default {
         },
     },
 };
+</script>

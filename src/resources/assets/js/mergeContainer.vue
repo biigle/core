@@ -1,3 +1,4 @@
+<script>
 import LabelTreeDiff from './components/labelTreeDiff';
 import MergeLabelTreesApi from './api/mergeLabelTrees';
 import {handleErrorResponse} from './import';
@@ -13,13 +14,15 @@ export default {
     components: {
         labelTreeDiff: LabelTreeDiff,
     },
-    data: {
-        baseTree: null,
-        mergeTree: null,
-        usedLabels: [],
-        toAdd: [],
-        toRemove: [],
-        merged: false,
+    data() {
+        return {
+            baseTree: null,
+            mergeTree: null,
+            usedLabels: [],
+            toAdd: [],
+            toRemove: [],
+            merged: false,
+        };
     },
     computed: {
         baseTreeLabels() {
@@ -128,3 +131,4 @@ export default {
         this.usedLabels = biigle.$require('labelTrees.usedLabels');
     },
 };
+</script>

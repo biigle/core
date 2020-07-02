@@ -1,3 +1,4 @@
+<script>
 import LabelTypeahead from '../components/labelTypeahead';
 import {randomColor} from '../utils';
 
@@ -70,3 +71,4 @@ export default {
         },
     },
 };
+</script>

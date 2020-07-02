@@ -1,3 +1,4 @@
+<script>
 import {Typeahead} from '../import';
 
 /**
@@ -13,3 +14,4 @@ export default {
         },
     },
 };
+</script>

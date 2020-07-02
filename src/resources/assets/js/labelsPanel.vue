@@ -1,3 +1,4 @@
+<script>
 import LabelTree from './components/labelTree';
 import ManualLabelForm from './components/manualLabelForm';
 import WormsLabelForm from './components/wormsLabelForm';
@@ -16,12 +17,14 @@ export default {
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        labelTree: null,
-        labels: [],
-        selectedColor: randomColor(),
-        selectedLabel: null,
-        selectedName: '',
+    data() {
+        return {
+            labelTree: null,
+            labels: [],
+            selectedColor: randomColor(),
+            selectedLabel: null,
+            selectedName: '',
+        };
     },
     components: {
         tabs: VueStrap.tabs,
@@ -127,3 +130,4 @@ export default {
         this.labels = biigle.$require('labelTrees.labels');
     },
 };
+</script>

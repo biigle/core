@@ -1,3 +1,4 @@
+<script>
 import {handleErrorResponse} from './import';
 import {LabelTreeVersionApi} from './import';
 import {LoaderMixin} from './import';
@@ -7,10 +8,12 @@ import {LoaderMixin} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        doi: '',
-        doiSaved: false,
-        version: null,
+    data() {
+        return {
+            doi: '',
+            doiSaved: false,
+            version: null,
+        };
     },
     computed: {
         doiUrl() {
@@ -37,3 +40,4 @@ export default {
         this.version = biigle.$require('labelTrees.version');
     },
 };
+</script>

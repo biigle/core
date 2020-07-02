@@ -1,3 +1,4 @@
+<script>
 import LabelFormComponent from '../mixins/labelFormComponent';
 
 /**
@@ -22,3 +23,4 @@ export default {
         },
     },
 };
+</script>

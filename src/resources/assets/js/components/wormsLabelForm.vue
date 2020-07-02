@@ -1,3 +1,4 @@
+<script>
 import LabelFormComponent from '../mixins/labelFormComponent';
 import WormsResultItem from './wormsResultItem';
 import {handleErrorResponse} from '../import';
@@ -86,3 +87,4 @@ export default {
         this.worms = biigle.$require('labelTrees.wormsLabelSource');
     },
 };
+</script>

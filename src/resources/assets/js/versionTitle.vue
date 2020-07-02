@@ -1,3 +1,4 @@
+<script>
 import {handleErrorResponse} from './import';
 import {LabelTreeVersionApi} from './import';
 import {LoaderMixin} from './import';
@@ -8,9 +9,11 @@ import {Messages} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        version: null,
-        redirectUrl: null,
+    data() {
+        return {
+            version: null,
+            redirectUrl: null,
+        };
     },
     methods: {
         deleteVersion() {
@@ -28,3 +31,4 @@ export default {
         this.redirectUrl = biigle.$require('labelTrees.redirectUrl');
     },
 };
+</script>

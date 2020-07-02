@@ -1,3 +1,4 @@
+<script>
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
 import {LabelTreesApi} from './import';
@@ -12,14 +13,16 @@ export default {
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        labelTree: null,
-        name: null,
-        description: null,
-        visibility_id: null,
-        userId: null,
-        redirectUrl: null,
-        privateVisibilityId: null,
+    data() {
+        return {
+            labelTree: null,
+            name: null,
+            description: null,
+            visibility_id: null,
+            userId: null,
+            redirectUrl: null,
+            privateVisibilityId: null,
+        };
     },
     computed: {
         isPrivate() {
@@ -103,3 +106,4 @@ export default {
         this.visibility_id = this.labelTree.visibility_id;
     },
 };
+</script>

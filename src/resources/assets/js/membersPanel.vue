@@ -1,3 +1,4 @@
+<script>
 import {handleErrorResponse} from './import';
 import {LabelTreesApi} from './import';
 import {LoaderMixin} from './import';
@@ -8,12 +9,14 @@ import {MembersPanel} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        labelTree: null,
-        members: [],
-        roles: [],
-        defaultRole: null,
-        userId: null,
+    data() {
+        return {
+            labelTree: null,
+            members: [],
+            roles: [],
+            defaultRole: null,
+            userId: null,
+        };
     },
     components: {
         membersPanel: MembersPanel,
@@ -64,3 +67,4 @@ export default {
         this.userId = biigle.$require('labelTrees.userId');
     },
 };
+</script>
