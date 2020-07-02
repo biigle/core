@@ -23,7 +23,7 @@ export default {
         },
     },
     watch: {
-        mousePosition(position) {
+        mousePosition() {
             throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
         },
     },

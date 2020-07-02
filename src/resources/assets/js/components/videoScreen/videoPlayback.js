@@ -122,10 +122,10 @@ export default {
         this.video.addEventListener('seeked', this.renderVideo);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
-        let mapPromise = new Vue.Promise((resolve, reject) => {
+        let mapPromise = new Vue.Promise((resolve) => {
             this.$once('map-created', resolve);
         });
-        let metadataPromise = new Vue.Promise((resolve, reject) => {
+        let metadataPromise = new Vue.Promise((resolve) => {
             this.video.addEventListener('loadedmetadata', resolve);
         });
         Vue.Promise.all([mapPromise, metadataPromise])

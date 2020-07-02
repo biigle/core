@@ -314,7 +314,7 @@ export default {
                 this.currentTimelineOffset = this.timelineOffsetReference - e.clientY;
             }
         },
-        finishUpdateTimelineHeight(e) {
+        finishUpdateTimelineHeight() {
             if (this.resizingTimeline) {
                 this.resizingTimeline = false;
                 // Use the actual element height to calculate the new offset because
@@ -365,7 +365,7 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
         this.startLoading();
-        let videoPromise = new Vue.Promise((resolve, reject) => {
+        let videoPromise = new Vue.Promise((resolve) => {
             this.video.addEventListener('canplay', resolve);
         });
         let annotationPromise = VideoAnnotationApi.query({id: this.videoId});

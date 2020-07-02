@@ -112,7 +112,7 @@ export default {
                 this.map.addInteraction(this.shiftClickSelectInteraction);
             }
         },
-        initShiftSelectInteraction(map) {
+        initShiftSelectInteraction() {
             this.shiftClickSelectInteraction = new SelectInteraction({
                 condition(e) {
                     return clickCondition(e) && shiftKeyOnlyCondition(e);

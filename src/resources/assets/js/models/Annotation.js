@@ -301,7 +301,7 @@ export default Vue.extend({
         },
     },
     watch: {
-        points(points) {
+        points() {
             this.revision += 1;
         },
     },
