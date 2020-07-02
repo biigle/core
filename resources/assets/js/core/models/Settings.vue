@@ -1,3 +1,4 @@
+<script>
 import {debounce, urlParams} from './../utils';
 
 /**
@@ -67,3 +68,4 @@ export default Vue.extend({
         }
     },
 });
+</script>

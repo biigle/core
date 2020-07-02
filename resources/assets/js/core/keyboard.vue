@@ -1,3 +1,4 @@
+<script>
 /**
  * Keyboard event handler.
  *
@@ -217,3 +218,4 @@ export default new Vue({
         window.addEventListener('focus', this.clearPressedKeys);
     },
 });
+</script>

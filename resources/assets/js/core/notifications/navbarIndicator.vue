@@ -1,3 +1,4 @@
+<script>
 import Store from './store';
 
 /**
@@ -29,3 +30,4 @@ export default {
         },
     }
 };
+</script>

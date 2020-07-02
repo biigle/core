@@ -1,3 +1,4 @@
+<script>
 import LoaderComponent from '../components/loader';
 import LoaderBlockComponent from '../components/loaderBlock';
 import Messages from './../messages/store';
@@ -41,3 +42,4 @@ export default {
         },
     },
 };
+</script>

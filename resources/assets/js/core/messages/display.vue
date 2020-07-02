@@ -1,3 +1,4 @@
+<script>
 import Store from './store';
 
 var message = {
@@ -47,8 +48,10 @@ export default {
     components: {
         message: message,
     },
-    data: {
-        messages: Store.all,
+    data() {
+        return {
+            messages: Store.all,
+        };
     },
     mounted() {
         let message = biigle.$require('staticMessage');
@@ -60,3 +63,4 @@ export default {
         }
     },
 };
+</script>

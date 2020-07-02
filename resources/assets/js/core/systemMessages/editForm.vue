@@ -1,3 +1,4 @@
+<script>
 /**
  * The a form that edits/creates a system message
  */
@@ -7,8 +8,10 @@
 // validation.
 
 export default {
-    data: {
-        body: '',
+    data() {
+        return {
+            body: '',
+        };
     },
     beforeMount() {
         let element = document.getElementById('system-messages-edit-form');
@@ -18,3 +21,4 @@ export default {
         }
     },
 };
+</script>

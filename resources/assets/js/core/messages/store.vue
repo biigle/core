@@ -1,3 +1,4 @@
+<script>
 import {exitFullscreen} from '../utils';
 
 /**
@@ -79,3 +80,4 @@ export default new Vue({
         },
     },
 });
+</script>

@@ -1,3 +1,4 @@
+<script>
 /**
  * The InAppNotification store.
  *
@@ -38,3 +39,4 @@ export default new Vue({
         },
     },
 });
+</script>

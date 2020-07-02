@@ -1,3 +1,4 @@
+<script>
 /**
  * A mixin for view models that have an editing state
  *
@@ -27,3 +28,4 @@ export default {
         },
     },
 };
+</script>

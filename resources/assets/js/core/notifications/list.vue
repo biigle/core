@@ -1,3 +1,4 @@
+<script>
 import NotificationsApi from './../api/notifications';
 import Store from './store';
 import Messages from './../messages/store';
@@ -59,8 +60,10 @@ export default {
     components: {
         notification: notification
     },
-    data: {
-        notifications: [],
+    data() {
+        return {
+            notifications: [],
+        };
     },
     computed: {
         hasNotifications() {
@@ -75,3 +78,4 @@ export default {
         this.notifications = Store.all;
     },
 };
+</script>
