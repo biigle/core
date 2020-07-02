@@ -16,10 +16,11 @@ jobs:
       with:
         fetch-depth: 1
 
-    - name: Install dependencies
-      run: npm install
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+        registry-url: https://npm.pkg.github.com/
+        scope: '@biigle'
 
     - name: Run ESLint
       run: npm run lint
