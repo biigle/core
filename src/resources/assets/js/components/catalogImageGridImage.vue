@@ -1,5 +1,15 @@
-import {ImageGridImage} from '../import';
+<template>
+    <figure class="image-grid__image image-grid__image--catalog" :class="classObject">
+        <a v-if="showAnnotationLink" :href="showAnnotationLink" target="_blank" title="Show the annotation in the annotation tool">
+            <img :src="url || emptyUrl" @error="showEmptyImage">
+        </a>
+        <img v-else :src="url || emptyUrl" @error="showEmptyImage">
+    </figure>
+</template>
+
+<script>
 import AnnotationPatch from '../mixins/annotationPatch';
+import {ImageGridImage} from '../import';
 
 /**
  * A variant of the image grid image used for the annotation catalog
@@ -11,12 +21,6 @@ export default {
         ImageGridImage,
         AnnotationPatch,
     ],
-    template: `<figure class="image-grid__image image-grid__image--catalog" :class="classObject">
-        <a v-if="showAnnotationLink" :href="showAnnotationLink" target="_blank" title="Show the annotation in the annotation tool">
-            <img :src="url || emptyUrl" @error="showEmptyImage">
-        </a>
-        <img v-else :src="url || emptyUrl" @error="showEmptyImage">
-    </figure>`,
     data() {
         return {
             showAnnotationRoute: null,
@@ -42,3 +46,5 @@ export default {
         this.showAnnotationRoute = biigle.$require('annotationCatalog.showAnnotationRoute');
     },
 };
+</script>
+

@@ -1,17 +1,5 @@
-import {ImageGridImage} from '../import';
-import AnnotationPatch from '../mixins/annotationPatch';
-
-/**
- * A variant of the image grid image used for the relabel step of Largo
- *
- * @type {Object}
- */
-export default {
-    mixins: [
-        ImageGridImage,
-        AnnotationPatch,
-    ],
-    template: `<figure class="image-grid__image image-grid__image--relabel" :class="classObject" :title="title">
+<template>
+    <figure class="image-grid__image image-grid__image--relabel" :class="classObject" :title="title">
         <div v-if="selectable" class="image-icon">
             <i class="fas" :class="iconClass"></i>
         </div>
@@ -25,7 +13,23 @@ export default {
             <span class="new-label__color" :style="newLabelStyle"></span>
             <span class="new-label__name" v-text="image.newLabel.name"></span>
         </div>
-    </figure>`,
+    </figure>
+</template>
+
+<script>
+import AnnotationPatch from '../mixins/annotationPatch';
+import {ImageGridImage} from '../import';
+
+/**
+ * A variant of the image grid image used for the relabel step of Largo
+ *
+ * @type {Object}
+ */
+export default {
+    mixins: [
+        ImageGridImage,
+        AnnotationPatch,
+    ],
     data() {
         return {
             showAnnotationRoute: null,
@@ -62,3 +66,4 @@ export default {
         this.showAnnotationRoute = biigle.$require('largo.showAnnotationRoute');
     },
 };
+</script>
