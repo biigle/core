@@ -22,22 +22,22 @@ class AttachLabelInteraction extends PointerInteraction {
                 element.style.cursor = '';
             }
         }
-    };
+    }
 
     // the label should be attached on mouseup but the event works only with the
     // pointer interaction if mousedown returned true before
     handleDownEvent(event) {
         this.currentFeature = this.featuresAtPixel(event.pixel, event.map);
         return !!this.currentFeature;
-    };
+    }
 
-    handleUpEvent(event) {
+    handleUpEvent() {
         if (this.currentFeature && this.currentFeature.get('annotation')) {
             this.dispatchEvent({type: 'attach', feature: this.currentFeature});
         }
 
         this.currentFeature = undefined;
-    };
+    }
 
     handleMoveEvent(event) {
         let elem = event.map.getTargetElement();
@@ -48,7 +48,7 @@ class AttachLabelInteraction extends PointerInteraction {
         } else {
             elem.style.cursor = '';
         }
-    };
+    }
 
     featuresAtPixel(pixel, map) {
         let found = null;
@@ -62,7 +62,7 @@ class AttachLabelInteraction extends PointerInteraction {
         }
 
         return found;
-    };
+    }
 
     handlesFeature(feature) {
         if (this.features) {
@@ -70,7 +70,7 @@ class AttachLabelInteraction extends PointerInteraction {
         }
 
         return false;
-    };
-};
+    }
+}
 
 export default AttachLabelInteraction;

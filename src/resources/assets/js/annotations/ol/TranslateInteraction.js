@@ -50,7 +50,7 @@ class Translate extends BaseTranslate {
             Keyboard.on('ArrowRight', this.translateRight, 10);
             Keyboard.on('ArrowDown', this.translateDown, 10);
         }
-    };
+    }
 
     translate(deltaX, deltaY) {
         if (this.features && this.features.getLength() > 0) {
@@ -74,7 +74,7 @@ class Translate extends BaseTranslate {
         }
         // if there are no features, pass on the event
         return true;
-    };
-};
+    }
+}
 
 export default Translate;

@@ -131,7 +131,7 @@ class MagicWandInteraction extends PointerInteraction {
      */
     getHighDpiScaling() {
         return this.snapshot.height / this.map.getSize()[1];
-    };
+    }
 
     /**
      * Convert OpenLayers coordinates on the image layer to coordinates on the snapshot.
@@ -151,7 +151,7 @@ class MagicWandInteraction extends PointerInteraction {
                 height - Math.round((point[1] - extent[1]) * factor),
             ];
         });
-    };
+    }
 
     /**
      * Convert coordinates on the snapshot to OpenLayers coordinates on the image layer.
@@ -171,7 +171,7 @@ class MagicWandInteraction extends PointerInteraction {
                 Math.round(((height - point[1]) * factor) + extent[1]),
             ];
         });
-    };
+    }
 
     /**
      * Convert MagicWand point objects to OpenLayers point arrays.
@@ -184,12 +184,12 @@ class MagicWandInteraction extends PointerInteraction {
         return points.map(function (point) {
             return [point.x, point.y];
         });
-    };
+    }
 
     /**
      * Finish drawing of a sketch.
      */
-    handleUpEvent(e) {
+    handleUpEvent() {
         this.currentThreshold = this.colorThreshold;
 
         if (this.isShowingCross) {
@@ -205,7 +205,7 @@ class MagicWandInteraction extends PointerInteraction {
         this.isShowingCross = false;
 
         return false;
-    };
+    }
 
     /**
      * Start drawing of a sketch.
@@ -222,7 +222,7 @@ class MagicWandInteraction extends PointerInteraction {
         this.isShowingPoint = false;
 
         return true;
-    };
+    }
 
     /**
      * Update the currently drawn sketch.
@@ -263,7 +263,7 @@ class MagicWandInteraction extends PointerInteraction {
                 this.drawSketch();
             }
         }
-    };
+    }
 
     /**
      * Update the target point.
@@ -276,7 +276,7 @@ class MagicWandInteraction extends PointerInteraction {
             this.isShowingCross = false;
         }
         this.indicatorPoint.getGeometry().setCoordinates(e.coordinate);
-    };
+    }
 
     /**
      * Update event listeners depending on the active state of the interaction.
@@ -295,7 +295,7 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchFeature = null;
             }
         }
-    };
+    }
 
     /**
      * Update the snapshot of the image layer.
@@ -309,7 +309,7 @@ class MagicWandInteraction extends PointerInteraction {
             this.map.renderSync();
             this.updatingSnapshot = false;
         }
-    };
+    }
 
     /**
      * Update the snapshot canvas.
@@ -320,14 +320,14 @@ class MagicWandInteraction extends PointerInteraction {
         this.snapshotContext.drawImage(e.context.canvas, 0, 0);
         this.snapshot = this.snapshotContext.getImageData(0, 0, this.snapshotCanvas.width, this.snapshotCanvas.height);
         this.snapshot.bytes = 4;
-    };
+    }
 
     /**
      * Update the layer to get the image information from.
      */
     setLayer(layer) {
         this.layer = layer;
-    };
+    }
 
     /**
      * Recompute the currently drawn sketch.
@@ -374,7 +374,7 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchSource.addFeature(this.sketchFeature);
             }
         }
-    };
-};
+    }
+}
 
 export default MagicWandInteraction;

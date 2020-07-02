@@ -507,7 +507,7 @@ export default {
                 this.map.render();
             }
         },
-        handleRegularImage(image, oldImage) {
+        handleRegularImage(image) {
             if (!image) {
                 this.imageLayer.setSource(null);
             } else {
@@ -519,7 +519,7 @@ export default {
                 }));
             }
         },
-        handleTiledImage(image, oldImage) {
+        handleTiledImage(image) {
             if (!image) {
                 this.tiledImageLayer.setSource(null);
             } else {

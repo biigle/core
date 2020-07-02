@@ -481,7 +481,7 @@ export default {
         handleOpenedTab(name) {
             Settings.set('openTab', name);
         },
-        handleClosedTab(name) {
+        handleClosedTab() {
             Settings.delete('openTab');
         },
         handleLoadingError(message) {
@@ -550,7 +550,7 @@ export default {
                 this.userUpdatedVolareResolution = false;
             }
         },
-        mapResolution(resolution) {
+        mapResolution() {
             if (this.isVolareAnnotationMode) {
                 this.userUpdatedVolareResolution = true;
             }

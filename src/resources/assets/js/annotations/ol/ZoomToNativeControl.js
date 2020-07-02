@@ -48,8 +48,8 @@ class ZoomToNative extends Control {
             }
 
         }
-    };
+    }
 
-};
+}
 
 export default ZoomToNative;

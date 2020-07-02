@@ -72,17 +72,9 @@ let editingStroke = new Stroke({
     lineDash: [5],
 });
 
-let defaultFill = new Fill({
-    color: colors.blue,
-});
-
-let selectedFill = new Fill({
-    color: colors.orange,
-});
-
 export default {
     colors: colors,
-    features(feature, resolution) {
+    features(feature) {
         let color = feature.get('color');
         color = color ? ('#' + color) : colors.blue;
 

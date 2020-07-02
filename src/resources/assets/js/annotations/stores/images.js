@@ -1,9 +1,9 @@
+import fx from '../vendor/glfx';
 import {Events} from '../import';
 
 /**
 * Store for the images of the annotation tool
 */
-let fx = require('../vendor/glfx');
 let fxCanvas;
 
 // This canvas is used as workaround to the auto-rotation of images according to EXIF
@@ -24,10 +24,10 @@ try {
     var fxTexture = null;
     var loadedImageTexture = null;
 } catch (error) {
-    console.log('WebGL not supported. Color adjustment disabled.');
+    console.warn('WebGL not supported. Color adjustment disabled.');
 }
 
-window.addEventListener('beforeunload', function (e) {
+window.addEventListener('beforeunload', function () {
     // Make sure the texture is destroyed when the page is left.
     // The browser may take its time to garbage collect it and it may cause
     // crashes due to lack of memory if not explicitly destroyed like this.
@@ -106,7 +106,7 @@ export default new Vue({
             // Check supported texture size.
             let size = this.supportedTextureSize;
             if (size < image.width || size < image.height) {
-                console.log(`Insufficient WebGL texture size. Required: ${image.width}x${image.height}, available: ${size}x${size}. Color adjustment disabled.`);
+                console.warn(`Insufficient WebGL texture size. Required: ${image.width}x${image.height}, available: ${size}x${size}. Color adjustment disabled.`);
                 this.supportsColorAdjustment = false;
                 return;
             }
@@ -117,7 +117,7 @@ export default new Vue({
             tmpCanvas.width = image.width;
             tmpCanvas.height = image.height;
             if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
-                console.log('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
+                console.warn('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
                 this.supportsColorAdjustment = false;
                 return;
             }
@@ -297,7 +297,6 @@ export default new Vue({
             // resources.
             if (cachedIds.length > this.maxCacheSize) {
                 let id = cachedIds.shift();
-                let image = this.cache[id];
                 delete this.cache[id];
             }
         },
