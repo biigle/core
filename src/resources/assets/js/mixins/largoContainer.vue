@@ -1,3 +1,4 @@
+<script>
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import {Events} from '../import';
@@ -22,13 +23,15 @@ export default {
         dismissImageGrid: DismissImageGrid,
         relabelImageGrid: RelabelImageGrid,
     },
-    data: {
-        labelTrees: [],
-        step: 0,
-        selectedLabel: null,
-        annotationsCache: {},
-        lastSelectedImage: null,
-        forceChange: false,
+    data() {
+        return {
+            labelTrees: [],
+            step: 0,
+            selectedLabel: null,
+            annotationsCache: {},
+            lastSelectedImage: null,
+            forceChange: false,
+        };
     },
     computed: {
         isInDismissStep() {
@@ -270,3 +273,4 @@ export default {
         });
     },
 };
+</script>

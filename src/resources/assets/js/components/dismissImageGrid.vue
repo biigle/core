@@ -1,3 +1,4 @@
+<script>
 import {ImageGrid} from '../import';
 import Image from './dismissImageGridImage';
 
@@ -12,3 +13,4 @@ export default {
         imageGridImage: Image,
     },
 };
+</script>

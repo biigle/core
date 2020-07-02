@@ -1,3 +1,4 @@
+<script>
 import AnnotationPatch from '../mixins/annotationPatch';
 
 /**
@@ -51,3 +52,4 @@ export default {
         this.url = this.getUrl();
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 export default {
     computed: {
         patchPrefix() {
@@ -12,3 +13,4 @@ export default {
         },
     },
 };
+</script>

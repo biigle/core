@@ -1,3 +1,4 @@
+<script>
 import LargoContainer from './mixins/largoContainer';
 import VolumesApi from './api/volumes';
 
@@ -6,11 +7,13 @@ import VolumesApi from './api/volumes';
  */
 export default {
     mixins: [LargoContainer],
-    data: {
-        volumeId: null,
-        labelTrees: [],
+    data() {
+        return {
+            volumeId: null,
+            labelTrees: [],
+        };
     },
-    methods: {
+        methods: {
         queryAnnotations(label) {
             return VolumesApi.queryAnnotations({id: this.volumeId, label_id: label.id});
         },
@@ -23,3 +26,4 @@ export default {
         this.labelTrees = biigle.$require('largo.labelTrees');
     },
 };
+</script>

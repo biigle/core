@@ -1,13 +1,16 @@
+<script>
 import {Events} from './import';
 
 /**
  * The dynamic part of the Largo breadcrumbs in the navbar
  */
 export default {
-    data: {
-        step: 0,
-        count: 0,
-        dismissedCount: 0,
+    data() {
+        return {
+            step: 0,
+            count: 0,
+            dismissedCount: 0,
+        };
     },
     computed: {
         shownCount() {
@@ -41,3 +44,4 @@ export default {
         Events.$on('step', this.updateStep);
     },
 };
+</script>

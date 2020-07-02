@@ -1,8 +1,9 @@
+<script>
 import {ImageGrid} from '../import';
-import Image from './relabelImageGridImage';
+import Image from './catalogImageGridImage';
 
 /**
- * A variant of the image grid used for the relabel step of Largo
+ * A variant of the image grid used for the annotation catalog
  *
  * @type {Object}
  */
@@ -12,3 +13,4 @@ export default {
         imageGridImage: Image,
     },
 };
+</script>

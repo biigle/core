@@ -1,3 +1,4 @@
+<script>
 import ImageGrid from './components/catalogImageGrid';
 import LabelsApi from './api/labels';
 import LargoContainer from './mixins/largoContainer';
@@ -10,8 +11,10 @@ export default {
     components: {
         catalogImageGrid: ImageGrid,
     },
-    data: {
-        labelTrees: [],
+    data() {
+        return {
+            labelTrees: [],
+        };
     },
     methods: {
         queryAnnotations(label) {
@@ -23,3 +26,4 @@ export default {
         this.labelTrees = [labelTree];
     },
 };
+</script>
