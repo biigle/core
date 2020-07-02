@@ -1,12 +1,16 @@
-import {Typeahead} from '../import';
-
-export default {
-    template: `<typeahead
+<template>
+    <typeahead
             :items="items"
             :placeholder="placeholder"
             :value="selectedItemName"
             @select="select"
-        ></typeahead>`,
+        ></typeahead>
+</template>
+
+<script>
+import {Typeahead} from '../import';
+
+export default {
     components: {
         typeahead: Typeahead,
     },
@@ -49,3 +53,4 @@ export default {
         this.$mount();
     },
 };
+</script>

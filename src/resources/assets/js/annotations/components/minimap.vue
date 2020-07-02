@@ -1,3 +1,8 @@
+<template>
+    <div class="minimap"></div>
+</template>
+
+<script>
 import Feature from '@biigle/ol/Feature';
 import Map from '@biigle/ol/Map';
 import Styles from '../stores/styles';
@@ -13,7 +18,6 @@ import {getCenter} from '@biigle/ol/extent';
  * @type {Object}
  */
 export default {
-    template: '<div class="minimap"></div>',
     props: {
         extent: {
             type: Array,
@@ -159,3 +163,4 @@ export default {
         map.getLayers().un('add', this.refreshImageLayer);
     },
 };
+</script>

@@ -1,6 +1,5 @@
-export default {
-    template:
-    `<form
+<template>
+    <form
         class="annotations-tab__filter form-inline"
         @submit.prevent
         >
@@ -36,7 +35,11 @@ export default {
                 >
                     <i class="fa fa-times"></i>
             </button>
-    </form>`,
+    </form>
+</template>
+
+<script>
+export default {
     props: {
         annotationFilters: {
             type: Array,
@@ -89,3 +92,5 @@ export default {
         },
     },
 };
+</script>
+

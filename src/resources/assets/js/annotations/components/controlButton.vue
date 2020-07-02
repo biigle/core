@@ -1,10 +1,5 @@
-/**
- * A generic control button of the annotation canvas
- *
- * @type {Object}
- */
-export default {
-    template: `<span
+<template>
+    <span
         class="control-button btn"
         :title="title"
         :class="classObject"
@@ -20,7 +15,16 @@ export default {
             >
             <slot></slot>
         </span>
-    </span>`,
+    </span>
+</template>
+
+<script>
+/**
+ * A generic control button of the annotation canvas
+ *
+ * @type {Object}
+ */
+export default {
     props: {
         title: {
             type: String,
@@ -120,3 +124,4 @@ export default {
         }
     },
 };
+</script>

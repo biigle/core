@@ -1,3 +1,16 @@
+<template>
+    <div class="annotation-tooltip">
+        <ul class="annotation-tooltip__annotations">
+            <li v-for="names in annotationLabels">
+                <ul class="annotation-tooltip__labels">
+                    <li v-for="name in names" v-text="name"></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
 import AnnotationTooltip from '../mixins/annotationTooltip';
 
 /**
@@ -7,16 +20,6 @@ import AnnotationTooltip from '../mixins/annotationTooltip';
  */
 export default {
     mixins: [AnnotationTooltip],
-    template:
-    `<div class="annotation-tooltip">
-        <ul class="annotation-tooltip__annotations">
-            <li v-for="names in annotationLabels">
-                <ul class="annotation-tooltip__labels">
-                    <li v-for="name in names" v-text="name"></li>
-                </ul>
-            </li>
-        </ul>
-    </div>`,
     computed: {
         annotationLabels() {
             return this.annotations.map(function (annotation) {
@@ -27,3 +30,4 @@ export default {
         },
     },
 };
+</script>

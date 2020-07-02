@@ -1,6 +1,5 @@
-export default {
-    template:
-    `<li
+<template>
+    <li
         class="annotations-tab-item__sub-item"
         :class="classObject"
         :data-annotation-id="annotation.id"
@@ -22,7 +21,11 @@ export default {
                 ></span>
             <span v-text="username"></span>
         </li>
-    </li>`,
+    </li>
+</template>
+
+<script>
+export default {
     props: {
         annotation: {
             type: Object,
@@ -66,3 +69,5 @@ export default {
         },
     },
 };
+</script>
+

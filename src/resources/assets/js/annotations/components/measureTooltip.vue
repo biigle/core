@@ -1,3 +1,12 @@
+<template>
+    <div class="annotation-tooltip">
+        <ul class="annotation-tooltip__annotations">
+            <li v-for="measure in measuredGeometries" v-text="measure"></li>
+        </ul>
+    </div>
+</template>
+
+<script>
 import AnnotationTooltip from '../mixins/annotationTooltip';
 import MeasureComponent from '../mixins/measureComponent';
 import Polygon from '@biigle/ol/geom/Polygon';
@@ -10,11 +19,6 @@ import LineString from '@biigle/ol/geom/LineString';
  * @type {Object}
  */
 export default {
-    template: `<div class="annotation-tooltip">
-        <ul class="annotation-tooltip__annotations">
-            <li v-for="measure in measuredGeometries" v-text="measure"></li>
-        </ul>
-    </div>`,
     mixins: [
         AnnotationTooltip,
         MeasureComponent,
@@ -120,3 +124,4 @@ export default {
         },
     }
 };
+</script>

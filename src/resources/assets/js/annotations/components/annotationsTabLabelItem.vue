@@ -1,8 +1,5 @@
-import AnnotationItem from './annotationsTabAnnotationItem';
-
-export default {
-    template:
-    `<li
+<template>
+    <li
         class="annotations-tab-item"
         :class="classObject"
         :title="title"
@@ -34,7 +31,13 @@ export default {
                     @focus="emitFocus"
                     ></annotation-item>
             </ul>
-    </li>`,
+    </li>
+</template>
+
+<script>
+import AnnotationItem from './annotationsTabAnnotationItem';
+
+export default {
     components: {
         annotationItem: AnnotationItem,
     },
@@ -123,3 +126,4 @@ export default {
         },
     },
 };
+</script>

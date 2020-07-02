@@ -1,14 +1,18 @@
+<template>
+    <div
+        class="mouse-position-indicator"
+        title="Mouse position in the image"
+        v-text="positionText"
+        ></div>
+</template>
+
+<script>
 /**
  * The mouse position indicator of the canvas element
  *
  * @type {Object}
  */
 export default {
-    template: `<div
-        class="mouse-position-indicator"
-        title="Mouse position in the image"
-        v-text="positionText"
-        ></div>`,
     props: {
         position: {
             type: Array,
@@ -21,3 +25,4 @@ export default {
         },
     },
 };
+</script>
