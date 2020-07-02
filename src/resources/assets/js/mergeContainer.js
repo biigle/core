@@ -116,7 +116,7 @@ export default {
         },
         handleMergeError(response) {
             this.finishLoading();
-            handleResponseError(response);
+            handleErrorResponse(response);
         },
         handleMergeSuccess() {
             this.merged = true;

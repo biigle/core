@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         cleanDoi(doi) {
-            return doi.replace(/^https?\:\/\/doi\.org\//, '');
+            return doi.replace(/^https?:\/\/doi\.org\//, '');
         },
         saveDoi() {
             this.doi = this.cleanDoi(this.doi);
