@@ -4,7 +4,7 @@
             <span v-if="editing && !isOwnUser">
                 <form class="form-inline">
                     <select class="form-control input-sm" :title="'Change the role of ' + name" v-model="roleId" @change="changeRole">
-                        <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
+                        <option v-for="role in roles" :key="role.id" :value="role.id" v-text="role.name"></option>
                     </select>
                     <button type="button" class="btn btn-default btn-sm" :title="'Remove ' + name" @click="removeMember">Remove</button>
                 </form>
