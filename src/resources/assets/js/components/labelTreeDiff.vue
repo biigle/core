@@ -1,12 +1,5 @@
-import Row from './labelTreeDiffRow';
-
-/**
- * A component that displays a single label of a label tree.
- *
- * @type {Object}
- */
-export default {
-    template: `<div class="label-tree-diff">
+<template>
+    <div class="label-tree-diff">
         <div v-if="hasDiff">
             <button
                 class="btn btn-default"
@@ -47,7 +40,18 @@ export default {
         <div v-else class="text-center lead">
             The label trees are identical.
         </div>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import Row from './labelTreeDiffRow';
+
+/**
+ * A component that displays a single label of a label tree.
+ *
+ * @type {Object}
+ */
+export default {
     components: {
         labelTreeDiffRow: Row,
     },
@@ -391,3 +395,4 @@ export default {
         this.diff = diff;
     },
 };
+</script>

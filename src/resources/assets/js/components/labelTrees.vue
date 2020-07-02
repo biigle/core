@@ -1,3 +1,17 @@
+<template>
+    <div class="label-trees">
+        <div v-if="typeahead || clearable" class="label-trees__head">
+            <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
+            <typeahead v-if="typeahead" :items="labels" :template="typeaheadTemplate" @select="handleSelect" placeholder="Find label"></typeahead>
+        </div>
+        <div class="label-trees__body">
+            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
+        </div>
+    </div>
+</template>
+
+<script>
 import Typeahead from './labelTypeahead';
 import LabelTree from './labelTree';
 import {Keyboard} from '../import';
@@ -8,16 +22,6 @@ import {Keyboard} from '../import';
  * @type {Object}
  */
 export default {
-    template: `<div class="label-trees">
-        <div v-if="typeahead || clearable" class="label-trees__head">
-            <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
-            <typeahead v-if="typeahead" :items="labels" :template="typeaheadTemplate" @select="handleSelect" placeholder="Find label"></typeahead>
-        </div>
-        <div class="label-trees__body">
-            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
-            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
-        </div>
-    </div>`,
     components: {
         typeahead: Typeahead,
         labelTree: LabelTree,
@@ -221,3 +225,4 @@ export default {
         }
     },
 };
+</script>

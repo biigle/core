@@ -1,11 +1,5 @@
-/**
- * A component that displays a single label of a label tree.
- *
- * @type {Object}
- */
-export default {
-    name: 'label-tree-label',
-    template: `<li class="label-tree-label" :class="classObject">
+<template>
+    <li class="label-tree-label" :class="classObject">
         <div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
             <span v-if="editing">
                 <input type="color" class="form-control input-sm label-tree-color-input" v-model="newColor" />
@@ -30,7 +24,17 @@ export default {
         <ul v-if="expandable && label.open" class="label-tree__list">
             <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
         </ul>
-    </li>`,
+    </li>
+</template>
+
+<script>
+/**
+ * A component that displays a single label of a label tree.
+ *
+ * @type {Object}
+ */
+export default {
+    name: 'label-tree-label',
     data() {
         return {
             hover: false,
@@ -183,3 +187,4 @@ export default {
         },
     },
 };
+</script>

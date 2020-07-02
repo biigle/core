@@ -1,10 +1,5 @@
-/**
- * A component that displays a single row of a label tree diff.
- *
- * @type {Object}
- */
-export default {
-    template: `<tr class="label-tree-diff-row" :class="classObject">
+<template>
+    <tr class="label-tree-diff-row" :class="classObject">
         <td class="label-tree-diff-row__button">
             <button
                 v-if="labelToAdd"
@@ -49,7 +44,16 @@ export default {
                 </div>
             </div>
         </td>
-    </tr>`,
+    </tr>
+</template>
+
+<script>
+/**
+ * A component that displays a single row of a label tree diff.
+ *
+ * @type {Object}
+ */
+export default {
     props: {
         item: {
             type: Object,
@@ -138,3 +142,4 @@ export default {
         },
     },
 };
+</script>

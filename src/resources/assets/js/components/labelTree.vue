@@ -1,12 +1,5 @@
-import LabelTreeLabel from './labelTreeLabel';
-
-/**
- * A component that displays a label tree. The labels can be searched and selected.
- *
- * @type {Object}
- */
-export default {
-    template: `<div class="label-tree">
+<template>
+    <div class="label-tree">
         <h4 class="label-tree__title" v-if="showTitle">
             <button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">
                 <span v-if="collapsed" class="fa fa-chevron-down" aria-hidden="true"></span>
@@ -18,7 +11,18 @@ export default {
             <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import LabelTreeLabel from './labelTreeLabel';
+
+/**
+ * A component that displays a label tree. The labels can be searched and selected.
+ *
+ * @type {Object}
+ */
+export default {
     data() {
         return {
             collapsed: false
@@ -319,3 +323,4 @@ export default {
         }
     },
 };
+</script>
