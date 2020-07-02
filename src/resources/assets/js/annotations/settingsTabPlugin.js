@@ -204,7 +204,7 @@ if (SettingsTabPlugins) {
             },
         },
         watch: {
-            opacity(opacity, oldOpacity) {
+            opacity(opacity) {
                 if (opacity < 1) {
                     this.settings.set('exportAreaOpacity', opacity);
                 } else {
