@@ -31,7 +31,7 @@ export default {
                 handleErrorResponse(response);
             }
         },
-        submit(e) {
+        submit() {
             if (!this.csv) return;
 
             this.startLoading();

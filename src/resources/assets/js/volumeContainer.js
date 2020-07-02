@@ -125,7 +125,7 @@ export default {
         handleSidebarOpen(tab) {
             this.imageLabelMode = tab === 'labels';
         },
-        handleSidebarClose(tab) {
+        handleSidebarClose() {
             this.imageLabelMode = false;
         },
         toggleLoading(loading) {
@@ -152,7 +152,7 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
-        handleDeselectedLabel(label) {
+        handleDeselectedLabel() {
             this.selectedLabel = null;
         },
         updateSortingSequence(sequence, active) {
