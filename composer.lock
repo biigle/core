@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37146af7beffd03bb2d6d249234c683a",
+    "content-hash": "279630a2baeb589298f8ac8b3425fbf4",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -115,12 +115,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/annotations.git",
-                "reference": "bd7ed5810045bb26827f66c0764262b141ded90e"
+                "reference": "4fad65376d0f0e814ae736564c6cc8a0e339dcc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/annotations/zipball/bd7ed5810045bb26827f66c0764262b141ded90e",
-                "reference": "bd7ed5810045bb26827f66c0764262b141ded90e",
+                "url": "https://api.github.com/repos/biigle/annotations/zipball/4fad65376d0f0e814ae736564c6cc8a0e339dcc4",
+                "reference": "4fad65376d0f0e814ae736564c6cc8a0e339dcc4",
                 "shasum": ""
             },
             "require": {
@@ -149,7 +149,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-05-19T11:49:43+00:00"
+            "time": "2020-06-16T12:28:02+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -157,12 +157,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "9c75b01cc51d28ea1cf3aa928a620e5c3010e604"
+                "reference": "7a2bbd817733f1c64cb15ff00435d7d03425ee9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/9c75b01cc51d28ea1cf3aa928a620e5c3010e604",
-                "reference": "9c75b01cc51d28ea1cf3aa928a620e5c3010e604",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/7a2bbd817733f1c64cb15ff00435d7d03425ee9e",
+                "reference": "7a2bbd817733f1c64cb15ff00435d7d03425ee9e",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +191,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-05-18T12:32:57+00:00"
+            "time": "2020-06-22T11:32:15+00:00"
         },
         {
             "name": "biigle/demo",
@@ -199,12 +199,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "75db321709103c50b3b94f76566d70444d4ae64b"
+                "reference": "b8c798591b58f78f315b1a6e9add1c4ba7aaaf51"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/75db321709103c50b3b94f76566d70444d4ae64b",
-                "reference": "75db321709103c50b3b94f76566d70444d4ae64b",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/b8c798591b58f78f315b1a6e9add1c4ba7aaaf51",
+                "reference": "b8c798591b58f78f315b1a6e9add1c4ba7aaaf51",
                 "shasum": ""
             },
             "require": {
@@ -232,7 +232,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-04-16T09:32:03+00:00"
+            "time": "2020-07-01T14:29:42+00:00"
         },
         {
             "name": "biigle/geo",
@@ -467,12 +467,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "4725ac84dbf40fb46d8e292fb93ad3cf189fd408"
+                "reference": "e8860927137af95e2f3afe819988313a2c483422"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/4725ac84dbf40fb46d8e292fb93ad3cf189fd408",
-                "reference": "4725ac84dbf40fb46d8e292fb93ad3cf189fd408",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/e8860927137af95e2f3afe819988313a2c483422",
+                "reference": "e8860927137af95e2f3afe819988313a2c483422",
                 "shasum": ""
             },
             "require": {
@@ -504,7 +504,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-04-16T09:31:20+00:00"
+            "time": "2020-06-05T14:21:53+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -595,17 +595,55 @@
             "time": "2020-05-19T11:48:38+00:00"
         },
         {
+            "name": "biigle/module",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/module.git",
+                "reference": "5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/module/zipball/5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11",
+                "reference": "5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Module\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A template for a new BIIGLE module.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "time": "2019-08-21T09:17:30+00:00"
+        },
+        {
             "name": "biigle/projects",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/projects.git",
-                "reference": "1619f8064cbbda9edbeba9bbad833e4305b13cf3"
+                "reference": "a161cf20b48b2cacafe6a77417d8d73c44ab6327"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/projects/zipball/1619f8064cbbda9edbeba9bbad833e4305b13cf3",
-                "reference": "1619f8064cbbda9edbeba9bbad833e4305b13cf3",
+                "url": "https://api.github.com/repos/biigle/projects/zipball/a161cf20b48b2cacafe6a77417d8d73c44ab6327",
+                "reference": "a161cf20b48b2cacafe6a77417d8d73c44ab6327",
                 "shasum": ""
             },
             "type": "library",
@@ -630,7 +668,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-04-16T09:30:14+00:00"
+            "time": "2020-06-05T14:21:11+00:00"
         },
         {
             "name": "biigle/reports",
@@ -638,12 +676,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "93fff9358abe7de282aabdef2993034078849412"
+                "reference": "68a42221bef6d4201c6ef27d6e239ba0e8e03c9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/93fff9358abe7de282aabdef2993034078849412",
-                "reference": "93fff9358abe7de282aabdef2993034078849412",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/68a42221bef6d4201c6ef27d6e239ba0e8e03c9f",
+                "reference": "68a42221bef6d4201c6ef27d6e239ba0e8e03c9f",
                 "shasum": ""
             },
             "require": {
@@ -673,7 +711,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-05-19T11:48:26+00:00"
+            "time": "2020-05-26T15:49:06+00:00"
         },
         {
             "name": "biigle/sync",
@@ -722,12 +760,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/videos.git",
-                "reference": "3fb49199e4a515aaed7a9382679581ad42c4ec38"
+                "reference": "bd35192a505bee4f65d981b232eb3dcdfa0c7ddb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/3fb49199e4a515aaed7a9382679581ad42c4ec38",
-                "reference": "3fb49199e4a515aaed7a9382679581ad42c4ec38",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/bd35192a505bee4f65d981b232eb3dcdfa0c7ddb",
+                "reference": "bd35192a505bee4f65d981b232eb3dcdfa0c7ddb",
                 "shasum": ""
             },
             "require": {
@@ -761,7 +799,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-05-19T11:48:00+00:00"
+            "time": "2020-06-05T14:19:49+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -769,12 +807,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/volumes.git",
-                "reference": "e12b6e950460ad3e346469832c781dc4233b5dc2"
+                "reference": "69ca451b40998edd42f0bcb24f9e711eee87c788"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/volumes/zipball/e12b6e950460ad3e346469832c781dc4233b5dc2",
-                "reference": "e12b6e950460ad3e346469832c781dc4233b5dc2",
+                "url": "https://api.github.com/repos/biigle/volumes/zipball/69ca451b40998edd42f0bcb24f9e711eee87c788",
+                "reference": "69ca451b40998edd42f0bcb24f9e711eee87c788",
                 "shasum": ""
             },
             "require": {
@@ -803,7 +841,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-05-19T11:47:49+00:00"
+            "time": "2020-06-09T13:02:18+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
