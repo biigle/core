@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "279630a2baeb589298f8ac8b3425fbf4",
+    "content-hash": "9390733f122448b8364e568db20f53ce",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -596,16 +596,16 @@
         },
         {
             "name": "biigle/module",
-            "version": "v1.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/module.git",
-                "reference": "5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11"
+                "reference": "654773ae40026dcb88ac210a740b5b139dde8e71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/module/zipball/5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11",
-                "reference": "5d7f32ab7cbc98182523c45bab0ca9bdc8e6cd11",
+                "url": "https://api.github.com/repos/biigle/module/zipball/654773ae40026dcb88ac210a740b5b139dde8e71",
+                "reference": "654773ae40026dcb88ac210a740b5b139dde8e71",
                 "shasum": ""
             },
             "type": "library",
@@ -630,7 +630,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2019-08-21T09:17:30+00:00"
+            "time": "2019-11-25T08:17:29+00:00"
         },
         {
             "name": "biigle/projects",
@@ -7409,6 +7409,7 @@
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/maia": 20,
+        "biigle/module": 20,
         "biigle/projects": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
