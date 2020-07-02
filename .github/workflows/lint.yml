@@ -16,11 +16,13 @@ jobs:
       with:
         fetch-depth: 1
 
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 12
-        registry-url: https://npm.pkg.github.com/
-        scope: '@biigle'
+    - name: Set registry authentication token
+      run: sed -i "s/$/:_authToken=$GITHUB_TOKEN/" .npmrc
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Install dependencies
+      run: npm install
 
     - name: Run ESLint
       run: npm run lint
