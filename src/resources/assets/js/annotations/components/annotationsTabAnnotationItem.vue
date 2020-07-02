@@ -20,7 +20,6 @@
                 :class="shapeClass"
                 ></span>
             <span v-text="username"></span>
-        </li>
     </li>
 </template>
 

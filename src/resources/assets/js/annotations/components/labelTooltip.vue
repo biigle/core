@@ -1,9 +1,9 @@
 <template>
     <div class="annotation-tooltip">
         <ul class="annotation-tooltip__annotations">
-            <li v-for="names in annotationLabels">
+            <li v-for="(names, index) in annotationLabels" :key="index">
                 <ul class="annotation-tooltip__labels">
-                    <li v-for="name in names" v-text="name"></li>
+                    <li v-for="(name, index) in names" :key="index" v-text="name"></li>
                 </ul>
             </li>
         </ul>
