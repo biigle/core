@@ -1,11 +1,5 @@
-/**
- * A component that displays a typeahead to find items.
- *
- * @type {Object}
- */
-export default {
-    template:
-    `<typeahead
+<template>
+    <typeahead
         class="typeahead clearfix"
         match-property="name"
         ref="typeahead"
@@ -15,7 +9,16 @@ export default {
         :placeholder="placeholder"
         :template="template"
         @clear="clear"
-        ></typeahead>`,
+        ></typeahead>
+</template>
+
+<script>
+/**
+ * A component that displays a typeahead to find items.
+ *
+ * @type {Object}
+ */
+export default {
     components: {
         typeahead: VueStrap.typeahead,
     },
@@ -76,3 +79,4 @@ export default {
         this.$refs.typeahead.$el.firstChild.addEventListener('blur', this.emitBlur);
     },
 };
+</script>

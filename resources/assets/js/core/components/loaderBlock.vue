@@ -1,3 +1,10 @@
+<template>
+    <div class="loader-block" :class="classObject">
+        <loader :active="active" :fancy="true"></loader>
+    </div>
+</template>
+
+<script>
 import Loader from './loader';
 
 /**
@@ -6,9 +13,6 @@ import Loader from './loader';
  * @type {Object}
  */
 export default {
-    template: `<div class="loader-block" :class="classObject">
-        <loader :active="active" :fancy="true"></loader>
-    </div>`,
     components: {
         loader: Loader,
     },
@@ -26,3 +30,4 @@ export default {
         },
     },
 };
+</script>

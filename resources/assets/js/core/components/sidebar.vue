@@ -1,3 +1,18 @@
+<template>
+    <aside class="sidebar" :class="classObject">
+        <div class="sidebar__buttons" v-if="showButtons">
+            <sidebar-button
+                v-for="tab in tabs"
+                :tab="tab"
+                :key="tab.id"
+                :direction="direction"
+                ></sidebar-button>
+        </div>
+        <div class="sidebar__tabs"><slot></slot></div>
+    </aside>
+</template>
+
+<script>
 import Button from './sidebarButton';
 import Events from '../events';
 import Keyboard from '../keyboard';
@@ -8,17 +23,6 @@ import Keyboard from '../keyboard';
  * @type {Object}
  */
 export default {
-    template: `<aside class="sidebar" :class="classObject">
-        <div class="sidebar__buttons" v-if="showButtons">
-            <sidebar-button
-                v-for="tab in tabs"
-                :tab="tab"
-                :key="tab.id"
-                :direction="direction"
-                ></sidebar-button>
-        </div>
-        <div class="sidebar__tabs"><slot></slot></div>
-    </aside>`,
     components: {
         sidebarButton: Button,
     },
@@ -113,3 +117,4 @@ export default {
         }
     }
 };
+</script>

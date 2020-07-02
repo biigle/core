@@ -1,13 +1,17 @@
+<template>
+    <a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">
+        <span v-if="open" :class="chevronClass" aria-hidden="true"></span>
+        <span v-else :class="iconClass" aria-hidden="true"></span>
+    </a>
+</template>
+
+<script>
 /**
  * A button to open or switch a tab in a sidebar
  *
  * @type {Object}
  */
 export default {
-    template: `<a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">
-        <span v-if="open" :class="chevronClass" aria-hidden="true"></span>
-        <span v-else :class="iconClass" aria-hidden="true"></span>
-    </a>`,
     props: {
         tab: {
             type: Object,
@@ -69,3 +73,4 @@ export default {
         },
     },
 };
+</script>

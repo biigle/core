@@ -1,15 +1,19 @@
+<template>
+    <span class="power-toggle">
+        <button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle">
+            <i class="fa fa-fw" :class="iconClass"></i>
+        </button>
+        <span v-if="label" class="power-toggle__label" v-text="label"></span>
+    </span>
+</template>
+
+<script>
 /**
  * A generic on/off button
  *
  * @type {Object}
  */
 export default {
-    template: `<span class="power-toggle">
-        <button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle">
-            <i class="fa fa-fw" :class="iconClass"></i>
-        </button>
-        <span v-if="label" class="power-toggle__label" v-text="label"></span>
-    </span>`,
     props: {
         active: {
             type: Boolean,
@@ -67,3 +71,4 @@ export default {
         },
     },
 };
+</script>

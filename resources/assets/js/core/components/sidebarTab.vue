@@ -1,10 +1,14 @@
+<template>
+    <div class="sidebar__tab" :class="classObject"><slot></slot></div>
+</template>
+
+<script>
 /**
  * A collapsible sidebar that can show different content "tabs"
  *
  * @type {Object}
  */
 export default {
-    template: '<div class="sidebar__tab" :class="classObject"><slot></slot></div>',
     data() {
         return {
             id: null,
@@ -53,3 +57,4 @@ export default {
         this.$parent.registerTab(this);
     },
 };
+</script>

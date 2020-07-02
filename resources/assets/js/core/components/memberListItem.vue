@@ -1,10 +1,5 @@
-/**
- * A component a list item of the membersPanel
- *
- * @type {Object}
- */
-export default {
-    template: `<li class="list-group-item clearfix">
+<template>
+    <li class="list-group-item clearfix">
         <span class="pull-right">
             <span v-if="editing && !isOwnUser">
                 <form class="form-inline">
@@ -19,7 +14,16 @@ export default {
             </span>
         </span>
         <span v-text="name"></span> <span class="text-muted" v-if="isOwnUser">(you)</span>
-    </li>`,
+    </li>
+</template>
+
+<script>
+/**
+ * A component a list item of the membersPanel
+ *
+ * @type {Object}
+ */
+export default {
     props: {
         member: {
             type: Object,
@@ -68,3 +72,4 @@ export default {
         this.roleId = this.member.role_id;
     },
 };
+</script>

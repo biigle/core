@@ -1,17 +1,5 @@
-import ListItem from './memberListItem';
-import Loader from './loader';
-import Typeahead from './typeahead';
-import EditorMixin from '../mixins/editor';
-import UsersApi from '../api/users';
-import Messages from '../messages/store';
-
-/**
- * A component managing members of an entity (project, label tree, ...)
- *
- * @type {Object}
- */
-export default {
-    template: `<div class="panel panel-default" :class="classObject">
+<template>
+    <div class="panel panel-default" :class="classObject">
         <div class="panel-heading">
             Members
             <span class="pull-right">
@@ -36,7 +24,23 @@ export default {
                 <slot></slot>
             </li>
         </ul>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import ListItem from './memberListItem';
+import Loader from './loader';
+import Typeahead from './typeahead';
+import EditorMixin from '../mixins/editor';
+import UsersApi from '../api/users';
+import Messages from '../messages/store';
+
+/**
+ * A component managing members of an entity (project, label tree, ...)
+ *
+ * @type {Object}
+ */
+export default {
     mixins: [EditorMixin],
     components: {
         typeahead: Typeahead,
@@ -141,3 +145,4 @@ export default {
         this.$once('editing.start', this.loadUsers);
     },
 };
+</script>

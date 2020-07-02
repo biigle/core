@@ -1,10 +1,14 @@
+<template>
+    <span class="loader" :class="classObject"></span>
+</template>
+
+<script>
 /**
  * A component for a loading spinner
  *
  * @type {Object}
  */
 export default {
-    template: '<span class="loader" :class="classObject"></span>',
     props: {
         active: {
             type: Boolean,
@@ -24,3 +28,4 @@ export default {
         },
     },
 };
+</script>
