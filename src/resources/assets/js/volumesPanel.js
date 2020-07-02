@@ -61,7 +61,6 @@ export default {
     },
     methods: {
         removeVolume(id) {
-            let self = this;
             this.startLoading();
             ProjectsApi.detachVolume({id: this.project.id, volume_id: id})
                 .then(() => this.volumeRemoved(id), (response) => {
