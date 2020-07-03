@@ -1,3 +1,4 @@
+<script>
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
 import {LoaderMixin} from './import';
@@ -12,12 +13,14 @@ export default{
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        project: null,
-        name: null,
-        description: null,
-        userId: null,
-        redirectUrl: null,
+    data() {
+        return {
+            project: null,
+            name: null,
+            description: null,
+            userId: null,
+            redirectUrl: null,
+        };
     },
     computed: {
         hasDescription() {
@@ -102,3 +105,4 @@ export default{
         this.redirectUrl = biigle.$require('projects.redirectUrl');
     },
 };
+</script>

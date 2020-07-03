@@ -1,3 +1,4 @@
+<script>
 import PreviewThumbnail from './components/previewThumbnail';
 
 /**
@@ -8,3 +9,4 @@ export default {
         previewThumbnail: PreviewThumbnail,
     }
 };
+</script>

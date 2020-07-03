@@ -1,12 +1,5 @@
-/**
- * An interactive thumbnail that shows an overview of (volume) images
- * on mousemove.
- *
- * @type {Object}
- */
-export default {
-    template:
-    `<figure
+<template>
+    <figure
         class="preview-thumbnail"
         @mousemove="updateIndex($event)"
         @mouseenter="updateHovered"
@@ -28,6 +21,7 @@ export default {
                     v-show="thumbShown(i)"
                     @error="failed(i)"
                     :src="uri"
+                    :key="i"
                     >
             </div>
             <div v-else class="preview-thumbnail__fallback">
@@ -39,7 +33,17 @@ export default {
                 class="preview-thumbnail__progress"
                 :style="{width: progress}"
                 ></span>
-    </figure>`,
+    </figure>
+</template>
+
+<script>
+/**
+ * An interactive thumbnail that shows an overview of (volume) images
+ * on mousemove.
+ *
+ * @type {Object}
+ */
+export default {
     props: {
         id: {
             type: Number,
@@ -97,7 +101,7 @@ export default {
         remove() {
             this.$emit('remove', this.id);
         },
-        failed: function(i) {
+        failed(i) {
             this.uris.splice(i, 1, false);
         },
         updateHovered() {
@@ -112,3 +116,4 @@ export default {
         }
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
 import {LoaderComponent} from './import';
@@ -17,11 +18,13 @@ export default {
         typeahead: Typeahead,
         loader: LoaderComponent,
     },
-    data: {
-        project: null,
-        labelTrees: [],
-        availableLabelTrees: [],
-        typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
+    data() {
+        return {
+            project: null,
+            labelTrees: [],
+            availableLabelTrees: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
+        };
     },
     computed: {
         classObject() {
@@ -95,3 +98,4 @@ export default {
         this.project = biigle.$require('projects.project');
     },
 };
+</script>

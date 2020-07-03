@@ -1,3 +1,4 @@
+<script>
 import {handleErrorResponse} from './import';
 import {LoaderMixin} from './import';
 import {MembersPanel} from './import';
@@ -8,12 +9,14 @@ import {ProjectsApi} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        project: null,
-        members: [],
-        roles: [],
-        defaultRole: null,
-        userId: null,
+    data() {
+        return {
+            project: null,
+            members: [],
+            roles: [],
+            defaultRole: null,
+            userId: null,
+        };
     },
     components: {
         membersPanel: MembersPanel,
@@ -63,3 +66,4 @@ export default {
         this.userId = biigle.$require('projects.userId');
     },
 };
+</script>

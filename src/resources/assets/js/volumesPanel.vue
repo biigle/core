@@ -1,3 +1,4 @@
+<script>
 import AttachableVolumesApi from './api/attachableVolumes';
 import PreviewThumbnail from './components/previewThumbnail';
 import {EditorMixin} from './import';
@@ -14,12 +15,14 @@ export default {
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        project: null,
-        volumes: [],
-        attachableVolumes: [],
-        filterString: '',
-        fullHeight: 0,
+    data() {
+        return {
+            project: null,
+            volumes: [],
+            attachableVolumes: [],
+            filterString: '',
+            fullHeight: 0,
+        };
     },
     components: {
         previewThumbnail: PreviewThumbnail,
@@ -140,3 +143,4 @@ export default {
         this.updateFullHeight();
     },
 };
+</script>
