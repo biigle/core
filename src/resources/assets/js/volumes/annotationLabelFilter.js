@@ -1,36 +1,44 @@
+import VolumesApi from './api/volumes';
+import {FilterList} from './import';
+import {FilterSelect} from './import';
+import {handleErrorResponse} from './import';
+import {LabelTypeahead} from './import';
+import {VolumeFilters} from './import';
+
 /**
  * Annotation label filter for the volume overview filters.
  */
-if (Array.isArray(biigle.$require('volumes.stores.filters'))) {
-    biigle.$require('volumes.stores.filters').push({
+if (Array.isArray(VolumeFilters)) {
+    VolumeFilters.push({
         id: 'annotationLabels',
         label: 'annotation with label',
         help: "All images that (don't) contain one or more annotations with the given label.",
         listComponent: {
-            mixins: [biigle.$require('volumes.components.filterListComponent')],
-            data: function () {
+            mixins: [FilterList],
+            data() {
                 return {name: 'annotation with label'};
             },
         },
         selectComponent: {
-            mixins: [biigle.$require('volumes.components.filterSelectComponent')],
+            mixins: [FilterSelect],
             components: {
-                typeahead: biigle.$require('labelTrees.components.labelTypeahead'),
+                typeahead: LabelTypeahead,
             },
-            data: function () {
+            data() {
                 return {
                     placeholder: 'Label name',
                 };
             },
-            created: function () {
-                biigle.$require('annotations.api.volumes')
-                    .queryAnnotationLabels({id: this.volumeId})
-                    .then(this.gotItems, biigle.$require('messages.store').handleErrorResponse);
+            created() {
+                VolumesApi.queryAnnotationLabels({id: this.volumeId})
+                    .then(this.gotItems, handleErrorResponse);
             },
         },
-        getSequence: function (volumeId, label) {
-            return biigle.$require('annotations.api.volumes')
-                .queryImagesWithAnnotationLabel({id: volumeId, label_id: label.id});
+        getSequence(volumeId, label) {
+            return VolumesApi.queryImagesWithAnnotationLabel({
+                id: volumeId,
+                label_id: label.id,
+            });
         }
     });
 }

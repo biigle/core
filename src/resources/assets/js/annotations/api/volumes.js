@@ -8,4 +8,4 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('annotations.api.volumeImageArea', Vue.resource('api/v1/volumes{/id}/images/area'));
+export default Vue.resource('api/v1/volumes{/id}/images/area');

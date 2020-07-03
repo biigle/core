@@ -17,7 +17,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('annotations.api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
+export default Vue.resource('api/v1/volumes{/id}', {}, {
     queryImagesWithAnnotations: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/images/filter/annotations',
@@ -34,4 +34,4 @@ biigle.$declare('annotations.api.volumes', Vue.resource('api/v1/volumes{/id}', {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotation-labels',
     },
-}));
+});

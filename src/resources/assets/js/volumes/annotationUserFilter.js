@@ -1,34 +1,40 @@
+import VolumesApi from './api/volumes';
+import {FilterList} from './import';
+import {FilterSelect} from './import';
+import {handleErrorResponse} from './import';
+import {VolumeFilters} from './import';
+import {VolumesApi as CoreVolumesApi} from './import';
+
 /**
  * Annotation user filter for the volume overview filters.
  */
-if (Array.isArray(biigle.$require('volumes.stores.filters'))) {
-    biigle.$require('volumes.stores.filters').push({
+if (Array.isArray(VolumeFilters)) {
+    VolumeFilters.push({
         id: 'annotationUser',
         label: 'annotations from user',
         help: "All images that (don't) contain one or more annotations from the given user.",
         listComponent: {
-            mixins: [biigle.$require('volumes.components.filterListComponent')],
-            data: function () {
+            mixins: [FilterList],
+            data() {
                 return {name: 'annotations from user'};
             },
         },
         selectComponent: {
-            mixins: [biigle.$require('volumes.components.filterSelectComponent')],
-            data: function () {
+            mixins: [FilterSelect],
+            data() {
                 return {
                     placeholder: 'User name',
                     typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
                 };
             },
-            created: function () {
-                biigle.$require('api.volumes').queryUsers({id: this.volumeId})
-                    .then(this.parseUsernames, biigle.$require('messages.store').handleErrorResponse)
+            created() {
+                CoreVolumesApi.queryUsers({id: this.volumeId})
+                    .then(this.parseUsernames, handleErrorResponse)
                     .then(this.gotItems);
             },
         },
-        getSequence: function (volumeId, user) {
-            return biigle.$require('annotations.api.volumes')
-                .queryImagesWithAnnotationFromUser({id: volumeId, user_id: user.id});
-        }
+        getSequence(volumeId, user) {
+            return VolumesApi.queryImagesWithAnnotationFromUser({id: volumeId, user_id: user.id});
+        },
     });
 }
