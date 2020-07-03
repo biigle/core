@@ -1,18 +1,22 @@
+<template>
+    <div class="entity-chooser-list" :class="classObject">
+        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">
+        <ul>
+            <li v-for="e in entities" :key="e.id" @click="select(e)">
+                <span v-text="e.name"></span>
+                <span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
 /**
  * A a list component of the entity chooser
  *
  * @type {Object}
  */
-biigle.$component('sync.components.entityChooserList', {
-    template: '<div class="entity-chooser-list" :class="classObject">' +
-        '<input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">' +
-        '<ul>' +
-            '<li v-for="e in entities" @click="select(e)">' +
-                '<span v-text="e.name"></span>' +
-                '<span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>' +
-            '</li>' +
-        '</ul>' +
-    '</div>',
+export default {
     props: {
         entities: {
             type: Array,
@@ -27,28 +31,29 @@ biigle.$component('sync.components.entityChooserList', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
             filterQuery: '',
         };
     },
     computed: {
-        classObject: function () {
+        classObject() {
             return {
                 'entity-chooser-list--disabled': this.disabled,
             };
         },
     },
     methods: {
-        select: function (entity) {
+        select(entity) {
             if (!this.disabled) {
                 this.$emit('select', entity);
             }
         },
     },
     watch: {
-        filterQuery: function (query) {
+        filterQuery(query) {
             this.$emit('filter', query);
         },
     },
-});
+};
+</script>
