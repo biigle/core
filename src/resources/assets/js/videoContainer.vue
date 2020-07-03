@@ -1,3 +1,4 @@
+<script>
 import Annotation from './models/Annotation';
 import AnnotationsTab from './components/viaAnnotationsTab';
 import Settings from './stores/settings';
@@ -27,41 +28,43 @@ export default {
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
     },
-    data: {
-        videoId: null,
-        shapes: [],
-        canEdit: false,
-        video: null,
-        labelTrees: [],
-        selectedLabel: null,
-        bookmarks: [],
-        annotations: [],
-        seeking: false,
-        settings: {
-            annotationOpacity: 1,
-            showMinimap: true,
-            autoplayDraw: 0,
-            showLabelTooltip: false,
-            showMousePosition: false,
-            playbackRate: 1.0,
-        },
-        openTab: '',
-        urlParams: {
-            x: 0,
-            y: 0,
-            r: 0,
-            t: 0,
-        },
-        initialCurrentTime: 0,
-        initialMapCenter: [0, 0],
-        initialMapResolution: 0,
-        annotationFilters: [],
-        activeAnnotationFilter: null,
-        resizingTimeline: false,
-        timelineOffsetReference: 0,
-        timelineHeightReference: 0,
-        fixedTimelineOffset: 0,
-        currentTimelineOffset: 0,
+    data() {
+        return {
+            videoId: null,
+            shapes: [],
+            canEdit: false,
+            video: null,
+            labelTrees: [],
+            selectedLabel: null,
+            bookmarks: [],
+            annotations: [],
+            seeking: false,
+            settings: {
+                annotationOpacity: 1,
+                showMinimap: true,
+                autoplayDraw: 0,
+                showLabelTooltip: false,
+                showMousePosition: false,
+                playbackRate: 1.0,
+            },
+            openTab: '',
+            urlParams: {
+                x: 0,
+                y: 0,
+                r: 0,
+                t: 0,
+            },
+            initialCurrentTime: 0,
+            initialMapCenter: [0, 0],
+            initialMapResolution: 0,
+            annotationFilters: [],
+            activeAnnotationFilter: null,
+            resizingTimeline: false,
+            timelineOffsetReference: 0,
+            timelineHeightReference: 0,
+            fixedTimelineOffset: 0,
+            currentTimelineOffset: 0,
+        };
     },
     computed: {
         selectedAnnotations() {
@@ -386,3 +389,4 @@ export default {
         this.video.src = biigle.$require('videos.src');
     },
 };
+</script>

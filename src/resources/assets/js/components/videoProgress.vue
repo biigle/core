@@ -1,60 +1,26 @@
-let Bookmark = {
-    template: '<span class="bookmark" :style="style" @click.stop="emitSelect"></span>',
-    props: {
-        bookmark: {
-            type: Object,
-            required: true,
-        },
-    },
-    computed: {
-        style() {
-            let offset = this.bookmark.time / this.$parent.duration * this.$parent.elementWidth;
-
-            return `left: ${offset}px`;
-        },
-    },
-    methods: {
-        emitSelect() {
-            this.$emit('select', this.bookmark);
-        },
-    },
-};
-
-let Tick = {
-    template: '<span class="tick" :style="style" v-text="text"></span>',
-    props: {
-        time: {
-            type: Number,
-            required: true,
-        },
-    },
-    computed: {
-        style() {
-            let offset = this.time / this.$parent.duration * this.$parent.elementWidth;
-
-            return `left: ${offset}px`;
-        },
-        text() {
-            return Vue.filter('videoTime')(this.time);
-        },
-    },
-};
-
-export default {
-    template: `<div
+<template>
+    <div
         class="video-progress"
         @click="emitSeek"
         >
             <bookmark v-for="mark in bookmarks"
                 :bookmark="mark"
+                :key="mark.time"
                 @select="emitSelectBookmark"
                 ></bookmark>
             <tick
-                v-if="hasTicks"
                 v-for="time in ticks"
+                :key="time"
                 :time="time"
                 ></tick>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import Bookmark from './videoProgressBookmark';
+import Tick from './videoProgressTick';
+
+export default {
     props: {
         duration: {
             type: Number,
@@ -85,6 +51,10 @@ export default {
             return Math.floor(this.elementWidth / this.tickSpacing);
         },
         ticks() {
+            if (!this.hasTicks) {
+                return [];
+            }
+
             let step = this.duration / this.tickCount;
 
             return Array.apply(null, {length: this.tickCount})
@@ -103,3 +73,4 @@ export default {
         },
     },
 };
+</script>

@@ -1,10 +1,5 @@
-import AnnotationTracks from './annotationTracks';
-import VideoProgress from './videoProgress';
-import {Events} from '../import';
-import {Keyboard} from '../import';
-
-export default {
-    template: `<div
+<template>
+    <div
         class="scroll-strip"
         @wheel.stop="handleWheel"
         @mouseleave="handleHideHoverTime"
@@ -50,7 +45,16 @@ export default {
             </div>
             <div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>
             <div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import AnnotationTracks from './annotationTracks';
+import VideoProgress from './videoProgress';
+import {Events} from '../import';
+import {Keyboard} from '../import';
+
+export default {
     components: {
         videoProgress: VideoProgress,
         annotationTracks: AnnotationTracks,
@@ -232,3 +236,4 @@ export default {
         this.$nextTick(this.updateInitialElementWidth);
     },
 };
+</script>

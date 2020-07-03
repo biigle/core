@@ -1,3 +1,4 @@
+<script>
 import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonBrush';
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
@@ -143,3 +144,4 @@ export default {
         }
     },
 };
+</script>

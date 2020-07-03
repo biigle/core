@@ -1,3 +1,4 @@
+<script>
 import {LoaderMixin} from './import';
 
 export default {
@@ -7,3 +8,4 @@ export default {
         this.$refs.nameInput.focus();
     },
 };
+</script>

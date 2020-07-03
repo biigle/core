@@ -1,3 +1,4 @@
+<script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -170,3 +171,4 @@ export default {
         }
     },
 };
+</script>

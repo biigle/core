@@ -1,9 +1,5 @@
-import CurrentTime from './currentTime';
-import ScrollStrip from './scrollStrip';
-import TrackHeaders from './trackHeaders';
-
-export default {
-    template: `<div class="video-timeline" :style="styleObject">
+<template>
+    <div class="video-timeline" :style="styleObject">
         <div class="grab-border"
             @mousedown="emitStartResize"
             ></div>
@@ -31,7 +27,15 @@ export default {
             @scroll-y="handleScrollY"
             @hover-time="updateHoverTime"
         ></scroll-strip>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import CurrentTime from './currentTime';
+import ScrollStrip from './scrollStrip';
+import TrackHeaders from './trackHeaders';
+
+export default {
     components: {
         currentTime: CurrentTime,
         trackHeaders: TrackHeaders,
@@ -102,6 +106,7 @@ export default {
 
             return Object.keys(map).map((labelId) => {
                 return {
+                    id: labelId,
                     label: this.labelMap[labelId],
                     lanes: this.getAnnotationTrackLanes(map[labelId])
                 };
@@ -209,3 +214,4 @@ export default {
         this.video.addEventListener('seeked', this.updateCurrentTime);
     },
 };
+</script>

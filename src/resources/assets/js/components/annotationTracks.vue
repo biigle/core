@@ -1,7 +1,5 @@
-import AnnotationTrack from './annotationTrack';
-
-export default {
-    template: `<div
+<template>
+    <div
         class="annotation-tracks"
         @click="emitDeselect"
         @mousedown="startDragging"
@@ -10,6 +8,7 @@ export default {
         @scroll.stop="updateScrollTop"
         >
             <annotation-track v-for="track in tracks"
+                :key="track.id"
                 :label="track.label"
                 :lanes="track.lanes"
                 :duration="duration"
@@ -17,7 +16,13 @@ export default {
                 @select="emitSelect"
                 @deselect="emitDeselectAnnotation"
                 ></annotation-track>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import AnnotationTrack from './annotationTrack';
+
+export default {
     components: {
         annotationTrack: AnnotationTrack,
     },
@@ -119,3 +124,4 @@ export default {
         this.$nextTick(this.updateClientHeight);
     },
 };
+</script>

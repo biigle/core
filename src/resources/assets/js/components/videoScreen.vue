@@ -1,37 +1,5 @@
-import AnnotationPlayback from './videoScreen/annotationPlayback';
-import Collection from '@biigle/ol/Collection';
-import DrawInteractions from './videoScreen/drawInteractions';
-import Indicators from './videoScreen/indicators';
-import Map from '@biigle/ol/Map';
-import ModifyInteractions from './videoScreen/modifyInteractions';
-import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
-import SelectInteraction from '@biigle/ol/interaction/Select';
-import Tooltips from './videoScreen/tooltips';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
-import VideoPlayback from './videoScreen/videoPlayback';
-import ZoomControl from '@biigle/ol/control/Zoom';
-import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
-import {click as clickCondition} from '@biigle/ol/events/condition';
-import {containsCoordinate} from '@biigle/ol/extent';
-import {ControlButton} from '../import';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction';
-import {Keyboard} from '../import';
-import {Minimap} from '../import';
-import {Styles} from '../import';
-import {ZoomToNativeControl} from '../import';
-
-export default {
-    mixins: [
-        VideoPlayback,
-        AnnotationPlayback,
-        DrawInteractions,
-        ModifyInteractions,
-        Tooltips,
-        Indicators,
-        PolygonBrushInteractions,
-    ],
-    template: `<div class="video-screen" :style="styleObject">
+<template>
+    <div class="video-screen" :style="styleObject">
         <minimap
             v-if="showMinimap"
             :extent="extent"
@@ -221,7 +189,43 @@ export default {
                 v-text="selectedLabel.name"
                 ></div>
         </div>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import AnnotationPlayback from './videoScreen/annotationPlayback';
+import Collection from '@biigle/ol/Collection';
+import DrawInteractions from './videoScreen/drawInteractions';
+import Indicators from './videoScreen/indicators';
+import Map from '@biigle/ol/Map';
+import ModifyInteractions from './videoScreen/modifyInteractions';
+import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
+import SelectInteraction from '@biigle/ol/interaction/Select';
+import Tooltips from './videoScreen/tooltips';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
+import VideoPlayback from './videoScreen/videoPlayback';
+import ZoomControl from '@biigle/ol/control/Zoom';
+import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
+import {click as clickCondition} from '@biigle/ol/events/condition';
+import {containsCoordinate} from '@biigle/ol/extent';
+import {ControlButton} from '../import';
+import {defaults as defaultInteractions} from '@biigle/ol/interaction';
+import {Keyboard} from '../import';
+import {Minimap} from '../import';
+import {Styles} from '../import';
+import {ZoomToNativeControl} from '../import';
+
+export default {
+    mixins: [
+        VideoPlayback,
+        AnnotationPlayback,
+        DrawInteractions,
+        ModifyInteractions,
+        Tooltips,
+        Indicators,
+        PolygonBrushInteractions,
+    ],
     components: {
         controlButton: ControlButton,
         minimap: Minimap,
@@ -255,7 +259,9 @@ export default {
         },
         initialCenter: {
             type: Array,
-            default: [0, 0],
+            default() {
+                return [0, 0];
+            },
         },
         initialResolution: {
             type: Number,
@@ -466,3 +472,4 @@ export default {
         this.map.setTarget(this.$el);
     },
 };
+</script>

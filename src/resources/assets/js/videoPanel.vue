@@ -1,3 +1,4 @@
+<script>
 import VideosApi from './api/videos';
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
@@ -15,11 +16,13 @@ export default {
     components: {
         previewThumbnail: PreviewThumbnail,
     },
-    data: {
-        project: null,
-        videos: [],
-        filterString: '',
-        fullHeight: 0,
+    data() {
+        return {
+            project: null,
+            videos: [],
+            filterString: '',
+            fullHeight: 0,
+        };
     },
     computed: {
         filteredVideos() {
@@ -97,3 +100,4 @@ export default {
         this.updateFullHeight();
     },
 };
+</script>

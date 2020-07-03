@@ -1,7 +1,5 @@
-import AnnotationClip from './annotationClip';
-
-export default {
-    template: `<div class="annotation-track">
+<template>
+    <div class="annotation-track">
         <div class="annotation-lane" v-for="lane in lanes">
             <annotation-clip v-for="annotation in lane"
                 :key="annotation.id"
@@ -13,7 +11,13 @@ export default {
                 @deselect="emitDeselect"
                 ></annotation-clip>
         </div>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import AnnotationClip from './annotationClip';
+
+export default {
     components: {
         annotationClip: AnnotationClip,
     },
@@ -44,3 +48,4 @@ export default {
         },
     },
 };
+</script>

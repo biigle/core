@@ -1,5 +1,5 @@
-export default {
-    template: `<div
+<template>
+    <div
         class="current-time"
         :class="classObject"
         >
@@ -11,7 +11,11 @@ export default {
                 v-show="showHoverTime"
                 v-text="hoverTimeText"
                 ></span>
-    </div>`,
+    </div>
+</template>
+
+<script>
+export default {
     props: {
         currentTime: {
             type: Number,
@@ -44,3 +48,4 @@ export default {
         },
     },
 };
+</script>

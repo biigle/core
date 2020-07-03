@@ -1,3 +1,4 @@
+<script>
 import CanvasSource from '@biigle/ol/source/Canvas';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Projection from '@biigle/ol/proj/Projection';
@@ -135,3 +136,4 @@ export default {
         Keyboard.on(' ', this.togglePlaying);
     },
 };
+</script>

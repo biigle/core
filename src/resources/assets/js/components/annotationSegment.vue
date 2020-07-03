@@ -1,21 +1,25 @@
-import Keyframe from './annotationKeyframe';
-
-export default {
-    template:
-    `<div
+<template>
+    <div
         class="annotation-segment"
         :class="classObject"
         :style="style"
         >
         <keyframe
             v-for="frame in keyframes"
+            :key="frame.time"
             :frame="frame"
             :start-frame="startFrame"
             :segment-duration="segmentDuration"
             :color="color"
             @select="selectFrame"
             ></keyframe>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import Keyframe from './annotationKeyframe';
+
+export default {
     components: {
         keyframe: Keyframe,
     },
@@ -94,3 +98,4 @@ export default {
         },
     },
 };
+</script>

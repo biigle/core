@@ -1,3 +1,4 @@
+<script>
 import {MousePositionIndicator} from '../../import';
 import {throttle} from '../../import';
 
@@ -28,3 +29,4 @@ export default {
         },
     },
 };
+</script>

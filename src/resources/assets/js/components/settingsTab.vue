@@ -1,3 +1,4 @@
+<script>
 import Settings from '../stores/settings';
 import {PowerToggle} from '../import';
 
@@ -80,3 +81,4 @@ export default {
         });
     },
 };
+</script>

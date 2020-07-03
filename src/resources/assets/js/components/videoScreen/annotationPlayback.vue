@@ -1,3 +1,4 @@
+<script>
 import Circle from '@biigle/ol/geom/Circle';
 import Ellipse from '@biigle/ol/geom/Ellipse';
 import Feature from '@biigle/ol/Feature';
@@ -208,3 +209,4 @@ export default {
         });
     },
 };
+</script>

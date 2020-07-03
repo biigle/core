@@ -1,7 +1,5 @@
-import Segment from './annotationSegment';
-
-export default {
-    template: `<div class="annotation-clip"
+<template>
+    <div class="annotation-clip"
         v-show="duration > 0"
         :style="style"
         :class="classObj"
@@ -9,7 +7,8 @@ export default {
         @click.stop="select($event)"
         >
             <segment
-                v-for="segment in segments"
+                v-for="(segment, i) in segments"
+                :key="i"
                 :annotation="annotation"
                 :label="label"
                 :frames="segment.frames"
@@ -17,7 +16,13 @@ export default {
                 :clip-duration="clipDuration"
                 @select="emitSelect"
                 ></segment>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import Segment from './annotationSegment';
+
+export default {
     components: {
         segment: Segment,
     },
@@ -156,3 +161,4 @@ export default {
         },
     },
 };
+</script>

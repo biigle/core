@@ -1,11 +1,14 @@
-export default {
-    template:
-    `<span
+<template>
+    <span
         class="annotation-keyframe"
         :style="style"
         :class="classObj"
         @click.stop="emitSelect"
-        ></span>`,
+        ></span>
+</template>
+
+<script>
+export default {
     props: {
         frame: {
             type: Object,
@@ -46,3 +49,4 @@ export default {
         },
     },
 };
+</script>

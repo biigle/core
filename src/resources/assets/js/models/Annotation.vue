@@ -1,3 +1,4 @@
+<script>
 import VideoAnnotationApi from '../api/videoAnnotations';
 import {interpolate} from 'polymorph-js';
 import {Messages} from '../import';
@@ -309,3 +310,4 @@ export default Vue.extend({
         this.shape = biigle.$require('videos.shapes')[this.shape_id]
     },
 });
+</script>

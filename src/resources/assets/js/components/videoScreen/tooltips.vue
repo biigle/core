@@ -1,3 +1,4 @@
+<script>
 import {LabelTooltip} from '../../import';
 
 /**
@@ -55,3 +56,4 @@ export default {
         this.$once('map-created', this.updateTooltipEventListeners);
     },
 };
+</script>

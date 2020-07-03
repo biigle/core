@@ -1,3 +1,4 @@
+<script>
 import {PreviewThumbnail} from './import';
 
 export default {
@@ -5,3 +6,4 @@ export default {
         previewThumbnail: PreviewThumbnail,
     },
 };
+</script>

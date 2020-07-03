@@ -1,3 +1,4 @@
+<script>
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import {AttachLabelInteraction} from '../../import';
 import {Keyboard} from '../../import';
@@ -185,3 +186,4 @@ export default {
         }
     },
 };
+</script>

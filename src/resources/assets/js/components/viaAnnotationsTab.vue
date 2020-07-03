@@ -1,3 +1,4 @@
+<script>
 import {AnnotationsTab} from '../import';
 
 /**
@@ -15,3 +16,4 @@ export default {
         },
     },
 };
+</script>
