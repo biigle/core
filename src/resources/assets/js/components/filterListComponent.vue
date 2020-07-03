@@ -1,10 +1,18 @@
+<template>
+    <span>
+        <strong>with<span v-if="rule.negate">out</span></strong>
+        <span v-text="name"></span>
+        <strong v-if="dataName" v-text="dataName"></strong>
+    </span>
+</template>
+
+<script>
 /**
  * Base component for a filter list item
  *
  * @type {Object}
  */
 export default {
-    template: '<span><strong>with<span v-if="rule.negate">out</span></strong> <span v-text="name"></span> <strong v-if="dataName" v-text="dataName"></strong></span>',
     props: {
         rule: {
             type: Object,
@@ -21,6 +29,9 @@ export default {
             if (this.rule.data) {
                 return this.rule.data.name;
             }
+
+            return '';
         },
     },
 };
+</script>

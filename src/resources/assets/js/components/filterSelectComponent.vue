@@ -1,3 +1,11 @@
+<template>
+    <div class="filter-select">
+        <typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :template="typeaheadTemplate"></typeahead>
+        <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
+    </div>
+</template>
+
+<script>
 import {Typeahead} from '../import';
 
 /**
@@ -6,10 +14,6 @@ import {Typeahead} from '../import';
  * @type {Object}
  */
 export default {
-    template: `<div class="filter-select">
-        <typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :template="typeaheadTemplate"></typeahead>
-        <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
-    </div>`,
     components: {
         typeahead: Typeahead,
     },
@@ -53,3 +57,4 @@ export default {
         },
     },
 };
+</script>

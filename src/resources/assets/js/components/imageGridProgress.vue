@@ -1,10 +1,5 @@
-/**
- * The progress bar of the Largo image grid
- *
- * @type {Object}
- */
-export default {
-    template: `<div class="image-grid-progress">
+<template>
+    <div class="image-grid-progress">
         <div class="btn-group-vertical">
             <button type="button" class="btn btn-default btn-xs" title="Go to top 𝗛𝗼𝗺𝗲" @click="top" :disabled="isAtTop">
                 <span class="fa fa-fast-backward fa-rotate-90"></span>
@@ -32,7 +27,16 @@ export default {
                 <span class="fa fa-fast-forward fa-rotate-90"></span>
             </button>
         </div>
-    </div>`,
+    </div>
+</template>
+
+<script>
+/**
+ * The progress bar of the Largo image grid
+ *
+ * @type {Object}
+ */
+export default {
     data() {
         return {
             scrolling: false,
@@ -90,3 +94,4 @@ export default {
         },
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 import FiltersStore from '../stores/filters';
 import {handleErrorResponse} from '../import';
 import {LoaderMixin} from '../import';
@@ -282,3 +283,4 @@ export default {
         }
     },
 };
+</script>

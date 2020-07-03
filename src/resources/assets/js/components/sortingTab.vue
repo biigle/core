@@ -1,3 +1,4 @@
+<script>
 import SorterStore from '../stores/sorters';
 import {handleErrorResponse} from '../import';
 import {LoaderMixin} from '../import';
@@ -140,3 +141,4 @@ export default {
         }
     },
 };
+</script>

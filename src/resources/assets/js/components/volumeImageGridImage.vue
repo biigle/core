@@ -1,3 +1,22 @@
+<template>
+    <figure class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
+        <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">
+            <img :src="url || emptyUrl" @error="showEmptyImage">
+        </a>
+        <img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">
+        <span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>
+        <div class="image-buttons">
+            <a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">
+                <span class="fa fa-info-circle" aria-hidden="true"></span>
+            </a>
+        </div>
+        <div v-if="showLabels" class="image-labels" @wheel.stop>
+            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>
+        </div>
+    </figure>
+</template>
+
+<script>
 import Image from './imageGridImage';
 import ImageLabelsApi from '../api/imageLabels';
 import LabelList from './imageLabelList';
@@ -14,21 +33,6 @@ export default {
         Image,
         LoaderMixin,
     ],
-    template: `<figure class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
-        <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">
-            <img :src="url || emptyUrl" @error="showEmptyImage">
-        </a>
-        <img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">
-        <span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>
-        <div class="image-buttons">
-            <a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">
-                <span class="fa fa-info-circle" aria-hidden="true"></span>
-            </a>
-        </div>
-        <div v-if="showLabels" class="image-labels" @wheel.stop>
-            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>
-        </div>
-    </figure>`,
     components: {
         imageLabelList: LabelList,
     },
@@ -124,3 +128,4 @@ export default {
         this.showAnnotationRoute = biigle.$require('largo.showAnnotationRoute');
     },
 };
+</script>

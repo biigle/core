@@ -1,3 +1,4 @@
+<script>
 import BrowserApi from './api/browser';
 import {handleErrorResponse} from './import';
 import {LoaderMixin} from './import';
@@ -7,17 +8,19 @@ import {LoaderMixin} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        disks: [],
-        url: null,
-        filenames: null,
-        browsing: false,
-        storageDisk: null,
-        breadCrumbs: [],
-        currentDirectories: [],
-        loadingBrowser: false,
-        directoryCache: {},
-        fileCache: {},
+    data() {
+        return {
+            disks: [],
+            url: null,
+            filenames: null,
+            browsing: false,
+            storageDisk: null,
+            breadCrumbs: [],
+            currentDirectories: [],
+            loadingBrowser: false,
+            directoryCache: {},
+            fileCache: {},
+        };
     },
     computed: {
         showFilenameWarning() {
@@ -134,3 +137,4 @@ export default {
         this.$refs.nameInput.focus();
     },
 };
+</script>

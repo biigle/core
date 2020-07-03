@@ -1,10 +1,14 @@
+<template>
+    <button class="list-group-item" :title="title" @click="handleClick" :class="classObject" v-text="text"></button>
+</template>
+
+<script>
 /**
  * A component of the sorting tab.
  *
  * @type {Object}
  */
 export default {
-    template: '<button class="list-group-item" :title="title" @click="handleClick" :class="classObject" v-text="text"></button>',
     props: {
         activeSorter: {
             type: String,
@@ -32,3 +36,4 @@ export default {
         },
     },
 };
+</script>

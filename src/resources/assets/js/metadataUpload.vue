@@ -1,3 +1,4 @@
+<script>
 import MetadataApi from './api/volumeImageMetadata';
 import {handleErrorResponse} from './import';
 import {LoaderMixin} from './import';
@@ -7,12 +8,14 @@ import {LoaderMixin} from './import';
  */
 export default {
     mixins: [LoaderMixin],
-    data: {
-        volumeId: null,
-        csv: undefined,
-        error: false,
-        success: false,
-        message: undefined,
+    data() {
+        return {
+            volumeId: null,
+            csv: undefined,
+            error: false,
+            success: false,
+            message: undefined,
+        };
     },
     methods: {
         handleSuccess() {
@@ -50,3 +53,4 @@ export default {
         this.volumeId = biigle.$require('volumes.id');
     },
 };
+</script>

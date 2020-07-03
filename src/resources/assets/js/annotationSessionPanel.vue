@@ -1,4 +1,7 @@
+<script>
+import ListItem from './components/annotationSessionListItem';
 import SessionsApi from './api/annotationSessions';
+import UserTag from './components/annotationSessionUserTag';
 import VolumesApi from './api/volumes';
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
@@ -22,69 +25,25 @@ let emptySession = function () {
     };
 };
 
-let listItem = {
-    props: ['session', 'editing', 'editId'],
-    computed: {
-        title() {
-            return this.editing ? 'Edit this annotation session' : this.session.name;
-        },
-        active() {
-            let now = new Date();
-
-            return this.session.starts_at_iso8601 < now && this.session.ends_at_iso8601 >= now;
-        },
-        currentlyEdited() {
-            return this.session.id === this.editId;
-        },
-        classObject() {
-            return {
-                'session--active': this.active,
-                'list-group-item-info': this.currentlyEdited,
-            };
-        },
-    },
-    methods: {
-        edit() {
-            if (!this.editing || this.currentlyEdited) return;
-            this.$emit('edit', this.session);
-        },
-    },
-};
-
-let userTag = {
-    props: ['user'],
-    computed: {
-        name() {
-            return this.user.firstname + ' ' + this.user.lastname;
-        },
-        title() {
-            return 'Remove ' + this.name;
-        },
-    },
-    methods: {
-        remove() {
-            this.$emit('remove', this.user);
-        },
-    },
-};
-
 export default {
     mixins: [
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        volumeId: null,
-        sessions: null,
-        editedSession: emptySession(),
-        users: [],
-        errors: {},
-        typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+    data() {
+        return {
+            volumeId: null,
+            sessions: null,
+            editedSession: emptySession(),
+            users: [],
+            errors: {},
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+        };
     },
     components: {
         typeahead: Typeahead,
-        listItem: listItem,
-        userTag: userTag,
+        listItem: ListItem,
+        userTag: UserTag,
         datepicker: VueStrap.datepicker,
     },
     computed: {
@@ -105,7 +64,7 @@ export default {
             return this.users.filter((user) => members.indexOf(user.id) === -1);
         },
         orderedSessions() {
-            return this.sessions.sort(function (a, b) {
+            return this.sessions.slice().sort(function (a, b) {
                 return b.starts_at_iso8601.getTime() - a.starts_at_iso8601.getTime();
             });
         },
@@ -295,3 +254,4 @@ export default {
         this.$once('editing.start', this.loadUsers);
     },
 };
+</script>

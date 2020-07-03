@@ -1,3 +1,4 @@
+<script>
 import {LabelTrees} from '../import';
 import {LoaderMixin} from '../import';
 import {PowerToggle} from '../import';
@@ -48,3 +49,4 @@ export default {
         this.labelTrees = biigle.$require('volumes.labelTrees');
     },
 };
+</script>

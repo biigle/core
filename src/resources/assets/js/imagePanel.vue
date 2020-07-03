@@ -1,3 +1,5 @@
+<script>
+import ImageItem from './components/imagePanelItem';
 import VolumesApi from './api/volumes';
 import {EditorMixin} from './import';
 import {handleErrorResponse} from './import';
@@ -7,38 +9,22 @@ import {LoaderMixin} from './import';
 /**
  * The panel for editing volume images
  */
-let imageItem = {
-    props: ['image'],
-    computed: {
-        classObject() {
-            return {
-                'list-group-item-success': this.image.isNew,
-            };
-        },
-        title() {
-            return 'Delete image #' + this.image.id;
-        },
-    },
-    methods: {
-        remove() {
-            this.$emit('remove', this.image);
-        },
-    },
-};
 
 export default {
     mixins: [
         LoaderMixin,
         EditorMixin,
     ],
-    data: {
-        volumeId: null,
-        filenames: '',
-        images: [],
-        errors: {},
+    data() {
+        return {
+            volumeId: null,
+            filenames: '',
+            images: [],
+            errors: {},
+        };
     },
     components: {
-        imageItem: imageItem,
+        imageItem: ImageItem,
     },
     computed: {
         classObject() {
@@ -47,7 +33,7 @@ export default {
             };
         },
         orderedImages() {
-            return this.images.sort((a, b) => a.filename < b.filename ? -1 : 1);
+            return this.images.slice().sort((a, b) => a.filename < b.filename ? -1 : 1);
         },
         hasNoImages() {
             return !this.loading && this.images.length === 0;
@@ -124,3 +110,4 @@ export default {
             .finally(this.finishLoading);
     },
 };
+</script>

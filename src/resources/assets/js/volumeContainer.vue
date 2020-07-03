@@ -1,3 +1,4 @@
+<script>
 import FilterTab from './components/filterTab';
 import ImageGrid from './components/volumeImageGrid';
 import ImagesStore from './stores/image';
@@ -35,24 +36,26 @@ export default {
         sortingTab: SortingTab,
         labelsTab: LabelsTab,
     },
-    data: {
-        imageIds: [],
-        images: [],
-        filterSequence: [],
-        filterMode: null,
-        filterActive: false,
-        sortingSequence: [],
-        sortingActive: false,
-        volumeId: null,
-        imageLabelMode: false,
-        selectedLabel: null,
-        loadingFilenames: false,
-        showFilenames: false,
-        filenamesPromise: null,
-        loadingLabels: false,
-        showLabels: false,
-        labelsPromise: null,
-        settings: null,
+    data() {
+        return {
+            imageIds: [],
+            images: [],
+            filterSequence: [],
+            filterMode: null,
+            filterActive: false,
+            sortingSequence: [],
+            sortingActive: false,
+            volumeId: null,
+            imageLabelMode: false,
+            selectedLabel: null,
+            loadingFilenames: false,
+            showFilenames: false,
+            filenamesPromise: null,
+            loadingLabels: false,
+            showLabels: false,
+            labelsPromise: null,
+            settings: null,
+        };
     },
     computed: {
         // Map from image ID to index of sorted array to compute sortedImages fast.
@@ -276,3 +279,4 @@ export default {
         this.restoreSettings();
     },
 };
+</script>

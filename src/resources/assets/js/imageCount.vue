@@ -1,3 +1,4 @@
+<script>
 import ImagesStore from './stores/image';
 
 /**
@@ -25,3 +26,4 @@ export default {
         this.imageIds = biigle.$require('volumes.imageIds');
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 /**
  * Store for the image count
  */
@@ -6,3 +7,4 @@ export default new Vue({
         count: 0,
     },
 });
+</script>

@@ -1,15 +1,19 @@
+<template>
+    <figure class="image-grid__image" :class="classObject">
+        <div v-if="showIcon" class="image-icon">
+            <i class="fas" :class="iconClass"></i>
+        </div>
+        <img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">
+    </figure>
+</template>
+
+<script>
 /**
  * An image of the Largo image grid
  *
  * @type {Object}
  */
 export default {
-    template: `<figure class="image-grid__image" :class="classObject">
-        <div v-if="showIcon" class="image-icon">
-            <i class="fas" :class="iconClass"></i>
-        </div>
-        <img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">
-    </figure>`,
     data() {
         return {
             url: '',
@@ -92,3 +96,4 @@ export default {
         clearTimeout(this.timeout);
     },
 };
+</script>

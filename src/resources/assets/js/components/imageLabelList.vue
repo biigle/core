@@ -1,3 +1,17 @@
+<template>
+    <ul class="image-label-list">
+        <list-item
+            v-for="item in imageLabels"
+            :key="item.id"
+            :item="item"
+            :deletable="canDelete(item)"
+            @deleted="emitDeleted"
+            ></list-item>
+        <li v-if="!hasImageLabels" class="text-muted">No image labels</li>
+    </ul>
+</template>
+
+<script>
 import Item from './imageLabelListItem';
 
 /**
@@ -6,10 +20,6 @@ import Item from './imageLabelListItem';
  * @type {Object}
  */
 export default {
-    template: `<ul class="image-label-list">
-        <list-item v-for="item in imageLabels" :item="item" :deletable="canDelete(item)" @deleted="emitDeleted"></list-item>
-        <li v-if="!hasImageLabels" class="text-muted">No image labels</li>
-    </ul>`,
     components: {
         listItem: Item,
     },
@@ -41,3 +51,4 @@ export default {
         },
     },
 };
+</script>
