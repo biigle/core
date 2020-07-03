@@ -1,7 +1,7 @@
 <template>
     <div class="annotation-tooltip">
         <ul class="annotation-tooltip__annotations">
-            <li v-for="(measure, index) in measuredGeometries" :key="index" v-text="measure"></li>
+            <li v-for="measure in measuredGeometries" v-text="measure"></li>
         </ul>
     </div>
 </template>

@@ -9,7 +9,6 @@
                 >
                     <option
                         v-for="(filter, index) in annotationFilters"
-                        :key="index"
                         :value="index"
                         v-text="filter.name"
                         ></option>
