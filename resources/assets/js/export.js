@@ -1,5 +1,4 @@
 import {mount, declare, require} from './utils';
-import {viewModel, component} from './legacy';
 import AnnotationsApi from './core/api/annotations';
 import ImagesApi from './core/api/images';
 import LabelsApi from './core/api/labels';
@@ -31,8 +30,6 @@ window.biigle = {};
 window.biigle.$mount = mount;
 window.biigle.$declare = declare;
 window.biigle.$require = require;
-window.biigle.$viewModel = viewModel; // Legacy support.
-window.biigle.$component = component; // Legacy support.
 
 biigle.$declare('api.annotations', AnnotationsApi);
 biigle.$declare('api.images', ImagesApi);
@@ -58,10 +55,10 @@ biigle.$declare('core.mixins.editor', EditorMixin);
 biigle.$declare('core.mixins.loader', LoaderMixin);
 biigle.$declare('core.models.Settings', SettingsModel);
 
-biigle.$declare('utils.debounce', () => debounce);
+biigle.$declare('utils.debounce', debounce);
 biigle.$declare('utils.urlParams', urlParams);
 biigle.$declare('urlParams', urlParams); // Legacy support.
-biigle.$declare('utils.throttle', () => throttle);
+biigle.$declare('utils.throttle', throttle);
 
 biigle.$declare('events', Events);
 biigle.$declare('keyboard', Keyboard);

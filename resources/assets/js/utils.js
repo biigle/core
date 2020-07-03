@@ -56,13 +56,7 @@ let declare = function (namespace, object) {
     namespace = namespace.split('.');
     let name = namespace.pop();
     let parent = require(namespace);
-    // Exclude constructor functions that are returned by Vue.extend().
-    if (typeof object === 'function' && !object.extend) {
-        console.warn(`Use of the biigle.$declare function with a function wrapper is deprecated. Declared functions will not be called in the future. Namespace: ${namespace}`);
-        parent[name] = object();
-    } else {
-        parent[name] = object;
-    }
+    parent[name] = object;
 
     return object;
 };
