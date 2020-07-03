@@ -21,7 +21,6 @@
                     v-show="thumbShown(i)"
                     @error="failed(i)"
                     :src="uri"
-                    :key="i"
                     >
             </div>
             <div v-else class="preview-thumbnail__fallback">
