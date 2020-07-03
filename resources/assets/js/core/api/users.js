@@ -29,9 +29,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.users', Vue.resource('api/v1/users{/id}', {}, {
+export default Vue.resource('api/v1/users{/id}', {}, {
     find: {
         method: 'GET',
         url: 'api/v1/users/find{/query}',
     }
-}));
+});

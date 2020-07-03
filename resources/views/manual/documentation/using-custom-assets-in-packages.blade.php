@@ -54,29 +54,25 @@
         Looking at the HTML of the rendered page, you'll notice that the new <code>script</code> tag is already appended at the correct location following all default scripts. So let's populate the tag with the following script:
     </p>
 <pre>
-biigle.$viewModel('quotes-container', function (element) {
-    var messages = biigle.$require('messages.store');
-    new Vue({
-        el: element,
-        methods: {
-            refreshQuote: function () {
-                messages.info("I don't do anything yet!");
-            },
+biigle.$mount('quotes-container', {
+    methods: {
+        refreshQuote() {
+            biigle.$require('messages').info("I don't do anything yet!");
         },
-    });
+    },
 });
 </pre>
     <p>
-        The script already shows two of the <a href="https://github.com/biigle/core/blob/master/resources/assets/js/main.js">special functions</a> that BIIGLE uses for its JavaScript code <code>$viewModel</code> and <code>$require</code>. These functions make sure that the code is executed at the right time and in the right order. Modern JavaScript has different techniques to accomplish this but this is how BIIGLE evolved and it works well for BIIGLEs module system.
+        The script already shows two of the <a href="https://github.com/biigle/core/blob/master/resources/assets/js/main.js">special functions</a> that BIIGLE uses for its JavaScript code <code>$mount</code> and <code>$require</code>. These functions make sure that the code is executed at the right time and can be shared between modules. In a module, most of the calls to <code>biigle.$require</code> should use the native <code>import</code> statement, instead, but this is not possible in the inline script of this example.
     </p>
     <p>
-        The <code>$viewModel</code> function is used whenever a new Vue instance should be mounted to the DOM of a view. It accepts the ID of the DOM element as a first argument and a callback function that is executed when this element is encountered in the DOM as second argument. Most importantly, it dies <em>not</em> create the Vue instance if the specified element is not found in the DOM. This way you can have many BIIGLE modules active on the same page without them interfering with their Vue instances.
+        The <code>$mount</code> function is used whenever a new Vue instance should be mounted to the DOM of a view. It accepts the ID of the DOM element as a first argument and the argument object of a Vue instance as second argument. The Vue instance is created and mounted when the DOM element is encountered on the page. Most importantly, it does <em>not</em> create the Vue instance if the specified element is not found in the DOM. This way you can have many BIIGLE modules active on the same page without them interfering with their Vue instances.
     </p>
     <p>
-        The <code>$require</code> function returns an object that has been registered using the <code>$declare</code> function before. That's basically all you need to know about it. Take a look at the <a href="https://github.com/biigle/core/blob/master/resources/assets/js/main.js">source code</a> if you want to know more about these functions.
+        The <code>$require</code> function returns an object that has been registered using the <code>$declare</code> function before. That's basically all you need to know about it. Take a look at the <a href="https://github.com/biigle/core/blob/master/resources/assets/js/utils.js">source code</a> if you want to know more about these functions.
     </p>
     <p>
-        The script above creates a new Vue instance when a DOM element with ID <code>quotes-container</code> is encountered. It also uses the object that has been registered as <code>messages.store</code>. The Vue instance has a single method which calls the <code>info</code> function of the messages object.
+        The script above creates a new Vue instance when a DOM element with ID <code>quotes-container</code> is encountered. It also uses the object that has been registered as <code>messages</code>. The Vue instance has a single method which calls the <code>info</code> function of the messages object.
     </p>
     <p>
         Let's edit the <code>content</code> section of our quotes view to connect the <code>refreshQuote</code> function with a button and see if everything works:
@@ -185,26 +181,23 @@ public function quote()
         When all tests pass, you have done everything right! Now let's rewrite our little Vue instance in <code>main.js</code> of the package:
     </p>
 <pre>
-biigle.$viewModel('quotes-container', function (element) {
-    var messages = biigle.$require('messages.store');
-    new Vue({
-        el: element,
-        data: {
-            quote: '',
+biigle.$mount('quotes-container', {
+    data: {
+        quote: '',
+    },
+    methods: {
+        refreshQuote() {
+            let messages = biigle.$require('messages');
+            this.$http.get('quotes/new')
+                .then(this.handleResponse, messages.handleErrorResponse)
         },
-        methods: {
-            refreshQuote: function () {
-                this.$http.get('quotes/new')
-                    .then(this.handleResponse, messages.handleErrorResponse)
-            },
-            handleResponse: function (response) {
-                this.quote = response.body;
-            },
+        handleResponse(response) {
+            this.quote = response.body;
         },
-        created: function () {
-            this.refreshQuote();
-        },
-    });
+    },
+    created() {
+        this.refreshQuote();
+    },
 });
 </pre>
     <p>
@@ -248,7 +241,7 @@ blockquote {
     <h4><a name="build-systems"></a>Build Systems</h4>
 
     <p>
-        You probably noticed that manually publishing your assets every time you make a change can be very annoying. Also, it's common to publish JavaScript and CSS as <em>minified</em> files that are smaller and can be transferred faster to the clients. Build systems can do this automatically for you. A thorough explanation of build systems would be out of scope of this tutorial. Look for examples in the official BIIGLE modules on how to configure and use a build system. The BIIGLE modules use <a href="https://gulpjs.com/">gulp.js</a> with a <a href="https://github.com/mzur/gulp-helpers">custom extension</a> that was written specially for BIIGLE module development.
+        You probably noticed that manually publishing your assets every time you make a change can be very annoying. Also, it's common to publish JavaScript and CSS as <em>minified</em> files that are smaller and can be transferred faster to the clients. Build systems can do this automatically for you. A thorough explanation of build systems would be out of scope of this tutorial. Look for examples in the official BIIGLE modules on how to configure and use a build system. The BIIGLE modules use <a href="https://laravel.com/docs/6.x/mix">Laravel Mix</a> with a <a href="https://github.com/mzur/laravel-mix-artisan-publish">custom extension</a> that was written specially for BIIGLE module development.
     </p>
 
     <h3><a name="conclusion"></a>Conclusion</h3>

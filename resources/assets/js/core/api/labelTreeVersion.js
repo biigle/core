@@ -11,9 +11,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labelTreeVersion', Vue.resource('api/v1/label-tree-versions{/id}', {}, {
+export default Vue.resource('api/v1/label-tree-versions{/id}', {}, {
     save: {
         method: 'POST',
         url: 'api/v1/label-trees{/id}/version',
     },
-}));
+});
