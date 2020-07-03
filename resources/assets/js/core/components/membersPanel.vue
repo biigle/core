@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <typeahead :items="availableUsers" placeholder="User name" @select="selectMember" :value="selectedMemberName" :template="typeaheadTemplate"></typeahead>
                     <select class="form-control" title="Role of the new user" v-model="selectedRole">
-                        <option v-for="role in roles" :key="role.id" :value="role.id" v-text="role.name"></option>
+                        <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
                     </select>
                     <button class="btn btn-default" type="submit" :disabled="!canAttachMember">Add</button>
                 </div>

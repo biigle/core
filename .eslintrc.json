@@ -16,7 +16,8 @@
     ],
     "rules": {
         "no-prototype-builtins": "off",
-        "no-console": ["error", {"allow": ["warn", "error"]}]
+        "no-console": ["error", {"allow": ["warn", "error"]}],
+        "vue/require-v-for-key": "off"
     },
     "globals": {
         "biigle": "readonly",
