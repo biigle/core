@@ -1,3 +1,4 @@
+<script>
 import ImportApi from './api/import';
 import ImportContainer from './mixins/importContainer';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer';
@@ -16,18 +17,20 @@ export default {
     components: {
         typeahead: Typeahead,
     },
-    data: {
-        importToken: null,
-        adminRoleId: null,
-        volumeCandidates: [],
-        labelCandidates: [],
-        conflictingParents: [],
-        userCandidates: [],
-        chosenVolumes: [],
-        labelTreeCandidates: [],
-        typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
-        availableProjects: [],
-        targetProject: null,
+    data() {
+        return {
+            importToken: null,
+            adminRoleId: null,
+            volumeCandidates: [],
+            labelCandidates: [],
+            conflictingParents: [],
+            userCandidates: [],
+            chosenVolumes: [],
+            labelTreeCandidates: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
+            availableProjects: [],
+            targetProject: null,
+        };
     },
     computed: {
         volumes() {
@@ -220,3 +223,4 @@ export default {
             });
     },
 };
+</script>

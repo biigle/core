@@ -1,12 +1,5 @@
-import List from './entityChooserList';
-
-/**
- * A component to choose entities like volumes or users for a list
- *
- * @type {Object}
- */
-export default {
-    template: `<div class="entity-chooser">
+<template>
+    <div class="entity-chooser">
         <entity-chooser-list
             class="entity-chooser-list--left"
             :entities="unchosenFilteredEntities"
@@ -25,7 +18,18 @@ export default {
             :disabled="disabled"
             @select="handleDeselect"
         ></entity-chooser-list>
-    </div>`,
+    </div>
+</template>
+
+<script>
+import List from './entityChooserList';
+
+/**
+ * A component to choose entities like volumes or users for a list
+ *
+ * @type {Object}
+ */
+export default {
     components: {
         entityChooserList: List,
     },
@@ -103,3 +107,4 @@ export default {
         },
     },
 };
+</script>

@@ -1,3 +1,4 @@
+<script>
 import EntityChooser from '../components/entityChooser';
 import {LoaderMixin} from '../import';
 
@@ -22,3 +23,4 @@ export default {
         },
     },
 };
+</script>

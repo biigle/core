@@ -1,3 +1,4 @@
+<script>
 /**
  * An extended mixin for the label tree and volume import view models
  *
@@ -139,3 +140,4 @@ export default {
         this.importLabels = biigle.$require('sync.importLabels');
     },
 };
+</script>

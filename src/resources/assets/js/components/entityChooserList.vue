@@ -1,18 +1,22 @@
+<template>
+    <div class="entity-chooser-list" :class="classObject">
+        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">
+        <ul>
+            <li v-for="e in entities" :key="e.id" @click="select(e)">
+                <span v-text="e.name"></span>
+                <span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
 /**
  * A a list component of the entity chooser
  *
  * @type {Object}
  */
 export default {
-    template: `<div class="entity-chooser-list" :class="classObject">
-        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">
-        <ul>
-            <li v-for="e in entities" @click="select(e)">
-                <span v-text="e.name"></span>
-                <span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>
-            </li>
-        </ul>
-    </div>`,
     props: {
         entities: {
             type: Array,
@@ -52,3 +56,4 @@ export default {
         },
     },
 };
+</script>

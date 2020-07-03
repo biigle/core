@@ -1,3 +1,4 @@
+<script>
 import EntityChooser from './components/entityChooser';
 import {handleErrorResponse} from './import';
 import {LabelTreesApi} from './import';
@@ -21,20 +22,22 @@ export default {
         tab: VueStrap.tab,
         entityChooser: EntityChooser,
     },
-    data: {
-        exportApiUrl: null,
-        allowedExports: [],
-        entities: {
-            volumes: [],
-            labelTrees: [],
-            users: [],
-        },
-        chosenEntities: {
-            volumes: [],
-            labelTrees: [],
-            users: [],
-        },
-        currentTab: 0,
+    data() {
+        return {
+            exportApiUrl: null,
+            allowedExports: [],
+            entities: {
+                volumes: [],
+                labelTrees: [],
+                users: [],
+            },
+            chosenEntities: {
+                volumes: [],
+                labelTrees: [],
+                users: [],
+            },
+            currentTab: 0,
+        };
     },
     computed: {
         indexMap() {
@@ -139,3 +142,4 @@ export default {
         this.fetchEntities(this.indexMap[0]);
     },
 };
+</script>

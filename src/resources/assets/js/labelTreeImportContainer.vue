@@ -1,3 +1,4 @@
+<script>
 import ImportApi from './api/import';
 import ImportContainer from './mixins/importContainer';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer';
@@ -11,15 +12,17 @@ export default{
         ImportContainer,
         LabelTreeImportContainer,
     ],
-    data: {
-        importToken: null,
-        adminRoleId: null,
-        labelCandidates: [],
-        conflictingParents: [],
-        userCandidates: [],
-        labelTreeCandidates: [],
-        chosenLabelTrees: [],
-        chosenLabels: [],
+    data() {
+        return {
+            importToken: null,
+            adminRoleId: null,
+            labelCandidates: [],
+            conflictingParents: [],
+            userCandidates: [],
+            labelTreeCandidates: [],
+            chosenLabelTrees: [],
+            chosenLabels: [],
+        };
     },
     computed: {
         chosenUsers() {
@@ -109,3 +112,4 @@ export default{
             });
     },
 };
+</script>

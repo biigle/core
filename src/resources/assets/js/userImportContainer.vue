@@ -1,3 +1,4 @@
+<script>
 import ImportApi from './api/import';
 import ImportContainer from './mixins/importContainer';
 import {handleErrorResponse} from './import';
@@ -7,10 +8,12 @@ import {handleErrorResponse} from './import';
  */
 export default {
     mixins: [ImportContainer],
-    data: {
-        importToken: null,
-        importCandidates: [],
-        chosenCandidates: [],
+    data() {
+        return {
+            importToken: null,
+            importCandidates: [],
+            chosenCandidates: [],
+        };
     },
     computed: {
         users() {
@@ -50,3 +53,4 @@ export default {
         this.importCandidates = biigle.$require('sync.importCandidates');
     },
 };
+</script>
