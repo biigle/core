@@ -29,9 +29,9 @@ biigle.$declare('annotations.components.settingsTabPlugins', settingsTabPlugins)
 biigle.$declare('annotations.models.LabelAnnotationFilter', LabelAnnotationFilter);
 biigle.$declare('annotations.models.ShapeAnnotationFilter', ShapeAnnotationFilter);
 biigle.$declare('annotations.models.UserAnnotationFilter', UserAnnotationFilter);
-biigle.$declare('annotations.ol.AttachLabelInteraction', () => AttachLabelInteraction);
-biigle.$declare('annotations.ol.TranslateInteraction', () => TranslateInteraction);
-biigle.$declare('annotations.ol.ZoomToNativeControl', () => ZoomToNativeControl);
+biigle.$declare('annotations.ol.AttachLabelInteraction', AttachLabelInteraction);
+biigle.$declare('annotations.ol.TranslateInteraction', TranslateInteraction);
+biigle.$declare('annotations.ol.ZoomToNativeControl', ZoomToNativeControl);
 biigle.$declare('annotations.stores.annotations', AnnotationsStore); // required for SHERPA2BIIGLE
 biigle.$declare('annotations.stores.images', ImagesStore);
 biigle.$declare('annotations.stores.styles', StylesStore);
