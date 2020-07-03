@@ -1,89 +1,98 @@
+<script>
+import Circle from '@biigle/ol/style/Circle';
+import Collection from '@biigle/ol/Collection';
+import DrawInteraction from '@biigle/ol/interaction/Draw';
+import ExportAreaApi from '../api/exportArea';
+import Feature from '@biigle/ol/Feature';
+import Fill from '@biigle/ol/style/Fill';
+import ModifyInteraction from '@biigle/ol/interaction/Modify';
+import Rectangle from '@biigle/ol/geom/Rectangle';
+import Stroke from '@biigle/ol/style/Stroke';
+import Style from '@biigle/ol/style/Style';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
+import {Events} from '../import';
+import {handleErrorResponse} from '../import';
+import {never as neverCondition} from '@biigle/ol/events/condition';
+
 /**
  * The plugin component to edit the export area in the annotation tool.
  *
  * @type {Object}
  */
-biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
+export default {
     props: {
         settings: {
             type: Object,
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             opacityValue: '1',
             currentImage: null,
             isEditing: false,
             exportArea: null,
+            volumeId: null,
         };
     },
     computed: {
-        opacity: function () {
+        opacity() {
             return parseFloat(this.opacityValue);
         },
-        shown: function () {
+        shown() {
             return this.opacity > 0;
         },
-        height: function () {
+        height() {
             return this.currentImage ? this.currentImage.height : 0;
         },
-        hasExportArea: function () {
+        hasExportArea() {
             return this.exportArea !== null;
         },
-        exportAreaApi: function () {
-            return biigle.$require('reports.api.volumes');
-        },
-        volumeId: function () {
-            return biigle.$require('annotations.volumeId');
-        },
-        messages: function () {
-            return biigle.$require('messages.store');
-        },
-        layer: function () {
-            return new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: new ol.Collection(),
+        layer() {
+            return new VectorLayer({
+                source: new VectorSource({
+                    features: new Collection(),
                 }),
                 style: [
-                    new ol.style.Style({
-                        stroke: new ol.style.Stroke({
+                    new Style({
+                        stroke: new Stroke({
                             color: 'white',
                             width: 4
                         }),
-                        image: new ol.style.Circle({
+                        image: new Circle({
                             radius: 6,
-                            fill: new ol.style.Fill({
+                            fill: new Fill({
                                 color: '#666666'
                             }),
-                            stroke: new ol.style.Stroke({
+                            stroke: new Stroke({
                                 color: 'white',
                                 width: 2,
                                 lineDash: [2]
-                            })
-                        })
+                            }),
+                        }),
                     }),
-                    new ol.style.Style({
-                        stroke: new ol.style.Stroke({
+                    new Style({
+                        stroke: new Stroke({
                             color: '#666666',
                             width: 1,
                             lineDash: [2]
-                        })
-                    })
+                        }),
+                    }),
                 ],
                 zIndex: 4,
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
             });
         },
-        drawInteraction: function () {
-            return new ol.interaction.Draw({
+        drawInteraction() {
+            return new DrawInteraction({
                 source: this.layer.getSource(),
                 type: 'Rectangle',
                 style: this.layer.getStyle(),
                 minPoints: 2,
                 maxPoints: 2,
-                geometryFunction: function (coordinates, opt_geometry) {
+                geometryFunction(coordinates, opt_geometry) {
                     if (coordinates.length > 1) {
                         coordinates = [
                             coordinates[0],
@@ -92,26 +101,26 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
                             [coordinates[1][0], coordinates[0][1]]
                         ];
                     }
-                    var geometry = opt_geometry;
+                    let geometry = opt_geometry;
                     if (geometry) {
                        geometry.setCoordinates([coordinates]);
                     } else {
-                        geometry = new ol.geom.Rectangle([coordinates]);
+                        geometry = new Rectangle([coordinates]);
                     }
                     return geometry;
                 }
             });
         },
-        modifyInteraction: function () {
-            return new ol.interaction.Modify({
+        modifyInteraction() {
+            return new ModifyInteraction({
                 features: this.layer.getSource().getFeaturesCollection(),
                 style: this.layer.getStyle(),
-                deleteCondition: ol.events.condition.never
+                deleteCondition: neverCondition,
             });
         },
     },
     methods: {
-        toggleEditing: function () {
+        toggleEditing() {
             this.isEditing = !this.isEditing;
             if (this.isEditing) {
                 this.drawInteraction.setActive(true);
@@ -121,50 +130,47 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
                 this.modifyInteraction.setActive(false);
             }
         },
-        deleteArea: function () {
+        deleteArea() {
             if (this.hasExportArea && confirm('Do you really want to delete the export area?')) {
-                var self = this;
-                var source = this.layer.getSource();
-                var feature = source.getFeatures()[0];
+                let source = this.layer.getSource();
+                let feature = source.getFeatures()[0];
                 source.clear();
-                this.exportAreaApi.delete({id: this.volumeId})
-                    .then(function () {
-                        self.exportArea = null;
-                    })
+                ExportAreaApi.delete({id: this.volumeId})
+                    .then(() => this.exportArea = null)
                     .catch(function (response) {
                         source.addFeature(feature);
-                        self.messages.handleErrorResponse(response);
+                        handleErrorResponse(response);
                     });
             }
         },
-        updateCurrentImage: function (id, image) {
+        updateCurrentImage(id, image) {
             this.currentImage = image;
         },
-        maybeDrawArea: function () {
+        maybeDrawArea() {
             this.clearSource();
             if (this.exportArea && this.height > 0) {
                 // Handle coordinates for tiled and regular images differently.
-                var height = this.currentImage.tiled ? 0 : this.height;
+                let height = this.currentImage.tiled ? 0 : this.height;
 
-                var geometry = new ol.geom.Rectangle([[
+                let geometry = new Rectangle([[
                     // Swap y coordinates for OpenLayers.
                     [this.exportArea[0], height - this.exportArea[1]],
                     [this.exportArea[0], height - this.exportArea[3]],
                     [this.exportArea[2], height - this.exportArea[3]],
                     [this.exportArea[2], height - this.exportArea[1]],
                 ]]);
-                this.layer.getSource().addFeature(new ol.Feature({geometry: geometry}));
+                this.layer.getSource().addFeature(new Feature({geometry: geometry}));
             }
         },
-        handleModifyend: function (e) {
+        handleModifyend(e) {
             this.updateExportArea(e.features.item(0));
         },
-        clearSource: function () {
+        clearSource() {
             this.layer.getSource().clear();
         },
-        handleDrawend: function (e) {
-            var source = this.layer.getSource();
-            var oldFeature = source.getFeatures()[0];
+        handleDrawend(e) {
+            let source = this.layer.getSource();
+            let oldFeature = source.getFeatures()[0];
             source.clear();
             // Remove the feature again if creating it failed.
             this.updateExportArea(e.feature).catch(function () {
@@ -174,33 +180,30 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
                 }
             });
         },
-        updateExportArea: function (feature) {
-            var self = this;
-            var coordinates = feature.getGeometry().getCoordinates()[0];
+        updateExportArea(feature) {
+            let coordinates = feature.getGeometry().getCoordinates()[0];
             // Handle coordinates for tiled and regular images differently.
-            var height = this.currentImage.tiled ? 0 : this.height;
+            let height = this.currentImage.tiled ? 0 : this.height;
             coordinates = [
                 coordinates[0][0], height - coordinates[0][1],
                 coordinates[2][0], height - coordinates[2][1],
             ].map(Math.round);
 
-            var promise = this.exportAreaApi.save({id: this.volumeId}, {coordinates: coordinates})
-                .then(function () {
-                    self.exportArea = coordinates;
-                });
+            let promise = ExportAreaApi.save({id: this.volumeId}, {coordinates: coordinates})
+                .then(() => this.exportArea = coordinates);
 
-            promise.catch(this.messages.handleErrorResponse);
+            promise.catch(handleErrorResponse);
 
             return promise;
         },
-        extendMap: function (map) {
+        extendMap(map) {
             map.addLayer(this.layer);
             map.addInteraction(this.drawInteraction);
             map.addInteraction(this.modifyInteraction);
         },
     },
     watch: {
-        opacity: function (opacity, oldOpacity) {
+        opacity(opacity) {
             if (opacity < 1) {
                 this.settings.set('exportAreaOpacity', opacity);
             } else {
@@ -209,14 +212,16 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
 
             this.layer.setOpacity(opacity);
         },
-        exportArea: function () {
+        exportArea() {
             this.maybeDrawArea();
         },
-        height: function () {
+        height() {
             this.maybeDrawArea();
         },
     },
-    created: function () {
+    created() {
+        this.volumeId = biigle.$require('annotations.volumeId');
+
         if (this.settings.has('exportAreaOpacity')) {
             this.opacityValue = this.settings.get('exportAreaOpacity');
         }
@@ -228,8 +233,8 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
         this.drawInteraction.on('drawend', this.handleDrawend);
         this.modifyInteraction.on('modifyend', this.handleModifyend);
 
-        var events = biigle.$require('events');
-        events.$on('images.change', this.updateCurrentImage);
-        events.$on('annotations.map.init', this.extendMap);
+        Events.$on('images.change', this.updateCurrentImage);
+        Events.$on('annotations.map.init', this.extendMap);
     },
 };
+</script>

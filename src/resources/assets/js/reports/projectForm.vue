@@ -1,13 +1,15 @@
+<script>
+import Form from './mixins/reportForm';
+import ProjectsApi from './api/projectReports';
+
 /**
  * The form for requesting a project report
  */
-biigle.$viewModel('project-report-form', function (element) {
-    var projectId = biigle.$require('reports.projectId');
-
-    new Vue({
-        el: element,
-        mixins: [biigle.$require('reports.mixins.reportForm')],
-        data: {
+export default {
+    mixins: [Form],
+    data() {
+        return {
+            projectId: null,
             allowedOptions: {
                 'Annotations': [
                     'export_area',
@@ -25,11 +27,15 @@ biigle.$viewModel('project-report-form', function (element) {
                     'only_labels',
                 ],
             },
-        },
-        methods: {
-            submit: function () {
-                this.request(projectId, biigle.$require('reports.api.projectReports'));
-            }
-        },
-    });
-});
+        };
+    },
+    methods: {
+        submit() {
+            this.request(this.projectId, ProjectsApi);
+        }
+    },
+    created() {
+        this.projectId = biigle.$require('reports.projectId');
+    },
+};
+</script>

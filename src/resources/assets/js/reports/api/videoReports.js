@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for videos
  *
- * var resource = biigle.$require('reports.api.videoReports');
+ * let resource = biigle.$require('reports.api.videoReports');
  *
  * Request a CSV report:
  *
@@ -11,4 +11,4 @@
  * }).then(...)
  *
  */
-biigle.$declare('reports.api.videoReports', Vue.resource('/api/v1/videos{/id}/reports'));
+export default Vue.resource('/api/v1/videos{/id}/reports');

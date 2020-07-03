@@ -1,13 +1,14 @@
+<script>
+import Form from './mixins/reportForm';
+import VolumesApi from './api/volumeReports';
+
 /**
  * The form for requesting a volume report
  */
-biigle.$viewModel('volume-report-form', function (element) {
-    var volumeId = biigle.$require('reports.volumeId');
-
-    new Vue({
-        el: element,
-        mixins: [biigle.$require('reports.mixins.reportForm')],
-        data: {
+export default {
+    mixins: [Form],
+    data() {
+        return {
             allowedOptions: {
                 'Annotations': [
                     'export_area',
@@ -26,11 +27,15 @@ biigle.$viewModel('volume-report-form', function (element) {
             options: {
                 annotation_session_id: null,
             },
+        };
+    },
+    methods: {
+        submit() {
+            this.request(this.volumeId, VolumesApi);
         },
-        methods: {
-            submit: function () {
-                this.request(volumeId, biigle.$require('reports.api.volumeReports'));
-            },
-        },
-    });
-});
+    },
+    created() {
+        this.volumeId = biigle.$require('reports.volumeId');
+    },
+};
+</script>

@@ -1,7 +1,7 @@
 /**
  * Resource for editing the export area of a volume
  *
- * var resource = biigle.$require('reports.api.volumes');
+ * let resource = biigle.$require('reports.api.volumes');
  *
  * Get the export area:
  * resource.get({id: volumeId}).then(...);
@@ -13,4 +13,4 @@
  * resource.delete({id: columeId}).then(...);
  *
  */
-biigle.$declare('reports.api.volumes', Vue.resource('/api/v1/volumes{/id}/export-area'));
+export default Vue.resource('/api/v1/volumes{/id}/export-area');
