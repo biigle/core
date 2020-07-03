@@ -1,24 +1,32 @@
+<template>
+    <div class="label-trees">
+        <div v-if="typeahead || clearable" class="label-trees__head">
+            <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
+            <typeahead v-if="typeahead" :items="labels" :template="typeaheadTemplate" @select="handleSelect" placeholder="Find label"></typeahead>
+        </div>
+        <div class="label-trees__body">
+            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
+        </div>
+    </div>
+</template>
+
+<script>
+import Typeahead from './labelTypeahead';
+import LabelTree from './labelTree';
+import {Keyboard} from '../import';
+
 /**
  * A component that displays a list of label trees.
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTrees', {
-    template: '<div class="label-trees">' +
-        '<div v-if="typeahead || clearable" class="label-trees__head">' +
-            '<button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>' +
-            '<typeahead v-if="typeahead" :items="labels" :template="typeaheadTemplate" @select="handleSelect" placeholder="Find label"></typeahead>' +
-        '</div>' +
-        '<div class="label-trees__body">' +
-            '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-            '<label-tree :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-        '</div>' +
-    '</div>',
+export default {
     components: {
-        typeahead: biigle.$require('labelTrees.components.labelTypeahead'),
-        labelTree: biigle.$require('labelTrees.components.labelTree'),
+        typeahead: Typeahead,
+        labelTree: LabelTree,
     },
-    data: function () {
+    data() {
         return {
             favourites: [],
             typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.tree.versionedName"></small>',
@@ -68,7 +76,7 @@ biigle.$component('labelTrees.components.labelTrees', {
         },
     },
     computed: {
-        localeCompareSupportsLocales: function () {
+        localeCompareSupportsLocales() {
             try {
               'foo'.localeCompare('bar', 'i');
             } catch (e) {
@@ -78,8 +86,8 @@ biigle.$component('labelTrees.components.labelTrees', {
             return false;
         },
         // All labels of all label trees in a flat, sorted list.
-        labels: function () {
-            var labels = [];
+        labels() {
+            let labels = [];
             this.trees.forEach(function (tree) {
                 Array.prototype.push.apply(labels, tree.labels);
             });
@@ -87,7 +95,7 @@ biigle.$component('labelTrees.components.labelTrees', {
             if (this.localeCompareSupportsLocales) {
                 // Use this to sort label names "natuarally". This is only supported in
                 // modern browsers, though.
-                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
                 labels.sort(function (a, b) {
                     return collator.compare(a.name, b.name);
                 });
@@ -99,24 +107,22 @@ biigle.$component('labelTrees.components.labelTrees', {
 
             return labels;
         },
-        favouriteIds: function () {
-            return this.favourites.map(function (label) {
-                return label.id;
-            });
+        favouriteIds() {
+            return this.favourites.map((label) => label.id);
         },
-        canHaveMoreFavourites: function () {
+        canHaveMoreFavourites() {
             return this.favourites.length < 10;
         },
-        hasFavourites: function () {
+        hasFavourites() {
             return this.favourites.length > 0;
         },
-        ownId: function () {
+        ownId() {
             if (this.id) {
                 return this.id;
             }
 
-            var ids = [];
-            for (var prop in this.trees) {
+            let ids = [];
+            for (let prop in this.trees) {
                 if (!this.trees.hasOwnProperty(prop)) {
                     continue;
                 }
@@ -126,45 +132,45 @@ biigle.$component('labelTrees.components.labelTrees', {
 
             return ids.join('-');
         },
-        favouriteStorageKey: function () {
-            return 'biigle.label-trees.' + this.ownId + '.favourites';
+        favouriteStorageKey() {
+            return `biigle.label-trees.${this.ownId}.favourites`;
         },
     },
     methods: {
-        handleSelect: function (label, e) {
+        handleSelect(label, e) {
             if (label) {
                 this.$emit('select', label, e);
             }
         },
-        handleDeselect: function (label, e) {
+        handleDeselect(label, e) {
             this.$emit('deselect', label, e);
         },
-        clear: function () {
+        clear() {
             this.$emit('clear');
         },
-        handleAddFavourite: function (label) {
+        handleAddFavourite(label) {
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
                 this.favourites.push(label);
                 this.updateFavouriteStorage();
             }
         },
-        handleRemoveFavourite: function (label) {
+        handleRemoveFavourite(label) {
             this.$emit('remove-favourite', label);
-            var index = this.favourites.indexOf(label);
+            let index = this.favourites.indexOf(label);
             if (index !== -1) {
                 this.favourites.splice(index, 1);
             }
             this.updateFavouriteStorage();
         },
-        updateFavouriteStorage: function () {
+        updateFavouriteStorage() {
             if (this.hasFavourites) {
                 localStorage.setItem(this.favouriteStorageKey, JSON.stringify(this.favouriteIds));
             } else {
                 localStorage.removeItem(this.favouriteStorageKey);
             }
         },
-        selectFavourite: function (index) {
+        selectFavourite(index) {
             if (this.favourites[index]) {
                 this.handleSelect(this.favourites[index]);
             }
@@ -173,7 +179,7 @@ biigle.$component('labelTrees.components.labelTrees', {
     watch: {
         trees: {
             immediate: true,
-            handler: function (trees) {
+            handler(trees) {
                 trees.forEach(function (tree) {
                     if (tree.version) {
                         tree.versionedName = tree.name + ' @ ' + tree.version.name;
@@ -184,41 +190,39 @@ biigle.$component('labelTrees.components.labelTrees', {
                     tree.labels.forEach(function (label) {
                         label.tree = tree;
                     });
-                }, this);
+                });
             },
         },
     },
-    mounted: function () {
+    mounted() {
         if (this.showFavourites) {
-            var favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
+            let favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
             if (favouriteIds) {
                 // Keep the ordering of the favourites!
-                var favouriteLabels = [];
+                let favouriteLabels = [];
                 this.labels.forEach(function (label) {
-                    var index = favouriteIds.indexOf(label.id);
+                    let index = favouriteIds.indexOf(label.id);
                     if (index !== -1) {
                         favouriteLabels[index] = label;
                     }
                 });
                 // Remove 'undefined' items in case labels were deleted in the meantime
-                favouriteLabels.filter(Boolean).forEach(function (label) {
+                favouriteLabels.filter(Boolean).forEach((label) => {
                     this.handleAddFavourite(label);
-                }, this);
+                });
             }
 
-            var keyboard = biigle.$require('keyboard');
-            var self = this;
-
-            var bindFavouriteKey = function (key, index) {
-                keyboard.on(key, function() {
-                    self.selectFavourite(index);
-                }, 0, self.listenerSet);
+            let bindFavouriteKey = (key, index) => {
+                Keyboard.on(key, () => {
+                    this.selectFavourite(index);
+                }, 0, this.listenerSet);
             };
 
-            for (var i = 1; i <= 9; i++) {
+            for (let i = 1; i <= 9; i++) {
                 bindFavouriteKey(i.toString(), i - 1);
             }
             bindFavouriteKey('0', 9);
         }
     },
-});
+};
+</script>

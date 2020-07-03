@@ -8,4 +8,4 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('labelTrees.api.mergeLabelTrees', Vue.resource('api/v1/label-trees{/id}/merge-labels'));
+export default Vue.resource('api/v1/label-trees{/id}/merge-labels');

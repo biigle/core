@@ -1,13 +1,16 @@
+<script>
+import LabelFormComponent from '../mixins/labelFormComponent';
+
 /**
  * A component for a form to manually create a new label for a label tree
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.manualLabelForm', {
-    mixins: [biigle.$require('labelTrees.mixins.labelFormComponent')],
+export default {
+    mixins: [LabelFormComponent],
     methods: {
-        submit: function () {
-            var label = {
+        submit() {
+            let label = {
                 name: this.selectedName,
                 color: this.selectedColor,
             };
@@ -17,6 +20,7 @@ biigle.$component('labelTrees.components.manualLabelForm', {
             }
 
             this.$emit('submit', label);
-        }
+        },
     },
-});
+};
+</script>

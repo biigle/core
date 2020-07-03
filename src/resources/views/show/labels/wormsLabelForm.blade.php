@@ -39,7 +39,7 @@
         </div>
         <div class="col-xs-12" v-if="hasSearched">
             <ul class="list-group list-group-restricted">
-                <worms-result-item v-for="result in results" :item="result" :recursive="recursive" :parent="parent" :labels="labels" v-on:select="importItem" inline-template>
+                <worms-result-item v-for="result in results" :key="result.aphia_id" :item="result" :recursive="recursive" :parent="parent" :labels="labels" v-on:select="importItem" inline-template>
                     <li class="list-group-item" :class="classObject">
                         <small class="text-muted" v-text="classification"></small>
                         <div class="clearfix">
