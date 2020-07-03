@@ -1,5 +1,5 @@
-import './annotationsLabelsTabPlugin';
-import './annotationsSettingsTabPlugin';
+import './annotationsLabelsTabPlugins';
+import './annotationsSettingsTabPlugins';
 import './export';
 import AnnotationCatalogContainer from './annotationCatalogContainer';
 import LargoContainer from './largoContainer';
