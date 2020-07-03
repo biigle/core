@@ -1,3 +1,4 @@
+<script>
 import Form from './mixins/reportForm';
 import VideosApi from './api/videoReports';
 
@@ -6,16 +7,18 @@ import VideosApi from './api/videoReports';
  */
 export default {
     mixins: [Form],
-    data: {
-        videoId: null,
-        selectedType: 'VideoAnnotations',
-        selectedVariant: 'Csv',
-        allowedOptions: {
-            'VideoAnnotations': [
-                'separate_label_trees',
-                'only_labels',
-            ],
-        },
+    data() {
+        return {
+            videoId: null,
+            selectedType: 'VideoAnnotations',
+            selectedVariant: 'Csv',
+            allowedOptions: {
+                'VideoAnnotations': [
+                    'separate_label_trees',
+                    'only_labels',
+                ],
+            },
+        };
     },
     methods: {
         submit() {
@@ -26,3 +29,4 @@ export default {
         this.videoId = biigle.$require('reports.videoId');
     },
 };
+</script>

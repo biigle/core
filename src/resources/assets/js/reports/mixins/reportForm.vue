@@ -1,3 +1,4 @@
+<script>
 import {handleErrorResponse} from '../import';
 import {LabelTrees} from '../import';
 import {LoaderMixin} from '../import';
@@ -12,22 +13,24 @@ export default {
     components: {
         labelTrees: LabelTrees,
     },
-    data: {
-        allowedOptions: {},
-        selectedType: '',
-        selectedVariant: '',
-        reportTypes: [],
-        labelTrees: [],
-        hasOnlyLabels: false,
-        success: false,
-        errors: {},
-        options: {
-            export_area: false,
-            newest_label: false,
-            separate_label_trees: false,
-            only_labels: [],
-            aggregate_child_labels: false,
-        },
+    data() {
+        return {
+            allowedOptions: {},
+            selectedType: '',
+            selectedVariant: '',
+            reportTypes: [],
+            labelTrees: [],
+            hasOnlyLabels: false,
+            success: false,
+            errors: {},
+            options: {
+                export_area: false,
+                newest_label: false,
+                separate_label_trees: false,
+                only_labels: [],
+                aggregate_child_labels: false,
+            },
+        };
     },
     computed: {
         flatLabels() {
@@ -149,3 +152,4 @@ export default {
         this.labelTrees = biigle.$require('reports.labelTrees');
     },
 };
+</script>

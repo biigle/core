@@ -1,1 +1,1 @@
-import './settingsTabPlugin';
+import './settingsTabPlugins';
