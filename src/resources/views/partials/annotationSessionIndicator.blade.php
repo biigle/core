@@ -20,16 +20,13 @@
 
     @push('scripts')
         <script type="text/javascript">
-            biigle.$viewModel('annotation-session-indicator', function (element) {
-                new Vue({
-                    el: element,
-                    components: {popover: VueStrap.popover},
-                    methods: {
-                        date: function (d) {
-                            return (new Date(d)).toLocaleString();
-                        },
+            biigle.$mount('annotation-session-indicator', {
+                components: {popover: VueStrap.popover},
+                methods: {
+                    date: function (d) {
+                        return (new Date(d)).toLocaleString();
                     },
-                });
+                },
             });
         </script>
     @endpush
