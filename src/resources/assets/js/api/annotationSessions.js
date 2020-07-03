@@ -1,7 +1,7 @@
 /**
  * Resource for annotation sessions.
  *
- * var resource = biigle.$require('api.annotationSessions');
+ * let resource = biigle.$require('api.annotationSessions');
  *
  * Get all annotation sessions of a volume:
  * resource.query({volume_id: 1}).then(...);
@@ -24,7 +24,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.annotationSessions', Vue.resource('api/v1/annotation-sessions{/id}', {}, {
+export default Vue.resource('api/v1/annotation-sessions{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/volumes{/volume_id}/annotation-sessions',
@@ -33,4 +33,4 @@ biigle.$declare('api.annotationSessions', Vue.resource('api/v1/annotation-sessio
         method: 'POST',
         url: 'api/v1/volumes{/volume_id}/annotation-sessions',
     },
-}));
+});

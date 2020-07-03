@@ -1,7 +1,7 @@
 /**
  * Resource for image labels.
  *
- * var resource = biigle.$require('api.imageLabels');
+ * let resource = biigle.$require('api.imageLabels');
  *
  * Get all labels of an image:
  * resource.query({image_id: 1}).then(...);
@@ -14,7 +14,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.imageLabels', Vue.resource('api/v1/image-labels{/id}', {}, {
+export default Vue.resource('api/v1/image-labels{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/images{/image_id}/labels',
@@ -23,4 +23,4 @@ biigle.$declare('api.imageLabels', Vue.resource('api/v1/image-labels{/id}', {}, 
         method: 'POST',
         url: 'api/v1/images{/image_id}/labels',
     },
-}));
+});

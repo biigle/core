@@ -1,16 +1,24 @@
+<template>
+    <div class="image-grid" @wheel.prevent="scroll">
+        <div class="image-grid__images" ref="images">
+            <image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" :selectable="selectable" :selected-icon="selectedIcon" @select="emitSelect"></image-grid-image>
+        </div>
+        <image-grid-progress v-if="canScroll" :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>
+    </div>
+</template>
+
+<script>
+import Image from './imageGridImage';
+import Progress from './imageGridProgress';
+import {Keyboard} from '../import';
+
 /**
  * A component that displays a grid of lots of images for Largo
  *
  * @type {Object}
  */
-biigle.$component('volumes.components.imageGrid', {
-    template: '<div class="image-grid" @wheel.prevent="scroll">' +
-        '<div class="image-grid__images" ref="images">' +
-            '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" :selectable="selectable" :selected-icon="selectedIcon" @select="emitSelect"></image-grid-image>' +
-        '</div>' +
-        '<image-grid-progress v-if="canScroll" :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
-    '</div>',
-    data: function () {
+export default {
+    data() {
         return {
             clientWidth: 0,
             clientHeight: 0,
@@ -22,8 +30,8 @@ biigle.$component('volumes.components.imageGrid', {
         };
     },
     components: {
-        imageGridImage: biigle.$require('volumes.components.imageGridImage'),
-        imageGridProgress: biigle.$require('volumes.components.imageGridProgress'),
+        imageGridImage: Image,
+        imageGridProgress: Progress,
     },
     props: {
         images: {
@@ -66,81 +74,80 @@ biigle.$component('volumes.components.imageGrid', {
         },
     },
     computed: {
-        columns: function () {
+        columns() {
             // This might be 0 if the clientWidth is not yet initialized, so force 1.
             return Math.max(1, Math.floor(this.clientWidth / (this.width + this.margin)));
         },
-        rows: function () {
+        rows() {
             // This might be 0 if the clientHeight is not yet initialized, so force 1.
             return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
         },
-        imagesOffsetEnd: function () {
+        imagesOffsetEnd() {
             return this.imagesOffset + this.columns * this.rows;
         },
-        displayedImages: function () {
+        displayedImages() {
             return this.images.slice(this.imagesOffset, this.imagesOffsetEnd);
         },
-        progress: function () {
+        progress() {
             return this.offset / (this.columns * this.lastRow);
         },
         // Number of the topmost row of the last "page".
-        lastRow: function () {
+        lastRow() {
             return Math.max(0, Math.ceil(this.images.length / this.columns) - this.rows);
         },
         // The largest possible offset.
-        lastOffset: function () {
+        lastOffset() {
             return this.lastRow * this.columns;
         },
-        canScroll: function () {
+        canScroll() {
             return this.lastRow > 0;
         },
     },
     methods: {
-        updateDimensions: function () {
+        updateDimensions() {
             if (this.$refs.images) {
                 this.clientHeight = this.$refs.images.clientHeight;
                 this.clientWidth = this.$refs.images.clientWidth;
             }
         },
-        scrollRows: function (rows, debounce) {
+        scrollRows(rows, debounce) {
             this.setOffset(this.offset + this.columns * rows, debounce);
         },
-        scroll: function (e) {
+        scroll(e) {
             this.scrollRows((e.deltaY >= 0) ? 1 : -1, true);
         },
-        advanceRow: function () {
+        advanceRow() {
             this.scrollRows(1);
         },
-        advancePage: function () {
+        advancePage() {
             this.scrollRows(this.rows);
         },
-        reverseRow: function () {
+        reverseRow() {
             this.scrollRows(-1);
         },
-        reversePage: function () {
+        reversePage() {
             this.scrollRows(-this.rows);
         },
-        jumpToPercent: function (percent) {
+        jumpToPercent(percent) {
             // The percentage from 0 to 1 goes from row 0 to the topmost row
             // of the last "page" and *not* to the very last row.
             this.setOffset(this.columns * Math.round(this.lastRow * percent));
         },
-        jumpToStart: function () {
+        jumpToStart() {
             this.jumpToPercent(0);
         },
-        jumpToEnd: function () {
+        jumpToEnd() {
             this.jumpToPercent(1);
         },
-        emitSelect: function (image, event) {
+        emitSelect(image, event) {
             this.$emit('select', image, event);
         },
-        setOffset: function (value, debounce) {
+        setOffset(value, debounce) {
             this.offset = Math.max(0, Math.min(this.lastOffset, value));
             clearTimeout(this.imagesOffsetTimeout);
             if (debounce) {
-                var self = this;
-                this.imagesOffsetTimeout = setTimeout(function () {
-                    self.imagesOffset = self.offset;
+                this.imagesOffsetTimeout = setTimeout(() => {
+                    this.imagesOffset = this.offset;
                 }, 25);
             } else {
                 this.imagesOffset = this.offset;
@@ -148,35 +155,35 @@ biigle.$component('volumes.components.imageGrid', {
         },
     },
     watch: {
-        lastOffset: function () {
+        lastOffset() {
             // Update the offset if the grid is scrolled to the very bottom.
             this.setOffset(this.offset);
         },
-        offset: function () {
+        offset() {
             this.$emit('scroll', this.offset);
         },
     },
-    created: function () {
-        var keyboard = biigle.$require('keyboard');
-        keyboard.on('ArrowUp', this.reverseRow, 0, this.listenerSet);
-        keyboard.on('w', this.reverseRow, 0, this.listenerSet);
-        keyboard.on('ArrowDown', this.advanceRow, 0, this.listenerSet);
-        keyboard.on('s', this.advanceRow, 0, this.listenerSet);
-        keyboard.on('ArrowLeft', this.reversePage, 0, this.listenerSet);
-        keyboard.on('a', this.reversePage, 0, this.listenerSet);
-        keyboard.on('ArrowRight', this.advancePage, 0, this.listenerSet);
-        keyboard.on('d', this.advancePage, 0, this.listenerSet);
-        keyboard.on('PageUp', this.reversePage, 0, this.listenerSet);
-        keyboard.on('PageDown', this.advancePage, 0, this.listenerSet);
-        keyboard.on('Home', this.jumpToStart, 0, this.listenerSet);
-        keyboard.on('End', this.jumpToEnd, 0, this.listenerSet);
+    created() {
+        Keyboard.on('ArrowUp', this.reverseRow, 0, this.listenerSet);
+        Keyboard.on('w', this.reverseRow, 0, this.listenerSet);
+        Keyboard.on('ArrowDown', this.advanceRow, 0, this.listenerSet);
+        Keyboard.on('s', this.advanceRow, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.reversePage, 0, this.listenerSet);
+        Keyboard.on('a', this.reversePage, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.advancePage, 0, this.listenerSet);
+        Keyboard.on('d', this.advancePage, 0, this.listenerSet);
+        Keyboard.on('PageUp', this.reversePage, 0, this.listenerSet);
+        Keyboard.on('PageDown', this.advancePage, 0, this.listenerSet);
+        Keyboard.on('Home', this.jumpToStart, 0, this.listenerSet);
+        Keyboard.on('End', this.jumpToEnd, 0, this.listenerSet);
         this.setOffset(this.initialOffset);
     },
-    mounted: function () {
+    mounted() {
         // Only call updateDimensions when the element actually exists.
         window.addEventListener('resize', this.updateDimensions);
         this.$on('resize', this.updateDimensions);
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },
-});
+};
+</script>

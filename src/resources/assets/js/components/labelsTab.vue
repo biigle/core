@@ -1,11 +1,16 @@
+<script>
+import {LabelTrees} from '../import';
+import {LoaderMixin} from '../import';
+import {PowerToggle} from '../import';
+
 /**
  * View model for the volume filter tab
  */
-biigle.$component('volumes.components.labelsTab', {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
-        powerToggle: biigle.$require('core.components.powerToggle'),
+        labelTrees: LabelTrees,
+        powerToggle: PowerToggle,
     },
     props: {
         volumeId: {
@@ -21,23 +26,27 @@ biigle.$component('volumes.components.labelsTab', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
-            labelTrees: biigle.$require('volumes.labelTrees'),
+            labelTrees: [],
         };
     },
     methods: {
-        handleSelectedLabel: function (label) {
+        handleSelectedLabel(label) {
             this.$emit('select', label);
         },
-        handleDeselectedLabel: function (label) {
+        handleDeselectedLabel(label) {
             this.$emit('deselect', label);
         },
-        enableLabels: function () {
+        enableLabels() {
             this.$emit('enable-labels');
         },
-        disableLabels: function () {
+        disableLabels() {
             this.$emit('disable-labels');
         },
     },
-});
+    created() {
+        this.labelTrees = biigle.$require('volumes.labelTrees');
+    },
+};
+</script>

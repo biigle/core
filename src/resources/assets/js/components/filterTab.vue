@@ -1,10 +1,16 @@
+<script>
+import FiltersStore from '../stores/filters';
+import {handleErrorResponse} from '../import';
+import {LoaderMixin} from '../import';
+import {PowerToggle} from '../import';
+
 /**
  * View model for the volume filter tab
  */
-biigle.$component('volumes.components.filterTab', {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        powerToggle: biigle.$require('core.components.powerToggle'),
+        powerToggle: PowerToggle,
     },
     props: {
         volumeId: {
@@ -24,9 +30,9 @@ biigle.$component('volumes.components.filterTab', {
             default: false,
         },
     },
-    data: function () {
+    data() {
         return {
-            filters: biigle.$require('volumes.stores.filters'),
+            filters: FiltersStore,
             rules: [],
             selectedFilterId: null,
             negate: false,
@@ -35,27 +41,27 @@ biigle.$component('volumes.components.filterTab', {
         };
     },
     computed: {
-        selectedFilter: function () {
+        selectedFilter() {
             return this.getFilter(this.selectedFilterId);
         },
-        hasSelectComponent: function () {
+        hasSelectComponent() {
             return this.selectedFilter && this.selectedFilter.selectComponent;
         },
-        selectComponent: function () {
+        selectComponent() {
             return this.selectedFilter.selectComponent;
         },
-        hasRules: function () {
+        hasRules() {
             return this.rules.length > 0;
         },
-        sequence: function () {
+        sequence() {
             if (!this.hasRules) {
                 return this.imageIds;
             }
 
-            var only = {};
-            var except = {};
-            var negatedRules = 0;
-            var nonNegatedRules = 0;
+            let only = {};
+            let except = {};
+            let negatedRules = 0;
+            let nonNegatedRules = 0;
 
             this.rules.forEach(function (rule) {
                 if (rule.negate) {
@@ -75,66 +81,62 @@ biigle.$component('volumes.components.filterTab', {
                 if (nonNegatedRules > 0) {
                     // All IDs that occur in every non-negated rule and not in a negated
                     // rule. Example: a && b && !c && !d === a && b && !(c || d)
-                    return this.imageIds.filter(function (id) {
-                        return only[id] === nonNegatedRules && !except.hasOwnProperty(id);
-                    });
+                    return this.imageIds.filter(
+                        id => only[id] === nonNegatedRules && !except.hasOwnProperty(id)
+                    );
                 } else {
                     // All IDs that don't occur in a negated rule.
-                    return this.imageIds.filter(function (id) {
-                        return !except.hasOwnProperty(id);
-                    });
+                    return this.imageIds.filter((id) => !except.hasOwnProperty(id));
                 }
             } else {
                 if (negatedRules > 0) {
                     // All IDs that occur in a non-negated rule or not in every negated
                     // rule. Example: a || b || !c || !d === a || b || !(c && d)
-                    return this.imageIds.filter(function (id) {
-                        return only.hasOwnProperty(id) || except[id] !== negatedRules;
-                    });
+                    return this.imageIds.filter(
+                        (id) => only.hasOwnProperty(id) || except[id] !== negatedRules
+                    );
                 } else {
                     // All IDs that occur in a non-negated rule.
-                    return this.imageIds.filter(function (id) {
-                        return only.hasOwnProperty(id);
-                    });
+                    return this.imageIds.filter((id) => only.hasOwnProperty(id));
                 }
             }
         },
-        inFilterMode: function () {
+        inFilterMode() {
             return this.mode === 'filter';
         },
-        inFlagMode: function () {
+        inFlagMode() {
             return this.mode === 'flag';
         },
-        usesAndOperator: function () {
+        usesAndOperator() {
             return this.operator === 'and';
         },
-        usesOrOperator: function () {
+        usesOrOperator() {
             return this.operator === 'or';
         },
-        helpText: function () {
+        helpText() {
             return this.selectedFilter ? this.selectedFilter.help : null;
         },
         // Use "filter2" to avoid conflicts with the previous version of the volume
         // filter written in AngularJS.
-        rulesStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.rules';
+        rulesStorageKey() {
+            return `biigle.volumes.${this.volumeId}.filter2.rules`;
         },
-        modeStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.mode';
+        modeStorageKey() {
+            return `biigle.volumes.${this.volumeId}.filter2.mode`;
         },
-        operatorStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.operator';
+        operatorStorageKey() {
+            return `biigle.volumes.${this.volumeId}.filter2.operator`;
         },
     },
     methods: {
-        filterValid: function (filter) {
+        filterValid(filter) {
             return typeof filter.id === 'string' &&
                 typeof filter.label === 'string' &&
                 typeof filter.listComponent === 'object' &&
                 typeof filter.getSequence === 'function';
         },
-        getFilter: function (id) {
-            for (var i = this.filters.length - 1; i >= 0; i--) {
+        getFilter(id) {
+            for (let i = this.filters.length - 1; i >= 0; i--) {
                 if (this.filters[i].id === id) {
                     return this.filters[i];
                 }
@@ -142,17 +144,17 @@ biigle.$component('volumes.components.filterTab', {
 
             return null;
         },
-        hasRule: function (rule) {
+        hasRule(rule) {
             return this.rules.findIndex(function (item) {
                 return item.id === rule.id &&
                     item.negate === rule.negate &&
                     item.data === rule.data;
             }) !== -1;
         },
-        addRule: function (data) {
+        addRule(data) {
             if (!this.selectedFilter) return;
 
-            var rule = {
+            let rule = {
                 id: this.selectedFilter.id,
                 data: data,
                 negate: this.negate,
@@ -161,75 +163,69 @@ biigle.$component('volumes.components.filterTab', {
             if (this.hasRule(rule)) return;
 
             this.startLoading();
-            var self = this;
-
             this.selectedFilter.getSequence(this.volumeId, data)
-                .catch(biigle.$require('messages.store').handleErrorResponse)
-                .then(function (response) {
-                    self.ruleAdded(rule, response);
-                })
+                .catch(handleErrorResponse)
+                .then((response) => this.ruleAdded(rule, response))
                 .finally(this.finishLoading);
         },
-        refreshRule: function (rule) {
-            var filter = this.getFilter(rule.id);
+        refreshRule(rule) {
+            let filter = this.getFilter(rule.id);
             if (!filter) return;
 
             this.startLoading();
             filter.getSequence(this.volumeId, rule.data)
-                .catch(biigle.$require('messages.store').handleErrorResponse)
-                .then(function (response) {
-                    rule.sequence = response.data;
-                })
+                .catch(handleErrorResponse)
+                .then((response) => rule.sequence = response.data)
                 .finally(this.finishLoading);
         },
-        ruleAdded: function (rule, response) {
+        ruleAdded(rule, response) {
             rule.sequence = response.data;
             this.rules.push(rule);
         },
-        removeRule: function (index) {
+        removeRule(index) {
             this.rules.splice(index, 1);
         },
-        reset: function () {
+        reset() {
             this.rules = [];
             this.selectedFilterId = null;
             this.negate = false;
             this.mode = 'filter';
             this.operator = 'and';
         },
-        activateFilterMode: function () {
+        activateFilterMode() {
             this.mode = 'filter';
         },
-        activateFlagMode: function () {
+        activateFlagMode() {
             this.mode = 'flag';
         },
-        activateAndOperator: function () {
+        activateAndOperator() {
             this.operator = 'and';
         },
-        activateOrOperator: function () {
+        activateOrOperator() {
             this.operator = 'or';
         },
-        emitUpdate: function () {
+        emitUpdate() {
             this.$emit('update', this.sequence, this.mode, this.hasRules);
         },
-        getListComponent: function (rule) {
-            for (var i = this.filters.length - 1; i >= 0; i--) {
+        getListComponent(rule) {
+            for (let i = this.filters.length - 1; i >= 0; i--) {
                 if (this.filters[i].id === rule.id) {
                     return this.filters[i].listComponent;
                 }
             }
         },
-        enableFilenames: function () {
+        enableFilenames() {
             this.$emit('enable-filenames');
         },
-        disableFilenames: function () {
+        disableFilenames() {
             this.$emit('disable-filenames');
         },
     },
     watch: {
-        sequence: function () {
+        sequence() {
             this.emitUpdate();
         },
-        mode: function () {
+        mode() {
             this.emitUpdate();
             if (this.mode !== 'filter') {
                 localStorage.setItem(this.modeStorageKey, this.mode);
@@ -237,7 +233,7 @@ biigle.$component('volumes.components.filterTab', {
                 localStorage.removeItem(this.modeStorageKey);
             }
         },
-        operator: function () {
+        operator() {
             this.emitUpdate();
             if (this.operator !== 'and') {
                 localStorage.setItem(this.operatorStorageKey, this.operator);
@@ -246,7 +242,7 @@ biigle.$component('volumes.components.filterTab', {
             }
         },
         rules: {
-            handler: function () {
+            handler() {
                 if (this.rules.length > 0) {
                     localStorage.setItem(
                         this.rulesStorageKey,
@@ -259,31 +255,32 @@ biigle.$component('volumes.components.filterTab', {
             deep: true,
         },
     },
-    created: function () {
-        var filter;
-        for (var i = 0; i < this.filters.length; i++) {
+    created() {
+        let filter;
+        for (let i = 0; i < this.filters.length; i++) {
             filter = this.filters[i];
 
             if (!this.filterValid(filter)) {
-                console.error('Filter ' + filter.id + ' invalid. Ignoring...');
+                console.error(`Filter ${filter.id} invalid. Ignoring...`);
                 this.filters.splice(i, 1);
             }
         }
 
         // Load saved state from local storage
-        var rules = JSON.parse(localStorage.getItem(this.rulesStorageKey));
+        let rules = JSON.parse(localStorage.getItem(this.rulesStorageKey));
         if (rules) {
             this.rules = rules;
         }
 
-        var mode = localStorage.getItem(this.modeStorageKey);
+        let mode = localStorage.getItem(this.modeStorageKey);
         if (mode) {
             this.mode = mode;
         }
 
-        var operator = localStorage.getItem(this.operatorStorageKey);
+        let operator = localStorage.getItem(this.operatorStorageKey);
         if (operator) {
             this.operator = operator;
         }
     },
-});
+};
+</script>
