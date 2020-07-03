@@ -18,7 +18,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.annotations', Vue.resource('api/v1/annotations{/id}', {}, {
+export default Vue.resource('api/v1/annotations{/id}', {}, {
     attachLabel: {
         method: 'POST',
         url: 'api/v1/annotations{/id}/labels',
@@ -27,4 +27,4 @@ biigle.$declare('api.annotations', Vue.resource('api/v1/annotations{/id}', {}, {
         method: 'DELETE',
         url: 'api/v1/annotation-labels{/annotation_label_id}',
     },
-}));
+});

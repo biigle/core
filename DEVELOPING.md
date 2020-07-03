@@ -77,10 +77,9 @@ The BIIGLE modules are installed by Composer and located in the `vendor/biigle/`
 4. Install JavaScript dependencies of the module:
    ```
    npm install
-   npm install -g gulp-cli
    ```
 
-Now you can build the JavaScript dependencies with the `gulp` command. Use `gulp watch` to continuously monitor and build the files while you develop. Before you commit, run `gulp --production` to commit only the minified versions of the JavaScript files.
+Now you can build the JavaScript dependencies with the `npm run dev` command. Use `npm run watch` to continuously monitor and build the files while you develop. Before you commit, run `npm run prod` to commit only the minified versions of the JavaScript files and `npm run lint` to check for errors.
 
 Once you are finished with your implementation and want to propose it to be merged into the official BIIGLE module, create a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
 

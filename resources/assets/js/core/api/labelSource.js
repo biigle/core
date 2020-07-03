@@ -9,4 +9,4 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labelSource', Vue.resource('api/v1/label-sources{/id}/find'));
+export default Vue.resource('api/v1/label-sources{/id}/find');

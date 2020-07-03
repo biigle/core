@@ -85,6 +85,20 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->assertEquals('10.5281/zenodo.xxxxxxx', $version->doi);
     }
 
+    public function testStoreDoiEmpty()
+    {
+        $master = $this->labelTree();
+        $master->addMember($this->admin(), Role::adminId());
+        $this->beAdmin();
+        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+                'name' => 'v1.0',
+                'doi' => '',
+            ])
+            ->assertStatus(200);
+        $version = $master->versions()->first();
+        $this->assertNull($version->doi);
+    }
+
     public function testUpdate()
     {
         $tree = $this->labelTree();
