@@ -1,13 +1,19 @@
+<script>
+import AnnotationPatch from'./annotationPatch';
+import VolumesApi from '../api/volumes';
+import {Events} from '../import';
+import {LoaderMixin} from '../import';
+
 /**
  * The plugin component to show example annotation patches in the labels tab of the
  * annotation tool.
  *
  * @type {Object}
  */
-biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = {
-    mixins: [biigle.$require('core.mixins.loader')],
+export default {
+    mixins: [LoaderMixin],
     components: {
-        annotationPatch: biigle.$require('largo.components.annotationPatch'),
+        annotationPatch: AnnotationPatch,
     },
     props: {
         label: {
@@ -22,7 +28,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
             default: 3,
         },
     },
-    data: function () {
+    data() {
         return {
             exampleLabel: null,
             exampleAnnotations: [],
@@ -31,45 +37,44 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         };
     },
     computed: {
-        isShown: function () {
+        isShown() {
             return this.shown && this.label !== null;
         },
-        hasExamples: function () {
+        hasExamples() {
             return this.exampleLabel && this.exampleAnnotations && Object.keys(this.exampleAnnotations).length > 0;
-        },
-        volumesApi: function () {
-            return  biigle.$require('largo.api.volumes');
         },
     },
     methods: {
-        parseResponse: function (response) {
+        parseResponse(response) {
             return response.data;
         },
-        setExampleAnnotations: function (args) {
-            // Delete the cached item if there is less than the desired number of example
-            // annotations. Maybe there are more the next time we fetch them again.
+        setExampleAnnotations(args) {
+            // Delete the cached item if there is less than the desired number of
+            // example annotations. Maybe there are more the next time we fetch them
+            // again.
             if (!args[0].hasOwnProperty('annotations') || Object.keys(args[0].annotations).length < this.count) {
                 delete this.cache[args[1]];
             }
 
             // Also delete the cached item if there are only examples with a similar
-            // label. Maybe there are examples from the requested label the next time.
+            // label. Maybe there are examples from the requested label the next
+            // time.
             if (!args[0].hasOwnProperty('label') || args[0].label.id !== args[1]) {
                 delete this.cache[args[1]];
             }
 
             // Only set the example annotations if the received data belongs to the
-            // currently selected label. The user might have selected another label in
-            // the meantime.
+            // currently selected label. The user might have selected another label
+            // in the meantime.
             if (this.label && this.label.id === args[1]) {
                 this.exampleAnnotations = args[0].annotations;
                 this.exampleLabel = args[0].label;
             }
         },
-        updateShown: function (shown) {
+        updateShown(shown) {
             this.shown = shown;
         },
-        updateExampleAnnotations: function () {
+        updateExampleAnnotations() {
             this.exampleAnnotations = [];
 
             // Note that this includes the check for label !== null.
@@ -77,7 +82,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
                 this.startLoading();
 
                 if (!this.cache.hasOwnProperty(this.label.id)) {
-                    this.cache[this.label.id] = this.volumesApi.queryExampleAnnotations({
+                    this.cache[this.label.id] = VolumesApi.queryExampleAnnotations({
                             id: this.volumeId,
                             label_id: this.label.id,
                             take: this.count,
@@ -92,14 +97,15 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         },
     },
     watch: {
-        label: function () {
+        label() {
             this.updateExampleAnnotations();
         },
-        shown: function () {
+        shown() {
             this.updateExampleAnnotations();
         },
     },
-    created: function () {
-        biigle.$require('events').$on('settings.exampleAnnotations', this.updateShown);
+    created() {
+        Events.$on('settings.exampleAnnotations', this.updateShown);
     },
 };
+</script>

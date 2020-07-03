@@ -1,11 +1,15 @@
+<script>
+import {Events} from '../import';
+import {PowerToggle} from '../import';
+
 /**
  * The plugin component to change the settings whether to show the example annotations.
  *
  * @type {Object}
  */
-biigle.$require('annotations.components.settingsTabPlugins').exampleAnnotations = {
+export default {
     components: {
-        powerButton: biigle.$require('annotations.components.powerButton'),
+        powerButton: PowerToggle,
     },
     props: {
         settings: {
@@ -13,29 +17,30 @@ biigle.$require('annotations.components.settingsTabPlugins').exampleAnnotations 
             required: true,
         },
     },
-    data: function () {
+    data() {
         return {
             isShown: true,
         };
     },
     methods: {
-        hide: function () {
+        hide() {
             this.isShown = false;
             this.settings.set('exampleAnnotations', false);
         },
-        show: function () {
+        show() {
             this.isShown = true;
             this.settings.delete('exampleAnnotations');
         },
     },
     watch: {
-        isShown: function (shown) {
-            biigle.$require('events').$emit('settings.exampleAnnotations', shown);
+        isShown(shown) {
+            Events.$emit('settings.exampleAnnotations', shown);
         },
     },
-    created: function () {
+    created() {
         if (this.settings.has('exampleAnnotations')) {
             this.isShown = this.settings.get('exampleAnnotations');
         }
     },
 };
+</script>

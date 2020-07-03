@@ -11,9 +11,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('largo.api.projects', Vue.resource('api/v1/projects{/id}/largo', {}, {
+export default Vue.resource('api/v1/projects{/id}/largo', {}, {
     queryAnnotations: {
         method: 'GET',
         url: 'api/v1/projects{/id}/annotations/filter/label{/label_id}',
     }
-}));
+});

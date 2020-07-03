@@ -9,7 +9,7 @@
                     Examples with label <strong v-text="exampleLabel.name"></strong>, may be similar to <strong v-text="label.name"></strong>:
                 </p>
                 <div class="largo-example-annotations__images">
-                    <annotation-patch v-for="(uuid, id) in exampleAnnotations" :id="id" :uuid="uuid" :label="label" empty-src="{{ asset(config('thumbnails.empty_url')) }}" url-template="{{Storage::disk(config('largo.patch_storage_disk'))->url(':prefix/:id.'.config('largo.patch_format'))}}" inline-template>
+                    <annotation-patch v-for="(uuid, id) in exampleAnnotations" :key="id" :id="id" :uuid="uuid" :label="label" empty-src="{{ asset(config('thumbnails.empty_url')) }}" url-template="{{Storage::disk(config('largo.patch_storage_disk'))->url(':prefix/:id.'.config('largo.patch_format'))}}" inline-template>
                         <img class="largo-example-annotation" :src="src" :title="title" v-on:error="showEmptyImage">
                     </annotation-patch>
                 </div>

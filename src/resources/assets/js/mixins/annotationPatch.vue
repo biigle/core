@@ -1,14 +1,16 @@
-biigle.$component('largo.mixins.annotationPatch', {
+<script>
+export default {
     computed: {
-        patchPrefix: function () {
+        patchPrefix() {
             return this.uuid[0] + this.uuid[1] + '/' + this.uuid[2] + this.uuid[3] + '/' + this.uuid;
         },
     },
     methods: {
-        getUrl: function () {
+        getUrl() {
             return this.urlTemplate
                 .replace(':prefix', this.patchPrefix)
                 .replace(':id', this.id);
         },
     },
-});
+};
+</script>
