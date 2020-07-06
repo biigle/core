@@ -36,6 +36,7 @@
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
         "filp/whoops": "^2.0",
+        "friendsofphp/php-cs-fixer": "^2.16",
         "fzaninotto/faker": "^1.4",
         "johnkary/phpunit-speedtrap": "^3.0",
         "mockery/mockery": "^1.0",
@@ -92,7 +93,7 @@
             "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
         ],
         "fix": [
-            "php-cs-fixer fix --config='.php_cs'"
+            "@php vendor/bin/php-cs-fixer fix --config='.php_cs'"
         ],
         "doc": [
             "rm -rf public/doc/server",
