@@ -24,7 +24,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      *
      * Public for testability.
      *
-     * @var Collection
+     * @var \Illuminate\Support\Collection
      */
     public $ids;
 
@@ -66,7 +66,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Collection $ids IDs oth the images to generate thumbnails for.
+     * @param \Illuminate\Support\Collection $ids IDs oth the images to generate thumbnails for.
      *
      * @return void
      */

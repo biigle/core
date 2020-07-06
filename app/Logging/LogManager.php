@@ -108,7 +108,7 @@ class LogManager
             return array_reduce($filenames, function ($carry, $filename) use ($days) {
                 $content = $this->getLogFileContent($filename);
 
-                return array_reduce($days, function ($carry, $day) use  ($content) {
+                return array_reduce($days, function ($carry, $day) use ($content) {
                     return $carry + substr_count($content, "[{$day}");
                 }, $carry);
             }, 0);
@@ -116,7 +116,7 @@ class LogManager
             $messages = $this->getRedisLogMessages();
 
             return array_reduce($messages, function ($carry, $message) use ($days) {
-                return array_reduce($days, function ($carry, $day) use  ($message) {
+                return array_reduce($days, function ($carry, $day) use ($message) {
                     // There are two possible formates in which the time can be stored.
                     return $carry + substr_count($message, "\"datetime\":\"{$day}T") + substr_count($message, "\"datetime\":{\"date\":\"{$day}");
                 }, $carry);

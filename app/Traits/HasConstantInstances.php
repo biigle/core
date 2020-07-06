@@ -32,7 +32,7 @@ trait HasConstantInstances
      * "myNameId".
      * @param mixed $arguments
      *
-     * @return \Illuminate\Eloquent\Model|int
+     * @return \Illuminate\Database\Eloquent\Model|int
      */
     public static function __callStatic($key, $arguments)
     {

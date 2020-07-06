@@ -220,7 +220,7 @@ class LabelTree extends Model
     /**
      * Add a new member with a certain role.
      *
-     * @param User|id $user
+     * @param User|int $user
      * @param Role|int $role
      */
     public function addMember($user, $role)

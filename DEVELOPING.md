@@ -60,6 +60,10 @@ Follow these steps to create a new project and volume with test images:
 
 You can run the tests with `composer test`. The first time might fail since the testing database container needs to start up. To run only a subset of the tests, use `composer testf <pattern>` with `<pattern>` being a string that matches the test class or function that you want to run.
 
+## Runing static analysis and CS fixes
+
+Static analysis for PHP can be run with `composer lint` and for JavaScript with `npm run lint`. These checks must pass before a pull request is accepted. In addition to that, you can fix PHP coding style issues with `composer fix`.
+
 ## Developing a module
 
 The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applied in the running development instance.
