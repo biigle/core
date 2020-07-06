@@ -20,7 +20,9 @@ export default {
             renderCurrentTime: -1,
             refreshLastTime: Date.now(),
             extent: [0, 0, 0, 0],
-            minResolution: 0.25,
+            // Allow a maximum of 100x magnification. More cannot be represented in the
+            // URL parameters.
+            minResolution: 0.01,
         };
     },
     methods: {
