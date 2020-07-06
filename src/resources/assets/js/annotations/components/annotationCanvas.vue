@@ -626,8 +626,9 @@ export default {
                 center: center,
                 resolution: this.resolution,
                 zoomFactor: 2,
-                // Allow a maximum of 4x magnification for non-tiled images.
-                minResolution: 0.25,
+                // Allow a maximum of 100x magnification for non-tiled images. More
+                // cannot be represented in the URL parameters.
+                minResolution: 0.01,
                 // Restrict movement.
                 extent: extent
             }));
