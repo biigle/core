@@ -83,6 +83,7 @@
     .largo-example-annotation {
         height: 125px;
         width: auto;
+        image-orientation: none;
 
         &:not(:last-child) {
             margin-right: .5em;
