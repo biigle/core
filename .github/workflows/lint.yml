@@ -46,5 +46,8 @@ jobs:
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
-    - name: Run ESLint
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Run Psalm
       run: composer lint
