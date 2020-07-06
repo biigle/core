@@ -10,7 +10,7 @@ class VolumeImageUnique implements Rule
     /**
      * The filenames of the images that already exist.
      *
-     * @var Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $images;
 

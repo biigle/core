@@ -9,7 +9,7 @@ class DestroyPinnedProject extends FormRequest
     /**
      * The project to unpin.
      *
-     * @var Project
+     * @var \Biigle\Project
      */
     public $project;
 

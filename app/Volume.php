@@ -112,7 +112,7 @@ class Volume extends Model
     /**
      * Sets the media type of this volume.
      *
-     * @param Biigle\MediaType $mediaType
+     * @param MediaType $mediaType
      * @return void
      */
     public function setMediaType($mediaType)
@@ -298,7 +298,7 @@ class Volume extends Model
     /**
      * Several images that can be used for the preview thumbnail of a volume.
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailsAttribute()
     {

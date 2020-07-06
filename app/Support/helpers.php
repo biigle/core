@@ -23,7 +23,7 @@ if (!function_exists('readable_number')) {
     /**
      * Shorten a large number to a readable size, e.g. 154222 => 154k.
      *
-     * @param  number  $n
+     * @param  int|float  $n
      * @return string
      */
     function readable_number($n)
