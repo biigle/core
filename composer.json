@@ -97,6 +97,9 @@
         "doc": [
             "rm -rf public/doc/server",
             "php sami.phar update sami.php -v"
+        ],
+        "lint": [
+            "@php vendor/bin/psalm"
         ]
     },
     "config": {
