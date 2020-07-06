@@ -38,6 +38,7 @@
 <script type="text/javascript">
     biigle.$declare('projects.videos', {!!
         \Biigle\Modules\Videos\Video::where('project_id', $project->id)
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->each(function ($item) {
                 $item->append('thumbnailUrl');
