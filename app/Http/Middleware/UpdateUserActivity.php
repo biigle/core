@@ -19,7 +19,7 @@ class UpdateUserActivity
     /**
      * Handle an outgoing response.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  Closure  $next
      * @return mixed
      */

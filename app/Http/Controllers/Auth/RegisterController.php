@@ -10,7 +10,7 @@ use Notification;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreUser;
- use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Biigle\Notifications\RegistrationConfirmation;

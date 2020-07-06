@@ -37,7 +37,7 @@ class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations that are visible for a certain user.
      *
-     * @param Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Database\Query\Builder $query
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
      * @return \Illuminate\Database\Eloquent\Builder
@@ -64,7 +64,7 @@ class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations that have a certain label attached.
      *
-     * @param Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Database\Query\Builder $query
      * @param Label $label
      *
      * @return \Illuminate\Database\Eloquent\Builder
@@ -79,7 +79,7 @@ class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
-     * @param Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
      * @return \Illuminate\Database\Eloquent\Builder

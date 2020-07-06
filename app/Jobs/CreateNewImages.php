@@ -46,7 +46,7 @@ class CreateNewImages extends Job implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @throws QueryException If there was an error creating the images (e.g. if there
+     * @throws \Illuminate\Database\QueryException If there was an error creating the images (e.g. if there
      * were duplicate filenames).
      */
     public function handle()

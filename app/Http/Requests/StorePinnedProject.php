@@ -9,7 +9,7 @@ class StorePinnedProject extends FormRequest
     /**
      * The project to pin.
      *
-     * @var Project
+     * @var \Biigle\Project
      */
     public $project;
 

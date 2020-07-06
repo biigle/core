@@ -62,7 +62,7 @@ class AnnotationSession extends Model
      * @param Image $image The image to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function getImageAnnotations(Image $image, User $user)
     {
@@ -108,7 +108,7 @@ class AnnotationSession extends Model
      *
      * This is **not** an Eloquent relation!
      *
-     * @return Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function annotations()
     {

@@ -33,8 +33,8 @@ class SystemMessage extends Model
     /**
      * All published system messages.
      *
-     * @param Illuminate\Database\Query\Builder $query
-     * @return Illuminate\Database\Query\Builder
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
      */
     public function scopePublished($query)
     {
