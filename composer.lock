@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5708fa10bd925d0c2ee08c3362d4418",
+    "content-hash": "b04f8aed63a0b3340efee04e898ee4a4",
     "packages": [
         {
             "name": "biigle/laravel-file-cache",
@@ -8268,7 +8268,8 @@
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-vips": "*"
+        "ext-vips": "*",
+        "ext-soap": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "1.1.0"
