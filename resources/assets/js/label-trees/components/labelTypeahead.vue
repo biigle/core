@@ -1,5 +1,5 @@
 <script>
-import {Typeahead} from '../import';
+import Typeahead from '../../core/components/typeahead';
 
 /**
  * A component that displays a single label of a label tree.

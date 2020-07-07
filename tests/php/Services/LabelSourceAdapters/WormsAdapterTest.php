@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\LabelTrees\Services\LabelSourceAdapters;
+namespace Biigle\Services\LabelSourceAdapters;
 
 use App;
 use Mockery;
@@ -10,7 +10,7 @@ use Biigle\Tests\LabelTest;
 use Illuminate\Http\Request;
 use Biigle\Tests\LabelTreeTest;
 use Illuminate\Validation\ValidationException;
-use Biigle\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter;
+use Biigle\Services\LabelSourceAdapters\WormsAdapter;
 
 class WormsAdapterTest extends TestCase
 {

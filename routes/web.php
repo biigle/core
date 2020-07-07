@@ -161,6 +161,48 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-logs-show',
             'uses' => 'LogsController@show',
         ]);
+
+        $router->get('label-trees', [
+            'as' => 'admin-global-label-trees',
+            'uses' => 'LabelTreesController@index',
+        ]);
+    });
+
+    $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {
+        $router->get('/', [
+            'as'   => 'label-trees-index',
+            'uses' => 'LabelTreesController@index',
+        ]);
+
+        $router->get('create', [
+            'as'   => 'label-trees-create',
+            'uses' => 'LabelTreesController@create',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'label-trees',
+            'uses' => 'LabelTreesController@show',
+        ]);
+
+        $router->get('{id}/merge', [
+            'as'   => 'label-trees-merge-index',
+            'uses' => 'LabelTreeMergeController@index',
+        ]);
+
+        $router->get('{id}/merge/{id2}', [
+            'as'   => 'label-trees-merge',
+            'uses' => 'LabelTreeMergeController@show',
+        ]);
+
+        $router->get('{id}/versions/{id2}', [
+            'as'   => 'label-tree-versions',
+            'uses' => 'LabelTreeVersionsController@show',
+        ]);
+
+        $router->get('{id}/versions/create', [
+            'as'   => 'create-label-tree-versions',
+            'uses' => 'LabelTreeVersionsController@create',
+        ]);
     });
 
 });

@@ -2,12 +2,7 @@
 
 @section('title', "Merge '{$mergeTree->versionedName}' into '{$baseTree->versionedName}'")
 
-@push('styles')
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('labelTrees.baseTree', {!! $baseTree !!});
     biigle.$declare('labelTrees.mergeTree', {!! $mergeTree !!});

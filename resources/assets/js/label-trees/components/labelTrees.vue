@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import Typeahead from './labelTypeahead';
+import Keyboard from '../../core/keyboard';
 import LabelTree from './labelTree';
-import {Keyboard} from '../import';
+import Typeahead from './labelTypeahead';
 
 /**
  * A component that displays a list of label trees.

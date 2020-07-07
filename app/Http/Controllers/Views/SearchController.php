@@ -2,6 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\User;
+use Biigle\LabelTree;
 use Biigle\Services\Modules;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
@@ -24,7 +26,8 @@ class SearchController extends Controller
         $user = $auth->user();
 
         $args = compact('user', 'query', 'type');
-        $values = $modules->callControllerMixins('search', $args);
+        $values = $this->searchLabelTrees($user, $query, $type);
+        $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
             if ($query) {
@@ -37,5 +40,40 @@ class SearchController extends Controller
         }
 
         return view('search.index', array_merge($args, $values));
+    }
+
+    /**
+     * Add label tree results to the search view.
+     *
+     * @param User $user
+     * @param string $query
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function searchLabelTrees(User $user, $query, $type)
+    {
+        $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
+
+        if ($query) {
+            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
+                $q->where('label_trees.name', 'ilike', "%{$query}%")
+                    ->orWhere('label_trees.description', 'ilike', "%{$query}%");
+            });
+        }
+
+        $values = [];
+
+        if ($type === 'label-trees') {
+            $values['results'] = $queryBuilder
+                ->orderBy('label_trees.updated_at', 'desc')
+                ->paginate(10);
+
+            $values['labelTreeResultCount'] = $values['results']->total();
+        } else {
+            $values = ['labelTreeResultCount' => $queryBuilder->count()];
+        }
+
+        return $values;
     }
 }

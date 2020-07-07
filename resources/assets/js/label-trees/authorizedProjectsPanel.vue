@@ -1,10 +1,10 @@
 <script>
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {LabelTreesApi} from './import';
-import {LoaderMixin} from './import';
-import {ProjectsApi} from './import';
-import {Typeahead} from './import';
+import EditorMixin from '../core/mixins/editor';
+import LabelTreesApi from '../core/api/labelTree';
+import LoaderMixin from '../core/mixins/loader';
+import ProjectsApi from '../core/api/projects';
+import Typeahead from '../core/components/typeahead';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the authorized projects of a label tree

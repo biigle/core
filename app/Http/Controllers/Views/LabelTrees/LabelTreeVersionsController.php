@@ -42,6 +42,6 @@ class LabelTreeVersionsController extends Controller
         $tree = LabelTree::findOrFail($id);
         $this->authorize('create', [LabelTreeVersion::class, $tree]);
 
-        return view('label-trees::versions.create', ['tree' => $tree]);
+        return view('label-trees.versions.create', ['tree' => $tree]);
     }
 }

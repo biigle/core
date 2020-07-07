@@ -1,7 +1,7 @@
 <script>
-import {handleErrorResponse} from './import';
-import {LabelTreeVersionApi} from './import';
-import {LoaderMixin} from './import';
+import LabelTreeVersionApi from '../core/api/labelTreeVersion';
+import LoaderMixin from '../core/mixins/loader';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the information of a label tree version

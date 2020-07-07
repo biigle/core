@@ -16,7 +16,7 @@ class LabelTreesController extends Controller
     {
         $trees = LabelTree::global()->get();
 
-        return view('label-trees::admin', [
+        return view('admin.label-trees', [
             'trees' => $trees,
         ]);
     }

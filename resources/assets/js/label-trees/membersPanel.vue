@@ -1,8 +1,8 @@
 <script>
-import {handleErrorResponse} from './import';
-import {LabelTreesApi} from './import';
-import {LoaderMixin} from './import';
-import {MembersPanel} from './import';
+import LabelTreesApi from '../core/api/labelTree';
+import LoaderMixin from '../core/mixins/loader';
+import MembersPanel from '../core/components/membersPanel';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the members of a label tree

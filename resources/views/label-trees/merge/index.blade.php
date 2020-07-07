@@ -2,12 +2,7 @@
 
 @section('title', "Merge a label tree into '{$tree->name}'")
 
-@push('styles')
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('labelTrees.mergeCandidates', {!! $mergeCandidates !!});
     biigle.$declare('labelTrees.mergeUrlTemplate', '{!! route('label-trees-merge', [$tree->id, ':id']) !!}');

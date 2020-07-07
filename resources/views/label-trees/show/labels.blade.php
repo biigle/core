@@ -13,7 +13,7 @@
             <tabs>
                 <tab header="Manual">
                     <manual-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel">
-                        @include('label-trees::show.labels.manualLabelForm')
+                        @include('label-trees.show.labels.manualLabelForm')
                     </manual-label-form>
                 </tab>
                 @if (config('biigle.offline_mode'))
@@ -21,7 +21,7 @@
                 @else
                     <tab header="WoRMS">
                         <worms-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel" v-on:load-start="startLoading" v-on:load-finish="finishLoading">
-                            @include('label-trees::show.labels.wormsLabelForm')
+                            @include('label-trees.show.labels.wormsLabelForm')
                         </worms-label-form>
                     </tab>
                 @endif

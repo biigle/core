@@ -1,8 +1,8 @@
 <script>
 import LabelFormComponent from '../mixins/labelFormComponent';
+import LabelSourceApi from '../../core/api/labelSource';
 import WormsResultItem from './wormsResultItem';
-import {handleErrorResponse} from '../import';
-import {LabelSourceApi} from '../import';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * A component for a form to manually create a new label for a label tree

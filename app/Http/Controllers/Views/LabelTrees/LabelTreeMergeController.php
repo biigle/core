@@ -31,7 +31,7 @@ class LabelTreeMergeController extends Controller
             ->with('version')
             ->get();
 
-        return view('label-trees::merge.index', [
+        return view('label-trees.merge.index', [
             'tree' => $tree,
             'mergeCandidates' => $mergeCandidates,
         ]);
@@ -74,7 +74,7 @@ class LabelTreeMergeController extends Controller
             })
             ->pluck('labels.id');
 
-        return view('label-trees::merge.show', [
+        return view('label-trees.merge.show', [
             'baseTree' => $baseTree->load('labels'),
             'mergeTree' => $mergeTree->load('labels'),
             'usedLabels' => $usedLabels,

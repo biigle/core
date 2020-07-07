@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\LabelTrees\Http\Controllers;
+namespace Biigle\Http\Controllers\Views\LabelTrees;
 
 use TestCase;
 use Biigle\Role;

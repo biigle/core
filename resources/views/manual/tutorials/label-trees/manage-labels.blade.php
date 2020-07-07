@@ -17,7 +17,7 @@
         <h3><a name="manually"></a>Create labels manually</h3>
 
         <p class="text-center">
-            <a href="{{asset('vendor/label-trees/images/manual/manage_labels_1.png')}}"><img src="{{asset('vendor/label-trees/images/manual/manage_labels_1.png')}}" width="90%"></a>
+            <a href="{{asset('assets/images/manual/manage_labels_1.png')}}"><img src="{{asset('assets/images/manual/manage_labels_1.png')}}" width="90%"></a>
         </p>
 
         <p>
@@ -39,7 +39,7 @@
         @endif
 
         <p class="text-center">
-            <a href="{{asset('vendor/label-trees/images/manual/manage_labels_2.png')}}"><img src="{{asset('vendor/label-trees/images/manual/manage_labels_2.png')}}" width="90%"></a>
+            <a href="{{asset('assets/images/manual/manage_labels_2.png')}}"><img src="{{asset('assets/images/manual/manage_labels_2.png')}}" width="90%"></a>
         </p>
 
         <p>
@@ -51,7 +51,7 @@
         </p>
 
         <p class="text-center">
-            <a href="{{asset('vendor/label-trees/images/manual/manage_labels_3.png')}}"><img src="{{asset('vendor/label-trees/images/manual/manage_labels_3.png')}}" width="90%"></a>
+            <a href="{{asset('assets/images/manual/manage_labels_3.png')}}"><img src="{{asset('assets/images/manual/manage_labels_3.png')}}" width="90%"></a>
         </p>
 
         <p>

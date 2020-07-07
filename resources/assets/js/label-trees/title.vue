@@ -1,9 +1,9 @@
 <script>
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {LabelTreesApi} from './import';
-import {LoaderMixin} from './import';
-import {Messages} from './import';
+import EditorMixin from '../core/mixins/editor';
+import LabelTreesApi from '../core/api/labelTree';
+import LoaderMixin from '../core/mixins/loader';
+import Messages from '../core/messages/store';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the title information of a label tree

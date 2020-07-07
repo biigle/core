@@ -1,8 +1,8 @@
 <script>
 import LabelTreeDiff from './components/labelTreeDiff';
+import LoaderMixin from '../core/mixins/loader';
 import MergeLabelTreesApi from './api/mergeLabelTrees';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The merge label trees tool.

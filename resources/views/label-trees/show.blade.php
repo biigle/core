@@ -3,12 +3,10 @@
 @section('title', $tree->name)
 
 @push('styles')
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
 @mixin('labelTreesShowStyles')
 @endpush
 
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('labelTrees.labelTree', {!! $tree !!});
     biigle.$declare('labelTrees.labels', {!! $labels !!});
@@ -32,16 +30,16 @@
 
 @section('content')
 <div class="container">
-    @include('label-trees::show.title')
-    @include('label-trees::show.toolbar')
+    @include('label-trees.show.title')
+    @include('label-trees.show.toolbar')
     <div class="col-md-6">
-        @include('label-trees::show.labels')
+        @include('label-trees.show.labels')
     </div>
     <div class="col-md-6">
-        @include('label-trees::show.projects')
+        @include('label-trees.show.projects')
         @can('update', $tree)
-            @include('label-trees::show.authorized-projects')
-            @include('label-trees::show.members')
+            @include('label-trees.show.authorized-projects')
+            @include('label-trees.show.members')
         @endcan
     </div>
 </div>

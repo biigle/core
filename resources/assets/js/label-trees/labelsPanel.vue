@@ -1,12 +1,12 @@
 <script>
+import EditorMixin from '../core/mixins/editor';
+import Events from '../core/events';
+import LabelsApi from '../core/api/labels';
 import LabelTree from './components/labelTree';
+import LoaderMixin from '../core/mixins/loader';
 import ManualLabelForm from './components/manualLabelForm';
 import WormsLabelForm from './components/wormsLabelForm';
-import {EditorMixin} from './import';
-import {Events} from './import';
-import {handleErrorResponse} from './import';
-import {LabelsApi} from './import';
-import {LoaderMixin} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 import {randomColor} from './utils';
 
 /**

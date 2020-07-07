@@ -47,20 +47,6 @@ class LabelTreesController extends Controller
     }
 
     /**
-     * Show the label tree admin page.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function admin()
-    {
-        $trees = LabelTree::global()->get();
-
-        return view('label-trees::admin', [
-            'trees' => $trees,
-        ]);
-    }
-
-    /**
      * Show the create label tree page.
      *
      * @param Request $request
@@ -91,27 +77,12 @@ class LabelTreesController extends Controller
 
         $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
 
-        return view('label-trees::create', compact(
+        return view('label-trees.create', compact(
             'visibilities',
             'selectedVisibility',
             'project',
             'upstreamLabelTree'
         ));
-    }
-
-    /**
-     * Show a tutorials article.
-     *
-     * @param string $name Article name
-     * @return \Illuminate\Http\Response
-     */
-    public function tutorial($name)
-    {
-        if (view()->exists('label-trees::manual.tutorials.'.$name)) {
-            return view('label-trees::manual.tutorials.'.$name);
-        } else {
-            abort(404);
-        }
     }
 
     /**
@@ -166,7 +137,7 @@ class LabelTreesController extends Controller
             Visibility::privateId() => Visibility::private()->name,
         ]);
 
-        return view('label-trees::show', [
+        return view('label-trees.show', [
             'tree' => $tree,
             'labels' => $labels,
             'projects' => $projects,
@@ -208,7 +179,7 @@ class LabelTreesController extends Controller
             })->get();
         }
 
-        return view('label-trees::versions.show', [
+        return view('label-trees.versions.show', [
             'version' => $tree->version,
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
