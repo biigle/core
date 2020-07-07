@@ -6,7 +6,7 @@
         </span>
         <span class="pull-right project-buttons" v-else>
             @if ($isMember)
-                @include('projects::partials.pinButton')
+                @include('projects.partials.pinButton')
             @endif
             <button class="btn btn-default" v-on:click="startEditing" :disabled="loading">Edit</button>
             <button class="btn btn-default" v-on:click="deleteProject" :disabled="loading">Delete</button>
@@ -35,7 +35,7 @@
         <h2>
             @if ($isMember)
                 <span class="pull-right">
-                    @include('projects::partials.pinButton')
+                    @include('projects.partials.pinButton')
                     <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
                 </span>
             @endif

@@ -18,7 +18,7 @@ class ProjectsController extends Controller
     {
         $this->authorize('create', Project::class);
 
-        return view('projects::create');
+        return view('projects.create');
     }
 
     /**
@@ -68,7 +68,7 @@ class ProjectsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        return view('projects::show', [
+        return view('projects.show', [
             'project' => $project,
             'roles' => $roles,
             'labelTrees' => $labelTrees,
@@ -89,20 +89,5 @@ class ProjectsController extends Controller
     public function index()
     {
         return redirect()->route('search', ['t' => 'projects']);
-    }
-
-    /**
-     * Show a tutorials article.
-     *
-     * @param string $name Article name
-     * @return \Illuminate\Http\Response
-     */
-    public function tutorial($name)
-    {
-        if (view()->exists('projects::manual.tutorials.'.$name)) {
-            return view('projects::manual.tutorials.'.$name);
-        } else {
-            abort(404);
-        }
     }
 }

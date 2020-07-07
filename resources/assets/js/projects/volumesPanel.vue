@@ -1,11 +1,11 @@
 <script>
 import AttachableVolumesApi from './api/attachableVolumes';
+import EditorMixin from '../core/mixins/editor';
+import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
-import {ProjectsApi} from './import';
-import {Typeahead} from './import';
+import ProjectsApi from '../core/api/projects';
+import Typeahead from '../core/components/typeahead';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The volume list on the project show view.

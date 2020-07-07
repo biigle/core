@@ -1,8 +1,8 @@
 <script>
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
-import {MembersPanel} from './import';
-import {ProjectsApi} from './import';
+import LoaderMixin from '../core/mixins/loader';
+import MembersPanel from '../core/components/membersPanel';
+import ProjectsApi from '../core/api/projects';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the members of a project

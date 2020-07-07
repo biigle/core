@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\User;
+use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Services\Modules;
 use Illuminate\Http\Request;
@@ -26,7 +27,8 @@ class SearchController extends Controller
         $user = $auth->user();
 
         $args = compact('user', 'query', 'type');
-        $values = $this->searchLabelTrees($user, $query, $type);
+        $values = $this->searchProjects($user, $query, $type);
+        $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
@@ -72,6 +74,44 @@ class SearchController extends Controller
             $values['labelTreeResultCount'] = $values['results']->total();
         } else {
             $values = ['labelTreeResultCount' => $queryBuilder->count()];
+        }
+
+        return $values;
+    }
+
+    /**
+     * Add project results to the search view.
+     *
+     * @param User $user
+     * @param string $query
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function searchProjects(User $user, $query, $type)
+    {
+        if ($user->can('sudo')) {
+            $queryBuilder = Project::query();
+        } else {
+            $queryBuilder = $user->projects();
+        }
+
+        if ($query) {
+            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
+                $q->where('projects.name', 'ilike', "%{$query}%")
+                    ->orWhere('projects.description', 'ilike', "%{$query}%");
+            });
+        }
+
+        $values = [];
+
+        if (!$type || $type === 'projects') {
+            $values['results'] = $queryBuilder->orderBy('updated_at', 'desc')
+                ->paginate(10);
+
+            $values['projectResultCount'] = $values['results']->total();
+        } else {
+            $values = ['projectResultCount' => $queryBuilder->count()];
         }
 
         return $values;
