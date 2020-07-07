@@ -205,4 +205,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
+    $router->group(['namespace' => 'Projects', 'prefix' => 'projects'], function ($router) {
+        $router->get('create', [
+            'as'   => 'projects-create',
+            'uses' => 'ProjectsController@create',
+        ]);
+
+        $router->get('/', [
+            'as'   => 'projects-index',
+            'uses' => 'ProjectsController@index',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'project',
+            'uses' => 'ProjectsController@show',
+        ]);
+    });
+
 });

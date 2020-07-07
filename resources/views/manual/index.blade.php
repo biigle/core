@@ -28,6 +28,12 @@
                 View and manage BIIGLE notifications in the notification center.
             </p>
 
+            <h3><a href="{{route('manual-tutorials', ['projects', 'about'])}}">Projects</a></h3>
+            <p>
+                Learn what projects are and how to manage them.
+            </p>
+
+
             <h3>Label Trees</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}">About Label Trees</a>

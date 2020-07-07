@@ -113,6 +113,8 @@ $router->resource('projects', 'ProjectController', [
     'parameters' => ['projects' => 'id'],
 ]);
 
+$router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
+
 $router->get(
     'projects/{id}/label-trees/available',
     'ProjectLabelTreeController@available'
