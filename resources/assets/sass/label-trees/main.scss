@@ -1,0 +1,49 @@
+@import "variables";
+
+.label-tree-title {
+    display: inline-block;
+}
+
+.label-tree-info-form {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+
+    .label-tree-description {
+        width: 500px;
+        margin-top: 2px;
+    }
+
+    .label-tree-name {
+        width: 300px;
+    }
+}
+
+.label-tree-buttons {
+    margin-top: 20px;
+}
+
+.panel-body--labels {
+    padding-bottom: 0;
+    border-bottom: 1px solid $list-group-border;
+
+    [tabs] > .tab-content {
+        margin-bottom: 0;
+    }
+}
+
+.label-color-dot {
+    width: 1em;
+    height: 1em;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: .5em;
+}
+
+@import 'components/labelTypeahead';
+@import 'components/labelTreeLabel';
+@import 'components/labelTree';
+@import 'components/labelTrees';
+@import 'components/labelTreeDiff';
+@import 'components/labelTreeDiffRow';

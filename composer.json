@@ -21,6 +21,7 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
+        "ext-soap": "*",
         "biigle/laravel-file-cache": "^3.1",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
