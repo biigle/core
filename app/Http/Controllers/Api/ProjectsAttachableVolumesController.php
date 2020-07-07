@@ -34,7 +34,7 @@ class ProjectsAttachableVolumesController extends Controller
      * ]
      *
      * @param Request $request
-     * @param id $id Project ID
+     * @param int $id Project ID
      *
      * @return \Illuminate\Http\Response
      */
