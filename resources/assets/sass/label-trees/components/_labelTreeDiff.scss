@@ -1,0 +1,10 @@
+.label-tree-diff {
+    table {
+        // Do not ajdust the column width if labels are added/removed.
+        table-layout: fixed;
+
+        thead th:first-child {
+            width: 32px;
+        }
+    }
+}

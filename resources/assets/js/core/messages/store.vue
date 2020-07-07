@@ -4,7 +4,7 @@ import {exitFullscreen} from '../utils';
 /**
  * The popup message store.
  */
-export default new Vue({
+let store = new Vue({
     data: {
         // Maximum number of messages to display until the oldest is automatically
         // removed.
@@ -80,4 +80,8 @@ export default new Vue({
         },
     },
 });
+
+export let handleErrorResponse = store.handleErrorResponse;
+
+export default store;
 </script>

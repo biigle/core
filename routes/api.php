@@ -79,6 +79,11 @@ $router->resource('label-trees.labels', 'LabelTreeLabelController', [
     'parameters' => ['label-trees' => 'id'],
 ]);
 
+$router->resource('label-trees.merge-labels', 'LabelTreeMergeController', [
+    'only' => ['store'],
+    'parameters' => ['label-trees' => 'id'],
+]);
+
 $router->resource('label-trees.users', 'LabelTreeUserController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['label-trees' => 'id', 'users' => 'id2'],

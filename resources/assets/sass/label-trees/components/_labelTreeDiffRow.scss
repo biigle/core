@@ -1,0 +1,45 @@
+.label-tree-diff-row {
+    td {
+        padding: 0;
+    }
+
+    &.success, &.success + & {
+        td {
+            border-color: $state-success-border;
+        }
+    }
+
+    &.danger, &.danger + & {
+        td {
+            border-color: $state-danger-border;
+        }
+    }
+
+    .label-tree-label__name:hover {
+        color: inherit;
+        cursor: default;
+        background-color: inherit;
+    }
+
+    .label-tree-diff-row__button {
+        width: 32px;
+        padding: 0;
+    }
+
+    .label-tree-diff-row__left, .label-tree-diff-row__right {
+        padding: 0 0 0 $padding-small-horizontal;
+    }
+
+    &.label-tree-diff-row--added {
+        .label-tree-diff-row__left {
+            color: $state-success-text;
+        }
+    }
+
+    &.label-tree-diff-row--removed {
+        .label-tree-diff-row__left {
+            color: $state-danger-text;
+            text-decoration: line-through;
+        }
+    }
+}
