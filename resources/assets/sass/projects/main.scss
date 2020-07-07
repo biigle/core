@@ -1,0 +1,24 @@
+@import "variables";
+
+.dashboard-project {
+    &:not(:last-child) {
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        margin-top: 0;
+    }
+
+    .preview-thumbnail {
+        height: 180px;
+        max-width: 100%;
+    }
+}
+
+.dashboard__all-projects {
+    padding: 2em;
+    text-align: center;
+}
+
+@import 'components/previewThumbnail';
+@import 'show';
