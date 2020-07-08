@@ -4,6 +4,8 @@ namespace Biigle\Http\Controllers\Views\Admin;
 
 use Biigle\User;
 use Biigle\Role;
+use Biigle\Image;
+use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Services\Modules;
 use Biigle\Http\Controllers\Controller;
@@ -86,6 +88,7 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $roleClass = $this->roleClassMap($user->role_id);
         $values = $this->showProject($user);
+        $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $modules->callControllerMixins('adminShowUser', ['user' => $user]));
 
         return view('admin.users.show', array_merge([
@@ -143,5 +146,32 @@ class UsersController extends Controller
         $memberPercent = $memberCount > 0 ? round($memberCount / $projectsTotal * 100, 2) : 0;
 
         return compact('creatorProjects', 'creatorCount', 'creatorPercent', 'memberProjects', 'memberCount', 'memberPercent');
+    }
+
+    /**
+     * Add volume statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function showVolume(User $user)
+    {
+        $volumesTotal = Volume::count();
+
+        $volumes = Volume::where('creator_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+        $volumesCount = $volumes->count();
+        $volumesPercent = $volumesCount > 0 ? round($volumesCount / $volumesTotal * 100, 2) : 0;
+
+        $imagesTotal = Image::count();
+        $imagesCount = Image::join('volumes', 'volumes.id', '=', 'images.volume_id')
+            ->where('volumes.creator_id', $user->id)
+            ->count();
+        $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
+
+        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent');
     }
 }

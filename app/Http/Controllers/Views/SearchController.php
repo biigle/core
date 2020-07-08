@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\User;
+use Biigle\Volume;
 use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Services\Modules;
@@ -29,6 +30,7 @@ class SearchController extends Controller
         $args = compact('user', 'query', 'type');
         $values = $this->searchProjects($user, $query, $type);
         $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
+        $values = array_merge($values, $this->searchVolumes($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
@@ -112,6 +114,38 @@ class SearchController extends Controller
             $values['projectResultCount'] = $values['results']->total();
         } else {
             $values = ['projectResultCount' => $queryBuilder->count()];
+        }
+
+        return $values;
+    }
+
+    /**
+     * Add volume results to the search view.
+     *
+     * @param User $user
+     * @param string $query
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function searchVolumes(User $user, $query, $type)
+    {
+        $queryBuilder = Volume::accessibleBy($user)
+            ->select('volumes.id', 'volumes.updated_at', 'volumes.name');
+
+        if ($query) {
+            $queryBuilder = $queryBuilder->where('volumes.name', 'ilike', "%{$query}%");
+        }
+
+        $values = [];
+
+        if ($type === 'volumes') {
+            $values['results'] = $queryBuilder->orderBy('volumes.updated_at', 'desc')
+                ->paginate(12);
+
+            $values['volumeResultCount'] = $values['results']->total();
+        } else {
+            $values = ['volumeResultCount' => $queryBuilder->count()];
         }
 
         return $values;

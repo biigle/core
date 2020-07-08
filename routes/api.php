@@ -192,6 +192,60 @@ $router->resource('volumes.images', 'VolumeImageController', [
     'parameters' => ['volumes' => 'id'],
 ]);
 
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Volumes',
+], function ($router) {
+    $router->get('{id}/images/order-by/filename', [
+        'uses' => 'Sorters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/images/filter/labels', [
+        'uses' => 'Filters\AnyImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label-user/{id2}', [
+        'uses' => 'Filters\ImageLabelUserController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label/{id2}', [
+        'uses' => 'Filters\ImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-label/{id2}', [
+        'uses' => 'Filters\ImageAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/filename/{pattern}', [
+        'uses' => 'Filters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/image-labels', [
+        'uses' => 'UsedImageLabelsController@index',
+    ]);
+
+    $router->get('{id}/filenames', [
+        'uses' => 'ImageFilenamesController@index',
+    ]);
+
+    $router->get('{id}/users', [
+        'uses' => 'UserController@index',
+    ]);
+
+    $router->get('{id}/images/labels', [
+        'uses' => 'ImageLabelsController@index',
+    ]);
+
+    $router->post('{id}/images/metadata', [
+        'uses' => 'ImageMetadataController@store',
+    ]);
+
+    $router->group(['prefix' => 'browser'], function ($router) {
+        $router->get('directories/{disk}', 'BrowserController@indexDirectories');
+        $router->get('images/{disk}', 'BrowserController@indexImages');
+    });
+});
+
 $router->get('users/find/{pattern}', 'UserController@find');
 
 $router->get('users/my', 'UserController@showOwn');

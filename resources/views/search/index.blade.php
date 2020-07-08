@@ -24,6 +24,7 @@
             <ul class="nav nav-tabs">
                 @include("search.projects-tab")
                 @include("search.label-trees-tab")
+                @include("search.volumes-tab")
                 @foreach (Modules::getViewMixins('searchTab') as $module => $nested)
                     @include("{$module}::searchTab")
                 @endforeach
@@ -31,6 +32,7 @@
             <div class="tab-content">
                 @include("search.projects-content")
                 @include("search.label-trees-content")
+                @include("search.volumes-content")
                 @foreach (Modules::getViewMixins('searchTabContent') as $module => $nested)
                     @include("{$module}::searchTabContent")
                 @endforeach
