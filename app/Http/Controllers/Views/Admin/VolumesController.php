@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Views\Admin;
 use Biigle\Volume;
 use Biigle\Http\Controllers\Views\Controller;
 
-class AdminController extends Controller
+class VolumesController extends Controller
 {
     /**
      * Shows the volumes admin page.
@@ -21,6 +21,6 @@ class AdminController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(100);
 
-        return view('volumes::admin', compact('volumes'));
+        return view('admin.volumes', compact('volumes'));
     }
 }

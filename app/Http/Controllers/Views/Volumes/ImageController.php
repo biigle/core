@@ -26,7 +26,7 @@ class ImageController extends Controller
             'yaw' => 'Yaw/Heading',
         ];
 
-        return view('volumes::images.index', [
+        return view('volumes.images.index', [
             'image' => $image,
             'volume' => $image->volume,
             'metadata' => Arr::only($image->metadata, array_keys($metadataMap)),

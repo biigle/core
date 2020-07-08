@@ -3,7 +3,6 @@
 @section('title', 'Create new volume')
 
 @push('scripts')
-   <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
    <script type="text/javascript">
       biigle.$declare('volumes.url', '{!! old('url') !!}');
       biigle.$declare('volumes.filenames', '{!! str_replace(["\r", "\n"], '', old('images')) !!}');
@@ -11,10 +10,6 @@
          biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
       @endif
    </script>
-@endpush
-
-@push('styles')
-   <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')

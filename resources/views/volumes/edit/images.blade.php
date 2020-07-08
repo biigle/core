@@ -19,7 +19,7 @@
         </form>
     </div>
     <ul class="list-group images-list" v-cloak>
-        <image-item v-for="image in orderedImages" key="image.id" :image="image" inline-template v-on:remove="handleRemove">
+        <image-item v-for="image in orderedImages" :key="image.id" :image="image" inline-template v-on:remove="handleRemove">
             <li class="list-group-item" :class="classObject">
                 <button type="button" class="close" :title="title" v-on:click="remove" v-once><span aria-hidden="true">&times;</span></button>
                 <span class="text-muted">#<span v-text="image.id"></span></span> <span v-text="image.filename"></span>

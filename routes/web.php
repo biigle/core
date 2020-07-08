@@ -166,6 +166,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-global-label-trees',
             'uses' => 'LabelTreesController@index',
         ]);
+
+        $router->get('volumes', [
+            'as' => 'admin-volumes',
+            'uses' => 'VolumesController@index',
+        ]);
     });
 
     $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {
@@ -221,5 +226,27 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'ProjectsController@show',
         ]);
     });
+
+    $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {
+        $router->get('create', [
+            'as'   => 'create-volume',
+            'uses' => 'VolumeController@create',
+        ]);
+
+        $router->get('edit/{id}', [
+            'as'   => 'volume-edit',
+            'uses' => 'VolumeController@edit',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'volume',
+            'uses' => 'VolumeController@index',
+        ]);
+    });
+
+    $router->get('images/{id}', [
+        'as'   => 'image',
+        'uses' => 'Volumes\ImageController@index',
+    ]);
 
 });

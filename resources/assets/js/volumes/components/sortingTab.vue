@@ -1,7 +1,7 @@
 <script>
+import LoaderMixin from '../../core/mixins/loader';
 import SorterStore from '../stores/sorters';
-import {handleErrorResponse} from '../import';
-import {LoaderMixin} from '../import';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * View model for the volume sorting tab

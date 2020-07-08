@@ -1,8 +1,8 @@
 import FilterList from '../components/filterListComponent';
 import FilterSelect from '../components/filterSelectComponent';
+import LabelTypeahead from '../../label-trees/components/labelTypeahead';
 import VolumesApi from '../api/volumes';
-import {handleErrorResponse} from '../import';
-import {LabelTypeahead} from '../import';
+import {handleErrorResponse} from '../../core/messages/store';
 
 let imageLabelsFilter = {
     id: 'imageLabels',

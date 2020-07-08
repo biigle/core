@@ -1,10 +1,10 @@
 <script>
+import EditorMixin from '../core/mixins/editor';
 import ImageItem from './components/imagePanelItem';
+import ImagesApi from '../core/api/images';
+import LoaderMixin from '../core/mixins/loader';
 import VolumesApi from './api/volumes';
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {ImagesApi} from './import';
-import {LoaderMixin} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing volume images

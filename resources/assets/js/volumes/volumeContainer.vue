@@ -3,13 +3,13 @@ import FilterTab from './components/filterTab';
 import ImageGrid from './components/volumeImageGrid';
 import ImagesStore from './stores/image';
 import LabelsTab from './components/labelsTab';
+import LoaderMixin from '../core/mixins/loader';
+import Settings from '../core/models/Settings';
+import Sidebar from '../core/components/sidebar';
+import SidebarTab from '../core/components/sidebarTab';
 import SortingTab from './components/sortingTab';
 import VolumesApi from './api/volumes';
-import {LoaderMixin} from './import';
-import {Settings} from './import';
-import {SidebarTab} from './import';
-import {Sidebar} from './import';
-import {UrlParams} from './import';
+import {urlParams as UrlParams} from '../core/utils';
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;

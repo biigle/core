@@ -26,7 +26,7 @@ class VolumeController extends Controller
         $this->authorize('update', $project);
         $disks = array_intersect(array_keys(config('filesystems.disks')), config('volumes.browser_disks'));
 
-        return view('volumes::create', [
+        return view('volumes.create', [
             'project' => $project,
             'mediaTypes' => MediaType::all(),
             'hasBrowser' => config('volumes.browser'),
@@ -65,7 +65,7 @@ class VolumeController extends Controller
         $thumbUriTemplate = Storage::disk(config('thumbnails.storage_disk'))
             ->url(':uuid.'.config('thumbnails.format'));
 
-        return view('volumes::show', compact(
+        return view('volumes.show', compact(
             'volume',
             'labelTrees',
             'projects',
@@ -89,7 +89,7 @@ class VolumeController extends Controller
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
 
-        return view('volumes::edit', [
+        return view('volumes.edit', [
             'projects' => $projects,
             'volume' => $volume,
             'mediaTypes' => MediaType::all(),
@@ -104,7 +104,7 @@ class VolumeController extends Controller
      * @param User $user
      * @param Volume $volume
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function getProjects(User $user, Volume $volume)
     {

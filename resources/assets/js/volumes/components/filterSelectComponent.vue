@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {Typeahead} from '../import';
+import Typeahead from '../../core/components/typeahead';
 
 /**
  * Base component for a filter select element

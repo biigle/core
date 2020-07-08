@@ -1,12 +1,12 @@
 <script>
+import EditorMixin from '../core/mixins/editor';
 import ListItem from './components/annotationSessionListItem';
+import LoaderMixin from '../core/mixins/loader';
 import SessionsApi from './api/annotationSessions';
+import Typeahead from '../core/components/typeahead';
 import UserTag from './components/annotationSessionUserTag';
 import VolumesApi from './api/volumes';
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
-import {Typeahead} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing annotation sessions

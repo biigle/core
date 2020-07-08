@@ -1,5 +1,5 @@
 <script>
-import {PreviewThumbnail} from './import';
+import PreviewThumbnail from '../projects/components/previewThumbnail';
 
 export default {
     components: {

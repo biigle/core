@@ -1,8 +1,8 @@
 <script>
 import FiltersStore from '../stores/filters';
-import {handleErrorResponse} from '../import';
-import {LoaderMixin} from '../import';
-import {PowerToggle} from '../import';
+import LoaderMixin from '../../core/mixins/loader';
+import PowerToggle from '../../core/components/powerToggle';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * View model for the volume filter tab

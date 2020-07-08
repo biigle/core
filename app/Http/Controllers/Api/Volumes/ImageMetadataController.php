@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Arr;
 use File;

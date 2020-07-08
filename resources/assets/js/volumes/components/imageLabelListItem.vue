@@ -8,7 +8,7 @@
 
 <script>
 import ImageLabelsApi from '../api/imageLabels';
-import {handleErrorResponse} from '../import';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * One item in the imageLabelList component.

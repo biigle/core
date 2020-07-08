@@ -9,8 +9,8 @@
 
 <script>
 import Image from './imageGridImage';
+import Keyboard from '../../core/keyboard';
 import Progress from './imageGridProgress';
-import {Keyboard} from '../import';
 
 /**
  * A component that displays a grid of lots of images for Largo

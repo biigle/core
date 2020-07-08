@@ -20,8 +20,8 @@
 import Image from './imageGridImage';
 import ImageLabelsApi from '../api/imageLabels';
 import LabelList from './imageLabelList';
-import {handleErrorResponse} from '../import';
-import {LoaderMixin} from '../import';
+import LoaderMixin from '../../core/mixins/loader';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * A variant of the image grid image used to display volume images

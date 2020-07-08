@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Http\Controllers\Api\VolumeSorters;
+namespace Biigle\Http\Controllers\Api\Volumes\Sorters;
 
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;

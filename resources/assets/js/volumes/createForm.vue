@@ -1,7 +1,7 @@
 <script>
 import BrowserApi from './api/browser';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
+import LoaderMixin from '../core/mixins/loader';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * View model for the create volume form.

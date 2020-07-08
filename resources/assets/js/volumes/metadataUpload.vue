@@ -1,7 +1,7 @@
 <script>
+import LoaderMixin from '../core/mixins/loader';
 import MetadataApi from './api/volumeImageMetadata';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The metadata upload of the volume edit page.

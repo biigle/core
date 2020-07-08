@@ -4,3 +4,4 @@ import './mounts';
 import './core/heartbeat';
 import './label-trees/main';
 import './projects/main';
+import './volumes/main';

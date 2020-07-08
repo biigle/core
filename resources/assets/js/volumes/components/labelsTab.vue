@@ -1,7 +1,7 @@
 <script>
-import {LabelTrees} from '../import';
-import {LoaderMixin} from '../import';
-import {PowerToggle} from '../import';
+import LabelTrees from '../../label-trees/components/labelTrees';
+import LoaderMixin from '../../core/mixins/loader';
+import PowerToggle from '../../core/components/powerToggle';
 
 /**
  * View model for the volume filter tab

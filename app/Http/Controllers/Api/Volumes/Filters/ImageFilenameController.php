@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Http\Controllers\Api\VolumeFilters;
+namespace Biigle\Http\Controllers\Api\Volumes\Filters;
 
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;

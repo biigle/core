@@ -41,7 +41,7 @@
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('users')}">
                     <label class="control-label" for="users">Users</label>
                     <div class="form-control tag-list" readonly>
-                        <user-tag v-for="user in editedSession.users" :user="user" v-on:remove="removeUser" inline-template>
+                        <user-tag v-for="user in editedSession.users" :key="user.id" :user="user" v-on:remove="removeUser" inline-template>
                             <span class="tag label label-default">
                                 <span v-text="name"></span> <button type="button" class="close" :title="title" v-on:click="remove"><span aria-hidden="true">&times;</span></button>
                             </span>
@@ -82,7 +82,7 @@
         </form>
     </div>
     <ul class="list-group images-list" v-cloak>
-        <list-item v-for="session in orderedSessions" :session="session" :editing="editing" :edit-id="editedSession.id" v-on:edit="editSession" inline-template>
+        <list-item v-for="session in orderedSessions" :key="session.id" :session="session" :editing="editing" :edit-id="editedSession.id" v-on:edit="editSession" inline-template>
             <li class="list-group-item session" :title="title" :class="classObject" v-on:click="edit">
                 <div>
                     <span class="session__dates"><span :title="session.starts_at_iso8601" v-text="session.starts_at"></span> - <span :title="session.ends_at_iso8601" v-text="session.ends_at"></span></span></span> <strong v-text="session.name"></strong>

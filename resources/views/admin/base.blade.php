@@ -13,6 +13,7 @@
                     <li role="presentation"@if(Route::is('admin-logs-index')) class="active" @endif><a href="{{route('admin-logs-index')}}">Logs @if ($errorCount > 0 )<span class="badge" title="{{$errorCount}} errors in the last two days">{{$errorCount}}</span>@endif</a></li>
                 @endif
                 <li role="presentation"@if(Request::is('admin/global-label-trees')) class="active" @endif><a href="{{route('admin-global-label-trees')}}">Global Label Trees</a></li>
+                <li role="presentation"@if(Request::is('admin/volumes')) class="active" @endif><a href="{{route('admin-volumes')}}">Volumes</a></li>
                 @mixin('adminMenu')
             </ul>
         </div>

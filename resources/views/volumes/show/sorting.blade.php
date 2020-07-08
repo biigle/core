@@ -11,7 +11,7 @@
         </div>
 
         <div class="list-group sorter-list-group">
-            <component :is="sorter.component" :active-sorter="activeSorter" v-on:select="handleSelect" v-for="sorter in sorters"></component>
+            <component :is="sorter.component" :active-sorter="activeSorter" v-on:select="handleSelect" v-for="sorter in sorters" :key="sorter.id"></component>
         </div>
     </div>
 </sorting-tab>
