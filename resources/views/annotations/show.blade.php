@@ -4,9 +4,6 @@
 @section('title', "Annotate {$image->filename}")
 
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     @can('add-annotation', $image)
         biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
@@ -28,20 +25,17 @@
 @endpush
 
 @push('styles')
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 @mixin('annotationsStyles')
 @endpush
 
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
-    @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+    @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
     <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
     <span id="annotations-navbar" default-filename="{{$image->filename}}">
-        @include('annotations::show.progressIndicator')<strong v-bind:title="filenameTitle" v-bind:class="filenameClass" v-text="currentImageFilename">{{$image->filename}}</strong>
+        @include('annotations.show.progressIndicator')<strong v-bind:title="filenameTitle" v-bind:class="filenameClass" v-text="currentImageFilename">{{$image->filename}}</strong>
     </span>
-    @include('volumes::partials.annotationSessionIndicator')
+    @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection
 
@@ -81,7 +75,7 @@
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             ref="canvas"
             inline-template>
-            @include('annotations::show.annotationCanvas')
+            @include('annotations.show.annotationCanvas')
         </annotation-canvas>
     </div>
     <sidebar
@@ -91,14 +85,14 @@
         v-on:open="handleOpenedTab"
         v-on:close="handleClosedTab"
         v-cloak>
-        @include('annotations::show.tabs.annotations')
+        @include('annotations.show.tabs.annotations')
         @can('add-annotation', $image)
-            @include('annotations::show.tabs.labels')
+            @include('annotations.show.tabs.labels')
         @endcan
-        @include('annotations::show.tabs.annotationModes')
-        @include('annotations::show.tabs.imageLabels')
-        @include('annotations::show.tabs.colorAdjustment')
-        @include('annotations::show.tabs.settings')
+        @include('annotations.show.tabs.annotationModes')
+        @include('annotations.show.tabs.imageLabels')
+        @include('annotations.show.tabs.colorAdjustment')
+        @include('annotations.show.tabs.settings')
     </sidebar>
 </div>
 @endsection

@@ -1,8 +1,8 @@
 <script>
-import {Loader} from '../import';
-import {ImageLabelList} from '../import';
-import {ImageLabelsApi} from '../import';
-import {handleErrorResponse} from '../import';
+import ImageLabelList from '../../volumes/components/imageLabelList';
+import ImageLabelsApi from '../../volumes/api/imageLabels';
+import Loader from '../../core/mixins/loader';
+import {handleErrorResponse} from '../../core/messages/store';
 
 /**
  * The image information tab of the annotation tool

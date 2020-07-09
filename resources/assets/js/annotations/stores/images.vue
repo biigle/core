@@ -1,6 +1,6 @@
 <script>
+import Events from '../../core/events';
 import fx from '../vendor/glfx';
-import {Events} from '../import';
 
 /**
 * Store for the images of the annotation tool
@@ -257,7 +257,6 @@ export default new Vue({
                 Events.$emit('images.fetching', id);
                 this.cache[id] = this.createImage(id);
                 this.cachedIds.push(id);
-
             }
 
             return this.cache[id];

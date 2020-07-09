@@ -249,4 +249,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'Volumes\ImageController@index',
     ]);
 
+    $router->group(['namespace' => 'Annotations'], function ($router) {
+        $router->get('annotate/{id}', [
+            'as'   => 'annotate',
+            'uses' => 'AnnotationToolController@show',
+        ]);
+
+        $router->get('annotations/{id}', [
+            'as'   => 'show-annotation',
+            'uses' => 'AnnotationController@show',
+        ]);
+    });
+
 });

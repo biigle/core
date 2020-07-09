@@ -1,7 +1,7 @@
 <script>
+import Events from '../../core/events';
 import FilenameTracker from '../mixins/imageFilenameTracker';
-import {Messages} from '../import';
-import {Events} from '../import';
+import Messages from '../../core/messages/store';
 
 /**
  * A button that produces a screenshot of the map

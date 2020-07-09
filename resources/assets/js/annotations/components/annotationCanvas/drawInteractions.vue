@@ -1,8 +1,8 @@
 <script>
-import Styles from '../../stores/styles';
-import {Keyboard} from '../../import';
-import {shiftKeyOnly} from '@biigle/ol/events/condition';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
+import Keyboard from '../../../core/keyboard';
+import Styles from '../../stores/styles';
+import {shiftKeyOnly} from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.

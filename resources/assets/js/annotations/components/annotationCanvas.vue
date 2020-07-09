@@ -7,8 +7,10 @@ import Collection from '@biigle/ol/Collection';
 import ControlButton from './controlButton';
 import DrawInteractions from './annotationCanvas/drawInteractions';
 import Ellipse from '@biigle/ol/geom/Ellipse';
+import Events from '../../core/events';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
+import Keyboard from '../../core/keyboard';
 import LabelIndicator from './labelIndicator';
 import Lawnmower from './annotationCanvas/lawnmower';
 import LineString from '@biigle/ol/geom/LineString';
@@ -39,9 +41,7 @@ import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction'
-import {Events} from '../import';
 import {getCenter} from '@biigle/ol/extent';
-import {Keyboard} from '../import';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 

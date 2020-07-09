@@ -1,5 +1,5 @@
 <script>
-import {Events} from '../import';
+import Events from '../../core/events';
 
 /**
  * A mixin that keeps track of the current image filename

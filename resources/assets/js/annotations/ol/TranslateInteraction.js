@@ -1,6 +1,6 @@
 import BaseTranslate from '@biigle/ol/interaction/Translate';
-import {debounce} from '../import';
-import {Keyboard} from '../import';
+import Keyboard from '../../core/keyboard';
+import {debounce} from '../../core/utils';
 
 /**
  * Control for translating OpenLayers features with extra functions

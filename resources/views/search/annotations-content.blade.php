@@ -27,8 +27,4 @@
     @endif
 </ul>
 
-@push('styles')
-<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @endif

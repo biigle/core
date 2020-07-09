@@ -1,6 +1,6 @@
 <script>
-import {throttle} from '../../import';
 import MousePositionIndicator from '../mousePositionIndicator';
+import {throttle} from '../../../core/utils';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the mouse position indicator.

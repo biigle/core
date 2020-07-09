@@ -1,6 +1,6 @@
 <script>
+import Keyboard from '../../../core/keyboard';
 import TranslateInteraction from '../../ol/TranslateInteraction';
-import {Keyboard} from '../../import';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the translate interaction.

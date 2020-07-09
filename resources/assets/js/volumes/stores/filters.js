@@ -119,6 +119,78 @@ let filenameFilter = {
     },
 };
 
+let annotationFilter = {
+    id: 'annotations',
+    label: 'annotations',
+    help: "All images that (don't) contain annotations.",
+    listComponent: FilterList,
+    getSequence(volumeId) {
+        return VolumesApi.queryImagesWithAnnotations({id: volumeId});
+    },
+};
+
+let annotationLabelFilter = {
+    id: 'annotationLabels',
+    label: 'annotation with label',
+    help: "All images that (don't) contain one or more annotations with the given label.",
+    listComponent: {
+        mixins: [FilterList],
+        data() {
+            return {name: 'annotation with label'};
+        },
+    },
+    selectComponent: {
+        mixins: [FilterSelect],
+        components: {
+            typeahead: LabelTypeahead,
+        },
+        data() {
+            return {
+                placeholder: 'Label name',
+            };
+        },
+        created() {
+            VolumesApi.queryAnnotationLabels({id: this.volumeId})
+                .then(this.gotItems, handleErrorResponse);
+        },
+    },
+    getSequence(volumeId, label) {
+        return VolumesApi.queryImagesWithAnnotationLabel({
+            id: volumeId,
+            label_id: label.id,
+        });
+    }
+};
+
+let annotationUserFilter = {
+    id: 'annotationUser',
+    label: 'annotations from user',
+    help: "All images that (don't) contain one or more annotations from the given user.",
+    listComponent: {
+        mixins: [FilterList],
+        data() {
+            return {name: 'annotations from user'};
+        },
+    },
+    selectComponent: {
+        mixins: [FilterSelect],
+        data() {
+            return {
+                placeholder: 'User name',
+                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+            };
+        },
+        created() {
+            VolumesApi.queryUsers({id: this.volumeId})
+                .then(this.parseUsernames, handleErrorResponse)
+                .then(this.gotItems);
+        },
+    },
+    getSequence(volumeId, user) {
+        return VolumesApi.queryImagesWithAnnotationFromUser({id: volumeId, user_id: user.id});
+    },
+};
+
 /**
  * Store for the volume image filters
  */
@@ -128,4 +200,7 @@ export default [
     imageLabelFilter,
     imageLabelUserFilter,
     filenameFilter,
+    annotationFilter,
+    annotationLabelFilter,
+    annotationUserFilter,
 ];

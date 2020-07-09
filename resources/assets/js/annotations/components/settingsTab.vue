@@ -1,8 +1,8 @@
 <script>
+import Keyboard from '../../core/keyboard';
+import PowerToggle from '../../core/components/powerToggle';
 import ScreenshotButton from './screenshotButton';
 import Settings from '../stores/settings';
-import {Keyboard} from '../import';
-import {PowerToggle} from '../import';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

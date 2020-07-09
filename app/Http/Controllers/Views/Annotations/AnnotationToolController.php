@@ -67,7 +67,7 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
-        return view('annotations::show', [
+        return view('annotations.show', [
             'user' => $user,
             'image' => $image,
             'volume' => $image->volume,

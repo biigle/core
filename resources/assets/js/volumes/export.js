@@ -6,7 +6,9 @@ import ImageLabelsApi from './api/imageLabels';
 import LabelList from './components/imageLabelList';
 import SortComponent from './components/sortComponent';
 import SorterStore from './stores/sorters';
+import VolumesApi from './api/volumes';
 
+biigle.$declare('annotations.api.volumes', VolumesApi); // Legacy support
 biigle.$declare('api.imageLabels', ImageLabelsApi);
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);
 biigle.$declare('volumes.components.imageGrid', ImageGrid);

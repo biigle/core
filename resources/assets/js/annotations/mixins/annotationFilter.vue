@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {Typeahead} from '../import';
+import Typeahead from '../../core/components/typeahead';
 
 export default {
     components: {

@@ -1,4 +1,4 @@
-import {Settings} from '../import';
+import Settings from '../../core/models/Settings';
 
 /**
  * Store for annotator settings

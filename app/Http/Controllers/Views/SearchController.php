@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\User;
+use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Project;
 use Biigle\LabelTree;
@@ -31,6 +32,7 @@ class SearchController extends Controller
         $values = $this->searchProjects($user, $query, $type);
         $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
         $values = array_merge($values, $this->searchVolumes($user, $query, $type));
+        $values = array_merge($values, $this->searchAnnotations($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
@@ -146,6 +148,44 @@ class SearchController extends Controller
             $values['volumeResultCount'] = $values['results']->total();
         } else {
             $values = ['volumeResultCount' => $queryBuilder->count()];
+        }
+
+        return $values;
+    }
+
+    /**
+     * Add image results to the search view.
+     *
+     * @param User $user
+     * @param string $query
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function searchAnnotations(User $user, $query, $type)
+    {
+        if ($user->can('sudo')) {
+            $imageQuery = Image::query();
+        } else {
+            $imageQuery = Image::join('project_volume', 'images.volume_id', '=', 'project_volume.volume_id')
+                ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                // Use distinct as volumes may be attached to more than one project.
+                ->distinct()
+                ->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id');
+        }
+
+        if ($query) {
+            $imageQuery = $imageQuery->where('images.filename', 'ilike', "%{$query}%");
+        }
+
+        $values = [
+            'imageResultCount' => $imageQuery->count('images.id'),
+        ];
+
+        if ($type === 'images') {
+            $values['results'] = $imageQuery->orderBy('images.id', 'desc')
+                ->paginate(12);
         }
 
         return $values;

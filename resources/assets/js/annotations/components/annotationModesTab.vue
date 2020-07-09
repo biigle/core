@@ -1,9 +1,9 @@
 <script>
+import Events from '../../core/events';
+import Keyboard from '../../core/keyboard';
+import PowerToggle from '../../core/components/powerToggle';
 import Settings from '../stores/settings';
-import {Events} from '../import';
-import {Keyboard} from '../import';
-import {PowerToggle} from '../import';
-import {UrlParams} from '../import';
+import {urlParams as UrlParams} from '../../core/utils';
 
 /**
  * The annotation modes tab of the annotator

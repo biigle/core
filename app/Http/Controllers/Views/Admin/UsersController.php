@@ -7,6 +7,8 @@ use Biigle\Role;
 use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Project;
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Biigle\Services\Modules;
 use Biigle\Http\Controllers\Controller;
 
@@ -89,6 +91,7 @@ class UsersController extends Controller
         $roleClass = $this->roleClassMap($user->role_id);
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
+        $values = array_merge($values, $this->showAnnotations($user));
         $values = array_merge($values, $modules->callControllerMixins('adminShowUser', ['user' => $user]));
 
         return view('admin.users.show', array_merge([
@@ -173,5 +176,42 @@ class UsersController extends Controller
         $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
 
         return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent');
+    }
+
+    /**
+     * Add annotation statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function showAnnotations(User $user)
+    {
+        $totalAnnotationLabels = AnnotationLabel::where('user_id', $user->id)->count();
+
+        if ($totalAnnotationLabels > 0) {
+            $annotationQuery = Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                ->where('annotation_labels.user_id', $user->id);
+
+            $totalAnnotations = (clone $annotationQuery)->distinct()->count('annotations.id');
+
+            $labelsPerAnnotation = round($totalAnnotationLabels / $totalAnnotations);
+
+            $relativeAnnotationLabels = $totalAnnotationLabels / AnnotationLabel::count();
+            $relativeAnnotations = $totalAnnotations / Annotation::count();
+
+            $recentAnnotations = $annotationQuery->orderBy('annotation_labels.created_at', 'desc')
+                ->take(10)
+                ->select('annotation_labels.created_at', 'annotations.id')
+                ->get();
+        } else {
+            $totalAnnotations = 0;
+            $labelsPerAnnotation = 0;
+            $relativeAnnotationLabels = 0;
+            $relativeAnnotations = 0;
+            $recentAnnotations = [];
+        }
+
+        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentAnnotations');
     }
 }

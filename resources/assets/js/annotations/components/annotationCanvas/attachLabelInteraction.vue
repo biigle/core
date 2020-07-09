@@ -1,6 +1,6 @@
 <script>
 import AttachLabelInteraction from '../../ol/AttachLabelInteraction';
-import {Keyboard} from '../../import';
+import Keyboard from '../../../core/keyboard';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the attach label interaction.

@@ -1,7 +1,7 @@
 <script>
+import Events from '../core/events';
 import FilenameTracker from './mixins/imageFilenameTracker';
 import Settings from './stores/settings';
-import {Events} from './import';
 
 /**
 * View model for the annotator navbar

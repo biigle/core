@@ -4,24 +4,24 @@ import AnnotationModesTab from './components/annotationModesTab';
 import AnnotationsStore from './stores/annotations';
 import AnnotationsTab from './components/siaAnnotationsTab';
 import ColorAdjustmentTab from './components/colorAdjustmentTab';
+import Events from '../core/events';
 import ImageLabelTab from './components/imageLabelTab';
 import ImagesStore from './stores/images';
 import LabelFilter from './models/LabelAnnotationFilter';
 import LabelsTab from './components/labelsTab';
+import Loader from '../core/mixins/loader';
+import Messages from '../core/messages/store';
 import SessionFilter from './models/SessionAnnotationFilter';
 import Settings from './stores/settings';
 import SettingsTab from './components/settingsTab';
 import ShapeFilter from './models/ShapeAnnotationFilter';
+import Sidebar from '../core/components/sidebar';
+import SidebarTab from '../core/components/sidebarTab';
 import UserFilter from './models/UserAnnotationFilter';
 import VolumeImageAreaApi from './api/volumes';
-import {debounce} from './import';
-import {Events} from './import';
-import {handleErrorResponse} from './import';
-import {Loader} from './import';
-import {Messages} from './import';
-import {SidebarTab} from './import';
-import {Sidebar} from './import';
-import {UrlParams} from './import';
+import {debounce} from './../core/utils';
+import {handleErrorResponse} from '../core/messages/store';
+import {urlParams as UrlParams} from '../core/utils';
 
 /**
  * View model for the annotator container
@@ -518,7 +518,6 @@ export default {
             if (id) {
                 this.startLoading();
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
-                    .catch(this.handleLoadingError)
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
                     .then(this.maybeUpdateAnnotationMode)
@@ -527,6 +526,7 @@ export default {
                     // When everything is loaded, pre-fetch the data of the next and
                     // previous images so they can be switched fast.
                     .then(this.cachePreviousAndNext)
+                    .catch(this.handleLoadingError)
                     .finally(this.finishLoading);
             }
         },
