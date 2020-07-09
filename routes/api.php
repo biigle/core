@@ -246,6 +246,27 @@ $router->group([
     });
 });
 
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Annotations',
+], function ($router) {
+    $router->get('{id}/images/filter/annotations', [
+        'uses' => 'Filters\AnnotationController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-user/{id2}', [
+        'uses' => 'Filters\AnnotationUserController@index',
+    ]);
+
+    $router->get('{id}/annotation-labels', [
+        'uses' => 'VolumeAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/area', [
+        'uses' => 'VolumeImageAreaController@index',
+    ]);
+});
+
 $router->get('users/find/{pattern}', 'UserController@find');
 
 $router->get('users/my', 'UserController@showOwn');

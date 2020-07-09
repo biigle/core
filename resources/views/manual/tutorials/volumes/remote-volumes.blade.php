@@ -50,7 +50,15 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the images. BIIGLE detects if CORS is properly configured for remote images and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
         </p>
         <ul>
-            @mixin('volumesManualRemoteVolumes')
+            <li>
+                Live color adjustment of images in the annotation tool.
+            </li>
+            <li>
+                The magic wand interaction in the annotation tool.
+            </li>
+            <li>
+                The screenshot button in the annotation tool. Use the usual functions of your operating system or browser to create screenshots manually.
+            </li>
         </ul>
 
         <h3><a name="how-to-secure"></a>How to secure a remote location</h3>
