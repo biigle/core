@@ -26,6 +26,8 @@
     "bootstrap-sass": "^3.3.7",
     "vue": "^2.0.5",
     "vue-resource": "^1.0.3",
-    "vue-strap": "git://github.com/biigle/vue-strap.git#v2"
+    "vue-strap": "git://github.com/biigle/vue-strap.git#v2",
+    "@biigle/ol": "^5.3.0",
+    "magic-wand-tool": "^1.1.4"
   }
 }

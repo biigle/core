@@ -1,0 +1,28 @@
+.scale-line-indicator {
+    @extend %info-box;
+}
+
+.scale-line-indicator__line {
+    border-bottom: 1px solid $text-color;
+    display: block;
+    text-align: center;
+    position: relative;
+    margin: auto;
+
+    &:before, &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        height: 50%;
+        width: 1px;
+        background-color: $text-color;
+    }
+
+    &:before {
+        left: 0;
+    }
+
+    &:after {
+        right: 0;
+    }
+}

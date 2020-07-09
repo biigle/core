@@ -1,0 +1,14 @@
+.labels-tab {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .labels-tab__trees {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .labels-tab__plugins:not(:empty) {
+        padding-top: 1em;
+    }
+}
