@@ -3,7 +3,6 @@
 @section('title', "Reports for {$video->name}")
 
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('reports.videoId', {!! $video->id !!});
@@ -13,8 +12,6 @@
 @endpush
 
 @push('styles')
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/reports/styles/main.css') }}" rel="stylesheet">
 @endpush
 

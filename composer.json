@@ -15,9 +15,7 @@
         }
     ],
     "require": {
-        "ext-zip": "*",
-        "biigle/projects": "^1.4 | dev-master",
-        "biigle/label-trees": "^1.27 | dev-master"
+        "ext-zip": "*"
     },
     "autoload": {
         "psr-4": {
