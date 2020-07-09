@@ -21,6 +21,7 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
+        "ext-soap": "*",
         "biigle/ananas": "dev-master",
         "biigle/annotations": "dev-master",
         "biigle/color-sort": "dev-master",

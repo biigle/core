@@ -79,6 +79,11 @@ $router->resource('label-trees.labels', 'LabelTreeLabelController', [
     'parameters' => ['label-trees' => 'id'],
 ]);
 
+$router->resource('label-trees.merge-labels', 'LabelTreeMergeController', [
+    'only' => ['store'],
+    'parameters' => ['label-trees' => 'id'],
+]);
+
 $router->resource('label-trees.users', 'LabelTreeUserController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['label-trees' => 'id', 'users' => 'id2'],
@@ -107,6 +112,8 @@ $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],
 ]);
+
+$router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
 
 $router->get(
     'projects/{id}/label-trees/available',
@@ -184,6 +191,81 @@ $router->resource('volumes.images', 'VolumeImageController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
 ]);
+
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Volumes',
+], function ($router) {
+    $router->get('{id}/images/order-by/filename', [
+        'uses' => 'Sorters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/images/filter/labels', [
+        'uses' => 'Filters\AnyImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label-user/{id2}', [
+        'uses' => 'Filters\ImageLabelUserController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label/{id2}', [
+        'uses' => 'Filters\ImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-label/{id2}', [
+        'uses' => 'Filters\ImageAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/filename/{pattern}', [
+        'uses' => 'Filters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/image-labels', [
+        'uses' => 'UsedImageLabelsController@index',
+    ]);
+
+    $router->get('{id}/filenames', [
+        'uses' => 'ImageFilenamesController@index',
+    ]);
+
+    $router->get('{id}/users', [
+        'uses' => 'UserController@index',
+    ]);
+
+    $router->get('{id}/images/labels', [
+        'uses' => 'ImageLabelsController@index',
+    ]);
+
+    $router->post('{id}/images/metadata', [
+        'uses' => 'ImageMetadataController@store',
+    ]);
+
+    $router->group(['prefix' => 'browser'], function ($router) {
+        $router->get('directories/{disk}', 'BrowserController@indexDirectories');
+        $router->get('images/{disk}', 'BrowserController@indexImages');
+    });
+});
+
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Annotations',
+], function ($router) {
+    $router->get('{id}/images/filter/annotations', [
+        'uses' => 'Filters\AnnotationController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-user/{id2}', [
+        'uses' => 'Filters\AnnotationUserController@index',
+    ]);
+
+    $router->get('{id}/annotation-labels', [
+        'uses' => 'VolumeAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/area', [
+        'uses' => 'VolumeImageAreaController@index',
+    ]);
+});
 
 $router->get('users/find/{pattern}', 'UserController@find');
 

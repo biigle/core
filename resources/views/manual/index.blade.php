@@ -28,6 +28,139 @@
                 View and manage BIIGLE notifications in the notification center.
             </p>
 
+            <h3><a href="{{route('manual-tutorials', ['projects', 'about'])}}">Projects</a></h3>
+            <p>
+                Learn what projects are and how to manage them.
+            </p>
+
+
+            <h3>Label Trees</h3>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}">About Label Trees</a>
+            </h4>
+            <p>
+                Learn what label trees are and how you can manage them.
+            </p>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'manage-labels'])}}">Manage Labels</a>
+            </h4>
+            <p>
+                Learn how to create, modify or delete labels of a label tree.
+            </p>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'label-tree-versions'])}}">Label Tree Versions</a>
+            </h4>
+            <p>
+                Everything you need to know about versioned label trees.
+            </p>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'merge-label-trees'])}}">Merge Label Trees</a>
+            </h4>
+            <p>
+                View and resolve differences between label trees.
+            </p>
+            @mixin('labelTreesManual')
+
+            <h3>Volumes</h3>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">Volume overview</a>
+            </h4>
+
+            <p>
+                The volume overview allows you to explore all images that belong to a volume.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">Remote volumes</a>
+            </h4>
+
+            <p>
+                With remote volumes you can use images from your own data source in BIIGLE.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
+            </h4>
+
+            <p>
+                Annotation sessions can be used to conduct scientific studies.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Image metadata</a>
+            </h4>
+
+            <p>
+                Upload image metadata to add information that can't be extracted from the images.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'image-labels'])}}">Image Labels</a>
+            </h4>
+
+            <p>
+                Image labels are labels that are attached to whole images.
+            </p>
+
+            <h3>Annotations</h3>
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'getting-started'])}}">Getting Started</a>
+            </h4>
+            <p>
+                A quick introduction to the annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Creating Annotations</a>
+            </h4>
+
+            <p>
+                Learn about all the tools that are available to create new annotations.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Editing Annotations</a>
+            </h4>
+
+            <p>
+                Learn about all the tools to modify or delete existing annotations.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}">Navigating Images</a>
+            </h4>
+
+            <p>
+                Learn about advanced ways to navigate the images in the annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}">Sidebar</a>
+            </h4>
+
+            <p>
+                All sidebar tabs of the annotation tool explained.
+            </p>
+
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">Shortcuts</a>
+            </h4>
+
+            <p>
+                A list of all available shortcut keys in the annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['annotations', 'url-parameters'])}}">URL Parameters</a>
+            </h4>
+
+            <p>
+                Advanced configuration of the annotation tool.
+            </p>
+
+
             @mixin('manualTutorial')
 
             <h2><a name="references"></a>References</h2>

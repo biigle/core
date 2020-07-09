@@ -22,11 +22,19 @@
                 <button type="submit" class="btn btn-success">Search</button>
             </form>
             <ul class="nav nav-tabs">
+                @include("search.projects-tab")
+                @include("search.label-trees-tab")
+                @include("search.volumes-tab")
+                @include("search.annotations-tab")
                 @foreach (Modules::getViewMixins('searchTab') as $module => $nested)
                     @include("{$module}::searchTab")
                 @endforeach
             </ul>
             <div class="tab-content">
+                @include("search.projects-content")
+                @include("search.label-trees-content")
+                @include("search.volumes-content")
+                @include("search.annotations-content")
                 @foreach (Modules::getViewMixins('searchTabContent') as $module => $nested)
                     @include("{$module}::searchTabContent")
                 @endforeach

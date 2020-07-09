@@ -1,0 +1,32 @@
+.label-trees {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+
+    .label-trees__head {
+        display: flex;
+        margin-bottom: 1em;
+        min-height: $input-height-base;
+    }
+
+    .label-trees__body {
+        flex: 1;
+        overflow: auto;
+    }
+
+    .typeahead {
+        flex: 1;
+
+        &:not(:first-child) {
+            margin-left: 10px;
+        }
+    }
+
+    .label-tree {
+        &:last-child {
+            .label-tree__list {
+                margin: 0;
+            }
+        }
+    }
+}
