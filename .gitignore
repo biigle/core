@@ -1,7 +1,0 @@
-/vendor
-/node_modules
-/bower_components
-/tests/_*
-/.php_cs.cache
-
-*.sublime-*
