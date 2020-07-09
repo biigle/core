@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56263cf4bafc26b3b405dff145804ff8",
+    "content-hash": "0fede17ab190e6e03e248ed0deda77bc",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -74,16 +74,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "7f5cb6b54c4699552a5e882bfeb74a29e11a0a4d"
+                "reference": "5c33b70abd7f8b2051ec153293fa5611932525f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/7f5cb6b54c4699552a5e882bfeb74a29e11a0a4d",
-                "reference": "7f5cb6b54c4699552a5e882bfeb74a29e11a0a4d",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/5c33b70abd7f8b2051ec153293fa5611932525f9",
+                "reference": "5c33b70abd7f8b2051ec153293fa5611932525f9",
                 "shasum": ""
-            },
-            "require": {
-                "biigle/annotations": ">=2.7"
             },
             "type": "library",
             "autoload": {
@@ -107,11 +104,11 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-03T17:25:15+00:00"
+            "time": "2020-07-09T08:15:57+00:00"
         },
         {
             "name": "biigle/annotations",
-            "version": "dev-master",
+            "version": "v3.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/annotations.git",
@@ -158,17 +155,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "f7bfdd50e2912b91ec9483fa0abcc2a70f03efe1"
+                "reference": "63b78072488446cf4b0f2d84a83da0415e1eaeca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/f7bfdd50e2912b91ec9483fa0abcc2a70f03efe1",
-                "reference": "f7bfdd50e2912b91ec9483fa0abcc2a70f03efe1",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/63b78072488446cf4b0f2d84a83da0415e1eaeca",
+                "reference": "63b78072488446cf4b0f2d84a83da0415e1eaeca",
                 "shasum": ""
             },
             "require": {
-                "biigle/laravel-file-cache": "^2.0 | ^3.0",
-                "biigle/volumes": "^2.0 | dev-master"
+                "biigle/laravel-file-cache": "^2.0 | ^3.0"
             },
             "type": "library",
             "autoload": {
@@ -192,7 +188,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-03T17:20:58+00:00"
+            "time": "2020-07-09T08:11:35+00:00"
         },
         {
             "name": "biigle/demo",
@@ -200,16 +196,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "b8c798591b58f78f315b1a6e9add1c4ba7aaaf51"
+                "reference": "6ec3c21d14edacef4ad13b48fd7c19151ed28f02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/b8c798591b58f78f315b1a6e9add1c4ba7aaaf51",
-                "reference": "b8c798591b58f78f315b1a6e9add1c4ba7aaaf51",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/6ec3c21d14edacef4ad13b48fd7c19151ed28f02",
+                "reference": "6ec3c21d14edacef4ad13b48fd7c19151ed28f02",
                 "shasum": ""
-            },
-            "require": {
-                "biigle/volumes": "^1.13 | dev-master"
             },
             "type": "library",
             "autoload": {
@@ -233,7 +226,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-01T14:29:42+00:00"
+            "time": "2020-07-09T08:12:07+00:00"
         },
         {
             "name": "biigle/geo",
@@ -241,17 +234,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "b96901b57ef367970464dbd9fc9416ad798a3f5d"
+                "reference": "23ad4c1db12ec7757edcdfff2f65a19586321748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/b96901b57ef367970464dbd9fc9416ad798a3f5d",
-                "reference": "b96901b57ef367970464dbd9fc9416ad798a3f5d",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/23ad4c1db12ec7757edcdfff2f65a19586321748",
+                "reference": "23ad4c1db12ec7757edcdfff2f65a19586321748",
                 "shasum": ""
-            },
-            "require": {
-                "biigle/label-trees": "^1.3 | dev-master",
-                "biigle/volumes": "^2.0 | dev-master"
             },
             "type": "library",
             "autoload": {
@@ -275,11 +264,11 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-03T17:21:09+00:00"
+            "time": "2020-07-09T08:17:56+00:00"
         },
         {
             "name": "biigle/label-trees",
-            "version": "dev-master",
+            "version": "v1.31.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/label-trees.git",
@@ -469,18 +458,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "00b9e344060d89ca252eb40f2518f1e7e6bc1983"
+                "reference": "8a78905151e79119d57e5e1d28fcb2d86fc77c88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/00b9e344060d89ca252eb40f2518f1e7e6bc1983",
-                "reference": "00b9e344060d89ca252eb40f2518f1e7e6bc1983",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/8a78905151e79119d57e5e1d28fcb2d86fc77c88",
+                "reference": "8a78905151e79119d57e5e1d28fcb2d86fc77c88",
                 "shasum": ""
             },
             "require": {
-                "biigle/label-trees": "^1.3 | dev-master",
                 "biigle/laravel-file-cache": "^2.0 | ^3.0",
-                "biigle/volumes": "^2.0 | dev-master",
                 "ext-vips": "*",
                 "jcupitt/vips": "^1.0"
             },
@@ -506,7 +493,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-06T14:08:43+00:00"
+            "time": "2020-07-09T08:19:56+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -514,18 +501,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "24fe101a3602c4e3f128c7ee06fe41a04baa4e59"
+                "reference": "946f6c2a9f06e431ec0f7975bf6e1520c966e89a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/24fe101a3602c4e3f128c7ee06fe41a04baa4e59",
-                "reference": "24fe101a3602c4e3f128c7ee06fe41a04baa4e59",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/946f6c2a9f06e431ec0f7975bf6e1520c966e89a",
+                "reference": "946f6c2a9f06e431ec0f7975bf6e1520c966e89a",
                 "shasum": ""
             },
             "require": {
-                "biigle/annotations": "^3.0 | dev-master",
-                "biigle/laravel-file-cache": "^2.0 | ^3.0",
-                "biigle/volumes": "^2.0 | dev-master"
+                "biigle/laravel-file-cache": "^2.0 | ^3.0"
             },
             "type": "library",
             "autoload": {
@@ -549,7 +534,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T07:50:25+00:00"
+            "time": "2020-07-09T08:21:27+00:00"
         },
         {
             "name": "biigle/maia",
@@ -557,20 +542,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "31088268138dc4a9256085f7aabd09b792a30780"
+                "reference": "80011208c88fe33abc3a033d93254f61a61d2cef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/31088268138dc4a9256085f7aabd09b792a30780",
-                "reference": "31088268138dc4a9256085f7aabd09b792a30780",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/80011208c88fe33abc3a033d93254f61a61d2cef",
+                "reference": "80011208c88fe33abc3a033d93254f61a61d2cef",
                 "shasum": ""
             },
             "require": {
-                "biigle/annotations": "^3.9 | dev-master",
-                "biigle/label-trees": "^1.19 | dev-master",
                 "biigle/laravel-file-cache": "^3.0",
-                "biigle/largo": "^2.4 | dev-master",
-                "biigle/volumes": "^2.7 | dev-master"
+                "biigle/largo": "^2.4 | dev-master"
             },
             "type": "library",
             "autoload": {
@@ -594,7 +576,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-03T17:21:49+00:00"
+            "time": "2020-07-09T08:23:14+00:00"
         },
         {
             "name": "biigle/module",
@@ -636,7 +618,7 @@
         },
         {
             "name": "biigle/projects",
-            "version": "dev-master",
+            "version": "v1.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/projects.git",
@@ -679,17 +661,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "98518c42d7de09e0e44053edb4095b402acdd6e7"
+                "reference": "fb841ef9369b5293ff4810ff6cd5195340605956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/98518c42d7de09e0e44053edb4095b402acdd6e7",
-                "reference": "98518c42d7de09e0e44053edb4095b402acdd6e7",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/fb841ef9369b5293ff4810ff6cd5195340605956",
+                "reference": "fb841ef9369b5293ff4810ff6cd5195340605956",
                 "shasum": ""
             },
             "require": {
-                "biigle/label-trees": "^1.27 | dev-master",
-                "biigle/projects": "^1.4 | dev-master",
                 "ext-zip": "*"
             },
             "type": "library",
@@ -714,7 +694,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-03T17:22:12+00:00"
+            "time": "2020-07-09T08:24:59+00:00"
         },
         {
             "name": "biigle/sync",
@@ -806,7 +786,7 @@
         },
         {
             "name": "biigle/volumes",
-            "version": "dev-master",
+            "version": "v2.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/volumes.git",
@@ -9378,20 +9358,16 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "biigle/ananas": 20,
-        "biigle/annotations": 20,
         "biigle/color-sort": 20,
         "biigle/demo": 20,
         "biigle/geo": 20,
-        "biigle/label-trees": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/maia": 20,
         "biigle/module": 20,
-        "biigle/projects": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
-        "biigle/videos": 20,
-        "biigle/volumes": 20
+        "biigle/videos": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

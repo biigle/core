@@ -189,10 +189,6 @@ return [
         Biigle\Providers\RouteServiceProvider::class,
 
         // Insert Biigle module service providers here.
-        Biigle\Modules\Projects\ProjectsServiceProvider::class,
-        Biigle\Modules\LabelTrees\LabelTreesServiceProvider::class,
-        Biigle\Modules\Volumes\VolumesServiceProvider::class,
-        Biigle\Modules\Annotations\AnnotationsServiceProvider::class,
         Biigle\Modules\ColorSort\ColorSortServiceProvider::class,
         Biigle\Modules\Geo\GeoServiceProvider::class,
         Biigle\Modules\Largo\LargoServiceProvider::class,
