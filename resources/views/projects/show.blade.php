@@ -11,6 +11,7 @@
     biigle.$declare('projects.userId', {!! $user->id !!});
     biigle.$declare('projects.redirectUrl', '{{route('home')}}');
     biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
+    biigle.$declare('projects.videos', {!! $videos !!});
 </script>
 @mixin('projectsShowScripts')
 @endpush
@@ -21,6 +22,7 @@
     @include('projects.show.toolbar')
     <div class="col-md-6">
         @include('projects.show.volumes')
+        @include('projects.show.videos')
         @mixin('projectsShowLeft')
     </div>
     <div class="col-md-6">

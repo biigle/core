@@ -1,6 +1,6 @@
 <script>
-import {MousePositionIndicator} from '../../import';
-import {throttle} from '../../import';
+import MousePositionIndicator from '../../../annotations/components/mousePositionIndicator';
+import {throttle} from '../../../core/utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the indicators.

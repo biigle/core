@@ -176,7 +176,7 @@ class VideoAnnotationController extends Controller
      * }
      *
      * @param StoreVideoAnnotation $request
-     * @return Annotation
+     * @return VideoAnnotation
      */
     public function store(StoreVideoAnnotation $request)
     {

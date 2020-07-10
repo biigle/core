@@ -24,7 +24,7 @@
         v-on:mouseleave="finishUpdateTimelineHeight"
         v-on:mouseup="finishUpdateTimelineHeight"
         >
-        @include('videos::show.content')
+        @include('videos.show.content')
     </div>
     <sidebar
         v-cloak
@@ -35,23 +35,20 @@
         v-on:close="handleClosedTab"
         v-on:toggle="handleToggledTab"
         >
-            @include('videos::show.sidebar-annotations')
+            @include('videos.show.sidebar-annotations')
             @can('edit-in', $video)
-                @include('videos::show.sidebar-labels')
+                @include('videos.show.sidebar-labels')
             @endcan
             @mixin('videosSidebar')
-            @include('videos::show.sidebar-settings')
+            @include('videos.show.sidebar-settings')
             @can('update', $video)
-                @include('videos::show.sidebar-edit')
+                @include('videos.show.sidebar-edit')
             @endcan
     </sidebar>
 </div>
 @endsection
 
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('videos.id', '{{$video->id}}');
     biigle.$declare('videos.src', '{{url('api/v1/videos/'.$video->id.'/file')}}');
@@ -61,10 +58,4 @@
     biigle.$declare('videos.shapes', {!! $shapes !!});
     biigle.$declare('videos.isEditor', @can('editIn', $video) true @else false @endcan);
 </script>
-@endpush
-
-@push('styles')
-<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/videos/styles/main.css') }}" rel="stylesheet">
 @endpush

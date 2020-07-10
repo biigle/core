@@ -226,7 +226,7 @@ class Video extends Model implements FileContract
     /**
      * Thumbnails array of this video. Use with the `thumbnail_url` helper function.
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailsAttribute()
     {
@@ -239,7 +239,7 @@ class Video extends Model implements FileContract
     /**
      * URLs to the thumbnails of this video.
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailsUrlAttribute()
     {

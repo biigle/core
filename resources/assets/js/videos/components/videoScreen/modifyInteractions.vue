@@ -1,10 +1,10 @@
 <script>
+import AttachLabelInteraction from '../../../annotations/ol/AttachLabelInteraction';
+import Keyboard from '../../../core/keyboard';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
-import {AttachLabelInteraction} from '../../import';
-import {Keyboard} from '../../import';
+import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import {TranslateInteraction} from '../../import';
 
 /**
  * Mixin for the videoScreen component that contains logic for the edit/delete

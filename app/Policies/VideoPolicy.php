@@ -111,7 +111,7 @@ class VideoPolicy extends CachedPolicy
      * @param User $user
      * @param Video $video
      *
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getBaseQuery(User $user, Video $video)
     {

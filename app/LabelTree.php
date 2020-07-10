@@ -6,7 +6,6 @@ use DB;
 use Exception;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\Modules\Videos\VideoAnnotationLabel;
 
 /**
  * A label tree is a group of labels. Projects can choose to used different label trees,
@@ -211,10 +210,9 @@ class LabelTree extends Model
             && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
                 ->whereIn('labels.label_tree_id', $treeIds)
                 ->exists()
-            && (!class_exists(VideoAnnotationLabel::class)
-                || !VideoAnnotationLabel::join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
+            && !VideoAnnotationLabel::join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
                     ->whereIn('labels.label_tree_id', $treeIds)
-                    ->exists());
+                    ->exists();
     }
 
     /**

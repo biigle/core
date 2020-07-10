@@ -1,7 +1,7 @@
 <script>
 import VideoAnnotationApi from '../api/videoAnnotations';
 import {interpolate} from 'polymorph-js';
-import {Messages} from '../import';
+import Messages from '../../core/messages/store';
 
 /**
  * Annotation model.

@@ -8,5 +8,9 @@ $finder = PhpCsFixer\Finder::create()
     ->ignoreVCS(true);
 
 return PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        'ordered_imports' => true,
+    ])
     ->setFinder($finder)
     ->setUsingCache(true);

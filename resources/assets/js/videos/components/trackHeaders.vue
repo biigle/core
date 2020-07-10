@@ -6,7 +6,8 @@
                 v-text="track.label.name"
                 :title="track.label.name"
                 ></div>
-            <div class="lane-dummy" v-for="lane in track.lanes" :key="lane"></div>
+            <!-- eslint-disable-next-line vue/no-unused-vars -->
+            <div class="lane-dummy" v-for="lane in track.lanes"></div>
         </div>
     </div>
 </template>

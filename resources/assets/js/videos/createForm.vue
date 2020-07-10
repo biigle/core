@@ -1,5 +1,5 @@
 <script>
-import {LoaderMixin} from './import';
+import LoaderMixin from '../core/mixins/loader';
 
 export default {
     mixins: [LoaderMixin],

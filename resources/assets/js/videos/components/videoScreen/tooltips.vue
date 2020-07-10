@@ -1,5 +1,5 @@
 <script>
-import {LabelTooltip} from '../../import';
+import LabelTooltip from '../../../annotations/components/labelTooltip';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.

@@ -191,7 +191,7 @@ class TrackObject extends Job implements ShouldQueue
      *
      * @param string $command Command to execute.
      *
-     * @return The last line of the stout output.
+     * @return string The last line of the stout output.
      */
     protected function python($command)
     {

@@ -14,7 +14,7 @@ class VideoController extends Controller
     /**
      * Show the video annotation tool.
      *
-     * @param number $id
+     * @param int $id
      *
      * @return mixed
      */

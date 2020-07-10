@@ -1,9 +1,9 @@
 <script>
 import CanvasSource from '@biigle/ol/source/Canvas';
 import ImageLayer from '@biigle/ol/layer/Image';
+import Keyboard from '../../../core/keyboard';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
-import {Keyboard} from '../../import';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.

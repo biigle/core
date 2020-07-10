@@ -1,13 +1,13 @@
 <script>
+import Keyboard from '../../../core/keyboard';
 import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonBrush';
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
+import Styles from '../../../annotations/stores/styles';
 import {click as clickCondition} from '@biigle/ol/events/condition';
-import {Keyboard} from '../../import';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import {Styles} from '../../import';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush

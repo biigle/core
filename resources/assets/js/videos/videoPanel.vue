@@ -1,9 +1,9 @@
 <script>
+import EditorMixin from '../core/mixins/editor';
+import LoaderMixin from '../core/mixins/loader';
+import PreviewThumbnail from '../projects/components/previewThumbnail';
 import VideosApi from './api/videos';
-import {EditorMixin} from './import';
-import {handleErrorResponse} from './import';
-import {LoaderMixin} from './import';
-import {PreviewThumbnail} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The video list on the project show view.

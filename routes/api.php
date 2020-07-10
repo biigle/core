@@ -139,6 +139,11 @@ $router->delete(
     'UserPinnedProjectController@destroy'
 );
 
+$router->resource('projects.videos', 'ProjectVideoController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['projects' => 'id'],
+]);
+
 $router->post(
     'projects/{id}/volumes/{id2}',
     'ProjectVolumeController@attach'
@@ -170,6 +175,43 @@ $router->resource('shapes', 'ShapeController', [
 $router->resource('system-messages', 'SystemMessageController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['system-messages' => 'id'],
+]);
+
+$router->get('videos/{id}/file', 'VideoFileController@show');
+
+$router->resource('videos', 'VideoController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('videos.annotations', 'VideoAnnotationController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('video-annotations', 'VideoAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.labels', 'VideoAnnotationLabelController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.link', 'LinkVideoAnnotationController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.split', 'SplitVideoAnnotationController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotation-labels', 'VideoAnnotationLabelController', [
+    'only' => ['destroy'],
+    'parameters' => ['video-annotation-labels' => 'id'],
 ]);
 
 $router->resource('visibilities', 'VisibilityController', [

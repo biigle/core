@@ -2,14 +2,6 @@
 
 @section('title', 'Create new video')
 
-@push('scripts')
-   <script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
-@endpush
-
-@push('styles')
-   <link href="{{ cachebust_asset('vendor/videos/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @section('content')
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">

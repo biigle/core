@@ -50,9 +50,9 @@
 
 <script>
 import AnnotationTracks from './annotationTracks';
+import Events from '../../core/events';
+import Keyboard from '../../core/keyboard';
 import VideoProgress from './videoProgress';
-import {Events} from '../import';
-import {Keyboard} from '../import';
 
 export default {
     components: {

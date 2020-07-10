@@ -6,6 +6,7 @@ use TestCase;
 use Biigle\Role;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
@@ -156,5 +157,39 @@ class SearchControllerTest extends TestCase
         $response->assertSeeText('my image');
         $response->assertDontSeeText('other image');
         $response->assertDontSeeText('third image');
+    }
+
+    public function testIndexVideos()
+    {
+        $user = UserTest::create();
+        $guest = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($guest->id, Role::guestId());
+
+        $video1 = VideoTest::create([
+            'project_id' => $project->id,
+            'name' => 'random video',
+        ]);
+        $video2 = VideoTest::create([
+            'project_id' => $project->id,
+            'name' => 'another video',
+        ]);
+
+        $this->be($user);
+        $this->get('search?t=videos')
+            ->assertStatus(200)
+            ->assertDontSeeText('random video')
+            ->assertDontSeeText('another video');
+
+        $this->be($guest);
+        $this->get('search?t=videos')
+            ->assertStatus(200)
+            ->assertSeeText('random video')
+            ->assertSeeText('another video');
+
+        $this->get('search?t=videos&q=random')
+            ->assertStatus(200)
+            ->assertSeeText('random video')
+            ->assertDontSeeText('another video');
     }
 }

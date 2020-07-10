@@ -32,19 +32,3 @@
         <span class="text-muted" v-if="!hasVideos" v-cloak>This project has no videos.</span>
     </div>
 </div>
-
-@push('scripts')
-<script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
-<script type="text/javascript">
-    biigle.$declare('projects.videos', {!!
-        \Biigle\Modules\Videos\Video::where('project_id', $project->id)
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->each(function ($item) {
-                $item->append('thumbnailUrl');
-                $item->append('thumbnailsUrl');
-            })
-            ->toJson()
-    !!});
-</script>
-@endpush

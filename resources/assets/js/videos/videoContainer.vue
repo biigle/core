@@ -1,21 +1,21 @@
 <script>
 import Annotation from './models/Annotation';
 import AnnotationsTab from './components/viaAnnotationsTab';
+import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
+import LabelTrees from '../label-trees/components/labelTrees';
+import LoaderMixin from '../core/mixins/loader';
+import Messages from '../core/messages/store';
 import Settings from './stores/settings';
 import SettingsTab from './components/settingsTab';
+import ShapeAnnotationFilter from '../annotations/models/ShapeAnnotationFilter';
+import Sidebar from '../core/components/sidebar';
+import SidebarTab from '../core/components/sidebarTab';
+import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
 import VideoAnnotationApi from './api/videoAnnotations';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
-import {handleErrorResponse} from './import';
-import {LabelAnnotationFilter} from './import';
-import {LabelTrees} from './import';
-import {LoaderMixin} from './import';
-import {Messages} from './import';
-import {ShapeAnnotationFilter} from './import';
-import {SidebarTab} from './import';
-import {Sidebar} from './import';
-import {UrlParams} from './import';
-import {UserAnnotationFilter} from './import';
+import {handleErrorResponse} from '../core/messages/store';
+import {urlParams as UrlParams} from '../core/utils';
 
 export default {
     mixins: [LoaderMixin],

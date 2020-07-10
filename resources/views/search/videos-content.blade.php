@@ -24,15 +24,5 @@
     @endif
 </ul>
 
-@push('scripts')
-<script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/videos/scripts/main.js') }}"></script>
-@endpush
-
-@push('styles')
-<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @endif
 
