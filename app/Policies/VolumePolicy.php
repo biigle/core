@@ -110,7 +110,7 @@ class VolumePolicy extends CachedPolicy
      * @param User $user
      * @param Volume $volume
      *
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getBaseQuery(User $user, Volume $volume)
     {

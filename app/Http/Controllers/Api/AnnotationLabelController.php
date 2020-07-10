@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Str;
 use Biigle\Label;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
@@ -116,7 +117,7 @@ class AnnotationLabelController extends Controller
         } catch (QueryException $e) {
             // Although we check for existence above, this error happened some time.
             // I suspect some kind of race condition between PHP FPM workers.
-            if (!str_contains($e->getMessage(), 'Unique violation')) {
+            if (!Str::contains($e->getMessage(), 'Unique violation')) {
                 throw $e;
             }
         }

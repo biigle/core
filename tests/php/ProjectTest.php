@@ -4,11 +4,11 @@ namespace Biigle\Tests;
 
 use Queue;
 use Biigle\Role;
+use Biigle\Video;
 use ModelTestCase;
 use Biigle\Project;
 use Biigle\Jobs\DeleteVolume;
 use Illuminate\Database\QueryException;
-use Biigle\Tests\Modules\Videos\VideoTest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase
@@ -263,18 +263,14 @@ class ProjectTest extends ModelTestCase
         $this->model->addVolumeId($i1->volume_id);
         $this->model->addVolumeId($i2->volume_id);
 
-        $this->assertContains($i1->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($i1->uuid, $this->model->thumbnailUrl);
     }
 
     public function testGetVideoThumbnailUrlAttribute()
     {
-        if (!class_exists(VideoTest::class)) {
-            $this->markTestSkipped('Requires the biigle/videos module');
-        }
-
         $video = VideoTest::create(['project_id' => $this->model->id]);
 
-        $this->assertContains($video->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($video->uuid, $this->model->thumbnailUrl);
     }
 
     public function testHasGeoInfo()
@@ -307,5 +303,12 @@ class ProjectTest extends ModelTestCase
 
         $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
         $this->assertEmpty($projects);
+    }
+
+    public function testVideos()
+    {
+        $project = self::create();
+        $video = factory(Video::class)->create(['project_id' => $project->id]);
+        $this->assertEquals($video->id, $project->videos()->first()->id);
     }
 }

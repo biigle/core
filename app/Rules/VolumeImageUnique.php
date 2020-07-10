@@ -10,7 +10,7 @@ class VolumeImageUnique implements Rule
     /**
      * The filenames of the images that already exist.
      *
-     * @var Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $images;
 
@@ -24,7 +24,7 @@ class VolumeImageUnique implements Rule
     /**
      * Create a new instance.
      *
-     * @param Volume $volum
+     * @param Volume $volume
      */
     public function __construct(Volume $volume)
     {

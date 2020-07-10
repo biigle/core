@@ -98,7 +98,9 @@ class UserTest extends ModelTestCase
         $role = RoleTest::create();
         $project->addUserId($this->model->id, $role->id);
 
-        $this->assertEquals($this->model->projects()->first()->id, $project->id);
+        $p = $this->model->projects()->first();
+        $this->assertEquals($project->id, $p->id);
+        $this->assertFalse($p->pivot->pinned);
     }
 
     public function testLabelTrees()

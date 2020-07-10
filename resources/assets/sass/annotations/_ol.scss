@@ -1,0 +1,19 @@
+%custom-icon {
+    color: white;
+    display: block;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 400;
+}
+
+.ol-zoom-extent button {
+    @extend %custom-icon;
+}
+
+.ol-control.zoom-to-native {
+    left: .5em;
+    top: 7.1em;
+
+    button {
+        @extend %custom-icon;
+    }
+}

@@ -10,7 +10,7 @@ use Biigle\Tests\VolumeTest;
 
 class VolumePolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $project = ProjectTest::create();

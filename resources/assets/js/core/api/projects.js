@@ -55,7 +55,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.projects', Vue.resource('api/v1/projects{/id}', {}, {
+export default Vue.resource('api/v1/projects{/id}', {}, {
     queryVolumes: {
         method: 'GET',
         url: 'api/v1/projects{/id}/volumes',
@@ -96,4 +96,4 @@ biigle.$declare('api.projects', Vue.resource('api/v1/projects{/id}', {}, {
         method: 'DELETE',
         url: 'api/v1/projects{/id}/label-trees{/label_tree_id}',
     },
-}));
+});

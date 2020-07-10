@@ -16,7 +16,7 @@ use Jcupitt\Vips\Exception as VipsException;
 
 class ProcessNewImageChunkTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         Storage::fake(config('thumbnails.storage_disk'));
@@ -36,8 +36,8 @@ class ProcessNewImageChunkTest extends TestCase
         $image = $image->fresh();
 
         $this->assertEquals('2011-12-31 17:07:29', (string) $image->taken_at);
-        $this->assertEquals(12.486211944, $image->lng, '', 0.000001);
-        $this->assertEquals(41.8898575, $image->lat, '', 0.000001);
+        $this->assertEqualsWithDelta(12.486211944, $image->lng, 0.000001);
+        $this->assertEqualsWithDelta(41.8898575, $image->lat, 0.000001);
         $this->assertEquals(56.819, $image->metadata['gps_altitude']);
         $this->assertEquals(500, $image->width);
         $this->assertEquals(375, $image->height);
@@ -96,7 +96,7 @@ class ProcessNewImageChunkTest extends TestCase
             (new ProcessNewImageChunk([$image->id]))->handle();
             $this->assertFalse(true);
         } catch (VipsException $e) {
-            $this->assertContains('not a known file format', $e->getMessage());
+            $this->assertStringContainsString('not a known file format', $e->getMessage());
         }
     }
 
@@ -128,6 +128,7 @@ class ProcessNewImageChunkTest extends TestCase
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
 
         Queue::assertNotPushed(TileSingleImage::class);
+        $this->assertFalse($image->tiled);
     }
 
     public function testHandleTileLargeImage()
@@ -147,21 +148,25 @@ class ProcessNewImageChunkTest extends TestCase
         Queue::assertPushed(TileSingleImage::class, function ($job) use ($image) {
             return $job->image->id === $image->id;
         });
+        $image->refresh();
+        $this->assertTrue($image->tiled);
+        $this->assertTrue($image->tilingInProgress);
     }
 
     public function testHandleTileLargeImageSkip()
     {
-        config(['image.tiles.threshold' => 300]);
-        Storage::fake('local-tiles');
+        config(['image.tiles.threshold' => 300, 'image.tiles.disk' => 'tiles']);
+        Storage::fake('tiles');
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
         $fragment = fragment_uuid_path($image->uuid);
-        Storage::disk('local-tiles')->put($fragment, 'test');
+        Storage::disk('tiles')->put("{$fragment}/ImageProperties.xml", 'test');
 
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
+        $this->assertFalse($image->tilingInProgress);
     }
 }
 

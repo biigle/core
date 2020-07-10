@@ -4,7 +4,6 @@ namespace Biigle\Tests;
 
 use Event;
 use Response;
-use TileCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;
@@ -119,8 +118,8 @@ class ImageTest extends ModelTestCase
             'tiled' => true,
             'width' => 6000,
             'height' => 7000,
+            'tilingInProgress' => false,
         ];
-        TileCache::shouldReceive('get')->once()->with($this->model);
         $this->assertEquals($expect, $this->model->getFile());
     }
 
@@ -136,6 +135,7 @@ class ImageTest extends ModelTestCase
             'tiled' => true,
             'width' => 6000,
             'height' => 7000,
+            'tilingInProgress' => false,
         ];
         $this->assertEquals($expect, $this->model->getFile());
     }
@@ -236,5 +236,14 @@ class ImageTest extends ModelTestCase
         $this->model->save();
         $this->model->refresh();
         $this->assertEquals('image/jpeg', $this->model->mimetype);
+    }
+
+    public function testSetGetTilingInProgress()
+    {
+        $this->assertFalse($this->model->tilingInProgress);
+        $this->model->tilingInProgress = true;
+        $this->model->save();
+        $this->model->refresh();
+        $this->assertTrue($this->model->tilingInProgress);
     }
 }

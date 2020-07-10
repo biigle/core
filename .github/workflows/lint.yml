@@ -1,0 +1,61 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  lint-js:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Set registry authentication token
+      run: echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run ESLint
+      run: npm run lint
+
+  lint-php:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer
+        restore-keys: |
+          ${{ runner.os }}-composer
+
+    - name: Install Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Run Psalm
+      run: composer lint

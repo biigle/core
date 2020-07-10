@@ -11,7 +11,7 @@ return [
     | by the framework. A "local" driver, as well as a variety of cloud
     | based drivers are available for your choosing. Just store away!
     |
-    | Supported: "local", "ftp", "s3", "rackspace"
+    | Supported: "local", "ftp", "sftp", "s3"
     |
     */
 
@@ -50,15 +50,24 @@ return [
         ],
 
         // Default storage disk for image tiles.
-        'local-tiles' => [
+        'tiles' => [
             'driver' => 'local',
-            'root' => storage_path('tiles'),
+            'root' => storage_path('app/public/tiles'),
+            'url' => env('APP_URL').'/storage/tiles',
+            'visibility' => 'public',
         ],
 
         'thumbs' => [
             'driver' => 'local',
             'root' => storage_path('app/public/thumbs'),
             'url' => env('APP_URL').'/storage/thumbs',
+            'visibility' => 'public',
+        ],
+
+        'video-thumbs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/video-thumbs'),
+            'url' => env('APP_URL').'/storage/video-thumbs',
             'visibility' => 'public',
         ],
     ],

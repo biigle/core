@@ -79,6 +79,11 @@ $router->resource('label-trees.labels', 'LabelTreeLabelController', [
     'parameters' => ['label-trees' => 'id'],
 ]);
 
+$router->resource('label-trees.merge-labels', 'LabelTreeMergeController', [
+    'only' => ['store'],
+    'parameters' => ['label-trees' => 'id'],
+]);
+
 $router->resource('label-trees.users', 'LabelTreeUserController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['label-trees' => 'id', 'users' => 'id2'],
@@ -108,6 +113,8 @@ $router->resource('projects', 'ProjectController', [
     'parameters' => ['projects' => 'id'],
 ]);
 
+$router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
+
 $router->get(
     'projects/{id}/label-trees/available',
     'ProjectLabelTreeController@available'
@@ -115,6 +122,26 @@ $router->get(
 $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
+]);
+
+$router->get(
+    'projects/pinned',
+    'UserPinnedProjectController@index'
+);
+
+$router->post(
+    'projects/{id}/pin',
+    'UserPinnedProjectController@store'
+);
+
+$router->delete(
+    'projects/{id}/pin',
+    'UserPinnedProjectController@destroy'
+);
+
+$router->resource('projects.videos', 'ProjectVideoController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['projects' => 'id'],
 ]);
 
 $router->post(
@@ -150,6 +177,43 @@ $router->resource('system-messages', 'SystemMessageController', [
     'parameters' => ['system-messages' => 'id'],
 ]);
 
+$router->get('videos/{id}/file', 'VideoFileController@show');
+
+$router->resource('videos', 'VideoController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('videos.annotations', 'VideoAnnotationController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('video-annotations', 'VideoAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.labels', 'VideoAnnotationLabelController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.link', 'LinkVideoAnnotationController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotations.split', 'SplitVideoAnnotationController', [
+    'only' => ['store'],
+    'parameters' => ['video-annotations' => 'id'],
+]);
+
+$router->resource('video-annotation-labels', 'VideoAnnotationLabelController', [
+    'only' => ['destroy'],
+    'parameters' => ['video-annotation-labels' => 'id'],
+]);
+
 $router->resource('visibilities', 'VisibilityController', [
     'only' => ['index', 'show'],
     'parameters' => ['visibilities' => 'id'],
@@ -169,6 +233,81 @@ $router->resource('volumes.images', 'VolumeImageController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
 ]);
+
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Volumes',
+], function ($router) {
+    $router->get('{id}/images/order-by/filename', [
+        'uses' => 'Sorters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/images/filter/labels', [
+        'uses' => 'Filters\AnyImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label-user/{id2}', [
+        'uses' => 'Filters\ImageLabelUserController@index',
+    ]);
+
+    $router->get('{id}/images/filter/image-label/{id2}', [
+        'uses' => 'Filters\ImageLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-label/{id2}', [
+        'uses' => 'Filters\ImageAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/filter/filename/{pattern}', [
+        'uses' => 'Filters\ImageFilenameController@index',
+    ]);
+
+    $router->get('{id}/image-labels', [
+        'uses' => 'UsedImageLabelsController@index',
+    ]);
+
+    $router->get('{id}/filenames', [
+        'uses' => 'ImageFilenamesController@index',
+    ]);
+
+    $router->get('{id}/users', [
+        'uses' => 'UserController@index',
+    ]);
+
+    $router->get('{id}/images/labels', [
+        'uses' => 'ImageLabelsController@index',
+    ]);
+
+    $router->post('{id}/images/metadata', [
+        'uses' => 'ImageMetadataController@store',
+    ]);
+
+    $router->group(['prefix' => 'browser'], function ($router) {
+        $router->get('directories/{disk}', 'BrowserController@indexDirectories');
+        $router->get('images/{disk}', 'BrowserController@indexImages');
+    });
+});
+
+$router->group([
+    'prefix' => 'volumes',
+    'namespace' => 'Annotations',
+], function ($router) {
+    $router->get('{id}/images/filter/annotations', [
+        'uses' => 'Filters\AnnotationController@index',
+    ]);
+
+    $router->get('{id}/images/filter/annotation-user/{id2}', [
+        'uses' => 'Filters\AnnotationUserController@index',
+    ]);
+
+    $router->get('{id}/annotation-labels', [
+        'uses' => 'VolumeAnnotationLabelController@index',
+    ]);
+
+    $router->get('{id}/images/area', [
+        'uses' => 'VolumeImageAreaController@index',
+    ]);
+});
 
 $router->get('users/find/{pattern}', 'UserController@find');
 

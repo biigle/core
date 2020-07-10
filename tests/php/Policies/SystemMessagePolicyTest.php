@@ -14,7 +14,7 @@ class SystemMessagePolicyTest extends TestCase
     private $globalAdmin;
     private $message;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->user = UserTest::create();

@@ -44,6 +44,97 @@
             @endunless
         </div>
     </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a href="{{route('projects-index')}}" title="Projects"><h3 class="panel-title">Projects</h3></a>
+            </div>
+            <div class="panel-body">
+                <p class="h1 text-center">{{ Biigle\Project::count() }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a href="{{route('admin-volumes')}}" title="Volumes"><h3 class="panel-title">Volumes</h3></a>
+            </div>
+            <div class="panel-body">
+                <p class="h1 text-center">{{ Biigle\Volume::count() }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Images</h3>
+            </div>
+            <div class="panel-body">
+                <p class="h1 text-center">{{ number_format(Biigle\Image::count()) }}</p>
+            </div>
+        </div>
+    </div>
+<?php
+    $height = 50;
+    $width = 40;
+?>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Annotations
+                    <span class="pull-right">{{ $totalAnnotations }}</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
+                    <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
+                    @foreach($annotationWeek as $index => $day)
+                        <?php $h = round($height * $day['percent']); ?>
+                        <g transform="translate({{ $index * $width }}, 0)">
+                            <rect fill="#ccc" y="{{$height - $h}}" width="{{ $width / 2 }}" height="{{ $h }}"><title>{{ $day['count'] }}</title></rect>
+                            <text fill="{{$day['count'] ? '#ccc' : '#888'}}" x="0" y="{{ $height + 15 }}" dy=".35em">{{ $day['day']->format('D') }}</text>
+                        </g>
+                    @endforeach
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a href="{{route('search', ['t' => 'videos'])}}">Videos</a>
+                    <span class="pull-right">{{Biigle\Video::count()}}</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <p class="h1 text-center">{{round(Biigle\Video::sum('duration') / 3600, 2)}}&nbsp;h</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Video Annotations
+                    <span class="pull-right">{{ $totalVideoAnnotations }}</span>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
+                    <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
+                    @foreach($videoAnnotationWeek as $index => $day)
+                        <?php $h = round($height * $day['percent']); ?>
+                        <g transform="translate({{ $index * $width }}, 0)">
+                            <rect fill="#ccc" y="{{$height - $h}}" width="{{ $width / 2 }}" height="{{ $h }}"><title>{{ $day['count'] }}</title></rect>
+                            <text fill="{{$day['count'] ? '#ccc' : '#888'}}" x="0" y="{{ $height + 15 }}" dy=".35em">{{ $day['day']->format('D') }}</text>
+                        </g>
+                    @endforeach
+                </svg>
+            </div>
+        </div>
+    </div>
     @foreach ($modules->getMixins('adminIndex') as $module => $nestedMixins)
         @include($module.'::adminIndex')
     @endforeach

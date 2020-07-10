@@ -36,7 +36,7 @@ class UpdateVolume extends FormRequest
     {
         return [
             'name' => 'filled|max:512',
-            'media_type_id' => 'filled|exists:media_types,id',
+            'media_type_id' => 'filled|id|exists:media_types,id',
             'url' => ['filled', new VolumeUrl],
         ];
     }

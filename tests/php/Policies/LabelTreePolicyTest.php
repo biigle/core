@@ -20,7 +20,7 @@ class LabelTreePolicyTest extends TestCase
     private $admin;
     private $globalAdmin;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);

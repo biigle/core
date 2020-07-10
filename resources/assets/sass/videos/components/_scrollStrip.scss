@@ -1,0 +1,108 @@
+.scroll-strip {
+    position: relative;
+    overflow: hidden;
+
+    .video-progress {
+        height: 34px;
+        border-bottom: 1px solid $legend-border-color;
+    }
+
+    // Use the wrapper so the overflow-shadow (top, bottom) elements do not overflow the
+    // video-timeline element.
+    .annotation-tracks-wrapper {
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .time-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 1px;
+        background-color: #990000;
+        box-shadow: 0 0 1px black;
+        will-change: transform;
+        pointer-events: none;
+        z-index: 100;
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -5px;
+            width: 11px;
+            height: 3px;
+            background-color: #ff0000;
+        }
+
+        &:after {
+            content: '';
+            position: absolute;
+            display: block;
+            top: 3px;
+            left: -5px;
+            border: 5px solid transparent;
+            border-top-color: #ff0000;
+            width: 11px;
+            height: 11px;
+        }
+
+        &.time-indicator--seeking {
+            background-color: grayscale(#990000);
+
+            &:before {
+                background-color: grayscale(#ff0000);
+            }
+
+            &:after {
+                border-top-color: grayscale(#ff0000);
+            }
+        }
+    }
+
+    .hover-time-indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 34px;
+        width: 1px;
+        background-color: $text-muted;
+        will-change: transform;
+        pointer-events: none;
+    }
+
+    .overflow-shadow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        pointer-events: none;
+    }
+
+    .overflow-shadow--top {
+        box-shadow: inset 0 10px 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--bottom {
+        box-shadow: inset 0 -10px 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--left {
+        box-shadow: inset 10px 0 5px -5px rgba(black, 0.75);
+    }
+
+    .overflow-shadow--right {
+        box-shadow: inset -10px 0 5px -5px rgba(black, 0.75);
+    }
+}
+
+.scroll-strip__scroller {
+    position: relative;
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

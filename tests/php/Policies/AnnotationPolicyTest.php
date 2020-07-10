@@ -17,7 +17,7 @@ use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationPolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();

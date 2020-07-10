@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Str;
 use Biigle\ApiToken;
 use Illuminate\Http\Request;
 
@@ -80,7 +81,7 @@ class ApiTokenController extends Controller
         $token = new ApiToken;
         $token->owner_id = $request->user()->id;
         $token->purpose = $request->input('purpose');
-        $secret = str_random(32);
+        $secret = Str::random(32);
         $token->hash = bcrypt($secret);
         $token->save();
         // return the un-hashed token only this time

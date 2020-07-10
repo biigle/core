@@ -146,7 +146,7 @@ class ProjectPolicy extends CachedPolicy
      * @param User $user
      * @param Project $project
      *
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getBaseQuery(User $user, Project $project)
     {

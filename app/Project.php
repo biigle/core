@@ -5,7 +5,6 @@ namespace Biigle;
 use DB;
 use Cache;
 use Biigle\Jobs\DeleteVolume;
-use Biigle\Modules\Videos\Video;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
@@ -159,6 +158,16 @@ class Project extends Model
     }
 
     /**
+     * The videos of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
+    }
+
+    /**
      * Adds a volume to this project if it wasn't already.
      *
      * @deprecated Use `$project->volumes()->attach($id)` instead.
@@ -255,7 +264,7 @@ class Project extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return Cache::remember("project-thumbnail-url-{$this->id}", 60, function () {
+        return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
                 ->select('id')
                 ->orderBy('id')
@@ -263,8 +272,8 @@ class Project extends Model
 
             if ($volume) {
                 return $volume->thumbnailUrl;
-            } elseif (class_exists(Video::class)) {
-                $video = Video::where('project_id', $this->id)->first();
+            } else {
+                $video = $this->videos()->first();
 
                 if ($video) {
                     return $video->thumbnailUrl;
@@ -282,7 +291,7 @@ class Project extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("project-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("project-{$this->id}-has-geo-info", 3600, function () {
             return Image::whereIn('volume_id', function ($query) {
                 return $query->select('volume_id')
                     ->from('project_volume')

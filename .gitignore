@@ -2,13 +2,13 @@ vendor
 public/vendor
 node_modules
 public/hot
-.idea
 tmp
 storage/largo_patches
 
 npm-debug.log
-package-lock.json
 .env
+.env.backup
+.phpunit.result.cache
 *.sublime-*
 *.phar
 *.php_cs.cache

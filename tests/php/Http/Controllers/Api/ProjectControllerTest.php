@@ -17,8 +17,8 @@ class ProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testIndexGlobalAdmin()
@@ -50,8 +50,8 @@ class ProjectControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"description":"', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"description":"', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testUpdate()
@@ -83,14 +83,14 @@ class ProjectControllerTest extends ApiTestCase
         $response = $this->json('PUT', "/api/v1/projects/{$id}", [
             'name' => 'my test',
             'description' => 'this is my test',
-            'creator_id' => 5,
+            'creator_id' => 0,
         ]);
         $response->assertStatus(200);
 
         $project = $this->project()->fresh();
         $this->assertEquals('my test', $project->name);
         $this->assertEquals('this is my test', $project->description);
-        $this->assertNotEquals(5, $project->creator_id);
+        $this->assertNotEquals(0, $project->creator_id);
     }
 
     public function testStore()
@@ -109,11 +109,11 @@ class ProjectControllerTest extends ApiTestCase
             'description' => 'my test project',
         ]);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"name":"test project"', $content);
+        $this->assertStringContainsString('"name":"test project"', $content);
         $this->assertEquals(2, Project::count());
     }
 
@@ -129,13 +129,13 @@ class ProjectControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
-        ])->assertStatus(200);
+        ])->assertSuccessful();
     }
 
     public function testDestroy()

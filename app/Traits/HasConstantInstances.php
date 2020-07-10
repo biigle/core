@@ -2,6 +2,7 @@
 
 namespace Biigle\Traits;
 
+use Str;
 use Cache;
 
 /**
@@ -31,12 +32,12 @@ trait HasConstantInstances
      * "myNameId".
      * @param mixed $arguments
      *
-     * @return \Illuminate\Eloquent\Model|int
+     * @return \Illuminate\Database\Eloquent\Model|int
      */
     public static function __callStatic($key, $arguments)
     {
         if (is_array(static::INSTANCES)) {
-            $wantsId = ends_with($key, 'Id');
+            $wantsId = Str::endsWith($key, 'Id');
             if ($wantsId) {
                 $key = substr($key, 0, -2);
             }

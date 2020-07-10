@@ -24,7 +24,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      *
      * Public for testability.
      *
-     * @var Collection
+     * @var \Illuminate\Support\Collection
      */
     public $ids;
 
@@ -66,7 +66,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Collection $ids IDs oth the images to generate thumbnails for.
+     * @param \Illuminate\Support\Collection $ids IDs oth the images to generate thumbnails for.
      *
      * @return void
      */
@@ -105,6 +105,9 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
 
                 // Do this after processing so the image has width and height attributes.
                 if ($this->shouldBeTiled($image)) {
+                    $image->tiled = true;
+                    $image->tilingInProgress = true;
+                    $image->save();
                     TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
@@ -166,11 +169,13 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
             $format = config('thumbnails.format');
             $buffer = VipsImage::thumbnail($path, $this->width, [
                     'height' => $this->height,
-                    // Do not auto rotate thumbnails based on EXIF information because
-                    // the orientation of AUV captured images is not reliable.
-                    'no_rotate' => true,
                 ])
-                ->writeToBuffer(".{$format}");
+                // Strip EXIF information to not auto rotate thumbnails because
+                // the orientation of AUV captured images is not reliable.
+                ->writeToBuffer(".{$format}", [
+                    'Q' => 85,
+                    'strip' => true,
+                ]);
 
             Storage::disk(config('thumbnails.storage_disk'))
                     ->put("{$prefix}.{$format}", $buffer);
@@ -392,7 +397,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         if ($image->tiled) {
             $disk = Storage::disk(config('image.tiles.disk'));
             $fragment = fragment_uuid_path($image->uuid);
-            if ($disk->exists($fragment)) {
+            if ($disk->exists("{$fragment}/ImageProperties.xml")) {
                 return false;
             }
         }

@@ -36,6 +36,12 @@
                             <li>
                                 <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
                             </li>
+                            <li>
+                                <a href="{{route('search', ['t' => 'projects'])}}" title="Projects">Projects</a>
+                            </li>
+                            <li>
+                                <a href="{{route('search', ['t' => 'label-trees'])}}" title="Label trees">Label trees</a>
+                            </li>
                             @mixin('navbarMenuItem')
                             @can('sudo')
                                 <li>
@@ -64,6 +70,9 @@
                                     @endif
                                     @if (View::exists('privacy'))
                                         <li><a href="{{route('privacy')}}" title="Privacy">Privacy</a></li>
+                                    @endif
+                                    @if (View::exists('terms'))
+                                        <li><a href="{{route('terms')}}" title="Terms">Terms</a></li>
                                     @endif
                                 </ul>
                             </li>

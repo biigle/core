@@ -29,6 +29,6 @@ class RoleControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('admin', $content);
+        $this->assertStringContainsString('admin', $content);
     }
 }
