@@ -160,6 +160,72 @@
                 Advanced configuration of the annotation tool.
             </p>
 
+            <h3>Video Annotations</h3>
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'getting-started'])}}">Getting Started</a>
+            </h4>
+            <p>
+                An introduction to the video annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'creating-video-annotations'])}}">Creating Video Annotations</a>
+            </h4>
+
+            <p>
+                Learn how to create different kinds of video annotations.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'navigating-timeline'])}}">Navigating the Timeline</a>
+            </h4>
+
+            <p>
+                Learn about the video timeline and how to navigate it.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">Editing Video Annotations</a>
+            </h4>
+
+            <p>
+                Learn about all the tools to modify or delete existing video annotations.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}">Sidebar</a>
+            </h4>
+
+            <p>
+                All sidebar tabs of the video annotation tool explained.
+            </p>
+
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}">Shortcuts</a>
+            </h4>
+
+            <p>
+                A list of all available shortcut keys in the video annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'url-parameters'])}}">URL Parameters</a>
+            </h4>
+
+            <p>
+                Advanced configuration of the video annotation tool.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">Remote Videos</a>
+            </h4>
+
+            <p>
+                With remote videos you can use videos from your own data source in BIIGLE.
+            </p>
+
+
 
             @mixin('manualTutorial')
 
@@ -171,6 +237,10 @@
             <p>
                 <strong>BIIGLE 2.0</strong><br>
                 <a href="https://doi.org/10.3389/fmars.2017.00083">Langenkämper, D., Zurowietz, M., Schoening, T., & Nattkemper, T. W. (2017). Biigle 2.0-browsing and annotating large marine image collections.</a><br>Frontiers in Marine Science, 4, 83. doi: <code>10.3389/fmars.2017.00083</code>
+            </p>
+            <p>
+                <strong>Video Object Tracking</strong><br>
+                <a href="https://doi.org/10.1109/CVPR.2017.515">Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.</a> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: <code>10.1109/CVPR.2017.515</code>
             </p>
             @mixin('manualReferences')
         </div>

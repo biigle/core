@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\User;
+use Biigle\Video;
 use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Project;
@@ -33,6 +34,7 @@ class SearchController extends Controller
         $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
         $values = array_merge($values, $this->searchVolumes($user, $query, $type));
         $values = array_merge($values, $this->searchAnnotations($user, $query, $type));
+        $values = array_merge($values, $this->searchVideos($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
@@ -186,6 +188,40 @@ class SearchController extends Controller
         if ($type === 'images') {
             $values['results'] = $imageQuery->orderBy('images.id', 'desc')
                 ->paginate(12);
+        }
+
+        return $values;
+    }
+
+    /**
+     * Add video results to the search view.
+     *
+     * @param User $user
+     * @param string $query
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function searchVideos(User $user, $query, $type)
+    {
+        $queryBuilder = Video::accessibleBy($user);
+
+        if ($query) {
+            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
+                $q->where('videos.name', 'ilike', "%{$query}%");
+            });
+        }
+
+        $values = [];
+
+        if ($type === 'videos') {
+            $values['results'] = $queryBuilder
+                ->orderBy('videos.updated_at', 'desc')
+                ->paginate(12);
+
+            $values['videoResultCount'] = $values['results']->total();
+        } else {
+            $values = ['videoResultCount' => $queryBuilder->count()];
         }
 
         return $values;

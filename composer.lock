@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fede17ab190e6e03e248ed0deda77bc",
+    "content-hash": "9099b42af7402258c28445b1ade3c0c8",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -743,12 +743,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/videos.git",
-                "reference": "f9aeca91ebf42fbbc9f684ab3c27282d246e61dc"
+                "reference": "4fb9e8163ef507e62c07539826e512dd482fff45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/f9aeca91ebf42fbbc9f684ab3c27282d246e61dc",
-                "reference": "f9aeca91ebf42fbbc9f684ab3c27282d246e61dc",
+                "url": "https://api.github.com/repos/biigle/videos/zipball/4fb9e8163ef507e62c07539826e512dd482fff45",
+                "reference": "4fb9e8163ef507e62c07539826e512dd482fff45",
                 "shasum": ""
             },
             "require": {
@@ -782,7 +782,8 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-06T14:20:13+00:00"
+            "abandoned": true,
+            "time": "2020-07-10T14:14:49+00:00"
         },
         {
             "name": "biigle/volumes",

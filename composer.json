@@ -45,7 +45,8 @@
         "msurguy/honeypot": "^1.0",
         "mzur/laravel-openstack-swift": "^1.0",
         "ramsey/uuid": "^3.5",
-        "ramsey/uuid-doctrine": "^1.2"
+        "ramsey/uuid-doctrine": "^1.2",
+        "php-ffmpeg/php-ffmpeg": "^0.14"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

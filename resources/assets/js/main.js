@@ -6,3 +6,4 @@ import './label-trees/main';
 import './projects/main';
 import './volumes/main';
 import './annotations/main';
+import './videos/main';

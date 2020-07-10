@@ -95,20 +95,19 @@
                     </h4>
 
                     <?php
-                        $items = $project->volumes()
+                        $volumes = $project->volumes()
                             ->orderBy('created_at', 'desc')
                             ->limit(4)
                             ->get();
 
-                        if (class_exists(Biigle\Modules\Videos\Video::class)) {
-                            $videos = Biigle\Modules\Videos\Video::where('project_id', $project->id)
-                                ->orderBy('created_at', 'desc')
-                                ->limit(4)
-                                ->get();
-                            $items = $items->concat($videos)
-                                ->sortByDesc('created_at')
-                                ->take(4);
-                        }
+                        $videos = $project->videos()
+                            ->orderBy('created_at', 'desc')
+                            ->limit(4)
+                            ->get();
+
+                        $items = $volumes->concat($videos)
+                            ->sortByDesc('created_at')
+                            ->take(4);
                     ?>
                     @forelse ($items as $item)
                         <div class="col-xs-12 col-sm-6 col-md-3">

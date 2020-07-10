@@ -3,7 +3,6 @@
 namespace Biigle;
 
 use Illuminate\Database\Eloquent\Model;
-use Biigle\Modules\Videos\VideoAnnotationLabel;
 
 /**
  * Annotations on an image can have multiple labels. A label is e.g. the
@@ -96,8 +95,7 @@ class Label extends Model
     {
         return AnnotationLabel::where('label_id', $this->id)->exists()
             || ImageLabel::where('label_id', $this->id)->exists()
-            || (class_exists(VideoAnnotationLabel::class)
-                && VideoAnnotationLabel::where('label_id', $this->id)->exists());
+            || VideoAnnotationLabel::where('label_id', $this->id)->exists();
     }
 
     /**
