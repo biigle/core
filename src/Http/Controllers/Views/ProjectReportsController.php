@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Project;
-use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -18,7 +17,7 @@ class ProjectReportsController extends Controller
     public function show($id)
     {
         $project = Project::findOrFail($id);
-        $hasVideo = class_exists(Video::class) && Video::where('project_id', $project->id)->exists();
+        $hasVideo = $project->videos()->exists();
         $hasVolume = $project->volumes()->exists();
         if (!$hasVolume && !$hasVideo) {
             abort(404);

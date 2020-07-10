@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects\VideoAnnotations;
 
-use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
@@ -35,6 +34,6 @@ class CsvReportGenerator extends ProjectReportGenerator
      */
     protected function getProjectSources()
     {
-        return Video::where('project_id', $this->source->id)->get();
+        return $this->source->videos;
     }
 }

@@ -9,7 +9,7 @@ use Exception;
 use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Modules\Videos\Video;
+use Biigle\Video;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
@@ -40,10 +40,6 @@ class ReportGeneratorTest extends TestCase
 
     public function testGetAllVideoExist()
     {
-        if (!class_exists(Video::class)) {
-            $this->markTestSkipped('Requires the biigle/videos module.');
-        }
-
         foreach (ReportType::where('name', 'like', 'Video%')->get() as $type) {
             $this->assertNotNull(ReportGenerator::get(Video::class, $type));
         }

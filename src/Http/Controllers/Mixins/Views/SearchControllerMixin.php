@@ -6,7 +6,7 @@ use DB;
 use Biigle\User;
 use Biigle\Volume;
 use Biigle\Project;
-use Biigle\Modules\Videos\Video;
+use Biigle\Video;
 use Biigle\Modules\Reports\Report;
 
 class SearchControllerMixin
@@ -44,16 +44,14 @@ class SearchControllerMixin
                                 ->where('projects.name', 'like', "%{$query}%");
                         });
                 })
-                ->when(class_exists(Video::class), function ($q) use ($query) {
-                    $q->orWhere(function ($q) use ($query) {
-                        $q->where('reports.source_type', Video::class)
-                            ->whereExists(function ($q) use ($query) {
-                                $q->select(DB::raw(1))
-                                    ->from('reports')
-                                    ->join('videos', 'reports.source_id', '=', 'videos.id')
-                                    ->where('videos.name', 'like', "%{$query}%");
-                            });
-                    });
+                ->orWhere(function ($q) use ($query) {
+                    $q->where('reports.source_type', Video::class)
+                        ->whereExists(function ($q) use ($query) {
+                            $q->select(DB::raw(1))
+                                ->from('reports')
+                                ->join('videos', 'reports.source_id', '=', 'videos.id')
+                                ->where('videos.name', 'like', "%{$query}%");
+                        });
                 });
         }
 

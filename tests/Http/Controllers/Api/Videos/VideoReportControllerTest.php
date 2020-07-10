@@ -5,19 +5,11 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Videos;
 use ApiTestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\Modules\Reports\ReportType;
-use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class VideoReportControllerTest extends ApiTestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-        if (!class_exists(VideoTest::class)) {
-            $this->markTestSkipped('Requires the biigle/videos module.');
-        }
-    }
-
     public function testStore()
     {
         $videoId = VideoTest::create(['project_id' => $this->project()->id])->id;

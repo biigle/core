@@ -53,7 +53,7 @@ class Report extends Model
 
     /**
      * Source of the report (\Biigle\Volume, \Biigle\Project or
-     * \Biigle\Modules\Videos\Video).
+     * \Biigle\Video).
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
