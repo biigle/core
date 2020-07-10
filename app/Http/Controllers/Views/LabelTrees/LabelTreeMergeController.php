@@ -9,7 +9,6 @@ use Biigle\Visibility;
 use Biigle\LabelTreeVersion;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\Modules\Videos\VideoAnnotationLabel;
 
 class LabelTreeMergeController extends Controller
 {
@@ -64,12 +63,10 @@ class LabelTreeMergeController extends Controller
                         ->from('image_labels')
                         ->whereRaw('labels.id = image_labels.label_id');
                 })
-                ->when(class_exists(VideoAnnotationLabel::class), function ($query) {
-                    return $query->orWhereExists(function ($query) {
-                        return $query->select(DB::raw(1))
-                            ->from('video_annotation_labels')
-                            ->whereRaw('labels.id = video_annotation_labels.label_id');
-                    });
+                ->orWhereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('video_annotation_labels')
+                        ->whereRaw('labels.id = video_annotation_labels.label_id');
                 });
             })
             ->pluck('labels.id');

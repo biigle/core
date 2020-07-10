@@ -5,11 +5,14 @@ namespace Biigle\Http\Controllers\Views\Admin;
 use Biigle\User;
 use Biigle\Role;
 use Biigle\Image;
+use Biigle\Video;
 use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
+use Biigle\VideoAnnotation;
 use Biigle\Services\Modules;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Http\Controllers\Controller;
 
 class UsersController extends Controller
@@ -92,6 +95,7 @@ class UsersController extends Controller
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $this->showAnnotations($user));
+        $values = array_merge($values, $this->showVideos($user));
         $values = array_merge($values, $modules->callControllerMixins('adminShowUser', ['user' => $user]));
 
         return view('admin.users.show', array_merge([
@@ -213,5 +217,47 @@ class UsersController extends Controller
         }
 
         return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentAnnotations');
+    }
+
+    /**
+     * Add project statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    public function showVideos(User $user)
+    {
+        $videosTotal = Video::count();
+
+        $videos = Video::where('creator_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+
+        $videosCount = $videos->count();
+        $videosPercent = $videosTotal > 0 ? round($videosCount / $videosTotal * 100, 2) : 0;
+
+        $totalDuration = Video::sum('duration');
+        $duration = Video::where('creator_id', $user->id)->sum('duration');
+        $durationPercent = $totalDuration > 0 ? round($duration / $totalDuration * 100, 2) : 0;
+
+        $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
+
+        if ($totalVideoAnnotationLabels > 0) {
+            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.video_annotation_id')
+                ->where('video_annotation_labels.user_id', $user->id)
+                ->distinct()
+                ->count('video_annotations.id');
+
+            $relativeVideoAnnotationLabels = $totalVideoAnnotationLabels / VideoAnnotationLabel::count();
+            $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::count();
+        } else {
+            $totalVideoAnnotations = 0;
+            $relativeVideoAnnotationLabels = 0;
+            $relativeVideoAnnotations = 0;
+        }
+
+        return compact('videos', 'videosCount', 'videosPercent', 'duration', 'durationPercent', 'totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
     }
 }

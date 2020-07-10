@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
+        \Biigle\Events\VideoDeleted::class => [
+            \Biigle\Listeners\PrepareDeleteVideoThumbnails::class,
+        ],
     ];
 
     /**

@@ -1,0 +1,33 @@
+.video-progress {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+
+    .bookmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 3px;
+        background-color: $gray-light;
+        transform: translateX(-1px);
+
+        &:hover {
+            background-color: $gray;
+        }
+    }
+
+    .tick {
+        position: absolute;
+        left: 0;
+        top: 0;
+        // height: 10px;
+        width: 1px;
+        border-left: 1px solid $text-muted;
+        color: $text-muted;
+        font-size: $font-size-small;
+        padding: 0 5px;
+        pointer-events: none;
+        user-select: none;
+    }
+}

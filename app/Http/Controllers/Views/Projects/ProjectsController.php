@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Role;
+use Biigle\Video;
 use Biigle\Project;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Views\Controller;
@@ -48,12 +49,19 @@ class ProjectsController extends Controller
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at')
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->get()
+            ->each(function ($item) {
+                $item->append('thumbnailUrl');
+                $item->append('thumbnailsUrl');
+            });
 
-        $volumes->each(function ($item) {
-            $item->append('thumbnailUrl');
-            $item->append('thumbnailsUrl');
-        });
+        $videos = $project->videos()
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->each(function ($item) {
+                $item->append('thumbnailUrl');
+                $item->append('thumbnailsUrl');
+            });
 
         $members = $project->users()
             ->select('id', 'firstname', 'lastname', 'project_role_id as role_id')
@@ -77,6 +85,7 @@ class ProjectsController extends Controller
             'isMember' => $isMember,
             'isPinned' => $isPinned,
             'canPin' => $canPin,
+            'videos' => $videos,
         ]);
     }
 
