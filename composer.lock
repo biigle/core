@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9099b42af7402258c28445b1ade3c0c8",
+    "content-hash": "23fb2dc632b24ad8b9dd443dc338800f",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -107,49 +107,6 @@
             "time": "2020-07-09T08:15:57+00:00"
         },
         {
-            "name": "biigle/annotations",
-            "version": "v3.27.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/annotations.git",
-                "reference": "d20b668ef55b92669506e74ee9f89270f72e443e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/annotations/zipball/d20b668ef55b92669506e74ee9f89270f72e443e",
-                "reference": "d20b668ef55b92669506e74ee9f89270f72e443e",
-                "shasum": ""
-            },
-            "require": {
-                "biigle/label-trees": "^1.3 | dev-master",
-                "biigle/volumes": "^2.0 | dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Annotations\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to create, edit and explore image annotations.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "abandoned": true,
-            "time": "2020-07-09T07:56:31+00:00"
-        },
-        {
             "name": "biigle/color-sort",
             "version": "dev-master",
             "source": {
@@ -196,12 +153,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "6ec3c21d14edacef4ad13b48fd7c19151ed28f02"
+                "reference": "1490b9d8657121389fad318152b93273b931689a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/6ec3c21d14edacef4ad13b48fd7c19151ed28f02",
-                "reference": "6ec3c21d14edacef4ad13b48fd7c19151ed28f02",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/1490b9d8657121389fad318152b93273b931689a",
+                "reference": "1490b9d8657121389fad318152b93273b931689a",
                 "shasum": ""
             },
             "type": "library",
@@ -226,7 +183,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T08:12:07+00:00"
+            "time": "2020-07-10T14:26:48+00:00"
         },
         {
             "name": "biigle/geo",
@@ -234,12 +191,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "23ad4c1db12ec7757edcdfff2f65a19586321748"
+                "reference": "a85c30b4b2e40555c3b698008222dc81cd17d889"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/23ad4c1db12ec7757edcdfff2f65a19586321748",
-                "reference": "23ad4c1db12ec7757edcdfff2f65a19586321748",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/a85c30b4b2e40555c3b698008222dc81cd17d889",
+                "reference": "a85c30b4b2e40555c3b698008222dc81cd17d889",
                 "shasum": ""
             },
             "type": "library",
@@ -264,50 +221,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T08:17:56+00:00"
-        },
-        {
-            "name": "biigle/label-trees",
-            "version": "v1.31.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/label-trees.git",
-                "reference": "fa4c8c40f155979108310b0ff7b616354d42dae1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/label-trees/zipball/fa4c8c40f155979108310b0ff7b616354d42dae1",
-                "reference": "fa4c8c40f155979108310b0ff7b616354d42dae1",
-                "shasum": ""
-            },
-            "require": {
-                "ext-soap": "*",
-                "ramsey/uuid": "^3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\LabelTrees\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to create, edit and manage label trees.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "abandoned": true,
-            "time": "2020-07-07T06:43:17+00:00"
+            "time": "2020-07-09T08:40:55+00:00"
         },
         {
             "name": "biigle/laravel-cached-openstack",
@@ -458,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "8a78905151e79119d57e5e1d28fcb2d86fc77c88"
+                "reference": "178edfb45d38a6fca628a87dfa8fd181bd4640c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/8a78905151e79119d57e5e1d28fcb2d86fc77c88",
-                "reference": "8a78905151e79119d57e5e1d28fcb2d86fc77c88",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/178edfb45d38a6fca628a87dfa8fd181bd4640c3",
+                "reference": "178edfb45d38a6fca628a87dfa8fd181bd4640c3",
                 "shasum": ""
             },
             "require": {
@@ -493,7 +407,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T08:19:56+00:00"
+            "time": "2020-07-09T08:38:35+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -542,12 +456,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "80011208c88fe33abc3a033d93254f61a61d2cef"
+                "reference": "53e9f46c3e982df439340f356704ea5f6ce105cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/80011208c88fe33abc3a033d93254f61a61d2cef",
-                "reference": "80011208c88fe33abc3a033d93254f61a61d2cef",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/53e9f46c3e982df439340f356704ea5f6ce105cc",
+                "reference": "53e9f46c3e982df439340f356704ea5f6ce105cc",
                 "shasum": ""
             },
             "require": {
@@ -576,7 +490,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T08:23:14+00:00"
+            "time": "2020-07-09T08:37:43+00:00"
         },
         {
             "name": "biigle/module",
@@ -617,56 +531,17 @@
             "time": "2020-07-03T17:21:57+00:00"
         },
         {
-            "name": "biigle/projects",
-            "version": "v1.21.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/projects.git",
-                "reference": "f9b76b5db1d0504391055e4152ca44c543b8623b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/projects/zipball/f9b76b5db1d0504391055e4152ca44c543b8623b",
-                "reference": "f9b76b5db1d0504391055e4152ca44c543b8623b",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Projects\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to create, edit and manage projects.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "abandoned": true,
-            "time": "2020-07-07T08:44:12+00:00"
-        },
-        {
             "name": "biigle/reports",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "fb841ef9369b5293ff4810ff6cd5195340605956"
+                "reference": "4d79bdfec9267126c533d11bd0a443666c9f3e2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/fb841ef9369b5293ff4810ff6cd5195340605956",
-                "reference": "fb841ef9369b5293ff4810ff6cd5195340605956",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/4d79bdfec9267126c533d11bd0a443666c9f3e2a",
+                "reference": "4d79bdfec9267126c533d11bd0a443666c9f3e2a",
                 "shasum": ""
             },
             "require": {
@@ -694,7 +569,7 @@
                 "biigle",
                 "biigle-module"
             ],
-            "time": "2020-07-09T08:24:59+00:00"
+            "time": "2020-07-10T14:26:43+00:00"
         },
         {
             "name": "biigle/sync",
@@ -736,97 +611,6 @@
                 "biigle-module"
             ],
             "time": "2020-07-03T17:22:19+00:00"
-        },
-        {
-            "name": "biigle/videos",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/videos.git",
-                "reference": "4fb9e8163ef507e62c07539826e512dd482fff45"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/videos/zipball/4fb9e8163ef507e62c07539826e512dd482fff45",
-                "reference": "4fb9e8163ef507e62c07539826e512dd482fff45",
-                "shasum": ""
-            },
-            "require": {
-                "biigle/annotations": "^3.9 | dev-master",
-                "biigle/label-trees": "^1.19 | dev-master",
-                "ext-vips": "*",
-                "guzzlehttp/guzzle": "^6.0",
-                "jcupitt/vips": "^1.0",
-                "php-ffmpeg/php-ffmpeg": "^0.14",
-                "ramsey/uuid": "^3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Videos\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to create, edit and explore video annotations.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "abandoned": true,
-            "time": "2020-07-10T14:14:49+00:00"
-        },
-        {
-            "name": "biigle/volumes",
-            "version": "v2.22.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/volumes.git",
-                "reference": "a5e18924c9e03b47958236e8000d429b57e6234a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/volumes/zipball/a5e18924c9e03b47958236e8000d429b57e6234a",
-                "reference": "a5e18924c9e03b47958236e8000d429b57e6234a",
-                "shasum": ""
-            },
-            "require": {
-                "biigle/label-trees": "^1.3 | dev-master",
-                "biigle/projects": "^1.4 | dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Volumes\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to create, edit and explore image volumes.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "abandoned": true,
-            "time": "2020-07-08T14:56:37+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -9367,8 +9151,7 @@
         "biigle/maia": 20,
         "biigle/module": 20,
         "biigle/reports": 20,
-        "biigle/sync": 20,
-        "biigle/videos": 20
+        "biigle/sync": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

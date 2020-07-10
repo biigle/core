@@ -198,7 +198,6 @@ return [
         Biigle\Modules\Sync\SyncServiceProvider::class,
         Biigle\Modules\Demo\DemoServiceProvider::class,
         Biigle\Modules\Maia\MaiaServiceProvider::class,
-        Biigle\Modules\Videos\VideosServiceProvider::class,
 
     ],
 

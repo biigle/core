@@ -34,7 +34,6 @@
         "biigle/module": "dev-master",
         "biigle/reports": "dev-master",
         "biigle/sync": "dev-master",
-        "biigle/videos": "dev-master",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "^4.0",
