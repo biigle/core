@@ -43,11 +43,9 @@ $router->group([
         'uses' => 'SettingsController@store',
     ]);
 
-    if (class_exists(Biigle\Modules\Videos\VideosServiceProvider::class)) {
-        $router->post('videos/{id}/reports', [
-            'uses' => 'Videos\VideoReportController@store',
-        ]);
-    }
+    $router->post('videos/{id}/reports', [
+        'uses' => 'Videos\VideoReportController@store',
+    ]);
 });
 
 $router->group([
@@ -69,10 +67,8 @@ $router->group([
         'as' => 'reports',
     ]);
 
-    if (class_exists(Biigle\Modules\Videos\VideosServiceProvider::class)) {
-        $router->get('videos/{id}/reports', [
-            'uses' => 'VideoReportsController@show',
-            'as' => 'video-reports',
-        ]);
-    }
+    $router->get('videos/{id}/reports', [
+        'uses' => 'VideoReportsController@show',
+        'as' => 'video-reports',
+    ]);
 });

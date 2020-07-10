@@ -7,9 +7,9 @@ use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Videos\Video;
+use Biigle\Video;
 use Biigle\Modules\Reports\ReportType;
-use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Tests\Modules\Reports\ReportTest;
 
 class SearchControllerMixinTest extends TestCase
@@ -45,10 +45,6 @@ class SearchControllerMixinTest extends TestCase
 
     public function testIndexVideo()
     {
-        if (!class_exists(Video::class)) {
-            $this->markTestSkipped('Requires the biigle/videos module.');
-        }
-
         $r1 = ReportTest::create([
             'type_id' => ReportType::videoAnnotationsCsvId(),
             'source_id' => VideoTest::create(['name' => 'my video'])->id,

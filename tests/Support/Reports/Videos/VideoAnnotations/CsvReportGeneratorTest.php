@@ -8,11 +8,10 @@ use TestCase;
 use ZipArchive;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Videos\VideosServiceProvider;
-use Biigle\Tests\Modules\Videos\VideoAnnotationTest;
-use Biigle\Tests\Modules\Videos\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
@@ -33,14 +32,6 @@ class CsvReportGeneratorTest extends TestCase
         'frames',
         'video_annotation_id',
     ];
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        if (!class_exists(VideosServiceProvider::class)) {
-            $this->markTestSkipped('Requires the biigle/videos module.');
-        }
-    }
 
     public function testProperties()
     {

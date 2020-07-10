@@ -1,4 +1,4 @@
-@if ($volumes->isEmpty() && (!class_exists(Biigle\Modules\Videos\Video::class) || !Biigle\Modules\Videos\Video::where('project_id', $project->id)->exists()))
+@if ($volumes->isEmpty() && $videos->isEmpty())
     <button class="btn btn-default" title="Reports cannot be generated for empty projects" disabled>
         <span class="fa fa-file" aria-hidden="true"></span> Request reports
     </button>

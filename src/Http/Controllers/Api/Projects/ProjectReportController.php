@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api\Projects;
 
 use Biigle\Project;
 use Illuminate\Http\Request;
-use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\Report;
 use Biigle\Modules\Reports\ReportType;
 use Illuminate\Validation\ValidationException;
@@ -42,13 +41,7 @@ class ProjectReportController extends ReportController
         $this->validate($request, ['type_id' => 'required|id|exists:report_types,id']);
 
         if (intval($request->input('type_id')) === ReportType::videoAnnotationsCsvId()) {
-            $hasVideo = false;
-
-            if (class_exists(Video::class)) {
-                $hasVideo = Video::where('project_id', $project->id)->exists();
-            }
-
-            if (!$hasVideo) {
+            if (!$project->videos()->exists()) {
                 throw ValidationException::withMessages(['type_id' => ['The project must contain videos.']]);
             }
         } elseif (!$project->volumes()->exists()) {

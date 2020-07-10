@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Videos;
 
+use Biigle\Video;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\Report;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;

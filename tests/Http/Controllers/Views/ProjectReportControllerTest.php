@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Views;
 
 use ApiTestCase;
-use Biigle\Tests\Modules\Videos\VideoTest;
+use Biigle\Tests\VideoTest;
 
 class ProjectReportControllerTest extends ApiTestCase
 {
@@ -31,10 +31,6 @@ class ProjectReportControllerTest extends ApiTestCase
 
     public function testShowVideo()
     {
-        if (!class_exists(VideoTest::class)) {
-            $this->markTestSkipped('Requires biigle/videos');
-        }
-
         $id = $this->project()->id;
         $this->beGuest();
         $this->get("projects/{$id}/reports")->assertStatus(404);

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
+use Biigle\Video;
 use Biigle\LabelTree;
-use Biigle\Modules\Videos\Video;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
