@@ -1,0 +1,68 @@
+.annotation-keyframe {
+    position: absolute;
+    height: 100%;
+    width: 3 * $border-radius-small;
+    border-radius: $border-radius-small;
+    left: 0;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    // The last keyframe be aligned with the end of the annotation clip.
+    &:last-child:not(:only-child) {
+        transform: translateX(-100%);
+    }
+}
+
+.annotation-keyframe--selected {
+    border: 2px solid white;
+    background-color: #ff5e00 !important;
+    z-index: 1;
+}
+
+.annotation-clip--compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        width: $border-radius-small;
+    }
+}
+
+.annotation-clip--more-compact {
+    min-width: $border-radius-small;
+
+    .annotation-keyframe {
+        display: none;
+    }
+}
+
+@keyframes keyframe-stripes {
+    100% {
+        background-position: 0 6px;
+    }
+}
+
+.annotation-clip--tracking {
+    .annotation-keyframe {
+        animation: .5s linear keyframe-stripes infinite;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.3) 2px,
+            rgba(0, 0, 0, 0.3) 4px
+        );
+        background-size: 100% 200%;
+    }
+
+    &.annotation-clip--dark {
+        .annotation-keyframe {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.3) 2px,
+                rgba(255, 255, 255, 0.3) 4px
+            );
+            background-size: 100% 200%;
+        }
+    }
+}

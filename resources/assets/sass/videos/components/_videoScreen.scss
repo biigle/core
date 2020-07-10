@@ -1,0 +1,66 @@
+$ol-control-color: rgb(0, 60, 136);
+
+%ol-control {
+    // on top of the map canvas
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 1px;
+    border-radius: 4px;
+    transition: all 0.25s ease;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.video-screen {
+    background: $gray-lighter;
+    position: relative;
+    background-image: url(../../annotations/images/noise.png);
+
+    video {
+        min-height: 100%;
+        max-height: 100%;
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .controls {
+        position: absolute;
+        bottom: 0.5em;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        color: white;
+
+        .btn-group {
+            @extend %ol-control;
+            margin-right: 0.5em;
+        }
+    }
+
+    .indicators {
+        z-index: 1;
+        position: absolute;
+        bottom: 0.5em;
+    }
+
+    .indicators--right {
+        right: 0.5em;
+    }
+
+    .indicators--left {
+        left: 0.5em;
+    }
+
+    .indicator {
+        border-radius: 4px;
+        background-color: fade-out(#222, 0.3);
+        border: 1px solid #353535;
+        padding: .25em .5em;
+
+        &:not(:last-child) {
+            margin-bottom: .25em;
+        }
+    }
+}
