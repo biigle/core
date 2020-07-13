@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Export;
 
-use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 use Biigle\Http\Controllers\Api\Controller as BaseController;
 use Biigle\Modules\Sync\Http\Requests\ShowPublicLabelTreeExport;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 
 class PublicLabelTreeExportController extends BaseController
 {

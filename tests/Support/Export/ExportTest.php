@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
+use Biigle\Modules\Sync\Support\Export\Export;
 use File;
 use TestCase;
 use ZipArchive;
-use Biigle\Modules\Sync\Support\Export\Export;
 
 class ExportTest extends TestCase
 {

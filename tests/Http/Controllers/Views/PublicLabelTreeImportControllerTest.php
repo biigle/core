@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Views;
 
 use ApiTestCase;
-use Illuminate\Http\UploadedFile;
+use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
-use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
+use Illuminate\Http\UploadedFile;
 
 class PublicLabelTreeImportControllerTest extends ApiTestCase
 {

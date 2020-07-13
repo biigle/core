@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use TestCase;
+use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
-use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class LabelTreeExportTest extends TestCase
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Export;
 
-use ZipArchive;
 use ApiTestCase;
 use Biigle\Tests\LabelTreeTest;
+use ZipArchive;
 
 class LabelTreeExportControllerTest extends ApiTestCase
 {

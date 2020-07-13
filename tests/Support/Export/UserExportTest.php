@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use TestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Modules\Sync\Support\Export\UserExport;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class UserExportTest extends TestCase
 {

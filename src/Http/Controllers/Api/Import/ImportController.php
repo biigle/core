@@ -2,16 +2,16 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Import;
 
-use Exception;
-use Biigle\Volume;
-use Biigle\Project;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
-use Illuminate\Validation\ValidationException;
-use Biigle\Modules\Sync\Support\Import\UserImport;
-use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Import\LabelTreeImport;
+use Biigle\Modules\Sync\Support\Import\UserImport;
+use Biigle\Modules\Sync\Support\Import\VolumeImport;
+use Biigle\Project;
+use Biigle\Volume;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ImportController extends Controller

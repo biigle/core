@@ -2,17 +2,17 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
-use DB;
-use File;
-use TestCase;
-use Exception;
-use ZipArchive;
-use Biigle\User;
-use Ramsey\Uuid\Uuid;
-use Biigle\Tests\UserTest;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Import\UserImport;
+use Biigle\Tests\UserTest;
+use Biigle\User;
+use DB;
+use Exception;
+use File;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use TestCase;
+use ZipArchive;
 
 class UserImportTest extends TestCase
 {

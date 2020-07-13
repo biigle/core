@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use TestCase;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 use Biigle\Role;
-use SplFileObject;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
-use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
+use Biigle\Tests\UserTest;
+use SplFileObject;
+use TestCase;
 
 class PublicLabelTreeExportTest extends TestCase
 {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Export;
 
-use Biigle\User;
 use Biigle\Modules\Sync\Support\Export\UserExport;
+use Biigle\User;
 
 class UserExportController extends Controller
 {

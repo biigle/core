@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Modules\Sync\Jobs;
 
+use Biigle\Jobs\ProcessNewImages;
+use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
 use Queue;
 use TestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Jobs\ProcessNewImages;
-use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class PostprocessVolumeImportTest extends TestCase
 {

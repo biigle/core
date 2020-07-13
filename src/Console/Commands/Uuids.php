@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Sync\Console\Commands;
 
-use Hash;
-use File;
 use Biigle\User;
+use File;
+use Hash;
 use Illuminate\Console\Command;
 
 class Uuids extends Command
@@ -109,11 +109,11 @@ class Uuids extends Command
                 $bar->advance();
 
                 return [
-                    'uuid' => $user->uuid,
-                    'firstname' => Hash::make($user->firstname),
-                    'lastname' => Hash::make($user->lastname),
-                    'email' => Hash::make($user->email),
-                ];
+                        'uuid' => $user->uuid,
+                        'firstname' => Hash::make($user->firstname),
+                        'lastname' => Hash::make($user->lastname),
+                        'email' => Hash::make($user->email),
+                    ];
             })
             ->toJson(JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $bar->finish();

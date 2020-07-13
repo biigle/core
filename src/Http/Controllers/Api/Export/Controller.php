@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Export;
 
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller as BaseController;
+use Illuminate\Http\Request;
 
 class Controller extends BaseController
 {

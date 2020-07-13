@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Console\Commands;
 
-use Illuminate\Console\Command;
 use Biigle\Modules\Sync\SyncServiceProvider as ServiceProvider;
+use Illuminate\Console\Command;
 
 class Publish extends Command
 {

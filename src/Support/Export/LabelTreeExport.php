@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Support\Export;
 
-use DB;
 use Biigle\LabelTree;
+use DB;
 
 class LabelTreeExport extends Export
 {

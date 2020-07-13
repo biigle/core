@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Support\Export;
 
-use DB;
 use Biigle\Volume;
+use DB;
 
 class VolumeExport extends Export
 {

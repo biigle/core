@@ -2,14 +2,14 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Import;
 
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\LabelTree;
+use Biigle\Modules\Sync\Support\Import\ArchiveManager;
+use Biigle\Role;
 use DB;
 use Exception;
-use Biigle\Role;
-use Biigle\LabelTree;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
-use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 
 class PublicLabelTreeImportController extends Controller
 {

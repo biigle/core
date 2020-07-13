@@ -2,31 +2,31 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
-use File;
-use Queue;
-use Storage;
-use TestCase;
-use Exception;
-use ZipArchive;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Label;
-use Biigle\Volume;
-use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\ImageLabelTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
-use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
+use Biigle\Role;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\User;
+use Biigle\Volume;
+use Exception;
+use File;
+use Queue;
+use Ramsey\Uuid\Uuid;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use TestCase;
+use ZipArchive;
 
 class VolumeImportTest extends TestCase
 {

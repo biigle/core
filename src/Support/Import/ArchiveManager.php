@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use Str;
+use Carbon\Carbon;
+use Exception;
 use File;
 use Storage;
-use Exception;
-use ZipArchive;
-use Carbon\Carbon;
+use Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use ZipArchive;
 
 class ArchiveManager
 {

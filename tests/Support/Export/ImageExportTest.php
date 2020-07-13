@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use File;
-use TestCase;
-use SplFileObject;
-use Biigle\Tests\ImageTest;
 use Biigle\Modules\Sync\Support\Export\ImageExport;
+use Biigle\Tests\ImageTest;
+use File;
+use SplFileObject;
+use TestCase;
 
 class ImageExportTest extends TestCase
 {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use Biigle\User;
 use Biigle\Role;
+use Biigle\User;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 

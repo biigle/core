@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use DB;
 use Biigle\Label;
-use SplFileObject;
 use Biigle\LabelTree;
-use Ramsey\Uuid\Uuid;
 use Biigle\Visibility;
+use DB;
 use Illuminate\Support\Collection;
+use Ramsey\Uuid\Uuid;
+use SplFileObject;
 
 class PublicLabelTreeImport extends Import
 {

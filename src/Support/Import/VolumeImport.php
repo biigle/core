@@ -2,22 +2,22 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use DB;
-use Exception;
-use Biigle\User;
-use Biigle\Label;
-use Biigle\Image;
-use SplFileObject;
-use Biigle\Volume;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Ramsey\Uuid\Uuid;
-use Biigle\ImageLabel;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
-use Biigle\Rules\VolumeUrl;
-use Illuminate\Support\Collection;
+use Biigle\Image;
+use Biigle\ImageLabel;
+use Biigle\Label;
+use Biigle\LabelTree;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
+use Biigle\Project;
+use Biigle\Rules\VolumeUrl;
+use Biigle\User;
+use Biigle\Volume;
+use DB;
+use Exception;
+use Illuminate\Support\Collection;
+use Ramsey\Uuid\Uuid;
+use SplFileObject;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class VolumeImport extends Import

@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
+use Biigle\Modules\Sync\Support\Export\VolumeExport;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageLabelTest;
 use File;
 use TestCase;
-use Biigle\Tests\ImageLabelTest;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Modules\Sync\Support\Export\VolumeExport;
 
 class VolumeExportTest extends TestCase
 {

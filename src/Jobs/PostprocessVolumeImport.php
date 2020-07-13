@@ -2,15 +2,15 @@
 
 namespace Biigle\Modules\Sync\Jobs;
 
-use Biigle\Volume;
-use Biigle\Jobs\Job;
 use Biigle\Annotation;
+use Biigle\Jobs\Job;
 use Biigle\Jobs\ProcessNewImages;
-use Illuminate\Support\Collection;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Biigle\Modules\Largo\LargoServiceProvider;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\LargoServiceProvider;
+use Biigle\Volume;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Collection;
 
 class PostprocessVolumeImport extends Job implements ShouldQueue
 {

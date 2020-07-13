@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Support\Export;
 
-use File;
 use Biigle\Label;
+use File;
 use SplFileObject;
 
 class PublicLabelExport extends Export

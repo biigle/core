@@ -2,19 +2,19 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Import;
 
-use Mockery;
-use Exception;
 use ApiTestCase;
-use Biigle\User;
-use Biigle\Project;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ProjectTest;
-use Illuminate\Http\UploadedFile;
 use Biigle\Modules\Sync\Support\Export\UserExport;
-use Biigle\Modules\Sync\Support\Import\UserImport;
-use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Import\LabelTreeImport;
+use Biigle\Modules\Sync\Support\Import\UserImport;
+use Biigle\Modules\Sync\Support\Import\VolumeImport;
+use Biigle\Project;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\User;
+use Exception;
+use Illuminate\Http\UploadedFile;
+use Mockery;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ImportControllerTest extends ApiTestCase

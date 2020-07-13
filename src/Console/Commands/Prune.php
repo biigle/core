@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Console\Commands;
 
-use Illuminate\Console\Command;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
+use Illuminate\Console\Command;
 
 class Prune extends Command
 {

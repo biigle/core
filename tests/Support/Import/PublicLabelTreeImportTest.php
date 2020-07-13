@@ -2,22 +2,22 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
-use File;
-use TestCase;
-use Exception;
-use ZipArchive;
-use Biigle\Role;
-use Biigle\User;
 use Biigle\Label;
-use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
+use Biigle\Modules\Sync\Support\Import\PublicLabelTreeImport;
+use Biigle\Role;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
-use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
-use Biigle\Modules\Sync\Support\Import\PublicLabelTreeImport;
+use Biigle\Tests\UserTest;
+use Biigle\User;
+use Biigle\Visibility;
+use Exception;
+use File;
+use Ramsey\Uuid\Uuid;
+use TestCase;
+use ZipArchive;
 
 class PublicLabelTreeImportTest extends TestCase
 {

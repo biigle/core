@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Export;
 
-use ZipArchive;
 use ApiTestCase;
 use Biigle\Tests\VolumeTest;
+use ZipArchive;
 
 class VolumeExportControllerTest extends ApiTestCase
 {

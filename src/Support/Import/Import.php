@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use File;
 use Exception;
+use File;
 use SplFileObject;
 
 class Import

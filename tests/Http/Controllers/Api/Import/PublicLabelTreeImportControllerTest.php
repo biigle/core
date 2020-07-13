@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Import;
 
-use Mockery;
-use Exception;
 use ApiTestCase;
-use Biigle\Role;
-use Biigle\Tests\LabelTreeTest;
-use Illuminate\Http\UploadedFile;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Import\PublicLabelTreeImport;
-use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
+use Biigle\Role;
+use Biigle\Tests\LabelTreeTest;
+use Exception;
+use Illuminate\Http\UploadedFile;
+use Mockery;
 
 class PublicLabelTreeImportControllerTest extends ApiTestCase
 {
@@ -89,5 +89,5 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $this->beUser();
         $this->postJson('/api/v1/label-trees/import', ['archive' => $file])
             ->assertStatus(422);
-        }
+    }
 }

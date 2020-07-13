@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
-use Biigle\LabelTree;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
 
 class PublicLabelTreeImportController extends Controller
 {

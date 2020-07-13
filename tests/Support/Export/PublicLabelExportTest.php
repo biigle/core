@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use File;
-use TestCase;
-use SplFileObject;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Sync\Support\Export\PublicLabelExport;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\LabelTest;
+use File;
+use SplFileObject;
+use TestCase;
 
 class PublicLabelExportTest extends TestCase
 {

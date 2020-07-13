@@ -2,15 +2,15 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use DB;
-use Exception;
+use Biigle\Label;
+use Biigle\LabelTree;
+use Biigle\LabelTreeVersion;
 use Biigle\Role;
 use Biigle\User;
-use Biigle\Label;
-use Carbon\Carbon;
-use Biigle\LabelTree;
 use Biigle\Visibility;
-use Biigle\LabelTreeVersion;
+use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 

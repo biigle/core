@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use File;
-use TestCase;
-use SplFileObject;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Sync\Support\Export\AnnotationExport;
+use Biigle\Tests\AnnotationTest;
+use File;
+use SplFileObject;
+use TestCase;
 
 class AnnotationExportTest extends TestCase
 {

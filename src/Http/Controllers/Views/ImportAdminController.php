@@ -2,14 +2,14 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
-use Biigle\Role;
-use Biigle\User;
-use Biigle\Label;
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\Modules\Sync\Support\Import\UserImport;
-use Biigle\Modules\Sync\Support\Import\VolumeImport;
+use Biigle\Label;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Import\LabelTreeImport;
+use Biigle\Modules\Sync\Support\Import\UserImport;
+use Biigle\Modules\Sync\Support\Import\VolumeImport;
+use Biigle\Role;
+use Biigle\User;
 
 class ImportAdminController extends Controller
 {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Export;
 
-use Biigle\Volume;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
+use Biigle\Volume;
 
 class VolumeExportController extends Controller
 {

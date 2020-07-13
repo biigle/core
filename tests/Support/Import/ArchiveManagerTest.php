@@ -2,21 +2,21 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
-use File;
-use Storage;
-use TestCase;
-use Exception;
-use ZipArchive;
-use Carbon\Carbon;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\LabelTreeTest;
-use Illuminate\Http\UploadedFile;
+use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
+use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
-use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
-use Biigle\Modules\Sync\Support\Export\PublicLabelTreeExport;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use Carbon\Carbon;
+use Exception;
+use File;
+use Illuminate\Http\UploadedFile;
+use Storage;
+use TestCase;
+use ZipArchive;
 
 class ArchiveManagerTest extends TestCase
 {
