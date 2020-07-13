@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Requests;
 
-use Validator;
+use Biigle\AnnotationLabel;
+use Biigle\ImageLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\ImageLabel;
-use Biigle\AnnotationLabel;
 use Biigle\VideoAnnotationLabel;
 use Illuminate\Foundation\Http\FormRequest;
+use Validator;
 
 class StoreLabelTreeMerge extends FormRequest
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Observers;
 
-use Biigle\Image;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Image;
 
 class ImageObserver
 {

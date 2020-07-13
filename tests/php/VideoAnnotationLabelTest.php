@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\VideoAnnotationLabel;
+use ModelTestCase;
 
 class VideoAnnotationLabelTest extends ModelTestCase
 {

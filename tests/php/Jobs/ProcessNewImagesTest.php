@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Queue;
-use TestCase;
+use Biigle\Jobs\ProcessNewImageChunk;
+use Biigle\Jobs\ProcessNewImages;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Jobs\ProcessNewImages;
-use Biigle\Jobs\ProcessNewImageChunk;
+use Queue;
+use TestCase;
 
 class ProcessNewImagesTest extends TestCase
 {

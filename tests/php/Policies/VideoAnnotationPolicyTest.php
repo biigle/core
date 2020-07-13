@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Policies;
 
-use Cache;
-use TestCase;
 use Biigle\Role;
-use Carbon\Carbon;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Cache;
+use Carbon\Carbon;
+use TestCase;
 
 class VideoAnnotationPolicyTest extends TestCase
 {

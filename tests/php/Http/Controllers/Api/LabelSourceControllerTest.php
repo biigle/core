@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use App;
-use Mockery;
 use ApiTestCase;
-use Illuminate\Http\Request;
+use App;
 use Biigle\Tests\LabelSourceTest;
+use Illuminate\Http\Request;
+use Mockery;
 
 class LabelSourceControllerTest extends ApiTestCase
 {

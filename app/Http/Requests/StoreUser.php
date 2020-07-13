@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\User;
 use Biigle\Rules\Uuid4;
+use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUser extends FormRequest

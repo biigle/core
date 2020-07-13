@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Volume;
 use Biigle\Rules\VolumeUrl;
+use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVolume extends FormRequest

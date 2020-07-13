@@ -3,12 +3,12 @@
 namespace Biigle\Services\LabelSourceAdapters;
 
 use Arr;
-use SoapClient;
-use Biigle\Label;
-use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Request;
 use Biigle\Contracts\LabelSourceAdapterContract;
+use Biigle\Label;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Uuid;
+use SoapClient;
 
 /**
  * WoRMS label source adapter.

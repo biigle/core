@@ -2,8 +2,8 @@
 
 namespace Biigle\Support;
 
-use Throwable;
 use FFMpeg\FFProbe;
+use Throwable;
 
 class VideoCodecExtractor
 {

@@ -3,10 +3,10 @@
 namespace Biigle\Tests;
 
 use App;
-use Mockery;
-use ModelTestCase;
 use Biigle\LabelSource;
 use Illuminate\Database\QueryException;
+use Mockery;
+use ModelTestCase;
 
 class LabelSourceTest extends ModelTestCase
 {

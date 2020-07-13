@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use File;
-use Carbon\Carbon;
-use Biigle\Logging\LogManager;
 use Biigle\Http\Controllers\Controller;
+use Biigle\Logging\LogManager;
+use Carbon\Carbon;
+use File;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class LogsController extends Controller

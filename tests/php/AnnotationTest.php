@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests;
 
-use Exception;
+use Biigle\Annotation;
 use Biigle\Role;
 use Biigle\Shape;
-use ModelTestCase;
-use Biigle\Annotation;
+use Exception;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class AnnotationTest extends ModelTestCase
 {

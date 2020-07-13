@@ -3,8 +3,8 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Label;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Http\FormRequest;
 
 class DestroyLabel extends FormRequest
 {

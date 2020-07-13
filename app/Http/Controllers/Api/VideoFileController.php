@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Storage;
-use FileCache;
-use Biigle\Video;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Video;
+use FileCache;
+use Illuminate\Http\Request;
 use League\Flysystem\FileNotFoundException;
+use Storage;
 
 class VideoFileController extends Controller
 {

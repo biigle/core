@@ -2,14 +2,14 @@
 
 namespace Biigle\Jobs;
 
-use File;
-use Exception;
-use FileCache;
-use Biigle\Shape;
 use Biigle\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
+use Biigle\Shape;
 use Biigle\VideoAnnotation;
+use Exception;
+use File;
+use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Attempts to track an obect in a video. The object is initially defined by a video

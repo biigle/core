@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Rules;
 
+use Biigle\Rules\VolumeImages;
 use Storage;
 use TestCase;
-use Biigle\Rules\VolumeImages;
 
 class VolumeImagesTest extends TestCase
 {

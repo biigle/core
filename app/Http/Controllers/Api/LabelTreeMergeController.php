@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Biigle\Label;
-use Ramsey\Uuid\Uuid;
-use Biigle\Http\Requests\StoreLabelTreeMerge;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\StoreLabelTreeMerge;
+use Biigle\Label;
+use DB;
+use Ramsey\Uuid\Uuid;
 
 class LabelTreeMergeController extends Controller
 {

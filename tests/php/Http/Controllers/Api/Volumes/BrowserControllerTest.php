@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
-use Storage;
 use ApiTestCase;
+use Storage;
 
 class BrowserControllerTest extends ApiTestCase
 {

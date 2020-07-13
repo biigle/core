@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api\Annotations;
 
-use DB;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\Volume;
-use Biigle\Http\Controllers\Api\Controller;
+use DB;
 
 class VolumeAnnotationLabelController extends Controller
 {

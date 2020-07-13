@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
+use Biigle\Role;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
 use Cache;
 use TestCase;
-use Biigle\Role;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ProjectTest;
 
 class ProjectsControllerTest extends TestCase
 {

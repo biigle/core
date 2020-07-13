@@ -3,8 +3,8 @@
 namespace Biigle\Jobs;
 
 use Biigle\Volume;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
 
 class DeleteVolume extends Job implements ShouldQueue
 {

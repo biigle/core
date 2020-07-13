@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 
 class UserPinnedProjectControllerTest extends ApiTestCase

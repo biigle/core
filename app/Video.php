@@ -2,12 +2,12 @@
 
 namespace Biigle;
 
-use DB;
-use Biigle\User;
-use Biigle\Traits\HasJsonAttributes;
-use Illuminate\Database\Eloquent\Model;
 use Biigle\Events\VideoDeleted;
 use Biigle\FileCache\Contracts\File as FileContract;
+use Biigle\Traits\HasJsonAttributes;
+use Biigle\User;
+use DB;
+use Illuminate\Database\Eloquent\Model;
 
 class Video extends Model implements FileContract
 {

@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
-use Biigle\Role;
 use Biigle\ApiToken;
-use Biigle\Tests\UserTest;
+use Biigle\Role;
 use Biigle\Tests\ApiTokenTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class ApiTokenPolicyTest extends TestCase
 {

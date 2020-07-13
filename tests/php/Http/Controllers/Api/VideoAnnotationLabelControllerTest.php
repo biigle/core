@@ -4,9 +4,9 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 
 class VideoAnnotationLabelControllerTest extends ApiTestCase
 {

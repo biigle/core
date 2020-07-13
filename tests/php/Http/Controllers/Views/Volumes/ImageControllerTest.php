@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
-use TestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class ImageControllerTest extends TestCase
 {

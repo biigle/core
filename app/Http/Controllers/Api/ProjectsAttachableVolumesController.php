@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
-use Biigle\Project;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 
 class ProjectsAttachableVolumesController extends Controller
 {

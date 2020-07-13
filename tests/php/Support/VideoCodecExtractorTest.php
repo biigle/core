@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Support;
 
-use TestCase;
 use Biigle\Support\VideoCodecExtractor;
+use TestCase;
 
 class VideoCodecExtractorTest extends TestCase
 {

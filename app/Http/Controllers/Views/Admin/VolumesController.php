@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Volume;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Volume;
 
 class VolumesController extends Controller
 {

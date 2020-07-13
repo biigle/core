@@ -2,10 +2,10 @@
 
 namespace Biigle;
 
-use DB;
-use Biigle\Traits\HasPointsAttribute;
-use Illuminate\Database\Eloquent\Model;
 use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Traits\HasPointsAttribute;
+use DB;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * An annotation is a region of an image that can be labeled by the users.

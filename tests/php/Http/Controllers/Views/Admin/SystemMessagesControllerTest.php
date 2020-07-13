@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\SystemMessageTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class SystemMessagesControllerTest extends TestCase
 {

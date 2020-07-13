@@ -2,10 +2,10 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Image;
 use File;
 use Storage;
 use ZipArchive;
-use Biigle\Image;
 
 class MigrateTiledImage extends TileSingleImage
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
+use Illuminate\Contracts\Console\Kernel;
 use PHPUnit\Runner\AfterLastTestHook;
 use PHPUnit\Runner\BeforeFirstTestHook;
-use Illuminate\Contracts\Console\Kernel;
 
 class Bootstrap implements BeforeFirstTestHook, AfterLastTestHook
 {

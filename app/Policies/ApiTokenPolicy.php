@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
+use Biigle\ApiToken;
 use Biigle\Role;
 use Biigle\User;
-use Biigle\ApiToken;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ApiTokenPolicy

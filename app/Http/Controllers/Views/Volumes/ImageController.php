@@ -3,8 +3,8 @@
 namespace Biigle\Http\Controllers\Views\Volumes;
 
 use Arr;
-use Biigle\Image;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Image;
 
 class ImageController extends Controller
 {

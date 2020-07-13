@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Views\Videos;
 
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Shape;
 use Biigle\Video;
-use Biigle\Project;
-use Biigle\LabelTree;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Views\Controller;
 
 class VideoController extends Controller
 {

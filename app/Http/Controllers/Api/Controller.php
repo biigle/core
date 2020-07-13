@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Route;
 use Biigle\Http\Controllers\Controller as BaseController;
+use Route;
 
 abstract class Controller extends BaseController
 {

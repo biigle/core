@@ -2,10 +2,10 @@
 
 namespace Biigle\Jobs;
 
-use Storage;
 use Biigle\Jobs\Job;
 use Biigle\Video;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Storage;
 
 class DeleteVideoThumbnails extends Job implements ShouldQueue
 {

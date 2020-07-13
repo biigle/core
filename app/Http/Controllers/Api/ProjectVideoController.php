@@ -3,15 +3,15 @@
 namespace Biigle\Http\Controllers\Api;
 
 use App;
-use Queue;
-use Storage;
-use Biigle\Video;
-use Biigle\Project;
-use Ramsey\Uuid\Uuid;
-use GuzzleHttp\Client;
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Http\Requests\StoreVideo;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\StoreVideo;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Project;
+use Biigle\Video;
+use GuzzleHttp\Client;
+use Queue;
+use Ramsey\Uuid\Uuid;
+use Storage;
 
 class ProjectVideoController extends Controller
 {

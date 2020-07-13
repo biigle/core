@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api\Volumes\Sorters;
 
-use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Volume;
 
 class ImageFilenameController extends Controller
 {

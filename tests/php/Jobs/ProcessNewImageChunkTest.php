@@ -2,17 +2,17 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Image;
+use Biigle\Jobs\ProcessNewImageChunk;
+use Biigle\Jobs\TileSingleImage;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VolumeTest;
+use Jcupitt\Vips\Exception as VipsException;
 use Log;
 use Queue;
 use Storage;
 use TestCase;
 use VipsImage;
-use Biigle\Image;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Jobs\TileSingleImage;
-use Biigle\Jobs\ProcessNewImageChunk;
-use Jcupitt\Vips\Exception as VipsException;
 
 class ProcessNewImageChunkTest extends TestCase
 {

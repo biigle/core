@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProjectUser extends FormRequest

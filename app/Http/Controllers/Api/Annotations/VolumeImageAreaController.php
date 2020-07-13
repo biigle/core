@@ -3,9 +3,9 @@
 namespace Biigle\Http\Controllers\Api\Annotations;
 
 use Arr;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Image;
 use Biigle\Volume;
-use Biigle\Http\Controllers\Api\Controller;
 
 class VolumeImageAreaController extends Controller
 {

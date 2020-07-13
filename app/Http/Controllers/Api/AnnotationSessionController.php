@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Carbon\Carbon;
-use Biigle\Volume;
 use Biigle\AnnotationSession;
-use Illuminate\Validation\ValidationException;
-use Biigle\Http\Requests\UpdateAnnotationSession;
 use Biigle\Http\Requests\DestroyAnnotationSession;
+use Biigle\Http\Requests\UpdateAnnotationSession;
+use Biigle\Volume;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Validation\ValidationException;
 
 class AnnotationSessionController extends Controller
 {

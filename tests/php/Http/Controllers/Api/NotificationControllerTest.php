@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Notifications\InAppNotification;
+use Biigle\Tests\UserTest;
 
 class NotificationControllerTest extends ApiTestCase
 {

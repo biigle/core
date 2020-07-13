@@ -2,8 +2,8 @@
 
 namespace Biigle\Traits;
 
-use Exception;
 use Biigle\Shape;
+use Exception;
 
 trait HasPointsAttribute
 {

@@ -3,14 +3,14 @@
 namespace Biigle\Services\LabelSourceAdapters;
 
 use App;
-use Mockery;
-use TestCase;
-use SoapClient;
-use Biigle\Tests\LabelTest;
-use Illuminate\Http\Request;
-use Biigle\Tests\LabelTreeTest;
-use Illuminate\Validation\ValidationException;
 use Biigle\Services\LabelSourceAdapters\WormsAdapter;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Mockery;
+use SoapClient;
+use TestCase;
 
 class WormsAdapterTest extends TestCase
 {

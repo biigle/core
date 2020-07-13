@@ -2,9 +2,9 @@
 
 namespace Biigle;
 
-use Biigle\User;
-use Biigle\Shape;
 use Biigle\Label;
+use Biigle\Shape;
+use Biigle\User;
 use Illuminate\Database\Eloquent\Model;
 
 class VideoAnnotationLabel extends Model

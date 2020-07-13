@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Rules;
 
-use Storage;
-use TestCase;
+use Biigle\Rules\VideoUrl;
+use Biigle\Support\VideoCodecExtractor;
 use GuzzleHttp\Client;
-use Illuminate\Http\File;
-use GuzzleHttp\Middleware;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
-use Biigle\Rules\VideoUrl;
-use GuzzleHttp\Exception\RequestException;
-use Biigle\Support\VideoCodecExtractor;
+use Illuminate\Http\File;
+use Storage;
+use TestCase;
 
 class VideoUrlTest extends TestCase
 {
@@ -137,7 +137,8 @@ class VideoUrlTest extends TestCase
 
         $this->app->bind(VideoCodecExtractor::class, function () {
             return new class {
-                public function extract($url) {
+                public function extract($url)
+                {
                     return 'h264';
                 }
             };

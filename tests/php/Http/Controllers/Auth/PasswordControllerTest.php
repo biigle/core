@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
-use DB;
-use Str;
-use Hash;
-use TestCase;
-use Faker\Factory;
 use Biigle\Tests\UserTest;
-use Illuminate\Support\Facades\Notification;
+use DB;
+use Faker\Factory;
+use Hash;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Notification;
+use Str;
+use TestCase;
 
 class PasswordControllerTest extends TestCase
 {

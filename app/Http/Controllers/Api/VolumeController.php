@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Exception;
-use Biigle\Volume;
-use Illuminate\Http\Request;
-use Biigle\Jobs\ProcessNewImages;
 use Biigle\Http\Requests\UpdateVolume;
+use Biigle\Jobs\ProcessNewImages;
+use Biigle\Volume;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller

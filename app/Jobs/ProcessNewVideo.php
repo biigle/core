@@ -3,18 +3,18 @@
 namespace Biigle\Jobs;
 
 use App;
-use Log;
-use Storage;
+use Biigle\Jobs\Job;
+use Biigle\Video;
 use Exception;
-use FileCache;
-use VipsImage;
+use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
-use Biigle\Jobs\Job;
-use FFMpeg\Coordinate\TimeCode;
-use Biigle\Video;
-use Illuminate\Queue\SerializesModels;
+use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Storage;
+use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {

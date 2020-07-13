@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\SystemMessage;
-use Illuminate\Http\Request;
-use Biigle\SystemMessageType;
 use Biigle\Http\Requests\StoreSystemMessage;
 use Biigle\Http\Requests\UpdateSystemMessage;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
+use Illuminate\Http\Request;
 
 class SystemMessageController extends Controller
 {

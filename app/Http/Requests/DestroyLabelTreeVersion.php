@@ -4,8 +4,8 @@ namespace Biigle\Http\Requests;
 
 use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Http\FormRequest;
 
 class DestroyLabelTreeVersion extends FormRequest
 {

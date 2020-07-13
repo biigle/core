@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Biigle\Volume;
-use Biigle\Jobs\CreateNewImages;
 use Biigle\Http\Requests\StoreVolumeImage;
+use Biigle\Jobs\CreateNewImages;
+use Biigle\Volume;
+use DB;
 
 class VolumeImageController extends Controller
 {

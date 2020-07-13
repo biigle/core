@@ -4,11 +4,11 @@ namespace Biigle\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Role;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
+use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\UserTest;
+use Biigle\Visibility;
 
 class LabelTreeMergeControllerTest extends ApiTestCase
 {

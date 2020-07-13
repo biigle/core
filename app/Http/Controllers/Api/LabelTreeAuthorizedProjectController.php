@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
+use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 use Biigle\LabelTree;
 use Biigle\Visibility;
+use DB;
 use Illuminate\Http\Request;
-use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 
 class LabelTreeAuthorizedProjectController extends Controller
 {

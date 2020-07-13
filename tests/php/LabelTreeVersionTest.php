@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\LabelTreeVersion;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class LabelTreeVersionTest extends ModelTestCase
 {

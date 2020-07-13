@@ -2,8 +2,8 @@
 
 namespace Biigle\Services\Auth;
 
-use Hash;
 use Biigle\ApiToken;
+use Hash;
 use Illuminate\Auth\TokenGuard;
 
 class ApiGuard extends TokenGuard

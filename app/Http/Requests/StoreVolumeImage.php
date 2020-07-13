@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Volume;
 use Biigle\Rules\VolumeImages;
 use Biigle\Rules\VolumeImageUnique;
+use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVolumeImage extends FormRequest

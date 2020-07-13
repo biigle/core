@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\User;
-use Biigle\Role;
-use Illuminate\Validation\ValidationException;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
+use Biigle\Role;
+use Biigle\User;
+use Illuminate\Validation\ValidationException;
 
 class UserRegistrationController extends Controller
 {

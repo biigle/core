@@ -3,8 +3,8 @@
 namespace Biigle\Tests;
 
 use Biigle\Shape;
-use ModelTestCase;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class ShapeTest extends ModelTestCase
 {

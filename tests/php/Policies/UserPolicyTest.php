@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\User;
 use Biigle\Tests\UserTest;
+use Biigle\User;
+use TestCase;
 
 class UserPolicyTest extends TestCase
 {

@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Carbon\Carbon;
 use Biigle\Tests\AnnotationSessionTest;
+use Carbon\Carbon;
 
 class VolumeAnnotationSessionControllerTest extends ApiTestCase
 {

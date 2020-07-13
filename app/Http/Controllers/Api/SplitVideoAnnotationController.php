@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\SplitVideoAnnotation;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
+use DB;
 
 class SplitVideoAnnotationController extends Controller
 {

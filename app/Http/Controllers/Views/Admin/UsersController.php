@@ -2,18 +2,18 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\User;
-use Biigle\Role;
-use Biigle\Image;
-use Biigle\Video;
-use Biigle\Volume;
-use Biigle\Project;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
-use Biigle\VideoAnnotation;
-use Biigle\Services\Modules;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Http\Controllers\Controller;
+use Biigle\Image;
+use Biigle\Project;
+use Biigle\Role;
+use Biigle\Services\Modules;
+use Biigle\User;
+use Biigle\Video;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
+use Biigle\Volume;
 
 class UsersController extends Controller
 {

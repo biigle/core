@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Views\Annotations;
 
 use ApiTestCase;
-use Carbon\Carbon;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
+use Carbon\Carbon;
 
 class AnnotationControllerTest extends ApiTestCase
 {

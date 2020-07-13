@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Storage;
 use ApiTestCase;
 use Biigle\MediaType;
+use Storage;
 
 class VolumeControllerTest extends ApiTestCase
 {

@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Console\Commands;
 
-use TestCase;
-use Carbon\Carbon;
 use Biigle\Console\Commands\PruneNotifications;
+use Carbon\Carbon;
 use Illuminate\Notifications\DatabaseNotification;
+use TestCase;
 
 class PruneNotificationsTest extends TestCase
 {

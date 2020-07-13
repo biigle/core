@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Shape;
 use ApiTestCase;
+use Biigle\Shape;
 
 class ShapeControllerTest extends ApiTestCase
 {

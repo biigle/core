@@ -3,15 +3,15 @@
 namespace Biigle\Rules;
 
 use App;
-use Storage;
+use Biigle\FileCache\GenericFile;
+use Biigle\Support\VideoCodecExtractor;
 use FileCache;
 use GuzzleHttp\Client;
-use Biigle\FileCache\GenericFile;
-use Illuminate\Contracts\Validation\Rule;
-use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use Biigle\Support\VideoCodecExtractor;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Contracts\Validation\Rule;
+use Storage;
 
 class VideoUrl implements Rule
 {

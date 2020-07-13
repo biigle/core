@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\ApiToken;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class ApiTokenTest extends ModelTestCase
 {

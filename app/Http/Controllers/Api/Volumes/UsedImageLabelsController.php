@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api\Volumes;
 
-use DB;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\Volume;
-use Biigle\Http\Controllers\Api\Controller;
+use DB;
 
 class UsedImageLabelsController extends Controller
 {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\LabelTree;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
 
 class LabelTreesController extends Controller
 {

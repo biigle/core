@@ -2,11 +2,11 @@
 
 namespace Biigle\Console\Commands;
 
-use Queue;
 use Biigle\Image;
+use Biigle\Jobs\MigrateTiledImage;
 use Biigle\Volume;
 use Illuminate\Console\Command;
-use Biigle\Jobs\MigrateTiledImage;
+use Queue;
 
 class MigrateTiledImages extends Command
 {

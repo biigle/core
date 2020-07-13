@@ -2,9 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\VideoAnnotationLabel;
-use Biigle\Http\Requests\StoreVideoAnnotationLabel;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\DestroyVideoAnnotationLabel;
+use Biigle\Http\Requests\StoreVideoAnnotationLabel;
+use Biigle\VideoAnnotationLabel;
 
 class VideoAnnotationLabelController extends Controller
 {
@@ -69,4 +70,3 @@ class VideoAnnotationLabelController extends Controller
         $request->annotationLabel->delete();
     }
 }
-use Biigle\Http\Controllers\Api\Controller;

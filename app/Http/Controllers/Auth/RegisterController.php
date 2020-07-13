@@ -2,18 +2,18 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use View;
-use Validator;
-use Biigle\User;
+use Biigle\Http\Controllers\Controller;
+use Biigle\Http\Requests\StoreUser;
+use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Role;
+use Biigle\User;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Notification;
 use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Request;
-use Biigle\Http\Requests\StoreUser;
-use Illuminate\Support\Facades\Hash;
-use Biigle\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Biigle\Notifications\RegistrationConfirmation;
+use Validator;
+use View;
 
 class RegisterController extends Controller
 {

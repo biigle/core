@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
-use Carbon\Carbon;
 use Biigle\AnnotationSession;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class AnnotationSessionTest extends ModelTestCase
 {

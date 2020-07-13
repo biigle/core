@@ -2,13 +2,13 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Cache;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\User;
+use Cache;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy

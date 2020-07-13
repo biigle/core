@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Ramsey\Uuid\Uuid;
-use Biigle\LabelTree;
-use Biigle\LabelTreeVersion;
+use Biigle\Http\Requests\DestroyLabelTreeVersion;
 use Biigle\Http\Requests\StoreLabelTreeVersion;
 use Biigle\Http\Requests\UpdateLabelTreeVersion;
-use Biigle\Http\Requests\DestroyLabelTreeVersion;
+use Biigle\LabelTree;
+use Biigle\LabelTreeVersion;
+use DB;
+use Ramsey\Uuid\Uuid;
 
 class LabelTreeVersionController extends Controller
 {

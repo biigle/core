@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
-use View;
-use Session;
-use TestCase;
-use Honeypot;
-use Biigle\User;
+use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
-use Illuminate\Support\Facades\Notification;
+use Biigle\User;
+use Honeypot;
 use Illuminate\Notifications\AnonymousNotifiable;
-use Biigle\Notifications\RegistrationConfirmation;
+use Illuminate\Support\Facades\Notification;
+use Session;
+use TestCase;
+use View;
 
 class RegisterControllerTest extends TestCase
 {

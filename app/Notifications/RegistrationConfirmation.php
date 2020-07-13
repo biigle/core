@@ -2,13 +2,13 @@
 
 namespace Biigle\Notifications;
 
-use View;
 use Biigle\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
+use View;
 
 class RegistrationConfirmation extends Notification implements ShouldQueue
 {

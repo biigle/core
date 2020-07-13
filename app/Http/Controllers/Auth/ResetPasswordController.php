@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use Biigle\User;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
+use Biigle\User;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
 
 class ResetPasswordController extends Controller
 {

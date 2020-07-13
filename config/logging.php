@@ -1,8 +1,8 @@
 <?php
 
+use Biigle\Logging\CreateRedisLogger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
-use Biigle\Logging\CreateRedisLogger;
 
 return [
 

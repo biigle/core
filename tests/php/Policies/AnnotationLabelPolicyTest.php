@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class AnnotationLabelPolicyTest extends TestCase
 {

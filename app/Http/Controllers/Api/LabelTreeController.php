@@ -2,15 +2,15 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Biigle\Role;
-use Ramsey\Uuid\Uuid;
-use Biigle\LabelTree;
-use Biigle\Visibility;
-use Illuminate\Http\Request;
+use Biigle\Http\Requests\DestroyLabelTree;
 use Biigle\Http\Requests\StoreLabelTree;
 use Biigle\Http\Requests\UpdateLabelTree;
-use Biigle\Http\Requests\DestroyLabelTree;
+use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\Visibility;
+use DB;
+use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class LabelTreeController extends Controller
 {

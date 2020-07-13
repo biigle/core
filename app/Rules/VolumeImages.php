@@ -2,10 +2,10 @@
 
 namespace Biigle\Rules;
 
-use FileCache;
-use Exception;
-use Biigle\Volume;
 use Biigle\FileCache\GenericFile;
+use Biigle\Volume;
+use Exception;
+use FileCache;
 use Illuminate\Contracts\Validation\Rule;
 
 class VolumeImages implements Rule

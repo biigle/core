@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Listeners;
 
-use Queue;
-use TestCase;
-use Biigle\Tests\VideoTest;
 use Biigle\Events\VideoDeleted;
 use Biigle\Jobs\DeleteVideoThumbnails;
 use Biigle\Listeners\PrepareDeleteVideoThumbnails;
+use Biigle\Tests\VideoTest;
+use Queue;
+use TestCase;
 
 class PrepareDeleteVideoThumbnailsTest extends TestCase
 {
