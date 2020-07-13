@@ -158,7 +158,7 @@ class DashboardController extends Controller
                 return [
                     'item' => $item,
                     'created_at' => $item->video_annotation_labels_created_at,
-                    'include' => 'videos::dashboardActivityItem',
+                    'include' => 'videos.dashboardActivityItem',
                 ];
             });
 
@@ -173,7 +173,7 @@ class DashboardController extends Controller
                 return [
                     'item' => $item,
                     'created_at' => $item->created_at,
-                    'include' => 'videos::dashboardActivityItem',
+                    'include' => 'videos.dashboardActivityItem',
                 ];
             });
 
