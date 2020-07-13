@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use App;
-use Mockery;
-use TestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ImageLabelTest;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\BasicReportGenerator;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
 
 class BasicReportGeneratorTest extends TestCase
 {

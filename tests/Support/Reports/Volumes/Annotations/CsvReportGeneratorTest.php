@@ -3,17 +3,17 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use App;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\CsvReportGenerator;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
 {

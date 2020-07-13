@@ -3,16 +3,16 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use App;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\CsvReportGenerator;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\ImageLabelTest;
-use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
 {

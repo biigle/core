@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations;
 
-use DB;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use DB;
 
 class CsvReportGenerator extends ReportGenerator
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Biigle\Modules\Reports\Report;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Reports\Report;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {

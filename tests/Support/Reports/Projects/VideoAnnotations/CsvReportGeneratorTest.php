@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\VideoAnnotations;
 
-use TestCase;
-use Biigle\VideosServiceProvider;
 use Biigle\Modules\Reports\Support\Reports\Projects\VideoAnnotations\CsvReportGenerator;
+use Biigle\VideosServiceProvider;
+use TestCase;
 
 class CsvReportGeneratorTest extends TestCase
 {

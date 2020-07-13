@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Reports;
 
-use File;
-use Storage;
-use SplFileInfo;
-use ReflectionClass;
-use Illuminate\Database\Eloquent\Model;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use File;
+use Illuminate\Database\Eloquent\Model;
+use ReflectionClass;
+use SplFileInfo;
+use Storage;
 
 class Report extends Model
 {

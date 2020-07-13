@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Modules\Reports\ReportType;
-use Biigle\Tests\VideoTest;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VideoTest;
 
 class ProjectReportControllerTest extends ApiTestCase
 {

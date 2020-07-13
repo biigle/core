@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Observers;
 
-use Biigle\Volume;
 use Biigle\Modules\Reports\Report;
+use Biigle\Volume;
 
 class VolumeObserver
 {

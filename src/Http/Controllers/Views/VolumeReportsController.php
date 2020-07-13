@@ -2,14 +2,14 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
-use Biigle\Role;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Illuminate\Http\Request;
-use Biigle\Volume as BaseVolume;
-use Biigle\Modules\Reports\Volume;
-use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Modules\Reports\Volume;
+use Biigle\Project;
+use Biigle\Role;
+use Biigle\Volume as BaseVolume;
+use Illuminate\Http\Request;
 
 class VolumeReportsController extends Controller
 {

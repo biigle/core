@@ -3,16 +3,16 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use App;
-use Mockery;
-use TestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Reports\Volume;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AbundanceReportGenerator;
+use Biigle\Modules\Reports\Volume;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
 
 class AbundanceReportGeneratorTest extends TestCase
 {

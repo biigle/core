@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
+use Biigle\Image;
+use Biigle\LabelTree;
+use Biigle\Modules\Laserpoints\Image as LImage;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Shape;
 use DB;
 use StdClass;
-use Biigle\Image;
-use Biigle\Shape;
-use Biigle\LabelTree;
-use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Laserpoints\Image as LImage;
 
 class AreaReportGenerator extends AnnotationReportGenerator
 {

@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Modules\Reports;
 
-use TestCase;
-use Exception;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\VolumeTest as BaseVolumeTest;
+use Exception;
+use TestCase;
 
 class VolumeTest extends TestCase
 {

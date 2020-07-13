@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Reports\Support\Reports;
 
-use Str;
-use File;
-use Exception;
 use Biigle\Label;
-use ReflectionClass;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\File as FileHelper;
+use Exception;
+use File;
+use ReflectionClass;
+use Str;
 
 class ReportGenerator
 {

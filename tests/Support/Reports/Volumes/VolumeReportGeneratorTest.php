@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
-use TestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\VolumeTest;
+use TestCase;
 
 class VolumeReportGeneratorTest extends TestCase
 {

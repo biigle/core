@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Modules\Reports;
 
-use File;
-use Storage;
-use Mockery;
-use ModelTestCase;
-use Carbon\Carbon;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Reports\Report;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\VolumeTest;
+use Carbon\Carbon;
+use File;
+use Mockery;
+use ModelTestCase;
+use Storage;
 
 class ReportTest extends ModelTestCase
 {

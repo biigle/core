@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api;
 
-use Storage;
-use Response;
 use ApiTestCase;
 use Biigle\Tests\Modules\Reports\ReportTest;
+use Response;
+use Storage;
 
 class ReportsControllerTest extends ApiTestCase
 {

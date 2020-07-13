@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Modules\Reports\Jobs;
 
-use Mockery;
-use TestCase;
-use Biigle\User;
-use Carbon\Carbon;
-use Biigle\Modules\Reports\Report;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Notifications\ReportReady;
+use Biigle\Modules\Reports\Report;
+use Biigle\User;
+use Carbon\Carbon;
+use Mockery;
+use TestCase;
 
 class GenerateReportJobTest extends TestCase
 {

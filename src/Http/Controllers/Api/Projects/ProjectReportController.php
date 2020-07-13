@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Projects;
 
-use Biigle\Project;
-use Illuminate\Http\Request;
+use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Report;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Project;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Biigle\Modules\Reports\Jobs\GenerateReportJob;
-use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class ProjectReportController extends ReportController
 {

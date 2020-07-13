@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Observers;
 
-use File;
 use Biigle\Modules\Reports\Report;
+use File;
 
 class UserObserver
 {

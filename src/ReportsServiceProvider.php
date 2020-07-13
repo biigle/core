@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Reports;
 
-use Biigle\Services\Modules;
-use Illuminate\Routing\Router;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Biigle\Modules\Reports\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Biigle\Services\Modules;
+use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Routing\Router;
 
 class ReportsServiceProvider extends ServiceProvider
 {

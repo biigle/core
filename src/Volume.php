@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports;
 
-use Exception;
 use Biigle\Volume as BaseVolume;
+use Exception;
 
 /**
  * Extends the base Biigle volume.

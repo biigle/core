@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\LabelTest;
 
 class VolumeReportControllerTest extends ApiTestCase
 {

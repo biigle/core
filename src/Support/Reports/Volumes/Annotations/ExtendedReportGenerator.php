@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
-use DB;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
+use DB;
 
 class ExtendedReportGenerator extends AnnotationReportGenerator
 {

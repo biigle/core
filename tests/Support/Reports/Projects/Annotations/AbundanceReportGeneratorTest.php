@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Annotations;
 
-use TestCase;
 use Biigle\Modules\Reports\Support\Reports\Projects\Annotations\AbundanceReportGenerator;
+use TestCase;
 
 class AbundanceReportGeneratorTest extends TestCase
 {

@@ -2,14 +2,14 @@
 
 namespace Biigle\Modules\Reports\Jobs;
 
+use Biigle\Jobs\Job;
+use Biigle\Modules\Reports\Notifications\ReportReady;
+use Biigle\Modules\Reports\Report;
 use Biigle\User;
 use Carbon\Carbon;
-use Biigle\Jobs\Job;
-use Biigle\Modules\Reports\Report;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Biigle\Modules\Reports\Notifications\ReportReady;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class GenerateReportJob extends Job implements ShouldQueue
 {

@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
-use Storage;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Reports\Report;
 use League\Flysystem\FileNotFoundException;
-use Biigle\Http\Controllers\Api\Controller;
+use Storage;
 
 class ReportsController extends Controller
 {

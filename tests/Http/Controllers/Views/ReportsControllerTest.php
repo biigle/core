@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Views;
 
-use TestCase;
 use Biigle\Tests\UserTest;
+use TestCase;
 
 class ReportsControllerTest extends TestCase
 {

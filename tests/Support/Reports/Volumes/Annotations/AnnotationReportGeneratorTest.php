@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
-use TestCase;
-use Biigle\Shape;
 use Biigle\Annotation;
-use Biigle\Tests\UserTest;
 use Biigle\AnnotationLabel;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
 use Biigle\Modules\Reports\Volume;
+use Biigle\Shape;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use TestCase;
 
 class AnnotationReportGeneratorTest extends TestCase
 {

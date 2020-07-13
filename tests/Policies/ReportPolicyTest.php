@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Modules\Reports\Policies;
 
-use TestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\Modules\Reports\ReportTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class ReportPolicyTest extends TestCase
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
-use Biigle\Project;
-use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Project;
 
 class ProjectReportsController extends Controller
 {

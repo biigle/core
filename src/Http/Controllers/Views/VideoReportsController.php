@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
-use Biigle\Video;
+use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\ReportType;
-use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Video;
 
 class VideoReportsController extends Controller
 {

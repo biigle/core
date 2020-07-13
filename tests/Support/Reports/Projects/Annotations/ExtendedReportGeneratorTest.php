@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Annotations;
 
-use TestCase;
 use Biigle\Modules\Reports\Support\Reports\Projects\Annotations\ExtendedReportGenerator;
+use TestCase;
 
 class ExtendedReportGeneratorTest extends TestCase
 {

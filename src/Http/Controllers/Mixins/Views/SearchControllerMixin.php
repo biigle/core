@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Mixins\Views;
 
-use DB;
-use Biigle\User;
-use Biigle\Volume;
-use Biigle\Project;
-use Biigle\Video;
 use Biigle\Modules\Reports\Report;
+use Biigle\Project;
+use Biigle\User;
+use Biigle\Video;
+use Biigle\Volume;
+use DB;
 
 class SearchControllerMixin
 {

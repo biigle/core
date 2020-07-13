@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Mixins\Views;
 
-use TestCase;
-use Biigle\Volume;
-use Biigle\Project;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Video;
 use Biigle\Modules\Reports\ReportType;
-use Biigle\Tests\VideoTest;
+use Biigle\Project;
 use Biigle\Tests\Modules\Reports\ReportTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Video;
+use Biigle\Volume;
+use TestCase;
 
 class SearchControllerMixinTest extends TestCase
 {

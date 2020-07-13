@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports;
 
-use Illuminate\Database\Eloquent\Model;
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Model;
 
 class ReportType extends Model
 {

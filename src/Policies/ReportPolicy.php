@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Policies;
 
-use Biigle\User;
 use Biigle\Modules\Reports\Report;
+use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ReportPolicy

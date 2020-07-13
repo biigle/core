@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
-use DB;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use DB;
 
 class BasicReportGenerator extends VolumeReportGenerator
 {

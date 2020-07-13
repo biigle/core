@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
-use DB;
 use Arr;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
+use DB;
 
 class FullReportGenerator extends AnnotationReportGenerator
 {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Console\Commands;
 
-use Illuminate\Console\Command;
 use Biigle\Modules\Reports\ReportsServiceProvider as ServiceProvider;
+use Illuminate\Console\Command;
 
 class Publish extends Command
 {

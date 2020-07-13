@@ -4,8 +4,8 @@ namespace Biigle\Modules\Reports\Support\Reports;
 
 use App;
 use Exception;
-use ZipArchive;
 use Illuminate\Support\Str;
+use ZipArchive;
 
 trait MakesZipArchives
 {

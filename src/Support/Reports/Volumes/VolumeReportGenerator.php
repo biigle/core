@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
-use File;
-use Exception;
 use Biigle\Label;
-use Biigle\Volume;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use Biigle\Volume;
+use Exception;
+use File;
 
 class VolumeReportGenerator extends ReportGenerator
 {

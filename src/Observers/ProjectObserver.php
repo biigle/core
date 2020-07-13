@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Observers;
 
-use Biigle\Project;
 use Biigle\Modules\Reports\Report;
+use Biigle\Project;
 
 class ProjectObserver
 {

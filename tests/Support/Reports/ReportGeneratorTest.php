@@ -2,17 +2,17 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports;
 
-use File;
-use Mockery;
-use TestCase;
-use Exception;
-use Biigle\Volume;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Video;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Video;
+use Biigle\Volume;
+use Exception;
+use File;
+use Mockery;
+use TestCase;
 
 class ReportGeneratorTest extends TestCase
 {

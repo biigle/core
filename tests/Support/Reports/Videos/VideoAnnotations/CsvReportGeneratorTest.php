@@ -3,16 +3,16 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Videos\VideoAnnotations;
 
 use App;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
 {

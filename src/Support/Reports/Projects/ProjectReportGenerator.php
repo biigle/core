@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 
 class ProjectReportGenerator extends ReportGenerator
 {

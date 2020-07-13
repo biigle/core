@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
-use DB;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
+use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {

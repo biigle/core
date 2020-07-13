@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Reports\Volume;
+use Biigle\Volume as BaseVolume;
 use Exception;
 use Illuminate\Http\Request;
-use Biigle\Volume as BaseVolume;
-use Biigle\Modules\Reports\Volume;
-use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
 
 class ExportAreaController extends Controller

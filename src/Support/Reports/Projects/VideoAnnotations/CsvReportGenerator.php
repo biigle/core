@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Reports\Support\Reports\Projects\VideoAnnotations;
 
 use Biigle\Modules\Reports\Support\File;
-use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 
 class CsvReportGenerator extends ProjectReportGenerator
 {

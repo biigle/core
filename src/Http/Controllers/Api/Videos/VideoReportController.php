@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Videos;
 
+use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Video;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Biigle\Modules\Reports\Report;
-use Biigle\Modules\Reports\ReportType;
-use Biigle\Modules\Reports\Jobs\GenerateReportJob;
-use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class VideoReportController extends ReportController
 {

@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
+use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Biigle\Modules\Reports\Report;
-use Biigle\Modules\Reports\ReportType;
-use Biigle\Modules\Reports\Jobs\GenerateReportJob;
-use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class VolumeReportController extends ReportController
 {

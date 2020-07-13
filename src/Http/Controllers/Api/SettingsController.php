@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\User;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 
 class SettingsController extends Controller
 {

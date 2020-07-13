@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Reports\Notifications;
 
 use Biigle\Modules\Reports\Report;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ReportReady extends Notification
 {
