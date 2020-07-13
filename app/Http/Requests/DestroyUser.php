@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Hash;
 use Biigle\User;
+use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

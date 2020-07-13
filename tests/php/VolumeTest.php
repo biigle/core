@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests;
 
-use File;
-use Event;
-use Cache;
-use Exception;
-use Biigle\Role;
-use Biigle\Image;
-use ModelTestCase;
-use Biigle\Volume;
-use Carbon\Carbon;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Image;
+use Biigle\Role;
+use Biigle\Volume;
+use Cache;
+use Carbon\Carbon;
+use Event;
+use Exception;
+use File;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolumeTest extends ModelTestCase

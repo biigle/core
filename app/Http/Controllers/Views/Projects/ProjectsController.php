@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Video;
-use Biigle\Project;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
 {

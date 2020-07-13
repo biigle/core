@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests;
 
-use Exception;
 use Biigle\Shape;
-use ModelTestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\VideoAnnotation;
+use Exception;
+use ModelTestCase;
 
 class VideoAnnotationTest extends ModelTestCase
 {

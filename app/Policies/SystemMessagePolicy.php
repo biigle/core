@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\User;
 use Biigle\SystemMessage;
+use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SystemMessagePolicy

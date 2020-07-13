@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class LabelPolicyTest extends TestCase
 {

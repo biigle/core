@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\MediaType;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class MediaTypeTest extends ModelTestCase
 {

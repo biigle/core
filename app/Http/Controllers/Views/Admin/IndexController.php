@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\User;
-use Carbon\Carbon;
 use Biigle\Annotation;
-use Biigle\VideoAnnotation;
-use Biigle\Services\Modules;
 use Biigle\Http\Controllers\Controller;
+use Biigle\Services\Modules;
+use Biigle\User;
+use Biigle\VideoAnnotation;
+use Carbon\Carbon;
 
 class IndexController extends Controller
 {

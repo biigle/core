@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Cache;
-use Queue;
 use ApiTestCase;
-use Biigle\Shape;
-use Carbon\Carbon;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Jobs\TrackObject;
-use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Shape;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Cache;
+use Carbon\Carbon;
+use Queue;
 
 class VideoAnnotationControllerTest extends ApiTestCase
 {

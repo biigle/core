@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
-use Biigle\User;
 use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
+use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelTreeVersionPolicy extends CachedPolicy

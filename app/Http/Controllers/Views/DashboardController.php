@@ -2,15 +2,15 @@
 
 namespace Biigle\Http\Controllers\Views;
 
-use Biigle\User;
+use Biigle\AnnotationLabel;
 use Biigle\Image;
+use Biigle\ImageLabel;
+use Biigle\Services\Modules;
+use Biigle\User;
 use Biigle\Video;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
-use Biigle\ImageLabel;
-use Biigle\AnnotationLabel;
-use Biigle\Services\Modules;
-use Biigle\VideoAnnotationLabel;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\View;
 

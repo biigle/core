@@ -2,9 +2,9 @@
 
 namespace Biigle\Listeners;
 
-use Storage;
 use Biigle\Events\TiledImagesDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Storage;
 
 class CleanupImageTiles implements ShouldQueue
 {

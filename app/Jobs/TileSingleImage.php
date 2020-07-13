@@ -2,19 +2,19 @@
 
 namespace Biigle\Jobs;
 
-use File;
-use Storage;
-use Exception;
-use VipsImage;
-use FileCache;
-use SplFileInfo;
 use Biigle\Image;
+use Exception;
+use File;
+use FileCache;
 use FilesystemIterator;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+use Storage;
+use VipsImage;
 
 class TileSingleImage extends Job implements ShouldQueue
 {

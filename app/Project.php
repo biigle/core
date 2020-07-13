@@ -2,9 +2,9 @@
 
 namespace Biigle;
 
-use DB;
-use Cache;
 use Biigle\Jobs\DeleteVolume;
+use Cache;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model

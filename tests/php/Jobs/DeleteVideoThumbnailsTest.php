@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Jobs\DeleteVideoThumbnails;
+use Biigle\Tests\VideoTest;
 use Storage;
 use TestCase;
-use Biigle\Tests\VideoTest;
-use Biigle\Jobs\DeleteVideoThumbnails;
 
 class DeleteVideoThumbnailsTest extends TestCase
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Biigle\Http\Requests\StorePinnedProject;
 use Biigle\Http\Requests\DestroyPinnedProject;
+use Biigle\Http\Requests\StorePinnedProject;
+use Illuminate\Http\Request;
 
 class UserPinnedProjectController extends Controller
 {

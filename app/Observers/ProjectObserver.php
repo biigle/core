@@ -2,9 +2,9 @@
 
 namespace Biigle\Observers;
 
-use Exception;
-use Biigle\Role;
 use Biigle\LabelTree;
+use Biigle\Role;
+use Exception;
 
 class ProjectObserver
 {

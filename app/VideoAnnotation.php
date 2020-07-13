@@ -2,9 +2,9 @@
 
 namespace Biigle;
 
-use Exception;
 use Biigle\Shape;
 use Biigle\Traits\HasPointsAttribute;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class VideoAnnotation extends Model

@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
 
 class ImageFilenamesControllerTest extends ApiTestCase
 {

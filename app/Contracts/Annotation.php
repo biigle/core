@@ -2,8 +2,8 @@
 
 namespace Biigle\Contracts;
 
-use Biigle\Shape;
 use Biigle\Image;
+use Biigle\Shape;
 use Illuminate\Contracts\Queue\QueueableEntity;
 
 /**

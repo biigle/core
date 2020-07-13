@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\ImageLabel;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class ImageLabelTest extends ModelTestCase
 {

@@ -2,13 +2,13 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Label;
 use Biigle\Policies\CachedPolicy;
+use Biigle\Role;
+use Biigle\User;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class VideoAnnotationPolicy extends CachedPolicy

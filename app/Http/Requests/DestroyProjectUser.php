@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\User;
 use Biigle\Project;
+use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DestroyProjectUser extends FormRequest

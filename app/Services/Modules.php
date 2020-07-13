@@ -2,8 +2,8 @@
 
 namespace Biigle\Services;
 
-use Arr;
 use App;
+use Arr;
 use File;
 
 /**

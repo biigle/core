@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Events\ImagesDeleted;
+use Biigle\Jobs\DeleteVolume;
+use Biigle\Tests\ImageTest;
 use Event;
 use TestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Jobs\DeleteVolume;
-use Biigle\Events\ImagesDeleted;
 
 class DeleteVolumeTest extends TestCase
 {

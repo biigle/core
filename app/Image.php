@@ -2,12 +2,12 @@
 
 namespace Biigle;
 
-use Response;
+use Biigle\FileCache\Contracts\File as FileContract;
+use Biigle\Traits\HasJsonAttributes;
 use Exception;
 use FileCache;
-use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\FileCache\Contracts\File as FileContract;
+use Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**

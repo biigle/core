@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Project;
 use Biigle\LabelTree;
-use Biigle\Visibility;
+use Biigle\Project;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Visibility;
 
 class ProjectLabelTreeControllerTest extends ApiTestCase
 {

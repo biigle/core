@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Middleware;
 
-use App;
-use Closure;
 use ApiTestCase;
-use Biigle\Tests\ApiTokenTest;
+use App;
 use Biigle\Http\Middleware\VerifyCsrfToken;
+use Biigle\Tests\ApiTokenTest;
+use Closure;
 use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfTokenTest extends ApiTestCase

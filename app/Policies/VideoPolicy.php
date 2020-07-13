@@ -2,11 +2,11 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Biigle\User;
-use Biigle\Role;
-use Biigle\Video;
 use Biigle\Policies\CachedPolicy;
+use Biigle\Role;
+use Biigle\User;
+use Biigle\Video;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class VideoPolicy extends CachedPolicy

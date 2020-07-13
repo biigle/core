@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Jobs\TrackObject;
+use Biigle\Shape;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Biigle\VideoAnnotation;
+use Exception;
 use File;
 use Storage;
 use TestCase;
-use Exception;
-use Biigle\Shape;
-use Biigle\VideoAnnotation;
-use Biigle\Tests\VideoTest;
-use Biigle\Jobs\TrackObject;
-use Biigle\Tests\VideoAnnotationTest;
 
 class TrackObjectTest extends TestCase
 {

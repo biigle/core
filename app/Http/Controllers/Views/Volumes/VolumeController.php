@@ -2,15 +2,15 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
-use Storage;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Biigle\MediaType;
+use Biigle\Project;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Biigle\MediaType;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Views\Controller;
+use Storage;
 
 class VolumeController extends Controller
 {

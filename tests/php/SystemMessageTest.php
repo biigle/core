@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests;
 
-use Mockery;
-use Biigle\User;
-use Notification;
-use ModelTestCase;
-use Biigle\SystemMessage;
-use Illuminate\Database\QueryException;
 use Biigle\Notifications\NewSystemMessageNotification;
+use Biigle\SystemMessage;
+use Biigle\User;
+use Illuminate\Database\QueryException;
+use Mockery;
+use ModelTestCase;
+use Notification;
 
 class SystemMessageTest extends ModelTestCase
 {

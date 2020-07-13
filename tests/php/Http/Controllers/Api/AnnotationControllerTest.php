@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Cache;
 use ApiTestCase;
 use Biigle\Shape;
-use Carbon\Carbon;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationSessionTest;
+use Cache;
+use Carbon\Carbon;
 
 class AnnotationControllerTest extends ApiTestCase
 {

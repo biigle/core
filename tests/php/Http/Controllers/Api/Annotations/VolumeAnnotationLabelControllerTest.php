@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations;
 
 use ApiTestCase;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
 
 class VolumeAnnotationLabelControllerTest extends ApiTestCase
 {

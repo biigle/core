@@ -1,9 +1,9 @@
 <?php
 
 use Biigle\Tests\CreatesApplication;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Queue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {

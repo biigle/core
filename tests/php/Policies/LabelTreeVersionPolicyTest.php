@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\LabelTree;
+use Biigle\LabelTreeVersion;
+use Biigle\Role;
+use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Visibility;
 use Cache;
 use TestCase;
-use Biigle\Role;
-use Biigle\LabelTree;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
-use Biigle\LabelTreeVersion;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelTreeVersionPolicyTest extends TestCase
 {

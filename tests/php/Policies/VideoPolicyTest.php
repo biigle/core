@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoTest;
+use TestCase;
 
 class VideoPolicyTest extends TestCase
 {

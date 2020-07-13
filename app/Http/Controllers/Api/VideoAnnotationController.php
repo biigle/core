@@ -2,18 +2,18 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Queue;
-use Exception;
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\StoreVideoAnnotation;
+use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Biigle\Jobs\TrackObject;
 use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\Jobs\TrackObject;
 use Biigle\VideoAnnotationLabel;
-use Biigle\Http\Controllers\Api\Controller;
+use DB;
+use Exception;
 use Illuminate\Validation\ValidationException;
-use Biigle\Http\Requests\StoreVideoAnnotation;
-use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Queue;
 
 class VideoAnnotationController extends Controller
 {

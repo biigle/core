@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Storage;
 use ApiTestCase;
 use Biigle\Tests\VideoTest;
+use Storage;
 
 class VideoFileControllerTest extends ApiTestCase
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Str;
 use Biigle\ApiToken;
 use Illuminate\Http\Request;
+use Str;
 
 class ApiTokenController extends Controller
 {

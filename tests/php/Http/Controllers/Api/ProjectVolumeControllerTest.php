@@ -2,21 +2,21 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Event;
+use ApiTestCase;
+use Biigle\Events\ImagesDeleted;
+use Biigle\Image;
+use Biigle\Jobs\CreateNewImages;
+use Biigle\Jobs\DeleteVolume;
+use Biigle\MediaType;
+use Biigle\Role;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Volume;
 use Cache;
+use Event;
 use Queue;
 use Storage;
-use Biigle\Role;
-use Biigle\Image;
-use ApiTestCase;
-use Biigle\Volume;
-use Biigle\MediaType;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Jobs\DeleteVolume;
-use Biigle\Events\ImagesDeleted;
-use Biigle\Jobs\CreateNewImages;
 
 class ProjectVolumeControllerTest extends ApiTestCase
 {

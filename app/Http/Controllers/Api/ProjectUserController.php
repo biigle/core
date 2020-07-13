@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Project;
 use Biigle\Http\Requests\AttachProjectUser;
-use Biigle\Http\Requests\UpdateProjectUser;
 use Biigle\Http\Requests\DestroyProjectUser;
+use Biigle\Http\Requests\UpdateProjectUser;
+use Biigle\Project;
 
 class ProjectUserController extends Controller
 {

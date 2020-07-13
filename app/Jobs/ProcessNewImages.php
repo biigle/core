@@ -3,9 +3,9 @@
 namespace Biigle\Jobs;
 
 use Biigle\Volume;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ProcessNewImages extends Job implements ShouldQueue
 {

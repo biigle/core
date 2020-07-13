@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Policies;
 
-use Cache;
-use TestCase;
 use Biigle\Role;
-use Carbon\Carbon;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use Cache;
+use Carbon\Carbon;
+use TestCase;
 
 class AnnotationPolicyTest extends TestCase
 {

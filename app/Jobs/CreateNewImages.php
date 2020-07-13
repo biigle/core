@@ -2,14 +2,14 @@
 
 namespace Biigle\Jobs;
 
-use DB;
 use Biigle\Image;
-use Biigle\Volume;
-use Ramsey\Uuid\Uuid;
 use Biigle\Jobs\ProcessNewImages;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use Biigle\Volume;
+use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Ramsey\Uuid\Uuid;
 
 class CreateNewImages extends Job implements ShouldQueue
 {

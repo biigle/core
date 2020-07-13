@@ -1,9 +1,9 @@
 <?php
 
-use Biigle\User;
 use Biigle\Role;
-use Illuminate\Support\Str;
+use Biigle\User;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------

@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\AnnotationLabel;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class AnnotationLabelTest extends ModelTestCase
 {

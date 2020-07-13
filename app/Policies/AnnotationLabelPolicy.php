@@ -2,10 +2,10 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\AnnotationLabel;
+use Biigle\Role;
+use Biigle\User;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnnotationLabelPolicy extends CachedPolicy

@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
-use DB;
-use Biigle\Project;
 use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Visibility;
+use DB;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectLabelTree extends FormRequest

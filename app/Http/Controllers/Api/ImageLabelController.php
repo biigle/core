@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Image;
-use Biigle\Label;
-use Biigle\ImageLabel;
 use Biigle\Http\Requests\StoreImageLabel;
+use Biigle\Image;
+use Biigle\ImageLabel;
+use Biigle\Label;
 
 class ImageLabelController extends Controller
 {

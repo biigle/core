@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations\Filters;
 
 use ApiTestCase;
-use Carbon\Carbon;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Carbon\Carbon;
 
 class AnnotationControllerTest extends ApiTestCase
 {

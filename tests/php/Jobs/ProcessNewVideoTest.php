@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Tests\VideoTest;
+use FileCache;
 use Storage;
 use TestCase;
-use FileCache;
-use Biigle\Tests\VideoTest;
-use Biigle\Jobs\ProcessNewVideo;
 
 class ProcessNewVideoTest extends TestCase
 {

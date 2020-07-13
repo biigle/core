@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests;
 
-use Event;
-use Response;
-use Biigle\Image;
-use Carbon\Carbon;
-use ModelTestCase;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Image;
+use Carbon\Carbon;
+use Event;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
+use Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImageTest extends ModelTestCase

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests;
 
-use TestCase;
 use Illuminate\Database\QueryException;
+use TestCase;
 
 class ProjectVolumeIntegrityTest extends TestCase
 {

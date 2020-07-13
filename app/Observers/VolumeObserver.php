@@ -2,10 +2,10 @@
 
 namespace Biigle\Observers;
 
-use Exception;
-use Biigle\Volume;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Volume;
+use Exception;
 
 class VolumeObserver
 {

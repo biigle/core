@@ -4,8 +4,8 @@ namespace Biigle;
 
 use DB;
 use Exception;
-use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Model;
+use Ramsey\Uuid\Uuid;
 
 /**
  * A label tree is a group of labels. Projects can choose to used different label trees,

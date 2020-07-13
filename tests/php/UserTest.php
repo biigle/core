@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests;
 
-use Biigle\User;
 use Biigle\Role;
-use ModelTestCase;
+use Biigle\User;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserTest extends ModelTestCase

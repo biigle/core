@@ -2,11 +2,11 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\User;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelPolicy extends CachedPolicy

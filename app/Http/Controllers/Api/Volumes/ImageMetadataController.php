@@ -3,13 +3,13 @@
 namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Arr;
-use File;
-use Exception;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Image;
 use Biigle\Volume;
 use Carbon\Carbon;
+use Exception;
+use File;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 use Illuminate\Validation\ValidationException;
 
 class ImageMetadataController extends Controller

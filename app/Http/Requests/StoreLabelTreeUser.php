@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\User;
-use Biigle\Role;
 use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabelTreeUser extends FormRequest

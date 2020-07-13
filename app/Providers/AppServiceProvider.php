@@ -4,10 +4,10 @@ namespace Biigle\Providers;
 
 use Auth;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

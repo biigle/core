@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Listeners;
 
+use Biigle\Events\TiledImagesDeleted;
+use Biigle\Listeners\CleanupImageTiles;
+use Biigle\Tests\ImageTest;
+use Illuminate\Events\CallQueuedListener;
 use Queue;
 use Storage;
 use TestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Events\TiledImagesDeleted;
-use Biigle\Listeners\CleanupImageTiles;
-use Illuminate\Events\CallQueuedListener;
 
 class CleanupImageTilesTest extends TestCase
 {

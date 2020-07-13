@@ -3,8 +3,8 @@
 namespace Biigle\Tests;
 
 use Biigle\Label;
-use ModelTestCase;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class LabelTest extends ModelTestCase
 {

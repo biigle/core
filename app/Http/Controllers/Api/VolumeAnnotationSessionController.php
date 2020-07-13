@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Volume;
 use Biigle\AnnotationSession;
-use Illuminate\Validation\ValidationException;
 use Biigle\Http\Requests\StoreAnnotationSession;
+use Biigle\Volume;
+use Illuminate\Validation\ValidationException;
 
 class VolumeAnnotationSessionController extends Controller
 {

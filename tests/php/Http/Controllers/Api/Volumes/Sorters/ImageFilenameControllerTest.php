@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes\Sorters;
 
 use ApiTestCase;
-use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
 
 class ImageFilenameControllerTest extends ApiTestCase
 {

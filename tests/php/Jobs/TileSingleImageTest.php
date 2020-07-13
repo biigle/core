@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Jobs;
 
-use File;
-use Storage;
-use Mockery;
-use TestCase;
-use Jcupitt\Vips\Image;
-use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;
+use Biigle\Tests\ImageTest;
+use File;
+use Jcupitt\Vips\Image;
+use Mockery;
+use Storage;
+use TestCase;
 
 class TileSingleImageTest extends TestCase
 {

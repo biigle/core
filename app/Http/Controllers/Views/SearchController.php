@@ -2,15 +2,15 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\Image;
+use Biigle\LabelTree;
+use Biigle\Project;
+use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
-use Biigle\Image;
 use Biigle\Volume;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Biigle\Services\Modules;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {

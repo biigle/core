@@ -2,8 +2,8 @@
 
 namespace Biigle;
 
-use DB;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**

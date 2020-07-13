@@ -2,9 +2,9 @@
 
 namespace Biigle\Listeners;
 
-use Queue;
 use Biigle\Events\VideoDeleted;
 use Biigle\Jobs\DeleteVideoThumbnails;
+use Queue;
 
 class PrepareDeleteVideoThumbnails
 {

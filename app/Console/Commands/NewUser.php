@@ -2,11 +2,11 @@
 
 namespace Biigle\Console\Commands;
 
-use Str;
-use Biigle\User;
 use Biigle\Role;
-use Ramsey\Uuid\Uuid;
+use Biigle\User;
 use Illuminate\Console\Command;
+use Ramsey\Uuid\Uuid;
+use Str;
 
 class NewUser extends Command
 {

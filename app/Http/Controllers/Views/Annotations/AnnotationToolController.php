@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Controllers\Views\Annotations;
 
-use DB;
-use Storage;
+use Biigle\Annotation;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Image;
+use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Shape;
-use Biigle\Image;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Biigle\Annotation;
+use DB;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Views\Controller;
+use Storage;
 
 class AnnotationToolController extends Controller
 {

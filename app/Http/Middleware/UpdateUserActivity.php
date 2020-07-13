@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Middleware;
 
-use Closure;
 use Carbon\Carbon;
+use Closure;
 
 class UpdateUserActivity
 {

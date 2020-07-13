@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Exception;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
-use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreAnnotations;
+use DB;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class AnnotationController extends Controller

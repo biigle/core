@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests;
 
-use Queue;
+use Biigle\Jobs\DeleteVolume;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Video;
-use ModelTestCase;
-use Biigle\Project;
-use Biigle\Jobs\DeleteVolume;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
+use Queue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase

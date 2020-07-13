@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Services\Auth;
 
-use TestCase;
-use Carbon\Carbon;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ApiTokenTest;
+use Biigle\Tests\UserTest;
+use Carbon\Carbon;
+use TestCase;
 
 class ApiGuardTest extends TestCase
 {

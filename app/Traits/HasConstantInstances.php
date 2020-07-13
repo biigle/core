@@ -2,8 +2,8 @@
 
 namespace Biigle\Traits;
 
-use Str;
 use Cache;
+use Str;
 
 /**
  * Some models have fixed, "constant" instances. An example is the Role model, which may

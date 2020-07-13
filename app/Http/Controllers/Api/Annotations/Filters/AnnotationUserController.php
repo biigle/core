@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api\Annotations\Filters;
 
-use Biigle\Volume;
 use Biigle\Annotation;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Volume;
+use Illuminate\Http\Request;
 
 class AnnotationUserController extends Controller
 {

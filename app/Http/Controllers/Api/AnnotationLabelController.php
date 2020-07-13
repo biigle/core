@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Str;
-use Biigle\Label;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
 use Biigle\Http\Requests\StoreAnnotationLabel;
+use Biigle\Label;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Str;
 
 class AnnotationLabelController extends Controller
 {

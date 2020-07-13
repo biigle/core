@@ -2,8 +2,8 @@
 
 namespace Biigle\Console\Commands;
 
-use DB;
 use Biigle\Volume;
+use DB;
 use Illuminate\Console\Command;
 
 class UpdateVolumeUrls extends Command

@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
+use Biigle\Role;
+use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelControllerTest extends ApiTestCase

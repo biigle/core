@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Visibility;
+use TestCase;
 
 class SearchControllerTest extends TestCase
 {

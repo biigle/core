@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests;
 
-use Event;
+use Biigle\Events\VideoDeleted;
 use Biigle\Role;
-use ModelTestCase;
 use Biigle\Tests\UserTest;
 use Biigle\Video;
-use Biigle\Events\VideoDeleted;
+use Event;
+use ModelTestCase;
 
 class VideoTest extends ModelTestCase
 {

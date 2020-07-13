@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Volume;
 use Biigle\Project;
-use Biigle\Rules\VolumeUrl;
 use Biigle\Rules\VolumeImages;
+use Biigle\Rules\VolumeUrl;
+use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVolume extends FormRequest

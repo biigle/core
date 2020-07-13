@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Cache;
-use Biigle\Role;
 use ApiTestCase;
 use Biigle\LabelTree;
-use Biigle\Visibility;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeTest;
+use Biigle\Role;
 use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Visibility;
+use Cache;
 
 class LabelTreeControllerTest extends ApiTestCase
 {

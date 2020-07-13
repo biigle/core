@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Hash;
 use Biigle\Role;
 use Biigle\User;
+use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUser extends FormRequest

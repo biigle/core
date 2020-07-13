@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Storage;
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
+use Storage;
 
 class VolumeImageControllerTest extends ApiTestCase
 {

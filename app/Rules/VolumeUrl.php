@@ -3,12 +3,12 @@
 namespace Biigle\Rules;
 
 use App;
-use Storage;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Validation\Rule;
-use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Contracts\Validation\Rule;
+use Storage;
 
 class VolumeUrl implements Rule
 {

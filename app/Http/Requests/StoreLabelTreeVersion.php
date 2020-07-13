@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Project;
 use Biigle\LabelTree;
-use Illuminate\Validation\Rule;
+use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLabelTreeVersion extends FormRequest
 {

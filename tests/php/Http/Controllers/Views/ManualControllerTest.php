@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use View;
 use TestCase;
+use View;
 
 class ManualControllerTest extends TestCase
 {

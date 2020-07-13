@@ -2,19 +2,19 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use TestCase;
-use Biigle\Role;
+use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
-use Biigle\Volume;
-use Biigle\Video;
+use Biigle\Role;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
+use Biigle\Video;
+use Biigle\Volume;
 use Illuminate\Support\Facades\View;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Http\Controllers\Views\DashboardController;
+use TestCase;
 
 class DashboardControllerTest extends TestCase
 {

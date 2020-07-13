@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Video;
 use Biigle\Rules\VideoUrl;
+use Biigle\Video;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVideo extends FormRequest

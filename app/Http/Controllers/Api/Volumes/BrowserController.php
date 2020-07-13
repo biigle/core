@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api\Volumes;
 
-use Storage;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
+use Storage;
 
 class BrowserController extends Controller
 {

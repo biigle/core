@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Queue;
-use Biigle\Volume;
-use Biigle\Project;
-use Illuminate\Http\Request;
-use Biigle\Jobs\CreateNewImages;
 use Biigle\Http\Requests\StoreVolume;
+use Biigle\Jobs\CreateNewImages;
+use Biigle\Project;
+use Biigle\Volume;
+use DB;
+use Illuminate\Http\Request;
+use Queue;
 
 class ProjectVolumeController extends Controller
 {

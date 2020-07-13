@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\DestroyLabelTreeUser;
 use Biigle\Http\Requests\StoreLabelTreeUser;
 use Biigle\Http\Requests\UpdateLabelTreeUser;
-use Biigle\Http\Requests\DestroyLabelTreeUser;
 
 class LabelTreeUserController extends Controller
 {

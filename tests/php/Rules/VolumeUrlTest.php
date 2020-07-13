@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Rules;
 
-use Storage;
-use TestCase;
-use GuzzleHttp\Client;
-use GuzzleHttp\Middleware;
 use Biigle\Rules\VolumeUrl;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Exception\RequestException;
+use Storage;
+use TestCase;
 
 class VolumeUrlTest extends TestCase
 {

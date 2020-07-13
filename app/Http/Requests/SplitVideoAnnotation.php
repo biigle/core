@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Shape;
+use Biigle\Rules\GreaterThan;
 use Biigle\Rules\LessThan;
+use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
-use Biigle\Rules\GreaterThan;
 
 class SplitVideoAnnotation extends FormRequest
 {

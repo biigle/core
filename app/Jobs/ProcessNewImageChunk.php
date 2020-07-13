@@ -3,17 +3,17 @@
 namespace Biigle\Jobs;
 
 use App;
-use Log;
-use File;
-use Storage;
-use Exception;
-use VipsImage;
-use FileCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ErrorException;
-use Illuminate\Queue\InteractsWithQueue;
+use Exception;
+use File;
+use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Log;
+use Storage;
+use VipsImage;
 
 class ProcessNewImageChunk extends Job implements ShouldQueue
 {

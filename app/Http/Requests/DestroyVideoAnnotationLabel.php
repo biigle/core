@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Biigle\VideoAnnotationLabel;
+use Illuminate\Foundation\Http\FormRequest;
 
 class DestroyVideoAnnotationLabel extends FormRequest
 {

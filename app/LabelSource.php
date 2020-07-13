@@ -2,8 +2,8 @@
 
 namespace Biigle;
 
-use Str;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 /**
  * The source (database) of a label.

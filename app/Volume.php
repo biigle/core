@@ -2,11 +2,11 @@
 
 namespace Biigle;
 
-use DB;
-use Cache;
-use Exception;
-use Carbon\Carbon;
 use Biigle\Traits\HasJsonAttributes;
+use Cache;
+use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 

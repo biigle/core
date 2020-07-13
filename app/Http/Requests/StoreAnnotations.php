@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Label;
 use Biigle\Image;
+use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAnnotations extends FormRequest

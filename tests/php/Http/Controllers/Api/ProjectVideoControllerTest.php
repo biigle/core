@@ -2,20 +2,20 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use ApiTestCase;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Project;
+use Biigle\Support\VideoCodecExtractor;
+use Biigle\Tests\VideoTest;
+use Biigle\Video;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Http\File;
 use Queue;
 use Storage;
-use ApiTestCase;
-use GuzzleHttp\Client;
-use Illuminate\Http\File;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
-use Biigle\Video;
-use Biigle\Project;
-use GuzzleHttp\Handler\MockHandler;
-use Biigle\Tests\VideoTest;
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Support\VideoCodecExtractor;
 
 class ProjectVideoControllerTest extends ApiTestCase
 {
@@ -138,7 +138,8 @@ class ProjectVideoControllerTest extends ApiTestCase
 
         $this->app->bind(VideoCodecExtractor::class, function () {
             return new class {
-                public function extract($url) {
+                public function extract($url)
+                {
                     return 'h264';
                 }
             };

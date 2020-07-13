@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use ApiTestCase;
 use Auth;
+use Biigle\Role;
+use Biigle\Tests\ApiTokenTest;
+use Biigle\Tests\UserTest;
+use Biigle\User;
 use Hash;
 use Session;
-use Biigle\User;
-use Biigle\Role;
-use ApiTestCase;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ApiTokenTest;
 
 class UserControllerTest extends ApiTestCase
 {

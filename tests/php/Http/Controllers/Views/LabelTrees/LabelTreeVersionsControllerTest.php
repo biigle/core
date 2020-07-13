@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\UserTest;
+use Biigle\Visibility;
+use TestCase;
 
 class LabelTreeVersionsControllerTest extends TestCase
 {
