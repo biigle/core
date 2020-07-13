@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Biigle\Jobs\Job;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Queue;
 use Storage;
-use Biigle\Jobs\Job;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class RemoveAnnotationPatches extends Job implements ShouldQueue
 {

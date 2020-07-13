@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Tests\AnnotationTest;
 use File;
 use Queue;
 use Storage;
 use TestCase;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class RemoveAnnotationPatchesTest extends TestCase
 {

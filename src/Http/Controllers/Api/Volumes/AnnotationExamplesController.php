@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
+use Biigle\Annotation;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\Volume;
-use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 
 class AnnotationExamplesController extends Controller
 {

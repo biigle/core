@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Projects;
 
-use Storage;
-use Biigle\Project;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Project;
+use Storage;
 
 class LargoController extends Controller
 {

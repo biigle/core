@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
-use Biigle\Label;
 use Biigle\Annotation;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Label;
+use Illuminate\Http\Request;
 
 class AnnotationsController extends Controller
 {

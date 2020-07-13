@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Role;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
+use Biigle\Visibility;
 use Cache;
 use TestCase;
-use Biigle\Role;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\LabelTreeTest;
 
 class AnnotationCatalogControllerTest extends TestCase
 {

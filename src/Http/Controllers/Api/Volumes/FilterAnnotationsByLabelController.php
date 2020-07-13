@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Volume;
 use Biigle\Annotation;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Volume;
+use Illuminate\Http\Request;
 
 class FilterAnnotationsByLabelController extends Controller
 {

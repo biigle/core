@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
-use File;
-use Storage;
 use Biigle\Annotation;
-use Illuminate\Console\Command;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use File;
+use Illuminate\Console\Command;
+use Storage;
 
 class GenerateMissing extends Command
 {

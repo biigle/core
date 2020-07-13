@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
-use Exception;
 use ApiTestCase;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Exception;
 
 class LargoControllerTest extends ApiTestCase
 {

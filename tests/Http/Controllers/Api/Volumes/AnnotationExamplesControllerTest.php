@@ -3,12 +3,12 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Carbon\Carbon;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Carbon\Carbon;
 
 class AnnotationExamplesControllerTest extends ApiTestCase
 {

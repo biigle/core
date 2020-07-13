@@ -2,17 +2,17 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Str;
-use Storage;
-use Exception;
-use VipsImage;
-use FileCache;
-use Biigle\Image;
-use Biigle\Shape;
-use Biigle\Jobs\Job;
 use Biigle\Contracts\Annotation;
-use Illuminate\Queue\InteractsWithQueue;
+use Biigle\Image;
+use Biigle\Jobs\Job;
+use Biigle\Shape;
+use Exception;
+use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Storage;
+use Str;
+use VipsImage;
 
 class GenerateAnnotationPatch extends Job implements ShouldQueue
 {

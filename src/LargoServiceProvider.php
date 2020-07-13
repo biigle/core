@@ -2,14 +2,14 @@
 
 namespace Biigle\Modules\Largo;
 
-use Event;
 use Biigle\Annotation;
-use Biigle\Services\Modules;
-use Illuminate\Routing\Router;
 use Biigle\Events\ImagesDeleted;
-use Illuminate\Support\ServiceProvider;
-use Biigle\Modules\Largo\Observers\AnnotationObserver;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
+use Biigle\Modules\Largo\Observers\AnnotationObserver;
+use Biigle\Services\Modules;
+use Event;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 
 class LargoServiceProvider extends ServiceProvider
 {

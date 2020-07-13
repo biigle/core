@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
-use Illuminate\Console\Command;
 use Biigle\Modules\Largo\LargoServiceProvider as ServiceProvider;
+use Illuminate\Console\Command;
 
 class Config extends Command
 {

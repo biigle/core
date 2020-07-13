@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Modules\Largo\Observers;
 
-use TestCase;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Tests\AnnotationTest;
+use TestCase;
 
 class AnnotationObserverTest extends TestCase
 {

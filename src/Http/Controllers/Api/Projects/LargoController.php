@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Label;
-use Biigle\Project;
 use Biigle\Annotation;
-use Illuminate\Http\Request;
-use Illuminate\Auth\Access\AuthorizationException;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Label;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Project;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 
 class LargoController extends Controller
 {

@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\LabelTrees;
 
-use Storage;
-use Biigle\LabelTree;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Storage;
 
 class AnnotationCatalogController extends Controller
 {

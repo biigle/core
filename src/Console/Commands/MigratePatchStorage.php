@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
-use File;
-use Storage;
 use Biigle\Annotation;
+use File;
 use FilesystemIterator;
-use InvalidArgumentException;
 use Illuminate\Console\Command;
+use InvalidArgumentException;
+use Storage;
 
 class MigratePatchStorage extends Command
 {

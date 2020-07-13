@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Project;
 use Biigle\Annotation;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Project;
+use Illuminate\Http\Request;
 
 class FilterAnnotationsByLabelController extends Controller
 {

@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
-use DB;
-use Biigle\Label;
-use Carbon\Carbon;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Label;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Http\Request;
 
 class LargoController extends Controller
 {

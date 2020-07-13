@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Listeners;
 
-use Biigle\Image;
 use Biigle\Annotation;
 use Biigle\Events\ImagesDeleted;
+use Biigle\Image;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class ImagesCleanupListener

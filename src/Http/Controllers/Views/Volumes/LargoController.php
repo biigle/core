@@ -2,13 +2,13 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
-use Storage;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
-use Biigle\Project;
-use Biigle\LabelTree;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Views\Controller;
+use Storage;
 
 class LargoController extends Controller
 {

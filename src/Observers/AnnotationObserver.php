@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Largo\Observers;
 
 use Biigle\Annotation;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class AnnotationObserver
 {

@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\Annotation;
+use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Shape;
+use Biigle\Tests\AnnotationTest;
 use File;
 use Mockery;
 use Storage;
 use TestCase;
-use Biigle\Shape;
-use Biigle\Annotation;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class GenerateAnnotationPatchTest extends TestCase
 {

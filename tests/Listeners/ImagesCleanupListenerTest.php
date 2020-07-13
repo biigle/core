@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Modules\Largo\Listeners;
 
-use TestCase;
-use Faker\Factory as Faker;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
 use Biigle\Events\ImagesDeleted;
-use Illuminate\Database\QueryException;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageTest;
+use Faker\Factory as Faker;
+use Illuminate\Database\QueryException;
+use TestCase;
 
 class ImagesCleanupListenerTest extends TestCase
 {
