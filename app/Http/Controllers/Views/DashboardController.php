@@ -51,13 +51,13 @@ class DashboardController extends Controller
     protected function indexDashboard(User $user)
     {
         $newerThan = Carbon::now()->subDays(7);
-        $limit = 3;
+        $limit = 4;
         $volumes = $this->volumesActivityItems($user, $limit, $newerThan);
         $annotations = $this->annotationsActivityItems($user, $limit, $newerThan);
         $videos = $this->videosActivityItems($user, $limit, $newerThan);
         $items = collect(array_merge($volumes, $annotations, $videos))
             ->sortByDesc('created_at')
-            ->take(4);
+            ->take($limit);
 
         $projects = $user->projects()
             ->orderBy('pivot_pinned', 'desc')
