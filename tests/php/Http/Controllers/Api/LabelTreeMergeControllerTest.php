@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
@@ -218,7 +218,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create();
         $tree->addMember($this->editor(), Role::editor());
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
-        $annotationLabel = AnnotationLabelTest::create(['label_id' => $label->id]);
+        $annotationLabel = ImageAnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
         $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [

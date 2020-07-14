@@ -82,7 +82,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    Annotations
+                    Image Annotations
                     <span class="pull-right">{{ $totalAnnotations }}</span>
                 </h3>
             </div>

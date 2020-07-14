@@ -11,17 +11,26 @@
 |
 */
 
-$router->resource('annotations', 'AnnotationController', [
-    'only' => ['show', 'store', 'update', 'destroy'],
+// Deprecated: use image-annotations instead
+$router->resource('annotations', 'ImageAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
     'parameters' => ['annotations' => 'id'],
 ]);
 
-$router->resource('annotations.labels', 'AnnotationLabelController', [
+// Deprecated: use image-annotations instead
+$router->resource('annotations', 'ImageAnnotationBulkController', [
+    'only' => ['store'],
+    'parameters' => ['annotations' => 'id'],
+]);
+
+// Deprecated: use image-annotations instead
+$router->resource('annotations.labels', 'ImageAnnotationLabelController', [
     'only' => ['index', 'store'],
     'parameters' => ['annotations' => 'id'],
 ]);
 
-$router->resource('annotation-labels', 'AnnotationLabelController', [
+// Deprecated: use image-annotation-labels instead
+$router->resource('annotation-labels', 'ImageAnnotationLabelController', [
     'only' => ['update', 'destroy'],
     'parameters' => ['annotation-labels' => 'id'],
 ]);
@@ -34,6 +43,26 @@ $router->resource('annotation-sessions', 'AnnotationSessionController', [
 $router->resource('api-tokens', 'ApiTokenController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['api-tokens' => 'id'],
+]);
+
+$router->resource('image-annotations', 'ImageAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotations', 'ImageAnnotationBulkController', [
+    'only' => ['store'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotations.labels', 'ImageAnnotationLabelController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotation-labels', 'ImageAnnotationLabelController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['image-annotation-labels' => 'id'],
 ]);
 
 $router->get('images/{id}/file', 'ImageController@showFile');

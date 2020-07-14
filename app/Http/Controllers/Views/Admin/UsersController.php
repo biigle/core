@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Services\Modules;
@@ -191,18 +191,18 @@ class UsersController extends Controller
      */
     protected function showAnnotations(User $user)
     {
-        $totalAnnotationLabels = AnnotationLabel::where('user_id', $user->id)->count();
+        $totalAnnotationLabels = ImageAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalAnnotationLabels > 0) {
-            $annotationQuery = Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+            $annotationQuery = ImageAnnotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
                 ->where('annotation_labels.user_id', $user->id);
 
             $totalAnnotations = (clone $annotationQuery)->distinct()->count('annotations.id');
 
             $labelsPerAnnotation = round($totalAnnotationLabels / $totalAnnotations);
 
-            $relativeAnnotationLabels = $totalAnnotationLabels / AnnotationLabel::count();
-            $relativeAnnotations = $totalAnnotations / Annotation::count();
+            $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
+            $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
             $recentAnnotations = $annotationQuery->orderBy('annotation_labels.created_at', 'desc')
                 ->take(10)

@@ -66,7 +66,7 @@ class AnnotationSession extends Model
      */
     public function getImageAnnotations(Image $image, User $user)
     {
-        $query = Annotation::allowedBySession($this, $user)
+        $query = ImageAnnotation::allowedBySession($this, $user)
             ->where('annotations.image_id', $image->id);
 
         /*
@@ -112,7 +112,7 @@ class AnnotationSession extends Model
      */
     public function annotations()
     {
-        return Annotation::where(function ($query) {
+        return ImageAnnotation::where(function ($query) {
             // all annotations of the associated volume
             return $query->whereIn('image_id', function ($query) {
                 $query->select('id')
@@ -139,11 +139,11 @@ class AnnotationSession extends Model
     /**
      * Check if the given user is allowed to access the annotation if this annotation session is active.
      *
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @param User $user
      * @return bool
      */
-    public function allowsAccess(Annotation $annotation, User $user)
+    public function allowsAccess(ImageAnnotation $annotation, User $user)
     {
         if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
             return $annotation->created_at >= $this->starts_at &&

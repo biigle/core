@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnnotationLabel extends FormRequest
+class StoreImageAnnotationLabel extends FormRequest
 {
     /**
      * The annotation to which the label should be attached.
      *
-     * @var Annotation
+     * @var ImageAnnotation
      */
     public $annotation;
 
@@ -29,7 +29,7 @@ class StoreAnnotationLabel extends FormRequest
      */
     public function authorize()
     {
-        $this->annotation = Annotation::findOrFail($this->route('id'));
+        $this->annotation = ImageAnnotation::findOrFail($this->route('id'));
         $this->label = Label::findOrFail($this->input('label_id'));
 
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);

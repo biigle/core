@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(Biigle\Annotation::class, function (Faker $faker) {
+$factory->define(Biigle\ImageAnnotation::class, function (Faker $faker) {
     return [
         'image_id' => function () {
             return factory(Biigle\Image::class)->create()->id;

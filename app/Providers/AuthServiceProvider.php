@@ -15,8 +15,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        \Biigle\Annotation::class => \Biigle\Policies\AnnotationPolicy::class,
-        \Biigle\AnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
+        \Biigle\ImageAnnotation::class => \Biigle\Policies\ImageAnnotationPolicy::class,
+        \Biigle\ImageAnnotationLabel::class => \Biigle\Policies\ImageAnnotationLabelPolicy::class,
         \Biigle\ApiToken::class => \Biigle\Policies\ApiTokenPolicy::class,
         \Biigle\Image::class => \Biigle\Policies\ImagePolicy::class,
         \Biigle\ImageLabel::class => \Biigle\Policies\ImageLabelPolicy::class,

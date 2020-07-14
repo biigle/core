@@ -3,16 +3,16 @@
 namespace Biigle\Tests\Http\Controllers\Views\Annotations;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Carbon\Carbon;
 
 class AnnotationControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $this->project()->addVolumeId($annotation->image->volume_id);
 
         $this->beUser();
@@ -26,20 +26,20 @@ class AnnotationControllerTest extends ApiTestCase
 
     public function testShowAnnotationSession()
     {
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'created_at' => Carbon::yesterday(),
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->admin()->id,
         ]);
         $this->project()->addVolumeId($annotation->image->volume_id);
 
-        $annotation2 = AnnotationTest::create([
+        $annotation2 = ImageAnnotationTest::create([
             'image_id' => $annotation->image_id,
             'created_at' => Carbon::today(),
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation2->id,
             'user_id' => $this->admin()->id,
         ]);

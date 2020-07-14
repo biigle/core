@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Carbon\Carbon;
 
@@ -124,12 +124,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -162,12 +162,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -200,12 +200,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -257,12 +257,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);

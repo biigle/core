@@ -3,19 +3,19 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use TestCase;
 
-class AnnotationLabelPolicyTest extends TestCase
+class ImageAnnotationLabelPolicyTest extends TestCase
 {
     public function setUp(): void
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
+        $this->annotation = ImageAnnotationTest::create();
         $this->project = ProjectTest::create();
         $this->project->volumes()->attach($this->annotation->image->volume);
         $this->user = UserTest::create();
@@ -34,19 +34,19 @@ class AnnotationLabelPolicyTest extends TestCase
     public function testUpdate()
     {
         $label = LabelTest::create();
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->user->id,
         ]);
 
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->guest->id,
         ]);
 
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->editor->id,
@@ -80,19 +80,19 @@ class AnnotationLabelPolicyTest extends TestCase
     public function testDestroy()
     {
         $label = LabelTest::create();
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->user->id,
         ]);
 
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->guest->id,
         ]);
 
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'label_id' => $label->id,
             'user_id' => $this->editor->id,

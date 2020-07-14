@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests;
 
-use Biigle\AnnotationLabel;
+use Biigle\ImageAnnotationLabel;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 
-class AnnotationLabelTest extends ModelTestCase
+class ImageAnnotationLabelTest extends ModelTestCase
 {
     /**
      * The model class this class will test.
      */
-    protected static $modelClass = AnnotationLabel::class;
+    protected static $modelClass = ImageAnnotationLabel::class;
 
     public function testAttributes()
     {
@@ -32,14 +32,14 @@ class AnnotationLabelTest extends ModelTestCase
 
     public function testAnnotationOnDeleteCascade()
     {
-        $this->assertNotNull(AnnotationLabel::find($this->model->id));
+        $this->assertNotNull(ImageAnnotationLabel::find($this->model->id));
         $this->model->annotation()->delete();
-        $this->assertNull(AnnotationLabel::find($this->model->id));
+        $this->assertNull(ImageAnnotationLabel::find($this->model->id));
     }
 
     public function testLabelOnDeleteRestrict()
     {
-        $this->assertNotNull(AnnotationLabel::find($this->model->id));
+        $this->assertNotNull(ImageAnnotationLabel::find($this->model->id));
         $this->expectException(QueryException::class);
         $this->model->label()->delete();
     }

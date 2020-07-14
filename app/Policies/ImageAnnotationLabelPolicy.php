@@ -2,13 +2,13 @@
 
 namespace Biigle\Policies;
 
-use Biigle\AnnotationLabel;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AnnotationLabelPolicy extends CachedPolicy
+class ImageAnnotationLabelPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
@@ -34,10 +34,10 @@ class AnnotationLabelPolicy extends CachedPolicy
      * be admin of one of the projects.
      *
      * @param  User  $user
-     * @param  AnnotationLabel  $annotationLabel
+     * @param  ImageAnnotationLabel  $annotationLabel
      * @return bool
      */
-    public function update(User $user, AnnotationLabel $annotationLabel)
+    public function update(User $user, ImageAnnotationLabel $annotationLabel)
     {
         return $this->remember("annotation-label-can-update-{$user->id}-{$annotationLabel->id}", function () use ($user, $annotationLabel) {
             $annotation = $annotationLabel->annotation;
@@ -79,10 +79,10 @@ class AnnotationLabelPolicy extends CachedPolicy
      * be admin of one of the projects.
      *
      * @param  User  $user
-     * @param  AnnotationLabel  $annotationLabel
+     * @param  ImageAnnotationLabel  $annotationLabel
      * @return bool
      */
-    public function destroy(User $user, AnnotationLabel $annotationLabel)
+    public function destroy(User $user, ImageAnnotationLabel $annotationLabel)
     {
         return $this->update($user, $annotationLabel);
     }

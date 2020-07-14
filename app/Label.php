@@ -93,7 +93,7 @@ class Label extends Model
      */
     public function isUsed()
     {
-        return AnnotationLabel::where('label_id', $this->id)->exists()
+        return ImageAnnotationLabel::where('label_id', $this->id)->exists()
             || ImageLabel::where('label_id', $this->id)->exists()
             || VideoAnnotationLabel::where('label_id', $this->id)->exists();
     }

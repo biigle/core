@@ -77,29 +77,29 @@ class AnnotationSessionTest extends ModelTestCase
         $image = ImageTest::create();
 
         // this should be shown but the annotation label of the own user should be hidden
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
             'points' => [20, 30, 40],
         ]);
-        $al11 = AnnotationLabelTest::create([
+        $al11 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
         ]);
-        $al12 = AnnotationLabelTest::create([
+        $al12 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
         ]);
 
         // this should be shown completely
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
             'points' => [30, 40, 50],
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
@@ -132,17 +132,17 @@ class AnnotationSessionTest extends ModelTestCase
         $image = ImageTest::create();
 
         // this should be shown but the annotation label of other users should be hidden
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
             'points' => [20, 30, 40],
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
@@ -172,17 +172,17 @@ class AnnotationSessionTest extends ModelTestCase
         $image = ImageTest::create();
 
         // this should be shown but the annotation label of other users should be hidden
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
             'points' => [40, 50, 60],
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
@@ -211,17 +211,17 @@ class AnnotationSessionTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
             'points' => [40, 50, 60],
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
@@ -252,41 +252,41 @@ class AnnotationSessionTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
         ]);
 
-        $a3 = AnnotationTest::create([
+        $a3 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $a4 = AnnotationTest::create([
+        $a4 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al4 = AnnotationLabelTest::create([
+        $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a4->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
@@ -362,40 +362,40 @@ class AnnotationSessionTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
         ]);
 
-        $a3 = AnnotationTest::create([
+        $a3 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $a4 = AnnotationTest::create([
+        $a4 = ImageAnnotationTest::create([
             'created_at' => '2016-09-06',
         ]);
-        $al4 = AnnotationLabelTest::create([
+        $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a4->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',

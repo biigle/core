@@ -2,19 +2,19 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Role;
 use Biigle\Shape;
 use Exception;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 
-class AnnotationTest extends ModelTestCase
+class ImageAnnotationTest extends ModelTestCase
 {
     /**
      * The model class this class will test.
      */
-    protected static $modelClass = Annotation::class;
+    protected static $modelClass = ImageAnnotation::class;
 
     public function testAttributes()
     {
@@ -26,9 +26,9 @@ class AnnotationTest extends ModelTestCase
 
     public function testImageOnDeleteCascade()
     {
-        $this->assertNotNull(Annotation::find($this->model->id));
+        $this->assertNotNull(ImageAnnotation::find($this->model->id));
         $this->model->image()->delete();
-        $this->assertNull(Annotation::find($this->model->id));
+        $this->assertNull(ImageAnnotation::find($this->model->id));
     }
 
     public function testShapeOnDeleteRestrict()
@@ -57,7 +57,7 @@ class AnnotationTest extends ModelTestCase
     {
         $label = LabelTest::create();
         $user = UserTest::create();
-        $this->modelLabel = AnnotationLabelTest::create([
+        $this->modelLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->model->id,
             'label_id' => $label->id,
             'user_id' => $user->id,
@@ -135,7 +135,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
@@ -146,7 +146,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
@@ -157,7 +157,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
@@ -171,7 +171,7 @@ class AnnotationTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $ids = ImageAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertCount(2, $ids);
         $this->assertContains($a2->id, $ids);
         $this->assertContains($a3->id, $ids);
@@ -188,7 +188,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
@@ -199,7 +199,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
@@ -210,7 +210,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
@@ -221,7 +221,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al4 = AnnotationLabelTest::create([
+        $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a4->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
@@ -235,7 +235,7 @@ class AnnotationTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $ids = ImageAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertCount(2, $ids);
         $this->assertContains($a1->id, $ids);
         $this->assertContains($a3->id, $ids);
@@ -252,7 +252,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
@@ -263,7 +263,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-05',
@@ -274,7 +274,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
@@ -285,7 +285,7 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
-        $al4 = AnnotationLabelTest::create([
+        $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a4->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
@@ -299,7 +299,7 @@ class AnnotationTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $ids = ImageAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertEquals([$a3->id], $ids);
     }
 
@@ -317,17 +317,17 @@ class AnnotationTest extends ModelTestCase
             'image_id' => $image->id,
         ]);
 
-        $this->assertEmpty(Annotation::visibleFor($otherUser)->pluck('annotations.id'));
-        $this->assertTrue(Annotation::visibleFor($user)->where('annotations.id', $a->id)->exists());
-        $this->assertTrue(Annotation::visibleFor($admin)->where('annotations.id', $a->id)->exists());
+        $this->assertEmpty(ImageAnnotation::visibleFor($otherUser)->pluck('annotations.id'));
+        $this->assertTrue(ImageAnnotation::visibleFor($user)->where('annotations.id', $a->id)->exists());
+        $this->assertTrue(ImageAnnotation::visibleFor($admin)->where('annotations.id', $a->id)->exists());
     }
 
     public function testScopeWithLabel()
     {
-        $al1 = AnnotationLabelTest::create();
-        $al2 = AnnotationLabelTest::create();
+        $al1 = ImageAnnotationLabelTest::create();
+        $al2 = ImageAnnotationLabelTest::create();
 
-        $this->assertEquals($al1->annotation->id, Annotation::withLabel($al1->label)->first()->id);
+        $this->assertEquals($al1->annotation->id, ImageAnnotation::withLabel($al1->label)->first()->id);
     }
 
     public function testGetPoints()

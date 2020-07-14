@@ -3,41 +3,51 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Cache;
 use Carbon\Carbon;
 use Session;
 
-class AnnotationLabelControllerTest extends ApiTestCase
+class ImageAnnotationLabelControllerTest extends ApiTestCase
 {
     private $annotation;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
+        $this->annotation = ImageAnnotationTest::create();
         $this->project()->volumes()->attach($this->annotation->image->volume);
     }
 
     public function testIndex()
     {
-        AnnotationLabelTest::create([
+        $this->index('api/v1/image-annotations');
+    }
+
+    public function testIndexLegacy()
+    {
+        $this->index('api/v1/annotations');
+    }
+
+    public function index($url)
+    {
+        ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);
         $id = $this->annotation->id;
-        $this->doTestApiRoute('GET', "/api/v1/annotations/{$id}/labels");
+        $this->doTestApiRoute('GET', "{$url}/{$id}/labels");
 
         // api key authentication
         $this->beUser();
-        $response = $this->get("/api/v1/annotations/{$id}/labels");
+        $response = $this->get("{$url}/{$id}/labels");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/annotations/{$id}/labels");
+        $response = $this->get("{$url}/{$id}/labels");
         $response->assertStatus(200);
 
         $content = $response->getContent();
@@ -46,6 +56,16 @@ class AnnotationLabelControllerTest extends ApiTestCase
     }
 
     public function testIndexAnnotationSession()
+    {
+        $this->indexAnnotationSession('api/v1/image-annotations');
+    }
+
+    public function testIndexAnnotationSessionLegacy()
+    {
+        $this->indexAnnotationSession('api/v1/annotations');
+    }
+
+    public function indexAnnotationSession($url)
     {
         $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
@@ -59,24 +79,34 @@ class AnnotationLabelControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $response = $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $response = $this->get("{$url}/{$this->annotation->id}/labels");
         $response->assertStatus(200);
 
         $session->users()->attach($this->admin());
         Cache::flush();
 
-        $response = $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $response = $this->get("{$url}/{$this->annotation->id}/labels");
         $response->assertStatus(403);
     }
 
     public function testStore()
     {
+        $this->store('api/v1/image-annotations');
+    }
+
+    public function testStoreLegacy()
+    {
+        $this->store('api/v1/annotations');
+    }
+
+    public function store($url)
+    {
         $id = $this->annotation->id;
-        $this->doTestApiRoute('POST', "/api/v1/annotations/{$id}/labels");
+        $this->doTestApiRoute('POST', "{$url}/{$id}/labels");
 
         // Invalid arguments
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels", [
+        $response = $this->json('POST', "{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 10,
         ]);
@@ -85,21 +115,21 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->assertEquals(0, $this->annotation->labels()->count());
 
         $this->beUser();
-        $response = $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
         $response->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
@@ -107,7 +137,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->assertEquals(1, $this->annotation->labels()->count());
 
         $this->beAdmin();
-        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels", [
+        $response = $this->json('POST', "{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
@@ -127,7 +157,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
         ]);
         $response->assertJsonFragment(['confidence' => 0.1]);
 
-        $response = $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
@@ -138,7 +168,17 @@ class AnnotationLabelControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $annotationLabel = AnnotationLabelTest::create([
+        $this->update('api/v1/image-annotation-labels');
+    }
+
+    public function testUpdateLegacy()
+    {
+        $this->update('api/v1/annotation-labels');
+    }
+
+    public function update()
+    {
+        $annotationLabel = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
@@ -146,27 +186,27 @@ class AnnotationLabelControllerTest extends ApiTestCase
         ]);
         $id = $annotationLabel->id;
 
-        $this->doTestApiRoute('PUT', '/api/v1/annotation-labels/'.$id);
+        $this->doTestApiRoute('PUT', "{$url}/{$id}");
 
         $this->beUser();
-        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response = $this->put("{$url}/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response = $this->put("{$url}/{$id}");
         $response->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response = $this->put("{$url}/{$id}");
         $response->assertStatus(200);
 
         $this->beAdmin();
-        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response = $this->put("{$url}/{$id}");
         $response->assertStatus(200);
 
         $this->assertEquals(0.5, $annotationLabel->fresh()->confidence);
         $this->beEditor();
-        $response = $this->put('/api/v1/annotation-labels/'.$id, [
+        $response = $this->put("{$url}/{$id}", [
             '_token' => Session::token(),
             'confidence' => 0.1,
         ]);
@@ -176,41 +216,51 @@ class AnnotationLabelControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
-        $id = AnnotationLabelTest::create([
+        $this->destroy('api/v1/image-annotation-labels');
+    }
+
+    public function testDestroyLegacy()
+    {
+        $this->destroy('api/v1/annotation-labels');
+    }
+
+    public function destroy($url)
+    {
+        $id = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ])->id;
 
-        $id2 = AnnotationLabelTest::create([
+        $id2 = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->admin()->id,
         ])->id;
 
-        $this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
+        $this->doTestApiRoute('DELETE', "{$url}/{$id}");
 
         $this->beUser();
-        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(403);
 
         $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
         $this->beEditor();
-        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
 
-        $response = $this->delete('/api/v1/annotation-labels/'.$id2);
+        $response = $this->delete("{$url}/{$id2}");
         // not the own label
         $response->assertStatus(403);
 
         $this->assertTrue($this->annotation->labels()->where('id', $id2)->exists());
 
-        $id = AnnotationLabelTest::create([
+        $id = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
@@ -218,36 +268,46 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
 
         $this->beAdmin();
-        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
 
-        $response = $this->delete('/api/v1/annotation-labels/'.$id2);
+        $response = $this->delete("{$url}/{$id2}");
         $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->exists());
     }
 
     public function testDestroyLast()
     {
-        $id = AnnotationLabelTest::create([
+        $this->destroyLast('api/v1/image-annotation-labels');
+    }
+
+    public function testDestroyLastLegacy()
+    {
+        $this->destroyLast('api/v1/annotation-labels');
+    }
+
+    public function destroyLast($url)
+    {
+        $id = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ])->id;
 
-        $id2 = AnnotationLabelTest::create([
+        $id2 = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelChild()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ])->id;
 
         $this->beEditor();
-        $response = $this->delete("/api/v1/annotation-labels/{$id}");
+        $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(200);
 
         $this->assertNotNull($this->annotation->fresh());
 
-        $response = $this->delete("/api/v1/annotation-labels/{$id2}");
+        $response = $this->delete("{$url}/{$id2}");
         $response->assertStatus(200);
         $this->assertNull($this->annotation->fresh());
     }

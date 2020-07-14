@@ -2,16 +2,16 @@
 
 namespace Biigle;
 
-use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Contracts\ImageAnnotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * An annotation is a region of an image that can be labeled by the users.
+ * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-class Annotation extends Model implements AnnotationContract
+class ImageAnnotation extends Model implements AnnotationContract
 {
     use HasPointsAttribute;
 
@@ -152,7 +152,7 @@ class Annotation extends Model implements AnnotationContract
      */
     public function labels()
     {
-        return $this->hasMany(AnnotationLabel::class)->with('label', 'user');
+        return $this->hasMany(ImageAnnotationLabel::class)->with('label', 'user');
     }
 
     /**

@@ -5,9 +5,9 @@ namespace Biigle;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Pivot object for the connection between Annotations and Labels.
+ * Pivot object for the connection between ImageAnnotation and Label.
  */
-class AnnotationLabel extends Model
+class ImageAnnotationLabel extends Model
 {
     /**
      * The attributes excluded from the model's JSON form.
@@ -35,7 +35,7 @@ class AnnotationLabel extends Model
      */
     public function annotation()
     {
-        return $this->belongsTo(Annotation::class);
+        return $this->belongsTo(ImageAnnotation::class);
     }
 
     /**

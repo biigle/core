@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\QueueableEntity;
 /**
  * An annotation model.
  */
-interface Annotation extends QueueableEntity
+interface ImageAnnotation extends QueueableEntity
 {
     /**
      * Get the points array of the annotation.

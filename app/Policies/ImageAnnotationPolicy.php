@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
 use Biigle\Role;
 use Biigle\User;
@@ -11,7 +11,7 @@ use Biigle\Volume;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AnnotationPolicy extends CachedPolicy
+class ImageAnnotationPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
@@ -33,10 +33,10 @@ class AnnotationPolicy extends CachedPolicy
      * Determine if the user may access the given annotation.
      *
      * @param User $user
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @return bool
      */
-    public function access(User $user, Annotation $annotation)
+    public function access(User $user, ImageAnnotation $annotation)
     {
         return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
             $volume = Volume::select('volumes.id')
@@ -64,10 +64,10 @@ class AnnotationPolicy extends CachedPolicy
      * Determine if the user may update the given annotation.
      *
      * @param User $user
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @return bool
      */
-    public function update(User $user, Annotation $annotation)
+    public function update(User $user, ImageAnnotation $annotation)
     {
         return $this->remember("annotation-can-update-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
             // user must be member of one of the projects, the annotation belongs to
@@ -96,11 +96,11 @@ class AnnotationPolicy extends CachedPolicy
      * the user and the annotation belong to.
      *
      * @param  User  $user
-     * @param  Annotation  $annotation
+     * @param  ImageAnnotation  $annotation
      * @param  Label  $label
      * @return bool
      */
-    public function attachLabel(User $user, Annotation $annotation, Label $label)
+    public function attachLabel(User $user, ImageAnnotation $annotation, Label $label)
     {
         return $this->remember("annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label) {
             // Projects, the annotation belongs to *and* the user is editor, expert or admin of.
@@ -134,10 +134,10 @@ class AnnotationPolicy extends CachedPolicy
      * Determine if the user may delete the given annotation.
      *
      * @param User $user
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @return bool
      */
-    public function destroy(User $user, Annotation $annotation)
+    public function destroy(User $user, ImageAnnotation $annotation)
     {
         return $this->remember("annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
             // selects the IDs of the projects, the annotation belongs to
@@ -150,7 +150,7 @@ class AnnotationPolicy extends CachedPolicy
 
             // check if there are labels of other users attached to this annotation
             // this also handles the case correctly when *no* label is attached
-            $hasLabelsFromOthers = AnnotationLabel::where('annotation_id', $annotation->id)
+            $hasLabelsFromOthers = ImageAnnotationLabel::where('annotation_id', $annotation->id)
                 ->where('user_id', '!=', $user->id)
                 ->exists();
 

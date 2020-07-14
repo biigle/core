@@ -6,7 +6,7 @@ use Biigle\Image;
 use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnnotations extends FormRequest
+class StoreImageAnnotations extends FormRequest
 {
     /**
      * Maximum number of new annotations that can be created in a single request.

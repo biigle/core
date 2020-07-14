@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -70,9 +70,9 @@ class DashboardControllerTest extends TestCase
         $items = $controller->annotationsActivityItems($user, 1);
         $this->assertEmpty($items);
 
-        $a = AnnotationLabelTest::create(['user_id' => $user->id]);
-        AnnotationLabelTest::create(['user_id' => $user->id]);
-        AnnotationLabelTest::create(['user_id' => $user->id]);
+        $a = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $items = $controller->annotationsActivityItems($user, 1);
         $this->assertCount(1, $items);
         $this->assertArrayHasKey('item', $items[0]);
@@ -88,7 +88,7 @@ class DashboardControllerTest extends TestCase
         $items = $controller->annotationsActivityItems($user, 3, $a->created_at);
         $this->assertCount(2, $items);
 
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'user_id' => $user->id,
             'annotation_id' => $a->annotation_id,
         ]);

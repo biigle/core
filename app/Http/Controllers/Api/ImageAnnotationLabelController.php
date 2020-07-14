@@ -2,20 +2,19 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
-use Biigle\Http\Requests\StoreAnnotationLabel;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
+use Biigle\Http\Requests\StoreImageAnnotationLabel;
 use Biigle\Label;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Str;
 
-class AnnotationLabelController extends Controller
+class ImageAnnotationLabelController extends Controller
 {
     /**
-     * Shows all labels of the specified annotation.
-     *
      * @api {get} annotations/:id/labels Get all labels
+     * @apiDeprecated use now (#ImageAnnotations:IndexImageAnnotationLabels).)
      * @apiGroup Annotations
      * @apiName IndexAnnotationLabels
      * @apiPermission projectMember
@@ -41,22 +40,52 @@ class AnnotationLabelController extends Controller
      *       }
      *    }
      * ]
+     */
+
+    /**
+     * Shows all labels of the specified annotation.
      *
-     * @param int $id Annotation ID
+     * @api {get} image-annotations/:id/labels Get all labels
+     * @apiGroup ImageAnnotations
+     * @apiName IndexImageAnnotationLabels
+     * @apiPermission projectMember
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
+     *
+     * @apiParam {Number} id The annotation ID.
+     * @apiSuccessExample {json} Success response:
+     * [
+     *    {
+     *       "id": 1,
+     *       "confidence": 0.5,
+     *       "label": {
+     *          "id": 2,
+     *          "name": "Coral",
+     *          "parent_id": 1,
+     *          "color": "0099ff"
+     *       },
+     *       "user": {
+     *          "id": 1,
+     *          "role_id": 2,
+     *          "firstname": "Joe",
+     *          "lastname": "User"
+     *       }
+     *    }
+     * ]
+     *
+     * @param int $id ImageAnnotation ID
      * @return \Illuminate\Http\Response
      */
     public function index($id)
     {
-        $annotation = Annotation::findOrFail($id);
+        $annotation = ImageAnnotation::findOrFail($id);
         $this->authorize('access', $annotation);
 
         return $annotation->labels;
     }
 
     /**
-     * Creates a new label for the specified annotation.
-     *
      * @api {post} annotations/:id/labels Attach a label
+     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotationLabels).)
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
@@ -87,19 +116,55 @@ class AnnotationLabelController extends Controller
      *       "lastname": "User"
      *    }
      * }
+     */
+
+    /**
+     * Creates a new label for the specified annotation.
      *
-     * @param StoreAnnotationLabel $request
+     * @api {post} image-annotations/:id/labels Attach a label
+     * @apiGroup ImageAnnotations
+     * @apiName StoreImageAnnotationLabels
+     * @apiPermission projectEditor
+     * @apiDescription Only labels may be used that belong to a label tree used by one of
+     * the projects, the annotation belongs to.
+     *
+     * @apiParam {Number} id The annotation ID.
+     * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the annotation.
+     * @apiParam (Required arguments) {Number} confidence The level of confidence for this annotation label.
+     * @apiParamExample {String} Request example:
+     * label_id: 1
+     * confidence: 0.75
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 1,
+     *    "confidence": 0.5,
+     *    "label": {
+     *       "id": 2,
+     *       "name": "Coral",
+     *       "parent_id": 1,
+     *       "color": "0099ff",
+     *       "label_tree_id": 1
+     *    },
+     *    "user": {
+     *       "id": 1,
+     *       "role_id": 2,
+     *       "firstname": "Joe",
+     *       "lastname": "User"
+     *    }
+     * }
+     *
+     * @param StoreImageAnnotationLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreAnnotationLabel $request)
+    public function store(StoreImageAnnotationLabel $request)
     {
-        $annotationLabel = new AnnotationLabel;
+        $annotationLabel = new ImageAnnotationLabel;
         $annotationLabel->confidence = $request->input('confidence');
         $annotationLabel->user()->associate($request->user());
         $annotationLabel->label()->associate($request->label);
         $annotationLabel->annotation()->associate($request->annotation);
 
-        $exists = AnnotationLabel::where('user_id', $annotationLabel->user_id)
+        $exists = ImageAnnotationLabel::where('user_id', $annotationLabel->user_id)
             ->where('label_id', $annotationLabel->label_id)
             ->where('annotation_id', $annotationLabel->annotation_id)
             ->exists();
@@ -124,11 +189,24 @@ class AnnotationLabelController extends Controller
     }
 
     /**
-     * Updates the attributes of the specified annotation label.
-     *
      * @api {put} annotation-labels/:id Update a label
+     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotationLabels).)
      * @apiGroup Annotations
      * @apiName UpdateAnnotationLabels
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
+     * @apiParam (Attributes that can be updated) {Number} confidence The level of confidence for this annotation label.
+     * @apiParamExample {String} Request example:
+     * confidence: 0.75
+     */
+
+    /**
+     * Updates the attributes of the specified annotation label.
+     *
+     * @api {put} image-annotation-labels/:id Update a label
+     * @apiGroup ImageAnnotations
+     * @apiName UpdateImageAnnotationLabels
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
@@ -141,7 +219,7 @@ class AnnotationLabelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $annotationLabel = AnnotationLabel::findOrFail($id);
+        $annotationLabel = ImageAnnotationLabel::findOrFail($id);
         $this->authorize('update', $annotationLabel);
 
         $annotationLabel->confidence = $request->input(
@@ -153,11 +231,22 @@ class AnnotationLabelController extends Controller
     }
 
     /**
-     * Deletes the specified annotation label.
-     *
      * @api {delete} annotation-labels/:id Detach a label
+     * @apiDeprecated use now (#ImageAnnotations:DeleteImageAnnotationLabels).)
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
+     * @apiPermission projectEditor
+     * @apiDescription If the detached label is the last label of an annotation, the annotation will be deleted as well!
+     *
+     * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
+     */
+
+    /**
+     * Deletes the specified annotation label.
+     *
+     * @api {delete} image-annotation-labels/:id Detach a label
+     * @apiGroup ImageAnnotations
+     * @apiName DeleteImageAnnotationLabels
      * @apiPermission projectEditor
      * @apiDescription If the detached label is the last label of an annotation, the annotation will be deleted as well!
      *
@@ -168,7 +257,7 @@ class AnnotationLabelController extends Controller
      */
     public function destroy($id)
     {
-        $annotationLabel = AnnotationLabel::with('annotation')->findOrFail($id);
+        $annotationLabel = ImageAnnotationLabel::with('annotation')->findOrFail($id);
         $this->authorize('destroy', $annotationLabel);
 
         $annotationLabel->delete();

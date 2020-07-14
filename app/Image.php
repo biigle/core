@@ -79,7 +79,7 @@ class Image extends Model implements FileContract
      */
     public function annotations()
     {
-        return $this->hasMany(Annotation::class);
+        return $this->hasMany(ImageAnnotation::class);
     }
 
     /**

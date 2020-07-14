@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations\Filters;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Carbon\Carbon;
 
@@ -16,7 +16,7 @@ class AnnotationControllerTest extends ApiTestCase
         $id = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $id]);
-        AnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationTest::create(['image_id' => $image->id]);
         // this image shouldn't appear
         ImageTest::create(['volume_id' => $id, 'filename' => 'b.jpg']);
 
@@ -37,11 +37,11 @@ class AnnotationControllerTest extends ApiTestCase
         $id = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $id]);
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2010-01-01',
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $this->guest()->id,
         ]);
@@ -62,11 +62,11 @@ class AnnotationControllerTest extends ApiTestCase
         $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
             ->assertExactJson([]);
 
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::today(),
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
             'user_id' => $this->guest()->id,
         ]);

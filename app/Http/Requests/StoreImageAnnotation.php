@@ -5,7 +5,7 @@ namespace Biigle\Http\Requests;
 use Biigle\Image;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnnotation extends StoreAnnotationLabel
+class StoreImageAnnotation extends StoreAnnotationLabel
 {
     /**
      * The image on which the annotation should be created.

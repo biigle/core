@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations\Filters;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Carbon\Carbon;
 
@@ -16,13 +16,13 @@ class AnnotationUserControllerTest extends ApiTestCase
         $tid = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $tid]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
-        $label = AnnotationLabelTest::create([
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $label = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
         // image ID should be returned only once even with multiple annotations on it
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
@@ -30,8 +30,8 @@ class AnnotationUserControllerTest extends ApiTestCase
 
         // this image shouldn't appear
         $image2 = ImageTest::create(['volume_id' => $tid, 'filename' => 'b.jpg']);
-        $annotation = AnnotationTest::create(['image_id' => $image2->id]);
-        $label = AnnotationLabelTest::create([
+        $annotation = ImageAnnotationTest::create(['image_id' => $image2->id]);
+        $label = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->admin()->id,
         ]);
@@ -61,11 +61,11 @@ class AnnotationUserControllerTest extends ApiTestCase
         ]);
 
         $image = ImageTest::create(['volume_id' => $tid]);
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
         ]);
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);

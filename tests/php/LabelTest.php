@@ -96,7 +96,7 @@ class LabelTest extends ModelTestCase
 
     public function testIsUsedAnnotationLabel()
     {
-        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
         $this->assertTrue($this->model->isUsed());
         $a->delete();
         $this->assertFalse($this->model->isUsed());
@@ -112,7 +112,7 @@ class LabelTest extends ModelTestCase
 
     public function testCanBeDeleted()
     {
-        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 }

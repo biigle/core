@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
@@ -16,14 +16,14 @@ class VolumeAnnotationLabelControllerTest extends ApiTestCase
 
         $label1 = LabelTest::create();
         $image = ImageTest::create(['volume_id' => $tid]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
-        AnnotationLabelTest::create([
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create([
             'label_id' => $label1->id,
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
         $label2 = LabelTest::create();
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,

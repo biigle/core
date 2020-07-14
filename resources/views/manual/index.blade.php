@@ -103,7 +103,7 @@
                 Image labels are labels that are attached to whole images.
             </p>
 
-            <h3>Annotations</h3>
+            <h3>Image Annotations</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['annotations', 'getting-started'])}}">Getting Started</a>
             </h4>
@@ -112,19 +112,19 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Creating Annotations</a>
+                <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Creating Image Annotations</a>
             </h4>
 
             <p>
-                Learn about all the tools that are available to create new annotations.
+                Learn about all the tools that are available to create new image annotations.
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Editing Annotations</a>
+                <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Editing Image Annotations</a>
             </h4>
 
             <p>
-                Learn about all the tools to modify or delete existing annotations.
+                Learn about all the tools to modify or delete existing image annotations.
             </p>
 
             <h4>

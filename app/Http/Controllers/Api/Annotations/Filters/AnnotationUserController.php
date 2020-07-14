@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api\Annotations\Filters;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -38,9 +38,9 @@ class AnnotationUserController extends Controller
         $session = $volume->getActiveAnnotationSession($user);
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $user);
+            $query = ImageAnnotation::allowedBySession($session, $user);
         } else {
-            $query = Annotation::getQuery();
+            $query = ImageAnnotation::getQuery();
         }
 
         return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
