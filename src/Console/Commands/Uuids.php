@@ -109,11 +109,11 @@ class Uuids extends Command
                 $bar->advance();
 
                 return [
-                        'uuid' => $user->uuid,
-                        'firstname' => Hash::make($user->firstname),
-                        'lastname' => Hash::make($user->lastname),
-                        'email' => Hash::make($user->email),
-                    ];
+                    'uuid' => $user->uuid,
+                    'firstname' => Hash::make($user->firstname),
+                    'lastname' => Hash::make($user->lastname),
+                    'email' => Hash::make($user->email),
+                ];
             })
             ->toJson(JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $bar->finish();

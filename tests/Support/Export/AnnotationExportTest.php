@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
 use Biigle\Modules\Sync\Support\Export\AnnotationExport;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use File;
 use SplFileObject;
 use TestCase;
@@ -12,7 +12,7 @@ class AnnotationExportTest extends TestCase
 {
     public function testGetContent()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $export = new AnnotationExport([$annotation->image->volume_id]);
 
         $path = $export->getContent();
@@ -32,7 +32,7 @@ class AnnotationExportTest extends TestCase
 
     public function testCleanUp()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $export = new AnnotationExport([$annotation->image->volume_id]);
 
         $path = $export->getContent();

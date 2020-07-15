@@ -44,10 +44,10 @@ class VolumeExport extends Export
     {
         $labelTreeIds = DB::table('labels')
             ->whereIn('id', function ($query) {
-                $query->select('annotation_labels.label_id')
-                    ->from('annotation_labels')
-                    ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                    ->join('images', 'images.id', '=', 'annotations.image_id')
+                $query->select('image_annotation_labels.label_id')
+                    ->from('image_annotation_labels')
+                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                    ->join('images', 'images.id', '=', 'image_annotations.image_id')
                     ->whereIn('images.volume_id', $this->ids);
             })
             ->orWhereIn('id', function ($query) {
@@ -67,10 +67,10 @@ class VolumeExport extends Export
         $userExport = $labelTreeExport->getAdditionalExports()[0];
         $userIds = DB::table('users')
             ->whereIn('id', function ($query) {
-                $query->select('annotation_labels.user_id')
-                    ->from('annotation_labels')
-                    ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                    ->join('images', 'images.id', '=', 'annotations.image_id')
+                $query->select('image_annotation_labels.user_id')
+                    ->from('image_annotation_labels')
+                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                    ->join('images', 'images.id', '=', 'image_annotations.image_id')
                     ->whereIn('images.volume_id', $this->ids);
             })
             ->orWhereIn('id', function ($query) {

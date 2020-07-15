@@ -34,18 +34,18 @@ class AnnotationLabelExport extends Export
             'updated_at',
         ]);
 
-        DB::table('annotation_labels')
-            ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->whereIn('images.volume_id', $this->ids)
             ->select([
-                'annotation_labels.id as annotation_label_id',
-                'annotation_labels.annotation_id',
-                'annotation_labels.label_id',
-                'annotation_labels.user_id',
-                'annotation_labels.confidence',
-                'annotation_labels.created_at',
-                'annotation_labels.updated_at',
+                'image_annotation_labels.id as annotation_label_id',
+                'image_annotation_labels.annotation_id',
+                'image_annotation_labels.label_id',
+                'image_annotation_labels.user_id',
+                'image_annotation_labels.confidence',
+                'image_annotation_labels.created_at',
+                'image_annotation_labels.updated_at',
             ])
             ->chunkById(1E+5, function ($rows) use ($csv) {
                 foreach ($rows as $row) {
@@ -58,7 +58,7 @@ class AnnotationLabelExport extends Export
                         $row->updated_at,
                     ]);
                 }
-            }, 'annotation_labels.id', 'annotation_label_id');
+            }, 'image_annotation_labels.id', 'annotation_label_id');
 
         return $this->tmpPath;
     }

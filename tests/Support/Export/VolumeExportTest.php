@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageLabelTest;
 use File;
 use TestCase;
@@ -12,7 +12,7 @@ class VolumeExportTest extends TestCase
 {
     public function testGetContent()
     {
-        $annotationLabel = AnnotationLabelTest::create();
+        $annotationLabel = ImageAnnotationLabelTest::create();
         $annotation = $annotationLabel->annotation;
         $image = $annotation->image;
         $volume = $image->volume;
@@ -33,7 +33,7 @@ class VolumeExportTest extends TestCase
 
     public function testGetAdditionalExports()
     {
-        $annotationLabel = AnnotationLabelTest::create();
+        $annotationLabel = ImageAnnotationLabelTest::create();
         $annotation = $annotationLabel->annotation;
         $image = $annotation->image;
         $imageLabel = ImageLabelTest::create(['image_id' => $image->id]);

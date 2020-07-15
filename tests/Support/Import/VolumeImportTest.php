@@ -8,8 +8,8 @@ use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
@@ -119,8 +119,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetVolumeImportCandidatesAnnotationLabelTree()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $tree = $annotationLabel->label->tree;
         $import = $this->getDefaultImport();
@@ -130,8 +130,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetVolumeImportCandidatesAnnotationLabelLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $label = $annotationLabel->label;
         $import = $this->getDefaultImport();
@@ -141,8 +141,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetVolumeImportCandidatesAnnotationLabelUser()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $user = $annotationLabel->user;
         $import = $this->getDefaultImport();
@@ -201,8 +201,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetUserImportCandidatesAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $users = $import->getUserImportCandidates();
@@ -236,8 +236,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetLabelTreeImportCandidatesAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $tree = $annotationLabel->label->tree;
@@ -269,8 +269,8 @@ class VolumeImportTest extends TestCase
 
     public function testGetLabelImportCandidatesAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $label = $annotationLabel->label;
@@ -307,8 +307,8 @@ class VolumeImportTest extends TestCase
 
     public function testPerform()
     {
-        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
-        $annotationLabel = AnnotationLabelTest::create([
+        $annotation = ImageAnnotationTest::create(['image_id' => $this->image->id]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -485,8 +485,8 @@ class VolumeImportTest extends TestCase
     public function testPerformUserAnnotationLabel()
     {
         $project = ProjectTest::create();
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $user = $annotationLabel->user->fresh();
         $import = $this->getDefaultImport();

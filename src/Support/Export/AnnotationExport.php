@@ -34,16 +34,16 @@ class AnnotationExport extends Export
             'points',
         ]);
 
-        DB::table('annotations')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        DB::table('image_annotations')
+            ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->whereIn('images.volume_id', $this->ids)
             ->select([
-                'annotations.id as annotation_id',
-                'annotations.image_id',
-                'annotations.shape_id',
-                'annotations.created_at',
-                'annotations.updated_at',
-                'annotations.points',
+                'image_annotations.id as annotation_id',
+                'image_annotations.image_id',
+                'image_annotations.shape_id',
+                'image_annotations.created_at',
+                'image_annotations.updated_at',
+                'image_annotations.points',
             ])
             // The chunk size is lower than for the AnnotationLabelExport and the
             // ImageExport because annotations can have a variable (and possibly large)
@@ -59,7 +59,7 @@ class AnnotationExport extends Export
                         $row->points,
                     ]);
                 }
-            }, 'annotations.id', 'annotation_id');
+            }, 'image_annotations.id', 'annotation_id');
 
         return $this->tmpPath;
     }

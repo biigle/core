@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Sync\Jobs;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Jobs\Job;
 use Biigle\Jobs\ProcessNewImages;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
@@ -47,15 +47,15 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
         });
 
         if (class_exists(LargoServiceProvider::class)) {
-            Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+            ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
                 ->whereIn('images.volume_id', $this->ids)
-                ->select('annotations.id')
+                ->select('image_annotations.id')
                 ->chunkById(1000, function ($annotations) {
                     foreach ($annotations as $annotation) {
                         GenerateAnnotationPatch::dispatch($annotation)
                             ->onQueue(config('largo.generate_annotation_patch_queue'));
                     }
-                }, 'annotations.id', 'id');
+                }, 'image_annotations.id', 'id');
         }
     }
 }

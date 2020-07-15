@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
@@ -567,14 +567,14 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    Annotation::insert($annotations);
+                    ImageAnnotation::insert($annotations);
                     $annotations = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        Annotation::insert($annotations);
+        ImageAnnotation::insert($annotations);
         // Try to save memory where we can here. The annotation(labels) arrays can get
         // huge.
         unset($annotations);
@@ -593,11 +593,11 @@ class VolumeImport extends Import
             }
         };
 
-        Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+        ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->whereIn('images.volume_id', array_values($volumeIdMap))
-            ->orderBy('annotations.id', 'asc')
-            ->select('annotations.id')
-            ->chunkById(10000, $handleChunk, 'annotations.id', 'id');
+            ->orderBy('image_annotations.id', 'asc')
+            ->select('image_annotations.id')
+            ->chunkById(10000, $handleChunk, 'image_annotations.id', 'id');
 
         unset($oldIds);
 
@@ -619,13 +619,13 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    AnnotationLabel::insert($annotationLabels);
+                    ImageAnnotationLabel::insert($annotationLabels);
                     $annotationLabels = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        AnnotationLabel::insert($annotationLabels);
+        ImageAnnotationLabel::insert($annotationLabels);
     }
 }
