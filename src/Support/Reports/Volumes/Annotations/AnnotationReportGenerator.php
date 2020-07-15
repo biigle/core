@@ -87,7 +87,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function restrictToExportAreaQuery($query)
     {
-        return $query->whereNotIn('annotations.id', $this->getSkipIds());
+        return $query->whereNotIn('image_annotations.id', $this->getSkipIds());
     }
 
     /**
@@ -102,10 +102,10 @@ class AnnotationReportGenerator extends VolumeReportGenerator
 
         return $query->where(function ($query) use ($session) {
             // take only annotations that belong to the time span...
-            $query->where('annotations.created_at', '>=', $session->starts_at)
-                ->where('annotations.created_at', '<', $session->ends_at)
+            $query->where('image_annotations.created_at', '>=', $session->starts_at)
+                ->where('image_annotations.created_at', '<', $session->ends_at)
                 // ...and to the users of the session
-                ->whereIn('annotation_labels.user_id', function ($query) use ($session) {
+                ->whereIn('image_annotation_labels.user_id', function ($query) use ($session) {
                     $query->select('user_id')
                         ->from('annotation_session_user')
                         ->where('annotation_session_id', $session->id);
@@ -126,9 +126,9 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         // overridden by the subsequent select() in self::initQuery(). If we would add
         // the "select distinct on" **after** the select(), we would get invalid syntax:
         // "select *, distinct on".
-        return $query->whereIn('annotation_labels.id', function ($query) {
+        return $query->whereIn('image_annotation_labels.id', function ($query) {
             return $query->selectRaw('distinct on (annotation_id) id')
-                ->from('annotation_labels')
+                ->from('image_annotation_labels')
                 ->orderBy('annotation_id', 'desc')
                 ->orderBy('id', 'desc')
                 ->orderBy('created_at', 'desc');
@@ -196,11 +196,11 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             }
         };
 
-        DB::table('annotations')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
+        DB::table('image_annotations')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $this->source->id)
-            ->select('annotations.id as id', 'annotations.points')
-            ->chunkById(500, $handleChunk, 'annotations.id', 'id');
+            ->select('image_annotations.id as id', 'image_annotations.points')
+            ->chunkById(500, $handleChunk, 'image_annotations.id', 'id');
 
         return $skip;
     }
@@ -213,7 +213,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function restrictToLabelsQuery($query)
     {
-        return $query->whereIn('annotation_labels.label_id', $this->getOnlyLabels());
+        return $query->whereIn('image_annotation_labels.label_id', $this->getOnlyLabels());
     }
 
     /**
@@ -224,10 +224,10 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function initQuery($columns = [])
     {
-        $query = DB::table('annotation_labels')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
+        $query = DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
+            ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])

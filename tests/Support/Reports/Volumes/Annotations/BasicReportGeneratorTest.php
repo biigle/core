@@ -6,8 +6,8 @@ use App;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
 use Biigle\Modules\Reports\Volume;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
@@ -28,15 +28,15 @@ class BasicReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create();
 
-        $al = AnnotationLabelTest::create();
+        $al = ImageAnnotationLabelTest::create();
         $al->annotation->image->volume_id = $volume->id;
         $al->annotation->image->save();
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $al->annotation_id,
             'label_id' => $al->label_id,
         ]);
 
-        $al2 = AnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
+        $al2 = ImageAnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
         $mock = Mockery::mock();
 
@@ -75,15 +75,15 @@ class BasicReportGeneratorTest extends TestCase
 
         $image = ImageTest::create();
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);

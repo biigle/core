@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
@@ -30,32 +30,32 @@ class AnnotationReportGeneratorTest extends TestCase
         ]);
 
         $annotations = [
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::pointId(),
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::polygonId(),
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::pointId(),
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::polygonId(),
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::circleId(),
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
-            AnnotationTest::create([
+            ImageAnnotationTest::create([
                 'shape_id' => Shape::circleId(),
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
@@ -63,7 +63,7 @@ class AnnotationReportGeneratorTest extends TestCase
         ];
 
         array_map(function ($a) {
-            AnnotationLabelTest::create(['annotation_id' => $a->id]);
+            ImageAnnotationLabelTest::create(['annotation_id' => $a->id]);
         }, $annotations);
 
         $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
@@ -74,7 +74,7 @@ class AnnotationReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($volume);
 
-        $ids = $generator->initQuery(['annotations.id'])->pluck('id')->toArray();
+        $ids = $generator->initQuery(['image_annotations.id'])->pluck('id')->toArray();
         $ids = array_map('intval', $ids);
 
         sort($inside);
@@ -150,28 +150,28 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $session->users()->attach($user);
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'created_at' => '2016-10-04',
         ]);
         $a1->image->volume_id = $session->volume_id;
         $a1->image->save();
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $user->id,
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $a1->image_id,
             'created_at' => '2016-10-05',
         ]);
 
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $user->id,
         ]);
 
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
         ]);
 
@@ -179,28 +179,28 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotationSession' => $session->id,
         ]);
         $generator->setSource($session->volume);
-        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
         $this->assertEquals($al2->id, $results[0]->id);
     }
 
     public function testRestrictToNewestLabelQuery()
     {
-        $a = AnnotationTest::create();
+        $a = ImageAnnotationTest::create();
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'created_at' => '2016-10-05 09:15:00',
             'annotation_id' => $a->id,
         ]);
 
         // Even if there are two labels created in the same second, we only want the
         // newest one (as determined by the ID).
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'created_at' => '2016-10-05 09:16:00',
             'annotation_id' => $a->id,
         ]);
 
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'created_at' => '2016-10-05 09:16:00',
             'annotation_id' => $a->id,
         ]);
@@ -209,24 +209,24 @@ class AnnotationReportGeneratorTest extends TestCase
             'newestLabel' => true,
         ]);
         $generator->setSource($a->image->volume);
-        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
         $this->assertEquals($al3->id, $results[0]->id);
     }
 
     public function testRestrictToLabels()
     {
-        $a1 = AnnotationTest::create();
-        $al1 = AnnotationLabelTest::create(['annotation_id' => $a1->id]);
+        $a1 = ImageAnnotationTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['annotation_id' => $a1->id]);
 
-        $a2 = AnnotationTest::create(['image_id' => $a1->image_id]);
-        $al2 = AnnotationLabelTest::create(['annotation_id' => $a2->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $a1->image_id]);
+        $al2 = ImageAnnotationLabelTest::create(['annotation_id' => $a2->id]);
 
         $generator = new AnnotationReportGenerator([
             'onlyLabels' => [$al1->label_id],
         ]);
         $generator->setSource($a1->image->volume);
-        $results = $generator->initQuery(['annotation_labels.id'])->get();
+        $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
         $this->assertEquals($al1->id, $results[0]->id);
     }

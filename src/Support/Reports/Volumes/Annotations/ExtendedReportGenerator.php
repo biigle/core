@@ -63,11 +63,11 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count, labels.label_tree_id'))
-                ->groupBy('annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+            $query->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count, labels.label_tree_id'))
+                ->groupBy('image_annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
         } else {
-            $query->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))
-                ->groupBy('annotation_labels.label_id', 'images.id');
+            $query->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
+                ->groupBy('image_annotation_labels.label_id', 'images.id');
         }
 
         return $query;

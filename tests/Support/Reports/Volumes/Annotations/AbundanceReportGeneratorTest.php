@@ -6,8 +6,8 @@ use App;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AbundanceReportGenerator;
 use Biigle\Modules\Reports\Volume;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
@@ -36,15 +36,15 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $i1->id])->id,
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
             'label_id' => $root->id,
         ]);
 
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $child->id,
         ]);
 
@@ -92,15 +92,15 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $image = ImageTest::create();
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
         ]);
 
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
@@ -165,20 +165,20 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $i1->id])->id,
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
             'label_id' => $child->id,
         ]);
 
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $child->id,
         ]);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $i2->id])->id,
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
             'label_id' => $childchild->id,
         ]);
 
@@ -232,22 +232,22 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         // Test case where the child label should not be included.
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $root1->id,
         ]);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $root1->id,
         ]);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $child1->id,
@@ -260,22 +260,22 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         // Test case where the root label should not be included but has annotations.
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $root2->id,
         ]);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $root2->id,
         ]);
 
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $child2->id,
@@ -288,8 +288,8 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         // Test case where the root label should not be included but has no annotations.
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $child3->id,
@@ -302,8 +302,8 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         // Test case where the root label should be included but has no annotations.
-        AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create([
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
             ])->id,
             'label_id' => $child4->id,

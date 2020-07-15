@@ -68,8 +68,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
     protected function query()
     {
         $query = $this->initQuery([
-                'annotation_labels.id as annotation_label_id',
-                'annotation_labels.label_id',
+                'image_annotation_labels.id as annotation_label_id',
+                'image_annotation_labels.label_id',
                 'labels.name as label_name',
                 'users.id as user_id',
                 'users.firstname',
@@ -80,13 +80,13 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 'images.lat as latitude',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',
-                'annotations.points',
+                'image_annotations.points',
                 'images.attrs',
-                'annotations.id as annotation_id',
+                'image_annotations.id as annotation_id',
             ])
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->join('users', 'annotation_labels.user_id', '=', 'users.id')
-            ->orderBy('annotation_labels.id');
+            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
+            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
+            ->orderBy('image_annotation_labels.id');
 
         return $query;
     }

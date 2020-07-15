@@ -27,7 +27,7 @@ class ProjectReportsController extends Controller
 
         $types = ReportType::when($hasVolume, function ($query) {
                 $query->where('name', 'like', 'Annotations%')
-                    ->orWhere('name', 'like', 'ImageLabels%');
+                        ->orWhere('name', 'like', 'ImageLabels%');
             })
             ->when($hasVideo, function ($query) {
                 $query->orWhere('name', 'like', 'VideoAnnotations%');

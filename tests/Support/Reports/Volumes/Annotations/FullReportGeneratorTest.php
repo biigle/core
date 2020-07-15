@@ -7,8 +7,8 @@ use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\FullReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
@@ -35,7 +35,7 @@ class FullReportGeneratorTest extends TestCase
             'label_tree_id' => $root->label_tree_id,
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $child->id,
         ]);
         $al->annotation->image->volume_id = $volume->id;
@@ -87,15 +87,15 @@ class FullReportGeneratorTest extends TestCase
             'attrs' => ['some' => 'attrs'],
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);

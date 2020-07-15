@@ -76,15 +76,15 @@ class AreaReportGenerator extends AnnotationReportGenerator
     protected function query()
     {
         $query = $this->initQuery([
-                'annotations.id as annotation_id',
+                'image_annotations.id as annotation_id',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',
-                'annotation_labels.label_id',
+                'image_annotation_labels.label_id',
                 'labels.name as label_name',
-                'annotations.image_id',
-                'annotations.points',
+                'image_annotations.image_id',
+                'image_annotations.points',
             ])
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
+            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             // We can only compute the area from annotations that have an area.
             ->whereIn('shapes.id', [
                 Shape::circleId(),
@@ -93,7 +93,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 Shape::ellipseId(),
                 Shape::lineId(),
             ])
-            ->orderBy('annotation_labels.id');
+            ->orderBy('image_annotation_labels.id');
 
         return $query;
     }

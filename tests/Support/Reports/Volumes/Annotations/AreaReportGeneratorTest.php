@@ -6,8 +6,8 @@ use App;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AreaReportGenerator;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
@@ -51,13 +51,13 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         // Should not be included.
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::pointId(),
             'image_id' => $image->id,
             'points' => [100, 100],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -95,16 +95,16 @@ class AreaReportGeneratorTest extends TestCase
             'volume_id' => $volume->id,
         ]);
 
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::circleId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100],
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -154,13 +154,13 @@ class AreaReportGeneratorTest extends TestCase
             'volume_id' => $volume->id,
         ]);
 
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::rectangleId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -210,13 +210,13 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         // It's a simple parallelogram so the area can be easily calculated manually.
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::polygonId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100, 200, 200, 100, 200, 0],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -266,13 +266,13 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         // It's a simple parallelogram so the area can be easily calculated manually.
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::ellipseId(),
             'image_id' => $image->id,
             'points' => [0, 100, 100, 100, 50, 200, 50, 0],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -322,13 +322,13 @@ class AreaReportGeneratorTest extends TestCase
             'attrs' => ['laserpoints' => ['area' => 1], 'width' => 1000, 'height' => 1000],
         ]);
 
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::rectangleId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 
@@ -374,17 +374,17 @@ class AreaReportGeneratorTest extends TestCase
 
         $image = ImageTest::create();
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'shape_id' => Shape::rectangleId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
@@ -452,13 +452,13 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         // It's a simple open box so the length can be easily calculated manually.
-        $a = AnnotationTest::create([
+        $a = ImageAnnotationTest::create([
             'shape_id' => Shape::lineId(),
             'image_id' => $image->id,
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
         ]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
         ]);
 

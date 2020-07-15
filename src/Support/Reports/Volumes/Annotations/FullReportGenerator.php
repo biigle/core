@@ -62,14 +62,14 @@ class FullReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->initQuery([
                 'images.filename',
-                'annotations.id as annotation_id',
-                'annotation_labels.label_id',
+                'image_annotations.id as annotation_id',
+                'image_annotation_labels.label_id',
                 'shapes.name as shape_name',
-                'annotations.points',
+                'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->orderBy('annotations.id');
+            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
+            ->orderBy('image_annotations.id');
 
         return $query;
     }

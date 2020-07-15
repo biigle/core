@@ -15,10 +15,10 @@
             The following sections describe the different types of volume reports but, per definition, apply for project reports as well.
         </p>
 
-        <h3>Annotation reports</h3>
+        <h3>Image annotation reports</h3>
         <h4><a name="annotation-basic-report"></a>Basic</h4>
         <p>
-            The basic annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree, there will be one plot for each label tree that was used.
+            The basic image annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree, there will be one plot for each label tree that was used.
         </p>
         <p>
             Example plot:
@@ -35,7 +35,7 @@
         <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
-            The extended annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
+            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
         </p>
         <p>
             For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
@@ -80,7 +80,7 @@ Animalia
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
-            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well.
+            The image annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well.
         </p>
         <div class="panel panel-danger">
             <div class="panel-body text-danger">
@@ -116,7 +116,7 @@ Animalia
         <h4><a name="annotation-full-report"></a>Full</h4>
 
         <p>
-            The full annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels.
+            The full image annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels.
         </p>
         <p>
             The columns are as follows:
@@ -156,7 +156,7 @@ Animalia
 
         <h4><a name="annotation-csv-report"></a>CSV</h4>
         <p>
-            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the volume ID and the volume name (cleaned up so it can be a file name) separated by an underscore. If the annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
+            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the volume ID and the volume name (cleaned up so it can be a file name) separated by an underscore. If the image annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
         </p>
         <p>
             Each CSV file contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The first row always contains the column headers. The columns are as follows:
