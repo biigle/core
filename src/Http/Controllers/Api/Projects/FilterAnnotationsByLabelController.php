@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Project;
 use Illuminate\Http\Request;
 
@@ -33,20 +33,20 @@ class FilterAnnotationsByLabelController extends Controller
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
-        return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
+        return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->whereIn('images.volume_id', function ($query) use ($pid) {
                 $query->select('volume_id')
                     ->from('project_volume')
                     ->where('project_id', $pid);
             })
-            ->where('annotation_labels.label_id', $lid)
+            ->where('image_annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
-            ->select('images.uuid', 'annotations.id')
+            ->select('images.uuid', 'image_annotations.id')
             ->distinct()
-            ->orderBy('annotations.id', 'desc')
-            ->pluck('images.uuid', 'annotations.id');
+            ->orderBy('image_annotations.id', 'desc')
+            ->pluck('images.uuid', 'image_annotations.id');
     }
 }

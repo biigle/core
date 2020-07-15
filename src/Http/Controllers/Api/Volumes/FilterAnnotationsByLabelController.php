@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -36,26 +36,26 @@ class FilterAnnotationsByLabelController extends Controller
         $session = $volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $request->user());
+            $query = ImageAnnotation::allowedBySession($session, $request->user());
         } else {
-            $query = Annotation::query();
+            $query = ImageAnnotation::query();
         }
 
-        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
+        return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $vid)
-            ->where('annotation_labels.label_id', $lid)
+            ->where('image_annotation_labels.label_id', $lid)
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
-                    $query->where('annotation_labels.user_id', $request->user()->id);
+                    $query->where('image_annotation_labels.user_id', $request->user()->id);
                 }
             })
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
-            ->select('images.uuid', 'annotations.id')
+            ->select('images.uuid', 'image_annotations.id')
             ->distinct()
-            ->orderBy('annotations.id', 'desc')
-            ->pluck('images.uuid', 'annotations.id');
+            ->orderBy('image_annotations.id', 'desc')
+            ->pluck('images.uuid', 'image_annotations.id');
     }
 }

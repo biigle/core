@@ -4,14 +4,14 @@ namespace Biigle\Tests\Modules\Largo\Observers;
 
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use TestCase;
 
 class AnnotationObserverTest extends TestCase
 {
     public function testDeleting()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $this->expectsJobs(RemoveAnnotationPatches::class);
         $annotation->delete();
     }
@@ -19,12 +19,12 @@ class AnnotationObserverTest extends TestCase
     public function testCreated()
     {
         $this->expectsJobs(GenerateAnnotationPatch::class);
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
     }
 
     public function testSaved()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $this->expectsJobs(GenerateAnnotationPatch::class);
         $annotation->save();
     }

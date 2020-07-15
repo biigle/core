@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Volume;
 use Illuminate\Http\Request;
@@ -39,9 +39,9 @@ class AnnotationExamplesController extends Controller
         $session = $volume->getActiveAnnotationSession($user);
 
         // Get same, sibling or parent labels that have annotations in the volume.
-        $query = Label::join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        $query = Label::join('image_annotation_labels', 'image_annotation_labels.label_id', '=', 'labels.id')
+            ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $vid)
             ->where('labels.label_tree_id', $label->label_tree_id)
             ->where(function ($query) use ($label) {
@@ -51,7 +51,7 @@ class AnnotationExamplesController extends Controller
             ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
 
         if ($session) {
-            with(new Annotation)->scopeAllowedBySession($query, $session, $user);
+            with(new ImageAnnotation)->scopeAllowedBySession($query, $session, $user);
         }
 
         $labelsToCheck = $query->get();
@@ -78,21 +78,21 @@ class AnnotationExamplesController extends Controller
         }
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $user);
+            $query = ImageAnnotation::allowedBySession($session, $user);
         } else {
-            $query = Annotation::getQuery();
+            $query = ImageAnnotation::getQuery();
         }
 
         // Get the example annotations from the similar label.
-        $annotations = $query->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        $annotations = $query->join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $vid)
-            ->where('annotation_labels.label_id', $closestLabel->id)
+            ->where('image_annotation_labels.label_id', $closestLabel->id)
             ->when(!is_null($take), function ($query) use ($take) {
-                return $query->orderBy('annotations.created_at', 'desc')
+                return $query->orderBy('image_annotations.created_at', 'desc')
                     ->take($take);
             })
-            ->pluck('images.uuid', 'annotations.id');
+            ->pluck('images.uuid', 'image_annotations.id');
 
         return [
             'label' => $closestLabel,

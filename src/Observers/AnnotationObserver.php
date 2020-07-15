@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Observers;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
@@ -11,9 +11,9 @@ class AnnotationObserver
     /**
      * Handle the event of creating/saving a single annotation.
      *
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      */
-    public function saved(Annotation $annotation)
+    public function saved(ImageAnnotation $annotation)
     {
         GenerateAnnotationPatch::dispatch($annotation)
             ->onQueue(config('largo.generate_annotation_patch_queue'))
@@ -23,10 +23,10 @@ class AnnotationObserver
     /**
      * Handle the event of deleting a single annotation.
      *
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @return bool
      */
-    public function deleting(Annotation $annotation)
+    public function deleting(ImageAnnotation $annotation)
     {
         RemoveAnnotationPatches::dispatch([$annotation->id => $annotation->image->uuid])
             ->onQueue(config('largo.remove_annotation_patches_queue'));

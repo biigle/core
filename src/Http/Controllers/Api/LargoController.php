@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
 use Carbon\Carbon;
 use DB;
@@ -50,15 +50,15 @@ class LargoController extends Controller
     /**
      * Check if all given annotations belong to the given volumes.
      *
-     * @param array $annotations Annotation IDs
+     * @param array $annotations ImageAnnotation IDs
      * @param array $volumes Volume IDs
      *
      * @return bool
      */
     protected function anotationsBelongToVolumes($annotations, $volumes)
     {
-        return !Annotation::join('images', 'annotations.image_id', '=', 'images.id')
-            ->whereIn('annotations.id', $annotations)
+        return !ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+            ->whereIn('image_annotations.id', $annotations)
             ->whereNotIn('images.volume_id', $volumes)
             ->exists();
     }
@@ -146,7 +146,7 @@ class LargoController extends Controller
     protected function applyDismissedLabels($user, $dismissed, $force)
     {
         foreach ($dismissed as $labelId => $annotationIds) {
-            AnnotationLabel::whereIn('annotation_id', $annotationIds)
+            ImageAnnotationLabel::whereIn('annotation_id', $annotationIds)
                 ->when(!$force, function ($query) use ($user) {
                     return $query->where('user_id', $user->id);
                 })
@@ -172,7 +172,7 @@ class LargoController extends Controller
 
         // Get all labels that are already there exactly like they should be created
         // in the next step.
-        $alreadyThere = AnnotationLabel::select('annotation_id', 'label_id')
+        $alreadyThere = ImageAnnotationLabel::select('annotation_id', 'label_id')
             ->where('user_id', $user->id)
             ->where(function ($query) use ($changed) {
                 foreach ($changed as $labelId => $annotationIds) {
@@ -185,7 +185,7 @@ class LargoController extends Controller
             ->get();
 
         $annotationIds = array_unique(array_merge(...$changed));
-        $existingAnnotations = Annotation::whereIn('id', $annotationIds)
+        $existingAnnotations = ImageAnnotation::whereIn('id', $annotationIds)
             ->pluck('id')
             ->toArray();
 
@@ -221,6 +221,6 @@ class LargoController extends Controller
             }
         }
 
-        AnnotationLabel::insert($newAnnotationLabels);
+        ImageAnnotationLabel::insert($newAnnotationLabels);
     }
 }

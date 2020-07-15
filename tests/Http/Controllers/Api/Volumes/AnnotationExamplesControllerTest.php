@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Carbon\Carbon;
@@ -44,26 +44,26 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $al0 = AnnotationLabelTest::create([
+        $al0 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'label_id' => $parentLabel->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $siblingLabel->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'label_id' => $separateLabel->id,
             'annotation_id' => $annotation->id,
         ]);
         // annotation from other volume should not appear
-        AnnotationTest::create();
+        ImageAnnotationTest::create();
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
 
@@ -98,33 +98,33 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::today(),
         ]);
 
-        $a3 = AnnotationTest::create([
+        $a3 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
         ]);
 
-        $l1 = AnnotationLabelTest::create([
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
         ]);
 
-        $l2 = AnnotationLabelTest::create([
+        $l2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'label_id' => $l1->label_id,
             'user_id' => $this->editor()->id,
         ]);
 
-        $l3 = AnnotationLabelTest::create([
+        $l3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'label_id' => $l1->label_id,
             'user_id' => $this->admin()->id,
@@ -188,9 +188,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $otherLabel->id,
             'annotation_id' => $annotation->id,
         ]);

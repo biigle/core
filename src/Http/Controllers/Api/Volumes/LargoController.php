@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
@@ -81,11 +81,11 @@ class LargoController extends Controller
         $this->applySave($user, $dismissed, $changed, $force);
 
         // Remove annotations that now have no more labels attached.
-        $toDeleteQuery = Annotation::whereIn('annotations.id', $affectedAnnotations)
+        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
             ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'annotations.image_id')
-            ->pluck('images.uuid', 'annotations.id')
+        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->pluck('images.uuid', 'image_annotations.id')
             ->toArray();
 
         if (!empty($toDeleteArgs)) {

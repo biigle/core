@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Labels;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
@@ -14,12 +14,12 @@ class AnnotationsControllerTest extends ApiTestCase
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $label = LabelTest::create();
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
-        $a2 = AnnotationTest::create(['image_id' => $image->id]);
-        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a2->id]);
-        $a3 = AnnotationTest::create(['image_id' => $image->id]);
-        AnnotationLabelTest::create(['annotation_id' => $a3->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a2->id]);
+        $a3 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
         $this->doTestApiRoute('GET', "/api/v1/labels/{$label->id}/annotations");
 
@@ -50,9 +50,9 @@ class AnnotationsControllerTest extends ApiTestCase
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $label = LabelTest::create();
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
-        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
 
         $this->beGuest();
         $this->get("/api/v1/labels/{$label->id}/annotations")

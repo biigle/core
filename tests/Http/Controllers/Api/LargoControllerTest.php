@@ -4,8 +4,8 @@ namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Exception;
@@ -15,14 +15,14 @@ class LargoControllerTest extends ApiTestCase
     public function testSaveChangedAlreadyExists()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $l1 = AnnotationLabelTest::create([
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
         ]);
-        $l2 = AnnotationLabelTest::create([
+        $l2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelChild()->id,
@@ -45,8 +45,8 @@ class LargoControllerTest extends ApiTestCase
     public function testSaveChangedDuplicate()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        $l1 = AnnotationLabelTest::create([
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
@@ -71,16 +71,16 @@ class LargoControllerTest extends ApiTestCase
     public function testAnnotationMeanwhileDeleted()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        $a2 = AnnotationTest::create(['image_id' => $image->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $l1 = AnnotationLabelTest::create([
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
         ]);
 
-        $l2 = AnnotationLabelTest::create([
+        $l2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
@@ -105,17 +105,17 @@ class LargoControllerTest extends ApiTestCase
     public function testLabelMeanwhileDeleted()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        $a2 = AnnotationTest::create(['image_id' => $image->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
         $otherLabel = LabelTest::create(['label_tree_id' => $this->labelRoot()->label_tree_id]);
 
-        $l1 = AnnotationLabelTest::create([
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
         ]);
 
-        $l2 = AnnotationLabelTest::create([
+        $l2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
@@ -141,8 +141,8 @@ class LargoControllerTest extends ApiTestCase
     public function testErrorRollbackDismissed()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        $l1 = AnnotationLabelTest::create([
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,
@@ -170,8 +170,8 @@ class LargoControllerTest extends ApiTestCase
     public function testErrorRollbackChanged()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        $l1 = AnnotationLabelTest::create([
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
             'label_id' => $this->labelRoot()->id,

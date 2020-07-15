@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Illuminate\Http\Request;
 
@@ -28,15 +28,15 @@ class AnnotationsController extends Controller
         $label = Label::findOrFail($id);
         $this->validate($request, ['take' => 'integer']);
 
-        return Annotation::visibleFor($request->user())
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        return ImageAnnotation::visibleFor($request->user())
+            ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->withLabel($label)
             ->when($request->filled('take'), function ($query) use ($request) {
                 return $query->take($request->input('take'));
             })
-            ->select('images.uuid', 'annotations.id')
+            ->select('images.uuid', 'image_annotations.id')
             ->distinct()
-            ->orderBy('annotations.id', 'desc')
-            ->pluck('images.uuid', 'annotations.id');
+            ->orderBy('image_annotations.id', 'desc')
+            ->pluck('images.uuid', 'image_annotations.id');
     }
 }

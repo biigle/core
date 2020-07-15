@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use File;
 use Queue;
 use Storage;
@@ -15,7 +15,7 @@ class RemoveAnnotationPatchesTest extends TestCase
     {
         Storage::fake('test');
         config(['largo.patch_storage_disk' => 'test']);
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $path = "{$prefix}/{$annotation->id}.jpg";
         Storage::disk('test')->put($path, 'test');
@@ -30,8 +30,8 @@ class RemoveAnnotationPatchesTest extends TestCase
         Queue::fake();
         Storage::fake('test');
         config(['largo.patch_storage_disk' => 'test']);
-        $annotation = AnnotationTest::create();
-        $annotation2 = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
+        $annotation2 = ImageAnnotationTest::create();
 
         $args = [
             $annotation->id => $annotation->image->uuid,
