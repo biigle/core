@@ -99,7 +99,9 @@ export default new Vue({
                 return;
             }
 
-            this.pressedKeysArray.push(e.key.toLowerCase());
+            if (!e.repeat) {
+                this.pressedKeysArray.push(e.key.toLowerCase());
+            }
             // Sometimes a modifier key is still pressed when the page is loaded (e.g.
             // if the user travelled back in browser history using the keys). Check for
             // meta keys on each keypress to get the correct set of pressed keys in these
