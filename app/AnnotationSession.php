@@ -67,7 +67,7 @@ class AnnotationSession extends Model
     public function getImageAnnotations(Image $image, User $user)
     {
         $query = ImageAnnotation::allowedBySession($this, $user)
-            ->where('annotations.image_id', $image->id);
+            ->where('image_annotations.image_id', $image->id);
 
         /*
          * If both hide_other_users_annotations and hide_own_annotations is true,
@@ -125,9 +125,9 @@ class AnnotationSession extends Model
             // and have a label by one of the members of this session
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->whereIn('annotation_labels.user_id', function ($query) {
+                        ->from('image_annotation_labels')
+                        ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                        ->whereIn('image_annotation_labels.user_id', function ($query) {
                             $query->select('user_id')
                                 ->from('annotation_session_user')
                                 ->where('annotation_session_id', $this->id);

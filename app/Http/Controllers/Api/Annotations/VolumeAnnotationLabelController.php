@@ -49,10 +49,10 @@ class VolumeAnnotationLabelController extends Controller
                 // take only labels that are used in annotations of this volume
                 $query->select(DB::raw(1))
                     ->from('images')
-                    ->join('annotations', 'images.id', '=', 'annotations.image_id')
-                    ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                    ->join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
+                    ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                     ->where('images.volume_id', $id)
-                    ->whereRaw('annotation_labels.label_id = labels.id');
+                    ->whereRaw('image_annotation_labels.label_id = labels.id');
             })
             ->get();
     }

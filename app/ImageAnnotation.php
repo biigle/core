@@ -48,10 +48,10 @@ class ImageAnnotation extends Model implements AnnotationContract
             return $query;
         }
 
-        return $query->whereIn('annotations.id', function ($query) use ($user) {
-            $query->select('annotations.id')
-                ->from('annotations')
-                ->join('images', 'images.id', '=', 'annotations.image_id')
+        return $query->whereIn('image_annotations.id', function ($query) use ($user) {
+            $query->select('image_annotations.id')
+                ->from('image_annotations')
+                ->join('images', 'images.id', '=', 'image_annotations.image_id')
                 ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
                 ->whereIn('project_volume.project_id', function ($query) use ($user) {
                     $query->select('project_id')
@@ -71,9 +71,9 @@ class ImageAnnotation extends Model implements AnnotationContract
      */
     public function scopeWithLabel($query, Label $label)
     {
-        return $query->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->where('annotation_labels.label_id', $label->id)
-            ->select('annotations.*');
+        return $query->join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->where('image_annotation_labels.label_id', $label->id)
+            ->select('image_annotations.*');
     }
 
     /**
@@ -89,26 +89,26 @@ class ImageAnnotation extends Model implements AnnotationContract
         if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
 
             // take only annotations of this session
-            $query->where('annotations.created_at', '>=', $session->starts_at)
-                ->where('annotations.created_at', '<', $session->ends_at)
+            $query->where('image_annotations.created_at', '>=', $session->starts_at)
+                ->where('image_annotations.created_at', '<', $session->ends_at)
                 // which have at least one label of the current user
                 ->whereExists(function ($query) use ($user) {
                     $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->where('annotation_labels.user_id', $user->id);
+                        ->from('image_annotation_labels')
+                        ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                        ->where('image_annotation_labels.user_id', $user->id);
                 });
         } elseif ($session->hide_own_annotations) {
             $query->where(function ($query) use ($session, $user) {
                 // take all annotations of this session
-                $query->where('annotations.created_at', '>=', $session->starts_at)
-                    ->where('annotations.created_at', '<', $session->ends_at)
+                $query->where('image_annotations.created_at', '>=', $session->starts_at)
+                    ->where('image_annotations.created_at', '<', $session->ends_at)
                     // or older annotations with at least one label of another user
                     ->orWhereExists(function ($query) use ($user) {
                         $query->select(DB::raw(1))
-                            ->from('annotation_labels')
-                            ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                            ->where('annotation_labels.user_id', '!=', $user->id);
+                            ->from('image_annotation_labels')
+                            ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                            ->where('image_annotation_labels.user_id', '!=', $user->id);
                     });
             });
         } elseif ($session->hide_other_users_annotations) {
@@ -116,9 +116,9 @@ class ImageAnnotation extends Model implements AnnotationContract
             // take only annotations with labels of the current user
             $query->whereExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
-                    ->from('annotation_labels')
-                    ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                    ->where('annotation_labels.user_id', $user->id);
+                    ->from('image_annotation_labels')
+                    ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                    ->where('image_annotation_labels.user_id', $user->id);
             });
         }
 

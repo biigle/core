@@ -55,8 +55,8 @@ class LabelTreeMergeController extends Controller
             ->where(function ($query) {
                 return $query->whereExists(function ($query) {
                     return $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('labels.id = annotation_labels.label_id');
+                        ->from('image_annotation_labels')
+                        ->whereRaw('labels.id = image_annotation_labels.label_id');
                 })
                 ->orWhereExists(function ($query) {
                     return $query->select(DB::raw(1))

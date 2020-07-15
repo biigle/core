@@ -194,19 +194,19 @@ class UsersController extends Controller
         $totalAnnotationLabels = ImageAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalAnnotationLabels > 0) {
-            $annotationQuery = ImageAnnotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                ->where('annotation_labels.user_id', $user->id);
+            $annotationQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                ->where('image_annotation_labels.user_id', $user->id);
 
-            $totalAnnotations = (clone $annotationQuery)->distinct()->count('annotations.id');
+            $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
 
             $labelsPerAnnotation = round($totalAnnotationLabels / $totalAnnotations);
 
             $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
             $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
-            $recentAnnotations = $annotationQuery->orderBy('annotation_labels.created_at', 'desc')
+            $recentAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
-                ->select('annotation_labels.created_at', 'annotations.id')
+                ->select('image_annotation_labels.created_at', 'image_annotations.id')
                 ->get();
         } else {
             $totalAnnotations = 0;

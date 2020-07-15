@@ -42,9 +42,9 @@ class ImageAnnotationLabelController extends Controller
             $query = ImageAnnotation::getQuery();
         }
 
-        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                ->where('annotation_labels.label_id', $lid)
-                ->join('images', 'annotations.image_id', '=', 'images.id')
+        return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                ->where('image_annotation_labels.label_id', $lid)
+                ->join('images', 'image_annotations.image_id', '=', 'images.id')
                 ->where('images.volume_id', $tid)
                 ->groupBy('images.id')
                 ->pluck('images.id');

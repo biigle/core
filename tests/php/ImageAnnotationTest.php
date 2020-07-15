@@ -317,9 +317,9 @@ class ImageAnnotationTest extends ModelTestCase
             'image_id' => $image->id,
         ]);
 
-        $this->assertEmpty(ImageAnnotation::visibleFor($otherUser)->pluck('annotations.id'));
-        $this->assertTrue(ImageAnnotation::visibleFor($user)->where('annotations.id', $a->id)->exists());
-        $this->assertTrue(ImageAnnotation::visibleFor($admin)->where('annotations.id', $a->id)->exists());
+        $this->assertEmpty(ImageAnnotation::visibleFor($otherUser)->pluck('image_annotations.id'));
+        $this->assertTrue(ImageAnnotation::visibleFor($user)->where('image_annotations.id', $a->id)->exists());
+        $this->assertTrue(ImageAnnotation::visibleFor($admin)->where('image_annotations.id', $a->id)->exists());
     }
 
     public function testScopeWithLabel()

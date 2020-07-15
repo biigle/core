@@ -109,13 +109,13 @@ class DashboardController extends Controller
      */
     public function annotationsActivityItems(User $user, $limit = 3, $newerThan = null)
     {
-        return Image::join('annotations', 'images.id', '=', 'annotations.image_id')
-            ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->where('annotation_labels.user_id', $user->id)
+        return Image::join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
+            ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->where('image_annotation_labels.user_id', $user->id)
             ->when(!is_null($newerThan), function ($query) use ($newerThan) {
-                $query->where('annotation_labels.created_at', '>', $newerThan);
+                $query->where('image_annotation_labels.created_at', '>', $newerThan);
             })
-            ->selectRaw('images.*, max(annotation_labels.created_at) as annotation_labels_created_at')
+            ->selectRaw('images.*, max(image_annotation_labels.created_at) as annotation_labels_created_at')
             ->groupBy('images.id')
             ->orderBy('annotation_labels_created_at', 'desc')
             ->limit($limit)

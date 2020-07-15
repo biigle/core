@@ -41,7 +41,7 @@ class AnnotationController extends Controller
             $query = ImageAnnotation::getQuery();
         }
 
-        return $query->join('images', 'images.id', '=', 'annotations.image_id')
+        return $query->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $id)
             ->groupBy('images.id')
             ->pluck('images.id');

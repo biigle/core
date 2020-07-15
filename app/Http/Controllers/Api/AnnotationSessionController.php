@@ -97,9 +97,9 @@ class AnnotationSessionController extends Controller
                     $wouldLooseAnnotations = $session->annotations()
                         ->whereExists(function ($query) use ($lostUsers) {
                             $query->select(DB::raw(1))
-                                ->from('annotation_labels')
-                                ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                                ->whereIn('annotation_labels.user_id', $lostUsers);
+                                ->from('image_annotation_labels')
+                                ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
+                                ->whereIn('image_annotation_labels.user_id', $lostUsers);
                         })
                         ->exists();
 
