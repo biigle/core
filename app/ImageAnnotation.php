@@ -95,7 +95,7 @@ class ImageAnnotation extends Model implements AnnotationContract
                 ->whereExists(function ($query) use ($user) {
                     $query->select(DB::raw(1))
                         ->from('image_annotation_labels')
-                        ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                        ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
                         ->where('image_annotation_labels.user_id', $user->id);
                 });
         } elseif ($session->hide_own_annotations) {
@@ -107,7 +107,7 @@ class ImageAnnotation extends Model implements AnnotationContract
                     ->orWhereExists(function ($query) use ($user) {
                         $query->select(DB::raw(1))
                             ->from('image_annotation_labels')
-                            ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                            ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
                             ->where('image_annotation_labels.user_id', '!=', $user->id);
                     });
             });
@@ -117,7 +117,7 @@ class ImageAnnotation extends Model implements AnnotationContract
             $query->whereExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
                     ->from('image_annotation_labels')
-                    ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                    ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
                     ->where('image_annotation_labels.user_id', $user->id);
             });
         }
@@ -152,7 +152,8 @@ class ImageAnnotation extends Model implements AnnotationContract
      */
     public function labels()
     {
-        return $this->hasMany(ImageAnnotationLabel::class)->with('label', 'user');
+        return $this->hasMany(ImageAnnotationLabel::class, 'annotation_id')
+            ->with('label', 'user');
     }
 
     /**

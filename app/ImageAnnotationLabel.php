@@ -35,7 +35,7 @@ class ImageAnnotationLabel extends Model
      */
     public function annotation()
     {
-        return $this->belongsTo(ImageAnnotation::class);
+        return $this->belongsTo(ImageAnnotation::class, 'annotation_id');
     }
 
     /**

@@ -126,7 +126,7 @@ class AnnotationSession extends Model
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('image_annotation_labels')
-                        ->whereRaw('image_annotation_labels.annotation_id = annotations.id')
+                        ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
                         ->whereIn('image_annotation_labels.user_id', function ($query) {
                             $query->select('user_id')
                                 ->from('annotation_session_user')

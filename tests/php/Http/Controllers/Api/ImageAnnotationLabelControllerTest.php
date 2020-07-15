@@ -176,7 +176,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         $this->update('api/v1/annotation-labels');
     }
 
-    public function update()
+    public function update($url)
     {
         $annotationLabel = ImageAnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,

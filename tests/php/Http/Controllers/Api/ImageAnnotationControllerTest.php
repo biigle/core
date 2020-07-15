@@ -22,15 +22,15 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->image = ImageTest::create([
             'volume_id' => $this->volume()->id,
         ]);
+
+        $this->annotation = ImageAnnotationTest::create([
+            'image_id' => $this->image->id,
+            'points' => [10, 20, 30, 40],
+        ]);
     }
 
     public function testIndex()
     {
-        $annotation = ImageAnnotationTest::create([
-            'image_id' => $this->image->id,
-            'points' => [10, 20, 30, 40],
-        ]);
-
         $label = LabelTest::create([
             'name' => 'My label',
             'color' => 'bada55',
@@ -38,7 +38,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
-            'annotation_id' => $annotation->id,
+            'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);
 
@@ -153,7 +153,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->showAnnotationSession('api/v1/annotations');
     }
 
-    public function showAnnotationSession()
+    public function showAnnotationSession($url)
     {
         $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
@@ -179,6 +179,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
     public function testStore()
     {
+        $this->annotation->delete();
         $label = LabelTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/images/{$this->image->id}/annotations");
