@@ -101,7 +101,7 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
         $this->assertEquals($this->labelRoot()->id, $annotation->labels()->first()->label_id);
     }
 
-     public function testStoreValidation()
+    public function testStoreValidation()
     {
         $this->storeValidation('api/v1/image-annotations');
     }

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\StoreImageAnnotationLabel;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
-use Biigle\Http\Requests\StoreImageAnnotationLabel;
 use Biigle\Label;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;

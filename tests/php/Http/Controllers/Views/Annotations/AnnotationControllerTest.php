@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Views\Annotations;
 
 use ApiTestCase;
-use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Carbon\Carbon;
 

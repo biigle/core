@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Role;
-use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
