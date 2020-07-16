@@ -6,9 +6,7 @@ use Biigle\Traits\HasConstantInstances;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Volumes can contain different types of image-series. One type would
- * be a time-series of a static camera taking photos in regular intervals
- * for example. Another type coud be images from a moving camera.
+ * Volumes can contain either images or videos as media type.
  */
 class MediaType extends Model
 {
@@ -20,8 +18,8 @@ class MediaType extends Model
      * @var array
      */
     const INSTANCES = [
-        'timeSeries' => 'time-series',
-        'locationSeries' => 'location-series',
+        'image' => 'image',
+        'video' => 'video',
     ];
 
     /**

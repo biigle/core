@@ -134,4 +134,9 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/{$id}/images", ['images' => '1.jpg'])
             ->assertStatus(422);
     }
+
+    public function testVideos()
+    {
+        $this->markTestIncomplete('Implement VolumeVideoControllerTest');
+    }
 }

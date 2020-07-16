@@ -3,12 +3,13 @@
 namespace Biigle\Rules;
 
 use Biigle\FileCache\GenericFile;
+use Biigle\MediaType;
 use Biigle\Volume;
 use Exception;
 use FileCache;
 use Illuminate\Contracts\Validation\Rule;
 
-class VolumeImages implements Rule
+class VolumeFiles implements Rule
 {
     /**
      * The validation message to display.
@@ -25,6 +26,13 @@ class VolumeImages implements Rule
     protected $url;
 
     /**
+     * The media type ID.
+     *
+     * @var int
+     */
+    protected $typeId;
+
+    /**
      * Number of sample images to check for existence.
      *
      * @var int
@@ -35,12 +43,14 @@ class VolumeImages implements Rule
      * Create a new instance.
      *
      * @param string $url
+     * @param int $typeId Media type ID
      * @param int $sampleCount
      */
-    public function __construct($url, $sampleCount = 5)
+    public function __construct($url, $typeId, $sampleCount = 5)
     {
         $this->message = 'The volume images are invalid.';
         $this->url = $url;
+        $this->typeId = $typeId;
         $this->sampleCount = $sampleCount;
     }
 
@@ -57,7 +67,7 @@ class VolumeImages implements Rule
     public function passes($attribute, $value)
     {
         if (empty($value)) {
-            $this->message = 'No images were supplied.';
+            $this->message = 'No files were supplied.';
 
             return false;
         }
@@ -65,19 +75,27 @@ class VolumeImages implements Rule
         $count = count($value);
 
         if ($count !== count(array_unique($value))) {
-            $this->message = 'A volume must not have the same image twice.';
+            $this->message = 'A volume must not have the same file twice.';
 
             return false;
         }
 
-        if ($count !== count(preg_grep(Volume::FILE_REGEX, $value))) {
-            $this->message = 'Only JPEG, PNG or TIFF image formats are supported.';
+        if ($this->typeId === MediaType::imageId()) {
+            if ($count !== count(preg_grep(Volume::IMAGE_FILE_REGEX, $value))) {
+                $this->message = 'Only JPEG, PNG or TIFF image formats are supported.';
 
-            return false;
+                return false;
+            }
+        } else {
+            if ($count !== count(preg_grep(Volume::VIDEO_FILE_REGEX, $value))) {
+                $this->message = 'Only MPEG, MP4 or WebM video formats are supported.';
+
+                return false;
+            }
         }
 
-        if (!$this->sampleImagesExist($value)) {
-            $this->message = 'Some images could not be accessed. Please make sure all image files exist.';
+        if (!$this->sampleFilesExist($value)) {
+            $this->message = 'Some files could not be accessed. Please make sure all files exist.';
 
             return false;
         }
@@ -96,15 +114,15 @@ class VolumeImages implements Rule
     }
 
     /**
-     * Check a random sample of the image files for existence.
+     * Check a random sample of the files for existence.
      *
-     * @param array $images
+     * @param array $files
      *
      * @return bool
      */
-    protected function sampleImagesExist($images)
+    protected function sampleFilesExist($files)
     {
-        $samples = collect($images)
+        $samples = collect($files)
             ->shuffle()
             ->take($this->sampleCount)
             ->map(function ($file) {

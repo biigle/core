@@ -25,7 +25,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
      *
      * @var Video
      */
-    protected $video;
+    public $video;
 
     /**
      * The FFMpeg video instance.

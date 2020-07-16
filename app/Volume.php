@@ -26,7 +26,17 @@ class Volume extends Model
      *
      * @var string
      */
-    const FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
+    const IMAGE_FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
+
+    /**
+     * Regular expression that matches the supported video file extensions.
+     * This regex allows optional HTTP query parameters after the file names, too.
+     * Example "video.mp4?raw=1".
+     * This may be required for remote files with services like Dropbox.
+     *
+     * @var string
+     */
+    const VIDEO_FILE_REGEX = '/\.(mpeg|mp4|webm)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -45,6 +55,7 @@ class Volume extends Model
      */
     protected $casts = [
         'attrs' => 'array',
+        'media_type_id' => 'int',
     ];
 
     /**
@@ -55,13 +66,13 @@ class Volume extends Model
     protected $appends = ['video_link', 'gis_link', 'doi'];
 
     /**
-     * Parses a comma separated list of image filenames to an array.
+     * Parses a comma separated list of filenames to an array.
      *
      * @param string $string
      *
      * @return array
      */
-    public static function parseImagesQueryString(string $string)
+    public static function parseFilesQueryString(string $string)
     {
         return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
     }
@@ -110,32 +121,6 @@ class Volume extends Model
     }
 
     /**
-     * Sets the media type of this volume.
-     *
-     * @param MediaType $mediaType
-     * @return void
-     */
-    public function setMediaType($mediaType)
-    {
-        $this->mediaType()->associate($mediaType);
-    }
-
-    /**
-     * Sets the media type of this volume to the media type with the given ID.
-     *
-     * @param int $id media type ID
-     * @return void
-     */
-    public function setMediaTypeId($id)
-    {
-        $type = MediaType::find($id);
-        if ($type === null) {
-            abort(400, 'The media type "'.$id.'" does not exist!');
-        }
-        $this->setMediaType($type);
-    }
-
-    /**
      * The images belonging to this volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -143,6 +128,30 @@ class Volume extends Model
     public function images()
     {
         return $this->hasMany(Image::class);
+    }
+
+    /**
+     * The videos belonging to this volume.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
+    }
+
+    /**
+     * The images or videos belonging to this volume.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function files()
+    {
+        if ($this->isImageVolume()) {
+            return $this->images();
+        }
+
+        return $this->videos();
     }
 
     /**
@@ -447,5 +456,25 @@ class Volume extends Model
         return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, function () {
             return $this->images()->where('tiled', true)->exists();
         });
+    }
+
+    /**
+     * Specifies whether the volume is an image volume.
+     *
+     * @return boolean
+     */
+    public function isImageVolume()
+    {
+        return $this->media_type_id === MediaType::imageId();
+    }
+
+    /**
+     * Specifies whether the volume is a video volume.
+     *
+     * @return boolean
+     */
+    public function isVideoVolume()
+    {
+        return $this->media_type_id === MediaType::videoId();
     }
 }

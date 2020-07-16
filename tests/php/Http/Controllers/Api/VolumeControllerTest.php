@@ -156,6 +156,8 @@ class VolumeControllerTest extends ApiTestCase
         ]);
         // url must not be empty if present
         $response->assertStatus(422);
+
+        $this->markTestIncomplete('Media type cannot be updated');
     }
 
     public function testUpdateRedirect()

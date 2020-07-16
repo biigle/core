@@ -7,20 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessNewImages extends Job implements ShouldQueue
+class ProcessNewVolumeFiles extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * The volume for which the images should be processed.
+     * The volume for which the files should be processed.
      *
      * @var Volume
      */
     protected $volume;
 
     /**
-     * Array of image IDs to restrict processing to.
-     * If it is empty, all images of the volume will be taken.
+     * Array of image/video IDs to restrict processing to.
+     * If it is empty, all files of the volume will be taken.
      *
      * @var array
      */
@@ -36,9 +36,9 @@ class ProcessNewImages extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Volume $volume The volume for which the images should be processed.
-     * @param array $only (optional) Array of image IDs to restrict processing to.
-     * If it is empty, all images of the volume will be taken.
+     * @param Volume $volume The volume for which the files should be processed.
+     * @param array $only (optional) Array of image/video IDs to restrict processing to.
+     * If it is empty, all files of the volume will be taken.
      *
      * @return void
      */
@@ -55,13 +55,18 @@ class ProcessNewImages extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $this->volume->images()
+        $query = $this->volume->files()
             ->select('id')
             ->when($this->only, function ($query) {
                 return $query->whereIn('id', $this->only);
-            })
-            ->chunk(100, function ($images) {
+            });
+
+        if ($this->volume->isImageVolume()) {
+            $query->chunkById(100, function ($images) {
                 ProcessNewImageChunk::dispatch($images->pluck('id'));
             });
+        } else {
+            $query->eachById([ProcessNewVideo::class, 'dispatch']);
+        }
     }
 }

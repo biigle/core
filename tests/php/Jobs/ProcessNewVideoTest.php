@@ -29,6 +29,30 @@ class ProcessNewVideoTest extends TestCase
         $this->assertTrue($disk->exists("{$fragment}/1.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/2.jpg"));
     }
+
+    public function testHandleMimeType()
+    {
+        // Take MIME detection from VideoUrl validator/ProjectVideoController
+        $this->markTestIncomplete('Show a warning that the video is being processed if the mimetype is not yet set.');
+    }
+
+    public function testHandleSize()
+    {
+        // Take code from ProjectVideoController
+        $this->markTestIncomplete('Show a warning that the video is being processed if the size is not yet set.');
+    }
+
+    public function testHandleInvalidMimeType()
+    {
+        // Take MIME detection from VideoUrl validator.
+        $this->markTestIncomplete('Dont process the video and set an error flag in the attrs which causes an error to be displayed in the video annotation tool.');
+    }
+
+    public function testHandleInvalidCodec()
+    {
+        // Take codec detection from VideoUrl validator.
+        $this->markTestIncomplete('Dont process the video and set an error flag in the attrs which causes an error to be displayed in the video annotation tool.');
+    }
 }
 
 class ProcessNewVideoStub extends ProcessNewVideo

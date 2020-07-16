@@ -31,6 +31,7 @@ class VideoTest extends ModelTestCase
 
     public function testCreatorSetNull()
     {
+        $this->markTestIncomplete('No longer exists');
         $this->assertNotNull($this->model->creator_id);
         $this->model->creator()->delete();
         $this->assertNull($this->model->fresh()->creator_id);
@@ -50,6 +51,7 @@ class VideoTest extends ModelTestCase
 
     public function testGisLinkAttr()
     {
+        $this->markTestIncomplete('No longer exists');
         $this->assertNull($this->model->gis_link);
 
         $this->model->gis_link = 'http://example.com';
@@ -63,6 +65,7 @@ class VideoTest extends ModelTestCase
 
     public function testSetAndGetDoiAttribute()
     {
+        $this->markTestIncomplete('No longer exists');
         $this->model->doi = '10.3389/fmars.2017.00083';
         $this->model->save();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
