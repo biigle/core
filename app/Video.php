@@ -19,11 +19,8 @@ class Video extends Model implements FileContract
      * @var array
      */
     protected $fillable = [
-        'name',
-        'url',
-        'description',
-        'creator_id',
-        'project_id',
+        'filename',
+        'volume_id',
         'uuid',
         'attrs',
         'duration',

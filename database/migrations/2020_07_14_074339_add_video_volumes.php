@@ -4,6 +4,7 @@ use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Video;
 use Biigle\Volume;
+use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -43,7 +44,14 @@ class AddVideoVolumes extends Migration
         Project::whereIn('id', $projectIds)->eachById([$this, 'migrateProjectVideos']);
 
         Schema::table('videos', function (Blueprint $table) {
-            $table->dropColumn(['project_id', 'url', 'creator_id', 'name']);
+            $table->dropColumn([
+                'project_id',
+                'url',
+                'creator_id',
+                'name',
+                'created_at',
+                'updated_at',
+            ]);
             $table->integer('volume_id')->nullable(false)->change();
         });
     }
@@ -72,6 +80,7 @@ class AddVideoVolumes extends Migration
 
             $table->string('url')->nullable();
             $table->string('name')->nullable();
+            $table->timestamps();
         });
 
         $id = MediaType::where('name', 'video')->first()->id;
@@ -79,12 +88,14 @@ class AddVideoVolumes extends Migration
             $projectId = $volume->projects()->first()->id;
             Video::where('volume_id', $volume->id)
                 ->eachById(function ($video) use ($volume, $projectId) {
-                    $video->update([
+                    $video->forceFill([
                         'name' => $video->filename,
                         'url' => "{$volume->url}/{$video->filename}",
                         'project_id' => $projectId,
                         'creator_id' => $volume->creator_id,
-                    ]);
+                        'created_at' => $volume->created_at,
+                        'updated_at' => Carbon::now(),
+                    ])->save();
                 });
         });
 
@@ -116,44 +127,17 @@ class AddVideoVolumes extends Migration
      */
     public function migrateProjectVideos($project)
     {
-        $videoGroups = $this->groupVideosByUrl($project->videos);
+        $videoGroups = $this->groupVideosByUrl(
+            $project->videos()->orderBy('created_at', 'asc')->get()
+        );
 
-        if ($videoGroups->count() === 1) {
-            $volume = new Volume;
-            $volume->name = 'Videos';
-            $volume->url = $videoGroups->keys()->first();
-            $volume->creator_id = $videoGroups->first()->first()->creator_id;
-            $volume->save();
-            $project->addVolumeId($volume->id);
-
-            $videoGroups[$volume->url]->each(function ($video) use ($volume) {
-                $video->update([
-                    'volume_id' => $volume->id,
-                    'filename' => basename($video->url),
-                    'attrs' => [
-                        'size' => $video->attrs['size'],
-                        'mimetype' => $video->attrs['mimetype'],
-                    ],
-                ]);
-            });
-        } else {
-            $index = 1;
-            $videoGroups->each(function ($videos, $url) use ($project, &$index) {
-                $volume = new Volume;
-                $volume->name = "Videos-{$index}";
-                $volume->url = $url;
-                $volume->creator_id = $videos->first()->creator_id;
-                $volume->save();
-                $project->addVolumeId($volume->id);
-                $videos->each(function ($video) use ($volume) {
-                    $video->update([
-                        'volume_id' => $volume->id,
-                        'filename' => basename($video->url),
-                    ]);
-                });
+        $index = 1;
+        $videoGroups->each(function ($subGroup, $url) use ($project, &$index) {
+            $subGroup->each(function ($videos) use ($project, $url, &$index) {
+                $this->createVideoVolume($project, "Videos-{$index}", $url, $videos);
                 $index += 1;
             });
-        }
+        });
     }
 
     /**
@@ -166,15 +150,67 @@ class AddVideoVolumes extends Migration
     protected function groupVideosByUrl($videos)
     {
         $groups = collect([]);
-        $videos->each(function ($video) {
-            $group = dirname($video->url);
+        $videos->each(function ($video) use ($groups) {
+            [$disk, $path] = explode('://', $video->url);
+            $path = explode('/', $path);
+
+            $group = $disk.'://'.array_shift($path);
+            $filename = join('/', $path);
             if (!$groups->has($group)) {
-                $groups[$group] = [];
+                $groups[$group] = collect([collect([])]);
             }
 
-            $groups[$group]->push($video);
+            // Some videos are duplicated in a project. These should be put into
+            // separate video volumes.
+            if ($groups[$group]->last()->has($filename)) {
+                $groups[$group]->push(collect([]));
+            }
+
+            $index = 0;
+            while ($groups[$group][$index]->has($filename)) {
+                $index += 1;
+            }
+
+            $groups[$group][$index]->put($filename, $video);
         });
 
+
+
         return $groups;
+    }
+
+    /**
+     * Create a new video volume
+     *
+     * @param Project $project
+     * @param string $name
+     * @param string $url
+     * @param \Illuminate\Support\Collection $videos
+     */
+    protected function createVideoVolume($project, $name, $url, $videos)
+    {
+        $volume = new Volume;
+        $volume->name = $name;
+        $volume->media_type_id = MediaType::videoId();
+        $volume->url = $url;
+        $volume->creator_id = $videos->first()->creator_id;
+        $volume->created_at = $videos->first()->created_at;
+        $volume->updated_at = Carbon::now();
+        if (is_null($volume->creator_id)) {
+            $volume->creator_id = $project->creator_id;
+        }
+        $volume->save();
+        $project->addVolumeId($volume->id);
+
+        $videos->each(function ($video, $filename) use ($project, $volume) {
+            $video->forceFill([
+                'volume_id' => $volume->id,
+                'filename' => $filename,
+                'attrs' => [
+                    'size' => $video->attrs['size'],
+                    'mimetype' => $video->attrs['mimetype'],
+                ],
+            ])->save();
+        });
     }
 }
