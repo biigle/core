@@ -14,6 +14,65 @@ class Video extends Model implements FileContract
     use HasJsonAttributes;
 
     /**
+     * Allowed video MIME types.
+     *
+     * @var array
+     */
+    const MIMES = [
+        'video/mpeg',
+        'video/mp4',
+        'video/quicktime',
+        'video/webm',
+    ];
+
+    /**
+     * Allowed video codecs.
+     *
+     * @var array
+     */
+    const CODECS = [
+        'h264',
+        'vp8',
+        'vp9',
+        'av1',
+    ];
+
+    /**
+     * Error if a video cannot be found.
+     *
+     * @var int
+     */
+    const ERROR_NOT_FOUND = 1;
+
+    /**
+     * Error if a video has an invalid MIME type.
+     *
+     * @var int
+     */
+    const ERROR_MIME_TYPE = 2;
+
+    /**
+     * Error if a video has an invalid codec.
+     *
+     * @var int
+     */
+    const ERROR_CODEC = 3;
+
+    /**
+     * Error if a video cannot be parsed.
+     *
+     * @var int
+     */
+    const ERROR_MALFORMED = 4;
+
+    /**
+     * Don't maintain timestamps for this model.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -42,8 +101,7 @@ class Video extends Model implements FileContract
      * @var array
      */
     protected $appends = [
-        'gis_link',
-        'doi',
+        'url',
     ];
 
     /**
@@ -65,25 +123,14 @@ class Video extends Model implements FileContract
     ];
 
     /**
-     * Scope a query to all videos that are accessible by a user.
+     * Adds the `url` attribute to the video model. The url is the absolute path
+     * to the original video file.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param User $user
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return string
      */
-    public function scopeAccessibleBy($query, User $user)
+    public function getUrlAttribute()
     {
-        if ($user->can('sudo')) {
-            return $query;
-        }
-
-        return $query->whereIn('id', function ($query) use ($user) {
-            $query->select('videos.id')
-                ->from('videos')
-                ->join('project_user', 'project_user.project_id', '=', 'videos.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->distinct();
-        });
+        return "{$this->volume->url}/{$this->filename}";
     }
 
     /**
@@ -93,25 +140,14 @@ class Video extends Model implements FileContract
     {
         return $this->url;
     }
-
     /**
-     * The user who created this video.
+     * The volume this video belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function creator()
+    public function volume()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * The project this video belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function project()
-    {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Volume::class);
     }
 
     /**
@@ -122,80 +158,6 @@ class Video extends Model implements FileContract
     public function annotations()
     {
         return $this->hasMany(VideoAnnotation::class);
-    }
-
-    /**
-     * Get the name of the storage disk of this video.
-     *
-     * @return string
-     */
-    public function getDiskAttribute()
-    {
-        return explode('://', $this->url)[0];
-    }
-
-    /**
-     * Get the file path in the storage disk of this video.
-     *
-     * @return string
-     */
-    public function getPathAttribute()
-    {
-        return explode('://', $this->url)[1];
-    }
-
-    /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
-    }
-
-    /**
-     * Set the doi attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setDoiAttribute($value)
-    {
-        if (is_string($value)) {
-            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
-        }
-
-        return $this->setJsonAttr('doi', $value);
-    }
-
-    /**
-     * Get the doi attribute of this volume.
-     *
-     * @return string
-     */
-    public function getDoiAttribute()
-    {
-        return $this->getJsonAttr('doi');
-    }
-
-    /**
-     * Determine if this video comes from a remote source.
-     *
-     * @return bool
-     */
-    public function isRemote()
-    {
-        return strpos($this->url, 'http') === 0;
     }
 
     /**
@@ -243,5 +205,65 @@ class Video extends Model implements FileContract
         return $this->thumbnails->map(function ($item) {
             return thumbnail_url($item, config('videos.thumbnail_storage_disk'));
         });
+    }
+
+    /**
+     * Get the error attribute.
+     *
+     * @return string
+     */
+    public function getErrorAttribute()
+    {
+        return $this->getJsonAttr('error');
+    }
+
+    /**
+     * Set the error attribute.
+     *
+     * @param string $value
+     */
+    public function setErrorAttribute($value)
+    {
+        $this->setJsonAttr('error', $value);
+    }
+
+    /**
+     * Get the mimeType attribute.
+     *
+     * @return string
+     */
+    public function getMimeTypeAttribute()
+    {
+        return $this->getJsonAttr('mimetype');
+    }
+
+    /**
+     * Set the mimeType attribute.
+     *
+     * @param string $value
+     */
+    public function setMimeTypeAttribute($value)
+    {
+        $this->setJsonAttr('mimetype', $value);
+    }
+
+    /**
+     * Get the size attribute.
+     *
+     * @return int
+     */
+    public function getSizeAttribute()
+    {
+        return $this->getJsonAttr('size');
+    }
+
+    /**
+     * Set the size attribute.
+     *
+     * @param int $value
+     */
+    public function setSizeAttribute($value)
+    {
+        $this->setJsonAttr('size', $value);
     }
 }

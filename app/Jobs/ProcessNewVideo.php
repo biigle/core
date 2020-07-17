@@ -9,16 +9,25 @@ use Exception;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
+use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
+use Throwable;
 use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
     use SerializesModels;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
 
     /**
      * The new video that should be processed.
@@ -33,6 +42,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @var \FFMpeg\Media\Video
      */
     protected $ffmpegVideo;
+
+    /**
+     * Ignore this job if the volume does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new instance.
@@ -54,9 +70,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->video, [$this, 'handleFile']);
         } catch (Exception $e) {
-            Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
+            $this->video->error = Video::ERROR_NOT_FOUND;
+            $this->video->save();
+
             if (App::runningUnitTests()) {
                 throw $e;
+            } else {
+                Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
             }
         }
     }
@@ -69,6 +89,28 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     public function handleFile($file, $path)
     {
+        $this->video->mimeType = File::mimeType($path);
+        if (!in_array($this->video->mimeType, Video::MIMES)) {
+            $this->video->error = Video::ERROR_MIME_TYPE;
+            $this->video->save();
+            return;
+        }
+
+        $codec = $this->getCodec($path);
+
+        if ($codec === '') {
+            $this->video->error = Video::ERROR_MALFORMED;
+            $this->video->save();
+            return;
+        }
+
+        if (!in_array($codec, Video::CODECS)) {
+            $this->video->error = Video::ERROR_CODEC;
+            $this->video->save();
+            return;
+        }
+
+        $this->video->size = File::size($path);
         $this->video->duration = $this->getVideoDuration($path);
         $this->video->save();
 
@@ -82,6 +124,26 @@ class ProcessNewVideo extends Job implements ShouldQueue
         foreach ($times as $index => $time) {
             $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
             $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+        }
+    }
+
+    /**
+     * Get the codec of a video
+     *
+     * @param string $url URL/path to the video file
+     *
+     * @return string
+     */
+    protected function getCodec($url)
+    {
+        if (!isset($this->ffprobe)) {
+            $this->ffprobe = FFProbe::create();
+        }
+
+        try {
+            return $this->ffprobe->streams($url)->videos()->first()->get('codec_name');
+        } catch (Throwable $e) {
+            return '';
         }
     }
 
