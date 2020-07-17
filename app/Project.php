@@ -157,15 +157,6 @@ class Project extends Model
         return $this->belongsToMany(Volume::class);
     }
 
-    /**
-     * The videos of this project.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function videos()
-    {
-        return $this->hasMany(Video::class);
-    }
 
     /**
      * Adds a volume to this project if it wasn't already.

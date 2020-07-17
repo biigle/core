@@ -304,11 +304,4 @@ class ProjectTest extends ModelTestCase
         $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
         $this->assertEmpty($projects);
     }
-
-    public function testVideos()
-    {
-        $project = self::create();
-        $video = factory(Video::class)->create(['project_id' => $project->id]);
-        $this->assertEquals($video->id, $project->videos()->first()->id);
-    }
 }

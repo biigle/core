@@ -3,13 +3,18 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\VideoTest;
 use Storage;
 
 class VolumeImageControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
+        $this->markTestIncomplete('Implement this as VolumeFileController that handles both images and videos');
+
+
         $id = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $id]);
@@ -28,8 +33,19 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->assertStringEndsWith(']', $content);
     }
 
+    public function testIndexWrongMediaType()
+    {
+        $this->markTestIncomplete();
+        $id = $this->volume()->id;
+        VideoTest::create(['volume_id' => $id]);
+        $this->beGuest();
+        $this->getJson("/api/v1/volumes/{$id}/videos")->assertExactJson([]);
+    }
+
     public function testStore()
     {
+        $this->markTestIncomplete('Implement this as VolumeFileController that handles both images and videos');
+
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
@@ -133,10 +149,5 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/images", ['images' => '1.jpg'])
             ->assertStatus(422);
-    }
-
-    public function testVideos()
-    {
-        $this->markTestIncomplete('Implement VolumeVideoControllerTest');
     }
 }

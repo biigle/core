@@ -56,7 +56,7 @@ class StoreVolumeImage extends FormRequest
         $images = $this->input('images');
         if (is_string($images)) {
             $this->merge([
-                'images' => Volume::parseImagesQueryString($images),
+                'images' => Volume::parseFilesQueryString($images),
             ]);
         }
     }

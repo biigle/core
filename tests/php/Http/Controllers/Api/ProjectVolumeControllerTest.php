@@ -76,7 +76,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg, 2.jpg',
         ]);
         // invalid url format
@@ -85,7 +85,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg, 2.jpg',
         ]);
         // unknown storage disk
@@ -94,7 +94,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg, 2.jpg',
         ]);
         // images directory dows not exist in storage disk
@@ -107,7 +107,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '',
         ]);
         // images array is empty
@@ -119,7 +119,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg, , 1.jpg',
         ]);
         // error because of duplicate image
@@ -128,7 +128,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.bmp',
         ]);
         // error because of unsupported image format
@@ -138,7 +138,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
-                'media_type_id' => MediaType::imageId(),
+                'media_type' => 'image',
                 'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
             ])
             ->assertStatus(422);
@@ -146,7 +146,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             // empty parts should be discarded
             'files' => '1.jpg, , 2.jpg, , ,',
         ]);
@@ -174,7 +174,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg',
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
@@ -188,7 +188,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => 'image',
             'files' => '1.jpg',
             'video_link' => '',
             'gis_link' => '',
@@ -211,7 +211,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->postJson("/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
-                'media_type_id' => MediaType::imageId(),
+                'media_type' => 'image',
                 'files' => ['1.jpg', '2.jpg'],
             ])
             ->assertSuccessful();
@@ -227,7 +227,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->postJson("/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
-                'media_type_id' => MediaType::imageId(),
+                'media_type' => 'image',
                 'files' => '1.jpg, 2.jpg',
             ])
             ->assertStatus(422);
@@ -237,7 +237,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->postJson("/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
-                'media_type_id' => MediaType::imageId(),
+                'media_type' => 'image',
                 'files' => '1.jpg, 2.jpg',
             ])
             ->assertSuccessful();
@@ -252,7 +252,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
-                'media_type_id' => MediaType::imageId(),
+                'media_type' => 'image',
                 'images' => '1.jpg',
             ])
             ->assertSuccessful();
@@ -265,7 +265,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             'files' => '1.mp4, 2.mp4',
         ]);
         // invalid url format
@@ -274,7 +274,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             'files' => '1.mp4, 2.mp4',
         ]);
         // unknown storage disk
@@ -283,7 +283,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://videos',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             'files' => '1.mp4, 2.mp4',
         ]);
         // videos directory dows not exist in storage disk
@@ -299,7 +299,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://videos',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             'files' => '1.mp4, , 1.mp4',
         ]);
         // error because of duplicate video
@@ -308,7 +308,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://videos',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             'files' => '1.avi',
         ]);
         // error because of unsupported video format
@@ -318,7 +318,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://videos',
-                'media_type_id' => MediaType::videoId(),
+                'media_type' => 'video',
                 'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp4',
             ])
             ->assertStatus(422);
@@ -326,7 +326,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://videos',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => 'video',
             // empty parts should be discarded
             'files' => '1.mp4, 2.mp4',
         ]);
