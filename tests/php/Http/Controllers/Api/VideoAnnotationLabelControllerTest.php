@@ -58,15 +58,15 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     {
         $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
         $annotationLabel1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->expert()->id,
         ]);
         $annotationLabel2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
         $annotationLabel3 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
 

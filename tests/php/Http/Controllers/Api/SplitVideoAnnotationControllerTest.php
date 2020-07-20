@@ -26,7 +26,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $label = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
         ]);
 
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$annotation->id}/split");

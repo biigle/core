@@ -42,7 +42,7 @@ class VideoAnnotationLabelPolicy extends CachedPolicy
                 $query->select('videos.project_id')
                     ->from('videos')
                     ->join('video_annotations', 'video_annotations.video_id', '=', 'videos.id')
-                    ->where('video_annotations.id', $annotationLabel->video_annotation_id);
+                    ->where('video_annotations.id', $annotationLabel->annotation_id);
             };
 
             if ((int) $annotationLabel->user_id === $user->id) {

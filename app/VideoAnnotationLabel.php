@@ -17,7 +17,6 @@ class VideoAnnotationLabel extends Model
     protected $fillable = [
         'label_id',
         'user_id',
-        'video_annotation_id',
     ];
 
     /**
@@ -27,7 +26,7 @@ class VideoAnnotationLabel extends Model
      */
     public function annotation()
     {
-        return $this->belongsTo(VideoAnnotation::class, 'video_annotation_id');
+        return $this->belongsTo(VideoAnnotation::class, 'annotation_id');
     }
 
     /**

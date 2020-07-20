@@ -142,7 +142,7 @@ class DashboardController extends Controller
     public function videosActivityItems(User $user, $limit = 3, $newerThan = null)
     {
         $annotated = Video::join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
-            ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.video_annotation_id')
+            ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->where('video_annotation_labels.user_id', $user->id)
             ->when(!is_null($newerThan), function ($query) use ($newerThan) {
                 $query->where('video_annotation_labels.created_at', '>', $newerThan);

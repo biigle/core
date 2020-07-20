@@ -93,23 +93,23 @@ class VideoAnnotationPolicyTest extends TestCase
         $a4 = VideoAnnotationTest::create(['video_id' => $video->id]);
 
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a1->id,
+            'annotation_id' => $a1->id,
             'user_id' => $this->user->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a2->id,
+            'annotation_id' => $a2->id,
             'user_id' => $this->guest->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a3->id,
+            'annotation_id' => $a3->id,
             'user_id' => $this->editor->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a4->id,
+            'annotation_id' => $a4->id,
             'user_id' => $this->editor->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a4->id,
+            'annotation_id' => $a4->id,
             'user_id' => $this->admin->id,
         ]);
 

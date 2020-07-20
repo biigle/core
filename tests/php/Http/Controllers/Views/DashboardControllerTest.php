@@ -125,7 +125,7 @@ class DashboardControllerTest extends TestCase
 
         VideoAnnotationLabelTest::create([
             'user_id' => $user->id,
-            'video_annotation_id' => $a->video_annotation_id,
+            'annotation_id' => $a->annotation_id,
         ]);
 
         $items = $controller->videosActivityItems($user, 3);

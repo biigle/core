@@ -34,17 +34,17 @@ class VideoAnnotationLabelPolicyTest extends TestCase
     public function testDestroy()
     {
         $al1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $this->annotation->id,
+            'annotation_id' => $this->annotation->id,
             'user_id' => $this->user->id,
         ]);
 
         $al2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $this->annotation->id,
+            'annotation_id' => $this->annotation->id,
             'user_id' => $this->guest->id,
         ]);
 
         $al3 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $this->annotation->id,
+            'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor->id,
         ]);
 

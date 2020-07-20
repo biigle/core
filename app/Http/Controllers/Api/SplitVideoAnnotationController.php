@@ -141,7 +141,7 @@ class SplitVideoAnnotationController extends Controller
                 VideoAnnotationLabel::create([
                     'label_id' => $label->label_id,
                     'user_id' => $label->user_id,
-                    'video_annotation_id' => $newAnnotation->id,
+                    'annotation_id' => $newAnnotation->id,
                 ]);
             });
         });

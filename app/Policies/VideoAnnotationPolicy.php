@@ -117,7 +117,7 @@ class VideoAnnotationPolicy extends CachedPolicy
     public function destroy(User $user, VideoAnnotation $annotation)
     {
         return $this->remember("video-annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
-            $hasLabelsFromOthers = VideoAnnotationLabel::where('video_annotation_id', $annotation->id)
+            $hasLabelsFromOthers = VideoAnnotationLabel::where('annotation_id', $annotation->id)
                 ->where('user_id', '!=', $user->id)
                 ->exists();
 

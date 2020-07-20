@@ -64,7 +64,7 @@ class VideoAnnotation extends Model
      */
     public function labels()
     {
-        return $this->hasMany(VideoAnnotationLabel::class);
+        return $this->hasMany(VideoAnnotationLabel::class, 'annotation_id');
     }
 
     /**

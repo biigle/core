@@ -245,7 +245,7 @@ class UsersController extends Controller
         $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalVideoAnnotationLabels > 0) {
-            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.video_annotation_id')
+            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
                 ->where('video_annotation_labels.user_id', $user->id)
                 ->distinct()
                 ->count('video_annotations.id');

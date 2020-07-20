@@ -29,7 +29,7 @@ class VideoAnnotationTest extends ModelTestCase
     {
         $this->assertFalse($this->model->labels()->exists());
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $this->model->id,
+            'annotation_id' => $this->model->id,
         ]);
         $this->assertTrue($this->model->labels()->exists());
     }

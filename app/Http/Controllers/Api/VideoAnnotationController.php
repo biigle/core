@@ -208,7 +208,7 @@ class VideoAnnotationController extends Controller
             VideoAnnotationLabel::create([
                 'label_id' => $request->input('label_id'),
                 'user_id' => $request->user()->id,
-                'video_annotation_id' => $annotation->id,
+                'annotation_id' => $annotation->id,
             ]);
 
             return $annotation;
