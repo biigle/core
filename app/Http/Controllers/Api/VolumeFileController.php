@@ -2,21 +2,21 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\StoreVolumeImage;
-use Biigle\Jobs\CreateNewImages;
+use Biigle\Http\Requests\StoreVolumeFile;
+use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Volume;
 use DB;
 
-class VolumeImageController extends Controller
+class VolumeFileController extends Controller
 {
     /**
-     * List the image IDs of the specified volume.
+     * List the image/video IDs of the specified volume.
      *
-     * @api {get} volumes/:id/images Get all images
+     * @api {get} volumes/:id/files Get all images/videos
      * @apiGroup Volumes
-     * @apiName IndexVolumeImages
+     * @apiName IndexVolumeFiles
      * @apiPermission projectMember
-     * @apiDescription Returns a list of all image IDs of the volume.
+     * @apiDescription Returns a list of all image/video IDs of the volume.
      *
      * @apiParam {Number} id The volume ID.
      *
@@ -32,22 +32,24 @@ class VolumeImageController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume->images()
+        return $volume->files()
             ->orderBy('id', 'asc')
             ->pluck('id');
     }
 
     /**
-     * Add images to the specified volume.
+     * Add images/videos to the specified volume.
      *
-     * @api {post} volumes/:id/images Add images
+     * @api {post} volumes/:id/files Add images/videos
      * @apiGroup Volumes
-     * @apiName StoreVolumeImages
+     * @apiName StoreVolumeVideos
      * @apiPermission projectAdmin
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required attributes) {String} images List of image file names, formatted as comma separated values or as array.
+     * @apiParam (Required attributes) {String} files List of file names, formatted as comma separated values or as array.
+     *
+     * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
      * @apiParamExample {String} Request example:
      * images: '1.jpg,2.jpg,3.jpg'
@@ -68,21 +70,21 @@ class VolumeImageController extends Controller
      * ]
      *
      *
-     * @param StoreVolumeImage $request
+     * @param StoreVolumeFile $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreVolumeImage $request)
+    public function store(StoreVolumeFile $request)
     {
-        $images = $request->input('images');
-        // No asynchronous processing from this endpoint since the new images should
+        $files = $request->input('files');
+        // No asynchronous processing from this endpoint since the new files should
         // be immediately returned. Do not push the job on the sync queue because the
         // returned JSON could not be tested this way.
-        (new CreateNewImages($request->volume, $images))->handle();
+        (new CreateNewImagesOrVideos($request->volume, $files))->handle();
 
-        return $request->volume->images()
+        return $request->volume->files()
             ->select('id', 'filename')
             ->orderBy('id', 'desc')
-            ->take(sizeof($images))
+            ->take(sizeof($files))
             ->get();
     }
 }

@@ -96,15 +96,6 @@ class Video extends Model implements FileContract
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'url',
-    ];
-
-    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array

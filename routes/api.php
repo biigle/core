@@ -258,7 +258,7 @@ $router->resource('volumes.annotation-sessions', 'VolumeAnnotationSessionControl
     'parameters' => ['volumes' => 'id'],
 ]);
 
-$router->resource('volumes.images', 'VolumeImageController', [
+$router->resource('volumes.files', 'VolumeFileController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
 ]);

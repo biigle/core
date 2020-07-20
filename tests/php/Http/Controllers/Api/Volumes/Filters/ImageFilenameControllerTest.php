@@ -9,6 +9,7 @@ class ImageFilenameControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
+        $this->markTestIncomplete('implement support for videos');
         $vid = $this->volume()->id;
 
         $image = ImageTest::create([

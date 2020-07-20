@@ -38,13 +38,16 @@ class StoreVolume extends FormRequest
      */
     public function rules()
     {
-        $filesRule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
 
         return [
             'name' => 'required|max:512',
             'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
             'url' => ['required', 'max:256', new VolumeUrl],
-            'files' => ['required', 'array', $filesRule],
+            'files' => [
+                'required',
+                'array',
+                new VolumeFiles($this->input('url'), $this->input('media_type_id')),
+            ],
             'files.*' => ['max:512'],
         ];
     }
@@ -68,9 +71,9 @@ class StoreVolume extends FormRequest
             $this->merge(['files' => $this->input('images')]);
         }
 
-        $images = $this->input('files');
-        if (is_string($images)) {
-            $this->merge(['files' => Volume::parseFilesQueryString($images)]);
+        $files = $this->input('files');
+        if (is_string($files)) {
+            $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
     }
 }

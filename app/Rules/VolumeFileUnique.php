@@ -5,17 +5,17 @@ namespace Biigle\Rules;
 use Biigle\Volume;
 use Illuminate\Contracts\Validation\Rule;
 
-class VolumeImageUnique implements Rule
+class VolumeFileUnique implements Rule
 {
     /**
-     * The filenames of the images that already exist.
+     * The filenames that already exist.
      *
      * @var \Illuminate\Support\Collection
      */
-    protected $images;
+    protected $files;
 
     /**
-     * The volume to check for existing images.
+     * The volume to check for existing files.
      *
      * @var Volume
      */
@@ -32,7 +32,7 @@ class VolumeImageUnique implements Rule
     }
 
     /**
-     * Check if the given image filenames don't already exist in the volume.
+     * Check if the given filenames don't already exist in the volume.
      *
      * @param  string  $attribute
      * @param  array  $value
@@ -40,11 +40,11 @@ class VolumeImageUnique implements Rule
      */
     public function passes($attribute, $value)
     {
-        $this->images = $this->volume->images()
+        $this->files = $this->volume->files()
             ->whereIn('filename', $value)
             ->pluck('filename');
 
-        return $this->images->isEmpty();
+        return $this->files->isEmpty();
     }
 
     /**
@@ -54,6 +54,6 @@ class VolumeImageUnique implements Rule
      */
     public function message()
     {
-        return "The images already exist: {$this->images->implode(', ')}";
+        return "The files already exist: {$this->files->implode(', ')}";
     }
 }

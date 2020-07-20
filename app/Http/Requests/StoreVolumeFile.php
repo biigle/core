@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Rules\VolumeImages;
-use Biigle\Rules\VolumeImageUnique;
+use Biigle\Rules\VolumeFiles;
+use Biigle\Rules\VolumeFileUnique;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVolumeImage extends FormRequest
+class StoreVolumeFile extends FormRequest
 {
     /**
      * The volume to create the images in.
@@ -36,13 +36,13 @@ class StoreVolumeImage extends FormRequest
     public function rules()
     {
         return [
-            'images' => [
+            'files' => [
                 'required',
                 'array',
-                new VolumeImages($this->volume->url),
-                new VolumeImageUnique($this->volume)
+                new VolumeFiles($this->volume->url, $this->volume->media_type_id),
+                new VolumeFileUnique($this->volume),
             ],
-            'images.*' => ['max:512'],
+            'files.*' => ['max:512'],
         ];
     }
 
@@ -53,11 +53,15 @@ class StoreVolumeImage extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $images = $this->input('images');
-        if (is_string($images)) {
-            $this->merge([
-                'images' => Volume::parseFilesQueryString($images),
-            ]);
+        // This establishes backwards compatibility of the old 'images' attribute which
+        // is now 'files'.
+        if ($this->missing('files') && $this->has('images')) {
+            $this->merge(['files' => $this->input('images')]);
+        }
+
+        $files = $this->input('files');
+        if (is_string($files)) {
+            $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
     }
 }
