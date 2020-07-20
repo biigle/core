@@ -30,7 +30,7 @@ class CsvReportGeneratorTest extends TestCase
         'shape_name',
         'points',
         'frames',
-        'video_annotation_id',
+        'annotation_id',
     ];
 
     public function testProperties()
@@ -127,11 +127,11 @@ class CsvReportGeneratorTest extends TestCase
         $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
 
         $al1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
         $al2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
 
@@ -222,10 +222,10 @@ class CsvReportGeneratorTest extends TestCase
         $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
 
         $al1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
         ]);
         $al2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
         ]);
 
         $generator = new CsvReportGenerator([

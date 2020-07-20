@@ -101,7 +101,7 @@ class CsvReportGenerator extends ReportGenerator
     public function initQuery($columns = [])
     {
         $query = DB::table('video_annotation_labels')
-            ->join('video_annotations', 'video_annotation_labels.video_annotation_id', '=', 'video_annotations.id')
+            ->join('video_annotations', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
             ->where('videos.id', $this->source->id)
@@ -151,7 +151,7 @@ class CsvReportGenerator extends ReportGenerator
                 'shapes.name as shape_name',
                 'video_annotations.points',
                 'video_annotations.frames',
-                'video_annotations.id as video_annotation_id',
+                'video_annotations.id as annotation_id',
             ])
             ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
@@ -184,7 +184,7 @@ class CsvReportGenerator extends ReportGenerator
             'shape_name',
             'points',
             'frames',
-            'video_annotation_id',
+            'annotation_id',
         ]);
 
         foreach ($rows as $row) {
@@ -202,7 +202,7 @@ class CsvReportGenerator extends ReportGenerator
                 $row->shape_name,
                 $row->points,
                 $row->frames,
-                $row->video_annotation_id,
+                $row->annotation_id,
             ]);
         }
 
