@@ -5,14 +5,9 @@ namespace Biigle;
 use Biigle\Shape;
 use Biigle\Traits\HasPointsAttribute;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 
-class VideoAnnotation extends Model
+class VideoAnnotation extends Annotation
 {
-    use HasPointsAttribute {
-        validatePoints as baseValidatePoints;
-    }
-
     /**
      * The attributes that are mass assignable.
      *
@@ -48,13 +43,23 @@ class VideoAnnotation extends Model
     }
 
     /**
-     * The shape of this annotation.
+     * The file, this annotation belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function shape()
+    public function file()
     {
-        return $this->belongsTo(Shape::class);
+        return $this->video();
+    }
+
+    /**
+     * Get the file_id attribute
+     *
+     * @return int
+     */
+    public function getFileIdAttribute()
+    {
+        return $this->video_id;
     }
 
     /**
@@ -89,15 +94,16 @@ class VideoAnnotation extends Model
     /**
      * Validate the points and frames of this annotation.
      *
+     * @param array $points Not used
      * @throws Exception If the points or frames are invalid.
      */
-    public function validatePoints()
+    public function validatePoints(array $points = [])
     {
         if (count($this->points) !== count($this->frames)) {
             throw new Exception('The number of key frames does not match the number of annotation coordinates.');
         }
 
-        array_map([$this, 'baseValidatePoints'], $this->points);
+        array_map([$this, 'parent::validatePoints'], $this->points);
     }
 
     /**

@@ -124,7 +124,7 @@ class ImageAnnotationTest extends ModelTestCase
         $this->model->validatePoints([10]);
     }
 
-    public function testAllowedBySessionScopeHideOwn()
+    public function testScopeAllowedBySessionHideOwn()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -177,7 +177,7 @@ class ImageAnnotationTest extends ModelTestCase
         $this->assertContains($a3->id, $ids);
     }
 
-    public function testAllowedBySessionScopeHideOther()
+    public function testScopeAllowedBySessionHideOther()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -241,7 +241,7 @@ class ImageAnnotationTest extends ModelTestCase
         $this->assertContains($a3->id, $ids);
     }
 
-    public function testAllowedBySessionScopeHideBoth()
+    public function testScopeAllowedBySessionHideBoth()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -344,5 +344,10 @@ class ImageAnnotationTest extends ModelTestCase
     public function testGetImage()
     {
         $this->assertEquals($this->model->image, $this->model->getImage());
+    }
+
+    public function testGetFileIdAttribute()
+    {
+        $this->assertEquals($this->model->image_id, $this->model->file_id);
     }
 }

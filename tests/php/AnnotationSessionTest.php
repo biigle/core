@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use Biigle\AnnotationSession;
+use Biigle\MediaType;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
@@ -246,7 +247,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]));
     }
 
-    public function testAllowsAccess()
+    public function testAllowsAccessImageAnnotation()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -328,6 +329,88 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertFalse($session->allowsAccess($a4, $ownUser));
     }
 
+    public function testAllowsAccessVideoAnnotation()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create();
+
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $a3 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $a4 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al4 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::make([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $this->assertTrue($session->allowsAccess($a1, $ownUser));
+        $this->assertTrue($session->allowsAccess($a2, $ownUser));
+        $this->assertTrue($session->allowsAccess($a3, $ownUser));
+        $this->assertTrue($session->allowsAccess($a4, $ownUser));
+
+        $session->hide_own_annotations = true;
+
+        $this->assertFalse($session->allowsAccess($a1, $ownUser));
+        $this->assertTrue($session->allowsAccess($a2, $ownUser));
+        $this->assertTrue($session->allowsAccess($a3, $ownUser));
+        $this->assertTrue($session->allowsAccess($a4, $ownUser));
+
+        $session->hide_own_annotations = false;
+        $session->hide_other_users_annotations = true;
+
+        $this->assertTrue($session->allowsAccess($a1, $ownUser));
+        $this->assertFalse($session->allowsAccess($a2, $ownUser));
+        $this->assertTrue($session->allowsAccess($a3, $ownUser));
+        $this->assertFalse($session->allowsAccess($a4, $ownUser));
+
+        $session->hide_own_annotations = true;
+
+        $this->assertFalse($session->allowsAccess($a1, $ownUser));
+        $this->assertFalse($session->allowsAccess($a2, $ownUser));
+        $this->assertTrue($session->allowsAccess($a3, $ownUser));
+        $this->assertFalse($session->allowsAccess($a4, $ownUser));
+    }
+
     public function testStartsAtEndsAtMutator()
     {
         $session = self::create([
@@ -356,7 +439,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertArrayHasKey('ends_at_iso8601', $session->toArray());
     }
 
-    public function testAnnotations()
+    public function testAnnotationsImage()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -403,6 +486,66 @@ class AnnotationSessionTest extends ModelTestCase
 
         $session = static::create([
             'volume_id' => $image->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($ownUser);
+
+        $this->assertTrue($session->annotations()->where('id', $a1->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a2->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a3->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a4->id)->exists());
+    }
+
+    public function testAnnotationsVideo()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create([
+            'volume_id' => VolumeTest::create(['media_type_id' => MediaType::videoId()]),
+        ]);
+
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $a3 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $a4 = VideoAnnotationTest::create([
+            'created_at' => '2016-09-06',
+        ]);
+        $al4 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
         ]);

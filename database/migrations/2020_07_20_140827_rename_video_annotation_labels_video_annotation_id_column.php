@@ -25,6 +25,8 @@ class RenameVideoAnnotationLabelsVideoAnnotationIdColumn extends Migration
      */
     public function down()
     {
-        $table->renameColumn('annotation_id', 'video_annotation_id');
+        Schema::table('video_annotation_labels', function (Blueprint $table) {
+            $table->renameColumn('annotation_id', 'video_annotation_id');
+        });
     }
 }
