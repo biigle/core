@@ -168,11 +168,6 @@ $router->delete(
     'UserPinnedProjectController@destroy'
 );
 
-$router->resource('projects.videos', 'ProjectVideoController', [
-    'only' => ['index', 'store'],
-    'parameters' => ['projects' => 'id'],
-]);
-
 $router->post(
     'projects/{id}/volumes/{id2}',
     'ProjectVolumeController@attach'
@@ -209,7 +204,7 @@ $router->resource('system-messages', 'SystemMessageController', [
 $router->get('videos/{id}/file', 'VideoFileController@show');
 
 $router->resource('videos', 'VideoController', [
-    'only' => ['update', 'destroy'],
+    'only' => ['destroy'],
     'parameters' => ['videos' => 'id'],
 ]);
 
