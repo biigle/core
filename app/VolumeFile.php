@@ -6,7 +6,7 @@ use Biigle\FileCache\Contracts\File as FileContract;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 
-class VolumeFile extends Model implements FileContract
+abstract class VolumeFile extends Model implements FileContract
 {
     use HasJsonAttributes;
 
@@ -44,4 +44,11 @@ class VolumeFile extends Model implements FileContract
     {
         return $this->belongsTo(Volume::class);
     }
+
+    /**
+     * URL to the thumbnail of this file.
+     *
+     * @return string
+     */
+    abstract public function getThumbnailUrlAttribute();
 }

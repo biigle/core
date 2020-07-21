@@ -223,4 +223,14 @@ class Image extends VolumeFile
     {
         return $this->getJsonAttr('tilingInProgress', false);
     }
+
+    /**
+     * URL to the thumbnail of this image.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return thumbnail_url($this->uuid);
+    }
 }

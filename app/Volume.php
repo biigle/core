@@ -157,11 +157,22 @@ class Volume extends Model
     /**
      * The images belonging to this volume ordered by filename (ascending).
      *
+     * @deprecated Use `orderedFiles` instead.
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function orderedImages()
     {
-        return $this->images()->orderBy('filename', 'asc');
+        return $this->orderedFiles();
+    }
+
+    /**
+     * The images belonging to this volume ordered by filename (ascending).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderedFiles()
+    {
+        return $this->files()->orderBy('filename', 'asc');
     }
 
     /**
@@ -283,7 +294,7 @@ class Volume extends Model
     }
 
     /**
-     * An image that can be used a unique thumbnail for this volume.
+     * An image that can be used as unique thumbnail for this volume.
      *
      * @return Image
      */
@@ -301,11 +312,11 @@ class Volume extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return $this->thumbnail ? thumbnail_url($this->thumbnail->uuid) : null;
+        return $this->thumbnail ? $this->thumbnail->thumbnailUrl : null;
     }
 
     /**
-     * Several images that can be used for the preview thumbnail of a volume.
+     * Several images or videos that can be used for the preview thumbnail of a volume.
      *
      * @return \Illuminate\Support\Collection
      */
@@ -315,11 +326,11 @@ class Volume extends Model
         // volume exists.
         return Cache::remember("volume-thumbnails-{$this->id}", 3600, function () {
             $number = 10;
-            $total = $this->images()->count();
-            $query = $this->orderedImages();
+            $total = $this->files()->count();
+            $query = $this->orderedFiles();
             $step = intdiv($total, $number);
 
-            return $this->orderedImages()
+            return $this->orderedFiles()
                 ->when($step > 1, function ($query) use ($step) {
                     $query->whereRaw("(id % {$step}) = 0");
                 })
@@ -335,8 +346,8 @@ class Volume extends Model
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(function ($image) {
-            return thumbnail_url($image->uuid);
+        return $this->thumbnails->map(function ($file) {
+            return $file->thumbnailUrl;
         });
     }
 

@@ -257,7 +257,7 @@ class Project extends Model
     {
         return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
-                ->select('id')
+                ->select('id', 'media_type_id')
                 ->orderBy('id')
                 ->first();
 

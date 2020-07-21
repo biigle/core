@@ -321,14 +321,41 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
 
+    public function testOrderedFilesImage()
+    {
+        ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+        ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+        $this->assertEquals('a.jpg', $this->model->orderedFiles()->first()->filename);
+    }
+
+    public function testOrderedFilesVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+
+        VideoTest::create([
+            'filename' => 'b.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $this->assertEquals('a.mp4', $this->model->orderedFiles()->first()->filename);
+    }
+
     public function testGetThumbnailAttributeNull()
     {
         $this->assertEquals(null, $this->model->thumbnail);
     }
 
-    public function testGetThumbnailAttribute()
+    public function testGetThumbnailAttributeImage()
     {
-        $this->markTestIncomplete('implement for video volumes, too');
         $i1 = ImageTest::create([
             'filename' => 'a.jpg',
             'volume_id' => $this->model->id,
@@ -348,6 +375,31 @@ class VolumeTest extends ModelTestCase
         // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
         $i2->delete();
         $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
+
+    public function testGetThumbnailAttributeVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+
+        $v1 = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $v2 = VideoTest::create([
+            'filename' => 'b.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $v3 = VideoTest::create([
+            'filename' => 'c.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        // Should be the middle image ordered by name.
+        $this->assertEquals($v2->uuid, $this->model->thumbnail->uuid);
+
+        // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
+        $v2->delete();
+        $this->assertEquals($v1->uuid, $this->model->thumbnail->uuid);
     }
 
     public function testHasGeoInfo()
@@ -452,9 +504,8 @@ class VolumeTest extends ModelTestCase
         $this->assertInstanceOf(Image::class, $thumbnails[0]);
     }
 
-    public function testGetThumbnailUrlAttribute()
+    public function testGetThumbnailUrlAttributeImage()
     {
-        $this->markTestIncomplete('implement for video volumes, too');
         $this->assertNull($this->model->thumbnailUrl);
 
         $i = ImageTest::create([
@@ -466,9 +517,22 @@ class VolumeTest extends ModelTestCase
         $this->assertStringContainsString($i->uuid, $this->model->thumbnailUrl);
     }
 
-    public function testGetThumbnailsUrlAttribute()
+    public function testGetThumbnailUrlAttributeVideo()
     {
-        $this->markTestIncomplete('implement for video volumes, too');
+        $this->model->media_type_id = MediaType::videoId();
+        $this->assertNull($this->model->thumbnailUrl);
+
+        $v = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->model->flushThumbnailCache();
+        $this->assertStringContainsString($v->uuid, $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailsUrlAttributeImage()
+    {
         $this->assertEmpty($this->model->thumbnailsUrl);
 
         $i = ImageTest::create([
@@ -478,5 +542,19 @@ class VolumeTest extends ModelTestCase
 
         $this->model->flushThumbnailCache();
         $this->assertStringContainsString($i->uuid, $this->model->thumbnailsUrl[0]);
+    }
+
+    public function testGetThumbnailsUrlAttributeVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+        $this->assertNull($this->model->thumbnailUrl);
+
+        $v = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->model->flushThumbnailCache();
+        $this->assertStringContainsString($v->uuid, $this->model->thumbnailsUrl[0]);
     }
 }
