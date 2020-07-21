@@ -13,7 +13,7 @@ use Biigle\AnnotationLabel;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-abstract class AnnotationPolicy extends CachedPolicy
+class AnnotationPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
@@ -40,7 +40,7 @@ abstract class AnnotationPolicy extends CachedPolicy
      */
     public function access(User $user, Annotation $annotation)
     {
-        $table = $this->getFileModelTableName();
+        $table = $this->getFileModelTableName($annotation);
 
         return $this->remember("{$table}-annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             $volume = Volume::select('volumes.id')
@@ -64,7 +64,7 @@ abstract class AnnotationPolicy extends CachedPolicy
      */
     public function update(User $user, Annotation $annotation)
     {
-        $table = $this->getFileModelTableName();
+        $table = $this->getFileModelTableName($annotation);
 
         return $this->remember("{$table}-annotation-can-update-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             // user must be member of one of the projects, the annotation belongs to
@@ -99,7 +99,7 @@ abstract class AnnotationPolicy extends CachedPolicy
      */
     public function attachLabel(User $user, Annotation $annotation, Label $label)
     {
-        $table = $this->getFileModelTableName();
+        $table = $this->getFileModelTableName($annotation);
 
         return $this->remember("{$table}-annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label, $table) {
             // Projects, the annotation belongs to *and* the user is editor, expert or admin of.
@@ -138,7 +138,7 @@ abstract class AnnotationPolicy extends CachedPolicy
      */
     public function destroy(User $user, Annotation $annotation)
     {
-        $table = $this->getFileModelTableName();
+        $table = $this->getFileModelTableName($annotation);
 
         return $this->remember("{$table}-annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             // selects the IDs of the projects, the annotation belongs to
@@ -151,8 +151,7 @@ abstract class AnnotationPolicy extends CachedPolicy
 
             // check if there are labels of other users attached to this annotation
             // this also handles the case correctly when *no* label is attached
-            $labelClass = $this->getLabelClass();
-            $hasLabelsFromOthers = $labelClass::where('annotation_id', $annotation->id)
+            $hasLabelsFromOthers = $annotation->labels()
                 ->where('user_id', '!=', $user->id)
                 ->exists();
 
@@ -181,29 +180,13 @@ abstract class AnnotationPolicy extends CachedPolicy
     }
 
     /**
-     * Get the class name of the file model.
+     * Get the file model table name of the annotation.
      *
+     * @param Annotation $annotation
      * @return string
      */
-    abstract protected function getFileClass();
-
-    /**
-     * Get the class name of the annotation label model.
-     *
-     * @return string
-     */
-    abstract protected function getLabelClass();
-
-    /**
-     * Get the file model table name
-     *
-     * @return string
-     */
-    protected function getFileModelTableName()
+    protected function getFileModelTableName(Annotation $annotation)
     {
-        $fileClass = $this->getFileClass();
-        $file = new $fileClass;
-
-        return $file->getTable();
+        return $annotation->file()->getRelated()->getTable();
     }
 }

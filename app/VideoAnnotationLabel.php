@@ -2,12 +2,7 @@
 
 namespace Biigle;
 
-use Biigle\Label;
-use Biigle\Shape;
-use Biigle\User;
-use Illuminate\Database\Eloquent\Model;
-
-class VideoAnnotationLabel extends Model
+class VideoAnnotationLabel extends AnnotationLabel
 {
     /**
      * The attributes that are mass assignable.
@@ -27,25 +22,5 @@ class VideoAnnotationLabel extends Model
     public function annotation()
     {
         return $this->belongsTo(VideoAnnotation::class, 'annotation_id');
-    }
-
-    /**
-     * The label, this annotation label belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function label()
-    {
-        return $this->belongsTo(Label::class);
-    }
-
-    /**
-     * The user who created this annotation label.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class)->select('id', 'firstname', 'lastname');
     }
 }

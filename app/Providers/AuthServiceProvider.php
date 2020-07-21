@@ -15,8 +15,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        \Biigle\ImageAnnotation::class => \Biigle\Policies\ImageAnnotationPolicy::class,
-        \Biigle\ImageAnnotationLabel::class => \Biigle\Policies\ImageAnnotationLabelPolicy::class,
+        \Biigle\ImageAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
+        \Biigle\ImageAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
         \Biigle\ApiToken::class => \Biigle\Policies\ApiTokenPolicy::class,
         \Biigle\Image::class => \Biigle\Policies\ImagePolicy::class,
         \Biigle\ImageLabel::class => \Biigle\Policies\ImageLabelPolicy::class,
@@ -27,8 +27,8 @@ class AuthServiceProvider extends ServiceProvider
         \Biigle\SystemMessage::class => \Biigle\Policies\SystemMessagePolicy::class,
         \Biigle\User::class => \Biigle\Policies\UserPolicy::class,
         \Biigle\Video::class => \Biigle\Policies\VideoPolicy::class,
-        \Biigle\VideoAnnotation::class => \Biigle\Policies\VideoAnnotationPolicy::class,
-        \Biigle\VideoAnnotationLabel::class => \Biigle\Policies\VideoAnnotationLabelPolicy::class,
+        \Biigle\VideoAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
+        \Biigle\VideoAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
         \Biigle\Volume::class => \Biigle\Policies\VolumePolicy::class,
     ];
 

@@ -50,8 +50,8 @@ abstract class Annotation extends Model
 
         return $query->whereIn("{$table}.id", function ($query) use ($user, $table) {
             $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
-            $foreignKeyName = $this->file()->getQualifiedForeignKeyName();
             $ownerTable = explode('.', $ownerKeyName)[0];
+            $foreignKeyName = $this->file()->getQualifiedForeignKeyName();
 
             $query->select("{$table}.id")
                 ->from($table)

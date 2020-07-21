@@ -2,12 +2,10 @@
 
 namespace Biigle;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Pivot object for the connection between ImageAnnotation and Label.
  */
-class ImageAnnotationLabel extends Model
+class ImageAnnotationLabel extends AnnotationLabel
 {
     /**
      * The attributes excluded from the model's JSON form.
@@ -25,6 +23,8 @@ class ImageAnnotationLabel extends Model
      * @var array
      */
     protected $casts = [
+        'user_id' => 'int',
+        'annotation_id' => 'int',
         'confidence' => 'float',
     ];
 
@@ -36,26 +36,5 @@ class ImageAnnotationLabel extends Model
     public function annotation()
     {
         return $this->belongsTo(ImageAnnotation::class, 'annotation_id');
-    }
-
-    /**
-     * The label, this annotation label belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function label()
-    {
-        return $this->belongsTo(Label::class);
-    }
-
-    /**
-     * The user who created this annotation label.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class)
-            ->select('id', 'firstname', 'lastname', 'role_id');
     }
 }
