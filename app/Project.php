@@ -263,12 +263,6 @@ class Project extends Model
 
             if ($volume) {
                 return $volume->thumbnailUrl;
-            } else {
-                $video = $this->videos()->first();
-
-                if ($video) {
-                    return $video->thumbnailUrl;
-                }
             }
 
             return null;

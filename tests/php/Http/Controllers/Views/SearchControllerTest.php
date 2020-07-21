@@ -166,14 +166,10 @@ class SearchControllerTest extends TestCase
         $project = ProjectTest::create();
         $project->addUserId($guest->id, Role::guestId());
 
-        $video1 = VideoTest::create([
-            'project_id' => $project->id,
-            'name' => 'random video',
-        ]);
-        $video2 = VideoTest::create([
-            'project_id' => $project->id,
-            'name' => 'another video',
-        ]);
+        $video1 = VideoTest::create(['filename' => 'random video']);
+        $project->addVolumeId($video1->volume_id);
+        $video2 = VideoTest::create(['filename' => 'another video']);
+        $project->addVolumeId($video2->volume_id);
 
         $this->be($user);
         $this->get('search?t=videos')

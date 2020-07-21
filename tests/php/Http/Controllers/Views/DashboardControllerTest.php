@@ -130,9 +130,5 @@ class DashboardControllerTest extends TestCase
 
         $items = $controller->videosActivityItems($user, 3);
         $this->assertCount(3, $items);
-
-        VideoTest::create(['creator_id' => $user->id]);
-        $items = $controller->videosActivityItems($user, 3);
-        $this->assertCount(4, $items);
     }
 }
