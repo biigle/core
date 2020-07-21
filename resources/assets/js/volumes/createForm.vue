@@ -82,11 +82,12 @@ export default {
                 this.breadCrumbs = this.breadCrumbs.slice(0, i + 1);
             }
         },
-        fetchImages(disk, path) {
+        fetchFiles(disk, path) {
             let key = disk + '://' + path;
             if (!this.fileCache.hasOwnProperty(key)) {
                 this.loadingBrowser = true;
 
+                // TODO get videos if the volume media type is video
                 let promise = BrowserApi.getImages({disk: disk, path: path});
                 promise.finally(() => this.loadingBrowser = false);
                 this.fileCache[key] = promise;
@@ -94,7 +95,7 @@ export default {
 
             return this.fileCache[key];
         },
-        setImages(response) {
+        setFiles(response) {
             this.filenames = response.body.join(', ');
         },
         selectDirectory(directory) {
@@ -102,8 +103,8 @@ export default {
             if (directory) {
                 crumbs.push(directory);
             }
-            this.fetchImages(this.storageDisk, crumbs.join('/'))
-                .then(this.setImages)
+            this.fetchFiles(this.storageDisk, crumbs.join('/'))
+                .then(this.setFiles)
                 .then(() => this.url = this.storageDisk + '://' + crumbs.join('/'))
                 .catch(handleErrorResponse);
         },

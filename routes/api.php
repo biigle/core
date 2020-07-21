@@ -309,6 +309,7 @@ $router->group([
     $router->group(['prefix' => 'browser'], function ($router) {
         $router->get('directories/{disk}', 'BrowserController@indexDirectories');
         $router->get('images/{disk}', 'BrowserController@indexImages');
+        $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
 });
 

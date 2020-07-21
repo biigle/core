@@ -89,16 +89,57 @@ class BrowserController extends Controller
      */
     public function indexImages(Request $request, $disk)
     {
+        return $this->indexFiles($request, $disk, Volume::IMAGE_FILE_REGEX);
+    }
+
+    /**
+     * List videos in a storage disk.
+     *
+     * @api {get} volumes/browser/videos/:disk List videos
+     * @apiGroup Volume_Browser
+     * @apiName VolumeBrowserIndexVideos
+     * @apiPermission user
+     * @apiDescription The volume browser can be disabled for a BIIGLE instance.
+     *
+     * @apiParam {Number} disk Name of the storage disk to browse.
+     * @apiParam {Number} path Path in the storage disk to list videos for.
+     *
+     * @apiSuccessExample {json} Success response:
+     * [
+     *    'video_1.mp4',
+     *    'video_2.mp4',
+     *    'video_3.mp4',
+     * ]
+     *
+     * @param  Request $request
+     * @param  string $disk
+     * @return \Illuminate\Http\Response
+     */
+    public function indexVideos(Request $request, $disk)
+    {
+        return $this->indexFiles($request, $disk, Volume::VIDEO_FILE_REGEX);
+    }
+
+    /**
+     * List files filtered by a regex in a storage disk.
+     *
+     * @param Request $request
+     * @param string $disk
+     * @param string $regex
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function indexFiles(Request $request, $disk, $regex)
+    {
         if (!$this->diskAccessible($disk)) {
             abort(404);
         }
         $path = $request->input('path', '');
-        $files = Storage::disk($disk)->files($path);
         // Use array_values to discard keys. This ensures the JSON returned by this
         // endpoint is an array, not an object.
-        $images = array_values(preg_grep(Volume::FILE_REGEX, $files));
+        $files = array_values(preg_grep($regex, Storage::disk($disk)->files($path)));
 
-        return $this->removePrefix($path, $images);
+        return $this->removePrefix($path, $files);
     }
 
     /**

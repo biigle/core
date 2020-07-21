@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Storage;
 
 class BrowserControllerTest extends ApiTestCase
@@ -62,11 +63,10 @@ class BrowserControllerTest extends ApiTestCase
 
     public function testIndexImages()
     {
-        $this->markTestIncomplete('implement support for videos');
         Storage::disk('test')->put('test_1/test1.jpg', '');
         Storage::disk('test')->put('test_1/test1.txt', '');
         Storage::disk('test')->put('test_1/test2.jpg', '');
-        Storage::disk('test')->put('test_1/test2.txt', '');
+        Storage::disk('test')->put('test_1/test2.mp4', '');
 
         $this->doTestApiRoute('GET', '/api/v1/volumes/browser/images/test', [
             'path' => 'test_1',
@@ -85,5 +85,31 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/images/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test1.jpg', 'test2.jpg']);
+    }
+
+    public function testIndexVideos()
+    {
+        Storage::disk('test')->put('test_1/test1.mp4', '');
+        Storage::disk('test')->put('test_1/test1.txt', '');
+        Storage::disk('test')->put('test_1/test2.mp4', '');
+        Storage::disk('test')->put('test_1/test2.jpg', '');
+
+        $this->doTestApiRoute('GET', '/api/v1/volumes/browser/videos/test', [
+            'path' => 'test_1',
+        ]);
+
+        $this->beUser();
+        $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
+            ->assertStatus(404);
+        config(['volumes.browser' => true]);
+
+        $this->get('/api/v1/volumes/browser/videos/local?path=test_1')
+            ->assertStatus(404);
+        $this->get('/api/v1/volumes/browser/videos/missing?path=test_1')
+            ->assertStatus(404);
+
+        $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
+            ->assertStatus(200)
+            ->assertExactJson(['test1.mp4', 'test2.mp4']);
     }
 }
