@@ -228,20 +228,6 @@ class UsersController extends Controller
      */
     public function showVideos(User $user)
     {
-        $videosTotal = Video::count();
-
-        $videos = Video::where('creator_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->select('id', 'name')
-            ->get();
-
-        $videosCount = $videos->count();
-        $videosPercent = $videosTotal > 0 ? round($videosCount / $videosTotal * 100, 2) : 0;
-
-        $totalDuration = Video::sum('duration');
-        $duration = Video::where('creator_id', $user->id)->sum('duration');
-        $durationPercent = $totalDuration > 0 ? round($duration / $totalDuration * 100, 2) : 0;
-
         $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalVideoAnnotationLabels > 0) {
@@ -258,6 +244,6 @@ class UsersController extends Controller
             $relativeVideoAnnotations = 0;
         }
 
-        return compact('videos', 'videosCount', 'videosPercent', 'duration', 'durationPercent', 'totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
+        return compact('totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
     }
 }
