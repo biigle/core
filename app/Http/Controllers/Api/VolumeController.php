@@ -3,7 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\UpdateVolume;
-use Biigle\Jobs\ProcessNewImages;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Volume;
 use Exception;
 use Illuminate\Http\Request;
@@ -93,9 +93,8 @@ class VolumeController extends Controller
      * @apiParam {Number} id The volume ID.
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
-     * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the volume.
-     * @apiParam (Attributes that can be updated) {String} url The base URL of the image files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
-     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this volume.
+     * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
+     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
      *
@@ -107,7 +106,6 @@ class VolumeController extends Controller
         $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
         $volume->url = $request->input('url', $volume->url);
-        $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
         $volume->video_link = $request->input('video_link', $volume->video_link);
         $volume->gis_link = $request->input('gis_link', $volume->gis_link);
         $volume->doi = $request->input('doi', $volume->doi);
@@ -119,7 +117,7 @@ class VolumeController extends Controller
 
         // Do this *after* saving.
         if ($newUrl || $shouldReread) {
-            ProcessNewImages::dispatch($volume);
+            ProcessNewVolumeFiles::dispatch($volume);
         }
 
         if (!$this->isAutomatedRequest()) {

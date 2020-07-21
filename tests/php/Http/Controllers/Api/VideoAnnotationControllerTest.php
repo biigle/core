@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Jobs\TrackObject;
+use Biigle\MediaType;
 use Biigle\Shape;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -18,7 +19,9 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->video = VideoTest::create(['project_id' => $this->project()->id]);
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+        $this->video = VideoTest::create(['volume_id' => $this->volume()->id]);
     }
 
     public function testIndex()

@@ -28,15 +28,17 @@ class VideoFileController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $video = Video::findOrFail($id);
+        $video = Video::with('volume')->findOrFail($id);
         $this->authorize('access', $video);
 
-        if ($video->isRemote()) {
+        if ($video->volume->isRemote()) {
             return redirect($video->url);
         }
 
+        [$disk, $path] = explode('://', $video->volume->url);
+
         try {
-            $response = Storage::disk($video->disk)->response($video->path);
+            $response = Storage::disk($disk)->response("{$path}/{$video->filename}");
         } catch (FileNotFoundException $e) {
             abort(404);
         }

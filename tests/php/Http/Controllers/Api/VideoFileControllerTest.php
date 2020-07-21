@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\VideoTest;
 use Storage;
 
@@ -11,10 +12,12 @@ class VideoFileControllerTest extends ApiTestCase
     public function testShow()
     {
         Storage::fake('test');
-        Storage::disk('test')->put('video.mp4', 'testvideo');
+        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
         $video = VideoTest::create([
-            'url' => 'test://video.mp4',
-            'project_id' => $this->project()->id,
+            'filename' => 'video.mp4',
+            'volume_id' => $this->volume()->id,
         ]);
 
         $this->doTestApiRoute('GET', "api/v1/videos/{$video->id}/file");
@@ -30,9 +33,11 @@ class VideoFileControllerTest extends ApiTestCase
     public function testShowNotFound()
     {
         Storage::fake('test');
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
         $video = VideoTest::create([
-            'url' => 'test://video.mp4',
-            'project_id' => $this->project()->id,
+            'filename' => 'video.mp4',
+            'volume_id' => $this->volume()->id,
         ]);
 
         $this->beGuest();
@@ -42,10 +47,12 @@ class VideoFileControllerTest extends ApiTestCase
     public function testShowPartial()
     {
         Storage::fake('test');
-        Storage::disk('test')->put('video.mp4', 'testvideo');
+        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
         $video = VideoTest::create([
-            'url' => 'test://video.mp4',
-            'project_id' => $this->project()->id,
+            'filename' => 'video.mp4',
+            'volume_id' => $this->volume()->id,
             'attrs' => ['size' => 9],
         ]);
 
@@ -61,9 +68,12 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowRemote()
     {
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->url = 'https://domain.tld';
+        $this->volume()->save();
         $video = VideoTest::create([
-            'url' => 'https://domain.tdl/video.mp4',
-            'project_id' => $this->project()->id,
+            'filename' => 'video.mp4',
+            'volume_id' => $this->volume()->id,
         ]);
 
         $this->beGuest();

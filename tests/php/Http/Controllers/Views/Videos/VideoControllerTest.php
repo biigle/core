@@ -3,13 +3,16 @@
 namespace Biigle\Tests\Http\Controllers\Views\Videos;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\VideoTest;
 
 class VideoControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $video = VideoTest::create(['project_id' => $this->project()->id]);
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+        $video = VideoTest::create(['volume_id' => $this->volume()->id]);
 
         $this->beUser();
         $this->get('videos/999')->assertStatus(404);

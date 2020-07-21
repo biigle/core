@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Storage;
 
@@ -45,10 +46,10 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $this->doesntExpectJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->doesntExpectJobs(ProcessNewVolumeFiles::class);
 
         $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::timeSeriesId();
+        $this->volume()->media_type_id = MediaType::imageId();
         $this->volume()->save();
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
@@ -64,11 +65,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::locationSeriesId(),
+            'media_type_id' => MediaType::videoId(),
         ]);
         $response->assertStatus(200);
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
-        $this->assertEquals(MediaType::locationSeriesId(), $this->volume()->fresh()->media_type_id);
+        // Media type cannot be updated.
+        $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
     }
 
     public function testUpdateJsonAttrs()
@@ -110,7 +112,7 @@ class VolumeControllerTest extends ApiTestCase
         Storage::disk('test')->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'test://volumes',
         ]);
@@ -123,7 +125,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         // A request that changes no attributes performed by a global admin triggers
         // a reread.
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id)
             ->assertStatus(200);
     }
@@ -140,24 +142,10 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'media_type_id' => '',
-        ]);
-        // media type id must not be empty if present
-        $response->assertStatus(422);
-
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'media_type_id' => 999,
-        ]);
-        // media type id does not exist
-        $response->assertStatus(422);
-
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'url' => '',
         ]);
         // url must not be empty if present
         $response->assertStatus(422);
-
-        $this->markTestIncomplete('Media type cannot be updated');
     }
 
     public function testUpdateRedirect()

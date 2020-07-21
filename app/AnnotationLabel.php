@@ -14,6 +14,7 @@ abstract class AnnotationLabel extends Model
     protected $fillable = [
         'label_id',
         'user_id',
+        'annotation_id',
     ];
 
     /**
