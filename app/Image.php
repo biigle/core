@@ -2,28 +2,16 @@
 
 namespace Biigle;
 
-use Biigle\FileCache\Contracts\File as FileContract;
-use Biigle\Traits\HasJsonAttributes;
 use Exception;
 use FileCache;
-use Illuminate\Database\Eloquent\Model;
 use Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model implements FileContract
+class Image extends VolumeFile
 {
-    use HasJsonAttributes;
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
     /**
      * The attributes hidden in the model's JSON form.
      *
@@ -55,24 +43,6 @@ class Image extends Model implements FileContract
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * The volume, this image belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function volume()
-    {
-        return $this->belongsTo(Volume::class);
-    }
-
-    /**
      * The annotations on this image.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -90,17 +60,6 @@ class Image extends Model implements FileContract
     public function labels()
     {
         return $this->hasMany(ImageLabel::class)->with('label', 'user');
-    }
-
-    /**
-     * Adds the `url` attribute to the image model. The url is the absolute path
-     * to the original image file.
-     *
-     * @return string
-     */
-    public function getUrlAttribute()
-    {
-        return "{$this->volume->url}/{$this->filename}";
     }
 
     /**

@@ -3,16 +3,11 @@
 namespace Biigle;
 
 use Biigle\Events\VideoDeleted;
-use Biigle\FileCache\Contracts\File as FileContract;
-use Biigle\Traits\HasJsonAttributes;
 use Biigle\User;
 use DB;
-use Illuminate\Database\Eloquent\Model;
 
-class Video extends Model implements FileContract
+class Video extends VolumeFile
 {
-    use HasJsonAttributes;
-
     /**
      * Allowed video MIME types.
      *
@@ -66,13 +61,6 @@ class Video extends Model implements FileContract
     const ERROR_MALFORMED = 4;
 
     /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -112,34 +100,6 @@ class Video extends Model implements FileContract
     protected $dispatchesEvents = [
         'deleted' => VideoDeleted::class,
     ];
-
-    /**
-     * Adds the `url` attribute to the video model. The url is the absolute path
-     * to the original video file.
-     *
-     * @return string
-     */
-    public function getUrlAttribute()
-    {
-        return "{$this->volume->url}/{$this->filename}";
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-    /**
-     * The volume this video belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function volume()
-    {
-        return $this->belongsTo(Volume::class);
-    }
 
     /**
      * The annotations that belong to this video.

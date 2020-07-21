@@ -6,6 +6,7 @@ use Biigle\Label;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
+use Biigle\VolumeFile;
 use Cache;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -32,14 +33,14 @@ class VolumeFilePolicy extends CachedPolicy
      * Determine if the user can access the given file.
      *
      * @param  User  $user
-     * @param  int  $volumeId
+     * @param  VolumeFile  $file
      * @return bool
      */
-    public function accessFile(User $user, $volumeId)
+    public function access(User $user, VolumeFile $file)
     {
         // put this to permanent cache for rapid querying of file thumbnails
-        return Cache::remember("volume-file-can-access-{$user->id}-{$volumeId}", 30, function () use ($user, $volumeId) {
-            return Project::inCommon($user, $volumeId)->exists();
+        return Cache::remember("volume-file-can-access-{$user->id}-{$file->volume_id}", 30, function () use ($user, $file) {
+            return Project::inCommon($user, $file->volume_id)->exists();
         });
     }
 
@@ -47,13 +48,13 @@ class VolumeFilePolicy extends CachedPolicy
      * Determine if the user can add an annotation to given file.
      *
      * @param  User  $user
-     * @param  int  $volumeId
+     * @param  VolumeFile  $file
      * @return bool
      */
-    public function addAnnotationToFile(User $user, $volumeId)
+    public function addAnnotation(User $user, VolumeFile $file)
     {
-        return $this->remember("volume-file-can-add-annotation-{$user->id}-{$volumeId}", function () use ($user, $volumeId) {
-            return Project::inCommon($user, $volumeId, [
+        return $this->remember("volume-file-can-add-annotation-{$user->id}-{$file->volume_id}", function () use ($user, $file) {
+            return Project::inCommon($user, $file->volume_id, [
                 Role::editorId(),
                 Role::expertId(),
                 Role::adminId(),
@@ -65,13 +66,15 @@ class VolumeFilePolicy extends CachedPolicy
      * Determine if the user can delete the given file.
      *
      * @param  User  $user
-     * @param  int  $volumeId
+     * @param  VolumeFile  $file
      * @return bool
      */
-    public function destroyFile(User $user, $volumeId)
+    public function destroy(User $user, VolumeFile $file)
     {
-        return $this->remember("volume-file-can-destroy-{$user->id}-{$volumeId}", function () use ($user, $volumeId) {
-            return Project::inCommon($user, $volumeId, [Role::adminId()])->exists();
+        return $this->remember("volume-file-can-destroy-{$user->id}-{$file->volume_id}", function () use ($user, $file) {
+            return Project::inCommon($user, $file->volume_id, [
+                Role::adminId(),
+            ])->exists();
         });
     }
 
@@ -83,16 +86,16 @@ class VolumeFilePolicy extends CachedPolicy
      * the user and the file belong to.
      *
      * @param  User  $user
-     * @param  int  $volumeId
+     * @param  VolumeFile  $file
      * @param  Label  $label
      * @return bool
      */
-    public function attachLabelToFile(User $user, $volumeId, Label $label)
+    public function attachLabel(User $user, VolumeFile $file, Label $label)
     {
-        return $this->remember("volume-file-can-attach-label-{$user->id}-{$volumeId}-{$label->id}", function () use ($user, $volumeId, $label) {
+        return $this->remember("volume-file-can-attach-label-{$user->id}-{$file->volume_id}-{$label->id}", function () use ($user, $file, $label) {
             // Projects, the file belongs to *and* the user is editor, expert or admin
             // of.
-            $projectIds = Project::inCommon($user, $volumeId, [
+            $projectIds = Project::inCommon($user, $file->volume_id, [
                 Role::editorId(),
                 Role::expertId(),
                 Role::adminId(),
