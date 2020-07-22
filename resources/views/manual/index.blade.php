@@ -68,7 +68,7 @@
             </h4>
 
             <p>
-                The volume overview allows you to explore all images that belong to a volume.
+                The volume overview allows you to explore all files that belong to a volume.
             </p>
 
             <h4>
@@ -108,7 +108,7 @@
                 <a href="{{route('manual-tutorials', ['annotations', 'getting-started'])}}">Getting Started</a>
             </h4>
             <p>
-                A quick introduction to the annotation tool.
+                A quick introduction to the image annotation tool.
             </p>
 
             <h4>
@@ -132,7 +132,7 @@
             </h4>
 
             <p>
-                Learn about advanced ways to navigate the images in the annotation tool.
+                Learn about advanced ways to navigate the images in the image annotation tool.
             </p>
 
             <h4>
@@ -140,7 +140,7 @@
             </h4>
 
             <p>
-                All sidebar tabs of the annotation tool explained.
+                All sidebar tabs of the image annotation tool explained.
             </p>
 
 
@@ -149,7 +149,7 @@
             </h4>
 
             <p>
-                A list of all available shortcut keys in the annotation tool.
+                A list of all available shortcut keys in the image annotation tool.
             </p>
 
             <h4>
@@ -157,7 +157,7 @@
             </h4>
 
             <p>
-                Advanced configuration of the annotation tool.
+                Advanced configuration of the image annotation tool.
             </p>
 
             <h3>Video Annotations</h3>
@@ -215,14 +215,6 @@
 
             <p>
                 Advanced configuration of the video annotation tool.
-            </p>
-
-            <h4>
-                <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">Remote Videos</a>
-            </h4>
-
-            <p>
-                With remote videos you can use videos from your own data source in BIIGLE.
             </p>
 
 
