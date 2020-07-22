@@ -5,16 +5,16 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 
-class ImageFilenamesController extends Controller
+class FilenamesController extends Controller
 {
     /**
-     * Get all image filenames of a volume.
+     * Get all filenames of a volume.
      *
-     * @api {get} volumes/:id/filenames Get image file names
+     * @api {get} volumes/:id/filenames Get file names
      * @apiGroup Volumes
-     * @apiName VolumeIndexImageFilenames
+     * @apiName VolumeIndexFilenames
      * @apiPermission projectMember
-     * @apiDescription Returns a map of image IDs to their file names.
+     * @apiDescription Returns a map of image/video IDs to their file names.
      *
      * @apiParam {Number} id The volume ID
      *
@@ -32,6 +32,6 @@ class ImageFilenamesController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume->images()->pluck('filename', 'id');
+        return $volume->files()->pluck('filename', 'id');
     }
 }

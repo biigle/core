@@ -45,9 +45,9 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/images/filter/image-label-user{/user_id}',
     },
-    queryImagesWithFilename: {
+    queryFilesWithFilename: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/filename{/pattern}',
+        url: 'api/v1/volumes{/id}/files/filter/filename{/pattern}',
     },
     queryUsedImageLabels: {
         method: 'GET',

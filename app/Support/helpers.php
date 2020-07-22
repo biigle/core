@@ -77,8 +77,12 @@ if (!function_exists('thumbnail_url')) {
 
         if (is_null($uuid)) {
             return Storage::disk($disk)->url('');
+        } elseif (strpos($uuid, ':') !== 0) {
+            // If the uuid starts with a : it is a template string and should not be
+            // fragmented.
+            $uuid = fragment_uuid_path($uuid);
         }
 
-        return Storage::disk($disk)->url(fragment_uuid_path($uuid).'.'.$format);
+        return Storage::disk($disk)->url("{$uuid}.{$format}");
     }
 }

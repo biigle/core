@@ -282,8 +282,8 @@ $router->group([
         'uses' => 'Filters\ImageAnnotationLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/filename/{pattern}', [
-        'uses' => 'Filters\ImageFilenameController@index',
+    $router->get('{id}/files/filter/filename/{pattern}', [
+        'uses' => 'Filters\FilenameController@index',
     ]);
 
     $router->get('{id}/image-labels', [
@@ -291,7 +291,7 @@ $router->group([
     ]);
 
     $router->get('{id}/filenames', [
-        'uses' => 'ImageFilenamesController@index',
+        'uses' => 'FilenamesController@index',
     ]);
 
     $router->get('{id}/users', [

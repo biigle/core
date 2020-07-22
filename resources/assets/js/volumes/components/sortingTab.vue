@@ -13,7 +13,7 @@ export default {
             type: Number,
             required: true,
         },
-        imageIds: {
+        fileIds: {
             type: Array,
             required: true,
         }
@@ -60,7 +60,7 @@ export default {
         reset() {
             this.direction = true;
             this.activeSorter = this.defaultSorter.id;
-            this.privateSequence = biigle.$require('volumes.imageIds');
+            this.privateSequence = biigle.$require('volumes.fileIds');
         },
         sortAscending() {
             this.direction = true;
@@ -85,7 +85,7 @@ export default {
             // images of the volume. It may contain more IDs if images have been
             // deleted in the meantime.
             let map = {};
-            let ids = this.imageIds;
+            let ids = this.fileIds;
 
             for (let i = sequence.length - 1; i >= 0; i--) {
                 map[sequence[i]] = true;
@@ -123,7 +123,7 @@ export default {
         },
     },
     created() {
-        this.privateSequence = biigle.$require('volumes.imageIds');
+        this.privateSequence = biigle.$require('volumes.fileIds');
 
         let sorter = JSON.parse(localStorage.getItem(this.sorterStorageKey));
         if (sorter && this.isValidSequence(sorter.sequence)) {

@@ -6,6 +6,7 @@ import {handleErrorResponse} from '../../core/messages/store';
 
 let imageLabelsFilter = {
     id: 'imageLabels',
+    types: ['image'],
     label: 'image labels',
     help: "All images that (don't) have image labels attached.",
     listComponent: {
@@ -16,13 +17,14 @@ let imageLabelsFilter = {
             };
         },
     },
-    getSequence(volumeId) {
+    getSequence(volumeId, type) {
         return VolumesApi.queryImagesWithImageLabels({id: volumeId});
     },
 };
 
 let imageLabelFilter = {
     id: 'imageLabel',
+    types: ['image'],
     label: 'image label',
     help: "All images that (don't) have the given image label attached.",
     listComponent: {
@@ -48,7 +50,7 @@ let imageLabelFilter = {
                 .then(this.gotItems, handleErrorResponse);
         },
     },
-    getSequence(volumeId, label) {
+    getSequence(volumeId, type, label) {
         return VolumesApi.queryImagesWithImageLabel({
             id: volumeId,
             label_id: label.id,
@@ -58,6 +60,7 @@ let imageLabelFilter = {
 
 let imageLabelUserFilter = {
     id: 'imageLabelUser',
+    types: ['image'],
     label: 'image label from user',
     help: "All images that (don't) have one or more image labels attached by the given user.",
     listComponent: {
@@ -82,7 +85,7 @@ let imageLabelUserFilter = {
                 .then(this.gotItems);
         },
     },
-    getSequence(volumeId, user) {
+    getSequence(volumeId, type, user) {
         return VolumesApi.queryImagesWithImageLabelFromUser({
             id: volumeId,
             user_id: user.id,
@@ -92,8 +95,9 @@ let imageLabelUserFilter = {
 
 let filenameFilter = {
     id: 'filename',
+    types: ['image', 'video'],
     label: 'filename',
-    help: "All images that (don't) have a filename matching the given pattern. A pattern may contain the wildcard character * that matches any string of zero or more characters.",
+    help: "All :types that (don't) have a filename matching the given pattern. A pattern may contain the wildcard character * that matches any string of zero or more characters.",
     listComponent: {
         mixins: [FilterList],
         computed: {
@@ -109,10 +113,19 @@ let filenameFilter = {
             </div>
             <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
         </div>`,
-        mixins: [FilterSelect],
+        data() {
+            return {
+                selectedItem: null,
+            };
+        },
+        methods: {
+            submit() {
+                this.$emit('select', this.selectedItem);
+            },
+        },
     },
-    getSequence(volumeId, pattern) {
-        return VolumesApi.queryImagesWithFilename({
+    getSequence(volumeId, type, pattern) {
+        return VolumesApi.queryFilesWithFilename({
             id: volumeId,
             pattern: pattern,
         });
@@ -121,18 +134,20 @@ let filenameFilter = {
 
 let annotationFilter = {
     id: 'annotations',
+    types: ['image'],
     label: 'annotations',
-    help: "All images that (don't) contain annotations.",
+    help: "All :types that (don't) contain annotations.",
     listComponent: FilterList,
-    getSequence(volumeId) {
+    getSequence(volumeId, type) {
         return VolumesApi.queryImagesWithAnnotations({id: volumeId});
     },
 };
 
 let annotationLabelFilter = {
     id: 'annotationLabels',
+    types: ['image'],
     label: 'annotation with label',
-    help: "All images that (don't) contain one or more annotations with the given label.",
+    help: "All :types that (don't) contain one or more annotations with the given label.",
     listComponent: {
         mixins: [FilterList],
         data() {
@@ -154,7 +169,7 @@ let annotationLabelFilter = {
                 .then(this.gotItems, handleErrorResponse);
         },
     },
-    getSequence(volumeId, label) {
+    getSequence(volumeId, type, label) {
         return VolumesApi.queryImagesWithAnnotationLabel({
             id: volumeId,
             label_id: label.id,
@@ -164,8 +179,9 @@ let annotationLabelFilter = {
 
 let annotationUserFilter = {
     id: 'annotationUser',
+    types: ['image'],
     label: 'annotations from user',
-    help: "All images that (don't) contain one or more annotations from the given user.",
+    help: "All :types that (don't) contain one or more annotations from the given user.",
     listComponent: {
         mixins: [FilterList],
         data() {
@@ -186,7 +202,7 @@ let annotationUserFilter = {
                 .then(this.gotItems);
         },
     },
-    getSequence(volumeId, user) {
+    getSequence(volumeId, type, user) {
         return VolumesApi.queryImagesWithAnnotationFromUser({id: volumeId, user_id: user.id});
     },
 };

@@ -62,18 +62,23 @@ class VolumeController extends Controller
             })
             ->get();
 
-        $imageIds = $volume->orderedImages()
-            ->pluck('uuid', 'id');
+        $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');
 
-        $thumbUriTemplate = Storage::disk(config('thumbnails.storage_disk'))
-            ->url(':uuid.'.config('thumbnails.format'));
+        if ($volume->isImageVolume()) {
+            $thumbUriTemplate = thumbnail_url(':uuid');
+        } else {
+            $thumbUriTemplate = thumbnail_url(':uuid',config('videos.thumbnail_storage_disk'));
+        }
+
+        $type = $volume->mediaType->name;
 
         return view('volumes.show', compact(
             'volume',
             'labelTrees',
             'projects',
-            'imageIds',
-            'thumbUriTemplate'
+            'fileIds',
+            'thumbUriTemplate',
+            'type'
         ));
     }
 

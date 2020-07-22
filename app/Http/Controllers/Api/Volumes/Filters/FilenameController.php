@@ -5,14 +5,14 @@ namespace Biigle\Http\Controllers\Api\Volumes\Filters;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 
-class ImageFilenameController extends Controller
+class FilenameController extends Controller
 {
     /**
-     * List the IDs of images with a filename matching the given pattern.
+     * List the IDs of files with a filename matching the given pattern.
      *
-     * @api {get} volumes/:id/images/filter/filename/:pattern Get images with matching filename
+     * @api {get} volumes/:id/files/filter/filename/:pattern Get files with matching filename
      * @apiGroup Volumes
-     * @apiName VolumeImagesFilterFilename
+     * @apiName VolumeFilesFilterFilename
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The volume ID
@@ -33,7 +33,7 @@ class ImageFilenameController extends Controller
         // Escape trailing backslashes, else there would be an error with ilike.
         $pattern = preg_replace('/\\\\$/', '\\\\\\\\', $pattern);
 
-        return $volume->images()
+        return $volume->files()
             ->where('filename', 'ilike', str_replace('*', '%', $pattern))
             ->pluck('id');
     }

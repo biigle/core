@@ -1,6 +1,6 @@
 <script>
 /**
- * Store for the image count
+ * Store for the file count
  */
 export default new Vue({
     data: {
