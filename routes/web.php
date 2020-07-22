@@ -266,11 +266,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'video',
             'uses' => 'VideoController@show',
         ]);
-
-        $router->get('create', [
-            'as' => 'create-video',
-            'uses' => 'VideoController@store',
-        ]);
     });
 
 });

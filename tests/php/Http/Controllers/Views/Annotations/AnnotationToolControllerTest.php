@@ -12,6 +12,7 @@ class AnnotationToolControllerTest extends ApiTestCase
 {
     public function testShow()
     {
+        $this->markTestIncomplete('route should be images/xxx/annotations (rename controller?)');
         $project = ProjectTest::create();
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);

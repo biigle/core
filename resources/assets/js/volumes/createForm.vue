@@ -12,6 +12,7 @@ export default {
         return {
             disks: [],
             url: null,
+            mediaType: '',
             filenames: null,
             browsing: false,
             storageDisk: null,
@@ -46,6 +47,12 @@ export default {
             }
 
             return null;
+        },
+        isImageMediaType() {
+            return this.mediaType === 'image';
+        },
+        isVideoMediaType() {
+            return this.mediaType === 'video';
         },
     },
     methods: {
@@ -108,6 +115,12 @@ export default {
                 .then(() => this.url = this.storageDisk + '://' + crumbs.join('/'))
                 .catch(handleErrorResponse);
         },
+        selectImageMediaType() {
+            this.mediaType = 'image';
+        },
+        selectVideoMediaType() {
+            this.mediaType = 'video';
+        },
     },
     watch: {
         storageDisk(disk) {
@@ -127,6 +140,7 @@ export default {
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
+        this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
 
         if (this.disks.length === 1) {

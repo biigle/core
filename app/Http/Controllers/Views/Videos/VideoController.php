@@ -40,18 +40,4 @@ class VideoController extends Controller
             'labelTrees'
         ));
     }
-
-    /**
-     * Shows the create video page.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $project = Project::findOrFail($request->input('project'));
-        $this->authorize('update', $project);
-
-        return view('videos.store', compact('project'));
-    }
 }

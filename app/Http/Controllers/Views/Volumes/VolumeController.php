@@ -25,12 +25,15 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
         $disks = array_intersect(array_keys(config('filesystems.disks')), config('volumes.browser_disks'));
+        $mediaType = old('media_type', 'image');
+        $filenames = str_replace(["\r", "\n"], '', old('files'));
 
         return view('volumes.create', [
             'project' => $project,
-            'mediaTypes' => MediaType::all(),
             'hasBrowser' => config('volumes.browser'),
             'disks' => $disks,
+            'mediaType' => $mediaType,
+            'filenames' => $filenames,
         ]);
     }
 
