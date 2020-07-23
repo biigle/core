@@ -278,8 +278,8 @@ $router->group([
         'uses' => 'Filters\ImageLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/annotation-label/{id2}', [
-        'uses' => 'Filters\ImageAnnotationLabelController@index',
+    $router->get('{id}/files/filter/annotation-label/{id2}', [
+        'uses' => 'Filters\AnnotationLabelController@index',
     ]);
 
     $router->get('{id}/files/filter/filename/{pattern}', [
@@ -317,11 +317,11 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Annotations',
 ], function ($router) {
-    $router->get('{id}/images/filter/annotations', [
+    $router->get('{id}/files/filter/annotations', [
         'uses' => 'Filters\AnnotationController@index',
     ]);
 
-    $router->get('{id}/images/filter/annotation-user/{id2}', [
+    $router->get('{id}/files/filter/annotation-user/{id2}', [
         'uses' => 'Filters\AnnotationUserController@index',
     ]);
 

@@ -65,25 +65,25 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/users',
     },
-    queryImages: {
+    queryFiles: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images',
+        url: 'api/v1/volumes{/id}/files',
     },
-    saveImages: {
+    saveFiles: {
         method: 'POST',
-        url: 'api/v1/volumes{/id}/images',
+        url: 'api/v1/volumes{/id}/files',
     },
-    queryImagesWithAnnotations: {
+    queryFilesWithAnnotations: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotations',
+        url: 'api/v1/volumes{/id}/files/filter/annotations',
     },
-    queryImagesWithAnnotationLabel: {
+    queryFilesWithAnnotationLabel: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotation-label{/label_id}',
+        url: 'api/v1/volumes{/id}/files/filter/annotation-label{/label_id}',
     },
-    queryImagesWithAnnotationFromUser: {
+    queryFilesWithAnnotationFromUser: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotation-user{/user_id}',
+        url: 'api/v1/volumes{/id}/files/filter/annotation-user{/user_id}',
     },
     queryAnnotationLabels: {
         method: 'GET',

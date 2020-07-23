@@ -109,6 +109,6 @@ class ImageControllerTest extends ApiTestCase
         $response->assertStatus(200);
         // only the volume ID is set to null so the image is marked for deletion
         $this->assertNull($this->image->fresh());
-        $this->merkTestIncomplete('Implement confirmation with force like for videos.');
+        $this->markTestIncomplete('Implement confirmation with force like for videos.');
     }
 }

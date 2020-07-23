@@ -11,9 +11,8 @@ class VideoControllerTest extends ApiTestCase
     public function testShow()
     {
         $this->markTestIncomplete('route should be videos/xxx/annotations');
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
-        $video = VideoTest::create(['volume_id' => $this->volume()->id]);
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $video = VideoTest::create(['volume_id' => $id]);
 
         $this->beUser();
         $this->get('videos/999')->assertStatus(404);

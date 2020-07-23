@@ -134,18 +134,18 @@ let filenameFilter = {
 
 let annotationFilter = {
     id: 'annotations',
-    types: ['image'],
+    types: ['image', 'video'],
     label: 'annotations',
     help: "All :types that (don't) contain annotations.",
     listComponent: FilterList,
     getSequence(volumeId, type) {
-        return VolumesApi.queryImagesWithAnnotations({id: volumeId});
+        return VolumesApi.queryFilesWithAnnotations({id: volumeId});
     },
 };
 
 let annotationLabelFilter = {
     id: 'annotationLabels',
-    types: ['image'],
+    types: ['image', 'video'],
     label: 'annotation with label',
     help: "All :types that (don't) contain one or more annotations with the given label.",
     listComponent: {
@@ -170,7 +170,7 @@ let annotationLabelFilter = {
         },
     },
     getSequence(volumeId, type, label) {
-        return VolumesApi.queryImagesWithAnnotationLabel({
+        return VolumesApi.queryFilesWithAnnotationLabel({
             id: volumeId,
             label_id: label.id,
         });
@@ -179,7 +179,7 @@ let annotationLabelFilter = {
 
 let annotationUserFilter = {
     id: 'annotationUser',
-    types: ['image'],
+    types: ['image', 'video'],
     label: 'annotations from user',
     help: "All :types that (don't) contain one or more annotations from the given user.",
     listComponent: {
@@ -203,7 +203,7 @@ let annotationUserFilter = {
         },
     },
     getSequence(volumeId, type, user) {
-        return VolumesApi.queryImagesWithAnnotationFromUser({id: volumeId, user_id: user.id});
+        return VolumesApi.queryFilesWithAnnotationFromUser({id: volumeId, user_id: user.id});
     },
 };
 

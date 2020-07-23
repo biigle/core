@@ -4,19 +4,20 @@ namespace Biigle\Http\Controllers\Api\Annotations\Filters;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
+use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
 class AnnotationController extends Controller
 {
     /**
-     * List the IDs of images having one or more annotations.
+     * List the IDs of files having one or more annotations.
      *
-     * @api {get} volumes/:id/images/filter/annotations Get images having annotations
+     * @api {get} volumes/:id/files/filter/annotations Get files having annotations
      * @apiGroup Volumes
-     * @apiName VolumeImagesHasAnnotation
+     * @apiName VolumeFilesHasAnnotation
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations. If there is an active annotation session, images with annotations hidden by the session are not returned.
+     * @apiDescription Returns IDs of files having one or more annotations. If there is an active annotation session, files with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} id The volume ID
      *
@@ -35,15 +36,25 @@ class AnnotationController extends Controller
         $user = $request->user();
         $session = $volume->getActiveAnnotationSession($user);
 
-        if ($session) {
-            $query = ImageAnnotation::allowedBySession($session, $user);
+        if ($volume->isImageVolume()) {
+            $model = new ImageAnnotation;
         } else {
-            $query = ImageAnnotation::getQuery();
+            $model = new VideoAnnotation;
         }
 
-        return $query->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->where('images.volume_id', $id)
-            ->groupBy('images.id')
-            ->pluck('images.id');
+        if ($session) {
+            $query = $model::allowedBySession($session, $user);
+        } else {
+            $query = $model::getQuery();
+        }
+
+        $fileRelation = $model->file();
+        $ownerKeyName = $fileRelation->getQualifiedOwnerKeyName();
+
+        return $query->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
+            ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $id)
+            ->select($ownerKeyName)
+            ->distinct()
+            ->pluck($ownerKeyName);
     }
 }

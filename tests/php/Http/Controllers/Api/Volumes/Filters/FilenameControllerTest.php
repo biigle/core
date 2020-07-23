@@ -74,9 +74,7 @@ class FilenameControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $vid = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
+        $vid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
 
         $video = VideoTest::create([
             'volume_id' => $vid,

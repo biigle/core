@@ -38,9 +38,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
     public function testIndexWrongMediaTypeVideo()
     {
-        $volume = $this->volume();
-        $volume->media_type_id = MediaType::videoId();
-        $volume->save();
+        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
         ImageTest::create(['volume_id' => $volume->id]);
         $this->beGuest();
         $this->getJson("/api/v1/volumes/{$volume->id}/files")->assertExactJson([]);
@@ -53,9 +51,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->put('images/1.jpg', 'abc');
         Storage::disk('test')->put('images/2.jpg', 'abc');
 
-        $id = $this->volume()->id;
-        $this->volume()->url = "test://images";
-        $this->volume()->save();
+        $id = $this->volume(['url' => 'test://images'])->id;
         ImageTest::create(['filename' => 'no.jpg', 'volume_id' => $id]);
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/files");
@@ -116,10 +112,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
         Storage::disk('test')->put('images/2.jpg', 'abc');
-        $this->volume()->url = "test://images";
-        $this->volume()->save();
-
-        $id = $this->volume()->id;
+        $id = $this->volume(['url' => 'test://images'])->id;
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.jpg', '2.jpg']])
             ->assertSuccessful();
@@ -130,10 +123,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
-        $this->volume()->url = "test://images";
-        $this->volume()->save();
-
-        $id = $this->volume()->id;
+        $id = $this->volume(['url' => 'test://images'])->id;
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['images' => ['1.jpg']])
             ->assertSuccessful();
@@ -144,10 +134,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
-        $this->volume()->url = "test://images";
-        $this->volume()->save();
-
-        $id = $this->volume()->id;
+        $id = $this->volume(['url' => 'test://images'])->id;
         ImageTest::create(['filename' => '1.jpg', 'volume_id' => $id]);
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['files' => '1.jpg'])
@@ -170,10 +157,10 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->put('videos/1.mp4', 'abc');
         Storage::disk('test')->put('videos/2.mp4', 'abc');
 
-        $id = $this->volume()->id;
-        $this->volume()->url = "test://videos";
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
+        $id = $this->volume([
+            'media_type_id' => MediaType::videoId(),
+            'url' => 'test://videos',
+        ])->id;
         VideoTest::create(['filename' => 'no.mp4', 'volume_id' => $id]);
 
         $this->assertEquals(1, $this->volume()->videos()->count());
@@ -221,11 +208,10 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->makeDirectory('videos');
         Storage::disk('test')->put('videos/1.mp4', 'abc');
         Storage::disk('test')->put('videos/2.mp4', 'abc');
-        $this->volume()->url = "test://videos";
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
-
-        $id = $this->volume()->id;
+        $id = $this->volume([
+            'media_type_id' => MediaType::videoId(),
+            'url' => 'test://videos',
+        ])->id;
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.mp4', '2.mp4']])
             ->assertSuccessful();
@@ -236,11 +222,10 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('videos');
         Storage::disk('test')->put('videos/1.mp4', 'abc');
-        $this->volume()->url = "test://videos";
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
-
-        $id = $this->volume()->id;
+        $id = $this->volume([
+            'media_type_id' => MediaType::videoId(),
+            'url' => 'test://videos',
+        ])->id;
         VideoTest::create(['filename' => '1.mp4', 'volume_id' => $id]);
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
@@ -250,9 +235,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
     public function testStoreVideoFileNotExists()
     {
-        $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::videoId();
-        $this->volume()->save();
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
             ->assertStatus(422);

@@ -44,7 +44,7 @@ export default {
             if (this.loading) return;
 
             this.startLoading();
-            VolumesApi.saveImages({id: this.volumeId}, {images: this.filenames})
+            VolumesApi.saveFiles({id: this.volumeId}, {images: this.filenames})
                 .then(this.imagesSaved)
                 .catch(this.handleErrorResponse)
                 .finally(this.finishLoading);

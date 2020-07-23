@@ -48,9 +48,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $this->doesntExpectJobs(ProcessNewVolumeFiles::class);
 
-        $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::imageId();
-        $this->volume()->save();
+        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
