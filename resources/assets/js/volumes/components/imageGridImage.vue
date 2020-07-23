@@ -3,7 +3,7 @@
         <div v-if="showIcon" class="image-icon">
             <i class="fas" :class="iconClass"></i>
         </div>
-        <img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">
+        <img @click="toggleSelect" :src="srcUrl" @error="showEmptyImage">
     </figure>
 </template>
 
@@ -16,7 +16,7 @@
 export default {
     data() {
         return {
-            url: '',
+            thumbnailUrl: null,
             timeout: null,
         };
     },
@@ -64,6 +64,15 @@ export default {
         showIcon() {
             return this.selectable || this.selected;
         },
+        srcUrl() {
+            if (Array.isArray(this.thumbnailUrl)) {
+                return this.thumbnailUrl[0];
+            } else if (this.thumbnailUrl) {
+                return this.thumbnailUrl;
+            }
+
+            return this.emptyUrl;
+        },
     },
     methods: {
         toggleSelect(event) {
@@ -77,16 +86,16 @@ export default {
             this.image.blob = this.url;
         },
         showEmptyImage() {
-            this.url = this.emptyUrl;
+            this.url = null;
         },
     },
     created() {
-        if (this.image.url) {
-            this.url = this.image.url;
+        if (this.image.thumbnailUrl) {
+            this.thumbnailUrl = this.image.thumbnailUrl;
         } else if (this.image.blob) {
-            this.url = this.image.blob;
+            this.thumbnailUrl = this.image.blob;
         } else if (this.getUrl) {
-            this.url = this.getUrl();
+            this.thumbnailUrl = this.getThumbnailUrl();
         } else if (this.getBlob) {
             // use a timeout to skip requests when scrolling fast
             this.timeout = setTimeout(() => this.getBlob().then(this.gotBlob), 50);

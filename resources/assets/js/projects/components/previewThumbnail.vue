@@ -83,7 +83,7 @@ export default {
             return this.hovered && this.someLoaded;
         },
         someLoaded() {
-            return this.uris.reduce((carry, item) => carry || item !== false, false);
+            return this.uris.some((item) => item !== false);
         },
         iconClass() {
             return this.icon ? 'fa-' + this.icon : '';

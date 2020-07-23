@@ -267,18 +267,18 @@ export default {
         // Do this here instead of a computed property so the file objects get
         // reactive. Also, this array does never change between page reloads.
         this.files = this.fileIds.map(function (id) {
-            let thumbnail;
+            let thumbnailUrl;
             if (thumbCount > 1) {
-                thumbnail = Array.from(Array(thumbCount).keys()).map(function (i) {
+                thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
                     return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
                 });
             } else {
-                thumbnail = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
+                thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
             }
 
             return {
                 id: id,
-                thumbnail: thumbnail,
+                thumbnailUrl: thumbnailUrl,
                 annotateUrl: annotateUri.replace(':id', id),
                 infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
                 flagged: false,

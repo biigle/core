@@ -33,6 +33,14 @@
         border-color: $brand-warning;
     }
 
+    .preview-thumbnail {
+        width: auto;
+        height: 100%;
+        border-radius: $border-radius-base;
+        transition: opacity .25s ease;
+        border: 0;
+    }
+
     .image-labels {
         position: absolute;
         top: 0;
