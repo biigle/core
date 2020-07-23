@@ -13,14 +13,17 @@ export default {
             type: Number,
             required: true,
         },
+        type: {
+            type: String,
+            required: true,
+        },
         fileIds: {
             type: Array,
             required: true,
-        }
+        },
     },
     data() {
         return {
-            sorters: SorterStore,
             // true for ascending, false for descending
             direction: true,
             activeSorter: null,
@@ -28,6 +31,11 @@ export default {
         };
     },
     computed: {
+        sorters() {
+            return SorterStore.filter((sorter) => {
+                return sorter.types && sorter.types.includes(this.type);
+            });
+        },
         defaultSorter() {
             return this.sorters[0];
         },

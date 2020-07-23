@@ -1,4 +1,4 @@
-<sorting-tab v-cloak :volume-id="volumeId" :file-ids="fileIds" v-on:loading="toggleLoading" v-on:update="updateSortingSequence" inline-template>
+<sorting-tab v-cloak :volume-id="volumeId" :file-ids="fileIds" :type="type" v-on:loading="toggleLoading" v-on:update="updateSortingSequence" inline-template>
     <div class="sorting-tab">
         <div class="sorting-tab__buttons">
             <div class="btn-group" role="group">
