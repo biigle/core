@@ -17,7 +17,7 @@ let imageLabelsFilter = {
             };
         },
     },
-    getSequence(volumeId, type) {
+    getSequence(volumeId) {
         return VolumesApi.queryImagesWithImageLabels({id: volumeId});
     },
 };
@@ -138,7 +138,7 @@ let annotationFilter = {
     label: 'annotations',
     help: "All :types that (don't) contain annotations.",
     listComponent: FilterList,
-    getSequence(volumeId, type) {
+    getSequence(volumeId) {
         return VolumesApi.queryFilesWithAnnotations({id: volumeId});
     },
 };
