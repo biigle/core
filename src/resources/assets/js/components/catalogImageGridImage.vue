@@ -1,9 +1,9 @@
 <template>
     <figure class="image-grid__image image-grid__image--catalog" :class="classObject">
         <a v-if="showAnnotationLink" :href="showAnnotationLink" target="_blank" title="Show the annotation in the annotation tool">
-            <img :src="url || emptyUrl" @error="showEmptyImage">
+            <img :src="srcUrl" @error="showEmptyImage">
         </a>
-        <img v-else :src="url || emptyUrl" @error="showEmptyImage">
+        <img v-else :src="srcUrl" @error="showEmptyImage">
     </figure>
 </template>
 
