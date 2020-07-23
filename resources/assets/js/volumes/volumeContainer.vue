@@ -118,7 +118,7 @@ export default {
                 0;
         },
         filterEmpty() {
-            return this.filterActive && this.filterSequence.length === 0;
+            return this.filterActive && this.filterMode !== 'flag' && this.filterSequence.length === 0;
         },
     },
     methods: {
