@@ -109,7 +109,16 @@ let filenameFilter = {
             </div>
             <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
         </div>`,
-        mixins: [FilterSelect],
+        data() {
+            return {
+                selectedItem: null,
+            };
+        },
+        methods: {
+            submit() {
+                this.$emit('select', this.selectedItem);
+            },
+        },
     },
     getSequence(volumeId, pattern) {
         return VolumesApi.queryImagesWithFilename({
