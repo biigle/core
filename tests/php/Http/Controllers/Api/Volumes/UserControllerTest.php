@@ -8,7 +8,6 @@ class UserControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->markTestIncomplete('implement support for videos');
         $id = $this->volume()->id;
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/users");
