@@ -128,7 +128,7 @@ class AddVideoVolumes extends Migration
     public function migrateProjectVideos($project)
     {
         $videoGroups = $this->groupVideosByUrl(
-            $project->videos()->orderBy('created_at', 'asc')->get()
+            Video::where('project_id', $project->id)->orderBy('created_at', 'asc')->get()
         );
 
         $index = 1;
@@ -151,7 +151,7 @@ class AddVideoVolumes extends Migration
     {
         $groups = collect([]);
         $videos->each(function ($video) use ($groups) {
-            [$disk, $path] = explode('://', $video->url);
+            [$disk, $path] = explode('://', $video->getOriginal('url'));
             $path = explode('/', $path);
 
             $group = $disk.'://'.array_shift($path);
