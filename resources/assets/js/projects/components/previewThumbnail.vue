@@ -3,6 +3,7 @@
         class="preview-thumbnail"
         @mousemove="updateIndex($event)"
         @mouseenter="updateHovered"
+        @click="emitClick"
         >
             <i
                 v-if="icon"
@@ -105,6 +106,9 @@ export default {
         },
         updateHovered() {
             this.hovered = true;
+        },
+        emitClick(e) {
+            this.$emit('click', e);
         },
     },
     created() {
