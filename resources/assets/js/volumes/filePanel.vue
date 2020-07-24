@@ -1,7 +1,8 @@
 <script>
 import EditorMixin from '../core/mixins/editor';
-import ImageItem from './components/imagePanelItem';
+import FileItem from './components/filePanelItem';
 import ImagesApi from '../core/api/images';
+import VideosApi from '../videos/api/videos';
 import LoaderMixin from '../core/mixins/loader';
 import VolumesApi from './api/volumes';
 import {handleErrorResponse} from '../core/messages/store';
@@ -19,12 +20,13 @@ export default {
         return {
             volumeId: null,
             filenames: '',
-            images: [],
+            files: [],
             errors: {},
+            type: '',
         };
     },
     components: {
-        imageItem: ImageItem,
+        fileItem: FileItem,
     },
     computed: {
         classObject() {
@@ -32,11 +34,14 @@ export default {
                 'panel-warning panel--editing': this.editing,
             };
         },
-        orderedImages() {
-            return this.images.slice().sort((a, b) => a.filename < b.filename ? -1 : 1);
+        orderedFiles() {
+            return this.files.slice().sort((a, b) => a.filename < b.filename ? -1 : 1);
         },
-        hasNoImages() {
-            return !this.loading && this.images.length === 0;
+        hasNoFiles() {
+            return !this.loading && this.files.length === 0;
+        },
+        fileApi() {
+            return this.type === 'image' ? ImagesApi : VideosApi;
         },
     },
     methods: {
@@ -44,32 +49,32 @@ export default {
             if (this.loading) return;
 
             this.startLoading();
-            VolumesApi.saveFiles({id: this.volumeId}, {images: this.filenames})
-                .then(this.imagesSaved)
+            VolumesApi.saveFiles({id: this.volumeId}, {files: this.filenames})
+                .then(this.filesSaved)
                 .catch(this.handleErrorResponse)
                 .finally(this.finishLoading);
         },
         imagesSaved(response) {
             for (let i = response.data.length - 1; i >= 0; i--) {
                 response.data[i].isNew = true;
-                this.images.push(response.data[i]);
+                this.files.push(response.data[i]);
             }
             this.filenames = '';
         },
-        handleRemove(image) {
-            if (!this.loading && confirm(`Do you really want to delete the image #${image.id} (${image.filename})? All annotations will be lost!`)) {
+        handleRemove(file) {
+            if (!this.loading && confirm(`Do you really want to delete the ${this.type} #${file.id} (${file.filename})? All annotations will be lost!`)) {
                 this.startLoading();
-                ImagesApi.delete({id: image.id})
-                    .then(() => this.imageRemoved(image.id))
+                this.fileApi.delete({id: file.id})
+                    .then(() => this.fileRemoved(file.id))
                     .catch(handleErrorResponse)
                     .finally(this.finishLoading);
             }
         },
-        imageRemoved(id) {
-            let images = this.images;
-            for (let i = images.length - 1; i >= 0; i--) {
-                if (images[i].id === id) {
-                    images.splice(i, 1);
+        fileRemoved(id) {
+            let files = this.files;
+            for (let i = files.length - 1; i >= 0; i--) {
+                if (files[i].id === id) {
+                    files.splice(i, 1);
                     return;
                 }
             }
@@ -87,10 +92,10 @@ export default {
         getError(name) {
             return this.errors[name].join("\n");
         },
-        setImages(response) {
+        setFiles(response) {
             for (let id in response.body) {
                 if (!response.body.hasOwnProperty(id));
-                this.images.push({id: id, filename: response.body[id]});
+                this.files.push({id: id, filename: response.body[id]});
             }
         },
     },
@@ -103,10 +108,11 @@ export default {
     },
     created() {
         this.volumeId = biigle.$require('volumes.id');
+        this.type = biigle.$require('volumes.type');
 
         this.startLoading();
         VolumesApi.queryFilenames({id: this.volumeId})
-            .then(this.setImages, handleErrorResponse)
+            .then(this.setFiles, handleErrorResponse)
             .finally(this.finishLoading);
     },
 };

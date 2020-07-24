@@ -1,19 +1,19 @@
 <script>
 export default {
-    props: ['image'],
+    props: ['file', 'type'],
     computed: {
         classObject() {
             return {
-                'list-group-item-success': this.image.isNew,
+                'list-group-item-success': this.file.isNew,
             };
         },
         title() {
-            return 'Delete image #' + this.image.id;
+            return `Delete ${this.type} #${this.file.id}`;
         },
     },
     methods: {
         remove() {
-            this.$emit('remove', this.image);
+            this.$emit('remove', this.file);
         },
     },
 };

@@ -96,6 +96,7 @@ class VolumeController extends Controller
         $this->authorize('update', $volume);
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
+        $type = $volume->mediaType->name;
 
         return view('volumes.edit', [
             'projects' => $projects,
@@ -103,6 +104,7 @@ class VolumeController extends Controller
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
+            'type' => $type,
         ]);
     }
 

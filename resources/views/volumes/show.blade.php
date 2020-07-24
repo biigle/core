@@ -46,7 +46,7 @@
         @can ('update', $volume)
             <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
-        @if ($type === 'image')
+        @if ($volume->isImageVolume())
             @can ('edit-in', $volume)
                 <sidebar-tab name="labels" icon="tags" title="Toggle image label mode">
                     @include('volumes.show.labels')
