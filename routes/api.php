@@ -262,10 +262,6 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
 ], function ($router) {
-    $router->get('{id}/images/order-by/filename', [
-        'uses' => 'Sorters\ImageFilenameController@index',
-    ]);
-
     $router->get('{id}/images/filter/labels', [
         'uses' => 'Filters\AnyImageLabelController@index',
     ]);
