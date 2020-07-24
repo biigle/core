@@ -2,13 +2,9 @@
 import FiltersStore from '../stores/filters';
 import LoaderMixin from '../../core/mixins/loader';
 import PowerToggle from '../../core/components/powerToggle';
+import {capitalize} from '../../core/utils';
 import {handleErrorResponse} from '../../core/messages/store';
 
-let capitalize = function (s) {
-  if (typeof s !== 'string') return ''
-
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
 
 /**
  * View model for the volume filter tab

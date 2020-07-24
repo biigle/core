@@ -1,11 +1,6 @@
 <script>
-import Events from '../core/events';
-import Settings from './stores/settings';
-import Breadcrumb from './components/breadcrumb';
+import Breadcrumb from '../annotations/components/breadcrumb';
 
-/**
-* View model for the annotator navbar
-*/
 export default {
     components: {
         breadcrumb: Breadcrumb,
@@ -37,22 +32,13 @@ export default {
         },
     },
     created() {
-        this.ids = biigle.$require('annotations.imagesIds').slice();
+        this.ids = biigle.$require('videos.videoIds').slice();
         let filenames = {};
-        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
+        biigle.$require('videos.videoFilenames').forEach((filename, index) => {
             filenames[this.ids[index]] = filename;
         });
         this.filenames = filenames;
-        this.currentId = biigle.$require('annotations.imageId');
-
-        Events.$on('images.sequence', (ids) => {
-            this.ids = ids.slice();
-        });
-
-        Events.$on('images.change', this.updateCurrentId);
-
-        this.updateShowIndicator(Settings.get('progressIndicator'));
-        Settings.watch('progressIndicator', this.updateShowIndicator);
+        this.currentId = biigle.$require('videos.id');
     },
 };
 </script>

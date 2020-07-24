@@ -1,5 +1,5 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/Document/exitFullscreen
-let exitFullscreen = function () {
+export let exitFullscreen = function () {
     if (document.fullscreenElement) {
         if (document.exitFullscreen) {
             document.exitFullscreen();
@@ -14,14 +14,14 @@ let exitFullscreen = function () {
 }
 
 let debounceTimeouts = {};
-let debounce = function (callback, wait, id) {
+export let debounce = function (callback, wait, id) {
     if (debounceTimeouts.hasOwnProperty(id)) {
         window.clearTimeout(debounceTimeouts[id]);
     }
     debounceTimeouts[id] = window.setTimeout(callback, wait);
 };
 
-let urlParams = new Vue({
+export let urlParams = new Vue({
     data: {
         params: {}
     },
@@ -89,7 +89,7 @@ let urlParams = new Vue({
 
 let throttleTimeouts = {};
 let throttleFunctions = {};
-let throttle = function (callback, wait, id) {
+export let throttle = function (callback, wait, id) {
     throttleFunctions[id] = callback;
     if (!throttleTimeouts.hasOwnProperty(id)) {
         throttleTimeouts[id] = window.setTimeout(function () {
@@ -99,4 +99,9 @@ let throttle = function (callback, wait, id) {
     }
 };
 
-export {exitFullscreen, debounce, urlParams, throttle};
+
+export let capitalize = function (s) {
+  if (typeof s !== 'string') return ''
+
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}

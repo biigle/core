@@ -1,14 +1,23 @@
 @extends('app')
 @section('full-navbar', true)
-@section('title', $video->name)
+@section('title', "Annotate {$video->name}")
 
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
-    <a href="{{route('project', $video->project_id)}}" class="navbar-link" title="Show project {{$video->project->name}}">{{$video->project->name}}</a> /
-    <strong>{{$video->name}}</strong>
-    @if ($video->doi)
-        <a href="https://doi.org/{{$video->doi}}" class="btn btn-default btn-xs" title="DOI: {{$video->doi}}"><span class="fa fa-link" aria-hidden="true" ></span></a>
-    @endif
+    @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+    <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
+    <span id="video-annotations-navbar">
+        <breadcrumb
+            :file-ids="ids"
+            :filenames="filenames"
+            :show-indicator="showIndicator"
+            :current-file-id="currentId"
+            type="video"
+            >
+            <strong>{{$video->filename}}</strong>
+        </breadcrumb>
+    </span>
+    @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection
 
@@ -36,26 +45,25 @@
         v-on:toggle="handleToggledTab"
         >
             @include('videos.show.sidebar-annotations')
-            @can('edit-in', $video)
+            @can('add-annotation', $video)
                 @include('videos.show.sidebar-labels')
             @endcan
             @mixin('videosSidebar')
             @include('videos.show.sidebar-settings')
-            @can('update', $video)
-                @include('videos.show.sidebar-edit')
-            @endcan
     </sidebar>
 </div>
 @endsection
 
 @push('scripts')
 <script type="text/javascript">
-    biigle.$declare('videos.id', '{{$video->id}}');
+    biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.src', '{{url('api/v1/videos/'.$video->id.'/file')}}');
-    @can('editIn', $video)
+    @can('addAnnotation', $video)
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
     @endcan
     biigle.$declare('videos.shapes', {!! $shapes !!});
-    biigle.$declare('videos.isEditor', @can('editIn', $video) true @else false @endcan);
+    biigle.$declare('videos.isEditor', @can('addAnnotation', $video) true @else false @endcan);
+    biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
+    biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
 </script>
 @endpush

@@ -27,6 +27,7 @@ class AnnotationToolController extends Controller
         $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
         $user = $request->user();
+        $volume = $image->volume;
 
         if ($user->can('sudo')) {
             // Global admins have no restrictions.
@@ -43,7 +44,7 @@ class AnnotationToolController extends Controller
             ])->pluck('id');
         }
 
-        $images = Image::where('volume_id', $image->volume_id)
+        $images = $volume->images()
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 

@@ -54,7 +54,7 @@ export default {
                 .catch(this.handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        imagesSaved(response) {
+        filesSaved(response) {
             for (let i = response.data.length - 1; i >= 0; i--) {
                 response.data[i].isNew = true;
                 this.files.push(response.data[i]);

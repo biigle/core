@@ -1,6 +1,5 @@
 <script>
 import Events from '../../core/events';
-import FilenameTracker from '../mixins/imageFilenameTracker';
 import Messages from '../../core/messages/store';
 
 /**
@@ -9,11 +8,16 @@ import Messages from '../../core/messages/store';
  * @type {Object}
  */
 export default {
-    mixins: [FilenameTracker],
+    data() {
+        return {
+            filenames: {},
+            currentId: null,
+        };
+    },
     computed: {
         filename() {
-            if (this.currentImageFilename) {
-                let name = this.currentImageFilename.split('.');
+            if (this.currentId) {
+                let name = this.filenames[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -134,8 +138,19 @@ export default {
         setMap(map) {
             this.map = map;
         },
+        updateCurrentId(id) {
+            this.currentId = id;
+        },
     },
     created() {
+        let ids = biigle.$require('annotations.imagesIds');
+        let filenames = {};
+        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
+            filenames[ids[index]] = filename;
+        });
+        this.filenames = filenames;
+        this.currentId = biigle.$require('annotations.imageId');
+        Events.$on('images.change', this.updateCurrentId);
         Events.$on('annotations.map.init', this.setMap);
     },
 };
