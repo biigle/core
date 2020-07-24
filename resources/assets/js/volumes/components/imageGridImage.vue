@@ -82,11 +82,11 @@ export default {
         },
         gotBlob(response) {
             let urlCreator = window.URL || window.webkitURL;
-            this.url = urlCreator.createObjectURL(response.body);
-            this.image.blob = this.url;
+            this.thumbnailUrl = urlCreator.createObjectURL(response.body);
+            this.image.blob = this.thumbnailUrl;
         },
         showEmptyImage() {
-            this.url = null;
+            this.thumbnailUrl = null;
         },
     },
     created() {

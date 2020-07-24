@@ -2,11 +2,11 @@
     <div class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
         <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">
             <preview-thumbnail :id="image.id" :thumb-uris="image.thumbnailUrl">
-                <img :src="srcUrl">
+                <img :src="srcUrl" @error="showEmptyImage">
             </preview-thumbnail>
         </a>
         <preview-thumbnail v-else :id="image.id" :thumb-uris="image.thumbnailUrl" @click="handleClick">
-            <img :src="srcUrl">
+            <img :src="srcUrl" @error="showEmptyImage">
         </preview-thumbnail>
         <span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>
         <div class="image-buttons">
