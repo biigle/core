@@ -46,6 +46,7 @@ export default {
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
+                showProgressIndicator: true,
             },
             openTab: '',
             urlParams: {

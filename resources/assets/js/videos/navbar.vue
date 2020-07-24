@@ -1,5 +1,6 @@
 <script>
 import Breadcrumb from '../annotations/components/breadcrumb';
+import Settings from './stores/settings';
 
 export default {
     components: {
@@ -39,6 +40,9 @@ export default {
         });
         this.filenames = filenames;
         this.currentId = biigle.$require('videos.id');
+
+        this.updateShowIndicator(Settings.get('showProgressIndicator'));
+        Settings.watch('showProgressIndicator', this.updateShowIndicator);
     },
 };
 </script>
