@@ -2,20 +2,21 @@
     <figure
         class="preview-thumbnail"
         @mousemove="updateIndex($event)"
-        @mouseenter="updateHovered"
+        @mouseenter="setHovered"
+        @mouseleave="unsetHovered"
         @click="emitClick"
         >
             <i
-                v-if="icon"
+                v-if="showIcon"
                 class="preview-thumbnail__icon fas fa-lg"
                 :class="iconClass"
                 ></i>
-            <span
-                v-if="removable"
-                class="preview-thumbnail__close close"
+            <i
+                v-if="showRemove"
+                class="preview-thumbnail__icon fas fa-trash"
                 @click.prevent="remove"
                 :title="removeTitle"
-                >&times;</span>
+                ></i>
             <div class="preview-thumbnail__images" v-if="showPreview">
                 <img
                     v-for="(uri, i) in uris"
@@ -69,6 +70,7 @@ export default {
         return {
             index: 0,
             uris: [],
+            touched: false,
             hovered: false,
         };
     },
@@ -81,13 +83,23 @@ export default {
             return this.uris[this.index] === false;
         },
         showPreview() {
-            return this.hovered && this.someLoaded;
+            return this.touched && this.someLoaded;
         },
         someLoaded() {
             return this.uris.some((item) => item !== false);
         },
         iconClass() {
             return this.icon ? 'fa-' + this.icon : '';
+        },
+        showIcon() {
+            if (this.removable) {
+                return !this.hovered && this.icon;
+            }
+
+            return this.icon;
+        },
+        showRemove() {
+            return this.removable && this.hovered;
         },
     },
     methods: {
@@ -104,8 +116,12 @@ export default {
         failed(i) {
             this.uris.splice(i, 1, false);
         },
-        updateHovered() {
+        setHovered() {
             this.hovered = true;
+            this.touched = true;
+        },
+        unsetHovered() {
+            this.hovered = false;
         },
         emitClick(e) {
             this.$emit('click', e);
