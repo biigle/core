@@ -10,7 +10,6 @@ class VideoControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $this->markTestIncomplete('route should be videos/xxx/annotations');
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create(['volume_id' => $id]);
 
@@ -20,5 +19,6 @@ class VideoControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->get("videos/{$video->id}")->assertStatus(200);
+        $this->markTestIncomplete('route should be videos/xxx/annotations');
     }
 }
