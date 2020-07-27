@@ -31,6 +31,7 @@ export default {
     },
     data() {
         return {
+            volumeId: null,
             videoId: null,
             videoIds: [],
             videoFileUri: '',
@@ -384,6 +385,25 @@ export default {
             this.$refs.videoTimeline.reset();
             this.$refs.videoScreen.reset();
         },
+        initVideoIds(ids) {
+            // Look for a sequence of video IDs in local storage. This sequence is
+            // produced by the volume overview page when the files are sorted or
+            // filtered. We want to reflect the same ordering or filtering here
+            // in the annotation tool.
+            let storedSequence = window.localStorage.getItem(`biigle.volumes.${this.volumeId}.files`);
+            if (storedSequence) {
+                // If there is such a stored sequence, filter out any image IDs that
+                // do not belong to the volume (any more), since some of them may
+                // have been deleted in the meantime.
+                let map = {};
+                ids.forEach(function (id) {
+                    map[id] = null;
+                });
+                return JSON.parse(storedSequence).filter((id) => map.hasOwnProperty(id));
+            }
+
+            return ids;
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -404,7 +424,8 @@ export default {
         });
         this.shapes = map;
         this.video = document.createElement('video');
-        this.videoIds = biigle.$require('videos.videoIds');
+        this.volumeId = biigle.$require('videos.volumeId');
+        this.videoIds = this.initVideoIds(biigle.$require('videos.videoIds'));
         this.videoFileUri = biigle.$require('videos.videoFileUri');
         this.canEdit = biigle.$require('videos.isEditor');
         this.labelTrees = biigle.$require('videos.labelTrees');

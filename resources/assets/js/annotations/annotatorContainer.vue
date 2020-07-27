@@ -116,7 +116,7 @@ export default {
             // Look for a sequence of image IDs in local storage. This sequence is
             // produced by the volume overview page when the files are sorted or
             // filtered. We want to reflect the same ordering or filtering here
-            // in the annotator.
+            // in the annotation tool.
             let storedSequence = window.localStorage.getItem(`biigle.volumes.${this.volumeId}.files`);
             if (storedSequence) {
                 // If there is such a stored sequence, filter out any image IDs that

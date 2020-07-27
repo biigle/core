@@ -56,6 +56,7 @@
 
 @push('scripts')
 <script type="text/javascript">
+    biigle.$declare('videos.volumeId', {{$volume->id}});
     biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
     @can('addAnnotation', $video)
