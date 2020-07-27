@@ -11,6 +11,12 @@
             ></label-tooltip>
         <div class="controls">
             <div class="btn-group">
+                 <control-button
+                    v-if="showPrevNext"
+                    icon="fa-step-backward"
+                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    @click="emitPrevious"
+                    ></control-button>
                 <control-button
                     v-if="playing"
                     icon="fa-pause"
@@ -29,6 +35,12 @@
                     title="Create a bookmark 𝗕"
                     @click="emitCreateBookmark"
                     ></control-button> -->
+                <control-button
+                    v-if="showPrevNext"
+                    icon="fa-step-forward"
+                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    @click="emitNext"
+                    ></control-button>
             </div>
             <div v-if="canAdd" class="btn-group">
                 <control-button
@@ -300,6 +312,10 @@ export default {
             type: Number,
             default: 0,
         },
+        showPrevNext: {
+            type: Boolean,
+            default: true,
+        },
     },
     data() {
         return {
@@ -426,6 +442,16 @@ export default {
         updateSize() {
             this.$nextTick(() => this.map.updateSize());
         },
+        emitPrevious() {
+            this.$emit('previous');
+        },
+        emitNext() {
+            this.$emit('next');
+        },
+        reset() {
+            this.setPaused();
+            this.resetInteractionMode();
+        },
     },
     watch: {
         selectedAnnotations(annotations) {
@@ -463,6 +489,8 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
 
         // if (this.canAdd) {
         //     Keyboard.on('b', this.emitCreateBookmark);

@@ -1,5 +1,6 @@
 <script>
 import Breadcrumb from '../annotations/components/breadcrumb';
+import Events from '../core/events';
 import Settings from './stores/settings';
 
 export default {
@@ -43,6 +44,7 @@ export default {
 
         this.updateShowIndicator(Settings.get('showProgressIndicator'));
         Settings.watch('showProgressIndicator', this.updateShowIndicator);
+        Events.$on('video.id', this.updateCurrentId);
     },
 };
 </script>

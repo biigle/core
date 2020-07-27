@@ -1,6 +1,7 @@
 <script>
 import Annotation from './models/Annotation';
 import AnnotationsTab from './components/viaAnnotationsTab';
+import Events from '../core/events';
 import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
 import LabelTrees from '../label-trees/components/labelTrees';
 import LoaderMixin from '../core/mixins/loader';
@@ -31,6 +32,8 @@ export default {
     data() {
         return {
             videoId: null,
+            videoIds: [],
+            videoFileUri: '',
             shapes: [],
             canEdit: false,
             video: null,
@@ -93,14 +96,17 @@ export default {
             }
 
             return '';
-        }
+        },
+        hasSiblingVideos() {
+            return this.videoIds.length > 1;
+        },
     },
     methods: {
         prepareAnnotation(annotation) {
             return new Annotation({data: annotation});
         },
-        setAnnotations(response) {
-            this.annotations = response.body.map(this.prepareAnnotation);
+        setAnnotations(args) {
+            this.annotations = args[0].body.map(this.prepareAnnotation);
         },
         addCreatedAnnotation(response) {
             let annotation = this.prepareAnnotation(response.body);
@@ -293,6 +299,10 @@ export default {
                 new ShapeAnnotationFilter({data: {shapes: this.shapes}}),
             ];
         },
+        updateAnnotationFilters() {
+            this.annotationFilters[0].annotations = this.annotations;
+            this.annotationFilters[1].annotations = this.annotations;
+        },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
         },
@@ -332,6 +342,48 @@ export default {
                 this.currentTimelineOffset = 0;
             }
         },
+        loadVideo(id) {
+            this.videoId = id;
+            Events.$emit('video.id', id);
+            UrlParams.setSlug(this.videoId);
+            this.startLoading();
+            let videoPromise = new Vue.Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve);
+            });
+            let annotationPromise = VideoAnnotationApi.query({id: this.videoId});
+            let promise = Vue.Promise.all([annotationPromise, videoPromise])
+                .then(this.setAnnotations)
+                .then(this.updateAnnotationFilters)
+                .then(this.maybeInitCurrentTime)
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
+
+            this.video.src = this.videoFileUri.replace(':id', this.videoId);
+
+            return promise;
+        },
+        showPreviousVideo() {
+            this.reset();
+            let length = this.videoIds.length;
+            let index = (this.videoIds.indexOf(this.videoId) + length - 1) % length;
+
+            this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
+        },
+        showNextVideo() {
+            this.reset();
+            let length = this.videoIds.length;
+            let index = (this.videoIds.indexOf(this.videoId) + length + 1) % length;
+
+            this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
+        },
+        reset() {
+            this.bookmarks = [];
+            this.annotations = [];
+            this.seeking = false;
+            this.initialCurrentTime = 0;
+            this.$refs.videoTimeline.reset();
+            this.$refs.videoScreen.reset();
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -352,10 +404,12 @@ export default {
         });
         this.shapes = map;
         this.video = document.createElement('video');
-        this.videoId = biigle.$require('videos.id');
+        this.videoIds = biigle.$require('videos.videoIds');
+        this.videoFileUri = biigle.$require('videos.videoFileUri');
         this.canEdit = biigle.$require('videos.isEditor');
         this.labelTrees = biigle.$require('videos.labelTrees');
 
+        this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = true;
         this.video.addEventListener('error', function (e) {
@@ -368,17 +422,6 @@ export default {
         this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
-        this.startLoading();
-        let videoPromise = new Vue.Promise((resolve) => {
-            this.video.addEventListener('canplay', resolve);
-        });
-        let annotationPromise = VideoAnnotationApi.query({id: this.videoId});
-        annotationPromise.then(this.setAnnotations, handleErrorResponse)
-            .then(this.initAnnotationFilters);
-
-        Vue.Promise.all([videoPromise, annotationPromise])
-            .then(this.maybeInitCurrentTime)
-            .then(this.finishLoading);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
@@ -387,7 +430,7 @@ export default {
     mounted() {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
-        this.video.src = biigle.$require('videos.src');
+        this.loadVideo(biigle.$require('videos.id'));
     },
 };
 </script>

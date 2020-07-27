@@ -57,7 +57,7 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('videos.id', {{$video->id}});
-    biigle.$declare('videos.src', '{{url('api/v1/videos/'.$video->id.'/file')}}');
+    biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
     @can('addAnnotation', $video)
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
     @endcan
