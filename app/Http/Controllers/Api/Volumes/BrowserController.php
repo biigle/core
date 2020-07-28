@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Storage;
 
 class BrowserController extends Controller
@@ -18,7 +19,7 @@ class BrowserController extends Controller
     {
         $this->middleware(function ($request, $next) {
             if (!config('volumes.browser')) {
-                abort(404);
+                abort(Response::HTTP_NOT_FOUND);
             }
 
             return $next($request);
@@ -51,7 +52,7 @@ class BrowserController extends Controller
     public function indexDirectories(Request $request, $disk)
     {
         if (!$this->diskAccessible($disk)) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         if ($request->has('path')) {
@@ -132,7 +133,7 @@ class BrowserController extends Controller
     protected function indexFiles(Request $request, $disk, $regex)
     {
         if (!$this->diskAccessible($disk)) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
         $path = $request->input('path', '');
         // Use array_values to discard keys. This ensures the JSON returned by this

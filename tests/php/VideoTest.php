@@ -106,4 +106,11 @@ class VideoTest extends ModelTestCase
         $this->model->size = 123;
         $this->assertEquals(['size' => 123], $this->model->attrs);
     }
+
+    public function testHasBeenProcessed()
+    {
+        $this->assertFalse($this->model->hasBeenProcessed());
+        $this->model->size = 123;
+        $this->assertTrue($this->model->hasBeenProcessed());
+    }
 }

@@ -4,7 +4,7 @@ namespace Biigle;
 
 use Exception;
 use FileCache;
-use Response;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
@@ -103,13 +103,13 @@ class Image extends VolumeFile
         }
 
         if ($this->volume->isRemote()) {
-            return Response::redirectTo($this->url);
+            return redirect($this->url);
         }
 
         try {
             $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
-                abort(404);
+                abort(Response::HTTP_NOT_FOUND);
             }
 
             return response()->stream(function () use ($stream) {

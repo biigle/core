@@ -17,6 +17,7 @@ class VideoFileControllerTest extends ApiTestCase
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
+            'attrs' => ['size' => 9],
         ]);
 
         $this->doTestApiRoute('GET', "api/v1/videos/{$video->id}/file");
@@ -36,6 +37,7 @@ class VideoFileControllerTest extends ApiTestCase
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
+            'attrs' => ['size' => 9],
         ]);
 
         $this->beGuest();
@@ -72,9 +74,22 @@ class VideoFileControllerTest extends ApiTestCase
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
+            'attrs' => ['size' => 9],
         ]);
 
         $this->beGuest();
         $this->get("api/v1/videos/{$video->id}/file")->assertRedirect($video->url);
+    }
+
+    public function testShowNotProcessed()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $video = VideoTest::create([
+            'filename' => 'video.mp4',
+            'volume_id' => $id,
+        ]);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")->assertStatus(428);
     }
 }

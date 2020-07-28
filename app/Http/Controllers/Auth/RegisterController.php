@@ -9,6 +9,7 @@ use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Notification;
 use Ramsey\Uuid\Uuid;
@@ -114,7 +115,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ($this->isRegistrationDisabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return $this->baseShowRegistrationForm();
@@ -129,7 +130,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         if ($this->isRegistrationDisabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return $this->baseRegister($request);

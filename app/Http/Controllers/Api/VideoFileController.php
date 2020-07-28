@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
 use FileCache;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use League\Flysystem\FileNotFoundException;
 use Storage;
 
@@ -19,7 +20,7 @@ class VideoFileController extends Controller
      * @apiName ShowVideoFile
      * @apiParam {Number} id The video ID.
      * @apiPermission projectMember
-     * @apiDescription This endpoint supports the `Range` header. If the video has a remote source, this endpoint redirects to the remote URL, instead.
+     * @apiDescription This endpoint supports the `Range` header. If the video has a remote source, this endpoint redirects to the remote URL, instead. Returns a HTTP code 428 if the video has not been processed yet.
      *
      * @param Request $request
      * @param int $id
@@ -31,6 +32,10 @@ class VideoFileController extends Controller
         $video = Video::with('volume')->findOrFail($id);
         $this->authorize('access', $video);
 
+        if (!$video->hasBeenProcessed()) {
+            abort(Response::HTTP_PRECONDITION_REQUIRED);
+        }
+
         if ($video->volume->isRemote()) {
             return redirect($video->url);
         }
@@ -40,7 +45,7 @@ class VideoFileController extends Controller
         try {
             $response = Storage::disk($disk)->response("{$path}/{$video->filename}");
         } catch (FileNotFoundException $e) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $response->headers->set('Accept-Ranges', 'bytes');
@@ -52,7 +57,7 @@ class VideoFileController extends Controller
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
             $offset = $range[0];
             $length = $range[1] - $range[0] + 1;
-            $total = $video->attrs['size'];
+            $total = $video->size;
             $response->headers->set('Content-Length', $length);
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
@@ -102,7 +107,7 @@ class VideoFileController extends Controller
             $range = array_map('intval', explode('-', trim($header[1])));
 
             if ($range[1] === 0) {
-                $range[1] = $video->attrs['size'] - 1;
+                $range[1] = $video->size - 1;
             }
         }
 

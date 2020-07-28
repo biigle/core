@@ -217,4 +217,14 @@ class Video extends VolumeFile
     {
         $this->setJsonAttr('size', $value);
     }
+
+    /**
+     * Determine whether the (new) video has been processed.
+     *
+     * @return boolean
+     */
+    public function hasBeenProcessed()
+    {
+        return !is_null($this->size);
+    }
 }

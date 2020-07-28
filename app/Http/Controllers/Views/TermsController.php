@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Illuminate\Http\Response;
 use View;
 
 class TermsController extends Controller
@@ -14,7 +15,7 @@ class TermsController extends Controller
     public function show()
     {
         if (!View::exists('terms')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return view('terms');

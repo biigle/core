@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Controller;
 use Biigle\Logging\LogManager;
 use Carbon\Carbon;
 use File;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class LogsController extends Controller
@@ -18,7 +19,7 @@ class LogsController extends Controller
     public function index()
     {
         if (!config('biigle.admin_logs')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $manager = new LogManager;
@@ -59,13 +60,13 @@ class LogsController extends Controller
     public function show($file)
     {
         if (!config('biigle.admin_logs')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $manager = new LogManager;
 
         if (!$manager->isFile() || !in_array($file, $manager->getLogFilenames())) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return view('admin.logs.show', [
