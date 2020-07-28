@@ -10,12 +10,13 @@ export default {
     mixins: [FilenameTracker],
     data() {
         return {
-                imageIds: [],
-                imageIdsLeft: [],
-                initialImageId: null,
-                showIndicator: true,
-            };
-        },
+            volumeId: null,
+            allImageIds: [],
+            imageIdsLeft: [],
+            initialImageId: null,
+            showIndicator: true,
+        };
+    },
     computed: {
         progressPath() {
             let largeArc = this.progress >= 0.5 ? 1 : 0;
@@ -71,6 +72,26 @@ export default {
         filenameTitle() {
             return this.hasSeenAllImages ? 'You have seen all images' : '';
         },
+        imageIds() {
+            let imagesIds = this.allImageIds.slice();
+            // Look for a sequence of image IDs in local storage. This sequence is
+            // produced by the volume overview page when the files are sorted or
+            // filtered. We want to reflect the same ordering or filtering here
+            // in the annotation tool.
+            let storedSequence = window.localStorage.getItem(`biigle.volumes.${this.volumeId}.images`);
+            if (storedSequence) {
+                // If there is such a stored sequence, filter out any image IDs that
+                // do not belong to the volume (any more), since some of them may
+                // have been deleted in the meantime.
+                let map = {};
+                imagesIds.forEach(function (id) {
+                    map[id] = null;
+                });
+                return JSON.parse(storedSequence).filter((id) => map.hasOwnProperty(id));
+            }
+
+            return imagesIds;
+        },
     },
     methods: {
         arcPosition(percent) {
@@ -101,13 +122,9 @@ export default {
         },
     },
     created() {
-        this.imageIds = biigle.$require('annotations.imagesIds').slice();
-        this.imageIdsLeft = biigle.$require('annotations.imagesIds').slice();
-
-        Events.$on('images.sequence', (ids) => {
-            this.imageIds = ids.slice();
-            this.imageIdsLeft = ids.slice();
-        });
+        this.allImageIds = biigle.$require('annotations.imagesIds');
+        this.volumeId = biigle.$require('annotations.volumeId');
+        this.imageIdsLeft = this.imageIds.slice()
 
         Events.$once('images.change', this.setInitialImageId);
 

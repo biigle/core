@@ -590,8 +590,6 @@ export default {
         }
         this.imageIndex = index;
 
-        Events.$emit('images.sequence', this.imagesIds);
-
         if (UrlParams.get('r') !== undefined) {
             this.mapResolution = parseInt(UrlParams.get('r'), 10) / 100;
         }
