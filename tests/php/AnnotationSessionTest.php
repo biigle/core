@@ -71,7 +71,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertEmpty($this->model->users()->get());
     }
 
-    public function testGetImageAnnotationsHideOwn()
+    public function testGetVolumeFileAnnotationsHideOwnImage()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -114,19 +114,74 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getImageAnnotations($image, $ownUser);
+        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
-        $this->assertFalse($annotations->contains('labels', [$al11->load('user', 'label')->toArray()]));
-        $this->assertTrue($annotations->contains('labels', [$al12->load('user', 'label')->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al12->toArray()]));
 
         $this->assertTrue($annotations->contains('points', [30, 40, 50]));
-        $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
-    public function testGetImageAnnotationsHideOther()
+    public function testGetVolumeFileAnnotationsHideOwnVideo()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create();
+
+        // this should be shown but the annotation label of the own user should be hidden
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-05',
+            'points' => [[20, 30, 40]],
+        ]);
+        $al11 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al12 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should be shown completely
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+            'points' => [[30, 40, 50]],
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        // expand the models in the collection so we can make assertions
+        $annotations = collect($annotations->toArray());
+
+        $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
+        $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al12->toArray()]));
+
+        $this->assertTrue($annotations->contains('points', [[30, 40, 50]]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
+    }
+
+    public function testGetVolumeFileAnnotationsHideOtherImage()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -157,16 +212,56 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getImageAnnotations($image, $ownUser);
+        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
-        $this->assertFalse($annotations->contains('labels', [$al1->load('user', 'label')->toArray()]));
-        $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
-    public function testGetImageAnnotationsHideBoth()
+    public function testGetVolumeFileAnnotationsHideOtherVideo()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create();
+
+        // this should be shown but the annotation label of other users should be hidden
+        $a = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-05',
+            'points' => [[20, 30, 40]],
+        ]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        // expand the models in the collection so we can make assertions
+        $annotations = collect($annotations->toArray());
+
+        $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
+        $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
+    }
+
+    public function testGetVolumeFileAnnotationsHideBothImage()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -197,16 +292,56 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getImageAnnotations($image, $ownUser);
+        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
-        $this->assertTrue($annotations->contains('labels', [$al1->load('user', 'label')->toArray()]));
-        $this->assertFalse($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al2->toArray()]));
     }
 
-    public function testGetImageAnnotationsHideNothing()
+    public function testGetVolumeFileAnnotationsHideBothVideo()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create();
+
+        // this should be shown but the annotation label of other users should be hidden
+        $a = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+            'points' => [[40, 50, 60]],
+        ]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        // expand the models in the collection so we can make assertions
+        $annotations = collect($annotations->toArray());
+
+        $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
+        $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al2->toArray()]));
+    }
+
+    public function testGetVolumeFileAnnotationsHideNothingImage()
     {
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
@@ -236,14 +371,55 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getImageAnnotations($image, $ownUser);
+        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
         $this->assertTrue($annotations->contains('labels', [
-            $al1->load('user', 'label')->toArray(),
-            $al2->load('user', 'label')->toArray(),
+            $al1->toArray(),
+            $al2->toArray(),
+        ]));
+    }
+
+    public function testGetVolumeFileAnnotationsHideNothingVideo()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $video = VideoTest::create();
+
+        $a = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+            'points' => [[40, 50, 60]],
+        ]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        // expand the models in the collection so we can make assertions
+        $annotations = collect($annotations->toArray());
+
+        $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
+        $this->assertTrue($annotations->contains('labels', [
+            $al1->toArray(),
+            $al2->toArray(),
         ]));
     }
 

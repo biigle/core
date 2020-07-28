@@ -12,6 +12,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use DB;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Queue;
 
@@ -24,6 +25,7 @@ class VideoAnnotationController extends Controller
      * @apiGroup Videos
      * @apiName IndexVideoAnnotations
      * @apiPermission projectMember
+     * @apiDescription If there is an active annotation session for the volume of this video, only those annotations will be returned that the user is allowed to access.
      *
      * @apiParam {Number} id The video ID.
      *
@@ -56,15 +58,24 @@ class VideoAnnotationController extends Controller
      *    }
      * ]
      *
+     * @param Request $request
      * @param int $id Video id
      * @return mixed
      */
-    public function index($id)
+    public function index(Request $request, $id)
     {
         $video = Video::findOrFail($id);
         $this->authorize('access', $video);
 
-        return $video->annotations()->with('labels.label', 'labels.user')->get();
+        $user = $request->user();
+        $session = $video->volume->getActiveAnnotationSession($user);
+        $load = ['labels.label', 'labels.user'];
+
+        if ($session) {
+            return $session->getVolumeFileAnnotations($video, $user)->load($load);
+        }
+
+        return $video->annotations()->with($load)->get();
     }
 
     /**

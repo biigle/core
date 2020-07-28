@@ -60,8 +60,7 @@ class ImageAnnotation extends Annotation implements AnnotationContract
      */
     public function labels()
     {
-        return $this->hasMany(ImageAnnotationLabel::class, 'annotation_id')
-            ->with('label', 'user');
+        return $this->hasMany(ImageAnnotationLabel::class, 'annotation_id');
     }
 
         /**

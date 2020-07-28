@@ -69,20 +69,20 @@ class ImageAnnotationController extends Controller
         $user = $request->user();
         $session = $image->volume->getActiveAnnotationSession($user);
 
+        $load = [
+            // Hide confidence.
+            'labels:id,annotation_id,label_id,user_id',
+            // Hide label_source_id and source_id.
+            'labels.label:id,name,parent_id,color,label_tree_id',
+            // Hide role_id.
+            'labels.user:id,firstname,lastname',
+        ];
+
         if ($session) {
-            return $session->getImageAnnotations($image, $user);
+            return $session->getVolumeFileAnnotations($image, $user)->load($load);
         }
 
-        return $image->annotations()
-            ->with(
-                // Hide confidence.
-                'labels:id,annotation_id,label_id,user_id',
-                // Hide label_source_id and source_id.
-                'labels.label:id,name,parent_id,color,label_tree_id',
-                // Hide role_id.
-                'labels.user:id,firstname,lastname'
-            )
-            ->get();
+        return $image->annotations()->with($load)->get();
     }
 
     /**
@@ -225,7 +225,7 @@ class ImageAnnotationController extends Controller
             $annotation->labels()->save($annotationLabel);
         });
 
-        $annotation->load('labels');
+        $annotation->load('labels.label', 'labels.user');
 
         return $annotation;
     }

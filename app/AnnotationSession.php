@@ -57,17 +57,18 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Get the annotations of the image (with labels), filtered by the restrictions of this annotation session.
+     * Get the annotations of the file (with labels), filtered by the restrictions of this annotation session.
      *
-     * @param Image $image The image to get the annotations from
+     * @param VolumeFile $file The file to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getImageAnnotations(Image $image, User $user)
+    public function getVolumeFileAnnotations(VolumeFile $file, User $user)
     {
-        $query = ImageAnnotation::allowedBySession($this, $user)
-            ->where('image_annotations.image_id', $image->id);
+        $annotationClass = $file->annotations()->getRelated();
+        $query = $annotationClass::allowedBySession($this, $user)
+            ->where($file->annotations()->getQualifiedForeignKeyName(), $file->id);
 
         /*
          * If both hide_other_users_annotations and hide_own_annotations is true,

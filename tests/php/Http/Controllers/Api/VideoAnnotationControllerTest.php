@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\Jobs\TrackObject;
 use Biigle\MediaType;
 use Biigle\Shape;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -57,6 +58,53 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertJsonFragment(['name' => 'My label']);
     }
 
+    public function testIndexAnnotationSessionHideOwn()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [[10, 20]],
+        ]);
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a1->id,
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'created_at' => Carbon::today(),
+            'points' => [[20, 30]],
+        ]);
+
+        $al2 = VideoAnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a2->id,
+        ]);
+
+        $this->beEditor();
+        $this->get("/api/v1/videos/{$this->video->id}/annotations")
+            ->assertStatus(200)
+            ->assertJsonFragment(['points' => [[10, 20]]])
+            ->assertJsonFragment(['points' => [[20, 30]]]);
+
+        $session->users()->attach($this->editor());
+        Cache::flush();
+
+        $this->get("/api/v1/videos/{$this->video->id}/annotations")
+            ->assertStatus(200)
+            ->assertJsonMissing(['points' => [[10, 20]]])
+            ->assertJsonFragment(['points' => [[20, 30]]]);
+    }
+
     public function testShow()
     {
         $annotation = VideoAnnotationTest::create([
@@ -89,6 +137,35 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertJsonFragment(['points' => [[10, 20]]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label']);
+    }
+
+
+    public function showAnnotationSession()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+            'created_at' => Carbon::yesterday(),
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->annotation->video->volume_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $this->get("/api/v1/video-annotations/{$this->annotation->id}")
+            ->assertStatus(200);
+
+        $session->users()->attach($this->admin());
+        Cache::flush();
+
+        $this->get("/api/v1/video-annotations/{$this->annotation->id}")
+            ->assertStatus(403);
     }
 
     public function testStore()
