@@ -9,7 +9,7 @@ import VolumeContainer from './volumeContainer';
 
 biigle.$mount('annotation-session-panel', AnnotationSessionPanel);
 biigle.$mount('create-volume-form', CreateForm);
-biigle.$mount('file-count', FileCount);
+biigle.$mount('volume-file-count', FileCount);
 biigle.$mount('file-panel', FilePanel);
 biigle.$mount('search-results', SearchResults);
 biigle.$mount('volume-container', VolumeContainer);
