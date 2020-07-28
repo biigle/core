@@ -12,28 +12,30 @@ class AnnotationToolControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $this->markTestIncomplete('route should be images/xxx/annotations (rename controller?)');
-        $project = ProjectTest::create();
-        $volume = VolumeTest::create();
-        $image = ImageTest::create(['volume_id' => $volume->id]);
-        $project->addVolumeId($volume->id);
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         // not logged in
-        $response = $this->get('annotate/'.$image->id);
+        $response = $this->get("images/{$image->id}/annotations");
         $response->assertStatus(302);
 
         // doesn't belong to project
-        $this->be(UserTest::create());
-        $response = $this->get('annotate/'.$image->id);
+        $this->beUser();
+        $response = $this->get("images/{$image->id}/annotations");
         $response->assertStatus(403);
 
-        $this->be($project->creator);
-        $response = $this->get('annotate/'.$image->id);
+        $this->beGuest();
+        $response = $this->get("images/{$image->id}/annotations");
         $response->assertStatus(200);
         $response->assertViewHas('user');
         $response->assertViewHas('image');
 
         // doesn't exist
-        $response = $this->get('annotate/-1');
+        $response = $this->get('images/-1/annotations');
         $response->assertStatus(404);
+    }
+
+    public function testShowRedirect()
+    {
+        $this->beUser();
+        $this->get("annotate/999")->assertRedirect('/images/999/annotations');
     }
 }

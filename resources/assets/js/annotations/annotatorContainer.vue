@@ -151,7 +151,7 @@ export default {
             }
         },
         updateUrlSlug() {
-            UrlParams.setSlug(this.imageId);
+            UrlParams.setSlug(this.imageId, -2);
         },
         getNextIndex(index) {
             return (index + 1) % this.imagesIds.length;

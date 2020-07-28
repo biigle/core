@@ -16,12 +16,12 @@ class AnnotationControllerTest extends ApiTestCase
         $this->project()->addVolumeId($annotation->image->volume_id);
 
         $this->beUser();
-        $response = $this->json('GET', 'annotations/'.$annotation->id);
+        $response = $this->json('GET', "image-annotations/{$annotation->id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get('annotations/'.$annotation->id);
-        $response->assertRedirect('annotate/'.$annotation->image_id.'?annotation='.$annotation->id);
+        $response = $this->get("image-annotations/{$annotation->id}");
+        $response->assertRedirect("images/{$annotation->image_id}/annotations?annotation={$annotation->id}");
     }
 
     public function testShowAnnotationSession()
@@ -55,10 +55,16 @@ class AnnotationControllerTest extends ApiTestCase
         $session->users()->attach($this->admin());
 
         $this->beAdmin();
-        $response = $this->get("annotations/{$annotation->id}");
+        $response = $this->get("image-annotations/{$annotation->id}");
         $response->assertStatus(403);
 
-        $response = $this->get("annotations/{$annotation2->id}");
+        $response = $this->get("image-annotations/{$annotation2->id}");
         $response->assertStatus(302);
+    }
+
+    public function testShowRedirect()
+    {
+        $this->beUser();
+        $this->get('annotations/999')->assertRedirect('/image-annotations/999');
     }
 }

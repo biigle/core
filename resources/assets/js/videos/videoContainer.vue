@@ -346,7 +346,7 @@ export default {
         loadVideo(id) {
             this.videoId = id;
             Events.$emit('video.id', id);
-            UrlParams.setSlug(this.videoId);
+            UrlParams.setSlug(this.videoId, -2);
             this.startLoading();
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);

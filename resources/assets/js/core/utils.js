@@ -26,10 +26,12 @@ export let urlParams = new Vue({
         params: {}
     },
     methods: {
-        setSlug(s) {
+        setSlug(s, index) {
+            index = index || -1;
             let oldPath = window.location.pathname.replace(/\/$/, '');
-            // Replace the old slug with the new slug.
-            let newPath = oldPath.substring(0, oldPath.lastIndexOf('/') + 1) + s;
+            let newPath = oldPath.split('/');
+            newPath.splice(index, 1, s);
+            newPath = newPath.join('/');
             this.replaceState(window.location.href.replace(oldPath, newPath));
         },
         set(params) {
