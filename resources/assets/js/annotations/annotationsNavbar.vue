@@ -12,7 +12,8 @@ export default {
     },
     data() {
         return {
-            ids: [],
+            volumeId: null,
+            allIds: [],
             filenames: {},
             showIndicator: true,
             currentId: null,
@@ -21,6 +22,26 @@ export default {
     computed: {
         currentFilename() {
             return this.filenames[this.currentId];
+        },
+        ids() {
+            let imagesIds = this.allIds.slice();
+            // Look for a sequence of image IDs in local storage. This sequence is
+            // produced by the volume overview page when the files are sorted or
+            // filtered. We want to reflect the same ordering or filtering here
+            // in the annotation tool.
+            let storedSequence = window.localStorage.getItem(`biigle.volumes.${this.volumeId}.files`);
+            if (storedSequence) {
+                // If there is such a stored sequence, filter out any image IDs that
+                // do not belong to the volume (any more), since some of them may
+                // have been deleted in the meantime.
+                let map = {};
+                imagesIds.forEach(function (id) {
+                    map[id] = null;
+                });
+                return JSON.parse(storedSequence).filter((id) => map.hasOwnProperty(id));
+            }
+
+            return imagesIds;
         },
     },
     methods: {
@@ -37,17 +58,14 @@ export default {
         },
     },
     created() {
-        this.ids = biigle.$require('annotations.imagesIds').slice();
+        this.allIds = biigle.$require('annotations.imagesIds');
+        this.volumeId = biigle.$require('annotations.volumeId');
         let filenames = {};
         biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
-            filenames[this.ids[index]] = filename;
+            filenames[this.allIds[index]] = filename;
         });
         this.filenames = filenames;
         this.currentId = biigle.$require('annotations.imageId');
-
-        Events.$on('images.sequence', (ids) => {
-            this.ids = ids.slice();
-        });
 
         Events.$on('images.change', this.updateCurrentId);
 
