@@ -2,7 +2,7 @@
 
 namespace Biigle;
 
-class ImageLabel extends VolumeFileLabel
+class VideoLabel extends VolumeFileLabel
 {
     /**
      * The file, this volume file label belongs to.
@@ -11,17 +11,17 @@ class ImageLabel extends VolumeFileLabel
      */
     public function file()
     {
-        return $this->image();
+        return $this->video();
     }
 
     /**
-     * The image, this image label belongs to.
+     * The video, this video label belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function image()
+    public function video()
     {
-        return $this->belongsTo(Image::class);
+        return $this->belongsTo(Video::class);
     }
 
     /**
@@ -31,6 +31,6 @@ class ImageLabel extends VolumeFileLabel
      */
     public function getFileIdAttribute()
     {
-        return $this->image_id;
+        return $this->video_id;
     }
 }

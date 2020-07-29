@@ -2,21 +2,21 @@
 
 namespace Biigle\Tests;
 
-use Biigle\ImageLabel;
+use Biigle\VideoLabel;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 
-class ImageLabelTest extends ModelTestCase
+class VideoLabelTest extends ModelTestCase
 {
     /**
      * The model class this class will test.
      */
-    protected static $modelClass = ImageLabel::class;
+    protected static $modelClass = VideoLabel::class;
 
     public function testAttributes()
     {
         $this->assertNotNull($this->model->file);
-        $this->assertNotNull($this->model->image);
+        $this->assertNotNull($this->model->video);
         $this->assertNotNull($this->model->label);
         $this->assertNotNull($this->model->user);
         $this->assertNotNull($this->model->created_at);
@@ -24,10 +24,10 @@ class ImageLabelTest extends ModelTestCase
         $this->assertNotNull($this->model->file_id);
     }
 
-    public function testImageOnDeleteCascade()
+    public function testVideoOnDeleteCascade()
     {
         $this->assertNotNull($this->model->fresh());
-        $this->model->image()->delete();
+        $this->model->video()->delete();
         $this->assertNull($this->model->fresh());
     }
 
@@ -49,7 +49,7 @@ class ImageLabelTest extends ModelTestCase
     {
         $this->expectException(QueryException::class);
         self::create([
-            'image_id' => $this->model->image_id,
+            'video_id' => $this->model->video_id,
             'label_id' => $this->model->label_id,
         ]);
     }

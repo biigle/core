@@ -227,4 +227,14 @@ class Video extends VolumeFile
     {
         return !is_null($this->size);
     }
+
+    /**
+     * The labels, this video got attached by the users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function labels()
+    {
+        return $this->hasMany(VideoLabel::class)->with('label', 'user');
+    }
 }

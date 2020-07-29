@@ -238,6 +238,16 @@ $router->resource('video-annotation-labels', 'VideoAnnotationLabelController', [
     'parameters' => ['video-annotation-labels' => 'id'],
 ]);
 
+$router->resource('videos.labels', 'VideoLabelController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('video-labels', 'VideoLabelController', [
+    'only' => ['destroy'],
+    'parameters' => ['video-labels' => 'id'],
+]);
+
 $router->resource('visibilities', 'VisibilityController', [
     'only' => ['index', 'show'],
     'parameters' => ['visibilities' => 'id'],

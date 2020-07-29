@@ -51,4 +51,11 @@ abstract class VolumeFile extends Model implements FileContract
      * @return string
      */
     abstract public function getThumbnailUrlAttribute();
+
+    /**
+     * The labels, this volume file got attached by the users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    abstract public function labels();
 }

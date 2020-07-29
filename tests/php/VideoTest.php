@@ -113,4 +113,12 @@ class VideoTest extends ModelTestCase
         $this->model->size = 123;
         $this->assertTrue($this->model->hasBeenProcessed());
     }
+
+    public function testLabels()
+    {
+        $vl = VideoLabelTest::create(['video_id' => $this->model->id]);
+        $this->assertEquals(1, $this->model->labels()->count());
+        $label = $this->model->labels()->first();
+        $this->assertEquals($vl->id, $label->id);
+    }
 }

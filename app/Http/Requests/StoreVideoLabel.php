@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Image;
+use Biigle\Video;
 
-class StoreImageLabel extends StoreVolumeFileLabel
+class StoreVideoLabel extends StoreVolumeFileLabel
 {
     /**
      * Get the file model class;
@@ -13,6 +13,6 @@ class StoreImageLabel extends StoreVolumeFileLabel
      */
     protected function getFileModel()
     {
-        return Image::class;
+        return Video::class;
     }
 }

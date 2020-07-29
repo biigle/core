@@ -2,19 +2,19 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\StoreImageLabel;
-use Biigle\Image;
-use Biigle\ImageLabel;
+use Biigle\Http\Requests\StoreVideoLabel;
+use Biigle\Video;
+use Biigle\VideoLabel;
 
-class ImageLabelController extends VolumeFileLabelController
+class VideoLabelController extends VolumeFileLabelController
 {
     /**
-     * @api {get} images/:id/labels Get all labels
-     * @apiGroup Images
-     * @apiName IndexImageLabels
+     * @api {get} videos/:id/labels Get all labels
+     * @apiGroup Videos
+     * @apiName IndexVideoLabels
      * @apiPermission projectMember
      *
-     * @apiParam {Number} id The image ID.
+     * @apiParam {Number} id The video ID.
      * @apiSuccessExample {json} Success response:
      * [
      *    {
@@ -40,17 +40,17 @@ class ImageLabelController extends VolumeFileLabelController
      */
 
     /**
-     * Creates a new label for the specified image.
+     * Creates a new label for the specified video.
      *
-     * @api {post} images/:id/labels Attach a label
-     * @apiGroup Images
-     * @apiName StoreImageLabels
+     * @api {post} videos/:id/labels Attach a label
+     * @apiGroup Videos
+     * @apiName StoreVideoLabels
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by one of
-     * the projects, the image belongs to.
+     * the projects, the video belongs to.
      *
-     * @apiParam {Number} id The image ID.
-     * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the image.
+     * @apiParam {Number} id The video ID.
+     * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the video.
      * @apiParamExample {String} Request example:
      * label_id: 1
      * @apiSuccessExample {json} Success response:
@@ -71,21 +71,21 @@ class ImageLabelController extends VolumeFileLabelController
      *    }
      * }
      *
-     * @param StoreImageLabel $request
+     * @param StoreVideoLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreImageLabel $request)
+    public function store(StoreVideoLabel $request)
     {
         return parent::baseStore($request);
     }
 
     /**
-     * @api {delete} image-labels/:id Detach a label
-     * @apiGroup Images
-     * @apiName DeleteImageLabels
+     * @api {delete} video-labels/:id Detach a label
+     * @apiGroup Videos
+     * @apiName DeleteVideoLabels
      * @apiPermission projectEditor
      *
-     * @apiParam {Number} id The image **label** ID (not the image ID).
+     * @apiParam {Number} id The video **label** ID (not the video ID).
      */
 
      /**
@@ -95,7 +95,7 @@ class ImageLabelController extends VolumeFileLabelController
      */
     protected function getFileModel()
     {
-        return Image::class;
+        return Video::class;
     }
 
      /**
@@ -105,6 +105,6 @@ class ImageLabelController extends VolumeFileLabelController
      */
     protected function getFileLabelModel()
     {
-        return ImageLabel::class;
+        return VideoLabel::class;
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Biigle\Policies;
 
-use Biigle\ImageLabel;
+use Biigle\VolumeFileLabel;
 use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ImageLabelPolicy extends CachedPolicy
+class VolumeFileLabelPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
@@ -34,21 +34,24 @@ class ImageLabelPolicy extends CachedPolicy
      * be admin of one of the projects.
      *
      * @param  User  $user
-     * @param  ImageLabel  $imageLabel
+     * @param  VolumeFileLabel  $fileLabel
      * @return bool
      */
-    public function destroy(User $user, ImageLabel $imageLabel)
+    public function destroy(User $user, VolumeFileLabel $fileLabel)
     {
-        return $this->remember("image-label-can-destroy-{$user->id}-{$imageLabel->id}", function () use ($user, $imageLabel) {
+        $table = $fileLabel->getTable();
+        return $this->remember("{$table}-can-destroy-{$user->id}-{$fileLabel->id}", function () use ($user, $fileLabel) {
             // selects the IDs of the projects, the image belongs to
-            $projectIdsQuery = function ($query) use ($imageLabel) {
+            $projectIdsQuery = function ($query) use ($fileLabel) {
+                $fileModel = $fileLabel->file()->getRelated();
+                $fileTable = $fileModel->getTable();
                 $query->select('project_volume.project_id')
                     ->from('project_volume')
-                    ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
-                    ->where('images.id', $imageLabel->image_id);
+                    ->join($fileTable, 'project_volume.volume_id', '=', $fileModel->volume()->getQualifiedForeignKeyName())
+                    ->where("{$fileTable}.id", $fileLabel->file_id);
             };
 
-            if ((int) $imageLabel->user_id === $user->id) {
+            if ($fileLabel->user_id === $user->id) {
                 // Editors, experts and admins may detach their own labels.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)

@@ -15,11 +15,11 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        \Biigle\ImageAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
-        \Biigle\ImageAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
         \Biigle\ApiToken::class => \Biigle\Policies\ApiTokenPolicy::class,
         \Biigle\Image::class => \Biigle\Policies\VolumeFilePolicy::class,
-        \Biigle\ImageLabel::class => \Biigle\Policies\ImageLabelPolicy::class,
+        \Biigle\ImageAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
+        \Biigle\ImageAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
+        \Biigle\ImageLabel::class => \Biigle\Policies\VolumeFileLabelPolicy::class,
         \Biigle\Label::class => \Biigle\Policies\LabelPolicy::class,
         \Biigle\LabelTree::class => \Biigle\Policies\LabelTreePolicy::class,
         \Biigle\LabelTreeVersion::class => \Biigle\Policies\LabelTreeVersionPolicy::class,
@@ -29,6 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         \Biigle\Video::class => \Biigle\Policies\VolumeFilePolicy::class,
         \Biigle\VideoAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
         \Biigle\VideoAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
+        \Biigle\VideoLabel::class => \Biigle\Policies\VolumeFileLabelPolicy::class,
         \Biigle\Volume::class => \Biigle\Policies\VolumePolicy::class,
     ];
 
