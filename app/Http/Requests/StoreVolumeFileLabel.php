@@ -10,7 +10,7 @@ abstract class StoreVolumeFileLabel extends FormRequest
     /**
      * The file to which the label should be attached.
      *
-     * @var Image
+     * @var \Biigle\VolumeFile
      */
     public $file;
 
