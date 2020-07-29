@@ -33,7 +33,7 @@ class VideoController extends Controller
      * }
      *
      * @param int $id image id
-     * @return Image
+     * @return Video
      */
     public function show($id)
     {

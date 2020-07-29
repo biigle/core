@@ -19,12 +19,12 @@ import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 
-class VideoError extends Error {};
-class VideoNotProcessedError extends VideoError {};
-class VideoNotFoundError extends VideoError {};
-class VideoMimeTypeError extends VideoError {};
-class VideoCodecError extends VideoError {};
-class VideoMalformedError extends VideoError {};
+class VideoError extends Error {}
+class VideoNotProcessedError extends VideoError {}
+class VideoNotFoundError extends VideoError {}
+class VideoMimeTypeError extends VideoError {}
+class VideoCodecError extends VideoError {}
+class VideoMalformedError extends VideoError {}
 
 export default {
     mixins: [LoaderMixin],
