@@ -204,7 +204,7 @@ $router->resource('system-messages', 'SystemMessageController', [
 $router->get('videos/{id}/file', 'VideoFileController@show');
 
 $router->resource('videos', 'VideoController', [
-    'only' => ['destroy'],
+    'only' => ['show', 'destroy'],
     'parameters' => ['videos' => 'id'],
 ]);
 

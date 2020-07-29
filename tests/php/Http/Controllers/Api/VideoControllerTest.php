@@ -6,12 +6,98 @@ use ApiTestCase;
 use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Biigle\Video;
 use Illuminate\Http\File;
 use Queue;
 use Storage;
 
 class VideoControllerTest extends ApiTestCase
 {
+    public function testShow()
+    {
+        $video = VideoTest::create([
+            'volume_id' => $this->volume()->id,
+            'duration' => 123,
+            'attrs' => [
+                'size' => 321,
+                'mimetype' => 'video/mp4',
+            ],
+        ]);
+        $id = $video->id;
+
+        $this->doTestApiRoute('GET', "/api/v1/videos/{$id}");
+
+        $this->beUser();
+        $this->get("/api/v1/videos/{$id}")->assertStatus(403);
+
+        $this->beGuest();
+        $this->getJson("/api/v1/videos/{$id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $video->id,
+                'uuid' => $video->uuid,
+                'filename' => $video->filename,
+                'volume_id' => $video->volume_id,
+                'size' => $video->size,
+                'mimeType' => $video->mimeType,
+                'duration' => $video->duration,
+                'error' => null,
+            ]);
+    }
+
+    public function testShowSizeNull()
+    {
+        $video = VideoTest::create([
+            'volume_id' => $this->volume()->id,
+            'duration' => 123,
+            'attrs' => [
+                'mimetype' => 'video/mp4',
+            ],
+        ]);
+        $id = $video->id;
+
+        $this->beGuest();
+        $this->getJson("/api/v1/videos/{$id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $video->id,
+                'uuid' => $video->uuid,
+                'filename' => $video->filename,
+                'volume_id' => $video->volume_id,
+                'size' => null,
+                'mimeType' => $video->mimeType,
+                'duration' => $video->duration,
+                'error' => null,
+            ]);
+    }
+
+    public function testShowError()
+    {
+        $video = VideoTest::create([
+            'volume_id' => $this->volume()->id,
+            'duration' => 123,
+            'attrs' => [
+                'mimetype' => 'video/mp4',
+                'error' => Video::ERROR_NOT_FOUND,
+            ],
+        ]);
+        $id = $video->id;
+
+        $this->beGuest();
+        $this->getJson("/api/v1/videos/{$id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $video->id,
+                'uuid' => $video->uuid,
+                'filename' => $video->filename,
+                'volume_id' => $video->volume_id,
+                'size' => null,
+                'mimeType' => $video->mimeType,
+                'duration' => $video->duration,
+                'error' => Video::ERROR_NOT_FOUND,
+            ]);
+    }
+
     public function testDestroy()
     {
         $video = VideoTest::create(['volume_id' => $this->volume()->id]);

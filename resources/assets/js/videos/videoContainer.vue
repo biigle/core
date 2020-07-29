@@ -13,10 +13,18 @@ import Sidebar from '../core/components/sidebar';
 import SidebarTab from '../core/components/sidebarTab';
 import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
 import VideoAnnotationApi from './api/videoAnnotations';
+import VideoApi from './api/videos';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+
+class VideoError extends Error {};
+class VideoNotProcessedError extends VideoError {};
+class VideoNotFoundError extends VideoError {};
+class VideoMimeTypeError extends VideoError {};
+class VideoCodecError extends VideoError {};
+class VideoMalformedError extends VideoError {};
 
 export default {
     mixins: [LoaderMixin],
@@ -69,6 +77,8 @@ export default {
             timelineHeightReference: 0,
             fixedTimelineOffset: 0,
             currentTimelineOffset: 0,
+            errors: {},
+            error: null,
         };
     },
     computed: {
@@ -100,6 +110,40 @@ export default {
         },
         hasSiblingVideos() {
             return this.videoIds.length > 1;
+        },
+        hasError() {
+            return this.error !== null;
+        },
+        hasVideoError() {
+            return this.error instanceof VideoError;
+        },
+        errorMessage() {
+            if (this.hasVideoError) {
+                if (this.error instanceof VideoNotProcessedError) {
+                    return 'The video has not been processed yet. Please try again later.'
+                } else if (this.error instanceof VideoNotFoundError) {
+                    return 'The video file has not been found. Please check the source.'
+                } else if (this.error instanceof VideoMimeTypeError) {
+                    return 'The video MIME type is invalid.'
+                } else if (this.error instanceof VideoCodecError) {
+                    return 'The video codec is invalid.'
+                } else if (this.error instanceof VideoMalformedError) {
+                    return 'The video file is malformed.'
+                }
+            }
+
+            return '';
+        },
+        errorClass() {
+            if (this.hasVideoError) {
+                if (this.error instanceof VideoNotProcessedError) {
+                    return 'panel-warning text-warning';
+                } else {
+                    return 'panel-danger text-danger';
+                }
+            }
+
+            return '';
         },
     },
     methods: {
@@ -343,23 +387,58 @@ export default {
                 this.currentTimelineOffset = 0;
             }
         },
-        loadVideo(id) {
-            this.videoId = id;
-            Events.$emit('video.id', id);
-            UrlParams.setSlug(this.videoId, -2);
-            this.startLoading();
+        handleVideoInformationResponse(response) {
+            let video = response.body;
+
+            if (video.size === null) {
+                throw new VideoNotProcessedError();
+            } else if (video.error === this.errors['not-found']) {
+                throw new VideoNotFoundError();
+            } else if (video.error === this.errors['mimetype']) {
+                throw new VideoMimeTypeError();
+            } else if (video.error === this.errors['codec']) {
+                throw new VideoCodecError();
+            } else if (video.error === this.errors['malformed']) {
+                throw new VideoMalformedError();
+            }
+
+            this.error = null;
+
+            return video;
+        },
+        handleVideoError(error) {
+            if (error instanceof VideoError) {
+                this.error = error;
+            } else {
+                this.error = true;
+                handleErrorResponse(error);
+            }
+        },
+        fetchVideoContent(video) {
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
             });
-            let annotationPromise = VideoAnnotationApi.query({id: this.videoId});
+            let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.updateAnnotationFilters)
-                .then(this.maybeInitCurrentTime)
-                .catch(handleErrorResponse)
-                .finally(this.finishLoading);
+                .then(this.maybeInitCurrentTime);
 
-            this.video.src = this.videoFileUri.replace(':id', this.videoId);
+            this.video.src = this.videoFileUri.replace(':id', video.id);
+
+            return promise;
+        },
+        loadVideo(id) {
+            this.videoId = id;
+            Events.$emit('video.id', id);
+            UrlParams.setSlug(id, -2);
+            this.startLoading();
+
+            let promise = VideoApi.get({id})
+                .then(this.handleVideoInformationResponse)
+                .then(this.fetchVideoContent)
+                .catch(this.handleVideoError)
+                .finally(this.finishLoading);
 
             return promise;
         },
@@ -429,6 +508,7 @@ export default {
         this.videoFileUri = biigle.$require('videos.videoFileUri');
         this.canEdit = biigle.$require('videos.isEditor');
         this.labelTrees = biigle.$require('videos.labelTrees');
+        this.errors = biigle.$require('videos.errors');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();

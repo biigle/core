@@ -64,6 +64,13 @@ class VideoController extends Controller
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 
+        $errors = collect([
+            'not-found' => Video::ERROR_NOT_FOUND,
+            'mimetype' => Video::ERROR_MIME_TYPE,
+            'codec' => Video::ERROR_CODEC,
+            'malformed' => VIDEO::ERROR_MALFORMED,
+        ]);
+
         return view('videos.show', compact(
             'user',
             'video',
@@ -71,7 +78,8 @@ class VideoController extends Controller
             'videos',
             'shapes',
             'labelTrees',
-            'annotationSessions'
+            'annotationSessions',
+            'errors'
         ));
     }
 }

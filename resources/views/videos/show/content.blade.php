@@ -1,4 +1,9 @@
 <loader-block :active="loading"></loader-block>
+<div v-if="hasVideoError" class="error-message">
+    <div class="panel" :class="errorClass">
+        <div class="panel-body" v-text="errorMessage"></div>
+    </div>
+</div>
 <video-screen
       ref="videoScreen"
       :annotations="filteredAnnotations"
@@ -17,6 +22,7 @@
       :video="video"
       :height-offset="screenHeightOffset"
       :show-prev-next="hasSiblingVideos"
+      :has-error="hasError"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"

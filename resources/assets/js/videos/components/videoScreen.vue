@@ -1,7 +1,7 @@
 <template>
     <div class="video-screen" :style="styleObject">
         <minimap
-            v-if="showMinimap"
+            v-if="showMinimap && !hasError"
             :extent="extent"
             ></minimap>
         <label-tooltip
@@ -21,12 +21,14 @@
                     v-if="playing"
                     icon="fa-pause"
                     title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
+                    :disabled="hasError"
                     @click="pause"
                     ></control-button>
                 <control-button
                     v-else
                     icon="fa-play"
                     title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
+                    :disabled="hasError"
                     @click="play"
                     ></control-button>
                 <!-- <control-button
@@ -49,6 +51,7 @@
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
+                    :disabled="hasError"
                     @click="drawPoint"
                     >
                         <control-button
@@ -70,6 +73,7 @@
                     :hover="false"
                     :open="isDrawingRectangle"
                     :active="isDrawingRectangle"
+                    :disabled="hasError"
                     @click="drawRectangle"
                     >
                         <control-button
@@ -85,6 +89,7 @@
                     :hover="false"
                     :open="isDrawingCircle"
                     :active="isDrawingCircle"
+                    :disabled="hasError"
                     @click="drawCircle"
                     >
                         <control-button
@@ -106,6 +111,7 @@
                     :hover="false"
                     :open="isDrawingLineString"
                     :active="isDrawingLineString"
+                    :disabled="hasError"
                     @click="drawLineString"
                     >
                         <control-button
@@ -120,6 +126,7 @@
                     title="Start a polygon annotation 𝗚"
                     :open="isDrawingPolygon"
                     :active="isDrawingPolygon"
+                    :disabled="hasError"
                     @click="drawPolygon"
                     >
                         <control-button
@@ -155,7 +162,7 @@
                     icon="fa-tag"
                     title="Attach the currently selected label to existing annotations 𝗟"
                     :active="isAttaching"
-                    :disabled="hasNoSelectedLabel"
+                    :disabled="hasNoSelectedLabel || hasError"
                     @click="toggleAttaching"
                     ></control-button>
                 <control-button
@@ -163,27 +170,28 @@
                     icon="fa-arrows-alt"
                     title="Move selected annotations 𝗠"
                     :active="isTranslating"
+                    :disabled="hasError"
                     @click="toggleTranslating"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-link"
                     title="Link selected annotations"
-                    :disabled="cannotLinkAnnotations"
+                    :disabled="cannotLinkAnnotations || hasError"
                     @click="emitLinkAnnotations"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-unlink"
                     title="Split selected annotation"
-                    :disabled="cannotSplitAnnotation"
+                    :disabled="cannotSplitAnnotation || hasError"
                     @click="emitSplitAnnotation"
                     ></control-button>
                 <control-button
                     v-if="canDelete"
                     icon="fa-trash"
                     title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"
-                    :disabled="hasNoSelectedAnnotations"
+                    :disabled="hasNoSelectedAnnotations || hasError"
                     @click="emitDelete"
                     ></control-button>
             </div>
@@ -315,6 +323,10 @@ export default {
         showPrevNext: {
             type: Boolean,
             default: true,
+        },
+        hasError: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
