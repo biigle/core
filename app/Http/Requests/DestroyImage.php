@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Video;
+use Biigle\Image;
 
-class DestroyVideo extends DestroyVolumeFile
+class DestroyImage extends DestroyVolumeFile
 {
     /**
      * Get the file model class name.
@@ -13,6 +13,6 @@ class DestroyVideo extends DestroyVolumeFile
      */
     protected function getFileModel()
     {
-        return Video::class;
+        return Image::class;
     }
 }

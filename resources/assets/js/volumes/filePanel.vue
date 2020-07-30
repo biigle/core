@@ -62,10 +62,20 @@ export default {
             this.filenames = '';
         },
         handleRemove(file) {
-            if (!this.loading && confirm(`Do you really want to delete the ${this.type} #${file.id} (${file.filename})? All annotations will be lost!`)) {
+            if (!this.loading && confirm(`Are you sure that you want to delete the ${this.type} #${file.id} (${file.filename})?`)) {
                 this.startLoading();
                 this.fileApi.delete({id: file.id})
                     .then(() => this.fileRemoved(file.id))
+                    .catch((response) => {
+                        if (response.status === 422) {
+                            if (confirm(`The ${this.type} contains annotations. Proceed to delete the ${this.type}?`)) {
+                                return this.fileApi.delete({id: file.id}, {force: true})
+                                    .then(() => this.fileRemoved(file.id));
+                            }
+                        } else {
+                            throw response;
+                        }
+                    })
                     .catch(handleErrorResponse)
                     .finally(this.finishLoading);
             }

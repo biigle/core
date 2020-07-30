@@ -60,6 +60,6 @@ class VideoController extends Controller
      */
     public function destroy(DestroyVideo $request)
     {
-        $request->video->delete();
+        $request->file->delete();
     }
 }

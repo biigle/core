@@ -58,4 +58,11 @@ abstract class VolumeFile extends Model implements FileContract
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     abstract public function labels();
+
+    /**
+     * The annotations that belong to this file.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    abstract public function annotations();
 }
