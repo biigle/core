@@ -1,5 +1,5 @@
 <template>
-    <ul class="image-label-list">
+    <ul class="file-label-list">
         <list-item
             v-for="item in fileLabels"
             :key="item.id"

@@ -1,18 +1,18 @@
-.image-label-list {
+.file-label-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.image-label {
+.file-label {
     position: relative;
     padding: $padding-small-vertical $padding-small-horizontal $padding-small-vertical 22px;
 
-    &.image-label--deleting {
+    &.file-label--deleting {
         color: $text-muted;
     }
 
-    .image-label__color {
+    .file-label__color {
         position: absolute;
         top: 9px;
         left: .25em;
@@ -22,7 +22,7 @@
         border-radius: 50%;
     }
 
-    .image-label__delete {
+    .file-label__delete {
         position: absolute;
         top: $padding-small-vertical;
         right: 5px;

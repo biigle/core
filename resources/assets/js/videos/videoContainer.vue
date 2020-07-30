@@ -14,6 +14,7 @@ import SidebarTab from '../core/components/sidebarTab';
 import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
 import VideoAnnotationApi from './api/videoAnnotations';
 import VideoApi from './api/videos';
+import VideoLabelsTab from './components/videoLabelsTab';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
@@ -36,6 +37,7 @@ export default {
         labelTrees: LabelTrees,
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
+        videoLabelsTab: VideoLabelsTab,
     },
     data() {
         return {
@@ -503,6 +505,7 @@ export default {
         });
         this.shapes = map;
         this.video = document.createElement('video');
+        this.videoId = biigle.$require('videos.id');
         this.volumeId = biigle.$require('videos.volumeId');
         this.videoIds = this.initVideoIds(biigle.$require('videos.videoIds'));
         this.videoFileUri = biigle.$require('videos.videoFileUri');
@@ -531,7 +534,7 @@ export default {
     mounted() {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
-        this.loadVideo(biigle.$require('videos.id'));
+        this.loadVideo(this.videoId);
     },
 };
 </script>

@@ -1,8 +1,8 @@
 <template>
-    <li class="image-label" :class="classObject">
-        <span class="image-label__color" :style="colorStyle"></span>
+    <li class="file-label" :class="classObject">
+        <span class="file-label__color" :style="colorStyle"></span>
         <span v-text="label.name" :title="title"></span>
-        <button v-if="!deleting && deletable" class="close image-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>
+        <button v-if="!deleting && deletable" class="close file-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>
     </li>
 </template>
 
