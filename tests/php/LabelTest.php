@@ -110,9 +110,27 @@ class LabelTest extends ModelTestCase
         $this->assertFalse($this->model->isUsed());
     }
 
-    public function testCanBeDeleted()
+    public function testCanBeDeletedImageAnnotationLabel()
     {
         $a = ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedImageLabel()
+    {
+        $a = ImageLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoAnnotationLabel()
+    {
+        $a = VideoAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoLabel()
+    {
+        $a = VideoLabelTest::create(['label_id' => $this->model->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 }

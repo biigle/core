@@ -67,7 +67,7 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->labels()->exists());
     }
 
-    public function testCanBeDeletedAnnotationLabel()
+    public function testCanBeDeletedImageAnnotationLabel()
     {
         $this->assertTrue($this->model->canBeDeleted());
         $label = LabelTest::create(['label_tree_id' => $this->model->id]);
@@ -82,6 +82,24 @@ class LabelTreeTest extends ModelTestCase
         $label = LabelTest::create(['label_tree_id' => $this->model->id]);
         $this->assertTrue($this->model->canBeDeleted());
         ImageLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoAnnotationLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoAnnotationLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoLabelTest::create(['label_id' => $label->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 

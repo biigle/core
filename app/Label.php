@@ -95,7 +95,8 @@ class Label extends Model
     {
         return ImageAnnotationLabel::where('label_id', $this->id)->exists()
             || ImageLabel::where('label_id', $this->id)->exists()
-            || VideoAnnotationLabel::where('label_id', $this->id)->exists();
+            || VideoAnnotationLabel::where('label_id', $this->id)->exists()
+            || VideoLabel::where('label_id', $this->id)->exists();
     }
 
     /**

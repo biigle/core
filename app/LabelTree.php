@@ -212,6 +212,9 @@ class LabelTree extends Model
                 ->exists()
             && !VideoAnnotationLabel::join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
                     ->whereIn('labels.label_tree_id', $treeIds)
+                    ->exists()
+            && !VideoLabel::join('labels', 'video_labels.label_id', '=', 'labels.id')
+                    ->whereIn('labels.label_tree_id', $treeIds)
                     ->exists();
     }
 
