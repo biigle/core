@@ -180,7 +180,7 @@ export default {
             if (this.hasRule(rule)) return;
 
             this.startLoading();
-            this.selectedFilter.getSequence(this.volumeId, this.type, data)
+            this.selectedFilter.getSequence(this.volumeId, data)
                 .catch(handleErrorResponse)
                 .then((response) => this.ruleAdded(rule, response))
                 .finally(this.finishLoading);

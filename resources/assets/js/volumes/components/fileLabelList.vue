@@ -1,19 +1,19 @@
 <template>
     <ul class="image-label-list">
         <list-item
-            v-for="item in imageLabels"
+            v-for="item in fileLabels"
             :key="item.id"
             :item="item"
             :deletable="canDelete(item)"
             :type="type"
             @deleted="emitDeleted"
             ></list-item>
-        <li v-if="!hasImageLabels" class="text-muted">No image labels</li>
+        <li v-if="!hasImageLabels" class="text-muted">No {{type}} labels</li>
     </ul>
 </template>
 
 <script>
-import Item from './imageLabelListItem';
+import Item from './fileLabelListItem';
 
 /**
  * List of image labels.
@@ -25,7 +25,7 @@ export default {
         listItem: Item,
     },
     props: {
-        imageLabels: {
+        fileLabels: {
             type: Array,
             required: true,
         },
@@ -44,7 +44,7 @@ export default {
     },
     computed: {
         hasImageLabels() {
-            return this.imageLabels.length > 0;
+            return this.fileLabels.length > 0;
         },
     },
     methods: {

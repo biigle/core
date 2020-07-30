@@ -15,7 +15,7 @@
             </a>
         </div>
         <div v-if="showLabels" class="image-labels" @wheel.stop>
-            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" :type="type" @deleted="removeImageLabel"></image-label-list>
+            <file-label-list :file-labels="image.labels" :user-id="userId" :is-admin="isAdmin" :type="type" @deleted="removeImageLabel"></file-label-list>
         </div>
     </div>
 </template>
@@ -24,7 +24,7 @@
 import Image from './imageGridImage';
 import ImageLabelsApi from '../api/imageLabels';
 import VideoLabelsApi from '../api/videoLabels';
-import LabelList from './imageLabelList';
+import LabelList from './fileLabelList';
 import LoaderMixin from '../../core/mixins/loader';
 import PreviewThumbnail from '../../projects/components/previewThumbnail';
 import {handleErrorResponse} from '../../core/messages/store';
@@ -40,7 +40,7 @@ export default {
         LoaderMixin,
     ],
     components: {
-        imageLabelList: LabelList,
+        fileLabelList: LabelList,
         previewThumbnail: PreviewThumbnail,
     },
     data() {

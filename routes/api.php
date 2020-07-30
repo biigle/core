@@ -272,16 +272,16 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
 ], function ($router) {
-    $router->get('{id}/images/filter/labels', [
-        'uses' => 'Filters\AnyImageLabelController@index',
+    $router->get('{id}/files/filter/labels', [
+        'uses' => 'Filters\AnyFileLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/image-label-user/{id2}', [
-        'uses' => 'Filters\ImageLabelUserController@index',
+    $router->get('{id}/files/filter/labels/users/{id2}', [
+        'uses' => 'Filters\FileLabelUserController@index',
     ]);
 
-    $router->get('{id}/images/filter/image-label/{id2}', [
-        'uses' => 'Filters\ImageLabelController@index',
+    $router->get('{id}/files/filter/labels/{id2}', [
+        'uses' => 'Filters\FileLabelController@index',
     ]);
 
     $router->get('{id}/files/filter/annotation-label/{id2}', [
@@ -292,8 +292,8 @@ $router->group([
         'uses' => 'Filters\FilenameController@index',
     ]);
 
-    $router->get('{id}/image-labels', [
-        'uses' => 'UsedImageLabelsController@index',
+    $router->get('{id}/file-labels', [
+        'uses' => 'UsedFileLabelsController@index',
     ]);
 
     $router->get('{id}/filenames', [

@@ -5,7 +5,7 @@ import VolumesApi from '../api/volumes';
 import {handleErrorResponse} from '../../core/messages/store';
 
 let imageLabelsFilter = {
-    id: 'imageLabels',
+    id: 'fileLabels',
     types: ['image'],
     label: 'image labels',
     help: "All images that (don't) have image labels attached.",
@@ -18,7 +18,25 @@ let imageLabelsFilter = {
         },
     },
     getSequence(volumeId) {
-        return VolumesApi.queryImagesWithImageLabels({id: volumeId});
+        return VolumesApi.queryFilesWithFileLabels({id: volumeId});
+    },
+};
+
+let videoLabelsFilter = {
+    id: 'fileLabels',
+    types: ['video'],
+    label: 'video labels',
+    help: "All videos that (don't) have video labels attached.",
+    listComponent: {
+        mixins: [FilterList],
+        data() {
+            return {
+                name: 'video labels',
+            };
+        },
+    },
+    getSequence(volumeId) {
+        return VolumesApi.queryFilesWithFileLabels({id: volumeId});
     },
 };
 
@@ -46,15 +64,45 @@ let imageLabelFilter = {
             };
         },
         created() {
-            VolumesApi.queryUsedImageLabels({id: this.volumeId})
+            VolumesApi.queryUsedFileLabels({id: this.volumeId})
                 .then(this.gotItems, handleErrorResponse);
         },
     },
-    getSequence(volumeId, type, label) {
-        return VolumesApi.queryImagesWithImageLabel({
-            id: volumeId,
-            label_id: label.id,
-        });
+    getSequence(volumeId, label) {
+        return VolumesApi.queryFilesWithLabel({id: volumeId, label_id: label.id});
+    },
+};
+
+let videoLabelFilter = {
+    id: 'videoLabel',
+    types: ['video'],
+    label: 'video label',
+    help: "All videos that (don't) have the given video label attached.",
+    listComponent: {
+        mixins: [FilterList],
+        data() {
+            return {
+                name: 'video label',
+            };
+        },
+    },
+    selectComponent: {
+        mixins: [FilterSelect],
+        components: {
+            typeahead: LabelTypeahead,
+        },
+        data() {
+            return {
+                placeholder: 'Label name',
+            };
+        },
+        created() {
+            VolumesApi.queryUsedFileLabels({id: this.volumeId})
+                .then(this.gotItems, handleErrorResponse);
+        },
+    },
+    getSequence(volumeId, label) {
+        return VolumesApi.queryFilesWithLabel({id: volumeId, label_id: label.id});
     },
 };
 
@@ -85,11 +133,40 @@ let imageLabelUserFilter = {
                 .then(this.gotItems);
         },
     },
-    getSequence(volumeId, type, user) {
-        return VolumesApi.queryImagesWithImageLabelFromUser({
-            id: volumeId,
-            user_id: user.id,
-        });
+    getSequence(volumeId, user) {
+        return VolumesApi.queryFilesWithLabelFromUser({id: volumeId, user_id: user.id});
+    },
+};
+
+let videoLabelUserFilter = {
+    id: 'videoLabelUser',
+    types: ['video'],
+    label: 'video label from user',
+    help: "All videos that (don't) have one or more video labels attached by the given user.",
+    listComponent: {
+        mixins: [FilterList],
+        data() {
+            return {
+                name: 'video label from user',
+            };
+        },
+    },
+    selectComponent: {
+        mixins: [FilterSelect],
+        data() {
+            return {
+                placeholder: 'User name',
+                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+            };
+        },
+        created() {
+            VolumesApi.queryUsers({id: this.volumeId})
+                .then(this.parseUsernames, handleErrorResponse)
+                .then(this.gotItems);
+        },
+    },
+    getSequence(volumeId, user) {
+        return VolumesApi.queryFilesWithLabelFromUser({id: volumeId, user_id: user.id});
     },
 };
 
@@ -124,7 +201,7 @@ let filenameFilter = {
             },
         },
     },
-    getSequence(volumeId, type, pattern) {
+    getSequence(volumeId, pattern) {
         return VolumesApi.queryFilesWithFilename({
             id: volumeId,
             pattern: pattern,
@@ -169,7 +246,7 @@ let annotationLabelFilter = {
                 .then(this.gotItems, handleErrorResponse);
         },
     },
-    getSequence(volumeId, type, label) {
+    getSequence(volumeId, label) {
         return VolumesApi.queryFilesWithAnnotationLabel({
             id: volumeId,
             label_id: label.id,
@@ -202,7 +279,7 @@ let annotationUserFilter = {
                 .then(this.gotItems);
         },
     },
-    getSequence(volumeId, type, user) {
+    getSequence(volumeId, user) {
         return VolumesApi.queryFilesWithAnnotationFromUser({id: volumeId, user_id: user.id});
     },
 };
@@ -213,8 +290,11 @@ let annotationUserFilter = {
 export default [
     // default filters
     imageLabelsFilter,
+    videoLabelsFilter,
     imageLabelFilter,
+    videoLabelFilter,
     imageLabelUserFilter,
+    videoLabelUserFilter,
     filenameFilter,
     annotationFilter,
     annotationLabelFilter,

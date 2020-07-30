@@ -5,16 +5,15 @@ namespace Biigle\Http\Controllers\Api\Volumes\Filters;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 
-class AnyImageLabelController extends Controller
+class AnyFileLabelController extends Controller
 {
     /**
-     * List the IDs of images having one or more image labels attached.
+     * List the IDs of images/videos having one or more labels attached.
      *
-     * @api {get} volumes/:id/images/filter/labels Get images with image labels
+     * @api {get} volumes/:id/files/filter/labels Get files with image labels
      * @apiGroup Volumes
-     * @apiName VolumeImagesHasImageLabels
+     * @apiName VolumeFilesHasFileLabels
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more image labels
      *
      * @apiParam {Number} id The volume ID
      *
@@ -29,6 +28,6 @@ class AnyImageLabelController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume->images()->has('labels')->pluck('id');
+        return $volume->files()->has('labels')->pluck('id');
     }
 }

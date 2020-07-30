@@ -8,7 +8,7 @@
                 @endcan
             </span>
             <h4>Image Labels</h4>
-            <image-label-list :image-labels="currentLabels" :user-id="userId" :is-admin="isAdmin" v-on:deleted="handleDeletedLabel"></image-label-list>
+            <file-label-list :file-labels="currentLabels" :user-id="userId" :is-admin="isAdmin" v-on:deleted="handleDeletedLabel"></file-label-list>
         </div>
     </image-label-tab>
 </sidebar-tab>

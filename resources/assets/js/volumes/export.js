@@ -3,7 +3,7 @@ import FilterStore from './stores/filters';
 import ImageGrid from './components/imageGrid';
 import ImageGridImage from './components/imageGridImage';
 import ImageLabelsApi from './api/imageLabels';
-import LabelList from './components/imageLabelList';
+import LabelList from './components/fileLabelList';
 import SortComponent from './components/sortComponent';
 import SorterStore from './stores/sorters';
 import VolumesApi from './api/volumes';

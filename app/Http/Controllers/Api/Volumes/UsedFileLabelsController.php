@@ -7,16 +7,16 @@ use Biigle\Label;
 use Biigle\Volume;
 use DB;
 
-class UsedImageLabelsController extends Controller
+class UsedFileLabelsController extends Controller
 {
     /**
-     * Get all image labels that were used in a volume.
+     * Get all file labels that were used in a volume.
      *
-     * @api {get} volumes/:id/image-labels Get used image labels
+     * @api {get} volumes/:id/file-labels Get used file labels
      * @apiGroup Volumes
-     * @apiName VolumeIndexUsedImageLabels
+     * @apiName VolumeIndexUsedFileLabels
      * @apiPermission projectMember
-     * @apiDescription Returns all image labels that were used in the volume.
+     * @apiDescription Returns all image/video labels that were used in the volume.
      *
      * @apiParam {Number} id The volume ID
      *
@@ -44,14 +44,20 @@ class UsedImageLabelsController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
+
         return Label::select('id', 'name', 'color', 'parent_id')
-            ->whereExists(function ($query) use ($id) {
-                // take only labels that are attached to images of this volume
+            ->whereExists(function ($query) use ($volume) {
+                $filesModel = $volume->files()->getRelated();
+                $filesTable = $filesModel->getTable();
+                $relation = $filesModel->labels();
+                $table = $relation->getRelated()->getTable();
+
+                // take only labels that are attached to files of this volume
                 $query->select(DB::raw(1))
-                    ->from('image_labels')
-                    ->join('images', 'image_labels.image_id', '=', 'images.id')
-                    ->where('images.volume_id', $id)
-                    ->whereRaw('image_labels.label_id = labels.id');
+                    ->from($table)
+                    ->join($filesTable, $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName())
+                    ->where("{$filesTable}.volume_id", $volume->id)
+                    ->whereRaw("{$table}.label_id = labels.id");
             })
             ->get();
     }

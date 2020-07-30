@@ -1,5 +1,5 @@
 <script>
-import ImageLabelList from '../../volumes/components/imageLabelList';
+import FileLabelList from '../../volumes/components/fileLabelList';
 import ImageLabelsApi from '../../volumes/api/imageLabels';
 import Loader from '../../core/mixins/loader';
 import {handleErrorResponse} from '../../core/messages/store';
@@ -12,7 +12,7 @@ import {handleErrorResponse} from '../../core/messages/store';
 export default {
     mixins: [Loader],
     components: {
-        imageLabelList: ImageLabelList,
+        fileLabelList: FileLabelList,
     },
     props: {
         imageId: {
