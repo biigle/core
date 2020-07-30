@@ -5,17 +5,17 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 
-class ImageLabelsController extends Controller
+class FileLabelsController extends Controller
 {
     /**
-     * Get the image labels for each image
+     * Get the labels for each image/video
      *
-     * @api {get} volumes/:id/images/labels Get the image labels for each image
+     * @api {get} volumes/:id/files/labels Get the labels for each image/video
      * @apiGroup Volumes
-     * @apiName VolumeIndexImageLabels
+     * @apiName VolumeIndexFileLabels
      * @apiPermission projectMember
-     * @apiDescription Returns an object with the image IDs as keys and the arrays of
-     * image labels as values.
+     * @apiDescription Returns an object with the image/video IDs as keys and the arrays
+     * of file labels as values (depending on the volume media type).
      *
      * @apiParam {Number} id The volume ID
      *
@@ -51,7 +51,7 @@ class ImageLabelsController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume->images()
+        return $volume->files()
             ->with('labels.label', 'labels.user')
             ->select('id')
             ->get()

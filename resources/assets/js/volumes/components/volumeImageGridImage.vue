@@ -15,7 +15,7 @@
             </a>
         </div>
         <div v-if="showLabels" class="image-labels" @wheel.stop>
-            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>
+            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" :type="type" @deleted="removeImageLabel"></image-label-list>
         </div>
     </div>
 </template>
@@ -23,6 +23,7 @@
 <script>
 import Image from './imageGridImage';
 import ImageLabelsApi from '../api/imageLabels';
+import VideoLabelsApi from '../api/videoLabels';
 import LabelList from './imageLabelList';
 import LoaderMixin from '../../core/mixins/loader';
 import PreviewThumbnail from '../../projects/components/previewThumbnail';
@@ -65,6 +66,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        type: {
+            type: String,
+            default: 'image',
+        },
     },
     computed: {
         alreadyHasSelectedLabel() {
@@ -103,9 +108,16 @@ export default {
             }
 
             this.saving = true;
-            ImageLabelsApi
-                .save({image_id: this.image.id}, {label_id: this.selectedLabel.id})
-                .then(this.labelAttached, this.attachingFailed)
+            let promise;
+            if (this.type === 'image') {
+                promise = ImageLabelsApi
+                    .save({image_id: this.image.id}, {label_id: this.selectedLabel.id});
+            } else {
+                promise = VideoLabelsApi
+                    .save({video_id: this.image.id}, {label_id: this.selectedLabel.id});
+            }
+
+            promise.then(this.labelAttached, this.attachingFailed)
                 .finally(this.resetSuccess)
                 .finally(() => this.saving = false);
         },

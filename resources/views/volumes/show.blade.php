@@ -10,14 +10,14 @@
         biigle.$declare('volumes.fileIds', {!! $fileIds->keys() !!});
         biigle.$declare('volumes.fileUuids', {!! $fileIds !!});
         biigle.$declare('volumes.thumbUri', '{{ $thumbUriTemplate }}');
-        @if ($type === 'video')
-            biigle.$declare('volumes.thumbCount', {{ config('videos.thumbnail_count') }});
-            biigle.$declare('volumes.annotateUri', '{{ route('video', ':id') }}');
-            biigle.$declare('volumes.infoUri', undefined);
-        @else
+        @if ($volume->isImageVolume())
             biigle.$declare('volumes.thumbCount', 1);
             biigle.$declare('volumes.annotateUri', '{{ route('annotate', ':id') }}');
             biigle.$declare('volumes.infoUri', '{{ route('image', ':id') }}');
+        @else
+            biigle.$declare('volumes.thumbCount', {{ config('videos.thumbnail_count') }});
+            biigle.$declare('volumes.annotateUri', '{{ route('video', ':id') }}');
+            biigle.$declare('volumes.infoUri', undefined);
         @endif
 
         biigle.$declare('volumes.userId', {!! $user->id !!});
@@ -46,13 +46,11 @@
         @can ('update', $volume)
             <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
-        @if ($volume->isImageVolume())
-            @can ('edit-in', $volume)
-                <sidebar-tab name="labels" icon="tags" title="Toggle image label mode">
-                    @include('volumes.show.labels')
-                </sidebar-tab>
-            @endcan
-        @endif
+        @can ('edit-in', $volume)
+            <sidebar-tab name="labels" icon="tags" title="Toggle {{$type}} label mode">
+                @include('volumes.show.labels')
+            </sidebar-tab>
+        @endcan
         <sidebar-tab name="filter" icon="filter" title="Filter files" :highlight="filterActive">
             @include('volumes.show.filters')
         </sidebar-tab>
@@ -79,6 +77,7 @@
             :show-labels="showLabels"
             :width="{{config('thumbnails.width')}}"
             :height="{{config('thumbnails.height')}}"
+            :type="type"
             v-on:scroll="handleScroll"
             ></image-grid>
     </div>

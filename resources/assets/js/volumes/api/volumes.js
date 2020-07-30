@@ -57,9 +57,9 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/filenames',
     },
-    queryImageLabels: {
+    queryFileLabels: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/labels',
+        url: 'api/v1/volumes{/id}/files/labels',
     },
     queryUsers: {
         method: 'GET',

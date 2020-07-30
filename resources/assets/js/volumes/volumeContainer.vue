@@ -184,7 +184,7 @@ export default {
         enableLabels() {
             if (!this.labelsPromise) {
                 this.loadingLabels = true;
-                this.labelsPromise = VolumesApi.queryImageLabels({id: this.volumeId})
+                this.labelsPromise = VolumesApi.queryFileLabels({id: this.volumeId})
                     .then(this.setLabels)
                     .finally(() => this.loadingLabels = false);
             }

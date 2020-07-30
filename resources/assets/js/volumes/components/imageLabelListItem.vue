@@ -8,6 +8,7 @@
 
 <script>
 import ImageLabelsApi from '../api/imageLabels';
+import VideoLabelsApi from '../api/videoLabels';
 import {handleErrorResponse} from '../../core/messages/store';
 
 /**
@@ -24,6 +25,10 @@ export default {
         deletable: {
             type: Boolean,
             default: false,
+        },
+        type: {
+            type: String,
+            default: 'image',
         },
     },
     data() {
@@ -51,13 +56,16 @@ export default {
                 'image-label--deleting': this.deleting,
             };
         },
+        labelsApi() {
+            return this.type === 'image' ? ImageLabelsApi : VideoLabelsApi;
+        },
     },
     methods: {
         deleteThis() {
             if (this.deleting) return;
 
             this.deleting = true;
-            ImageLabelsApi.delete({id: this.item.id})
+            this.labelsApi.delete({id: this.item.id})
                 .then(this.deleted, handleErrorResponse)
                 .finally(() => this.deleting = false);
         },

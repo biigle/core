@@ -304,8 +304,8 @@ $router->group([
         'uses' => 'UserController@index',
     ]);
 
-    $router->get('{id}/images/labels', [
-        'uses' => 'ImageLabelsController@index',
+    $router->get('{id}/files/labels', [
+        'uses' => 'FileLabelsController@index',
     ]);
 
     $router->post('{id}/images/metadata', [

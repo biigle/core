@@ -5,6 +5,7 @@
             :key="item.id"
             :item="item"
             :deletable="canDelete(item)"
+            :type="type"
             @deleted="emitDeleted"
             ></list-item>
         <li v-if="!hasImageLabels" class="text-muted">No image labels</li>
@@ -35,6 +36,10 @@ export default {
         isAdmin: {
             type: Boolean,
             default: false,
+        },
+        type: {
+            type: String,
+            default: 'image',
         },
     },
     computed: {
