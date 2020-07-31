@@ -18,7 +18,7 @@ export default {
     },
     methods: {
         queryAnnotations(label) {
-            return LabelsApi.queryAnnotations({id: label.id});
+            return LabelsApi.queryImageAnnotations({id: label.id});
         },
     },
     created() {

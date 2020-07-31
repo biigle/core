@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Views;
 
 use ApiTestCase;
+use Biigle\MediaType;
 
 class LargoControllerTest extends ApiTestCase
 {
@@ -10,31 +11,37 @@ class LargoControllerTest extends ApiTestCase
     {
         $id = $this->volume()->id;
 
-        $response = $this->get("volumes/{$id}/largo")
-            ->assertStatus(302);
+        $this->get("volumes/{$id}/largo")->assertStatus(302);
 
         $this->beGuest();
-        $response = $this->get("volumes/{$id}/largo")
-            ->assertStatus(403);
+        $this->get("volumes/{$id}/largo")->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->get("volumes/{$id}/largo")
-            ->assertStatus(200);
+        $this->get("volumes/{$id}/largo")->assertStatus(200);
+    }
+
+    public function testIndexVideoVolume()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->beEditor();
+        $this->get("volumes/{$id}/largo")->assertStatus(404);
     }
 
     public function testIndexProject()
     {
         $id = $this->project()->id;
 
-        $response = $this->get("projects/{$id}/largo")
-            ->assertStatus(302);
+        $this->get("projects/{$id}/largo")->assertStatus(302);
 
         $this->beGuest();
-        $response = $this->get("projects/{$id}/largo")
-            ->assertStatus(403);
+        $this->get("projects/{$id}/largo")->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->get("projects/{$id}/largo")
-            ->assertStatus(200);
+        $this->get("projects/{$id}/largo")->assertStatus(404);
+        $volume = $this->volume();
+        $this->get("projects/{$id}/largo")->assertStatus(200);
+        $volume->media_type_id = MediaType::videoId();
+        $volume->save();
+        $this->get("projects/{$id}/largo")->assertStatus(404);
     }
 }

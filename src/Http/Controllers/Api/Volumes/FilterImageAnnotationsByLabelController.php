@@ -7,19 +7,19 @@ use Biigle\ImageAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
-class FilterAnnotationsByLabelController extends Controller
+class FilterImageAnnotationsByLabelController extends Controller
 {
     /**
-     * Show all annotations of the volume that have a specific label attached.
+     * Show all image annotations of the volume that have a specific label attached.
      *
-     * @api {get} volumes/:vid/annotations/filter/label/:lid Get annotations with a label
+     * @api {get} volumes/:vid/image-annotations/filter/label/:lid Get image annotations with a label
      * @apiGroup Volumes
      * @apiName ShowVolumesAnnotationsFilterLabels
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
-     * @apiParam (Optional arguments) {Number} take Number of annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
+     * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
      * @apiPermission projectMember
-     * @apiDescription Returns a map of annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned.
+     * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
      *
      * @param Request $request
      * @param  int  $vid Volume ID

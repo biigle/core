@@ -29,23 +29,23 @@ $router->group([
         'uses' => 'Volumes\LargoController@save',
     ]);
 
-    $router->get('volumes/{id}/annotations/filter/label/{id2}', [
-        'uses' => 'Volumes\FilterAnnotationsByLabelController@index',
+    $router->get('volumes/{id}/image-annotations/filter/label/{id2}', [
+        'uses' => 'Volumes\FilterImageAnnotationsByLabelController@index',
     ]);
 
-    $router->get('volumes/{id}/annotations/examples/{id2}', [
-        'uses' => 'Volumes\AnnotationExamplesController@index',
+    $router->get('volumes/{id}/image-annotations/examples/{id2}', [
+        'uses' => 'Volumes\ImageAnnotationExamplesController@index',
     ]);
 
     $router->post('projects/{id}/largo', [
         'uses' => 'Projects\LargoController@save',
     ]);
 
-    $router->get('projects/{id}/annotations/filter/label/{id2}', [
-        'uses' => 'Projects\FilterAnnotationsByLabelController@index',
+    $router->get('projects/{id}/image-annotations/filter/label/{id2}', [
+        'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
     ]);
 
-    $router->get('labels/{id}/annotations', [
-        'uses' => 'Labels\AnnotationsController@index',
+    $router->get('labels/{id}/image-annotations', [
+        'uses' => 'Labels\ImageAnnotationsController@index',
     ]);
 });

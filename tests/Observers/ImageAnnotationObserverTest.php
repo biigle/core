@@ -7,7 +7,7 @@ use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Tests\ImageAnnotationTest;
 use TestCase;
 
-class AnnotationObserverTest extends TestCase
+class ImageAnnotationObserverTest extends TestCase
 {
     public function testDeleting()
     {

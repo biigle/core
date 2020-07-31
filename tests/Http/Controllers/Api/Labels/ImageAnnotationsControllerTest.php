@@ -8,7 +8,7 @@ use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
-class AnnotationsControllerTest extends ApiTestCase
+class ImageAnnotationsControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
@@ -21,15 +21,15 @@ class AnnotationsControllerTest extends ApiTestCase
         $a3 = ImageAnnotationTest::create(['image_id' => $image->id]);
         ImageAnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
-        $this->doTestApiRoute('GET', "/api/v1/labels/{$label->id}/annotations");
+        $this->doTestApiRoute('GET', "/api/v1/labels/{$label->id}/image-annotations");
 
         $this->beUser();
-        $this->get("/api/v1/labels/{$label->id}/annotations")
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
             ->assertStatus(200)
             ->assertExactJson([]);
 
         $this->beGuest();
-        $this->get("/api/v1/labels/{$label->id}/annotations")
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
             ->assertStatus(200)
             ->assertExactJson([
                 $a2->id => $image->uuid,
@@ -37,12 +37,12 @@ class AnnotationsControllerTest extends ApiTestCase
             ]);
 
         // Show the newest annotation first.
-        $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
+        $this->get("/api/v1/labels/{$label->id}/image-annotations?take=1")
             ->assertStatus(200)
             ->assertExactJson([$a2->id => $image->uuid]);
 
         $this->beGlobalAdmin();
-        $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
+        $this->get("/api/v1/labels/{$label->id}/image-annotations?take=1")
             ->assertStatus(200);
     }
 
@@ -55,7 +55,7 @@ class AnnotationsControllerTest extends ApiTestCase
         ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
 
         $this->beGuest();
-        $this->get("/api/v1/labels/{$label->id}/annotations")
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
             ->assertExactJson([$a1->id => $image->uuid]);
     }
 }

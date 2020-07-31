@@ -8,18 +8,18 @@ use Biigle\Label;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
-class AnnotationExamplesController extends Controller
+class ImageAnnotationExamplesController extends Controller
 {
     /**
-     * Show example annotations of a label or of a similar label if no annotation exists.
+     * Show example image annotations of a label or of a similar label if no annotation exists.
      *
-     * @api {get} volumes/:vid/annotations/examples/:lid Get example annotations
+     * @api {get} volumes/:vid/image-annotations/examples/:lid Get example image annotations
      * @apiGroup Volumes
      * @apiName ShowVolumesExampleAnnotations
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
      * @apiPermission projectMember
-     * @apiDescription The similarity is based on the Levenshtein distance between the label names. Only the sibling labels and the parent label are considered. This endpoint returns the annotations of the specified label or of the most similar sibling/parent label if no annotations exist.
+     * @apiDescription The similarity is based on the Levenshtein distance between the label names. Only the sibling labels and the parent label are considered. This endpoint returns the image annotations of the specified label or of the most similar sibling/parent label if no annotations exist. Only available for image volumes.
      *
      * @param Request $request
      * @param  int  $vid Volume ID

@@ -6,7 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
-class AnnotationObserver
+class ImageAnnotationObserver
 {
     /**
      * Handle the event of creating/saving a single annotation.

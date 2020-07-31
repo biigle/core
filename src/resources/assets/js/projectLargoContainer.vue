@@ -15,7 +15,7 @@ export default{
     },
     methods: {
         queryAnnotations(label) {
-            return ProjectsApi.queryAnnotations({id: this.projectId, label_id: label.id});
+            return ProjectsApi.queryImageAnnotations({id: this.projectId, label_id: label.id});
         },
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);
