@@ -41,7 +41,7 @@
                     <div class="btn-group btn-group-justified">
                         @if ($hasVolume)
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('Annotations')" :class="{active: wantsType('Annotations')}">Annotation report</button>
+                                <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Annotation report</button>
                             </div>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
@@ -61,7 +61,7 @@
                     </select>
                     @include('reports::partials.reportTypeInfo')
                 </div>
-                <div v-if="wantsType('Annotations')" v-cloak>
+                <div v-if="wantsType('ImageAnnotations')" v-cloak>
                     <div class="form-group" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
                             @if ($hasExportArea)

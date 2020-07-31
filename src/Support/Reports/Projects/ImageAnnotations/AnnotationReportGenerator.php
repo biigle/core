@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
 use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
 
@@ -20,7 +20,7 @@ class AnnotationReportGenerator extends ProjectReportGenerator
         }
 
         if ($this->isRestrictedToNewestLabel()) {
-            $restrictions[] = 'newest label for each annotation';
+            $restrictions[] = 'newest label for each image annotation';
         }
 
         if (!empty($restrictions)) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\AnnotationSession;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;

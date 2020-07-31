@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\CsvReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\CsvReportGenerator;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -39,8 +39,8 @@ class CsvReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new CsvReportGenerator;
-        $this->assertEquals('CSV annotation report', $generator->getName());
-        $this->assertEquals('csv_annotation_report', $generator->getFilename());
+        $this->assertEquals('CSV image annotation report', $generator->getName());
+        $this->assertEquals('csv_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 

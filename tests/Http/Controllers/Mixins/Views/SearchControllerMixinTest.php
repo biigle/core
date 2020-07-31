@@ -17,12 +17,12 @@ class SearchControllerMixinTest extends TestCase
     public function testIndexVolume()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::annotationsCsvId(),
+            'type_id' => ReportType::imageAnnotationsCsvId(),
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::annotationsCsvId(),
+            'type_id' => ReportType::imageAnnotationsCsvId(),
             'user_id' => $r1->user_id,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,

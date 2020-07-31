@@ -34,7 +34,7 @@
                     <label>Report type</label>
                     <div class="btn-group btn-group-justified">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('Annotations')" :class="{active: wantsType('Annotations')}">Annotation report</button>
+                            <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Annotation report</button>
                         </div>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
@@ -49,7 +49,7 @@
                     @include('reports::partials.reportTypeInfo')
                 </div>
                 @if ($annotationSessions->count() > 0)
-                    <div v-if="wantsType('Annotations')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
+                    <div v-if="wantsType('ImageAnnotations')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
                         <label for="annotation-session">Restrict to annotation session</label>
                         <select id="annotation-session" class="form-control" v-model="options.annotation_session_id">
                             @foreach ($annotationSessions as $session)
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                 @endif
-                <div v-if="wantsType('Annotations')" v-cloak>
+                <div v-if="wantsType('ImageAnnotations')" v-cloak>
                     <div class="form-group" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
                             @if ($volume->exportArea)

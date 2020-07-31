@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\Label;
 use Biigle\LabelTree;
@@ -14,14 +14,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'abundance annotation report';
+    protected $name = 'abundance image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'abundance_annotation_report';
+    protected $filename = 'abundance_image_annotation_report';
 
     /**
      * File extension of the report file.

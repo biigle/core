@@ -26,7 +26,7 @@ class ProjectReportsController extends Controller
         $this->authorize('access', $project);
 
         $types = ReportType::when($hasVolume, function ($query) {
-                $query->where('name', 'like', 'Annotations%')
+                $query->where('name', 'like', 'ImageAnnotations%')
                         ->orWhere('name', 'like', 'ImageLabels%');
             })
             ->when($hasVideo, function ($query) {

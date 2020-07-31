@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Arr;
 use Biigle\LabelTree;
@@ -14,14 +14,14 @@ class FullReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'full annotation report';
+    protected $name = 'full image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'full_annotation_report';
+    protected $filename = 'full_image_annotation_report';
 
     /**
      * File extension of the report file.

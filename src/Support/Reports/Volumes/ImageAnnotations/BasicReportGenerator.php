@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
@@ -13,14 +13,14 @@ class BasicReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'basic annotation report';
+    protected $name = 'basic image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'basic_annotation_report';
+    protected $filename = 'basic_image_annotation_report';
 
     /**
      * File extension of the report file.

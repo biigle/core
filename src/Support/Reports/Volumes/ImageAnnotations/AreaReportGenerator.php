@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\Image;
 use Biigle\LabelTree;
@@ -17,14 +17,14 @@ class AreaReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'annotation area report';
+    protected $name = 'image annotation area report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'annotation_area_report';
+    protected $filename = 'image_annotation_area_report';
 
     /**
      * File extension of the report file.

@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -19,8 +19,8 @@ class BasicReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new BasicReportGenerator;
-        $this->assertEquals('basic annotation report', $generator->getName());
-        $this->assertEquals('basic_annotation_report', $generator->getFilename());
+        $this->assertEquals('basic image annotation report', $generator->getName());
+        $this->assertEquals('basic_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.pdf', $generator->getFullFilename());
     }
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AreaReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AreaReportGenerator;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -35,8 +35,8 @@ class AreaReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new AreaReportGenerator;
-        $this->assertEquals('annotation area report', $generator->getName());
-        $this->assertEquals('annotation_area_report', $generator->getFilename());
+        $this->assertEquals('image annotation area report', $generator->getName());
+        $this->assertEquals('image_annotation_area_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 

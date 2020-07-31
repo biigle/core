@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AbundanceReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -19,8 +19,8 @@ class AbundanceReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new AbundanceReportGenerator;
-        $this->assertEquals('abundance annotation report', $generator->getName());
-        $this->assertEquals('abundance_annotation_report', $generator->getFilename());
+        $this->assertEquals('abundance image annotation report', $generator->getName());
+        $this->assertEquals('abundance_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 

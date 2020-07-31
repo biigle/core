@@ -4,7 +4,7 @@ namespace Biigle\Tests\Modules\Reports\Support\Reports;
 
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
@@ -24,7 +24,7 @@ class ReportGeneratorTest extends TestCase
 
     public function testGet()
     {
-        $type = ReportType::whereName('Annotations\Basic')->first();
+        $type = ReportType::whereName('ImageAnnotations\Basic')->first();
         $this->assertInstanceOf(
             BasicReportGenerator::class,
             ReportGenerator::get(Volume::class, $type)

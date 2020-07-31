@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\CsvReportGenerator as ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AreaReportGenerator as ReportGenerator;
 
-class CsvReportGenerator extends AnnotationReportGenerator
+class AreaReportGenerator extends AnnotationReportGenerator
 {
     /**
      * The class of the volume report to use for this project report.
@@ -18,12 +18,12 @@ class CsvReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV annotation report';
+    protected $name = 'image annotation area report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_annotation_report';
+    protected $filename = 'image_annotation_area_report';
 }

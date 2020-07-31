@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\ExtendedReportGenerator as ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\ExtendedReportGenerator as ReportGenerator;
 
 class ExtendedReportGenerator extends AnnotationReportGenerator
 {
@@ -18,12 +18,12 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'extended annotation report';
+    protected $name = 'extended image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'extended_annotation_report';
+    protected $filename = 'extended_image_annotation_report';
 }

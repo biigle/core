@@ -1,11 +1,12 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\ExtendedReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\FullReportGenerator;
 use Biigle\Modules\Reports\Volume;
+use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -14,15 +15,13 @@ use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
 
-class ExtendedReportGeneratorTest extends TestCase
+class FullReportGeneratorTest extends TestCase
 {
-    private $columns = ['image_filename', 'label_hierarchy', 'annotation_count'];
-
     public function testProperties()
     {
-        $generator = new ExtendedReportGenerator;
-        $this->assertEquals('extended annotation report', $generator->getName());
-        $this->assertEquals('extended_annotation_report', $generator->getFilename());
+        $generator = new FullReportGenerator;
+        $this->assertEquals('full image annotation report', $generator->getName());
+        $this->assertEquals('full_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 
@@ -40,14 +39,8 @@ class ExtendedReportGeneratorTest extends TestCase
             'label_id' => $child->id,
         ]);
         $al->annotation->image->volume_id = $volume->id;
+        $al->annotation->image->attrs = ['laserpoints' => ['area' => 3.1415]];
         $al->annotation->image->save();
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => $al->annotation_id,
-            'label_id' => $al->label_id,
-        ]);
-
-        $al2 = ImageAnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
         $mock = Mockery::mock();
 
@@ -57,15 +50,18 @@ class ExtendedReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with($this->columns);
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$al->annotation->image->filename, "{$root->name} > {$child->name}", 2]);
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->with([$al->annotation->image->filename, $al2->label->name, 1]);
+            ->with([
+                $al->annotation->image->filename,
+                $al->annotation_id,
+                "{$root->name} > {$child->name}",
+                $al->annotation->shape->name,
+                json_encode($al->annotation->points),
+                3.1415,
+            ]);
 
         $mock->shouldReceive('close')
             ->once();
@@ -74,7 +70,7 @@ class ExtendedReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new ExtendedReportGenerator;
+        $generator = new FullReportGenerator;
         $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
@@ -87,7 +83,9 @@ class ExtendedReportGeneratorTest extends TestCase
         $label1 = LabelTest::create();
         $label2 = LabelTest::create();
 
-        $image = ImageTest::create();
+        $image = ImageTest::create([
+            'attrs' => ['some' => 'attrs'],
+        ]);
 
         $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
@@ -114,15 +112,29 @@ class ExtendedReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->twice()
-            ->with($this->columns);
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$image->filename, $label1->name, 1]);
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $label1->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$image->filename, $label2->name, 1]);
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $label2->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
 
         $mock->shouldReceive('close')
             ->twice();
@@ -131,7 +143,7 @@ class ExtendedReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new ExtendedReportGenerator([
+        $generator = new FullReportGenerator([
             'separateLabelTrees' => true,
         ]);
         $generator->setSource($image->volume);

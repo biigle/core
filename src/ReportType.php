@@ -15,11 +15,12 @@ class ReportType extends Model
      * @var array
      */
     const INSTANCES = [
-        'annotationsArea' => 'Annotations\Area',
-        'annotationsBasic' => 'Annotations\Basic',
-        'annotationsCsv' => 'Annotations\Csv',
-        'annotationsExtended' => 'Annotations\Extended',
-        'annotationsFull' => 'Annotations\Full',
+        'imageAnnotationsArea' => 'ImageAnnotations\Area',
+        'imageAnnotationsBasic' => 'ImageAnnotations\Basic',
+        'imageAnnotationsCsv' => 'ImageAnnotations\Csv',
+        'imageAnnotationsExtended' => 'ImageAnnotations\Extended',
+        'imageAnnotationsFull' => 'ImageAnnotations\Full',
+        'imageAnnotationsAbundance' => 'ImageAnnotations\Abundance',
         'imageLabelsBasic' => 'ImageLabels\Basic',
         'imageLabelsCsv' => 'ImageLabels\Csv',
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',

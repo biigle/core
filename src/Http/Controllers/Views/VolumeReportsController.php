@@ -25,7 +25,7 @@ class VolumeReportsController extends Controller
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
-        $types = ReportType::where('name', 'like', 'Annotations%')
+        $types = ReportType::where('name', 'like', 'ImageAnnotations%')
             ->orWhere('name', 'like', 'ImageLabels%')
             ->get();
 

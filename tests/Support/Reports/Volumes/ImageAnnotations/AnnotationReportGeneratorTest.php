@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AnnotationReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
