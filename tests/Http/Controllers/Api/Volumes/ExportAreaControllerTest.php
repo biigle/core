@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Modules\Reports\Volume;
 
 class ExportAreaControllerTest extends ApiTestCase
@@ -23,6 +24,14 @@ class ExportAreaControllerTest extends ApiTestCase
         $response = $this->get("/api/v1/volumes/{$volume->id}/export-area");
         $response->assertStatus(200);
         $response->assertExactJson([10, 20, 30, 40]);
+    }
+
+    public function testShowVideoVolume()
+    {
+        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+
+        $this->beGuest();
+        $this->get("/api/v1/volumes/{$volume->id}/export-area")->assertStatus(404);
     }
 
     public function testStore()
@@ -55,6 +64,17 @@ class ExportAreaControllerTest extends ApiTestCase
         $this->assertEquals([10, 20, 30, 40], $volume->fresh()->exportArea);
     }
 
+    public function testStoreVideoVolume()
+    {
+        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$volume->id}/export-area", [
+                'coordinates' => [10, 20, 30, 40],
+            ])
+            ->assertStatus(422);
+    }
+
     public function testDestroy()
     {
         $volume = Volume::convert($this->volume());
@@ -72,5 +92,13 @@ class ExportAreaControllerTest extends ApiTestCase
         $response = $this->delete("/api/v1/volumes/{$volume->id}/export-area");
         $response->assertStatus(200);
         $this->assertNull($volume->fresh()->exportArea);
+    }
+
+    public function testDestroyVideoVolume()
+    {
+        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+
+        $this->beAdmin();
+        $this->delete("/api/v1/volumes/{$volume->id}/export-area")->assertStatus(404);
     }
 }
