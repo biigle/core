@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use Biigle\Jobs\DeleteVolume;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Video;
@@ -306,5 +307,25 @@ class ProjectTest extends ModelTestCase
 
         $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
         $this->assertEmpty($projects);
+    }
+
+    public function testImageVolumes()
+    {
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->imageVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->imageVolumes()->count());
+    }
+
+    public function testVideoVolumes()
+    {
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->videoVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->videoVolumes()->count());
     }
 }

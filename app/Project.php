@@ -157,6 +157,26 @@ class Project extends Model
         return $this->belongsToMany(Volume::class);
     }
 
+    /**
+     * The image volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function imageVolumes()
+    {
+        return $this->volumes()->where('media_type_id', MediaType::imageId());
+    }
+
+    /**
+     * The video volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function videoVolumes()
+    {
+        return $this->volumes()->where('media_type_id', MediaType::videoId());
+    }
+
 
     /**
      * Adds a volume to this project if it wasn't already.
