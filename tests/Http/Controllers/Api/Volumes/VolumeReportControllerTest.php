@@ -12,7 +12,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStore()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::imageAnnotationsBasic()->id;
 
         $this->doTestApiRoute('POST', "api/v1/volumes/{$volumeId}/reports");
 
@@ -54,7 +54,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['newestLabel']);
     }
 
-    public function testStoreVideoAnnotations()
+    public function testStoreInvalidVideoAnnotations()
     {
         $volumeId = $this->volume()->id;
         $typeId = ReportType::videoAnnotationsCsvId();
@@ -62,6 +62,27 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
             ->assertStatus(422);
+    }
+
+    public function testStoreVideoLabels()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreVideoVolume()
+    {
+        // include negative validation of the export area trribute
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreInvalidImageAnnotations()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreImageLabels()
+    {
+        $this->markTestIncomplete();
     }
 
     public function testStoreOnlyLabels()

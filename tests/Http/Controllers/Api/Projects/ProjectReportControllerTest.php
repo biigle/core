@@ -55,6 +55,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+        $this->markTestIncomplete('support video volumes');
     }
 
     public function testStoreEmptyProject()
