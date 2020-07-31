@@ -25,7 +25,7 @@ class LargoController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
 
-        if ($volume->isVideoVolume()) {
+        if (!$volume->isImageVolume()) {
             abort(Response::HTTP_NOT_FOUND);
         }
 

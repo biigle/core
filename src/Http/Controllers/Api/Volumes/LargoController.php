@@ -49,7 +49,7 @@ class LargoController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
-        if ($volume->isVideoVolume()) {
+        if (!$volume->isImageVolume()) {
             abort(400, 'Only available for image volumes.');
         }
 
