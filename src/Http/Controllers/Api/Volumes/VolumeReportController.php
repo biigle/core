@@ -2,15 +2,12 @@
 
 namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
-use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Reports\Http\Requests\StoreVolumeReport;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\Report;
-use Biigle\Volume;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
-class VolumeReportController extends ReportController
+class VolumeReportController extends Controller
 {
     /**
      * Generate a volume report.
@@ -24,7 +21,7 @@ class VolumeReportController extends ReportController
      *
      * @apiParam (Required arguments) {Number} type_id The report type ID.
      *
-     * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the volume. Only available for image volumes.
+     * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the volume. Only available for image annotation reports.
      * @apiParam (Optional arguments) {Boolean} newest_label If `true`, restrict the report to the newest label of each annotation.
      * @apiParam (Optional arguments) {Boolean} separate_label_trees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
      * @apiParam (Optional arguments) {Number} annotation_session_id ID of an annotation session of the volume. If given, only annotations belonging to the annotation session are included in the report.
@@ -42,25 +39,10 @@ class VolumeReportController extends ReportController
         $report->source()->associate($request->volume);
         $report->type_id = $request->input('type_id');
         $report->user()->associate($request->user());
-        $report->options = $this->getOptions($request);
+        $report->options = $request->getOptions();
         $report->save();
 
         $queue = config('reports.generate_report_queue');
         GenerateReportJob::dispatch($report)->onQueue($queue);
-    }
-
-    /**
-     * Get the options of the requested report.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function getOptions(Request $request)
-    {
-        $options = parent::getOptions($request);
-
-        return array_merge($options, [
-            'annotationSession' => $request->input('annotation_session_id'),
-        ]);
     }
 }

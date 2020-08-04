@@ -2,13 +2,11 @@
 
 namespace Biigle\Modules\Reports\Http\Requests;
 
-use Biigle\MediaType;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Volume;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreVolumeReport extends FormRequest
+class StoreVolumeReport extends StoreReport
 {
     /**
      * The volume to generate a new report for.
@@ -36,28 +34,38 @@ class StoreVolumeReport extends FormRequest
      */
     public function rules()
     {
-        return [
+        if ($this->volume->isImageVolume()) {
+            $types = [
+                ReportType::imageAnnotationsAreaId(),
+                ReportType::imageAnnotationsBasicId(),
+                ReportType::imageAnnotationsCsvId(),
+                ReportType::imageAnnotationsExtendedId(),
+                ReportType::imageAnnotationsFullId(),
+                ReportType::imageAnnotationsAbundanceId(),
+                ReportType::imageLabelsBasicId(),
+                ReportType::imageLabelsCsvId(),
+            ];
+        } else {
+            $types = [
+                ReportType::videoAnnotationsCsvId(),
+            ];
+        }
+
+        return array_merge(parent::rules(), [
+            'type_id' => ['required', Rule::in($types)],
             'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
-            'type_id' => [
-                'required',
-                Rule::notIn([ReportType::videoAnnotationsCsvId()]),
-                'exists:report_types,id',
-            ],
-        ];
+        ]);
     }
 
     /**
-     * Configure the validator instance.
+     * Get the options for the new report.
      *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
+     * @return array
      */
-    public function withValidator($validator)
+    public function getOptions()
     {
-        $validator->after(function ($validator) {
-            // if ($this->project->users()->where('id', $this->route('id2'))->exists()) {
-            //     $validator->errors()->add('id', 'The user is already member of this project.');
-            // }
-        });
+        return array_merge(parent::getOptions(), [
+            'annotationSession' => $this->input('annotation_session_id'),
+        ]);
     }
 }

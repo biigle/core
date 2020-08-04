@@ -5,7 +5,7 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Views;
 use ApiTestCase;
 use Biigle\Tests\VideoTest;
 
-class VideoReportControllerTest extends ApiTestCase
+class VideoReportsControllerTest extends ApiTestCase
 {
     public function testShow()
     {

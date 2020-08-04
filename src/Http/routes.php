@@ -42,10 +42,6 @@ $router->group([
     $router->post('users/my/settings/reports', [
         'uses' => 'SettingsController@store',
     ]);
-
-    $router->post('videos/{id}/reports', [
-        'uses' => 'Videos\VideoReportController@store',
-    ]);
 });
 
 $router->group([

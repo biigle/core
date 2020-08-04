@@ -4,7 +4,7 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Views;
 
 use ApiTestCase;
 
-class VolumeReportControllerTest extends ApiTestCase
+class VolumeReportsControllerTest extends ApiTestCase
 {
     public function testShow()
     {
