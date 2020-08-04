@@ -10,7 +10,7 @@ export default {
     data() {
         return {
             allowedOptions: {
-                'Annotations': [
+                'ImageAnnotations': [
                     'export_area',
                     'newest_label',
                     'separate_label_trees',

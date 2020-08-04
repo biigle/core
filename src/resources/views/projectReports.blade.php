@@ -27,27 +27,21 @@
         <div class="col-md-6 col-md-offset-3">
             <h2>Request report for {{$project->name}}</h2>
             <p>
-                @if ($hasVolume && $hasVideo)
-                    Request a project report to consolidate data of all volumes or videos of the project into downloadable files.
-                @elseif ($hasVolume)
-                    Request a project report to consolidate data of all volumes of the project into downloadable files.
-                @else
-                    Request a project report to consolidate data of all videos of the project into downloadable files.
-                @endif
+                Request a project report to consolidate data of image or video volumes of the project into downloadable files.
             </p>
             <form v-on:submit.prevent="submit">
                 <div class="form-group">
                     <label>Report type</label>
                     <div class="btn-group btn-group-justified">
-                        @if ($hasVolume)
+                        @if ($hasImageVolume)
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Annotation report</button>
+                                <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Image annotation report</button>
                             </div>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                             </div>
                         @endif
-                        @if ($hasVideo)
+                        @if ($hasVideoVolume)
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
                             </div>

@@ -28,13 +28,4 @@ class ProjectReportsControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("projects/{$id}/reports")->assertStatus(404);
     }
-
-    public function testShowVideo()
-    {
-        $id = $this->project()->id;
-        $this->beGuest();
-        $this->get("projects/{$id}/reports")->assertStatus(404);
-        VideoTest::create(['project_id' => $id]);
-        $this->get("projects/{$id}/reports")->assertStatus(200);
-    }
 }
