@@ -3,10 +3,10 @@
 namespace Biigle\Modules\Reports\Support\Reports\Projects\VideoAnnotations;
 
 use Biigle\Modules\Reports\Support\File;
-use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectVideoReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 
-class CsvReportGenerator extends ProjectReportGenerator
+class CsvReportGenerator extends ProjectVideoReportGenerator
 {
     /**
      * The class of the video report to use for this project report.
@@ -30,10 +30,56 @@ class CsvReportGenerator extends ProjectReportGenerator
     protected $filename = 'csv_video_annotation_report';
 
     /**
-     * {@inheritdoc}
+     * Get the report name.
+     *
+     * @return string
      */
-    protected function getProjectSources()
+    public function getName()
     {
-        return $this->source->videos;
+        $restrictions = [];
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest label for each video annotation';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode(' and ', $restrictions);
+
+            return "{$this->name} (restricted to {$suffix})";
+        }
+
+        return $this->name;
+    }
+
+    /**
+     * Get the filename.
+     *
+     * @return string
+     */
+    public function getFilename()
+    {
+        $restrictions = [];
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest_label';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode('_', $restrictions);
+
+            return "{$this->filename}_restricted_to_{$suffix}";
+        }
+
+        return $this->filename;
+    }
+
+    /**
+     * Determines if this report should take only the newest label for each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
     }
 }

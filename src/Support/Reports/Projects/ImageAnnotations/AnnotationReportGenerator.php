@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
-use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectImageReportGenerator;
 
-class AnnotationReportGenerator extends ProjectReportGenerator
+class AnnotationReportGenerator extends ProjectImageReportGenerator
 {
     /**
      * Get the report name.

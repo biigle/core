@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
-use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectImageReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\CsvReportGenerator as ReportGenerator;
 
-class CsvReportGenerator extends ProjectReportGenerator
+class CsvReportGenerator extends ProjectImageReportGenerator
 {
     /**
      * The class of the volume report to use for this project report.

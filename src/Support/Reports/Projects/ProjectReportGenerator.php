@@ -5,7 +5,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Projects;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 
-class ProjectReportGenerator extends ReportGenerator
+abstract class ProjectReportGenerator extends ReportGenerator
 {
     use MakesZipArchives;
 
@@ -59,8 +59,5 @@ class ProjectReportGenerator extends ReportGenerator
      *
      * @return mixed
      */
-    protected function getProjectSources()
-    {
-        return $this->source->volumes;
-    }
+    abstract protected function getProjectSources();
 }
