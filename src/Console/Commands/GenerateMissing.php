@@ -25,13 +25,6 @@ class GenerateMissing extends Command
     protected $description = 'Generate missing patches for annotations.';
 
     /**
-     * Largo patch storage disk.
-     *
-     * @var string
-     */
-    protected $disk;
-
-    /**
      * Largo patch storage file format.
      *
      * @var string
@@ -63,7 +56,7 @@ class GenerateMissing extends Command
     public function handle()
     {
         $pushToQueue = !$this->option('dry-run');
-        $storage = Storage::disk($this->disk);
+        $storage = Storage::disk(config('largo.patch_storage_disk'));
 
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
