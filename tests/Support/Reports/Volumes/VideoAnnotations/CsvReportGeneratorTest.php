@@ -1,15 +1,19 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Videos\VideoAnnotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\VideoAnnotations;
 
 use App;
+use Biigle\MediaType;
 use Biigle\Modules\Reports\Support\CsvFile;
-use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VideoAnnotations\CsvReportGenerator;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
 use ZipArchive;
@@ -25,7 +29,7 @@ class CsvReportGeneratorTest extends TestCase
         'firstname',
         'lastname',
         'video_id',
-        'video_name',
+        'video_filename',
         'shape_id',
         'shape_name',
         'points',
@@ -43,8 +47,13 @@ class CsvReportGeneratorTest extends TestCase
 
     public function testGenerateReport()
     {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+            'media_type_id' => MediaType::videoId(),
+        ]);
+
         $video = VideoTest::create([
-            'name' => 'My Cool Video',
+            'volume_id' => $volume->id,
         ]);
 
         $root = LabelTest::create();
@@ -78,7 +87,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al->user->firstname,
                 $al->user->lastname,
                 $al->annotation->video_id,
-                $al->annotation->video->name,
+                $al->annotation->video->filename,
                 $al->annotation->shape->id,
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
@@ -101,7 +110,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$video->id}-my-cool-video.csv");
+            ->with('abc', "{$volume->id}-my-cool-volume.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -110,7 +119,7 @@ class CsvReportGeneratorTest extends TestCase
         });
 
         $generator = new CsvReportGenerator;
-        $generator->setSource($video);
+        $generator->setSource($volume);
         $generator->generateReport('my/path');
     }
 
@@ -155,7 +164,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->user->firstname,
                 $al1->user->lastname,
                 $annotation->video_id,
-                $annotation->video->name,
+                $annotation->video->filename,
                 $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
@@ -174,7 +183,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al2->user->firstname,
                 $al2->user->lastname,
                 $annotation->video_id,
-                $annotation->video->name,
+                $annotation->video->filename,
                 $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
@@ -212,7 +221,7 @@ class CsvReportGeneratorTest extends TestCase
         $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
         ]);
-        $generator->setSource($video);
+        $generator->setSource($video->volume);
         $generator->generateReport('my/path');
     }
 
@@ -231,9 +240,84 @@ class CsvReportGeneratorTest extends TestCase
         $generator = new CsvReportGenerator([
             'onlyLabels' => [$al1->label_id],
         ]);
-        $generator->setSource($video);
+        $generator->setSource($video->volume);
         $results = $generator->initQuery(['video_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
         $this->assertEquals($al1->id, $results[0]->id);
+    }
+
+    public function testRestrictToAnnotationSessionQuery()
+    {
+        $user = UserTest::create();
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+        ]);
+
+        $session->users()->attach($user);
+
+        $a1 = VideoAnnotationTest::create([
+            'created_at' => '2016-10-04',
+        ]);
+        $a1->video->volume_id = $session->volume_id;
+        $a1->video->save();
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $user->id,
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $a1->video_id,
+            'created_at' => '2016-10-05',
+        ]);
+
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $user->id,
+        ]);
+
+        $al3 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+        ]);
+
+        $generator = new CsvReportGenerator([
+            'annotationSession' => $session->id,
+        ]);
+        $generator->setSource($session->volume);
+        $results = $generator->initQuery(['video_annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($al2->id, $results[0]->id);
+    }
+
+    public function testRestrictToNewestLabelQuery()
+    {
+        $a = VideoAnnotationTest::create();
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:15:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        // Even if there are two labels created in the same second, we only want the
+        // newest one (as determined by the ID).
+        $al2 = VideoAnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:16:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        $al3 = VideoAnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:16:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        $generator = new CsvReportGenerator([
+            'newestLabel' => true,
+        ]);
+        $generator->setSource($a->video->volume);
+        $results = $generator->initQuery(['video_annotation_labels.id'])->get();
+        $this->assertCount(1, $results);
+        $this->assertEquals($al3->id, $results[0]->id);
     }
 }

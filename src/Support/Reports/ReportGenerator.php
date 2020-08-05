@@ -3,6 +3,8 @@
 namespace Biigle\Modules\Reports\Support\Reports;
 
 use Biigle\Label;
+use Biigle\Video;
+use Biigle\Volume;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\File as FileHelper;
 use Exception;
@@ -72,6 +74,12 @@ class ReportGenerator
      */
     public static function get($sourceClass, ReportType $type, $options = [])
     {
+        // Establish backwards compatibility with old single video reports.
+        // See: https://github.com/biigle/core/issues/276
+        if ($sourceClass === Video::class && $type->id === ReportType::videoAnnotationsCsvId()) {
+            $sourceClass = Volume::class;
+        }
+
         if (class_exists($sourceClass)) {
             $reflect = new ReflectionClass($sourceClass);
             $sourceClass = Str::plural($reflect->getShortName());

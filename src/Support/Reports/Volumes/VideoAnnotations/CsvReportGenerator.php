@@ -1,15 +1,15 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\VideoAnnotations;
 
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
-use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use DB;
 
-class CsvReportGenerator extends ReportGenerator
+class CsvReportGenerator extends VolumeReportGenerator
 {
     use MakesZipArchives;
 
@@ -63,25 +63,6 @@ class CsvReportGenerator extends ReportGenerator
     }
 
     /**
-     * Constructs a label name from the names of all parent labels and the label itself.
-     *
-     * Example: `Animalia > Annelida > Polychaeta > Buskiella sp`
-     *
-     * @param int  $id  Label ID
-     * @return string
-     */
-    public function expandLabelName($id)
-    {
-        if (is_null($this->labels)) {
-            // We expect most of the used labels to belong to a label tree currently
-            // attached to the video (through its projects).
-            $this->labels = $this->getVideoLabels()->keyBy('id');
-        }
-
-        return parent::expandLabelName($id);
-    }
-
-    /**
      * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
      *
      * @param \Illuminate\Database\Query\Builder $query
@@ -104,7 +85,9 @@ class CsvReportGenerator extends ReportGenerator
             ->join('video_annotations', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
-            ->where('videos.id', $this->source->id)
+            ->where('videos.volume_id', $this->source->id)
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+            ->when($this->isRestrictedToNewestLabel(), [$this, 'restrictToNewestLabelQuery'])
             ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
             ->select($columns);
 
@@ -116,19 +99,48 @@ class CsvReportGenerator extends ReportGenerator
     }
 
     /**
-     * Get all labels that are attached to the volume of this report (through project label trees).
+     * Callback to be used in a `when` query statement that restricts the resulting annotation labels to the annotation session of this report.
      *
-     * @return \Illuminate\Support\Collection
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
      */
-    protected function getVideoLabels()
+    public function restrictToAnnotationSessionQuery($query)
     {
-        return Label::select('id', 'name', 'parent_id')
-            ->whereIn('label_tree_id', function ($query) {
-                $query->select('label_tree_id')
-                    ->from('label_tree_project')
-                    ->where('project_id', $this->source->project_id);
-            })
-            ->get();
+        $session = $this->getAnnotationSession();
+
+        return $query->where(function ($query) use ($session) {
+            // take only annotations that belong to the time span...
+            $query->where('video_annotations.created_at', '>=', $session->starts_at)
+                ->where('video_annotations.created_at', '<', $session->ends_at)
+                // ...and to the users of the session
+                ->whereIn('video_annotation_labels.user_id', function ($query) use ($session) {
+                    $query->select('user_id')
+                        ->from('annotation_session_user')
+                        ->where('annotation_session_id', $session->id);
+                });
+        });
+    }
+
+    /**
+     * Callback to be used in a `when` query statement that restricts the results to the newest annotation labels of each annotation.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToNewestLabelQuery($query)
+    {
+        // This is a quite inefficient query. Here is why:
+        // We could use "select distinct on" directly on the query but this would be
+        // overridden by the subsequent select() in self::initQuery(). If we would add
+        // the "select distinct on" **after** the select(), we would get invalid syntax:
+        // "select *, distinct on".
+        return $query->whereIn('video_annotation_labels.id', function ($query) {
+            return $query->selectRaw('distinct on (annotation_id) id')
+                ->from('video_annotation_labels')
+                ->orderBy('annotation_id', 'desc')
+                ->orderBy('id', 'desc')
+                ->orderBy('created_at', 'desc');
+        });
     }
 
     /**
@@ -146,7 +158,7 @@ class CsvReportGenerator extends ReportGenerator
                 'users.firstname',
                 'users.lastname',
                 'videos.id as video_id',
-                'videos.name as video_name',
+                'videos.filename as video_filename',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',
                 'video_annotations.points',
@@ -179,7 +191,7 @@ class CsvReportGenerator extends ReportGenerator
             'firstname',
             'lastname',
             'video_id',
-            'video_name',
+            'video_filename',
             'shape_id',
             'shape_name',
             'points',
@@ -197,7 +209,7 @@ class CsvReportGenerator extends ReportGenerator
                 $row->firstname,
                 $row->lastname,
                 $row->video_id,
-                $row->video_name,
+                $row->video_filename,
                 $row->shape_id,
                 $row->shape_name,
                 $row->points,

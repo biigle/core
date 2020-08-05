@@ -69,7 +69,7 @@ class Report extends Model
      */
     public function getSourceNameAttribute()
     {
-        if (is_null($this->source)) {
+        if (is_null($this->source) || is_null($this->source->name)) {
             return $this->attributes['source_name'];
         }
 

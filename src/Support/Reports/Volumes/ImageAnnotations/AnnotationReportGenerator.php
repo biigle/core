@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
-use Biigle\AnnotationSession;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use DB;
@@ -10,13 +9,6 @@ use Illuminate\Support\Str;
 
 class AnnotationReportGenerator extends VolumeReportGenerator
 {
-    /**
-     * Cache for the annotation session the report may be restricted to.
-     *
-     * @var Biigle\AnnotationSession
-     */
-    protected $annotationSession;
-
     /**
      * Get the report name.
      *
@@ -250,40 +242,6 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     protected function isRestrictedToExportArea()
     {
         return $this->options->get('exportArea', false);
-    }
-
-    /**
-     * Should this report be restricted an annotation session?
-     *
-     * @return bool
-     */
-    protected function isRestrictedToAnnotationSession()
-    {
-        return !is_null($this->options->get('annotationSession', null));
-    }
-
-    /**
-     * Returns the annotation session this report should be restricted to.
-     *
-     * @return AnnotationSession|null
-     */
-    protected function getAnnotationSession()
-    {
-        if (!$this->annotationSession) {
-            $this->annotationSession = AnnotationSession::find($this->options->get('annotationSession', null));
-        }
-
-        return $this->annotationSession;
-    }
-
-    /**
-     * Determines if this report should take only the newest label of each annotation.
-     *
-     * @return bool
-     */
-    protected function isRestrictedToNewestLabel()
-    {
-        return $this->options->get('newestLabel', false);
     }
 
     /**

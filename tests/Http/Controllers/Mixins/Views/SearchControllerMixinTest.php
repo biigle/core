@@ -47,8 +47,9 @@ class SearchControllerMixinTest extends TestCase
     {
         $r1 = ReportTest::create([
             'type_id' => ReportType::videoAnnotationsCsvId(),
-            'source_id' => VideoTest::create(['name' => 'my video'])->id,
+            'source_id' => VideoTest::create()->id,
             'source_type' => Video::class,
+            'source_name' => 'my video',
         ]);
 
         $this->be($r1->user);

@@ -239,7 +239,7 @@ Animalia
             <li><strong>User firstname</strong></li>
             <li><strong>User lastname</strong></li>
             <li><strong>Video ID</strong></li>
-            <li><strong>Video name</strong></li>
+            <li><strong>Video filename</strong></li>
             <li><strong>Video annotation shape ID</strong></li>
             <li><strong>Video annotation shape name</strong></li>
             <li>

@@ -7,6 +7,7 @@ use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\Project;
 use Biigle\Video;
 use Biigle\Volume;
 use Exception;
@@ -31,18 +32,23 @@ class ReportGeneratorTest extends TestCase
         );
     }
 
-    public function testGetAllExist()
+    public function testGetAllVolumeExist()
     {
-        foreach (ReportType::where('name', 'not like', 'Video%')->get() as $type) {
+        foreach (ReportType::get() as $type) {
             $this->assertNotNull(ReportGenerator::get(Volume::class, $type));
         }
     }
 
-    public function testGetAllVideoExist()
+    public function testGetAllProjectExist()
     {
-        foreach (ReportType::where('name', 'like', 'Video%')->get() as $type) {
-            $this->assertNotNull(ReportGenerator::get(Video::class, $type));
+        foreach (ReportType::get() as $type) {
+            $this->assertNotNull(ReportGenerator::get(Project::class, $type));
         }
+    }
+
+    public function testGetAllVideoLegacyExist()
+    {
+        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::videoAnnotationsCsv()));
     }
 
     public function testHandleException()
