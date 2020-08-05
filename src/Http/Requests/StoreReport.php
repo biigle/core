@@ -107,8 +107,6 @@ class StoreReport extends FormRequest
     protected function isAllowedForAggregateChildLabels()
     {
         return $this->isType([
-            ReportType::imageAnnotationsBasicId(),
-            ReportType::imageAnnotationsExtendedId(),
             ReportType::imageAnnotationsAbundanceId(),
         ]);
     }
