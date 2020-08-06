@@ -28,6 +28,10 @@ export default {
                     'annotation_session_id',
                     'only_labels',
                 ],
+                'VideoLabels': [
+                    'separate_label_trees',
+                    'only_labels',
+                ],
             },
         };
     },

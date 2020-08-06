@@ -24,6 +24,7 @@ class ReportType extends Model
         'imageLabelsBasic' => 'ImageLabels\Basic',
         'imageLabelsCsv' => 'ImageLabels\Csv',
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',
+        'videoLabelsCsv' => 'VideoLabels\Csv',
     ];
 
     /**

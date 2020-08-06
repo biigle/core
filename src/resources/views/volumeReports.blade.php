@@ -42,14 +42,17 @@
                             </div>
                         @else
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
+                                <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" title="Request a video label report" v-on:click="selectType('VideoLabels')" :class="{active: wantsType('VideoLabels')}">Video label report</button>
                             </div>
                         @endif
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="report-variant">Report variant</label>
-                    <select id="report-variant" class="form-control" v-model="selectedVariant" required="">
+                    <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="availableVariants.length === 1">
                         <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
                     </select>
                     @include('reports::partials.reportTypeInfo')

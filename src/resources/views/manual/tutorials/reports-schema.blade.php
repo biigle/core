@@ -15,24 +15,35 @@
             The following sections describe the different types of volume reports but, per definition, apply for project reports as well.
         </p>
 
-        <strong><a href="#image-annotation-reports">Image annotation reports</a></strong>
-        <ul>
-            <li><a href="#annotation-abundance-report">Abundance</a></li>
-            <li><a href="#annotation-area-report">Area</a></li>
-            <li><a href="#annotation-basic-report">Basic</a></li>
-            <li><a href="#annotation-csv-report">CSV</a></li>
-            <li><a href="#annotation-extended-report">Extended</a></li>
-            <li><a href="#annotation-full-report">Full</a></li>
-        </ul>
-        <strong><a href="#image-label-reports">Image label reports</a></strong>
-        <ul>
-            <li><a href="#image-label-basic-report">Basic</a></li>
-            <li><a href="#image-label-csv-report">CSV</a></li>
-        </ul>
-        <strong><a href="#video-annotation-reports">Video annotation reports</a></strong>
-        <ul>
-            <li><a href="#video-annotation-csv-report">CSV</a></li>
-        </ul>
+        <div class="row">
+            <div class="col-xs-6">
+                <strong><a href="#image-annotation-reports">Image annotation reports</a></strong>
+                <ul>
+                    <li><a href="#annotation-abundance-report">Abundance</a></li>
+                    <li><a href="#annotation-area-report">Area</a></li>
+                    <li><a href="#annotation-basic-report">Basic</a></li>
+                    <li><a href="#annotation-csv-report">CSV</a></li>
+                    <li><a href="#annotation-extended-report">Extended</a></li>
+                    <li><a href="#annotation-full-report">Full</a></li>
+                </ul>
+                <strong><a href="#image-label-reports">Image label reports</a></strong>
+                <ul>
+                    <li><a href="#image-label-basic-report">Basic</a></li>
+                    <li><a href="#image-label-csv-report">CSV</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-6">
+                <strong><a href="#video-annotation-reports">Video annotation reports</a></strong>
+                <ul>
+                    <li><a href="#video-annotation-csv-report">CSV</a></li>
+                </ul>
+                <strong><a href="#video-label-reports">Video label reports</a></strong>
+                <ul>
+                    <li><a href="#video-label-csv-report">CSV</a></li>
+                </ul>
+            </div>
+        </div>
+
 
         <h3><a name="image-annotation-reports"></a>Image annotation reports</h3>
         <h4><a name="annotation-abundance-report"></a>Abundance</h4>
@@ -274,6 +285,23 @@ Animalia
                 </p>
             </li>
             <li><strong>Video annotation ID</strong></li>
+        </ol>
+
+        <h3><a name="video-label-reports"></a>Video label reports</h3>
+        <h4><a name="video-label-csv-report"></a>CSV</h4>
+        <p>
+            Each CSV file contains one row for each video label. Since a video can have multiple different labels, there may be multiple rows for a single video. The columns are as follows:
+        </p>
+        <ol>
+            <li><strong>Video label ID</strong></li>
+            <li><strong>Video ID</strong></li>
+            <li><strong>Video filename</strong></li>
+            <li><strong>ID of the user who attached the video label</strong></li>
+            <li><strong>User firstname</strong></li>
+            <li><strong>User lastname</strong></li>
+            <li><strong>Label ID</strong></li>
+            <li><strong>Label name</strong></li>
+            <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
     </div>
 @endsection

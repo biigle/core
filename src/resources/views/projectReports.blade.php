@@ -32,21 +32,30 @@
             <form v-on:submit.prevent="submit">
                 <div class="form-group">
                     <label>Report type</label>
-                    <div class="btn-group btn-group-justified">
-                        @if ($hasImageVolume)
+                    @if ($hasImageVolume)
+                        <div class="btn-group btn-group-justified">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Image annotation report</button>
                             </div>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                             </div>
-                        @endif
-                        @if ($hasVideoVolume)
+                        </div>
+                    @endif
+                @if ($hasImageVolume && $hasVideoVolume)
+                </div>
+                <div class="form-group">
+                @endif
+                    @if ($hasVideoVolume)
+                        <div class="btn-group btn-group-justified">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
                             </div>
-                        @endif
-                    </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" title="Request a video label report" v-on:click="selectType('VideoLabels')" :class="{active: wantsType('VideoLabels')}">Video label report</button>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="form-group">
                     <label for="report-variant">Report variant</label>

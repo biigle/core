@@ -25,3 +25,6 @@
 <div class="help-block" v-cloak v-if="wantsCombination('VideoAnnotations', 'Csv')">
     The CSV video annotation report is intended for subsequent processing and lists the video annotation labels at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#video-annotation-csv-report">report schema</a>.
 </div>
+<div class="help-block" v-cloak v-if="wantsCombination('VideoLabels', 'Csv')">
+    The CSV video label report lists the video labels at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#video-label-csv-report">report schema</a>.
+</div>

@@ -65,6 +65,16 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreInvalidVideoLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::videoLabelsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
+
     public function testStoreVideoVolume()
     {
         $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
@@ -97,6 +107,16 @@ class VolumeReportControllerTest extends ApiTestCase
     {
         $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $typeId = ReportType::imageAnnotationsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
+
+    public function testStoreInvalidImageLabels()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::imageLabelsCsvId();
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])

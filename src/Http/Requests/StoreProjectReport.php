@@ -63,6 +63,7 @@ class StoreProjectReport extends StoreReport
 
             $videoReports = [
                 ReportType::videoAnnotationsCsvId(),
+                ReportType::videoLabelsCsvId(),
             ];
 
             if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
