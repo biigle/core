@@ -8,6 +8,7 @@ use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use DB;
+use Illuminate\Support\Str;
 
 class CsvReportGenerator extends VolumeReportGenerator
 {
@@ -33,6 +34,60 @@ class CsvReportGenerator extends VolumeReportGenerator
      * @var string
      */
     protected $extension = 'zip';
+
+    /**
+     * Get the report name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        $restrictions = [];
+
+        if ($this->isRestrictedToAnnotationSession()) {
+            $name = $this->getAnnotationSessionName();
+            $restrictions[] = "annotation session {$name}";
+        }
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest label of each annotation';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode(', ', $restrictions);
+
+            return "{$this->name} (restricted to {$suffix})";
+        }
+
+        return $this->name;
+    }
+
+    /**
+     * Get the filename.
+     *
+     * @return string
+     */
+    public function getFilename()
+    {
+        $restrictions = [];
+
+        if ($this->isRestrictedToAnnotationSession()) {
+            $name = Str::slug($this->getAnnotationSessionName());
+            $restrictions[] = "annotation_session_{$name}";
+        }
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest_label';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode('_', $restrictions);
+
+            return "{$this->filename}_restricted_to_{$suffix}";
+        }
+
+        return $this->filename;
+    }
 
     /**
      * Generate the report.

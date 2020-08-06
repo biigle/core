@@ -4,7 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Projects\VideoAnnotations;
 
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\Projects\ProjectVideoReportGenerator;
-use Biigle\Modules\Reports\Support\Reports\Videos\VideoAnnotations\CsvReportGenerator as ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 
 class CsvReportGenerator extends ProjectVideoReportGenerator
 {

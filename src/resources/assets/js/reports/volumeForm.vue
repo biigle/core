@@ -23,6 +23,12 @@ export default {
                     'annotation_session_id',
                     'only_labels',
                 ],
+                'VideoAnnotations': [
+                    'newest_label',
+                    'separate_label_trees',
+                    'annotation_session_id',
+                    'only_labels',
+                ],
             },
             options: {
                 annotation_session_id: null,

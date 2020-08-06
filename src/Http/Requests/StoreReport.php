@@ -36,11 +36,14 @@ class StoreReport extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->has('export_area') && !$this->isAllowedForExportArea()) {
+            $exportArea = boolval($this->input('export_area', false));
+
+            if ($exportArea && !$this->isAllowedForExportArea()) {
                 $validator->errors()->add('export_area', 'The export area is only supported for image annotation reports.');
             }
 
-            if ($this->has('aggregate_child_labels') && !$this->isAllowedForAggregateChildLabels()) {
+            $aggregate = boolval($this->input('aggregate_child_labels', false));
+            if ($aggregate && !$this->isAllowedForAggregateChildLabels()) {
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
             }
         });

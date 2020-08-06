@@ -128,18 +128,6 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Get the name of the annotation session if it exists.
-     *
-     * @return string
-     */
-    protected function getAnnotationSessionName()
-    {
-        $session = $this->getAnnotationSession();
-
-        return $session ? $session->name : $this->options->get('annotationSession', '');
-    }
-
-    /**
      * Returns the annotation IDs to skip as outside of the volume export area.
      *
      * We collect the IDs to skip rather than the IDs to include since there are probably

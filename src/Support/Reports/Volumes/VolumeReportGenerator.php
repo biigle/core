@@ -120,6 +120,18 @@ class VolumeReportGenerator extends ReportGenerator
     }
 
     /**
+     * Get the name of the annotation session if it exists.
+     *
+     * @return string
+     */
+    protected function getAnnotationSessionName()
+    {
+        $session = $this->getAnnotationSession();
+
+        return $session ? $session->name : $this->options->get('annotationSession', '');
+    }
+
+    /**
      * Determines if this report should take only the newest label of each annotation.
      *
      * @return bool
