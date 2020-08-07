@@ -6,7 +6,7 @@ use DB;
 use File;
 use SplFileObject;
 
-class AnnotationExport extends Export
+class ImageAnnotationExport extends Export
 {
     /**
      * Path to the temporary CSV file.
@@ -21,7 +21,7 @@ class AnnotationExport extends Export
     public function getContent()
     {
         if (!$this->tmpPath) {
-            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_annotation_export');
+            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_image_annotation_export');
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
@@ -45,21 +45,19 @@ class AnnotationExport extends Export
                 'image_annotations.updated_at',
                 'image_annotations.points',
             ])
-            // The chunk size is lower than for the AnnotationLabelExport and the
+            // The chunk size is lower than for the ImageAnnotationLabelExport and the
             // ImageExport because annotations can have a variable (and possibly large)
             // number of points!
-            ->chunkById(5E+4, function ($rows) use ($csv) {
-                foreach ($rows as $row) {
-                    $csv->fputcsv([
-                        $row->annotation_id,
-                        $row->image_id,
-                        $row->shape_id,
-                        $row->created_at,
-                        $row->updated_at,
-                        $row->points,
-                    ]);
-                }
-            }, 'image_annotations.id', 'annotation_id');
+            ->eachById(function ($row) use ($csv) {
+                $csv->fputcsv([
+                    $row->annotation_id,
+                    $row->image_id,
+                    $row->shape_id,
+                    $row->created_at,
+                    $row->updated_at,
+                    $row->points,
+                ]);
+            }, 5E+4, 'image_annotations.id', 'annotation_id');
 
         return $this->tmpPath;
     }
@@ -69,7 +67,7 @@ class AnnotationExport extends Export
      */
     public function getFileName()
     {
-        return 'annotations.csv';
+        return 'image_annotations.csv';
     }
 
     /**

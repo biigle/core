@@ -3,8 +3,9 @@
         <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">
         <ul>
             <li v-for="e in entities" :key="e.id" @click="select(e)">
+                <i v-if="e.icon" :class="`fa fa-${e.icon}`"></i>
                 <span v-text="e.name"></span>
-                <span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>
+                <span><br><span class="text-muted" v-text="e.description"></span></span>
             </li>
         </ul>
     </div>

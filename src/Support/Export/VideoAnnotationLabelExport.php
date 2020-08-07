@@ -6,7 +6,7 @@ use DB;
 use File;
 use SplFileObject;
 
-class ImageLabelExport extends Export
+class VideoAnnotationLabelExport extends Export
 {
     /**
      * Path to the temporary CSV file.
@@ -21,38 +21,39 @@ class ImageLabelExport extends Export
     public function getContent()
     {
         if (!$this->tmpPath) {
-            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_image_label_export');
+            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_video_annotation_label_export');
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
         $csv->fputcsv([
-            'image_id',
+            'annotation_id',
             'label_id',
             'user_id',
             'created_at',
             'updated_at',
         ]);
 
-        DB::table('image_labels')
-            ->join('images', 'images.id', '=', 'image_labels.image_id')
-            ->whereIn('images.volume_id', $this->ids)
+        DB::table('video_annotation_labels')
+            ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            ->whereIn('videos.volume_id', $this->ids)
             ->select([
-                'image_labels.id as image_label_id',
-                'image_labels.image_id',
-                'image_labels.label_id',
-                'image_labels.user_id',
-                'image_labels.created_at',
-                'image_labels.updated_at',
+                'video_annotation_labels.id as annotation_label_id',
+                'video_annotation_labels.annotation_id',
+                'video_annotation_labels.label_id',
+                'video_annotation_labels.user_id',
+                'video_annotation_labels.created_at',
+                'video_annotation_labels.updated_at',
             ])
             ->eachById(function ($row) use ($csv) {
                 $csv->fputcsv([
-                    $row->image_id,
+                    $row->annotation_id,
                     $row->label_id,
                     $row->user_id,
                     $row->created_at,
                     $row->updated_at,
                 ]);
-            }, 1E+5, 'image_labels.id', 'image_label_id');
+            }, 1E+5, 'video_annotation_labels.id', 'annotation_label_id');
 
         return $this->tmpPath;
     }
@@ -62,7 +63,7 @@ class ImageLabelExport extends Export
      */
     public function getFileName()
     {
-        return 'image_labels.csv';
+        return 'video_annotation_labels.csv';
     }
 
     /**

@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use Biigle\Modules\Sync\Support\Export\AnnotationExport;
+use Biigle\Modules\Sync\Support\Export\ImageAnnotationExport;
 use Biigle\Tests\ImageAnnotationTest;
 use File;
 use SplFileObject;
 use TestCase;
 
-class AnnotationExportTest extends TestCase
+class ImageAnnotationExportTest extends TestCase
 {
     public function testGetContent()
     {
         $annotation = ImageAnnotationTest::create();
-        $export = new AnnotationExport([$annotation->image->volume_id]);
+        $export = new ImageAnnotationExport([$annotation->image->volume_id]);
 
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
@@ -33,7 +33,7 @@ class AnnotationExportTest extends TestCase
     public function testCleanUp()
     {
         $annotation = ImageAnnotationTest::create();
-        $export = new AnnotationExport([$annotation->image->volume_id]);
+        $export = new ImageAnnotationExport([$annotation->image->volume_id]);
 
         $path = $export->getContent();
         $this->assertTrue(File::exists($path));

@@ -6,7 +6,7 @@ use DB;
 use File;
 use SplFileObject;
 
-class AnnotationLabelExport extends Export
+class ImageAnnotationLabelExport extends Export
 {
     /**
      * Path to the temporary CSV file.
@@ -21,7 +21,7 @@ class AnnotationLabelExport extends Export
     public function getContent()
     {
         if (!$this->tmpPath) {
-            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_annotation_label_export');
+            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_image_annotation_label_export');
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
@@ -47,18 +47,16 @@ class AnnotationLabelExport extends Export
                 'image_annotation_labels.created_at',
                 'image_annotation_labels.updated_at',
             ])
-            ->chunkById(1E+5, function ($rows) use ($csv) {
-                foreach ($rows as $row) {
-                    $csv->fputcsv([
-                        $row->annotation_id,
-                        $row->label_id,
-                        $row->user_id,
-                        $row->confidence,
-                        $row->created_at,
-                        $row->updated_at,
-                    ]);
-                }
-            }, 'image_annotation_labels.id', 'annotation_label_id');
+            ->eachById(function ($row) use ($csv) {
+                $csv->fputcsv([
+                    $row->annotation_id,
+                    $row->label_id,
+                    $row->user_id,
+                    $row->confidence,
+                    $row->created_at,
+                    $row->updated_at,
+                ]);
+            }, 1E+5, 'image_annotation_labels.id', 'annotation_label_id');
 
         return $this->tmpPath;
     }
@@ -68,7 +66,7 @@ class AnnotationLabelExport extends Export
      */
     public function getFileName()
     {
-        return 'annotation_labels.csv';
+        return 'image_annotation_labels.csv';
     }
 
     /**
