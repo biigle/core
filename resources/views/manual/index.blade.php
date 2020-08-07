@@ -96,11 +96,11 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['volumes', 'image-labels'])}}">Image Labels</a>
+                <a href="{{route('manual-tutorials', ['volumes', 'file-labels'])}}">File Labels</a>
             </h4>
 
             <p>
-                Image labels are labels that are attached to whole images.
+                File labels are labels that are attached to whole images or videos.
             </p>
 
             <h3>Image Annotations</h3>

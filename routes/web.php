@@ -44,6 +44,8 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'uses' => 'ManualController@index',
     ]);
 
+    $router->permanentRedirect('/tutorials/volumes/image-labels', '/manual/tutorials/volumes/file-labels');
+
     $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
         'uses' => 'ManualController@tutorialsArticle',

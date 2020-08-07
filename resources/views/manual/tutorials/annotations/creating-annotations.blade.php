@@ -21,7 +21,7 @@
         </p>
 
         <p>
-            An image annotation is a point or a region on an image that can have one or more labels attached to it. The annotation tool offers different shapes that can be used to create new annotations. Each shape is suited best for specific annotation tasks so choose the shapes you want to use wisely before you begin annotating.
+            An image annotation is a point or a region on an image that can have one or more labels attached to it. The image annotation tool offers different shapes that can be used to create new annotations. Each shape is suited best for specific annotation tasks so choose the shapes you want to use wisely before you begin annotating.
         </p>
         <p>
             You can activate a tool by clicking the button in the toolbar at the bottom:

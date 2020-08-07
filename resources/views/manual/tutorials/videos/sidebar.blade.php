@@ -31,6 +31,15 @@
             The label trees tab shows all label trees that are available for the video. Here you can find and choose the labels you want to attach to new annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <kbd>0</kbd>-<kbd>9</kbd> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label again to remove it from the favorites.
         </p>
 
+        <h3><a name="video-labels-tab"></a> <i class="fa fa-film"></i> Video Labels</h3>
+
+        <p>
+            Video labels are labels that are attached to a whole video instead of annotations. Only project editors, experts or admins can modify video labels. To attach a new video label, select a label in the <a href="#label-trees-tab">label trees tab</a> (or use a <a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}">shortcut</a>), then open the video label tab and click the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button in the top right corner. To detach a video label, click the <button class="close" style="float: none;"><span aria-hidden="true">×</span></button> button next to it.
+        </p>
+        <p>
+            Attaching video labels with the video label tab is useful if you need to explore the whole video in order to determine the correct video label. If a video thumbnail is enough (e.g. to sort out bad videos where the camera didn't operate properly) you can attach and detach video labels more quickly <a href="{{route('manual-tutorials', ['volumes', 'file-labels'])}}">in the volume overview</a>.
+        </p>
+
         @mixin('manualVideosSidebar')
 
         <h3><a name="settings-tab"></a> <i class="fa fa-cog"></i> Settings</h3>
@@ -61,12 +70,6 @@
 
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
-        </p>
-
-        <h3><a name="edit-tab"></a> <i class="fa fa-pencil-alt"></i> Edit</h3>
-
-        <p>
-            Project admins have access to the edit tab. This tab can be used to edit video information such as the name or URL.
         </p>
     </div>
 @endsection

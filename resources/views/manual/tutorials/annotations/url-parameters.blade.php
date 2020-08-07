@@ -5,18 +5,18 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Advanced configuration of the annotation tool.
+            Advanced configuration of the image annotation tool.
         </p>
         <p>
-            The annotation tool provides various configuration options in the <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#settings-tab">settings tab</a> as well as different <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#annotation-modes">annotation modes</a>. Most of these features can be controlled via URL parameters, too.
+            The image annotation tool provides various configuration options in the <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#settings-tab">settings tab</a> as well as different <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#annotation-modes">annotation modes</a>. Most of these features can be controlled via URL parameters, too.
         </p>
         <div class="panel panel-info">
             <div class="panel-body text-info">
-                URL parameters are the part of the URL in your browser's address bar after the <code>?</code>. Example: <code>https://biigle.de?myParameter=myValue</code>.
+                URL parameters are the part of the URL in your browser's address bar after the <code>?</code>. Example: <code>{{url('')}}?myParameter=myValue</code>.
             </div>
         </div>
         <p>
-            By using URL parameters, you can send your colleagues a link to an image in the annotation tool and control how the annotation tool should behave. This can be useful e.g. if you want to conduct an annotation study and want each participant to have the same configuration of the annotation tool.
+            By using URL parameters, you can send your colleagues a link to an image in the image annotation tool and control how the image annotation tool should behave. This can be useful e.g. if you want to conduct an annotation study and want each participant to have the same configuration of the image annotation tool.
         </p>
         <h3>Available parameters</h3>
 
@@ -111,7 +111,7 @@
             You want to show a specific object to a colleague, who is also a BIIGLE user, to discuss the object's size. First, center the viewport on the object. The <code>x</code>, <code>y</code> and <code>r</code> URL parameters will automatically update accordingly. Now append the <code>scaleLine</code> parameter, so the scale line indicator is activated for your colleague. Example URL:
         </p>
 
-        <pre><code>https://biigle.de/annotate/123?<strong>r=50&amp;x=683&amp;y=512&amp;scaleLine=true</strong></code></pre>
+        <pre><code>{{url('')}}/annotate/123?<strong>r=50&amp;x=683&amp;y=512&amp;scaleLine=true</strong></code></pre>
 
         <h4>Set a starting point for annotating with Lawnmower Mode</h4>
 
@@ -119,10 +119,10 @@
             You would like some of your colleagues to annotate images using <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#lawnmower-mode">Lawnmower Mode</a>. For comparability, they should all use the same zoom factor. In addition to that, you want to remove distracting elements from the viewport.
         </p>
         <p>
-            Open the first image in the annotation tool. Now zoom in to the resolution that you want your colleagues to use. You can also use the <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#zoom-to-extent">zoom to original resolution</a> button, which will set the resolution to <code>100</code>. Next, append the URL parameters to disable distracting elements like the minimap, the mouse position or the zoom level indicator from the viewport. Finally, add the URL parameter for the Lawnmower annotation mode. Example URL:
+            Open the first image in the image annotation tool. Now zoom in to the resolution that you want your colleagues to use. You can also use the <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#zoom-to-extent">zoom to original resolution</a> button, which will set the resolution to <code>100</code>. Next, append the URL parameters to disable distracting elements like the minimap, the mouse position or the zoom level indicator from the viewport. Finally, add the URL parameter for the Lawnmower annotation mode. Example URL:
         </p>
 
-        <pre><code>https://biigle.de/annotate/123?<strong>r=100&amp;minimap=false&amp;mousePosition=false&amp;zoomLevel=false&amp;scaleLine=false&amp;annotationMode=lawnmower</strong></code></pre>
+        <pre><code>{{url('')}}/annotate/123?<strong>r=100&amp;minimap=false&amp;mousePosition=false&amp;zoomLevel=false&amp;scaleLine=false&amp;annotationMode=lawnmower</strong></code></pre>
 
         <h4>Set a base configuration for random sampling</h4>
 
@@ -130,7 +130,7 @@
             You wish to conduct an annotation study using <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#random-sampling">random sampling</a>. Of course every participant should use the exact same number of random annotation samples per image. To do this, configure the <code>randomSamplingNumber</code> parameter with the number of samples. Then append the parameter for the random sampling annotation mode. Example URL:
         </p>
 
-        <pre><code>https://biigle.de/annotate/123?<strong>randomSamplingNumber=20&amp;annotationMode=randomSampling</strong></code></pre>
+        <pre><code>{{url('')}}/annotate/123?<strong>randomSamplingNumber=20&amp;annotationMode=randomSampling</strong></code></pre>
 
     </div>
 
