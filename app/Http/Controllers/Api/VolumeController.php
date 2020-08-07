@@ -24,6 +24,7 @@ class VolumeController extends Controller
      *    {
      *       "id": 1,
      *       "name": "My Volume",
+     *       "media_type_id": 1,
      *       "created_at": "2015-02-10 09:45:30",
      *       "updated_at": "2015-02-10 09:45:30",
      *       "projects": [
@@ -46,7 +47,7 @@ class VolumeController extends Controller
                 $query->select('id', 'name', 'description');
             }])
             ->orderByDesc('id')
-            ->select('id', 'name', 'created_at', 'updated_at')
+            ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
             ->get();
     }
 
