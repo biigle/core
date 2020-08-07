@@ -13,13 +13,13 @@
         </p>
 
         <p>
-            Largo allows you to view annotations with the same label in a regular grid. The annotations can belong to a single volume or an entire project. You can quickly select annotations to change their labels, attach new labels or delete them.
+            Largo allows you to view image annotations with the same label in a regular grid. The annotations can belong to a single image volume or an entire project. You can quickly select annotations to change their labels, attach new labels or delete them. Largo is not available for video volumes and video annotations are not shown in Largo of a whole project.
         </p>
 
         <h3>How to use Largo</h3>
 
         <p>
-            There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of a volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
+            There are two ways to run Largo. To review image annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of an image volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
         </p>
 
         <p class="text-center">
@@ -27,7 +27,7 @@
         </p>
 
         <p>
-            The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the image grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
+            The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all image annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the thumbnail grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
         </p>
 
         <p class="text-center">
@@ -35,7 +35,7 @@
         </p>
 
         <p>
-            When you hover your cursor over an annotation you can see the <span class="fa fa-external-link-square-alt" aria-hidden="true"></span> button in the upper right corner. A click on this button will open the annotation tool in a new window and focus on this annotation. Use this to review an annotation with its surroundings if you are uncertain what it may be.
+            When you hover your cursor over an annotation you can see the <span class="fa fa-external-link-square-alt" aria-hidden="true"></span> button in the upper right corner. A click on this button will open the image annotation tool in a new window and focus on this annotation. Use this to review an annotation with its surroundings if you are uncertain what it may be.
         </p>
 
         <p class="text-center">
@@ -48,7 +48,7 @@
         </p>
 
         <p>
-            The second step in Largo is the re-label step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To re-label an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
+            The second step in Largo is the re-label step. In this step all image annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To re-label an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
         </p>
 
         <p class="text-center">
@@ -117,7 +117,7 @@
         <h4>Annotation examples</h4>
 
         <p>
-            The dismiss step of Largo can serve as an annotation reference. Annotators can check existing annotations of specific labels if they are unsure which label to use for a new annotation. Note that this can be done in the label tree overview, too, but Largo displays only project- or volume-specific annotations.
+            The dismiss step of Largo can serve as an annotation reference. Annotators can check existing annotations of specific labels if they are unsure which label to use for a new annotation. Note that this can be done in the <a href="{{route('manual-tutorials', ['largo', 'annotation-catalog'])}}">annotation catalog</a> of a label tree, too, but Largo displays only project- or volume-specific annotations.
         </p>
     </div>
 @endsection
