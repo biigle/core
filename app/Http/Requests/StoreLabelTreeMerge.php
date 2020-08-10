@@ -7,6 +7,7 @@ use Biigle\ImageLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\VideoAnnotationLabel;
+use Biigle\VideoLabel;
 use Illuminate\Foundation\Http\FormRequest;
 use Validator;
 
@@ -129,7 +130,8 @@ class StoreLabelTreeMerge extends FormRequest
 
         $areUsed = ImageAnnotationLabel::whereIn('label_id', $this->remove)->exists()
             || ImageLabel::whereIn('label_id', $this->remove)->exists()
-            || VideoAnnotationLabel::whereIn('label_id', $this->remove)->exists();
+            || VideoAnnotationLabel::whereIn('label_id', $this->remove)->exists()
+            || VideoLabel::whereIn('label_id', $this->remove)->exists();
 
         if ($areUsed) {
             $validator->errors()->add('remove', 'All labels to remove must not be used.');

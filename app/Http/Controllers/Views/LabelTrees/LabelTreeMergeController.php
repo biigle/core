@@ -67,6 +67,11 @@ class LabelTreeMergeController extends Controller
                     return $query->select(DB::raw(1))
                         ->from('video_annotation_labels')
                         ->whereRaw('labels.id = video_annotation_labels.label_id');
+                })
+                ->orWhereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('video_labels')
+                        ->whereRaw('labels.id = video_labels.label_id');
                 });
             })
             ->pluck('labels.id');
