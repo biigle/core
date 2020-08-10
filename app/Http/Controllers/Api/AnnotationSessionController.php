@@ -95,11 +95,17 @@ class AnnotationSessionController extends Controller
                     // Check if there are any annotations of the users that should no
                     // longer belong to the annotation session.
                     $wouldLooseAnnotations = $session->annotations()
-                        ->whereExists(function ($query) use ($lostUsers) {
+                        ->whereExists(function ($query) use ($session, $lostUsers) {
+                            // This must work with image annotations and video
+                            // annotations.
+                            $labelModel = $session->annotations()
+                                ->getModel()
+                                ->labels()
+                                ->getRelated();
                             $query->select(DB::raw(1))
-                                ->from('image_annotation_labels')
-                                ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
-                                ->whereIn('image_annotation_labels.user_id', $lostUsers);
+                                ->from($labelModel->getTable())
+                                ->whereRaw($labelModel->annotation()->getQualifiedForeignKeyName().' = '.$labelModel->annotation()->getQualifiedOwnerKeyName())
+                                ->whereIn($labelModel->user()->getQualifiedForeignKeyName(), $lostUsers);
                         })
                         ->exists();
 
