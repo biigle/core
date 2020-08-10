@@ -133,4 +133,32 @@ class LabelTest extends ModelTestCase
         $a = VideoLabelTest::create(['label_id' => $this->model->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
+
+    public function testUsedScopeImageAnnotationLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeVideoAnnotationLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        VideoAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeImageLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        ImageLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeVideoLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        VideoLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
 }

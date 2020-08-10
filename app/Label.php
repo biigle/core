@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -40,6 +41,39 @@ class Label extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * Scope a query to used labels.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopeUsed($query)
+    {
+        return $query->where(function ($query) {
+            return $query->whereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('image_annotation_labels')
+                        ->whereRaw('labels.id = image_annotation_labels.label_id');
+                })
+                ->orWhereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('image_labels')
+                        ->whereRaw('labels.id = image_labels.label_id');
+                })
+                ->orWhereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('video_annotation_labels')
+                        ->whereRaw('labels.id = video_annotation_labels.label_id');
+                })
+                ->orWhereExists(function ($query) {
+                    return $query->select(DB::raw(1))
+                        ->from('video_labels')
+                        ->whereRaw('labels.id = video_labels.label_id');
+                });
+        });
+    }
 
     /**
      * The parent label if the labels are ordered in a tree-like structure.
@@ -93,10 +127,7 @@ class Label extends Model
      */
     public function isUsed()
     {
-        return ImageAnnotationLabel::where('label_id', $this->id)->exists()
-            || ImageLabel::where('label_id', $this->id)->exists()
-            || VideoAnnotationLabel::where('label_id', $this->id)->exists()
-            || VideoLabel::where('label_id', $this->id)->exists();
+        return static::used()->where('id', $this->id)->exists();
     }
 
     /**

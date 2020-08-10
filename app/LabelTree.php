@@ -204,18 +204,7 @@ class LabelTree extends Model
             ->pluck('label_trees.id')
             ->concat([$this->id]);
 
-        return !ImageAnnotationLabel::join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
-                ->whereIn('labels.label_tree_id', $treeIds)
-                ->exists()
-            && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
-                ->whereIn('labels.label_tree_id', $treeIds)
-                ->exists()
-            && !VideoAnnotationLabel::join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
-                    ->whereIn('labels.label_tree_id', $treeIds)
-                    ->exists()
-            && !VideoLabel::join('labels', 'video_labels.label_id', '=', 'labels.id')
-                    ->whereIn('labels.label_tree_id', $treeIds)
-                    ->exists();
+        return !Label::used()->whereIn('label_tree_id', $treeIds)->exists();
     }
 
     /**

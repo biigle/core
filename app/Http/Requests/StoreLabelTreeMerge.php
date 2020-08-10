@@ -128,10 +128,7 @@ class StoreLabelTreeMerge extends FormRequest
             $validator->errors()->add('remove', 'All labels to remove must belong to the label tree.');
         }
 
-        $areUsed = ImageAnnotationLabel::whereIn('label_id', $this->remove)->exists()
-            || ImageLabel::whereIn('label_id', $this->remove)->exists()
-            || VideoAnnotationLabel::whereIn('label_id', $this->remove)->exists()
-            || VideoLabel::whereIn('label_id', $this->remove)->exists();
+        $areUsed = Label::used()->whereIn('id', $this->remove)->exists();
 
         if ($areUsed) {
             $validator->errors()->add('remove', 'All labels to remove must not be used.');
