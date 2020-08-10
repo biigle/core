@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
+use Biigle\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
 
 class ExportAdminController extends Controller
@@ -18,6 +19,8 @@ class ExportAdminController extends Controller
             abort(404);
         }
 
-        return view('sync::export.index', compact('allowedExports'));
+        $mediaTypes = MediaType::pluck('id', 'name');
+
+        return view('sync::export.index', compact('allowedExports', 'mediaTypes'));
     }
 }

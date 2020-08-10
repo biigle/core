@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
 use Biigle\Modules\Sync\Support\Export\PublicLabelExport;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\LabelTest;
 use File;
 use SplFileObject;

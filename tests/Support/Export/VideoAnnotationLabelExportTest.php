@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Export;
 
-use Biigle\Modules\Sync\Support\Export\AnnotationLabelExport;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Modules\Sync\Support\Export\VideoAnnotationLabelExport;
+use Biigle\Tests\VideoAnnotationLabelTest;
 use File;
 use SplFileObject;
 use TestCase;
 
-class AnnotationLabelExportTest extends TestCase
+class VideoAnnotationLabelExportTest extends TestCase
 {
     public function testGetContent()
     {
-        $label = AnnotationLabelTest::create();
-        $export = new AnnotationLabelExport([$label->annotation->image->volume_id]);
+        $label = VideoAnnotationLabelTest::create();
+        $export = new VideoAnnotationLabelExport([$label->annotation->video->volume_id]);
 
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
@@ -23,7 +23,6 @@ class AnnotationLabelExportTest extends TestCase
             "{$label->annotation_id}",
             "{$label->label_id}",
             "{$label->user_id}",
-            "{$label->confidence}",
             "{$label->created_at}",
             "{$label->updated_at}",
         ];
@@ -32,8 +31,8 @@ class AnnotationLabelExportTest extends TestCase
 
     public function testCleanUp()
     {
-        $label = AnnotationLabelTest::create();
-        $export = new AnnotationLabelExport([$label->annotation->image->volume_id]);
+        $label = VideoAnnotationLabelTest::create();
+        $export = new VideoAnnotationLabelExport([$label->annotation->video->volume_id]);
 
         $path = $export->getContent();
         $this->assertTrue(File::exists($path));

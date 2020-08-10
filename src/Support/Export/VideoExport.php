@@ -2,11 +2,11 @@
 
 namespace Biigle\Modules\Sync\Support\Export;
 
-use Biigle\Label;
+use DB;
 use File;
 use SplFileObject;
 
-class PublicLabelExport extends Export
+class VideoExport extends Export
 {
     /**
      * Path to the temporary CSV file.
@@ -21,30 +21,24 @@ class PublicLabelExport extends Export
     public function getContent()
     {
         if (!$this->tmpPath) {
-            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_public_label_export');
+            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_video_export');
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
-        $columns = [
-            'id',
-            'name',
-            'parent_id',
-            'color',
-            'label_tree_id',
-            'source_id',
-        ];
-        $csv->fputcsv($columns);
+        $csv->fputcsv(['id', 'filename', 'volume_id']);
 
-        Label::where('label_tree_id', $this->ids[0])
-            ->select($columns)
+        DB::table('videos')
+            ->whereIn('volume_id', $this->ids)
+            ->select([
+                'id',
+                'filename',
+                'volume_id',
+            ])
             ->eachById(function ($row) use ($csv) {
                 $csv->fputcsv([
                     $row->id,
-                    $row->name,
-                    $row->parent_id,
-                    $row->color,
-                    $row->label_tree_id,
-                    $row->source_id,
+                    $row->filename,
+                    $row->volume_id,
                 ]);
             }, 1E+5);
 
@@ -56,7 +50,7 @@ class PublicLabelExport extends Export
      */
     public function getFileName()
     {
-        return 'labels.csv';
+        return 'videos.csv';
     }
 
     /**

@@ -2,16 +2,21 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\MediaType;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Biigle\Project;
 use Biigle\Rules\VolumeUrl;
 use Biigle\User;
+use Biigle\Video;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
+use Biigle\VideoLabel;
 use Biigle\Volume;
 use DB;
 use Exception;
@@ -82,7 +87,11 @@ class VolumeImport extends Import
 
             $imageIdMap = $this->insertImages($volumeIdMap);
             $this->insertImageLabels($imageIdMap, $labelIdMap, $userIdMap);
-            $this->insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
+            $this->insertImageAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
+
+            $videoIdMap = $this->insertVideos($volumeIdMap);
+            $this->insertVideoLabels($videoIdMap, $labelIdMap, $userIdMap);
+            $this->insertVideoAnnotations($volumeIdMap, $videoIdMap, $labelIdMap, $userIdMap);
 
             PostprocessVolumeImport::dispatch($volumes)
                 ->onQueue(config('sync.postprocess_volume_import_queue'));
@@ -208,9 +217,13 @@ class VolumeImport extends Import
             'label_trees.json',
             'volumes.json',
             'images.csv',
-            'annotations.csv',
-            'annotation_labels.csv',
+            'image_annotations.csv',
+            'image_annotation_labels.csv',
             'image_labels.csv',
+            'videos.csv',
+            'video_annotations.csv',
+            'video_annotation_labels.csv',
+            'video_labels.csv',
         ];
     }
 
@@ -227,7 +240,7 @@ class VolumeImport extends Import
                 return $this->expectKeysInJson('volumes.json', [
                     'id',
                     'name',
-                    'media_type_id',
+                    'media_type_name',
                     'url',
                     'attrs',
                 ]);
@@ -237,8 +250,8 @@ class VolumeImport extends Import
                     'filename',
                     'volume_id',
                 ]);
-            case 'annotation_labels.csv':
-                return $this->expectColumnsInCsv('annotation_labels.csv', [
+            case 'image_annotation_labels.csv':
+                return $this->expectColumnsInCsv('image_annotation_labels.csv', [
                     'annotation_id',
                     'label_id',
                     'user_id',
@@ -246,8 +259,8 @@ class VolumeImport extends Import
                     'created_at',
                     'updated_at',
                 ]);
-            case 'annotations.csv':
-                return $this->expectColumnsInCsv('annotations.csv', [
+            case 'image_annotations.csv':
+                return $this->expectColumnsInCsv('image_annotations.csv', [
                     'id',
                     'image_id',
                     'shape_id',
@@ -258,6 +271,38 @@ class VolumeImport extends Import
             case 'image_labels.csv':
                 return $this->expectColumnsInCsv('image_labels.csv', [
                     'image_id',
+                    'label_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at',
+                ]);
+            case 'videos.csv':
+                return $this->expectColumnsInCsv('videos.csv', [
+                    'id',
+                    'filename',
+                    'volume_id',
+                ]);
+            case 'video_annotation_labels.csv':
+                return $this->expectColumnsInCsv('video_annotation_labels.csv', [
+                    'annotation_id',
+                    'label_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at',
+                ]);
+            case 'video_annotations.csv':
+                return $this->expectColumnsInCsv('video_annotations.csv', [
+                    'id',
+                    'video_id',
+                    'shape_id',
+                    'created_at',
+                    'updated_at',
+                    'points',
+                    'frames',
+                ]);
+            case 'video_labels.csv':
+                return $this->expectColumnsInCsv('video_labels.csv', [
+                    'video_id',
                     'label_id',
                     'user_id',
                     'created_at',
@@ -325,18 +370,22 @@ class VolumeImport extends Import
 
     /**
      * Get the list of labels and users that whould need to be imported for each volume.
-     * This is based on annotation and image labels of each volume.
+     * This is based on image annotation labels, image labels, video annotation labels
+     * and video labels of each volume.
      *
      * @return array Maps volume IDs to a list of label IDs and a list of user IDs.
      */
     protected function getRequiredEntities()
     {
         $imageVolumeMap = $this->getCsvIdMap('images.csv', 'volume_id');
-        $annotationImageMap = $this->getCsvIdMap('annotations.csv', 'image_id');
+        $annotationImageMap = $this->getCsvIdMap('image_annotations.csv', 'image_id');
+
+        $videoVolumeMap = $this->getCsvIdMap('videos.csv', 'volume_id');
+        $annotationVideoMap = $this->getCsvIdMap('video_annotations.csv', 'video_id');
 
         $labels = [];
         $users = [];
-        $csv = new SplFileObject("{$this->path}/annotation_labels.csv");
+        $csv = new SplFileObject("{$this->path}/image_annotation_labels.csv");
         $csv->fgetcsv();
         while ($line = $csv->fgetcsv()) {
             if (!is_null($line[0])) {
@@ -351,6 +400,26 @@ class VolumeImport extends Import
         while ($line = $csv->fgetcsv()) {
             if (!is_null($line[0])) {
                 $volumeId = $imageVolumeMap->get($line[0]);
+                $labels[$volumeId][] = (int) $line[1];
+                $users[$volumeId][] = (int) $line[2];
+            }
+        }
+
+        $csv = new SplFileObject("{$this->path}/video_annotation_labels.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0])) {
+                $volumeId = $videoVolumeMap->get($annotationVideoMap->get($line[0]));
+                $labels[$volumeId][] = (int) $line[1];
+                $users[$volumeId][] = (int) $line[2];
+            }
+        }
+
+        $csv = new SplFileObject("{$this->path}/video_labels.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0])) {
+                $volumeId = $videoVolumeMap->get($line[0]);
                 $labels[$volumeId][] = (int) $line[1];
                 $users[$volumeId][] = (int) $line[2];
             }
@@ -378,7 +447,9 @@ class VolumeImport extends Import
      */
     protected function insertVolumes(Collection $candidates, User $creator, array $newUrls)
     {
-        return $candidates->map(function ($candidate) use ($creator, $newUrls) {
+        $mediaTypes = MediaType::pluck('id', 'name');
+
+        return $candidates->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
                 $volume = new Volume;
                 $volume->old_id = $candidate['id'];
                 $volume->name = $candidate['name'];
@@ -394,7 +465,7 @@ class VolumeImport extends Import
                     throw new UnprocessableEntityHttpException($message);
                 }
 
-                $volume->media_type_id = $candidate['media_type_id'];
+                $volume->media_type_id = $mediaTypes[$candidate['media_type_name']];
                 $volume->attrs = $candidate['attrs'];
                 $volume->creator_id = $creator->id;
 
@@ -457,6 +528,61 @@ class VolumeImport extends Import
     }
 
     /**
+     * Insert import files into the database.
+     *
+     * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
+     * @param string $csv Filename of the import CSV.
+     * @param string $modelClass File model class.
+     *
+     * @return array Map of import file IDs to existing file IDs.
+     */
+    protected function insertFiles($volumeIdMap, $csv, $modelClass)
+    {
+        $files = [];
+        $csv = new SplFileObject("{$this->path}/{$csv}");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0]) && array_key_exists($line[2], $volumeIdMap)) {
+                $files[] = [
+                    'id' => (int) $line[0],
+                    'filename' => $line[1],
+                    'volume_id' => $volumeIdMap[$line[2]],
+                ];
+            }
+        }
+
+        $files = array_map(function ($file) {
+            $file['uuid'] = (string) Uuid::uuid4();
+
+            return $file;
+        }, $files);
+
+        $toInsert = array_map(function ($file) {
+            return [
+                'filename' => $file['filename'],
+                'volume_id' => $file['volume_id'],
+                'uuid' => $file['uuid'],
+            ];
+        }, $files);
+
+        $volumeIds = [];
+        foreach ($files as $file) {
+            $volumeIds[] = $file['volume_id'];
+        }
+
+        $modelClass::insert($toInsert);
+        $newFiles = $modelClass::whereIn('volume_id', array_unique($volumeIds))
+            ->pluck('id', 'uuid');
+
+        $idMap = [];
+        foreach ($files as $file) {
+            $idMap[$file['id']] = $newFiles[$file['uuid']];
+        }
+
+        return $idMap;
+    }
+
+    /**
      * Insert import images into the database.
      *
      * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
@@ -465,48 +591,19 @@ class VolumeImport extends Import
      */
     protected function insertImages($volumeIdMap)
     {
-        $images = [];
-        $csv = new SplFileObject("{$this->path}/images.csv");
-        $csv->fgetcsv();
-        while ($line = $csv->fgetcsv()) {
-            if (!is_null($line[0]) && array_key_exists($line[2], $volumeIdMap)) {
-                $images[] = [
-                    'id' => (int) $line[0],
-                    'filename' => $line[1],
-                    'volume_id' => $volumeIdMap[$line[2]],
-                ];
-            }
-        }
+        return $this->insertFiles($volumeIdMap, 'images.csv', Image::class);
+    }
 
-        $images = array_map(function ($image) {
-            $image['uuid'] = (string) Uuid::uuid4();
-
-            return $image;
-        }, $images);
-
-        $toInsert = array_map(function ($image) {
-            return [
-                'filename' => $image['filename'],
-                'volume_id' => $image['volume_id'],
-                'uuid' => $image['uuid'],
-            ];
-        }, $images);
-
-        $volumeIds = [];
-        foreach ($images as $image) {
-            $volumeIds[] = $image['volume_id'];
-        }
-
-        Image::insert($toInsert);
-        $newImages = Image::whereIn('volume_id', array_unique($volumeIds))
-            ->pluck('id', 'uuid');
-
-        $idMap = [];
-        foreach ($images as $image) {
-            $idMap[$image['id']] = $newImages[$image['uuid']];
-        }
-
-        return $idMap;
+    /**
+     * Insert import videos into the database.
+     *
+     * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
+     *
+     * @return array Map of import video IDs to existing video IDs.
+     */
+    protected function insertVideos($volumeIdMap)
+    {
+        return $this->insertFiles($volumeIdMap, 'videos.csv', Video::class);
     }
 
     /**
@@ -537,21 +634,48 @@ class VolumeImport extends Import
     }
 
     /**
-     * Insert import annotations into the database.
+     * Insert import video labels into the database.
+     *
+     * @param array $videoIdMap Map of import video IDs to existing video IDs.
+     * @param array $labelIdMap Map of import label IDs to existing label IDs.
+     * @param array $userIdMap Map of import user IDs to existing user IDs.
+     */
+    protected function insertVideoLabels($videoIdMap, $labelIdMap, $userIdMap)
+    {
+        $videoLabels = [];
+        $csv = new SplFileObject("{$this->path}/video_labels.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0]) && array_key_exists($line[0], $videoIdMap)) {
+                $videoLabels[] = [
+                    'video_id' => $videoIdMap[$line[0]],
+                    'label_id' => $labelIdMap[$line[1]],
+                    'user_id' => $userIdMap[$line[2]],
+                    'created_at' => $line[3],
+                    'updated_at' => $line[4],
+                ];
+            }
+        }
+
+        VideoLabel::insert($videoLabels);
+    }
+
+    /**
+     * Insert import image annotations into the database.
      *
      * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
      * @param array $imageIdMap Map of import image IDs to existing image IDs.
      * @param array $labelIdMap Map of import label IDs to existing label IDs.
      * @param array $userIdMap Map of import user IDs to existing user IDs.
      */
-    protected function insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap)
+    protected function insertImageAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap)
     {
         $chunkSize = 1000;
         $currentIndex = 0;
 
         $annotations = [];
         $oldIds = [];
-        $csv = new SplFileObject("{$this->path}/annotations.csv");
+        $csv = new SplFileObject("{$this->path}/image_annotations.csv");
         $csv->fgetcsv();
         while ($line = $csv->fgetcsv()) {
             if (!is_null($line[0]) && array_key_exists($line[1], $imageIdMap)) {
@@ -567,14 +691,14 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    Annotation::insert($annotations);
+                    ImageAnnotation::insert($annotations);
                     $annotations = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        Annotation::insert($annotations);
+        ImageAnnotation::insert($annotations);
         // Try to save memory where we can here. The annotation(labels) arrays can get
         // huge.
         unset($annotations);
@@ -586,24 +710,22 @@ class VolumeImport extends Import
         // $annotationIdMap = array_combine($oldIds, $newIds);
         $annotationIdMap = [];
         reset($oldIds);
-        $handleChunk = function ($annotations) use (&$oldIds, &$annotationIdMap) {
-            foreach ($annotations as $annotation) {
-                $annotationIdMap[current($oldIds)] = $annotation->id;
-                next($oldIds);
-            }
+        $handleAnnotation = function ($annotation) use (&$oldIds, &$annotationIdMap) {
+            $annotationIdMap[current($oldIds)] = $annotation->id;
+            next($oldIds);
         };
 
-        Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+        ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->whereIn('images.volume_id', array_values($volumeIdMap))
-            ->orderBy('annotations.id', 'asc')
-            ->select('annotations.id')
-            ->chunkById(10000, $handleChunk, 'annotations.id', 'id');
+            ->orderBy('image_annotations.id', 'asc')
+            ->select('image_annotations.id')
+            ->eachById($handleAnnotation, 10000, 'image_annotations.id', 'id');
 
         unset($oldIds);
 
         $currentIndex = 0;
         $annotationLabels = [];
-        $csv = new SplFileObject("{$this->path}/annotation_labels.csv");
+        $csv = new SplFileObject("{$this->path}/image_annotation_labels.csv");
         $csv->fgetcsv();
         while ($line = $csv->fgetcsv()) {
             if (!is_null($line[0]) && array_key_exists($line[0], $annotationIdMap)) {
@@ -619,13 +741,104 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    AnnotationLabel::insert($annotationLabels);
+                    ImageAnnotationLabel::insert($annotationLabels);
                     $annotationLabels = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        AnnotationLabel::insert($annotationLabels);
+        ImageAnnotationLabel::insert($annotationLabels);
+    }
+
+    /**
+     * Insert import video annotations into the database.
+     *
+     * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
+     * @param array $videoIdMap Map of import video IDs to existing video IDs.
+     * @param array $labelIdMap Map of import label IDs to existing label IDs.
+     * @param array $userIdMap Map of import user IDs to existing user IDs.
+     */
+    protected function insertVideoAnnotations($volumeIdMap, $videoIdMap, $labelIdMap, $userIdMap)
+    {
+        $chunkSize = 1000;
+        $currentIndex = 0;
+
+        $annotations = [];
+        $oldIds = [];
+        $csv = new SplFileObject("{$this->path}/video_annotations.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0]) && array_key_exists($line[1], $videoIdMap)) {
+                $oldIds[] = (int) $line[0];
+                $annotations[] = [
+                    'video_id' => $videoIdMap[$line[1]],
+                    'shape_id' => (int) $line[2],
+                    'created_at' => $line[3],
+                    'updated_at' => $line[4],
+                    'points' => $line[5],
+                    'frames' => $line[6],
+                ];
+
+                $currentIndex += 1;
+
+                if ($currentIndex >= $chunkSize) {
+                    VideoAnnotation::insert($annotations);
+                    $annotations = [];
+                    $currentIndex = 0;
+                }
+            }
+        }
+
+        VideoAnnotation::insert($annotations);
+        // Try to save memory where we can here. The annotation(labels) arrays can get
+        // huge.
+        unset($annotations);
+
+        // As we cannot use any attribute of the annotations to establish a connection
+        // between import IDs and existing IDs, we just assume that the IDs of the newly
+        // created annotations match the ordering of the $oldIds array (i.e. the
+        // ordering in which the annotations have been inserted).
+        // $annotationIdMap = array_combine($oldIds, $newIds);
+        $annotationIdMap = [];
+        reset($oldIds);
+        $handleAnnotation = function ($annotation) use (&$oldIds, &$annotationIdMap) {
+            $annotationIdMap[current($oldIds)] = $annotation->id;
+            next($oldIds);
+        };
+
+        VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            ->whereIn('videos.volume_id', array_values($volumeIdMap))
+            ->orderBy('video_annotations.id', 'asc')
+            ->select('video_annotations.id')
+            ->eachById($handleAnnotation, 10000, 'video_annotations.id', 'id');
+
+        unset($oldIds);
+
+        $currentIndex = 0;
+        $annotationLabels = [];
+        $csv = new SplFileObject("{$this->path}/video_annotation_labels.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0]) && array_key_exists($line[0], $annotationIdMap)) {
+                $annotationLabels[] = [
+                    'annotation_id' => $annotationIdMap[$line[0]],
+                    'label_id' => $labelIdMap[$line[1]],
+                    'user_id' => $userIdMap[$line[2]],
+                    'created_at' => $line[3],
+                    'updated_at' => $line[4],
+                ];
+
+                $currentIndex += 1;
+
+                if ($currentIndex >= $chunkSize) {
+                    VideoAnnotationLabel::insert($annotationLabels);
+                    $annotationLabels = [];
+                    $currentIndex = 0;
+                }
+            }
+        }
+
+        VideoAnnotationLabel::insert($annotationLabels);
     }
 }

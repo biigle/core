@@ -37,6 +37,12 @@ export default {
             return this.volumeCandidates.map(function (volume) {
                 Vue.set(volume, 'new_url', volume.url);
 
+                if (volume.media_type_name === 'image') {
+                    volume.icon = 'image';
+                } else if (volume.media_type_name === 'video') {
+                    volume.icon = 'film';
+                }
+
                 return volume;
             });
         },

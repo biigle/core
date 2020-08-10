@@ -4,18 +4,23 @@ namespace Biigle\Tests\Modules\Sync\Support\Import;
 
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\MediaType;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoLabelTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\User;
 use Biigle\Volume;
@@ -35,8 +40,10 @@ class VolumeImportTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->volume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
-        $this->image = ImageTest::create(['volume_id' => $this->volume->id]);
+        $this->imageVolume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
+        $this->image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
+        $this->videoVolume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
     }
 
     public function tearDown(): void
@@ -62,13 +69,25 @@ class VolumeImportTest extends TestCase
         File::move("{$this->destination}/images.csv", "{$this->destination}/images.doge");
         $this->assertFalse($import->filesMatch());
         File::move("{$this->destination}/images.doge", "{$this->destination}/images.csv");
-        File::move("{$this->destination}/annotations.csv", "{$this->destination}/annotations.doge");
+        File::move("{$this->destination}/image_annotations.csv", "{$this->destination}/image_annotations.doge");
         $this->assertFalse($import->filesMatch());
-        File::move("{$this->destination}/annotations.doge", "{$this->destination}/annotations.csv");
-        File::move("{$this->destination}/annotation_labels.csv", "{$this->destination}/annotation_labels.doge");
+        File::move("{$this->destination}/image_annotations.doge", "{$this->destination}/image_annotations.csv");
+        File::move("{$this->destination}/image_annotation_labels.csv", "{$this->destination}/image_annotation_labels.doge");
         $this->assertFalse($import->filesMatch());
-        File::move("{$this->destination}/annotation_labels.doge", "{$this->destination}/annotation_labels.csv");
+        File::move("{$this->destination}/image_annotation_labels.doge", "{$this->destination}/image_annotation_labels.csv");
         File::move("{$this->destination}/image_labels.csv", "{$this->destination}/image_labels.doge");
+        $this->assertFalse($import->filesMatch());
+        File::move("{$this->destination}/image_labels.doge", "{$this->destination}/image_labels.csv");
+        File::move("{$this->destination}/videos.csv", "{$this->destination}/videos.doge");
+        $this->assertFalse($import->filesMatch());
+        File::move("{$this->destination}/videos.doge", "{$this->destination}/videos.csv");
+        File::move("{$this->destination}/video_annotations.csv", "{$this->destination}/video_annotations.doge");
+        $this->assertFalse($import->filesMatch());
+        File::move("{$this->destination}/video_annotations.doge", "{$this->destination}/video_annotations.csv");
+        File::move("{$this->destination}/video_annotation_labels.csv", "{$this->destination}/video_annotation_labels.doge");
+        $this->assertFalse($import->filesMatch());
+        File::move("{$this->destination}/video_annotation_labels.doge", "{$this->destination}/video_annotation_labels.csv");
+        File::move("{$this->destination}/video_labels.csv", "{$this->destination}/video_labels.doge");
         $this->assertFalse($import->filesMatch());
     }
 
@@ -93,11 +112,12 @@ class VolumeImportTest extends TestCase
     {
         $import = $this->getDefaultImport();
         $volumes = $import->getImportVolumes();
-        $this->assertCount(1, $volumes);
-        $this->assertEquals($this->volume->name, $volumes[0]['name']);
+        $this->assertCount(2, $volumes);
+        $this->assertEquals($this->imageVolume->name, $volumes[0]['name']);
+        $this->assertEquals($this->videoVolume->name, $volumes[1]['name']);
     }
 
-    public function testGetImportLabelTrees()
+    public function testGetImportLabelTreesImages()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $import = $this->getDefaultImport();
@@ -106,21 +126,34 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($imageLabel->label->tree->uuid, $trees[0]['uuid']);
     }
 
+    public function testGetImportLabelTreesVideos()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $import = $this->getDefaultImport();
+        $trees = $import->getImportLabelTrees();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($videoLabel->label->tree->uuid, $trees[0]['uuid']);
+    }
+
     public function testGetVolumeImportCandidates()
     {
         $import = $this->getDefaultImport();
         $volumes = $import->getVolumeImportCandidates();
-        $this->assertCount(1, $volumes);
-        $this->assertEquals($this->volume->name, $volumes[0]['name']);
+        $this->assertCount(2, $volumes);
+        $this->assertEquals($this->imageVolume->name, $volumes[0]['name']);
         $this->assertEquals([], $volumes[0]['users']);
         $this->assertEquals([], $volumes[0]['label_trees']);
         $this->assertEquals([], $volumes[0]['labels']);
+        $this->assertEquals($this->videoVolume->name, $volumes[1]['name']);
+        $this->assertEquals([], $volumes[1]['users']);
+        $this->assertEquals([], $volumes[1]['label_trees']);
+        $this->assertEquals([], $volumes[1]['labels']);
     }
 
-    public function testGetVolumeImportCandidatesAnnotationLabelTree()
+    public function testGetVolumeImportCandidatesImageAnnotationLabelTree()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $tree = $annotationLabel->label->tree;
         $import = $this->getDefaultImport();
@@ -128,10 +161,21 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
     }
 
-    public function testGetVolumeImportCandidatesAnnotationLabelLabel()
+    public function testGetVolumeImportCandidatesVideoAnnotationLabelTree()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
+        ]);
+        $tree = $annotationLabel->label->tree;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($tree->id, $volumes[1]['label_trees'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesImageAnnotationLabelLabel()
+    {
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $label = $annotationLabel->label;
         $import = $this->getDefaultImport();
@@ -139,15 +183,37 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($label->id, $volumes[0]['labels'][0]);
     }
 
-    public function testGetVolumeImportCandidatesAnnotationLabelUser()
+    public function testGetVolumeImportCandidatesVideoAnnotationLabelLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
+        ]);
+        $label = $annotationLabel->label;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($label->id, $volumes[1]['labels'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesImageAnnotationLabelUser()
+    {
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
         ]);
         $user = $annotationLabel->user;
         $import = $this->getDefaultImport();
         $volumes = $import->getVolumeImportCandidates();
         $this->assertEquals($user->id, $volumes[0]['users'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesVideoAnnotationLabelUser()
+    {
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
+        ]);
+        $user = $annotationLabel->user;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($user->id, $volumes[1]['users'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageLabelTree()
@@ -159,6 +225,15 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
     }
 
+    public function testGetVolumeImportCandidatesVideoLabelTree()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $tree = $videoLabel->label->tree;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($tree->id, $volumes[1]['label_trees'][0]);
+    }
+
     public function testGetVolumeImportCandidatesImageLabelLabel()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -168,6 +243,15 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($label->id, $volumes[0]['labels'][0]);
     }
 
+    public function testGetVolumeImportCandidatesVideoLabelLabel()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $label = $videoLabel->label;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($label->id, $volumes[1]['labels'][0]);
+    }
+
     public function testGetVolumeImportCandidatesImageLabelUser()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -175,6 +259,15 @@ class VolumeImportTest extends TestCase
         $import = $this->getDefaultImport();
         $volumes = $import->getVolumeImportCandidates();
         $this->assertEquals($user->id, $volumes[0]['users'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesVideoLabelUser()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $user = $videoLabel->user;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($user->id, $volumes[1]['users'][0]);
     }
 
     public function testGetUserImportCandidatesLabelTree()
@@ -199,10 +292,25 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($admin->uuid, $users[0]['uuid']);
     }
 
-    public function testGetUserImportCandidatesAnnotationLabel()
+    public function testGetUserImportCandidatesImageAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $import = $this->getDefaultImport();
+        $users = $import->getUserImportCandidates();
+        $this->assertCount(0, $users);
+        $uuid = $annotationLabel->user->fresh()->uuid;
+        $annotationLabel->user->delete();
+        $users = $import->getUserImportCandidates();
+        $this->assertCount(1, $users);
+        $this->assertEquals($uuid, $users[0]['uuid']);
+    }
+
+    public function testGetUserImportCandidatesVideoAnnotationLabel()
+    {
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $users = $import->getUserImportCandidates();
@@ -227,6 +335,19 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($uuid, $users[0]['uuid']);
     }
 
+    public function testGetUserImportCandidatesVideoLabel()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $import = $this->getDefaultImport();
+        $users = $import->getUserImportCandidates();
+        $this->assertCount(0, $users);
+        $uuid = $videoLabel->user->fresh()->uuid;
+        $videoLabel->user->delete();
+        $users = $import->getUserImportCandidates();
+        $this->assertCount(1, $users);
+        $this->assertEquals($uuid, $users[0]['uuid']);
+    }
+
     public function testGetLabelTreeImportCandidatesNothing()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -234,10 +355,24 @@ class VolumeImportTest extends TestCase
         $this->assertCount(0, $import->getLabelTreeImportCandidates());
     }
 
-    public function testGetLabelTreeImportCandidatesAnnotationLabel()
+    public function testGetLabelTreeImportCandidatesImageAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $import = $this->getDefaultImport();
+        $tree = $annotationLabel->label->tree;
+        $annotationLabel->delete();
+        $tree->delete();
+        $trees = $import->getLabelTreeImportCandidates();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($tree->uuid, $trees[0]['uuid']);
+    }
+
+    public function testGetLabelTreeImportCandidatesVideoAnnotationLabel()
+    {
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $tree = $annotationLabel->label->tree;
@@ -260,6 +395,18 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($tree->uuid, $trees[0]['uuid']);
     }
 
+    public function testGetLabelTreeImportCandidatesVideoLabel()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $import = $this->getDefaultImport();
+        $tree = $videoLabel->label->tree;
+        $videoLabel->delete();
+        $tree->delete();
+        $trees = $import->getLabelTreeImportCandidates();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($tree->uuid, $trees[0]['uuid']);
+    }
+
     public function testGetLabelImportCandidatesNothing()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -267,10 +414,24 @@ class VolumeImportTest extends TestCase
         $this->assertCount(0, $import->getLabelImportCandidates());
     }
 
-    public function testGetLabelImportCandidatesAnnotationLabel()
+    public function testGetLabelImportCandidatesImageAnnotationLabel()
     {
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $import = $this->getDefaultImport();
+        $label = $annotationLabel->label;
+        $annotationLabel->delete();
+        $label->delete();
+        $labels = $import->getLabelImportCandidates();
+        $this->assertCount(1, $labels);
+        $this->assertEquals($label->uuid, $labels[0]['uuid']);
+    }
+
+    public function testGetLabelImportCandidatesVideoAnnotationLabel()
+    {
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
         ]);
         $import = $this->getDefaultImport();
         $label = $annotationLabel->label;
@@ -293,6 +454,18 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($label->uuid, $labels[0]['uuid']);
     }
 
+    public function testGetLabelImportCandidatesVideoLabel()
+    {
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $import = $this->getDefaultImport();
+        $label = $videoLabel->label;
+        $videoLabel->delete();
+        $label->delete();
+        $labels = $import->getLabelImportCandidates();
+        $this->assertCount(1, $labels);
+        $this->assertEquals($label->uuid, $labels[0]['uuid']);
+    }
+
     public function testGetLabelImportCandidatesConflict()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
@@ -307,30 +480,44 @@ class VolumeImportTest extends TestCase
 
     public function testPerform()
     {
-        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => $annotation->id,
+        $imageAnnotation = ImageAnnotationTest::create(['image_id' => $this->image->id]);
+        $imageAnnotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $imageAnnotation->id,
         ]);
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+
+        $videoAnnotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        $videoAnnotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $videoAnnotation->id,
+        ]);
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+
         $volume2 = VolumeTest::create();
-        $import = $this->getImport([$this->volume->id, $volume2->id]);
+        $import = $this->getImport([
+            $this->imageVolume->id,
+            $this->videoVolume->id,
+            $volume2->id,
+        ]);
         $project = ProjectTest::create();
 
         $map = $import->perform($project, $project->creator);
 
         $this->assertArrayHasKey('volumes', $map);
-        $this->assertCount(2, $map['volumes']);
-        $this->assertArrayHasKey($this->volume->id, $map['volumes']);
+        $this->assertCount(3, $map['volumes']);
+        $this->assertArrayHasKey($this->imageVolume->id, $map['volumes']);
+        $this->assertArrayHasKey($this->videoVolume->id, $map['volumes']);
         $this->assertArrayHasKey($volume2->id, $map['volumes']);
-        $this->assertEquals(2, $project->volumes()->count());
+        $this->assertEquals(2, $project->imageVolumes()->count());
+        $this->assertEquals(1, $project->videoVolumes()->count());
 
-        $newVolume = Volume::find($map['volumes'][$this->volume->id]);
-        $this->assertEquals($this->volume->name, $newVolume->name);
-        $this->assertEquals($this->volume->url, $newVolume->url);
-        $this->assertEquals($project->creator->id, $newVolume->creator_id);
-        $this->assertEquals(['ab' => 'cd'], $newVolume->attrs);
+        $newImageVolume = Volume::find($map['volumes'][$this->imageVolume->id]);
+        $this->assertEquals($this->imageVolume->name, $newImageVolume->name);
+        $this->assertEquals($this->imageVolume->url, $newImageVolume->url);
+        $this->assertEquals($project->creator->id, $newImageVolume->creator_id);
+        $this->assertEquals(MediaType::imageId(), $newImageVolume->media_type_id);
+        $this->assertEquals(['ab' => 'cd'], $newImageVolume->attrs);
 
-        $newImages = $newVolume->images;
+        $newImages = $newImageVolume->images;
         $this->assertCount(1, $newImages);
         $this->assertEquals($this->image->filename, $newImages[0]->filename);
 
@@ -338,25 +525,48 @@ class VolumeImportTest extends TestCase
         $this->assertCount(1, $newImageLabels);
         $this->assertEquals($imageLabel->label->name, $newImageLabels[0]->label->name);
 
-        $newAnnotations = $newImages[0]->annotations;
-        $this->assertCount(1, $newAnnotations);
-        $this->assertEquals($annotation->points, $newAnnotations[0]->points);
+        $newImageAnnotations = $newImages[0]->annotations;
+        $this->assertCount(1, $newImageAnnotations);
+        $this->assertEquals($imageAnnotation->points, $newImageAnnotations[0]->points);
 
-        $newAnnotationLabels = $newAnnotations[0]->labels;
-        $this->assertCount(1, $newAnnotationLabels);
-        $this->assertEquals($annotationLabel->label->name, $newAnnotationLabels[0]->label->name);
+        $newImageAnnotationLabels = $newImageAnnotations[0]->labels;
+        $this->assertCount(1, $newImageAnnotationLabels);
+        $this->assertEquals($imageAnnotationLabel->label->name, $newImageAnnotationLabels[0]->label->name);
+
+        $newVideoVolume = Volume::find($map['volumes'][$this->videoVolume->id]);
+        $this->assertEquals($this->videoVolume->name, $newVideoVolume->name);
+        $this->assertEquals($this->videoVolume->url, $newVideoVolume->url);
+        $this->assertEquals($project->creator->id, $newVideoVolume->creator_id);
+        $this->assertEquals(MediaType::videoId(), $newVideoVolume->media_type_id);
+
+        $newVideos = $newVideoVolume->videos;
+        $this->assertCount(1, $newVideos);
+        $this->assertEquals($this->video->filename, $newVideos[0]->filename);
+
+        $newVideoLabels = $newVideos[0]->labels;
+        $this->assertCount(1, $newVideoLabels);
+        $this->assertEquals($videoLabel->label->name, $newVideoLabels[0]->label->name);
+
+        $newVideoAnnotations = $newVideos[0]->annotations;
+        $this->assertCount(1, $newVideoAnnotations);
+        $this->assertEquals($videoAnnotation->points, $newVideoAnnotations[0]->points);
+        $this->assertEquals($videoAnnotation->frames, $newVideoAnnotations[0]->frames);
+
+        $newVideoAnnotationLabels = $newVideoAnnotations[0]->labels;
+        $this->assertCount(1, $newVideoAnnotationLabels);
+        $this->assertEquals($videoAnnotationLabel->label->name, $newVideoAnnotationLabels[0]->label->name);
     }
 
     public function testPerformOnly()
     {
         $project = ProjectTest::create();
         $volume2 = VolumeTest::create();
-        $import = $this->getImport([$this->volume->id, $volume2->id]);
-        $map = $import->perform($project, $project->creator, [$this->volume->id]);
+        $import = $this->getImport([$this->imageVolume->id, $volume2->id]);
+        $map = $import->perform($project, $project->creator, [$this->imageVolume->id]);
         $this->assertCount(1, $map['volumes']);
         $this->assertEquals(1, $project->volumes()->count());
-        $this->assertEquals($this->volume->name, $project->volumes()->first()->name);
-        $this->assertEquals($project->volumes()->first()->id, $map['volumes'][$this->volume->id]);
+        $this->assertEquals($this->imageVolume->name, $project->volumes()->first()->name);
+        $this->assertEquals($project->volumes()->first()->id, $map['volumes'][$this->imageVolume->id]);
     }
 
     public function testPerformLabelTree()
@@ -427,9 +637,9 @@ class VolumeImportTest extends TestCase
         // file here.
         Storage::disk('test')->put('new-url/fakeimage.jpg', '');
         $project = ProjectTest::create();
-        $import = $this->getDefaultImport();
+        $import = $this->getImport([$this->imageVolume->id]);
         $map = $import->perform($project, $project->creator, null, [
-            $this->volume->id => 'test://new-url',
+            $this->imageVolume->id => 'test://new-url',
         ]);
         $newVolume = $project->volumes()->first();
         $this->assertEquals('test://new-url', $newVolume->url);
@@ -439,7 +649,7 @@ class VolumeImportTest extends TestCase
     {
         $project = ProjectTest::create();
         $volume2 = VolumeTest::create();
-        $import = $this->getImport([$this->volume->id, $volume2->id]);
+        $import = $this->getImport([$this->imageVolume->id, $volume2->id]);
         try {
             $map = $import->perform($project, $project->creator, null, [
                 $volume2->id => 'test://not/existing',
@@ -482,11 +692,27 @@ class VolumeImportTest extends TestCase
         }
     }
 
-    public function testPerformUserAnnotationLabel()
+    public function testPerformUserImageAnnotationLabel()
     {
         $project = ProjectTest::create();
-        $annotationLabel = AnnotationLabelTest::create([
-            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $user = $annotationLabel->user->fresh();
+        $import = $this->getDefaultImport();
+        $user->delete();
+
+        $map = $import->perform($project, $project->creator);
+        $newUser = User::where('uuid', $user->uuid)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($newUser->id, $map['users'][$user->id]);
+    }
+
+    public function testPerformUserVideoAnnotationLabel()
+    {
+        $project = ProjectTest::create();
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => VideoAnnotationTest::create(['video_id' => $this->video->id])->id,
         ]);
         $user = $annotationLabel->user->fresh();
         $import = $this->getDefaultImport();
@@ -503,6 +729,20 @@ class VolumeImportTest extends TestCase
         $project = ProjectTest::create();
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $user = $imageLabel->user->fresh();
+        $import = $this->getDefaultImport();
+        $user->delete();
+
+        $map = $import->perform($project, $project->creator);
+        $newUser = User::where('uuid', $user->uuid)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($newUser->id, $map['users'][$user->id]);
+    }
+
+    public function testPerformUserVideoLabel()
+    {
+        $project = ProjectTest::create();
+        $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
+        $user = $videoLabel->user->fresh();
         $import = $this->getDefaultImport();
         $user->delete();
 
@@ -529,7 +769,7 @@ class VolumeImportTest extends TestCase
         }
 
         $this->assertEquals(0, $project->volumes()->count());
-        $this->assertEquals(1, Volume::count());
+        $this->assertEquals(2, Volume::count());
     }
 
     public function testPerformExceptionVolumes()
@@ -547,7 +787,7 @@ class VolumeImportTest extends TestCase
         }
 
         $this->assertEquals(0, $project->volumes()->count());
-        $this->assertEquals(1, Volume::count());
+        $this->assertEquals(2, Volume::count());
     }
 
     public function testPerformExceptionLabelTrees()
@@ -620,7 +860,7 @@ class VolumeImportTest extends TestCase
 
     protected function getDefaultImport()
     {
-        return $this->getImport([$this->volume->id]);
+        return $this->getImport([$this->imageVolume->id, $this->videoVolume->id]);
     }
 
     protected function getImport(array $ids)

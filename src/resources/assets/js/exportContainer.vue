@@ -37,6 +37,7 @@ export default {
                 users: [],
             },
             currentTab: 0,
+            volumeIconMap: {},
         };
     },
     computed: {
@@ -48,10 +49,12 @@ export default {
                 .filter((item) => this.allowedExports.indexOf(item) !== -1);
         },
         volumes() {
-            return this.entities.volumes.map(function (volume) {
+            return this.entities.volumes.map((volume) => {
                 volume.description = volume.projects
                     .map((project) => project.name)
                     .join(', ');
+
+                volume.icon = this.volumeIconMap[volume.media_type_id];
 
                 return volume;
             });
@@ -139,6 +142,10 @@ export default {
     created() {
         this.exportApiUrl = biigle.$require('sync.exportApiUrl');
         this.allowedExports = biigle.$require('sync.allowedExports');
+        let mediaTypes = biigle.$require('sync.mediaTypes');
+        this.volumeIconMap[mediaTypes.image] = 'image';
+        this.volumeIconMap[mediaTypes.video] = 'film';
+
         this.fetchEntities(this.indexMap[0]);
     },
 };

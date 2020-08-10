@@ -34,15 +34,13 @@ class ImageExport extends Export
                 'filename',
                 'volume_id',
             ])
-            ->chunkById(1E+5, function ($rows) use ($csv) {
-                foreach ($rows as $row) {
-                    $csv->fputcsv([
-                        $row->id,
-                        $row->filename,
-                        $row->volume_id,
-                    ]);
-                }
-            });
+            ->eachById(function ($row) use ($csv) {
+                $csv->fputcsv([
+                    $row->id,
+                    $row->filename,
+                    $row->volume_id,
+                ]);
+            }, 1E+5);
 
         return $this->tmpPath;
     }
