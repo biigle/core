@@ -200,6 +200,13 @@ export default {
         emitStartResize(e) {
             this.$emit('start-resize', e);
         },
+        reset() {
+            this.currentTime = 0;
+            this.duration = 0;
+            this.scrollTop = 0;
+            this.hoverTime = 0;
+            this.$refs.scrollStrip.reset();
+        },
     },
     watch: {
         heightOffset() {

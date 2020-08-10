@@ -4,7 +4,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            With remote volumes you can use images from your own data source in BIIGLE.
+            With remote volumes you can use files from your own data source in BIIGLE.
         </p>
 
         @if (config('biigle.offline_mode'))
@@ -16,48 +16,48 @@
         @endif
 
         <p>
-            Typically the image files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image (e.g. in the annotation tool), the application receives the request, loads the image from a storage disk and returns the image file in the response.
+            Typically the files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image or video (e.g. in the annotation tool), the application receives the request, loads the file from a storage disk and returns the file in the response.
         </p>
         <p>
-            Depending on where you come from (literally), this setup might pose some problems. Usually you want to work with your own images. This means that you have to transfer all the images to the people that run the BIIGLE instance. So first, you have to inconveniently transfer a large amount of data and second, you lose control of that data. This might not be a problem most of the time but sometimes you might want to keep (control of) your data.
+            Depending on where you come from (literally), this setup might pose some problems. Usually you want to work with your own files. This means that you have to transfer all the files to the people that run the BIIGLE instance. So first, you have to inconveniently transfer a large amount of data and second, you lose control of that data. This might not be a problem most of the time but sometimes you might want to keep (control of) your data.
         </p>
         <p>
-            This is where remote volumes come in. When you request an image in BIIGLE, your browser doesn't care where this image comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the image is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote image location may speed up loading times of the images if your internet connection to the BIIGLE server is rather slow but the connection to the remote location is fast.
+            This is where remote volumes come in. When you request an image or video in BIIGLE, your browser doesn't care where this file comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the file is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote location may speed up loading times of the files if your internet connection to the BIIGLE server is rather slow but the connection to the remote location is fast. This can be particularly effective for large video files.
         </p>
-        <h3><a name="how-to-set-up"></a>How to set up a remote location for images</h3>
+        <h3><a name="how-to-set-up"></a>How to set up a remote location</h3>
         <p>
-            Images from a remote location must be accessible both by the BIIGLE application and your browser. The simplest setup is to make the images publicly available through a web server. After a successful setup you should be able to access the images in your browser via a URL like this <code>https://your-institute.com/subdirectory/image_001.jpg</code>. The domain, directory and image file names are just examples and can be completely arbitrary (<code>http(s)://&lt;domain>/&lt;subdirectories>/&lt;image file></code>).
-        </p>
-        <p>
-            Once the remote location is set up you can create a new volume with the images. Just enter the first part of the location (<code>http(s)://&lt;domain>/&lt;subdirectories></code>) as the volume URL and a comma separated list of all image filenames (<code>&lt;image file></code>) as images. BIIGLE will automatically detect volume images coming from a remote location. The remote location should be available as long as the remote volume exists in BIIGLE.
+            Files from a remote location must be accessible both by the BIIGLE application and your browser. The simplest setup is to make the file publicly available through a web server. After a successful setup you should be able to access the files in your browser via a URL like this <code>https://your-institute.com/subdirectory/image_001.jpg</code>. The domain, directory and file names are just examples and can be completely arbitrary (<code>http(s)://&lt;domain>/&lt;subdirectories>/&lt;file></code>).
         </p>
         <p>
-            If you want to revoke access to the images of your remote location, just turn your webserver off. Although BIIGLE will keep all information of the volume (annotations, etc.) BIIGLE users won't be able to access the original images any more.
+            Once the remote location is set up you can create a new volume with the files. Just enter the first part of the location (<code>http(s)://&lt;domain>/&lt;subdirectories></code>) as the volume URL and a comma separated list of all filenames (<code>&lt;file></code>) as files. BIIGLE will automatically detect volume files coming from a remote location. The remote location should be available as long as the remote volume exists in BIIGLE.
+        </p>
+        <p>
+            If you want to revoke access to the files of your remote location, just turn your webserver off. Although BIIGLE will keep all information of the volume (annotations, etc.) BIIGLE users won't be able to access the original files any more.
         </p>
 
         <h3><a name="cors"></a>Cross-Origin Resource Sharing</h3>
         <p>
-            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading images from remote sources in BIIGLE. Although those images can be displayed, BIIGLE cannot access the raw image data in the browser which is a requirement for some features. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process images from remote sources just like regular images.
+            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading files from remote sources in BIIGLE. Although those files can be displayed, BIIGLE cannot access the raw data in the browser which is a requirement for some features of the image annotation tool. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process files from remote sources just like regular files.
         </p>
         <p>
-            To set up CORS for the images of your remote source, you have to update the configuration of the webserver that serves the images. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
+            To set up CORS for the files of your remote source, you have to update the configuration of the webserver that serves the files. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
         </p>
 <pre>
 Access-Control-Allow-Origin "*"
 Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
 </pre>
         <p>
-            In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the images. BIIGLE detects if CORS is properly configured for remote images and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
+            In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the files. BIIGLE detects if CORS is properly configured for remote files and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
         </p>
         <ul>
             <li>
-                Live color adjustment of images in the annotation tool.
+                Live color adjustment of images in the image annotation tool.
             </li>
             <li>
-                The magic wand interaction in the annotation tool.
+                The magic wand interaction in the image annotation tool.
             </li>
             <li>
-                The screenshot button in the annotation tool. Use the usual functions of your operating system or browser to create screenshots manually.
+                The screenshot button in the image annotation tool. Use the usual functions of your operating system or browser to create screenshots manually.
             </li>
         </ul>
 
@@ -68,10 +68,10 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             </div>
         </div>
         <p>
-            A method to prevent unauthorized access to the images of your remote location is to keep the URL secret. This way only authorized BIIGLE users know and have access to the location. Although <em>theoretically</em> anyone has access to the images, the probability of someone accidentally stumbling on the correct URL can be kept as low as someone accidentally (or by brute force) guessing a correct password.
+            A method to prevent unauthorized access to the files of your remote location is to keep the URL secret. This way only authorized BIIGLE users know and have access to the location. Although <em>theoretically</em> anyone has access to the files, the probability of someone accidentally stumbling on the correct URL can be kept as low as someone accidentally (or by brute force) guessing a correct password.
         </p>
         <p>
-            One way to keep this probability low is to use long random names for the image directory and/or the image files. If your remote location URL is <code>https://your-institute.com/images</code>, the directory name is an easy guess. But with <code>https://your-institute.com/4e29be7a-4bfa-4a5e-98c4-c99ce6a94226</code> it becomes almost impossible to guess the URL.
+            One way to keep this probability low is to use long random names for the directory and/or the files. If your remote location URL is <code>https://your-institute.com/files</code>, the directory name is an easy guess. But with <code>https://your-institute.com/4e29be7a-4bfa-4a5e-98c4-c99ce6a94226</code> it becomes almost impossible to guess the URL.
         </p>
         @if (class_exists(\Ramsey\Uuid\Uuid::class))
             <p>

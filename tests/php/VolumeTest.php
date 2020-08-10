@@ -5,6 +5,7 @@ namespace Biigle\Tests;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
 use Biigle\Image;
+use Biigle\MediaType;
 use Biigle\Role;
 use Biigle\Volume;
 use Cache;
@@ -72,32 +73,44 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals($image->id, $this->model->images()->first()->id);
     }
 
+    public function testVideos()
+    {
+        $video = VideoTest::create(['volume_id' => $this->model->id]);
+        $this->assertEquals($video->id, $this->model->videos()->first()->id);
+    }
+
+    public function testFiles()
+    {
+        $image = ImageTest::create(['volume_id' => $this->model->id]);
+        $video = VideoTest::create(['volume_id' => $this->model->id]);
+        $this->assertEquals($image->uuid, $this->model->files()->first()->uuid);
+        $this->model->media_type_id = MediaType::videoId();
+        $this->model->save();
+        $this->assertEquals($video->uuid, $this->model->files()->first()->uuid);
+    }
+
+    public function testIsImageVolume()
+    {
+        $this->assertTrue($this->model->isImageVolume());
+        $this->model->media_type_id = MediaType::videoId();
+        $this->model->save();
+        $this->assertFalse($this->model->isImageVolume());
+    }
+
+    public function testIsVideoVolume()
+    {
+        $this->assertFalse($this->model->isVideoVolume());
+        $this->model->media_type_id = MediaType::videoId();
+        $this->model->save();
+        $this->assertTrue($this->model->isVideoVolume());
+    }
+
     public function testProjects()
     {
         $project = ProjectTest::create();
         $this->assertEquals(0, $this->model->projects()->count());
         $project->volumes()->attach($this->model);
         $this->assertEquals(1, $this->model->projects()->count());
-    }
-
-    public function testSetMediaType()
-    {
-        $type = MediaTypeTest::create();
-        $this->assertNotEquals($type->id, $this->model->mediaType->id);
-        $this->model->setMediaType($type);
-        $this->assertEquals($type->id, $this->model->mediaType->id);
-    }
-
-    public function testSetMediaTypeId()
-    {
-        $type = MediaTypeTest::create();
-        $this->assertNotEquals($type->id, $this->model->mediaType->id);
-        $this->model->setMediaTypeId($type->id);
-        $this->assertEquals($type->id, $this->model->mediaType->id);
-
-        // media type does not exist
-        $this->expectException(HttpException::class);
-        $this->model->setMediaTypeId(99999);
     }
 
     public function testCastsAttrs()
@@ -107,15 +120,15 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals([1, 2, 3], $this->model->fresh()->attrs);
     }
 
-    public function testParseImagesQueryString()
+    public function testParseFilesQueryString()
     {
-        $return = Volume::parseImagesQueryString('');
+        $return = Volume::parseFilesQueryString('');
         $this->assertEquals([], $return);
 
-        $return = Volume::parseImagesQueryString(', 1.jpg , , 2.jpg, , , ');
+        $return = Volume::parseFilesQueryString(', 1.jpg , , 2.jpg, , , ');
         $this->assertEquals(['1.jpg', '2.jpg'], $return);
 
-        $return = Volume::parseImagesQueryString(' 1.jpg ');
+        $return = Volume::parseFilesQueryString(' 1.jpg ');
         $this->assertEquals(['1.jpg'], $return);
     }
 
@@ -308,12 +321,40 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
 
+    public function testOrderedFilesImage()
+    {
+        ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+        ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $this->model->id,
+        ]);
+        $this->assertEquals('a.jpg', $this->model->orderedFiles()->first()->filename);
+    }
+
+    public function testOrderedFilesVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+
+        VideoTest::create([
+            'filename' => 'b.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $this->assertEquals('a.mp4', $this->model->orderedFiles()->first()->filename);
+    }
+
     public function testGetThumbnailAttributeNull()
     {
         $this->assertEquals(null, $this->model->thumbnail);
     }
 
-    public function testGetThumbnailAttribute()
+    public function testGetThumbnailAttributeImage()
     {
         $i1 = ImageTest::create([
             'filename' => 'a.jpg',
@@ -334,6 +375,31 @@ class VolumeTest extends ModelTestCase
         // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
         $i2->delete();
         $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
+
+    public function testGetThumbnailAttributeVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+
+        $v1 = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $v2 = VideoTest::create([
+            'filename' => 'b.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+        $v3 = VideoTest::create([
+            'filename' => 'c.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        // Should be the middle image ordered by name.
+        $this->assertEquals($v2->uuid, $this->model->thumbnail->uuid);
+
+        // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
+        $v2->delete();
+        $this->assertEquals($v1->uuid, $this->model->thumbnail->uuid);
     }
 
     public function testHasGeoInfo()
@@ -438,7 +504,7 @@ class VolumeTest extends ModelTestCase
         $this->assertInstanceOf(Image::class, $thumbnails[0]);
     }
 
-    public function testGetThumbnailUrlAttribute()
+    public function testGetThumbnailUrlAttributeImage()
     {
         $this->assertNull($this->model->thumbnailUrl);
 
@@ -451,7 +517,21 @@ class VolumeTest extends ModelTestCase
         $this->assertStringContainsString($i->uuid, $this->model->thumbnailUrl);
     }
 
-    public function testGetThumbnailsUrlAttribute()
+    public function testGetThumbnailUrlAttributeVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+        $this->assertNull($this->model->thumbnailUrl);
+
+        $v = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->model->flushThumbnailCache();
+        $this->assertStringContainsString($v->uuid, $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailsUrlAttributeImage()
     {
         $this->assertEmpty($this->model->thumbnailsUrl);
 
@@ -462,5 +542,19 @@ class VolumeTest extends ModelTestCase
 
         $this->model->flushThumbnailCache();
         $this->assertStringContainsString($i->uuid, $this->model->thumbnailsUrl[0]);
+    }
+
+    public function testGetThumbnailsUrlAttributeVideo()
+    {
+        $this->model->media_type_id = MediaType::videoId();
+        $this->assertNull($this->model->thumbnailUrl);
+
+        $v = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->model->id,
+        ]);
+
+        $this->model->flushThumbnailCache();
+        $this->assertStringContainsString($v->uuid, $this->model->thumbnailsUrl[0]);
     }
 }

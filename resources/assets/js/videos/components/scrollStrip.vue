@@ -210,6 +210,13 @@ export default {
         updateHeight() {
             this.$refs.annotationTracks.updateClientHeight();
         },
+        reset() {
+            this.zoom = 1;
+            this.scrollLeft = 0;
+            this.hoverTime = 0;
+            this.hasOverflowTop = false;
+            this.hasOverflowBottom = false;
+        },
     },
     watch: {
         hoverTime(time) {

@@ -2,8 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api\Annotations\Filters;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
+use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -37,17 +38,28 @@ class AnnotationUserController extends Controller
         $user = $request->user();
         $session = $volume->getActiveAnnotationSession($user);
 
-        if ($session) {
-            $query = Annotation::allowedBySession($session, $user);
+        if ($volume->isImageVolume()) {
+            $model = new ImageAnnotation;
         } else {
-            $query = Annotation::getQuery();
+            $model = new VideoAnnotation;
         }
 
-        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                ->where('annotation_labels.user_id', $uid)
-                ->join('images', 'annotations.image_id', '=', 'images.id')
-                ->where('images.volume_id', $tid)
-                ->groupBy('images.id')
-                ->pluck('images.id');
+        if ($session) {
+            $query = $model::allowedBySession($session, $user);
+        } else {
+            $query = $model::getQuery();
+        }
+
+        $fileRelation = $model->file();
+        $ownerKeyName = $fileRelation->getQualifiedOwnerKeyName();
+        $labelsRelation = $model->labels();
+
+        return $query->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
+                ->where($labelsRelation->getRelated()->user()->getQualifiedForeignKeyName(), $uid)
+                ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
+                ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $tid)
+                ->select($ownerKeyName)
+                ->distinct()
+                ->pluck($ownerKeyName);
     }
 }

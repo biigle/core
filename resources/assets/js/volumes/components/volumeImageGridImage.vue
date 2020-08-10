@@ -1,26 +1,32 @@
 <template>
-    <figure class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
+    <div class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
         <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">
-            <img :src="url || emptyUrl" @error="showEmptyImage">
+            <preview-thumbnail :id="image.id" :thumb-uris="image.thumbnailUrl">
+                <img :src="srcUrl" @error="showEmptyImage">
+            </preview-thumbnail>
         </a>
-        <img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">
+        <preview-thumbnail v-else :id="image.id" :thumb-uris="image.thumbnailUrl" @click="handleClick">
+            <img :src="srcUrl" @error="showEmptyImage">
+        </preview-thumbnail>
         <span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>
         <div class="image-buttons">
-            <a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">
+            <a v-if="image.infoUrl" :href="image.infoUrl" class="image-button" title="View image information">
                 <span class="fa fa-info-circle" aria-hidden="true"></span>
             </a>
         </div>
         <div v-if="showLabels" class="image-labels" @wheel.stop>
-            <image-label-list :image-labels="image.labels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>
+            <file-label-list :file-labels="image.labels" :user-id="userId" :is-admin="isAdmin" :type="type" @deleted="removeImageLabel"></file-label-list>
         </div>
-    </figure>
+    </div>
 </template>
 
 <script>
 import Image from './imageGridImage';
 import ImageLabelsApi from '../api/imageLabels';
-import LabelList from './imageLabelList';
+import VideoLabelsApi from '../api/videoLabels';
+import LabelList from './fileLabelList';
 import LoaderMixin from '../../core/mixins/loader';
+import PreviewThumbnail from '../../projects/components/previewThumbnail';
 import {handleErrorResponse} from '../../core/messages/store';
 
 /**
@@ -34,7 +40,8 @@ export default {
         LoaderMixin,
     ],
     components: {
-        imageLabelList: LabelList,
+        fileLabelList: LabelList,
+        previewThumbnail: PreviewThumbnail,
     },
     data() {
         return {
@@ -58,6 +65,10 @@ export default {
         showLabels: {
             type: Boolean,
             default: false,
+        },
+        type: {
+            type: String,
+            default: 'image',
         },
     },
     computed: {
@@ -97,9 +108,16 @@ export default {
             }
 
             this.saving = true;
-            ImageLabelsApi
-                .save({image_id: this.image.id}, {label_id: this.selectedLabel.id})
-                .then(this.labelAttached, this.attachingFailed)
+            let promise;
+            if (this.type === 'image') {
+                promise = ImageLabelsApi
+                    .save({image_id: this.image.id}, {label_id: this.selectedLabel.id});
+            } else {
+                promise = VideoLabelsApi
+                    .save({video_id: this.image.id}, {label_id: this.selectedLabel.id});
+            }
+
+            promise.then(this.labelAttached, this.attachingFailed)
                 .finally(this.resetSuccess)
                 .finally(() => this.saving = false);
         },

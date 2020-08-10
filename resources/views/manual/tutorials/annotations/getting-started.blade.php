@@ -5,24 +5,24 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            A quick introduction to the annotation tool.
+            A quick introduction to the image annotation tool.
         </p>
 
         <p>
-            The annotation tool can be used to navigate and explore images and their annotations. Project editors, experts or admins can also create new annotations as well as modify or delete existing ones.
+            The image annotation tool can be used to navigate and explore images and their annotations. Project editors, experts or admins can also create new annotations as well as modify or delete existing ones.
         </p>
 
         <p>
-            You can access the annotation tool by clicking on an individual image in the volume overview:
+            You can access the image annotation tool by clicking on an individual image in the volume overview:
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/getting_started_1.jpg')}}"><img src="{{asset('assets/images/manual/getting_started_1.jpg')}}" width="75%"></a>
         </p>
         <p>
-            The main element of the annotation tool is the image which you can navigate similar to an interactive map (like Google Maps). You can grab and move the image with the mouse or zoom in and out using the mouse wheel.
+            The main element of the image annotation tool is the image which you can navigate similar to an interactive map (like Google Maps). You can grab and move the image with the mouse or zoom in and out using the mouse wheel.
         </p>
         <p>
-            On the right there is the annotation tool sidebar with different tabs like <i class="fa fa-map-marker-alt"></i> annotations, <i class="fa fa-tags"></i> label trees, <i class="fa fa-adjust"></i> color adjustment or the <i class="fa fa-cog"></i> settings. Open a tab by clicking on an icon.
+            On the right there is the image annotation tool sidebar with different tabs like <i class="fa fa-map-marker-alt"></i> annotations, <i class="fa fa-tags"></i> label trees, <i class="fa fa-adjust"></i> color adjustment or the <i class="fa fa-cog"></i> settings. Open a tab by clicking on an icon.
         </p>
         <p>
             On the top right over the image there is the minimap. It always shows the entire image and highlights your current viewport depending on the zoom level and position.
@@ -55,11 +55,11 @@
             Now you should be able to use the annotation tool for basic tasks. But this was not all you can learn about the tool. Continue reading the other tutorials to become an expert annotator:
         </p>
         <ul>
-            <li><a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Learn about all the tools that are available to create new annotations.</a></li>
-            <li><a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Learn about all the tools to modify or delete existing annotations.</a></li>
-            <li><a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}">Learn about advanced ways to navigate the images in the annotation tool.</a></li>
-            <li><a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}">All sidebar tabs of the annotation tool explained.</a></li>
-            <li><a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">A list of all available shortcut keys in the annotation tool.</a></li>
+            <li><a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Learn about all the tools that are available to create new image annotations.</a></li>
+            <li><a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Learn about all the tools to modify or delete existing image annotations.</a></li>
+            <li><a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}">Learn about advanced ways to navigate the images in the image annotation tool.</a></li>
+            <li><a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}">All sidebar tabs of the image annotation tool explained.</a></li>
+            <li><a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">A list of all available shortcut keys in the image annotation tool.</a></li>
         </ul>
     </div>
 @endsection

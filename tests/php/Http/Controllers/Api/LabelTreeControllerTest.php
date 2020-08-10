@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\LabelTree;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
@@ -462,7 +462,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         // make sure the tree has a label that is used somewhere
-        $a = AnnotationLabelTest::create(['label_id' => $this->labelRoot()->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->labelRoot()->id]);
 
         $this->beAdmin();
         $response = $this->json('DELETE', "/api/v1/label-trees/{$id}");

@@ -43,22 +43,22 @@ class ApiTestCase extends TestCase
         return $user;
     }
 
-    protected function project()
+    protected function project($attrs = [])
     {
         if ($this->project) {
             return $this->project;
         }
 
-        return $this->project = ProjectTest::create();
+        return $this->project = ProjectTest::create($attrs);
     }
 
-    protected function volume()
+    protected function volume($attrs = [])
     {
         if ($this->volume) {
             return $this->volume;
         }
 
-        $this->volume = VolumeTest::create();
+        $this->volume = VolumeTest::create($attrs);
         $this->project()->volumes()->attach($this->volume);
 
         return $this->volume;
@@ -162,7 +162,7 @@ class ApiTestCase extends TestCase
         $this->be($this->globalAdmin());
     }
 
-    protected function labelTree()
+    protected function labelTree($attrs = [])
     {
         if ($this->labelTree) {
             return $this->labelTree;
@@ -172,38 +172,44 @@ class ApiTestCase extends TestCase
         // would be attached by default
         $this->project();
 
-        $this->labelTree = $this->labelTree = LabelTreeTest::create([
+        $attrs = array_merge($attrs, [
             'visibility_id' => Visibility::publicId(),
         ]);
+
+        $this->labelTree = $this->labelTree = LabelTreeTest::create($attrs);
 
         $this->labelTree->projects()->attach($this->project());
 
         return $this->labelTree;
     }
 
-    protected function labelRoot()
+    protected function labelRoot($attrs = [])
     {
         if ($this->labelRoot) {
             return $this->labelRoot;
         }
 
-        return $this->labelRoot = LabelTest::create([
+        $attrs = array_merge($attrs, [
             'name' => 'Test Root',
             'label_tree_id' => $this->labelTree()->id,
         ]);
+
+        return $this->labelRoot = LabelTest::create($attrs);
     }
 
-    protected function labelChild()
+    protected function labelChild($attrs = [])
     {
         if ($this->labelChild) {
             return $this->labelChild;
         }
 
-        return $this->labelChild = LabelTest::create([
-            'name' => 'Test Child',
+        $attrs = array_merge($attrs, [
+            'name' => 'Test Root',
             'parent_id' => $this->labelRoot()->id,
             'label_tree_id' => $this->labelTree()->id,
         ]);
+
+        return $this->labelChild = LabelTest::create($attrs);
     }
 
     /*

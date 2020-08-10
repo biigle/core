@@ -1,37 +1,17 @@
 import AnnotationCanvas from './components/annotationCanvas';
 import AnnotationsStore from './stores/annotations';
-import AnnotationsTab from './components/annotationsTab';
 import AttachLabelInteraction from './ol/AttachLabelInteraction';
-import ControlButton from './components/controlButton';
 import ImagesStore from './stores/images';
-import LabelAnnotationFilter from './models/LabelAnnotationFilter';
-import LabelTooltip from './components/labelTooltip';
-import Minimap from './components/minimap';
-import MousePositionIndicator from './components/mousePositionIndicator';
-import ShapeAnnotationFilter from './models/ShapeAnnotationFilter';
 import StylesStore from './stores/styles';
-import TranslateInteraction from './ol/TranslateInteraction';
-import UserAnnotationFilter from './models/UserAnnotationFilter';
-import ZoomToNativeControl from './ol/ZoomToNativeControl';
 import {plugins as annotationsTabPlugins} from './components/siaAnnotationsTab';
 import {plugins as labelsTabPlugins} from './components/labelsTab';
 import {plugins as settingsTabPlugins} from './components/settingsTab';
 
 biigle.$declare('annotations.components.annotationCanvas', AnnotationCanvas);
-biigle.$declare('annotations.components.annotationsTab', AnnotationsTab);
 biigle.$declare('annotations.components.annotationsTabPlugins', annotationsTabPlugins);
-biigle.$declare('annotations.components.controlButton', ControlButton);
 biigle.$declare('annotations.components.labelsTabPlugins', labelsTabPlugins);
-biigle.$declare('annotations.components.labelTooltip', LabelTooltip);
-biigle.$declare('annotations.components.minimap', Minimap);
-biigle.$declare('annotations.components.mousePositionIndicator', MousePositionIndicator);
 biigle.$declare('annotations.components.settingsTabPlugins', settingsTabPlugins);
-biigle.$declare('annotations.models.LabelAnnotationFilter', LabelAnnotationFilter);
-biigle.$declare('annotations.models.ShapeAnnotationFilter', ShapeAnnotationFilter);
-biigle.$declare('annotations.models.UserAnnotationFilter', UserAnnotationFilter);
 biigle.$declare('annotations.ol.AttachLabelInteraction', AttachLabelInteraction);
-biigle.$declare('annotations.ol.TranslateInteraction', TranslateInteraction);
-biigle.$declare('annotations.ol.ZoomToNativeControl', ZoomToNativeControl);
 biigle.$declare('annotations.stores.annotations', AnnotationsStore); // required for SHERPA2BIIGLE
 biigle.$declare('annotations.stores.images', ImagesStore);
 biigle.$declare('annotations.stores.styles', StylesStore);

@@ -1,6 +1,7 @@
 <script>
 import Annotation from './models/Annotation';
 import AnnotationsTab from './components/viaAnnotationsTab';
+import Events from '../core/events';
 import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
 import LabelTrees from '../label-trees/components/labelTrees';
 import LoaderMixin from '../core/mixins/loader';
@@ -12,10 +13,19 @@ import Sidebar from '../core/components/sidebar';
 import SidebarTab from '../core/components/sidebarTab';
 import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
 import VideoAnnotationApi from './api/videoAnnotations';
+import VideoApi from './api/videos';
+import VideoLabelsTab from './components/videoLabelsTab';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+
+class VideoError extends Error {}
+class VideoNotProcessedError extends VideoError {}
+class VideoNotFoundError extends VideoError {}
+class VideoMimeTypeError extends VideoError {}
+class VideoCodecError extends VideoError {}
+class VideoMalformedError extends VideoError {}
 
 export default {
     mixins: [LoaderMixin],
@@ -27,10 +37,14 @@ export default {
         labelTrees: LabelTrees,
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
+        videoLabelsTab: VideoLabelsTab,
     },
     data() {
         return {
+            volumeId: null,
             videoId: null,
+            videoIds: [],
+            videoFileUri: '',
             shapes: [],
             canEdit: false,
             video: null,
@@ -46,6 +60,7 @@ export default {
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
+                showProgressIndicator: true,
             },
             openTab: '',
             urlParams: {
@@ -64,6 +79,8 @@ export default {
             timelineHeightReference: 0,
             fixedTimelineOffset: 0,
             currentTimelineOffset: 0,
+            errors: {},
+            error: null,
         };
     },
     computed: {
@@ -92,14 +109,51 @@ export default {
             }
 
             return '';
-        }
+        },
+        hasSiblingVideos() {
+            return this.videoIds.length > 1;
+        },
+        hasError() {
+            return this.error !== null;
+        },
+        hasVideoError() {
+            return this.error instanceof VideoError;
+        },
+        errorMessage() {
+            if (this.hasVideoError) {
+                if (this.error instanceof VideoNotProcessedError) {
+                    return 'The video has not been processed yet. Please try again later.'
+                } else if (this.error instanceof VideoNotFoundError) {
+                    return 'The video file has not been found. Please check the source.'
+                } else if (this.error instanceof VideoMimeTypeError) {
+                    return 'The video MIME type is invalid.'
+                } else if (this.error instanceof VideoCodecError) {
+                    return 'The video codec is invalid.'
+                } else if (this.error instanceof VideoMalformedError) {
+                    return 'The video file is malformed.'
+                }
+            }
+
+            return '';
+        },
+        errorClass() {
+            if (this.hasVideoError) {
+                if (this.error instanceof VideoNotProcessedError) {
+                    return 'panel-warning text-warning';
+                } else {
+                    return 'panel-danger text-danger';
+                }
+            }
+
+            return '';
+        },
     },
     methods: {
         prepareAnnotation(annotation) {
             return new Annotation({data: annotation});
         },
-        setAnnotations(response) {
-            this.annotations = response.body.map(this.prepareAnnotation);
+        setAnnotations(args) {
+            this.annotations = args[0].body.map(this.prepareAnnotation);
         },
         addCreatedAnnotation(response) {
             let annotation = this.prepareAnnotation(response.body);
@@ -292,6 +346,10 @@ export default {
                 new ShapeAnnotationFilter({data: {shapes: this.shapes}}),
             ];
         },
+        updateAnnotationFilters() {
+            this.annotationFilters[0].annotations = this.annotations;
+            this.annotationFilters[1].annotations = this.annotations;
+        },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
         },
@@ -331,6 +389,102 @@ export default {
                 this.currentTimelineOffset = 0;
             }
         },
+        handleVideoInformationResponse(response) {
+            let video = response.body;
+
+            if (video.size === null) {
+                throw new VideoNotProcessedError();
+            } else if (video.error === this.errors['not-found']) {
+                throw new VideoNotFoundError();
+            } else if (video.error === this.errors['mimetype']) {
+                throw new VideoMimeTypeError();
+            } else if (video.error === this.errors['codec']) {
+                throw new VideoCodecError();
+            } else if (video.error === this.errors['malformed']) {
+                throw new VideoMalformedError();
+            }
+
+            this.error = null;
+
+            return video;
+        },
+        handleVideoError(error) {
+            if (error instanceof VideoError) {
+                this.error = error;
+            } else {
+                this.error = true;
+                handleErrorResponse(error);
+            }
+        },
+        fetchVideoContent(video) {
+            let videoPromise = new Vue.Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve);
+            });
+            let annotationPromise = VideoAnnotationApi.query({id: video.id});
+            let promise = Vue.Promise.all([annotationPromise, videoPromise])
+                .then(this.setAnnotations)
+                .then(this.updateAnnotationFilters)
+                .then(this.maybeInitCurrentTime);
+
+            this.video.src = this.videoFileUri.replace(':id', video.id);
+
+            return promise;
+        },
+        loadVideo(id) {
+            this.videoId = id;
+            Events.$emit('video.id', id);
+            UrlParams.setSlug(id, -2);
+            this.startLoading();
+
+            let promise = VideoApi.get({id})
+                .then(this.handleVideoInformationResponse)
+                .then(this.fetchVideoContent)
+                .catch(this.handleVideoError)
+                .finally(this.finishLoading);
+
+            return promise;
+        },
+        showPreviousVideo() {
+            this.reset();
+            let length = this.videoIds.length;
+            let index = (this.videoIds.indexOf(this.videoId) + length - 1) % length;
+
+            this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
+        },
+        showNextVideo() {
+            this.reset();
+            let length = this.videoIds.length;
+            let index = (this.videoIds.indexOf(this.videoId) + length + 1) % length;
+
+            this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
+        },
+        reset() {
+            this.bookmarks = [];
+            this.annotations = [];
+            this.seeking = false;
+            this.initialCurrentTime = 0;
+            this.$refs.videoTimeline.reset();
+            this.$refs.videoScreen.reset();
+        },
+        initVideoIds(ids) {
+            // Look for a sequence of video IDs in local storage. This sequence is
+            // produced by the volume overview page when the files are sorted or
+            // filtered. We want to reflect the same ordering or filtering here
+            // in the annotation tool.
+            let storedSequence = window.localStorage.getItem(`biigle.volumes.${this.volumeId}.files`);
+            if (storedSequence) {
+                // If there is such a stored sequence, filter out any image IDs that
+                // do not belong to the volume (any more), since some of them may
+                // have been deleted in the meantime.
+                let map = {};
+                ids.forEach(function (id) {
+                    map[id] = null;
+                });
+                return JSON.parse(storedSequence).filter((id) => map.hasOwnProperty(id));
+            }
+
+            return ids;
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -352,9 +506,14 @@ export default {
         this.shapes = map;
         this.video = document.createElement('video');
         this.videoId = biigle.$require('videos.id');
+        this.volumeId = biigle.$require('videos.volumeId');
+        this.videoIds = this.initVideoIds(biigle.$require('videos.videoIds'));
+        this.videoFileUri = biigle.$require('videos.videoFileUri');
         this.canEdit = biigle.$require('videos.isEditor');
         this.labelTrees = biigle.$require('videos.labelTrees');
+        this.errors = biigle.$require('videos.errors');
 
+        this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = true;
         this.video.addEventListener('error', function (e) {
@@ -367,17 +526,6 @@ export default {
         this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
-        this.startLoading();
-        let videoPromise = new Vue.Promise((resolve) => {
-            this.video.addEventListener('canplay', resolve);
-        });
-        let annotationPromise = VideoAnnotationApi.query({id: this.videoId});
-        annotationPromise.then(this.setAnnotations, handleErrorResponse)
-            .then(this.initAnnotationFilters);
-
-        Vue.Promise.all([videoPromise, annotationPromise])
-            .then(this.maybeInitCurrentTime)
-            .then(this.finishLoading);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
@@ -386,7 +534,7 @@ export default {
     mounted() {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
-        this.video.src = biigle.$require('videos.src');
+        this.loadVideo(this.videoId);
     },
 };
 </script>

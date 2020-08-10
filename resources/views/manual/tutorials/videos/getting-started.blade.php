@@ -8,7 +8,7 @@
             An introduction to the video annotation tool.
         </p>
         <p>
-            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can create new video annotations as well as modify or delete existing ones. Each video belongs to a project. You can access a video by clicking on its name in the project page.
+            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can create new video annotations as well as modify or delete existing ones. Each video belongs to a project. You can access a video by clicking on its thumbnail in the video volume overview.
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/videos/getting_started_1.jpg')}}"><img src="{{asset('assets/images/manual/videos/getting_started_1.jpg')}}" width="75%" style="border: 1px solid #111;"></a>
@@ -23,7 +23,7 @@
             On the right there is the sidebar with the <i class="fa fa-tags"></i> label trees and <i class="fa fa-cog"></i> settings tabs. Open a tab by clicking on the icon.
         </p>
         <p>
-            Finally, on the bottom of the video there is the tool bar. Starting from the left there is the video playback button, the annotation tools to create new video annotations and the manipulation tools to edit existing video annotations.
+            Finally, on the bottom of the video there is the tool bar. Starting from the left there are the video navigation and playback buttons, the annotation tools to create new video annotations and the manipulation tools to edit existing video annotations.
         </p>
         <p>
             Let's create a new video annotation. First, select one of the labels from the <i class="fa fa-tags"></i> label trees tab in the sidebar:

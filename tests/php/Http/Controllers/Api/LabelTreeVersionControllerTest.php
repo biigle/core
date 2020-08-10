@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\LabelTree;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
@@ -132,7 +132,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->labelTree()->version_id = $version->id;
         $this->labelTree()->save();
 
-        $a = AnnotationLabelTest::create(['label_id' => $this->labelRoot()->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->labelRoot()->id]);
 
         $this->doTestApiRoute('DELETE', "/api/v1/label-tree-versions/{$version->id}");
 

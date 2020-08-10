@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Role;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
@@ -18,10 +19,9 @@ class VideoAnnotationPolicyTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->annotation = VideoAnnotationTest::create();
         $this->project = ProjectTest::create();
-        $this->annotation = VideoAnnotationTest::create([
-            'video_id' => VideoTest::create(['project_id' => $this->project->id])->id,
-        ]);
+        $this->project->volumes()->attach($this->annotation->video->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -44,6 +44,44 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
     }
 
+    public function testAccessAnnotationSession()
+    {
+        $this->annotation->created_at = Carbon::yesterday();
+        $this->annotation->save();
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->annotation->video->volume_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->assertFalse($this->user->can('access', $this->annotation));
+        $this->assertTrue($this->guest->can('access', $this->annotation));
+        $this->assertTrue($this->editor->can('access', $this->annotation));
+        $this->assertTrue($this->expert->can('access', $this->annotation));
+        $this->assertTrue($this->admin->can('access', $this->annotation));
+        $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+
+        $session->users()->attach([
+            $this->user->id,
+            $this->guest->id,
+            $this->editor->id,
+            $this->expert->id,
+            $this->admin->id,
+            $this->globalAdmin->id,
+        ]);
+        Cache::flush();
+
+        $this->assertFalse($this->user->can('access', $this->annotation));
+        $this->assertFalse($this->guest->can('access', $this->annotation));
+        $this->assertFalse($this->editor->can('access', $this->annotation));
+        $this->assertFalse($this->expert->can('access', $this->annotation));
+        $this->assertFalse($this->admin->can('access', $this->annotation));
+        $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+    }
+
     public function testUpdate()
     {
         $this->assertFalse($this->user->can('update', $this->annotation));
@@ -60,28 +98,42 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->project->labelTrees()->attach($allowedLabel->label_tree_id);
         $disallowedLabel = LabelTest::create();
 
+        // the annotation belongs to this project, too, and the label is a valid one
+        // for the project *but* no user belongs to the project so they shouldn't be able
+        // to attach the label
+        $otherProject = ProjectTest::create();
+        $otherProject->volumes()->attach($this->annotation->video->volume);
+        $otherDisallowedLabel = LabelTest::create();
+        $otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
+
         $this->assertFalse($this->user->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->user->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->user->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertFalse($this->guest->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->guest->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->guest->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertTrue($this->editor->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->editor->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->editor->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertTrue($this->expert->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->expert->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->expert->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertTrue($this->admin->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->admin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
     }
 
     public function testDestroy()
     {
-        $video = VideoTest::create(['project_id' => $this->project->id]);
+        $video = VideoTest::create(['volume_id' => $this->annotation->video->volume_id]);
 
         // has a label of user
         $a1 = VideoAnnotationTest::create(['video_id' => $video->id]);
@@ -93,23 +145,23 @@ class VideoAnnotationPolicyTest extends TestCase
         $a4 = VideoAnnotationTest::create(['video_id' => $video->id]);
 
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a1->id,
+            'annotation_id' => $a1->id,
             'user_id' => $this->user->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a2->id,
+            'annotation_id' => $a2->id,
             'user_id' => $this->guest->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a3->id,
+            'annotation_id' => $a3->id,
             'user_id' => $this->editor->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a4->id,
+            'annotation_id' => $a4->id,
             'user_id' => $this->editor->id,
         ]);
         VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a4->id,
+            'annotation_id' => $a4->id,
             'user_id' => $this->admin->id,
         ]);
 

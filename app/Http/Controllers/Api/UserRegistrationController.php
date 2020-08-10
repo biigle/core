@@ -6,6 +6,7 @@ use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
 use Biigle\Role;
 use Biigle\User;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class UserRegistrationController extends Controller
@@ -35,7 +36,7 @@ class UserRegistrationController extends Controller
     public function accept($id)
     {
         if (!$this->isAdminConfirmationEnabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $user = User::where('role_id', Role::guestId())->findOrFail($id);
@@ -68,7 +69,7 @@ class UserRegistrationController extends Controller
     public function reject($id)
     {
         if (!$this->isAdminConfirmationEnabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $user = User::where('role_id', Role::guestId())->findOrFail($id);

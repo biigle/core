@@ -1,7 +1,7 @@
 <script>
 import FilterTab from './components/filterTab';
 import ImageGrid from './components/volumeImageGrid';
-import ImagesStore from './stores/image';
+import FilesStore from './stores/files';
 import LabelsTab from './components/labelsTab';
 import LoaderMixin from '../core/mixins/loader';
 import Settings from '../core/models/Settings';
@@ -38,8 +38,8 @@ export default {
     },
     data() {
         return {
-            imageIds: [],
-            images: [],
+            fileIds: [],
+            files: [],
             filterSequence: [],
             filterMode: null,
             filterActive: false,
@@ -55,10 +55,11 @@ export default {
             showLabels: false,
             labelsPromise: null,
             settings: null,
+            type: null,
         };
     },
     computed: {
-        // Map from image ID to index of sorted array to compute sortedImages fast.
+        // Map from file ID to index of sorted array to compute sortedFiles fast.
         sortingMap() {
             let map = {};
             this.sortingSequence.forEach(function (value, index) {
@@ -67,17 +68,17 @@ export default {
 
             return map;
         },
-        sortedImages() {
-            // Create new array where each image is at its sorted index.
+        sortedFiles() {
+            // Create new array where each file is at its sorted index.
             let map = this.sortingMap;
-            let images = [];
-            this.images.forEach(function (image) {
-                images[map[image.id]] = image;
+            let files = [];
+            this.files.forEach(function (file) {
+                files[map[file.id]] = file;
             });
 
-            return images;
+            return files;
         },
-        // Datastructure to make the filtering in imagesToShow more performant.
+        // Datastructure to make the filtering in filesToShow more performant.
         filterMap() {
             let map = {};
             this.filterSequence.forEach(function (i) {
@@ -86,28 +87,28 @@ export default {
 
             return map;
         },
-        imagesToShow() {
+        filesToShow() {
             let map = this.filterMap;
 
             if (this.filterMode === 'flag') {
-                return this.sortedImages.map(function (image) {
-                    image.flagged = map.hasOwnProperty(image.id);
+                return this.sortedFiles.map(function (file) {
+                    file.flagged = map.hasOwnProperty(file.id);
 
-                    return image;
+                    return file;
                 });
             }
 
-            return this.sortedImages.filter(function (image) {
-                image.flagged = false;
+            return this.sortedFiles.filter(function (file) {
+                file.flagged = false;
 
-                return map.hasOwnProperty(image.id);
+                return map.hasOwnProperty(file.id);
             });
         },
-        imageIdsToShow() {
-            return this.imagesToShow.map((image) => image.id);
+        fileIdsToShow() {
+            return this.filesToShow.map((file) => file.id);
         },
-        imagesStorageKey() {
-            return `biigle.volumes.${this.volumeId}.images`;
+        filesStorageKey() {
+            return `biigle.volumes.${this.volumeId}.files`;
         },
         offsetStorageKey() {
             return `biigle.volumes.${this.volumeId}.offset`;
@@ -143,7 +144,7 @@ export default {
             this.filterMode = mode;
             this.filterActive = active;
         },
-        handleImageGridScroll(offset) {
+        handleScroll(offset) {
             if (offset > 0) {
                 UrlParams.set({offset: offset});
                 localStorage.setItem(this.offsetStorageKey, offset);
@@ -176,14 +177,14 @@ export default {
             this.showFilenames = false;
         },
         setFilenames(response) {
-            this.images.forEach(function (image) {
-                image.filename = response.body[image.id];
+            this.files.forEach(function (file) {
+                file.filename = response.body[file.id];
             });
         },
         enableLabels() {
             if (!this.labelsPromise) {
                 this.loadingLabels = true;
-                this.labelsPromise = VolumesApi.queryImageLabels({id: this.volumeId})
+                this.labelsPromise = VolumesApi.queryFileLabels({id: this.volumeId})
                     .then(this.setLabels)
                     .finally(() => this.loadingLabels = false);
             }
@@ -194,8 +195,8 @@ export default {
             this.showLabels = false;
         },
         setLabels(response) {
-            this.images.forEach(function (image) {
-                image.labels = response.body[image.id];
+            this.files.forEach(function (file) {
+                file.labels = response.body[file.id];
             });
         },
         restoreSettings() {
@@ -209,15 +210,15 @@ export default {
         },
     },
     watch: {
-        imageIdsToShow(imageIdsToShow) {
-            // If the shown images differ from the default sequence, store them for
+        fileIdsToShow(fileIdsToShow) {
+            // If the shown files differ from the default sequence, store them for
             // the annotation tool.
-            let imageIds = this.imageIds;
-            let equal = imageIdsToShow.length === imageIds.length;
+            let fileIds = this.fileIds;
+            let equal = fileIdsToShow.length === fileIds.length;
 
             if (equal) {
-                for (let i = imageIdsToShow.length - 1; i >= 0; i--) {
-                    if (imageIdsToShow[i] !== imageIds[i]) {
+                for (let i = fileIdsToShow.length - 1; i >= 0; i--) {
+                    if (fileIdsToShow[i] !== fileIds[i]) {
                         equal = false;
                         break;
                     }
@@ -225,15 +226,15 @@ export default {
             }
 
             if (equal) {
-                localStorage.removeItem(this.imagesStorageKey);
+                localStorage.removeItem(this.filesStorageKey);
             } else {
                 localStorage.setItem(
-                    this.imagesStorageKey,
-                    JSON.stringify(imageIdsToShow)
+                    this.filesStorageKey,
+                    JSON.stringify(fileIdsToShow)
                 );
             }
 
-            ImagesStore.count = imageIdsToShow.length;
+            FilesStore.count = fileIdsToShow.length;
         },
         showFilenames(show) {
             this.settings.set('showFilenames', show);
@@ -243,14 +244,10 @@ export default {
         },
     },
     created() {
-        let imageUuids = biigle.$require('volumes.imageUuids');
-        let thumbUri = biigle.$require('volumes.thumbUri');
-        let annotateUri = biigle.$require('volumes.annotateUri');
-        let imageUri = biigle.$require('volumes.imageUri');
-
-        this.imageIds = biigle.$require('volumes.imageIds');
-        this.filterSequence = this.imageIds;
-        this.sortingSequence = this.imageIds;
+        this.type = biigle.$require('volumes.type');
+        this.fileIds = biigle.$require('volumes.fileIds');
+        this.filterSequence = this.fileIds;
+        this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
             data: {
@@ -262,14 +259,28 @@ export default {
             },
         });
 
-        // Do this here instead of a computed property so the image objects get
+        let fileUuids = biigle.$require('volumes.fileUuids');
+        let thumbUri = biigle.$require('volumes.thumbUri');
+        let thumbCount = biigle.$require('volumes.thumbCount');
+        let annotateUri = biigle.$require('volumes.annotateUri');
+        let infoUri = biigle.$require('volumes.infoUri');
+        // Do this here instead of a computed property so the file objects get
         // reactive. Also, this array does never change between page reloads.
-        this.images = this.imageIds.map(function (id) {
+        this.files = this.fileIds.map(function (id) {
+            let thumbnailUrl;
+            if (thumbCount > 1) {
+                thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
+                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
+                });
+            } else {
+                thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
+            }
+
             return {
                 id: id,
-                url: thumbUri.replace(':uuid', transformUuid(imageUuids[id])),
+                thumbnailUrl: thumbnailUrl,
                 annotateUrl: annotateUri.replace(':id', id),
-                imageUrl: imageUri.replace(':id', id),
+                infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
                 flagged: false,
                 filename: null,
                 labels: [],

@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Services\Modules;
@@ -191,22 +191,22 @@ class UsersController extends Controller
      */
     protected function showAnnotations(User $user)
     {
-        $totalAnnotationLabels = AnnotationLabel::where('user_id', $user->id)->count();
+        $totalAnnotationLabels = ImageAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalAnnotationLabels > 0) {
-            $annotationQuery = Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                ->where('annotation_labels.user_id', $user->id);
+            $annotationQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                ->where('image_annotation_labels.user_id', $user->id);
 
-            $totalAnnotations = (clone $annotationQuery)->distinct()->count('annotations.id');
+            $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
 
             $labelsPerAnnotation = round($totalAnnotationLabels / $totalAnnotations);
 
-            $relativeAnnotationLabels = $totalAnnotationLabels / AnnotationLabel::count();
-            $relativeAnnotations = $totalAnnotations / Annotation::count();
+            $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
+            $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
-            $recentAnnotations = $annotationQuery->orderBy('annotation_labels.created_at', 'desc')
+            $recentAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
-                ->select('annotation_labels.created_at', 'annotations.id')
+                ->select('image_annotation_labels.created_at', 'image_annotations.id')
                 ->get();
         } else {
             $totalAnnotations = 0;
@@ -228,24 +228,10 @@ class UsersController extends Controller
      */
     public function showVideos(User $user)
     {
-        $videosTotal = Video::count();
-
-        $videos = Video::where('creator_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->select('id', 'name')
-            ->get();
-
-        $videosCount = $videos->count();
-        $videosPercent = $videosTotal > 0 ? round($videosCount / $videosTotal * 100, 2) : 0;
-
-        $totalDuration = Video::sum('duration');
-        $duration = Video::where('creator_id', $user->id)->sum('duration');
-        $durationPercent = $totalDuration > 0 ? round($duration / $totalDuration * 100, 2) : 0;
-
         $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalVideoAnnotationLabels > 0) {
-            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.video_annotation_id')
+            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
                 ->where('video_annotation_labels.user_id', $user->id)
                 ->distinct()
                 ->count('video_annotations.id');
@@ -258,6 +244,6 @@ class UsersController extends Controller
             $relativeVideoAnnotations = 0;
         }
 
-        return compact('videos', 'videosCount', 'videosPercent', 'duration', 'durationPercent', 'totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
+        return compact('totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
     }
 }

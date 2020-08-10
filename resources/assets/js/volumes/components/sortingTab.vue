@@ -13,14 +13,17 @@ export default {
             type: Number,
             required: true,
         },
-        imageIds: {
+        type: {
+            type: String,
+            required: true,
+        },
+        fileIds: {
             type: Array,
             required: true,
-        }
+        },
     },
     data() {
         return {
-            sorters: SorterStore,
             // true for ascending, false for descending
             direction: true,
             activeSorter: null,
@@ -28,6 +31,11 @@ export default {
         };
     },
     computed: {
+        sorters() {
+            return SorterStore.filter((sorter) => {
+                return sorter.types && sorter.types.includes(this.type);
+            });
+        },
         defaultSorter() {
             return this.sorters[0];
         },
@@ -60,7 +68,7 @@ export default {
         reset() {
             this.direction = true;
             this.activeSorter = this.defaultSorter.id;
-            this.privateSequence = biigle.$require('volumes.imageIds');
+            this.privateSequence = biigle.$require('volumes.fileIds');
         },
         sortAscending() {
             this.direction = true;
@@ -85,7 +93,7 @@ export default {
             // images of the volume. It may contain more IDs if images have been
             // deleted in the meantime.
             let map = {};
-            let ids = this.imageIds;
+            let ids = this.fileIds;
 
             for (let i = sequence.length - 1; i >= 0; i--) {
                 map[sequence[i]] = true;
@@ -123,7 +131,7 @@ export default {
         },
     },
     created() {
-        this.privateSequence = biigle.$require('volumes.imageIds');
+        this.privateSequence = biigle.$require('volumes.fileIds');
 
         let sorter = JSON.parse(localStorage.getItem(this.sorterStorageKey));
         if (sorter && this.isValidSequence(sorter.sequence)) {

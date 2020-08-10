@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
-use Biigle\Http\Requests\StoreAnnotation;
+use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
 use Biigle\Shape;
 use DB;
@@ -69,20 +69,69 @@ class ImageAnnotationController extends Controller
         $user = $request->user();
         $session = $image->volume->getActiveAnnotationSession($user);
 
+        $load = [
+            // Hide confidence.
+            'labels:id,annotation_id,label_id,user_id',
+            // Hide label_source_id and source_id.
+            'labels.label:id,name,parent_id,color,label_tree_id',
+            // Hide role_id.
+            'labels.user:id,firstname,lastname',
+        ];
+
         if ($session) {
-            return $session->getImageAnnotations($image, $user);
+            return $session->getVolumeFileAnnotations($image, $user)->load($load);
         }
 
-        return $image->annotations()
-            ->with(
-                // Hide confidence.
-                'labels:id,annotation_id,label_id,user_id',
-                // Hide label_source_id and source_id.
-                'labels.label:id,name,parent_id,color,label_tree_id',
-                // Hide role_id.
-                'labels.user:id,firstname,lastname'
-            )
-            ->get();
+        return $image->annotations()->with($load)->get();
+    }
+
+    /**
+     * @api {get} annotations/:id Get an annotation
+     * @apiDeprecated use now (#ImageAnnotations:ShowAnnotation).
+     * @apiGroup Annotations
+     * @apiName ShowAnnotation
+     * @apiParam {Number} id The annotation ID.
+     * @apiPermission projectMember
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id":1,
+     *    "image_id":1,
+     *    "shape_id":1,
+     *    "created_at":"2015-02-13 11:59:23",
+     *    "updated_at":"2015-02-13 11:59:23",
+     *    "points": [100, 100]
+     * }
+     */
+
+    /**
+     * Displays the annotation.
+     *
+     * @api {get} image-annotations/:id Get an annotation
+     * @apiGroup ImageAnnotations
+     * @apiName ShowImageAnnotation
+     * @apiParam {Number} id The annotation ID.
+     * @apiPermission projectMember
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id":1,
+     *    "image_id":1,
+     *    "shape_id":1,
+     *    "created_at":"2015-02-13 11:59:23",
+     *    "updated_at":"2015-02-13 11:59:23",
+     *    "points": [100, 100]
+     * }
+     *
+     * @param  int  $id
+     * @return ImageAnnotation
+     */
+    public function show($id)
+    {
+        $annotation = ImageAnnotation::findOrFail($id);
+        $this->authorize('access', $annotation);
+
+        return $annotation;
     }
 
     /**
@@ -145,14 +194,14 @@ class ImageAnnotationController extends Controller
      *    ]
      * }
      *
-     * @param StoreAnnotation $request
-     * @return Annotation
+     * @param StoreImageAnnotation $request
+     * @return ImageAnnotation
      */
-    public function store(StoreAnnotation $request)
+    public function store(StoreImageAnnotation $request)
     {
         $points = $request->input('points');
 
-        $annotation = new Annotation;
+        $annotation = new ImageAnnotation;
         $annotation->shape_id = $request->input('shape_id');
         $annotation->image()->associate($request->image);
 
@@ -169,15 +218,109 @@ class ImageAnnotationController extends Controller
 
         DB::transaction(function () use ($annotation, $request, $label) {
             $annotation->save();
-            $annotationLabel = new AnnotationLabel;
+            $annotationLabel = new ImageAnnotationLabel;
             $annotationLabel->label_id = $label->id;
             $annotationLabel->user_id = $request->user()->id;
             $annotationLabel->confidence = $request->input('confidence');
             $annotation->labels()->save($annotationLabel);
         });
 
-        $annotation->load('labels');
+        $annotation->load('labels.label', 'labels.user');
 
         return $annotation;
+    }
+
+    /**
+     * @api {put} annotations/:id Update an annotation
+     * @apiDeprecated use now (#ImageAnnotations:UpdateAnnotation).
+     * @apiGroup Annotations
+     * @apiName UpdateAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation ID.
+     * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
+     * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParamExample {json} Request example (JSON):
+     * {
+     *    "points": [10, 11, 20, 21],
+     *    "shape_id": 3
+     * }
+     */
+
+    /**
+     * Updates the annotation including its points.
+     *
+     * @api {put} image-annotations/:id Update an annotation
+     * @apiGroup ImageAnnotations
+     * @apiName UpdateImageAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation ID.
+     * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
+     * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParamExample {json} Request example (JSON):
+     * {
+     *    "points": [10, 11, 20, 21],
+     *    "shape_id": 3
+     * }
+     *
+     * @param Request $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $annotation = ImageAnnotation::findOrFail($id);
+        $this->authorize('update', $annotation);
+        $request->validate([
+            'shape_id' => 'required_without:points|id|exists:shapes,id',
+            'points' => 'required_without:shape_id|array',
+        ]);
+
+        // from a JSON request, the array may already be decoded
+        $points = $request->input('points', $annotation->points);
+        $annotation->shape_id = $request->input('shape_id', $annotation->shape_id);
+
+        try {
+            $annotation->validatePoints($points);
+        } catch (Exception $e) {
+            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
+        }
+
+        $annotation->points = $points;
+        $annotation->save();
+    }
+
+    /**
+     * @api {delete} annotations/:id Delete an annotation
+     * @apiDeprecated use now (#ImageAnnotations:DestroyAnnotation).
+     * @apiGroup Annotations
+     * @apiName DestroyAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation ID.
+     */
+
+    /**
+     * Removes the annotation.
+     *
+     * @api {delete} image-annotations/:id Delete an annotation
+     * @apiGroup ImageAnnotations
+     * @apiName DestroyImageAnnotation
+     * @apiPermission projectEditor
+     *
+     * @apiParam {Number} id The annotation ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $annotation = ImageAnnotation::findOrFail($id);
+        $this->authorize('destroy', $annotation);
+
+        $annotation->delete();
+
+        return response('Deleted.', 200);
     }
 }

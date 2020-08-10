@@ -2,7 +2,9 @@
 import FiltersStore from '../stores/filters';
 import LoaderMixin from '../../core/mixins/loader';
 import PowerToggle from '../../core/components/powerToggle';
+import {capitalize} from '../../core/utils';
 import {handleErrorResponse} from '../../core/messages/store';
+
 
 /**
  * View model for the volume filter tab
@@ -17,7 +19,11 @@ export default {
             type: Number,
             required: true,
         },
-        imageIds: {
+        type: {
+            type: String,
+            required: true,
+        },
+        fileIds: {
             type: Array,
             required: true,
         },
@@ -32,7 +38,6 @@ export default {
     },
     data() {
         return {
-            filters: FiltersStore,
             rules: [],
             selectedFilterId: null,
             negate: false,
@@ -41,6 +46,11 @@ export default {
         };
     },
     computed: {
+        filters() {
+            return FiltersStore.filter((filter) => {
+                return filter.types && filter.types.includes(this.type);
+            });
+        },
         selectedFilter() {
             return this.getFilter(this.selectedFilterId);
         },
@@ -55,7 +65,7 @@ export default {
         },
         sequence() {
             if (!this.hasRules) {
-                return this.imageIds;
+                return this.fileIds;
             }
 
             let only = {};
@@ -81,23 +91,23 @@ export default {
                 if (nonNegatedRules > 0) {
                     // All IDs that occur in every non-negated rule and not in a negated
                     // rule. Example: a && b && !c && !d === a && b && !(c || d)
-                    return this.imageIds.filter(
+                    return this.fileIds.filter(
                         id => only[id] === nonNegatedRules && !except.hasOwnProperty(id)
                     );
                 } else {
                     // All IDs that don't occur in a negated rule.
-                    return this.imageIds.filter((id) => !except.hasOwnProperty(id));
+                    return this.fileIds.filter((id) => !except.hasOwnProperty(id));
                 }
             } else {
                 if (negatedRules > 0) {
                     // All IDs that occur in a non-negated rule or not in every negated
                     // rule. Example: a || b || !c || !d === a || b || !(c && d)
-                    return this.imageIds.filter(
+                    return this.fileIds.filter(
                         (id) => only.hasOwnProperty(id) || except[id] !== negatedRules
                     );
                 } else {
                     // All IDs that occur in a non-negated rule.
-                    return this.imageIds.filter((id) => only.hasOwnProperty(id));
+                    return this.fileIds.filter((id) => only.hasOwnProperty(id));
                 }
             }
         },
@@ -114,7 +124,11 @@ export default {
             return this.operator === 'or';
         },
         helpText() {
-            return this.selectedFilter ? this.selectedFilter.help : null;
+            if (this.selectedFilter) {
+                return this.selectedFilter.help.replace(':type', this.type);
+            }
+
+            return null;
         },
         // Use "filter2" to avoid conflicts with the previous version of the volume
         // filter written in AngularJS.
@@ -126,6 +140,9 @@ export default {
         },
         operatorStorageKey() {
             return `biigle.volumes.${this.volumeId}.filter2.operator`;
+        },
+        typeText() {
+            return capitalize(this.type) + 's';
         },
     },
     methods: {

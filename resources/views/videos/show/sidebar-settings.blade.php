@@ -9,7 +9,7 @@
                     <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
                 </div>
 
-                @can('edit-in', $video)
+                @can('add-annotation', $video)
                     <div class="sidebar-tab__section">
                         <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
                     </div>
@@ -17,6 +17,10 @@
 
                 <div class="sidebar-tab__section">
                     <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="showProgressIndicator" title-off="Show progress indicator" title-on="Hide progress indicator" v-on:on="handleShowProgressIndicator" v-on:off="handleHideProgressIndicator">Progress Indicator</power-toggle>
                 </div>
 
                 <div class="sidebar-tab__section">

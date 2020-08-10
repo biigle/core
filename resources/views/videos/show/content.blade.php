@@ -1,4 +1,9 @@
 <loader-block :active="loading"></loader-block>
+<div v-if="hasVideoError" class="error-message">
+    <div class="panel" :class="errorClass">
+        <div class="panel-body" v-text="errorMessage"></div>
+    </div>
+</div>
 <video-screen
       ref="videoScreen"
       :annotations="filteredAnnotations"
@@ -16,6 +21,8 @@
       :show-mouse-position="settings.showMousePosition"
       :video="video"
       :height-offset="screenHeightOffset"
+      :show-prev-next="hasSiblingVideos"
+      :has-error="hasError"
       v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
@@ -27,6 +34,8 @@
       v-on:delete="deleteAnnotationsOrKeyframes"
       v-on:moveend="updateMapUrlParams"
       v-on:requires-selected-label="handleRequiresSelectedLabel"
+      v-on:previous="showPreviousVideo"
+      v-on:next="showNextVideo"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

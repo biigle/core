@@ -51,25 +51,7 @@ class LabelTreeMergeController extends Controller
         $mergeTree = LabelTree::findOrFail($id2);
         $this->authorize('access', $mergeTree);
 
-        $usedLabels = $baseTree->labels()
-            ->where(function ($query) {
-                return $query->whereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('labels.id = annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_labels')
-                        ->whereRaw('labels.id = image_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_annotation_labels')
-                        ->whereRaw('labels.id = video_annotation_labels.label_id');
-                });
-            })
-            ->pluck('labels.id');
+        $usedLabels = $baseTree->labels()->used()->pluck('labels.id');
 
         return view('label-trees.merge.show', [
             'baseTree' => $baseTree->load('labels'),

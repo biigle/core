@@ -18,7 +18,7 @@ class TrackObjectTest extends TestCase
     {
         parent::setUp();
         Storage::fake('test');
-        Storage::disk('test')->put('my-video.mp4', 'abc');
+        Storage::disk('test')->put('files/my-video.mp4', 'abc');
     }
 
     public function testHandle()
@@ -29,7 +29,7 @@ class TrackObjectTest extends TestCase
             'shape_id' => Shape::pointId(),
             'frames' => [0.5],
             'points' => [[0, 0]],
-            'video_id' => VideoTest::create(['url' => 'test://my-video.mp4']),
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
         $job = new TrackObjectStub($annotation);
@@ -54,7 +54,7 @@ class TrackObjectTest extends TestCase
             'shape_id' => Shape::pointId(),
             'frames' => [0.5],
             'points' => [[0, 0]],
-            'video_id' => VideoTest::create(['url' => 'test://my-video.mp4']),
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
         $job = new TrackObjectStub($annotation);
@@ -74,7 +74,7 @@ class TrackObjectTest extends TestCase
             'shape_id' => Shape::circleId(),
             'frames' => [0.5],
             'points' => [[10, 10, 5]],
-            'video_id' => VideoTest::create(['url' => 'test://my-video.mp4']),
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
         $job = new TrackObjectStub($annotation);
@@ -108,7 +108,7 @@ class TrackObjectTest extends TestCase
             'shape_id' => Shape::circleId(),
             'frames' => [0.5],
             'points' => [[10, 10, 5]],
-            'video_id' => VideoTest::create(['url' => 'test://my-video.mp4']),
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
         $job = new TrackObjectStub($annotation);
         $job->keyframes = '[]';

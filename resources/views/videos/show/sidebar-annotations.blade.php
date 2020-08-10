@@ -9,7 +9,7 @@
             :annotations="filteredAnnotations"
             :selected-annotations="selectedAnnotations"
             :annotation-filters="annotationFilters"
-            :can-detach-others="@can('forceEditIn', $video) true @else false @endcan"
+            :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
             :has-active-filter="hasActiveAnnotationFilter"
             :own-user-id="{{$user->id}}"
             v-on:select="selectAnnotation"

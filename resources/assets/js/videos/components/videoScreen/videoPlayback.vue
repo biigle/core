@@ -136,6 +136,12 @@ export default {
             .then(this.emitMapReady);
 
         Keyboard.on(' ', this.togglePlaying);
+
+        this.$watch('hasError', (hasError) => {
+            if (this.videoLayer) {
+                this.videoLayer.setVisible(!hasError);
+            }
+        });
     },
 };
 </script>

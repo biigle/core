@@ -39,17 +39,23 @@ class AnnotationLabelPolicy extends CachedPolicy
      */
     public function update(User $user, AnnotationLabel $annotationLabel)
     {
-        return $this->remember("annotation-label-can-update-{$user->id}-{$annotationLabel->id}", function () use ($user, $annotationLabel) {
-            $annotation = $annotationLabel->annotation;
-            // selects the IDs of the projects, the annotation belongs to
-            $projectIdsQuery = function ($query) use ($annotation) {
+        $model = $annotationLabel->annotation()->getRelated();
+        $fileTable = $model->file()->getRelated()->getTable();
+
+        return $this->remember("{$fileTable}-annotation-label-can-update-{$user->id}-{$annotationLabel->id}", function () use ($user, $annotationLabel, $fileTable, $model) {
+            $projectIdsQuery = function ($query) use ($annotationLabel, $fileTable, $model) {
+
+                $annotationsTable = $model->getTable();
+                $foreignKeyName = $model->file()->getQualifiedForeignKeyName();
+
                 $query->select('project_volume.project_id')
                     ->from('project_volume')
-                    ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
-                    ->where('images.id', $annotation->image_id);
+                    ->join($fileTable, 'project_volume.volume_id', '=', "{$fileTable}.volume_id")
+                    ->join($annotationsTable, $foreignKeyName, '=', "{$fileTable}.id")
+                    ->where("{$annotationsTable}.id", $annotationLabel->annotation_id);
             };
 
-            if ((int) $annotationLabel->user_id === $user->id) {
+            if ($annotationLabel->user_id === $user->id) {
                 // Editors, experts and admins may detach their own labels.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)

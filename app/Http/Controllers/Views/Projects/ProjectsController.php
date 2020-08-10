@@ -47,15 +47,8 @@ class ProjectsController extends Controller
             ->get();
 
         $volumes = $project->volumes()
-            ->select('id', 'name', 'updated_at')
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->each(function ($item) {
-                $item->append('thumbnailUrl');
-                $item->append('thumbnailsUrl');
-            });
-
-        $videos = $project->videos()
+            ->select('id', 'name', 'updated_at', 'media_type_id')
+            ->with('mediaType')
             ->orderBy('updated_at', 'desc')
             ->get()
             ->each(function ($item) {
@@ -85,7 +78,6 @@ class ProjectsController extends Controller
             'isMember' => $isMember,
             'isPinned' => $isPinned,
             'canPin' => $canPin,
-            'videos' => $videos,
         ]);
     }
 

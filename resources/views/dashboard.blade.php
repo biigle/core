@@ -99,17 +99,8 @@
                             ->orderBy('created_at', 'desc')
                             ->limit(4)
                             ->get();
-
-                        $videos = $project->videos()
-                            ->orderBy('created_at', 'desc')
-                            ->limit(4)
-                            ->get();
-
-                        $items = $volumes->concat($videos)
-                            ->sortByDesc('created_at')
-                            ->take(4);
                     ?>
-                    @forelse ($items as $item)
+                    @forelse ($volumes as $item)
                         <div class="col-xs-12 col-sm-6 col-md-3">
                             @include('projects.partials.dashboardPreviewItem')
                         </div>

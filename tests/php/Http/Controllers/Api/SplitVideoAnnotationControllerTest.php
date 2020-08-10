@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -13,7 +14,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->video = VideoTest::create(['project_id' => $this->project()->id]);
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
     public function testStore()
@@ -26,7 +28,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $label = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
         ]);
 
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$annotation->id}/split");

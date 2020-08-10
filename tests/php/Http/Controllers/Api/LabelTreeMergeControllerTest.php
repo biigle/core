@@ -4,10 +4,13 @@ namespace Biigle\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Role;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoLabelTest;
 use Biigle\Visibility;
 
 class LabelTreeMergeControllerTest extends ApiTestCase
@@ -213,12 +216,12 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
-    public function testStoreRemoveIdsCanBeDeleted()
+    public function testStoreRemoveIdsCanBeDeletedImageAnnotationLabel()
     {
         $tree = LabelTreeTest::create();
         $tree->addMember($this->editor(), Role::editor());
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
-        $annotationLabel = AnnotationLabelTest::create(['label_id' => $label->id]);
+        $annotationLabel = ImageAnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
         $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
@@ -241,6 +244,72 @@ class LabelTreeMergeControllerTest extends ApiTestCase
 
         $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id, $child->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreRemoveIdsCanBeDeletedImageLabel()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::editor());
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $annotationLabel = ImageLabelTest::create(['label_id' => $label->id]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            // Cannot be removed.
+            ->assertStatus(422);
+
+        $annotationLabel->delete();
+
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreRemoveIdsCanBeDeletedVideoAnnotationLabel()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::editor());
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $annotationLabel = VideoAnnotationLabelTest::create(['label_id' => $label->id]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            // Cannot be removed.
+            ->assertStatus(422);
+
+        $annotationLabel->delete();
+
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreRemoveIdsCanBeDeletedVideoLabel()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::editor());
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $annotationLabel = VideoLabelTest::create(['label_id' => $label->id]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            // Cannot be removed.
+            ->assertStatus(422);
+
+        $annotationLabel->delete();
+
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
             ])
             ->assertStatus(200);
     }

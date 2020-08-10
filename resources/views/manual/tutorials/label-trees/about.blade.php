@@ -8,7 +8,7 @@
         </p>
 
         <p>
-            A label tree is a collection of labels that may be flat or in a tree-like structure. This can be a taxonomy, a custom classification scheme or something entirely different. Label trees can be attached to multiple <a href="{{route('manual-tutorials', ['projects', 'about'])}}">projects</a>. If a label tree is attached to a project, all labels of the label tree are available to be attached to annotations or images in this project.
+            A label tree is a collection of labels that may be flat or in a tree-like structure. This can be a taxonomy, a custom classification scheme or something entirely different. Label trees can be attached to multiple <a href="{{route('manual-tutorials', ['projects', 'about'])}}">projects</a>. If a label tree is attached to a project, all labels of the label tree are available to be attached to annotations, images or videos in this project.
         </p>
         <div class="panel panel-info">
             <div class="panel-body text-info">

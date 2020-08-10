@@ -25,12 +25,15 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
         $disks = array_intersect(array_keys(config('filesystems.disks')), config('volumes.browser_disks'));
+        $mediaType = old('media_type', 'image');
+        $filenames = str_replace(["\r", "\n"], '', old('files'));
 
         return view('volumes.create', [
             'project' => $project,
-            'mediaTypes' => MediaType::all(),
             'hasBrowser' => config('volumes.browser'),
             'disks' => $disks,
+            'mediaType' => $mediaType,
+            'filenames' => $filenames,
         ]);
     }
 
@@ -59,18 +62,23 @@ class VolumeController extends Controller
             })
             ->get();
 
-        $imageIds = $volume->orderedImages()
-            ->pluck('uuid', 'id');
+        $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');
 
-        $thumbUriTemplate = Storage::disk(config('thumbnails.storage_disk'))
-            ->url(':uuid.'.config('thumbnails.format'));
+        if ($volume->isImageVolume()) {
+            $thumbUriTemplate = thumbnail_url(':uuid');
+        } else {
+            $thumbUriTemplate = thumbnail_url(':uuid',config('videos.thumbnail_storage_disk'));
+        }
+
+        $type = $volume->mediaType->name;
 
         return view('volumes.show', compact(
             'volume',
             'labelTrees',
             'projects',
-            'imageIds',
-            'thumbUriTemplate'
+            'fileIds',
+            'thumbUriTemplate',
+            'type'
         ));
     }
 
@@ -88,6 +96,7 @@ class VolumeController extends Controller
         $this->authorize('update', $volume);
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
+        $type = $volume->mediaType->name;
 
         return view('volumes.edit', [
             'projects' => $projects,
@@ -95,6 +104,7 @@ class VolumeController extends Controller
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
+            'type' => $type,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\DestroyImage;
 use Biigle\Image;
 
 class ImageController extends Controller
@@ -65,23 +66,22 @@ class ImageController extends Controller
     }
 
     /**
-     * Deletes the image.
+     * Delete an image.
      *
      * @api {delete} images/:id Delete an image
      * @apiGroup Images
-     * @apiName DestroyImage
+     * @apiName DestroyImages
      * @apiPermission projectAdmin
      *
      * @apiParam {Number} id The image ID.
      *
-     * @param int $id image id
-     * @return \Illuminate\Http\Response
+     * @apiParam (Optional parameters) {Boolean} force Must be set to `true` if the image has any annotations and should be deleted anyway.
+     *
+     * @param DestroyImage $request
+     * @return mixed
      */
-    public function destroy($id)
+    public function destroy(DestroyImage $request)
     {
-        $image = Image::findOrFail($id);
-        $this->authorize('destroy', $image);
-
-        $image->delete();
+        $request->file->delete();
     }
 }

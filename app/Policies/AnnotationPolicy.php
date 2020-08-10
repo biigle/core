@@ -2,12 +2,14 @@
 
 namespace Biigle\Policies;
 
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Label;
+use Biigle\Policies\CachedPolicy;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -38,25 +40,18 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function access(User $user, Annotation $annotation)
     {
-        return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+        $table = $this->getFileModelTableName($annotation);
+
+        return $this->remember("{$table}-annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             $volume = Volume::select('volumes.id')
-                ->join('images', 'images.volume_id', '=', 'volumes.id')
-                ->where('images.id', $annotation->image_id)
+                ->join($table, "{$table}.volume_id", '=', 'volumes.id')
+                ->where("{$table}.id", $annotation->file_id)
                 ->first();
 
             $session = $volume->getActiveAnnotationSession($user);
             $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
 
-            return $sessionAccess &&
-                // user must be member of one of the projects, the annotation belongs to
-                DB::table('project_user')
-                    ->where('user_id', $user->id)
-                    ->whereIn('project_id', function ($query) use ($volume) {
-                        $query->select('project_id')
-                            ->from('project_volume')
-                            ->where('volume_id', $volume->id);
-                    })
-                    ->exists();
+            return $sessionAccess && Project::inCommon($user, $volume->id)->exists();
         });
     }
 
@@ -69,15 +64,17 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function update(User $user, Annotation $annotation)
     {
-        return $this->remember("annotation-can-update-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+        $table = $this->getFileModelTableName($annotation);
+
+        return $this->remember("{$table}-annotation-can-update-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             // user must be member of one of the projects, the annotation belongs to
             return DB::table('project_user')
                 ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($annotation) {
+                ->whereIn('project_id', function ($query) use ($annotation, $table) {
                     $query->select('project_volume.project_id')
                         ->from('project_volume')
-                        ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
-                        ->where('images.id', $annotation->image_id);
+                        ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
+                        ->where("{$table}.id", $annotation->file_id);
                 })
                 ->whereIn('project_role_id', [
                     Role::editorId(),
@@ -102,16 +99,18 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function attachLabel(User $user, Annotation $annotation, Label $label)
     {
-        return $this->remember("annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label) {
+        $table = $this->getFileModelTableName($annotation);
+
+        return $this->remember("{$table}-annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label, $table) {
             // Projects, the annotation belongs to *and* the user is editor, expert or admin of.
             $projectIds = DB::table('project_user')
                 ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($annotation) {
+                ->whereIn('project_id', function ($query) use ($annotation, $table) {
                     // the projects, the annotation belongs to
                     $query->select('project_volume.project_id')
                         ->from('project_volume')
-                        ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
-                        ->where('images.id', $annotation->image_id);
+                        ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
+                        ->where("{$table}.id", $annotation->file_id);
                 })
                 ->whereIn('project_role_id', [
                     Role::editorId(),
@@ -139,18 +138,20 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function destroy(User $user, Annotation $annotation)
     {
-        return $this->remember("annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+        $table = $this->getFileModelTableName($annotation);
+
+        return $this->remember("{$table}-annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             // selects the IDs of the projects, the annotation belongs to
-            $projectIdsQuery = function ($query) use ($annotation) {
+            $projectIdsQuery = function ($query) use ($annotation, $table) {
                 $query->select('project_volume.project_id')
                     ->from('project_volume')
-                    ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
-                    ->where('images.id', $annotation->image_id);
+                    ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
+                    ->where("{$table}.id", $annotation->file_id);
             };
 
             // check if there are labels of other users attached to this annotation
             // this also handles the case correctly when *no* label is attached
-            $hasLabelsFromOthers = AnnotationLabel::where('annotation_id', $annotation->id)
+            $hasLabelsFromOthers = $annotation->labels()
                 ->where('user_id', '!=', $user->id)
                 ->exists();
 
@@ -176,5 +177,16 @@ class AnnotationPolicy extends CachedPolicy
                     ->exists();
             }
         });
+    }
+
+    /**
+     * Get the file model table name of the annotation.
+     *
+     * @param Annotation $annotation
+     * @return string
+     */
+    protected function getFileModelTableName(Annotation $annotation)
+    {
+        return $annotation->file()->getRelated()->getTable();
     }
 }

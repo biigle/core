@@ -67,7 +67,7 @@
     opacity: .25;
 }
 
-.preview-thumbnail__close {
+.preview-thumbnail__remove {
     position: absolute;
     top: 0;
     right: .5em;
@@ -81,4 +81,12 @@
     color: white;
     opacity: 0.75;
     z-index: 1;
+
+    &.fa-trash {
+        color: $brand-danger;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }

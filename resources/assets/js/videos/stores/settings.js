@@ -6,6 +6,7 @@ let defaults = {
     autoplayDraw: 0,
     showLabelTooltip: false,
     showMousePosition: false,
+    showProgressIndicator: true,
 };
 
 export default new Settings({

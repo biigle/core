@@ -11,9 +11,6 @@ export default new Vue({
         cache: {},
     },
     computed: {
-        imageFileUri() {
-            return biigle.$require('annotations.imageFileUri');
-        },
         shapeMap() {
             return biigle.$require('annotations.shapes');
         },

@@ -6,47 +6,41 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\DestroyVideo;
 use Biigle\Http\Requests\UpdateVideo;
 use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Video;
 use Queue;
 
 class VideoController extends Controller
 {
     /**
-     * Updates the attributes of the specified video.
+     * Shows the specified image.
      *
-     * @api {put} videos/:id Update a video
+     * @api {get} videos/:id Get video information
      * @apiGroup Videos
-     * @apiName UpdateVideos
-     * @apiPermission projectAdmin
+     * @apiName ShowVideos
+     * @apiPermission projectMember
      *
      * @apiParam {Number} id The video ID.
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 1,
+     *    "uuid": "01ef3e62-31ae-384c-b9d7-1b7ee64fd58a",
+     *    "filename": "video.mp4"
+     *    "volume_id": 123,
+     *    "size": 172889435,
+     *    "mimeType": "video/mp4",
+     *    "duration": 149.84,
+     *    "error": null,
+     * }
      *
-     * @apiParam (Attributes that can be updated) {String} name Name of the video.
-     * @apiParam (Attributes that can be updated) {String} url The URL of the video file. Can be a path to a storage disk like `local://videos/1.mp4` or a remote path like `https://example.com/videos/1.mp4`.
-     * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this video.
-     * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new video.
-     *
-     * @param UpdateVideo $request
-     * @return \Illuminate\Http\Response
+     * @param int $id image id
+     * @return Video
      */
-    public function update(UpdateVideo $request)
+    public function show($id)
     {
-        $video = $request->video;
-        $video->name = $request->input('name', $video->name);
-        $video->url = $request->input('url', $video->url);
-        $video->gis_link = $request->input('gis_link', $video->gis_link);
-        $video->doi = $request->input('doi', $video->doi);
+        $video = Video::findOrFail($id);
+        $this->authorize('access', $video);
 
-        $isUrlDirty = $video->isDirty('url');
-        $isDirty = $isUrlDirty || $video->isDirty();
-        $video->save();
-
-        if ($isUrlDirty) {
-            Queue::push(new ProcessNewVideo($video));
-        }
-
-        if (!$this->isAutomatedRequest()) {
-            return $this->fuzzyRedirect()->with('saved', $isDirty);
-        }
+        return $video->append('size', 'mimeType', 'error');
     }
 
     /**
@@ -66,6 +60,6 @@ class VideoController extends Controller
      */
     public function destroy(DestroyVideo $request)
     {
-        $request->video->delete();
+        $request->file->delete();
     }
 }

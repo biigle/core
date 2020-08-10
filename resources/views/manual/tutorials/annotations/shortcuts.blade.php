@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            A list of all available shortcut keys in the annotation tool.
+            A list of all available shortcut keys in the image annotation tool.
         </p>
 
         <table class="table">

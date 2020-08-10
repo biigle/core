@@ -12,6 +12,7 @@ export default {
         return {
             disks: [],
             url: null,
+            mediaType: '',
             filenames: null,
             browsing: false,
             storageDisk: null,
@@ -46,6 +47,12 @@ export default {
             }
 
             return null;
+        },
+        isImageMediaType() {
+            return this.mediaType === 'image';
+        },
+        isVideoMediaType() {
+            return this.mediaType === 'video';
         },
     },
     methods: {
@@ -82,11 +89,12 @@ export default {
                 this.breadCrumbs = this.breadCrumbs.slice(0, i + 1);
             }
         },
-        fetchImages(disk, path) {
+        fetchFiles(disk, path) {
             let key = disk + '://' + path;
             if (!this.fileCache.hasOwnProperty(key)) {
                 this.loadingBrowser = true;
 
+                // TODO get videos if the volume media type is video
                 let promise = BrowserApi.getImages({disk: disk, path: path});
                 promise.finally(() => this.loadingBrowser = false);
                 this.fileCache[key] = promise;
@@ -94,7 +102,7 @@ export default {
 
             return this.fileCache[key];
         },
-        setImages(response) {
+        setFiles(response) {
             this.filenames = response.body.join(', ');
         },
         selectDirectory(directory) {
@@ -102,10 +110,16 @@ export default {
             if (directory) {
                 crumbs.push(directory);
             }
-            this.fetchImages(this.storageDisk, crumbs.join('/'))
-                .then(this.setImages)
+            this.fetchFiles(this.storageDisk, crumbs.join('/'))
+                .then(this.setFiles)
                 .then(() => this.url = this.storageDisk + '://' + crumbs.join('/'))
                 .catch(handleErrorResponse);
+        },
+        selectImageMediaType() {
+            this.mediaType = 'image';
+        },
+        selectVideoMediaType() {
+            this.mediaType = 'video';
         },
     },
     watch: {
@@ -126,6 +140,7 @@ export default {
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
+        this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
 
         if (this.disks.length === 1) {

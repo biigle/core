@@ -3,43 +3,43 @@
 namespace Biigle\Tests\Http\Controllers\Views\Annotations;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Carbon\Carbon;
 
 class AnnotationControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $this->project()->addVolumeId($annotation->image->volume_id);
 
         $this->beUser();
-        $response = $this->json('GET', 'annotations/'.$annotation->id);
+        $response = $this->json('GET', "image-annotations/{$annotation->id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get('annotations/'.$annotation->id);
-        $response->assertRedirect('annotate/'.$annotation->image_id.'?annotation='.$annotation->id);
+        $response = $this->get("image-annotations/{$annotation->id}");
+        $response->assertRedirect("images/{$annotation->image_id}/annotations?annotation={$annotation->id}");
     }
 
     public function testShowAnnotationSession()
     {
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'created_at' => Carbon::yesterday(),
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->admin()->id,
         ]);
         $this->project()->addVolumeId($annotation->image->volume_id);
 
-        $annotation2 = AnnotationTest::create([
+        $annotation2 = ImageAnnotationTest::create([
             'image_id' => $annotation->image_id,
             'created_at' => Carbon::today(),
         ]);
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation2->id,
             'user_id' => $this->admin()->id,
         ]);
@@ -55,10 +55,16 @@ class AnnotationControllerTest extends ApiTestCase
         $session->users()->attach($this->admin());
 
         $this->beAdmin();
-        $response = $this->get("annotations/{$annotation->id}");
+        $response = $this->get("image-annotations/{$annotation->id}");
         $response->assertStatus(403);
 
-        $response = $this->get("annotations/{$annotation2->id}");
+        $response = $this->get("image-annotations/{$annotation2->id}");
         $response->assertStatus(302);
+    }
+
+    public function testShowRedirect()
+    {
+        $this->beUser();
+        $this->get('annotations/999')->assertRedirect('/image-annotations/999');
     }
 }

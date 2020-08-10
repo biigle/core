@@ -85,7 +85,7 @@
         </p>
 
         <p>
-            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="fa fa-check text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="fa fa-times"></i>. To delete a label from the label tree, click the <i class="fa fa-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an image or an annotation can be deleted.
+            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="fa fa-check text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="fa fa-times"></i>. To delete a label from the label tree, click the <i class="fa fa-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an annotation, image or video can be deleted.
         </p>
 
         <p>

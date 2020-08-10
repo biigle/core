@@ -57,17 +57,18 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Get the annotations of the image (with labels), filtered by the restrictions of this annotation session.
+     * Get the annotations of the file (with labels), filtered by the restrictions of this annotation session.
      *
-     * @param Image $image The image to get the annotations from
+     * @param VolumeFile $file The file to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getImageAnnotations(Image $image, User $user)
+    public function getVolumeFileAnnotations(VolumeFile $file, User $user)
     {
-        $query = Annotation::allowedBySession($this, $user)
-            ->where('annotations.image_id', $image->id);
+        $annotationClass = $file->annotations()->getRelated();
+        $query = $annotationClass::allowedBySession($this, $user)
+            ->where($file->annotations()->getQualifiedForeignKeyName(), $file->id);
 
         /*
          * If both hide_other_users_annotations and hide_own_annotations is true,
@@ -112,28 +113,11 @@ class AnnotationSession extends Model
      */
     public function annotations()
     {
-        return Annotation::where(function ($query) {
-            // all annotations of the associated volume
-            return $query->whereIn('image_id', function ($query) {
-                $query->select('id')
-                        ->from('images')
-                        ->where('volume_id', $this->volume_id);
-            })
-            // that were created between the start and end date
-                ->where('created_at', '>=', $this->starts_at)
-                ->where('created_at', '<', $this->ends_at)
-            // and have a label by one of the members of this session
-                ->whereExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->whereIn('annotation_labels.user_id', function ($query) {
-                            $query->select('user_id')
-                                ->from('annotation_session_user')
-                                ->where('annotation_session_id', $this->id);
-                        });
-                });
-        });
+        if ($this->volume->isImageVolume()) {
+            return $this->imageAnnotations();
+        }
+
+        return $this->videoAnnotations();
     }
 
     /**
@@ -205,5 +189,71 @@ class AnnotationSession extends Model
     public function getEndsAtIso8601Attribute()
     {
         return $this->ends_at->toIso8601String();
+    }
+
+    /**
+     * Get a query for all image annotations that belong to this session.
+     *
+     * This is **not** an Eloquent relation!
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function imageAnnotations()
+    {
+        return ImageAnnotation::where(function ($query) {
+            // all annotations of the associated volume
+            return $query->whereIn('image_id', function ($query) {
+                $query->select('id')
+                        ->from('images')
+                        ->where('volume_id', $this->volume_id);
+            })
+            // that were created between the start and end date
+            ->where('created_at', '>=', $this->starts_at)
+            ->where('created_at', '<', $this->ends_at)
+            // and have a label by one of the members of this session
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('image_annotation_labels')
+                    ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
+                    ->whereIn('image_annotation_labels.user_id', function ($query) {
+                        $query->select('user_id')
+                            ->from('annotation_session_user')
+                            ->where('annotation_session_id', $this->id);
+                    });
+            });
+        });
+    }
+
+    /**
+     * Get a query for all video annotations that belong to this session.
+     *
+     * This is **not** an Eloquent relation!
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function videoAnnotations()
+    {
+        return VideoAnnotation::where(function ($query) {
+            // all annotations of the associated volume
+            return $query->whereIn('video_id', function ($query) {
+                $query->select('id')
+                        ->from('videos')
+                        ->where('volume_id', $this->volume_id);
+            })
+            // that were created between the start and end date
+            ->where('created_at', '>=', $this->starts_at)
+            ->where('created_at', '<', $this->ends_at)
+            // and have a label by one of the members of this session
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('video_annotation_labels')
+                    ->whereRaw('video_annotation_labels.annotation_id = video_annotations.id')
+                    ->whereIn('video_annotation_labels.user_id', function ($query) {
+                        $query->select('user_id')
+                            ->from('annotation_session_user')
+                            ->where('annotation_session_id', $this->id);
+                    });
+            });
+        });
     }
 }

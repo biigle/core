@@ -90,7 +90,6 @@ class ProcessNewImageChunkTest extends TestCase
     {
         Storage::fake('test');
         Storage::disk('test')->put('files/broken.jpg', '');
-        Log::shouldReceive('warning')->once();
         $image = ImageTest::create(['filename' => 'broken.jpg']);
         try {
             (new ProcessNewImageChunk([$image->id]))->handle();

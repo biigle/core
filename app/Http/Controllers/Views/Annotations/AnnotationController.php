@@ -2,20 +2,20 @@
 
 namespace Biigle\Http\Controllers\Views\Annotations;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\ImageAnnotation;
 
 class AnnotationController extends Controller
 {
     /**
      * Redirect to the annotator link that shows a specified annotation.
      *
-     * @param int $id Annotation ID
+     * @param int $id Image annotation ID
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $annotation = Annotation::findOrFail($id);
+        $annotation = ImageAnnotation::findOrFail($id);
         $this->authorize('access', $annotation);
 
         return redirect()->route('annotate', [

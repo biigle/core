@@ -158,14 +158,25 @@ class Project extends Model
     }
 
     /**
-     * The videos of this project.
+     * The image volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function videos()
+    public function imageVolumes()
     {
-        return $this->hasMany(Video::class);
+        return $this->volumes()->where('media_type_id', MediaType::imageId());
     }
+
+    /**
+     * The video volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function videoVolumes()
+    {
+        return $this->volumes()->where('media_type_id', MediaType::videoId());
+    }
+
 
     /**
      * Adds a volume to this project if it wasn't already.
@@ -266,18 +277,12 @@ class Project extends Model
     {
         return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
-                ->select('id')
+                ->select('id', 'media_type_id')
                 ->orderBy('id')
                 ->first();
 
             if ($volume) {
                 return $volume->thumbnailUrl;
-            } else {
-                $video = $this->videos()->first();
-
-                if ($video) {
-                    return $video->thumbnailUrl;
-                }
             }
 
             return null;

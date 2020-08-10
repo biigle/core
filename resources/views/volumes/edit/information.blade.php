@@ -10,49 +10,40 @@
         @endif
         @if (session('reread'))
             <div class="alert alert-success" role="alert">
-                The volume images are reprocessed.
+                The volume {{$type}}s are reprocessed.
             </div>
         @endif
         <form role="form" method="POST" action="{{ url('api/v1/volumes/'.$volume->id) }}">
             <div class="row">
-                <div class="form-group col-sm-6{{ $errors->has('name') ? ' has-error' : '' }}">
+                <div class="form-group col-xs-6{{ $errors->has('name') ? ' has-error' : '' }}">
                     <label for="name">Name</label>
                     <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $volume->name) }}" placeholder="My volume" required>
                     @if($errors->has('name'))
                         <span class="help-block">{{ $errors->first('name') }}</span>
                     @endif
                 </div>
-                <div class="form-group col-sm-6{{ $errors->has('media_type_id') ? ' has-error' : '' }}">
-                    <label for="media_type_id">Media type</label>
-                    <select class="form-control" name="media_type_id" id="media_type_id" required>
-                        @foreach($mediaTypes as $mediaType)
-                            <option {!! old('media_type_id', $volume->media_type_id) == $mediaType->id ? 'selected="selected"' : '' !!} value="{{ $mediaType->id }}">{{ trans('biigle.media_types.'.$mediaType->name) }}</option>
-                        @endforeach
-                    </select>
-                    @if($errors->has('media_type_id'))
-                        <span class="help-block">{{ $errors->first('media_type_id') }}</span>
-                    @endif
+                <div class="form-group col-xs-6">
+                    <label for="media_type">Media Type</label>
+                    <span class="form-control" id="media_type" readonly><i class="fa @if ($volume->isImageVolume()) fa-image @else fa-film @endif"></i> {{ucfirst($type)}} Volume</span>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-xs-12{{ $errors->has('url') ? ' has-error' : '' }}">
-                    <label for="url">URL</label>
+            <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
+                <label for="url">URL</label>
+                @if (config('biigle.offline_mode'))
+                    <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="local://images/volume" required>
+                @else
+                    <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="https://my-domain.tld/volume" required>
+                @endif
+                <p class="help-block">
                     @if (config('biigle.offline_mode'))
-                        <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="local://images/volume" required>
-                    @else
-                        <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="https://my-domain.tld/volume" required>
-                    @endif
-                    <p class="help-block">
-                        @if (config('biigle.offline_mode'))
-                          The volume directory on the BIIGLE server (e.g. <code>local://images/volume</code>).
-                       @else
-                          The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://images/volume</code>).
-                       @endif
-                    </p>
-                    @if($errors->has('url'))
-                        <span class="help-block">{{ $errors->first('url') }}</span>
-                    @endif
-                </div>
+                      The volume directory on the BIIGLE server (e.g. <code>local://files/volume</code>).
+                   @else
+                      The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://files/volume</code>).
+                   @endif
+                </p>
+                @if($errors->has('url'))
+                    <span class="help-block">{{ $errors->first('url') }}</span>
+                @endif
             </div>
             <div class="row">
                 <div class="form-group col-sm-4{{ $errors->has('doi') ? ' has-error' : '' }}">

@@ -4,19 +4,17 @@ namespace Biigle;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Pivot object for the connection between Annotations and Labels.
- */
-class AnnotationLabel extends Model
+abstract class AnnotationLabel extends Model
 {
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $hidden = [
-        'created_at',
-        'updated_at',
+    protected $fillable = [
+        'label_id',
+        'user_id',
+        'annotation_id',
     ];
 
     /**
@@ -25,7 +23,8 @@ class AnnotationLabel extends Model
      * @var array
      */
     protected $casts = [
-        'confidence' => 'float',
+        'user_id' => 'int',
+        'annotation_id' => 'int',
     ];
 
     /**
@@ -33,10 +32,7 @@ class AnnotationLabel extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function annotation()
-    {
-        return $this->belongsTo(Annotation::class);
-    }
+    abstract public function annotation();
 
     /**
      * The label, this annotation label belongs to.
@@ -55,7 +51,6 @@ class AnnotationLabel extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class)
-            ->select('id', 'firstname', 'lastname', 'role_id');
+        return $this->belongsTo(User::class)->select('id', 'firstname', 'lastname');
     }
 }

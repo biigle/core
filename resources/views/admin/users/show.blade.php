@@ -90,31 +90,14 @@
     <div class="panel panel-default">
         <div class="panel-body">
             @if ($totalAnnotationLabels > 0)
-                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ Str::plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> {{ Str::plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ Str::plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
+                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ Str::plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> image {{ Str::plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ Str::plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
             @else
-                Created no annotations yet.
+                Created no image annotations yet.
             @endif
         </div>
         <ul class="list-group user-stats-list-group">
             @foreach ($recentAnnotations as $annotation)
                 <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
-            @endforeach
-        </ul>
-    </div>
-</div>
-
-<div class="col-xs-6">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            @if ($videosCount > 0)
-                Created <strong>{{ $videosCount }}</strong> {{ Str::plural('video', $videosCount) }} ({{ $videosPercent }}&nbsp;%) which have a total duration of {{ round($duration / 3600, 2) }}&nbsp;h ({{ $durationPercent }}&nbsp;%).
-            @else
-                Created no videos yet.
-            @endif
-        </div>
-        <ul class="list-group user-stats-list-group">
-            @foreach ($videos as $video)
-                <li class="list-group-item"><a href="{{route('video', $video->id)}}">{{$video->name}}</a></li>
             @endforeach
         </ul>
     </div>
