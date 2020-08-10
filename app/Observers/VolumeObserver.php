@@ -17,7 +17,7 @@ class VolumeObserver
      */
     public function creating(Volume $volume)
     {
-        if ($volume->creator === null) {
+        if ($volume->creator_id === null) {
             throw new Exception('Volume creator must not be null when creating a new volume.');
         }
 

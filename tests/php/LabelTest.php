@@ -96,7 +96,7 @@ class LabelTest extends ModelTestCase
 
     public function testIsUsedAnnotationLabel()
     {
-        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
         $this->assertTrue($this->model->isUsed());
         $a->delete();
         $this->assertFalse($this->model->isUsed());
@@ -110,9 +110,55 @@ class LabelTest extends ModelTestCase
         $this->assertFalse($this->model->isUsed());
     }
 
-    public function testCanBeDeleted()
+    public function testCanBeDeletedImageAnnotationLabel()
     {
-        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
         $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedImageLabel()
+    {
+        $a = ImageLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoAnnotationLabel()
+    {
+        $a = VideoAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoLabel()
+    {
+        $a = VideoLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testUsedScopeImageAnnotationLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        ImageAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeVideoAnnotationLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        VideoAnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeImageLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        ImageLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testUsedScopeVideoLabel()
+    {
+        $this->assertFalse(Label::used()->exists());
+        VideoLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue(Label::used()->exists());
     }
 }

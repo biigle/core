@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -13,7 +14,8 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->video = VideoTest::create(['project_id' => $this->project()->id]);
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
     public function testStore()
@@ -58,15 +60,15 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     {
         $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
         $annotationLabel1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->expert()->id,
         ]);
         $annotationLabel2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
         $annotationLabel3 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $annotation->id,
+            'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
 

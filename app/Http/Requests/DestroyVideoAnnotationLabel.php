@@ -47,7 +47,7 @@ class DestroyVideoAnnotationLabel extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $isOnlyLabel = !VideoAnnotationLabel::where('video_annotation_id', $this->annotationLabel->video_annotation_id)
+            $isOnlyLabel = !VideoAnnotationLabel::where('annotation_id', $this->annotationLabel->annotation_id)
                 ->where('id', '!=', $this->annotationLabel->id)
                 ->exists();
 

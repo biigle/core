@@ -1,4 +1,4 @@
-.image-label-tab {
+.file-label-tab {
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -10,20 +10,20 @@
         position: relative;
     }
 
-    .image-label__buttons {
+    .file-label__buttons {
         position: absolute;
         top: 1em;
         right: 1em;
         z-index: 1;
     }
 
-    .image-label-list {
+    .file-label-list {
         .text-muted {
             padding: 0 1em;
         }
     }
 
-    .image-label {
+    .file-label {
         border-bottom: 1px solid #353535;
         padding: 1em;
         padding-left: 32px;
@@ -33,12 +33,12 @@
         }
     }
 
-    .image-label__color {
+    .file-label__color {
         top: 1.2em;
         left: 1em;
     }
 
-    .image-label__delete {
+    .file-label__delete {
         top: 12px;
         right: 14px;
     }

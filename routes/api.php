@@ -11,17 +11,26 @@
 |
 */
 
-$router->resource('annotations', 'AnnotationController', [
-    'only' => ['show', 'store', 'update', 'destroy'],
+// Deprecated: use image-annotations instead
+$router->resource('annotations', 'ImageAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
     'parameters' => ['annotations' => 'id'],
 ]);
 
-$router->resource('annotations.labels', 'AnnotationLabelController', [
+// Deprecated: use image-annotations instead
+$router->resource('annotations', 'ImageAnnotationBulkController', [
+    'only' => ['store'],
+    'parameters' => ['annotations' => 'id'],
+]);
+
+// Deprecated: use image-annotations instead
+$router->resource('annotations.labels', 'ImageAnnotationLabelController', [
     'only' => ['index', 'store'],
     'parameters' => ['annotations' => 'id'],
 ]);
 
-$router->resource('annotation-labels', 'AnnotationLabelController', [
+// Deprecated: use image-annotation-labels instead
+$router->resource('annotation-labels', 'ImageAnnotationLabelController', [
     'only' => ['update', 'destroy'],
     'parameters' => ['annotation-labels' => 'id'],
 ]);
@@ -34,6 +43,26 @@ $router->resource('annotation-sessions', 'AnnotationSessionController', [
 $router->resource('api-tokens', 'ApiTokenController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['api-tokens' => 'id'],
+]);
+
+$router->resource('image-annotations', 'ImageAnnotationController', [
+    'only' => ['show', 'update', 'destroy'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotations', 'ImageAnnotationBulkController', [
+    'only' => ['store'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotations.labels', 'ImageAnnotationLabelController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['image-annotations' => 'id'],
+]);
+
+$router->resource('image-annotation-labels', 'ImageAnnotationLabelController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['image-annotation-labels' => 'id'],
 ]);
 
 $router->get('images/{id}/file', 'ImageController@showFile');
@@ -139,11 +168,6 @@ $router->delete(
     'UserPinnedProjectController@destroy'
 );
 
-$router->resource('projects.videos', 'ProjectVideoController', [
-    'only' => ['index', 'store'],
-    'parameters' => ['projects' => 'id'],
-]);
-
 $router->post(
     'projects/{id}/volumes/{id2}',
     'ProjectVolumeController@attach'
@@ -180,7 +204,7 @@ $router->resource('system-messages', 'SystemMessageController', [
 $router->get('videos/{id}/file', 'VideoFileController@show');
 
 $router->resource('videos', 'VideoController', [
-    'only' => ['update', 'destroy'],
+    'only' => ['show', 'destroy'],
     'parameters' => ['videos' => 'id'],
 ]);
 
@@ -214,6 +238,16 @@ $router->resource('video-annotation-labels', 'VideoAnnotationLabelController', [
     'parameters' => ['video-annotation-labels' => 'id'],
 ]);
 
+$router->resource('videos.labels', 'VideoLabelController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['videos' => 'id'],
+]);
+
+$router->resource('video-labels', 'VideoLabelController', [
+    'only' => ['destroy'],
+    'parameters' => ['video-labels' => 'id'],
+]);
+
 $router->resource('visibilities', 'VisibilityController', [
     'only' => ['index', 'show'],
     'parameters' => ['visibilities' => 'id'],
@@ -229,7 +263,7 @@ $router->resource('volumes.annotation-sessions', 'VolumeAnnotationSessionControl
     'parameters' => ['volumes' => 'id'],
 ]);
 
-$router->resource('volumes.images', 'VolumeImageController', [
+$router->resource('volumes.files', 'VolumeFileController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
 ]);
@@ -238,44 +272,40 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
 ], function ($router) {
-    $router->get('{id}/images/order-by/filename', [
-        'uses' => 'Sorters\ImageFilenameController@index',
+    $router->get('{id}/files/filter/labels', [
+        'uses' => 'Filters\AnyFileLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/labels', [
-        'uses' => 'Filters\AnyImageLabelController@index',
+    $router->get('{id}/files/filter/labels/users/{id2}', [
+        'uses' => 'Filters\FileLabelUserController@index',
     ]);
 
-    $router->get('{id}/images/filter/image-label-user/{id2}', [
-        'uses' => 'Filters\ImageLabelUserController@index',
+    $router->get('{id}/files/filter/labels/{id2}', [
+        'uses' => 'Filters\FileLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/image-label/{id2}', [
-        'uses' => 'Filters\ImageLabelController@index',
+    $router->get('{id}/files/filter/annotation-label/{id2}', [
+        'uses' => 'Filters\AnnotationLabelController@index',
     ]);
 
-    $router->get('{id}/images/filter/annotation-label/{id2}', [
-        'uses' => 'Filters\ImageAnnotationLabelController@index',
+    $router->get('{id}/files/filter/filename/{pattern}', [
+        'uses' => 'Filters\FilenameController@index',
     ]);
 
-    $router->get('{id}/images/filter/filename/{pattern}', [
-        'uses' => 'Filters\ImageFilenameController@index',
-    ]);
-
-    $router->get('{id}/image-labels', [
-        'uses' => 'UsedImageLabelsController@index',
+    $router->get('{id}/file-labels', [
+        'uses' => 'UsedFileLabelsController@index',
     ]);
 
     $router->get('{id}/filenames', [
-        'uses' => 'ImageFilenamesController@index',
+        'uses' => 'FilenamesController@index',
     ]);
 
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
     ]);
 
-    $router->get('{id}/images/labels', [
-        'uses' => 'ImageLabelsController@index',
+    $router->get('{id}/files/labels', [
+        'uses' => 'FileLabelsController@index',
     ]);
 
     $router->post('{id}/images/metadata', [
@@ -285,6 +315,7 @@ $router->group([
     $router->group(['prefix' => 'browser'], function ($router) {
         $router->get('directories/{disk}', 'BrowserController@indexDirectories');
         $router->get('images/{disk}', 'BrowserController@indexImages');
+        $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
 });
 
@@ -292,11 +323,11 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Annotations',
 ], function ($router) {
-    $router->get('{id}/images/filter/annotations', [
+    $router->get('{id}/files/filter/annotations', [
         'uses' => 'Filters\AnnotationController@index',
     ]);
 
-    $router->get('{id}/images/filter/annotation-user/{id2}', [
+    $router->get('{id}/files/filter/annotation-user/{id2}', [
         'uses' => 'Filters\AnnotationUserController@index',
     ]);
 

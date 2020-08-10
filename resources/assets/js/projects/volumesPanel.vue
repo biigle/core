@@ -136,7 +136,11 @@ export default {
     },
     created() {
         this.project = biigle.$require('projects.project');
-        this.volumes = biigle.$require('projects.volumes');
+        this.volumes = biigle.$require('projects.volumes').map(function (volume) {
+            volume.icon = volume.media_type.name === 'image' ? 'image' : 'film';
+
+            return volume;
+        });
         this.$once('editing.start', this.fetchAttachableVolumes);
     },
     mounted() {

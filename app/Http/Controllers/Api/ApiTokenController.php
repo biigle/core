@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\ApiToken;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Str;
 
 class ApiTokenController extends Controller
@@ -121,7 +122,7 @@ class ApiTokenController extends Controller
             }
         } else {
             // Dont't disclose existing token IDs to other users.
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
     }
 }

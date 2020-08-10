@@ -1,7 +1,7 @@
 FROM docker.pkg.github.com/biigle/core/app as intermediate
 
 # FROM php:7.4-alpine
-FROM php@sha256:38b3a7a57da5e60049706ae3770db350212b9dd3f6b6c80d7f9ae4f53a365230
+FROM php@sha256:f7a0acfde4042d1f27464a2848b965d553cd48d7f2bdad570958be507b1431ef
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache \
@@ -78,7 +78,7 @@ RUN apk add --no-cache \
     py3-pillow \
     py3-scipy
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
     py3-scikit-learn
 
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \

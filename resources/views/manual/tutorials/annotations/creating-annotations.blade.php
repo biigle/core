@@ -12,16 +12,16 @@
 </style>
 @endpush
 
-@section('manual-title', 'Creating Annotations')
+@section('manual-title', 'Creating Image Annotations')
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn about all the tools that are available to create new annotations.
+            Learn about all the tools that are available to create new image annotations.
         </p>
 
         <p>
-            An annotation is a point or a region on an image that can have one or more labels attached to it. The annotation tool offers different shapes that can be used to create new annotations. Each shape is suited best for specific annotation tasks so choose the shapes you want to use wisely before you begin annotating.
+            An image annotation is a point or a region on an image that can have one or more labels attached to it. The image annotation tool offers different shapes that can be used to create new annotations. Each shape is suited best for specific annotation tasks so choose the shapes you want to use wisely before you begin annotating.
         </p>
         <p>
             You can activate a tool by clicking the button in the toolbar at the bottom:

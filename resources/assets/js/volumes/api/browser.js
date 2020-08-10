@@ -9,8 +9,11 @@
  * Show subdirectories:
  * resource.get({disk: storageDisk, path: subDirectory}).then(...);
  *
- * Show image files:
+ * Show images:
  * resource.getImages({disk: storageDisk, path: subDirectory}).then(...);
+ *
+ * Show videos:
+ * resource.getVideos({disk: storageDisk, path: subDirectory}).then(...);
  *
  * @type {Vue.resource}
  */
@@ -18,5 +21,9 @@ export default Vue.resource('api/v1/volumes/browser/directories{/disk}', {}, {
     getImages: {
         method: 'GET',
         url: 'api/v1/volumes/browser/images{/disk}',
+    },
+    getVideos: {
+        method: 'GET',
+        url: 'api/v1/volumes/browser/videos{/disk}',
     },
 });

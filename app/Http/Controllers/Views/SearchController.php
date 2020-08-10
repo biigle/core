@@ -135,7 +135,7 @@ class SearchController extends Controller
     protected function searchVolumes(User $user, $query, $type)
     {
         $queryBuilder = Volume::accessibleBy($user)
-            ->select('volumes.id', 'volumes.updated_at', 'volumes.name');
+            ->select('volumes.id', 'volumes.updated_at', 'volumes.name', 'volumes.media_type_id');
 
         if ($query) {
             $queryBuilder = $queryBuilder->where('volumes.name', 'ilike', "%{$query}%");
@@ -186,7 +186,8 @@ class SearchController extends Controller
         ];
 
         if ($type === 'images') {
-            $values['results'] = $imageQuery->orderBy('images.id', 'desc')
+            $values['results'] = $imageQuery
+                ->orderBy('images.id', 'desc')
                 ->paginate(12);
         }
 
@@ -204,11 +205,20 @@ class SearchController extends Controller
      */
     protected function searchVideos(User $user, $query, $type)
     {
-        $queryBuilder = Video::accessibleBy($user);
+        if ($user->can('sudo')) {
+            $queryBuilder = Video::query();
+        } else {
+            $queryBuilder = Video::join('project_volume', 'videos.volume_id', '=', 'project_volume.volume_id')
+                ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                // Use distinct as volumes may be attached to more than one project.
+                ->distinct()
+                ->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id');
+        }
 
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('videos.name', 'ilike', "%{$query}%");
+                $q->where('videos.filename', 'ilike', "%{$query}%");
             });
         }
 
@@ -216,7 +226,7 @@ class SearchController extends Controller
 
         if ($type === 'videos') {
             $values['results'] = $queryBuilder
-                ->orderBy('videos.updated_at', 'desc')
+                ->orderBy('videos.id', 'desc')
                 ->paginate(12);
 
             $values['videoResultCount'] = $values['results']->total();

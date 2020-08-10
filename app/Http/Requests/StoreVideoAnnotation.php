@@ -24,7 +24,7 @@ class StoreVideoAnnotation extends FormRequest
     {
         $this->video = Video::findOrFail($this->route('id'));
 
-        return $this->user()->can('edit-in', $this->video);
+        return $this->user()->can('add-annotation', $this->video);
     }
 
     /**

@@ -3,15 +3,62 @@
 namespace Biigle;
 
 use Biigle\Events\VideoDeleted;
-use Biigle\FileCache\Contracts\File as FileContract;
-use Biigle\Traits\HasJsonAttributes;
 use Biigle\User;
 use DB;
-use Illuminate\Database\Eloquent\Model;
 
-class Video extends Model implements FileContract
+class Video extends VolumeFile
 {
-    use HasJsonAttributes;
+    /**
+     * Allowed video MIME types.
+     *
+     * @var array
+     */
+    const MIMES = [
+        'video/mpeg',
+        'video/mp4',
+        'video/quicktime',
+        'video/webm',
+    ];
+
+    /**
+     * Allowed video codecs.
+     *
+     * @var array
+     */
+    const CODECS = [
+        'h264',
+        'vp8',
+        'vp9',
+        'av1',
+    ];
+
+    /**
+     * Error if a video cannot be found.
+     *
+     * @var int
+     */
+    const ERROR_NOT_FOUND = 1;
+
+    /**
+     * Error if a video has an invalid MIME type.
+     *
+     * @var int
+     */
+    const ERROR_MIME_TYPE = 2;
+
+    /**
+     * Error if a video has an invalid codec.
+     *
+     * @var int
+     */
+    const ERROR_CODEC = 3;
+
+    /**
+     * Error if a video cannot be parsed.
+     *
+     * @var int
+     */
+    const ERROR_MALFORMED = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -19,11 +66,8 @@ class Video extends Model implements FileContract
      * @var array
      */
     protected $fillable = [
-        'name',
-        'url',
-        'description',
-        'creator_id',
-        'project_id',
+        'filename',
+        'volume_id',
         'uuid',
         'attrs',
         'duration',
@@ -37,16 +81,6 @@ class Video extends Model implements FileContract
     protected $casts = [
         'attrs' => 'array',
         'duration' => 'float',
-    ];
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'gis_link',
-        'doi',
     ];
 
     /**
@@ -68,56 +102,6 @@ class Video extends Model implements FileContract
     ];
 
     /**
-     * Scope a query to all videos that are accessible by a user.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param User $user
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeAccessibleBy($query, User $user)
-    {
-        if ($user->can('sudo')) {
-            return $query;
-        }
-
-        return $query->whereIn('id', function ($query) use ($user) {
-            $query->select('videos.id')
-                ->from('videos')
-                ->join('project_user', 'project_user.project_id', '=', 'videos.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->distinct();
-        });
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * The user who created this video.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function creator()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * The project this video belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function project()
-    {
-        return $this->belongsTo(Project::class);
-    }
-
-    /**
      * The annotations that belong to this video.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -125,80 +109,6 @@ class Video extends Model implements FileContract
     public function annotations()
     {
         return $this->hasMany(VideoAnnotation::class);
-    }
-
-    /**
-     * Get the name of the storage disk of this video.
-     *
-     * @return string
-     */
-    public function getDiskAttribute()
-    {
-        return explode('://', $this->url)[0];
-    }
-
-    /**
-     * Get the file path in the storage disk of this video.
-     *
-     * @return string
-     */
-    public function getPathAttribute()
-    {
-        return explode('://', $this->url)[1];
-    }
-
-    /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
-    }
-
-    /**
-     * Set the doi attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setDoiAttribute($value)
-    {
-        if (is_string($value)) {
-            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
-        }
-
-        return $this->setJsonAttr('doi', $value);
-    }
-
-    /**
-     * Get the doi attribute of this volume.
-     *
-     * @return string
-     */
-    public function getDoiAttribute()
-    {
-        return $this->getJsonAttr('doi');
-    }
-
-    /**
-     * Determine if this video comes from a remote source.
-     *
-     * @return bool
-     */
-    public function isRemote()
-    {
-        return strpos($this->url, 'http') === 0;
     }
 
     /**
@@ -246,5 +156,85 @@ class Video extends Model implements FileContract
         return $this->thumbnails->map(function ($item) {
             return thumbnail_url($item, config('videos.thumbnail_storage_disk'));
         });
+    }
+
+    /**
+     * Get the error attribute.
+     *
+     * @return string
+     */
+    public function getErrorAttribute()
+    {
+        return $this->getJsonAttr('error');
+    }
+
+    /**
+     * Set the error attribute.
+     *
+     * @param string $value
+     */
+    public function setErrorAttribute($value)
+    {
+        $this->setJsonAttr('error', $value);
+    }
+
+    /**
+     * Get the mimeType attribute.
+     *
+     * @return string
+     */
+    public function getMimeTypeAttribute()
+    {
+        return $this->getJsonAttr('mimetype');
+    }
+
+    /**
+     * Set the mimeType attribute.
+     *
+     * @param string $value
+     */
+    public function setMimeTypeAttribute($value)
+    {
+        $this->setJsonAttr('mimetype', $value);
+    }
+
+    /**
+     * Get the size attribute.
+     *
+     * @return int
+     */
+    public function getSizeAttribute()
+    {
+        return $this->getJsonAttr('size');
+    }
+
+    /**
+     * Set the size attribute.
+     *
+     * @param int $value
+     */
+    public function setSizeAttribute($value)
+    {
+        $this->setJsonAttr('size', $value);
+    }
+
+    /**
+     * Determine whether the (new) video has been processed.
+     *
+     * @return boolean
+     */
+    public function hasBeenProcessed()
+    {
+        return !is_null($this->size);
+    }
+
+    /**
+     * The labels, this video got attached by the users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function labels()
+    {
+        return $this->hasMany(VideoLabel::class)->with('label', 'user');
     }
 }

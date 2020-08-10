@@ -2,28 +2,16 @@
 
 namespace Biigle;
 
-use Biigle\FileCache\Contracts\File as FileContract;
-use Biigle\Traits\HasJsonAttributes;
 use Exception;
 use FileCache;
-use Illuminate\Database\Eloquent\Model;
-use Response;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model implements FileContract
+class Image extends VolumeFile
 {
-    use HasJsonAttributes;
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
     /**
      * The attributes hidden in the model's JSON form.
      *
@@ -55,31 +43,13 @@ class Image extends Model implements FileContract
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * The volume, this image belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function volume()
-    {
-        return $this->belongsTo(Volume::class);
-    }
-
-    /**
      * The annotations on this image.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function annotations()
     {
-        return $this->hasMany(Annotation::class);
+        return $this->hasMany(ImageAnnotation::class);
     }
 
     /**
@@ -90,17 +60,6 @@ class Image extends Model implements FileContract
     public function labels()
     {
         return $this->hasMany(ImageLabel::class)->with('label', 'user');
-    }
-
-    /**
-     * Adds the `url` attribute to the image model. The url is the absolute path
-     * to the original image file.
-     *
-     * @return string
-     */
-    public function getUrlAttribute()
-    {
-        return "{$this->volume->url}/{$this->filename}";
     }
 
     /**
@@ -144,13 +103,13 @@ class Image extends Model implements FileContract
         }
 
         if ($this->volume->isRemote()) {
-            return Response::redirectTo($this->url);
+            return redirect($this->url);
         }
 
         try {
             $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
-                abort(404);
+                abort(Response::HTTP_NOT_FOUND);
             }
 
             return response()->stream(function () use ($stream) {
@@ -263,5 +222,15 @@ class Image extends Model implements FileContract
     public function getTilingInProgressAttribute()
     {
         return $this->getJsonAttr('tilingInProgress', false);
+    }
+
+    /**
+     * URL to the thumbnail of this image.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return thumbnail_url($this->uuid);
     }
 }

@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -13,7 +14,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->video = VideoTest::create(['project_id' => $this->project()->id]);
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
     public function testStoreValidation()
@@ -195,7 +197,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $l1 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a1->id,
+            'annotation_id' => $a1->id,
         ]);
 
         $a2 = VideoAnnotationTest::create([
@@ -206,17 +208,17 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $l2 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a2->id,
+            'annotation_id' => $a2->id,
             'label_id' => $l1->label_id,
         ]);
 
         $l3 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a2->id,
+            'annotation_id' => $a2->id,
             'user_id' => $l1->user_id,
         ]);
 
         $l4 = VideoAnnotationLabelTest::create([
-            'video_annotation_id' => $a2->id,
+            'annotation_id' => $a2->id,
             'label_id' => $l1->label_id,
             'user_id' => $l1->user_id,
         ]);
@@ -229,8 +231,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
         $this->assertEquals(3, $a1->labels()->count());
         $this->assertNotNull($l1->fresh());
-        $this->assertEquals($a1->id, $l2->fresh()->video_annotation_id);
-        $this->assertEquals($a1->id, $l3->fresh()->video_annotation_id);
+        $this->assertEquals($a1->id, $l2->fresh()->annotation_id);
+        $this->assertEquals($a1->id, $l3->fresh()->annotation_id);
         $this->assertNull($l4->fresh());
     }
 

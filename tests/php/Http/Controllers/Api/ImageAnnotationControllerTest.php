@@ -4,9 +4,9 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Cache;
@@ -22,23 +22,23 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->image = ImageTest::create([
             'volume_id' => $this->volume()->id,
         ]);
+
+        $this->annotation = ImageAnnotationTest::create([
+            'image_id' => $this->image->id,
+            'points' => [10, 20, 30, 40],
+        ]);
     }
 
     public function testIndex()
     {
-        $annotation = AnnotationTest::create([
-            'image_id' => $this->image->id,
-            'points' => [10, 20, 30, 40],
-        ]);
-
         $label = LabelTest::create([
             'name' => 'My label',
             'color' => 'bada55',
         ]);
 
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
-            'annotation_id' => $annotation->id,
+            'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);
 
@@ -66,24 +66,24 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $this->image->id,
             'created_at' => Carbon::yesterday(),
             'points' => [10, 20],
         ]);
 
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $a1->id,
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $this->image->id,
             'created_at' => Carbon::today(),
             'points' => [20, 30],
         ]);
 
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $a2->id,
         ]);
@@ -103,8 +103,83 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(200);
     }
 
+    public function testShow()
+    {
+        $this->show('api/v1/image-annotations');
+    }
+
+    public function testShowLegacy()
+    {
+        $this->show('api/v1/annotations');
+    }
+
+    public function show($url)
+    {
+        $id = $this->annotation->id;
+        $this->annotation->points = [10, 10, 20, 20];
+        $this->annotation->save();
+        $this->doTestApiRoute('GET', "{$url}/{$id}");
+
+        $this->beEditor();
+        $response = $this->get("{$url}/{$id}");
+        $response->assertStatus(200);
+
+        $this->beGuest();
+        $response = $this->get("{$url}/{$id}");
+        $response->assertStatus(200);
+
+        $this->beUser();
+        $response = $this->get("{$url}/{$id}");
+        $response->assertStatus(403);
+
+        $this->beAdmin();
+        $response = $this->get("{$url}/{$id}")
+            ->assertJsonFragment(['points' => [10, 10, 20, 20]]);
+        // the labels should be fetched separately
+        $this->assertStringNotContainsString('labels', $response->getContent());
+        // image and volume objects from projectIds() call shouldn't be
+        // included in the output
+        $this->assertStringNotContainsString('"image"', $response->getContent());
+        $this->assertStringNotContainsString('volume', $response->getContent());
+    }
+
+    public function testShowAnnotationSession()
+    {
+        $this->showAnnotationSession('api/v1/image-annotations');
+    }
+
+    public function testShowAnnotationSessionLegacy()
+    {
+        $this->showAnnotationSession('api/v1/annotations');
+    }
+
+    public function showAnnotationSession($url)
+    {
+        $this->annotation->created_at = Carbon::yesterday();
+        $this->annotation->save();
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->annotation->image->volume_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $response = $this->get("{$url}/{$this->annotation->id}");
+        $response->assertStatus(200);
+
+        $session->users()->attach($this->admin());
+        Cache::flush();
+
+        $response = $this->get("{$url}/{$this->annotation->id}");
+        $response->assertStatus(403);
+    }
+
     public function testStore()
     {
+        $this->annotation->delete();
         $label = LabelTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/images/{$this->image->id}/annotations");
@@ -207,5 +282,154 @@ class ImageAnnotationControllerTest extends ApiTestCase
         ]);
         // invalid number of points
         $response->assertStatus(422);
+    }
+
+    public function testUpdate()
+    {
+        $this->update('api/v1/image-annotations');
+    }
+
+    public function testUpdateLegacy()
+    {
+        $this->update('api/v1/annotations');
+    }
+
+    public function update($url)
+    {
+        $id = $this->annotation->id;
+
+        $this->doTestApiRoute('PUT', "{$url}/{$id}");
+
+        $this->beUser();
+        $response = $this->put("{$url}/{$id}");
+        $response->assertStatus(403);
+
+        $this->annotation->points = [10, 10];
+        $this->annotation->save();
+
+        $this->beAdmin();
+        $response = $this->put("{$url}/{$id}", ['points' => [10, 15, 100, 200]]);
+        $response->assertStatus(200);
+
+        $this->annotation = $this->annotation->fresh();
+
+        $this->assertEquals(4, sizeof($this->annotation->points));
+        $this->assertEquals(15, $this->annotation->points[1]);
+
+        $response = $this->json('PUT', "{$url}/{$id}", ['points' => [20, 25]]);
+        $response->assertStatus(200);
+
+        $this->annotation = $this->annotation->fresh();
+
+        $this->assertEquals(2, sizeof($this->annotation->points));
+        $this->assertEquals(25, $this->annotation->points[1]);
+    }
+
+    public function testUpdateValidatePoints()
+    {
+        $this->updateValidatePoints('api/v1/image-annotations');
+    }
+
+    public function testUpdateValidatePointsLegacy()
+    {
+        $this->updateValidatePoints('api/v1/annotations');
+    }
+
+    public function updateValidatePoints($url)
+    {
+        $id = $this->annotation->id;
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beAdmin();
+        $response = $this->json('PUT', "{$url}/{$id}", ['points' => [10, 15, 100, 200]]);
+        // invalid number of points
+        $response->assertStatus(422);
+
+        // Points must be array.
+        $this->json('PUT', "{$url}/{$id}")
+            ->assertStatus(422);
+    }
+
+    public function testUpdateChangeShape()
+    {
+        $this->updateChangeShape('api/v1/image-annotations');
+    }
+
+    public function testUpdateChangeShapeLegacy()
+    {
+        $this->updateChangeShape('api/v1/annotations');
+    }
+
+    public function updateChangeShape($url)
+    {
+        $id = $this->annotation->id;
+        $this->annotation->points = [100, 200];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beEditor();
+        // invalid points for a circle
+        $this->putJson("{$url}/{$id}", ['shape_id' => Shape::circleId()])
+            ->assertStatus(422);
+
+        $this->putJson("{$url}/{$id}", [
+                'shape_id' => Shape::circleId(),
+                'points' => [100, 200, 300],
+            ])
+            ->assertStatus(200);
+
+        $this->annotation->refresh();
+        $this->assertEquals(Shape::circleId(), $this->annotation->shape_id);
+    }
+
+    public function testDestroy()
+    {
+        $this->destroy('api/v1/image-annotations');
+    }
+
+    public function testDestroyLegacy()
+    {
+        $this->destroy('api/v1/annotations');
+    }
+
+    public function destroy($url)
+    {
+        $id = $this->annotation->id;
+
+        $this->doTestApiRoute('DELETE', "{$url}/{$id}");
+
+        $this->beUser();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(403);
+
+        $this->assertNotNull($this->annotation->fresh());
+
+        $this->beAdmin();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(200);
+
+        $this->assertNull($this->annotation->fresh());
+
+        $this->annotation = ImageAnnotationTest::create();
+        $this->project()->volumes()->attach($this->annotation->image->volume);
+        $id = $this->annotation->id;
+
+        $this->beUser();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(403);
+
+        $this->beGuest();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(403);
+
+        $this->beEditor();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(200);
+
+        // admin could delete but the annotation was already deleted
+        $this->beAdmin();
+        $response = $this->delete("{$url}/{$id}");
+        $response->assertStatus(404);
     }
 }

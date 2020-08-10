@@ -14,6 +14,7 @@ export default {
                 'autoplayDraw',
                 'showLabelTooltip',
                 'showMousePosition',
+                'showProgressIndicator',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -21,6 +22,7 @@ export default {
             showLabelTooltip: false,
             showMousePosition: false,
             playbackRate: 1.0,
+            showProgressIndicator: true,
         };
     },
     methods: {
@@ -41,6 +43,12 @@ export default {
         },
         handleHideMousePosition() {
             this.showMousePosition = false;
+        },
+        handleShowProgressIndicator() {
+            this.showProgressIndicator = true;
+        },
+        handleHideProgressIndicator() {
+            this.showProgressIndicator = false;
         },
     },
     watch: {
@@ -73,6 +81,10 @@ export default {
             if (!isNaN(value)) {
                 this.$emit('update', 'playbackRate', value);
             }
+        },
+        showProgressIndicator(show) {
+            this.$emit('update', 'showProgressIndicator', show);
+            Settings.set('showProgressIndicator', show);
         },
     },
     created() {

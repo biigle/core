@@ -9,7 +9,7 @@
     align-items: center;
     pointer-events: none;
     transition: .25s background-color ease;
-    z-index: 100;
+    z-index: 999;
 
     &.loader-block--active {
         pointer-events: auto;

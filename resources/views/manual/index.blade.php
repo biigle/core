@@ -68,7 +68,7 @@
             </h4>
 
             <p>
-                The volume overview allows you to explore all images that belong to a volume.
+                The volume overview allows you to explore all files that belong to a volume.
             </p>
 
             <h4>
@@ -96,35 +96,35 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['volumes', 'image-labels'])}}">Image Labels</a>
+                <a href="{{route('manual-tutorials', ['volumes', 'file-labels'])}}">File Labels</a>
             </h4>
 
             <p>
-                Image labels are labels that are attached to whole images.
+                File labels are labels that are attached to whole images or videos.
             </p>
 
-            <h3>Annotations</h3>
+            <h3>Image Annotations</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['annotations', 'getting-started'])}}">Getting Started</a>
             </h4>
             <p>
-                A quick introduction to the annotation tool.
+                A quick introduction to the image annotation tool.
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Creating Annotations</a>
+                <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}">Creating Image Annotations</a>
             </h4>
 
             <p>
-                Learn about all the tools that are available to create new annotations.
+                Learn about all the tools that are available to create new image annotations.
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Editing Annotations</a>
+                <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">Editing Image Annotations</a>
             </h4>
 
             <p>
-                Learn about all the tools to modify or delete existing annotations.
+                Learn about all the tools to modify or delete existing image annotations.
             </p>
 
             <h4>
@@ -132,7 +132,7 @@
             </h4>
 
             <p>
-                Learn about advanced ways to navigate the images in the annotation tool.
+                Learn about advanced ways to navigate the images in the image annotation tool.
             </p>
 
             <h4>
@@ -140,7 +140,7 @@
             </h4>
 
             <p>
-                All sidebar tabs of the annotation tool explained.
+                All sidebar tabs of the image annotation tool explained.
             </p>
 
 
@@ -149,7 +149,7 @@
             </h4>
 
             <p>
-                A list of all available shortcut keys in the annotation tool.
+                A list of all available shortcut keys in the image annotation tool.
             </p>
 
             <h4>
@@ -157,7 +157,7 @@
             </h4>
 
             <p>
-                Advanced configuration of the annotation tool.
+                Advanced configuration of the image annotation tool.
             </p>
 
             <h3>Video Annotations</h3>
@@ -215,14 +215,6 @@
 
             <p>
                 Advanced configuration of the video annotation tool.
-            </p>
-
-            <h4>
-                <a href="{{route('manual-tutorials', ['videos', 'remote-videos'])}}">Remote Videos</a>
-            </h4>
-
-            <p>
-                With remote videos you can use videos from your own data source in BIIGLE.
             </p>
 
 

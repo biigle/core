@@ -2,16 +2,15 @@
 
 namespace Biigle;
 
-use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * An annotation is a region of an image that can be labeled by the users.
+ * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-class Annotation extends Model implements AnnotationContract
+abstract class Annotation extends Model
 {
     use HasPointsAttribute;
 
@@ -21,7 +20,6 @@ class Annotation extends Model implements AnnotationContract
      * @var array
      */
     protected $hidden = [
-        // don't display info from the pivot table
         'pivot',
     ];
 
@@ -48,11 +46,17 @@ class Annotation extends Model implements AnnotationContract
             return $query;
         }
 
-        return $query->whereIn('annotations.id', function ($query) use ($user) {
-            $query->select('annotations.id')
-                ->from('annotations')
-                ->join('images', 'images.id', '=', 'annotations.image_id')
-                ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
+        $table = $this->getTable();
+
+        return $query->whereIn("{$table}.id", function ($query) use ($user, $table) {
+            $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
+            $ownerTable = explode('.', $ownerKeyName)[0];
+            $foreignKeyName = $this->file()->getQualifiedForeignKeyName();
+
+            $query->select("{$table}.id")
+                ->from($table)
+                ->join($ownerTable, $ownerKeyName, '=', $foreignKeyName)
+                ->join('project_volume', 'project_volume.volume_id', '=', "{$ownerTable}.volume_id")
                 ->whereIn('project_volume.project_id', function ($query) use ($user) {
                     $query->select('project_id')
                         ->from('project_user')
@@ -71,9 +75,14 @@ class Annotation extends Model implements AnnotationContract
      */
     public function scopeWithLabel($query, Label $label)
     {
-        return $query->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->where('annotation_labels.label_id', $label->id)
-            ->select('annotations.*');
+        $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
+        $foreignTable = explode('.', $foreignKeyName)[0];
+        $parentKeyName = $this->labels()->getQualifiedParentKeyName();
+        $table = $this->getTable();
+
+        return $query->join($foreignTable, $foreignKeyName, '=', $parentKeyName)
+            ->where("{$foreignTable}.label_id", $label->id)
+            ->select("{$table}.*");
     }
 
     /**
@@ -86,39 +95,53 @@ class Annotation extends Model implements AnnotationContract
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
+        $table = $this->getTable();
+
         if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
 
             // take only annotations of this session
-            $query->where('annotations.created_at', '>=', $session->starts_at)
-                ->where('annotations.created_at', '<', $session->ends_at)
+            $query->where("{$table}.created_at", '>=', $session->starts_at)
+                ->where("{$table}.created_at", '<', $session->ends_at)
                 // which have at least one label of the current user
                 ->whereExists(function ($query) use ($user) {
+                    $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
+                    $foreignTable = explode('.', $foreignKeyName)[0];
+                    $parentKeyName = $this->labels()->getQualifiedParentKeyName();
+
                     $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->where('annotation_labels.user_id', $user->id);
+                        ->from($foreignTable)
+                        ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
+                        ->where("{$foreignTable}.user_id", $user->id);
                 });
         } elseif ($session->hide_own_annotations) {
-            $query->where(function ($query) use ($session, $user) {
+            $query->where(function ($query) use ($session, $user, $table) {
                 // take all annotations of this session
-                $query->where('annotations.created_at', '>=', $session->starts_at)
-                    ->where('annotations.created_at', '<', $session->ends_at)
+                $query->where("{$table}.created_at", '>=', $session->starts_at)
+                    ->where("{$table}.created_at", '<', $session->ends_at)
                     // or older annotations with at least one label of another user
                     ->orWhereExists(function ($query) use ($user) {
+                        $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
+                        $foreignTable = explode('.', $foreignKeyName)[0];
+                        $parentKeyName = $this->labels()->getQualifiedParentKeyName();
+
                         $query->select(DB::raw(1))
-                            ->from('annotation_labels')
-                            ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                            ->where('annotation_labels.user_id', '!=', $user->id);
+                            ->from($foreignTable)
+                            ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
+                            ->where("{$foreignTable}.user_id", '!=', $user->id);
                     });
             });
         } elseif ($session->hide_other_users_annotations) {
 
             // take only annotations with labels of the current user
             $query->whereExists(function ($query) use ($user) {
+                $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
+                $foreignTable = explode('.', $foreignKeyName)[0];
+                $parentKeyName = $this->labels()->getQualifiedParentKeyName();
+
                 $query->select(DB::raw(1))
-                    ->from('annotation_labels')
-                    ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                    ->where('annotation_labels.user_id', $user->id);
+                    ->from($foreignTable)
+                    ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
+                    ->where("{$foreignTable}.user_id", $user->id);
             });
         }
 
@@ -126,14 +149,25 @@ class Annotation extends Model implements AnnotationContract
     }
 
     /**
-     * The image, this annotation belongs to.
+     * The file, this annotation belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function image()
-    {
-        return $this->belongsTo(Image::class);
-    }
+    abstract public function file();
+
+    /**
+     * The labels, this annotation got assigned by the users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    abstract public function labels();
+
+    /**
+     * Get the file_id attribute
+     *
+     * @return int
+     */
+    abstract public function getFileIdAttribute();
 
     /**
      * The shape of this annotation.
@@ -143,39 +177,5 @@ class Annotation extends Model implements AnnotationContract
     public function shape()
     {
         return $this->belongsTo(Shape::class);
-    }
-
-    /**
-     * The labels, this annotation got assigned by the users.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function labels()
-    {
-        return $this->hasMany(AnnotationLabel::class)->with('label', 'user');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPoints(): array
-    {
-        return $this->points;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getShape(): Shape
-    {
-        return $this->shape;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getImage(): Image
-    {
-        return $this->image;
     }
 }

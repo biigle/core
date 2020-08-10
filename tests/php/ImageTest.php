@@ -72,8 +72,8 @@ class ImageTest extends ModelTestCase
 
     public function testAnnotations()
     {
-        $annotation = AnnotationTest::create(['image_id' => $this->model->id]);
-        AnnotationTest::create(['image_id' => $this->model->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $this->model->id]);
+        ImageAnnotationTest::create(['image_id' => $this->model->id]);
         $this->assertEquals(2, $this->model->annotations()->count());
         $this->assertNotNull($this->model->annotations()->find($annotation->id));
     }
@@ -100,11 +100,8 @@ class ImageTest extends ModelTestCase
     public function testGetFileRemote()
     {
         $this->model->volume->url = 'http://localhost';
-        Response::shouldReceive('redirectTo')
-            ->once()
-            ->with($this->model->url)
-            ->andReturn(true);
-        $this->assertTrue($this->model->getFile());
+        $response = $this->model->getFile();
+        $this->assertEquals($this->model->url, $response->getTargetUrl());
     }
 
     public function testGetFileTiled()

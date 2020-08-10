@@ -20,6 +20,13 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     use InteractsWithQueue;
 
     /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * IDs of the images to generate thumbnails for.
      *
      * Public for testability.
@@ -111,9 +118,10 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
                     TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
-                Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
                 if (App::runningUnitTests()) {
                     throw $e;
+                } else {
+                    Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
                 }
             }
         }

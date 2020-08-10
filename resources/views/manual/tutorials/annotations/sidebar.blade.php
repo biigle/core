@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            All sidebar tabs of the annotation tool explained.
+            All sidebar tabs of the image annotation tool explained.
         </p>
 
         <h3><a name="annotations-tab"></a> <i class="fa fa-map-marker-alt"></i> Annotations</h3>
@@ -91,7 +91,7 @@
         <h3><a name="settings-tab"></a> <i class="fa fa-cog"></i> Settings</h3>
 
         <p>
-            The settings tab allows you to customize the annotation tool and provides some advanced features.
+            The settings tab allows you to customize the image annotation tool and provides some advanced features.
         </p>
         <p>
             Click the <i class="fa fa-camera"></i> capture screenshot button to get a screenshot of the currently visible area as a downloadable image. Note that the screenshot does not include the whole image but only the visible area of your current viewport.
@@ -104,7 +104,7 @@
         </div>
 
         <p>
-            The annotation opacity slider allows you to make annotations more transparent or hide them completely. Note that this setting will be remembered permanently so don't be confused if no annotations show up the next time you open an image in the annotation tool.
+            The annotation opacity slider allows you to make annotations more transparent or hide them completely. Note that this setting will be remembered permanently so don't be confused if no annotations show up the next time you open an image in the image annotation tool.
         </p>
 
         <p>

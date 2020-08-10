@@ -5,7 +5,8 @@
 @push('scripts')
    <script type="text/javascript">
       biigle.$declare('volumes.url', '{!! old('url') !!}');
-      biigle.$declare('volumes.filenames', '{!! str_replace(["\r", "\n"], '', old('images')) !!}');
+      biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
+      biigle.$declare('volumes.filenames', '{!! $filenames !!}');
       @if ($hasBrowser)
          biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
       @endif
@@ -25,27 +26,45 @@
             @endif
          </div>
 
+         <div class="row">
+             <div class="form-group col-sm-12{{ $errors->has('media_type') ? ' has-error' : '' }}">
+                <label for="media_type">Volume media type</label>
+                <div class="btn-group btn-group-justified">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" title="Image Volume" v-on:click="selectImageMediaType" :class="{active: isImageMediaType}"><i class="fa fa-image"></i> Image Volume</button>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" title="Video Volume" v-on:click="selectVideoMediaType" :class="{active: isVideoMediaType}"><i class="fa fa-film"></i> Video Volume</button>
+                    </div>
+                    <input type="hidden" name="media_type" v-model="mediaType">
+                </div>
+                @if($errors->has('media_type'))
+                   <span class="help-block">{{ $errors->first('media_type') }}</span>
+                @endif
+             </div>
+         </div>
+
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
             <label for="url">Volume url</label>
             @if ($hasBrowser)
                <div class="input-group">
-                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url" value="{{old('url')}}">
                   <span class="input-group-btn">
                      <button type="button" class="btn btn-default" v-bind:class="buttonClass" v-on:click="toggleBrowse" title="Open the volume directory browser">browse</button>
                   </span>
                </div>
             @else
                @if (config('biigle.offline_mode'))
-                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url" value="{{old('url')}}">
                @else
-                  <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url">
+                  <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url" value="{{old('url')}}">
                @endif
             @endif
             <p class="help-block">
                @if (config('biigle.offline_mode'))
-                  The volume directory on the BIIGLE server (e.g. <code>local://images/volume</code>).
+                  The volume directory on the BIIGLE server (e.g. <code>local://files/volume</code>).
                @else
-                  The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://images/volume</code>).
+                  The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://files/volume</code>).
                @endif
             </p>
             @if($errors->has('url'))
@@ -90,38 +109,27 @@
          @unless (config('biigle.offline_mode'))
              <div class="panel panel-warning">
                 <div class="panel-body text-warning">
-                    If you do not have the resources to host images as remote volumes, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the images on the BIIGLE server.
+                    If you do not have the resources to host files as remote volumes, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the files on the BIIGLE server.
                 </div>
             </div>
          @endunless
 
          <div class="row">
-             <div class="form-group col-sm-6{{ $errors->has('media_type_id') ? ' has-error' : '' }}">
-                <label for="media_type_id">Volume media type</label>
-                <select class="form-control" name="media_type_id" id="media_type_id" required>
-                   @foreach($mediaTypes as $mediaType)
-                      <option{!! old('media_type_id') == $mediaType->id ? ' selected="selected"' : '' !!} value="{{ $mediaType->id }}">{{ trans('biigle.media_types.'.$mediaType->name) }}</option>
-                   @endforeach
-                </select>
-                @if($errors->has('media_type_id'))
-                   <span class="help-block">{{ $errors->first('media_type_id') }}</span>
-                @endif
-             </div>
-             <div class="form-group col-sm-6{{ $errors->has('doi') ? ' has-error' : '' }}">
+             <div class="form-group col-sm-4{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
-                <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.1000/xyz123">
+                <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
                 @if($errors->has('doi'))
                     <span class="help-block">{{ $errors->first('doi') }}</span>
                 @endif
             </div>
-            <div class="form-group col-sm-6{{ $errors->has('video_link') ? ' has-error' : '' }}">
+            <div class="form-group col-sm-4{{ $errors->has('video_link') ? ' has-error' : '' }}">
                 <label for="video_link">Video link</label>
                 <input type="text" class="form-control" name="video_link" id="video_link" value="{{ old('video_link') }}" placeholder="http://video.example.com">
                 @if($errors->has('video_link'))
                     <span class="help-block">{{ $errors->first('video_link') }}</span>
                 @endif
             </div>
-            <div class="form-group col-sm-6{{ $errors->has('gis_link') ? ' has-error' : '' }}">
+            <div class="form-group col-sm-4{{ $errors->has('gis_link') ? ' has-error' : '' }}">
                 <label for="gis_link">GIS link</label>
                 <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link') }}" placeholder="http://gis.example.com">
                 @if($errors->has('gis_link'))
@@ -130,19 +138,27 @@
             </div>
         </div>
 
-         <div class="form-group{{ $errors->has('images') ? ' has-error' : '' }}">
-            <label for="images">Volume images</label>
-            <textarea class="form-control" name="images" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames"></textarea>
-            <p class="help-block">
-               The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
-            </p>
-            <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
-                <div class="panel-body text-warning">
-                    Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+         <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
+            <label for="files">Volume files</label>
+            <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
+                <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames">{{$filenames}}</textarea>
+                <p class="help-block">
+                   The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
+                </p>
+                <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
+                    <div class="panel-body text-warning">
+                        Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+                    </div>
                 </div>
             </div>
-            @if($errors->has('images'))
-               <span class="help-block">{{ $errors->first('images') }}</span>
+            <div v-else @unless ($mediaType === 'video') v-cloak @endif>
+                <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames">{{$filenames}}</textarea>
+                <p class="help-block">
+                   The filenames of the volume videos in the directory of the volume URL formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
+                </p>
+            </div>
+            @if($errors->has('files'))
+               <span class="help-block">{{ $errors->first('files') }}</span>
             @endif
          </div>
 

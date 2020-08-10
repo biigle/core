@@ -32,7 +32,7 @@
         </p>
 
         <p>
-            A label tree version can be deleted at any time unless one of its labels is used by an annotation.
+            A label tree version can be deleted at any time unless one of its labels is attached to an annotation, image or video.
         </p>
 
 

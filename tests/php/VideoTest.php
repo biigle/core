@@ -19,61 +19,11 @@ class VideoTest extends ModelTestCase
     public function testAttributes()
     {
         $this->assertNotNull($this->model->uuid);
-        $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->filename);
         $this->assertNotNull($this->model->url);
-        $this->assertNotNull($this->model->creator);
-        $this->assertNotNull($this->model->project);
-        $this->assertNotNull($this->model->created_at);
-        $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->volume);
         $this->assertNotNull($this->model->duration);
         $this->assertEquals([], $this->model->attrs);
-    }
-
-    public function testCreatorSetNull()
-    {
-        $this->assertNotNull($this->model->creator_id);
-        $this->model->creator()->delete();
-        $this->assertNull($this->model->fresh()->creator_id);
-    }
-
-    public function testGetDiskAttribute()
-    {
-        $this->model->url = 'test://my/video.mp4';
-        $this->assertEquals('test', $this->model->disk);
-    }
-
-    public function testGetPathAttribute()
-    {
-        $this->model->url = 'test://my/video.mp4';
-        $this->assertEquals('my/video.mp4', $this->model->path);
-    }
-
-    public function testGisLinkAttr()
-    {
-        $this->assertNull($this->model->gis_link);
-
-        $this->model->gis_link = 'http://example.com';
-        $this->model->save();
-        $this->assertEquals('http://example.com', $this->model->fresh()->gis_link);
-
-        $this->model->gis_link = null;
-        $this->model->save();
-        $this->assertNull($this->model->fresh()->gis_link);
-    }
-
-    public function testSetAndGetDoiAttribute()
-    {
-        $this->model->doi = '10.3389/fmars.2017.00083';
-        $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
-
-        $this->model->doi = 'https://doi.org/10.3389/fmars.2017.00083';
-        $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
-
-        $this->model->doi = 'http://doi.org/10.3389/fmars.2017.00083';
-        $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
     }
 
     public function testAnnotations()
@@ -81,26 +31,6 @@ class VideoTest extends ModelTestCase
         $this->assertFalse($this->model->annotations()->exists());
         VideoAnnotationTest::create(['video_id' => $this->model->id]);
         $this->assertTrue($this->model->annotations()->exists());
-    }
-
-    public function testIsRemote()
-    {
-        $this->model->url = 'local://path';
-        $this->assertFalse($this->model->isRemote());
-        $this->model->url = 'http://remote.path';
-        $this->assertTrue($this->model->isRemote());
-        $this->model->url = 'https://remote.path';
-        $this->assertTrue($this->model->isRemote());
-    }
-
-    public function testScopeAccessibleBy()
-    {
-        $user = UserTest::create();
-        $guest = UserTest::create();
-        $this->model->project->addUserId($guest->id, Role::guestId());
-
-        $this->assertEquals(0, Video::accessibleBy($user)->count());
-        $this->assertEquals(1, Video::accessibleBy($guest)->count());
     }
 
     public function testDispatchesDeletedEvent()
@@ -136,5 +66,59 @@ class VideoTest extends ModelTestCase
         $this->assertStringContainsString("{$this->model->uuid}/0", $this->model->thumbnailsUrl[0]);
         $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnailsUrl[1]);
         $this->assertStringContainsString("{$this->model->uuid}/2", $this->model->thumbnailsUrl[2]);
+    }
+
+    public function testGetErrorAttribute()
+    {
+        $this->assertNull($this->model->error);
+        $this->model->attrs = ['error' => 'not-found'];
+        $this->assertEquals('not-found', $this->model->error);
+    }
+
+    public function testSetErrorAttribute()
+    {
+        $this->model->error = 'not-found';
+        $this->assertEquals(['error' => 'not-found'], $this->model->attrs);
+    }
+
+    public function testGetMimeTypeAttribute()
+    {
+        $this->assertNull($this->model->mimeType);
+        $this->model->attrs = ['mimetype' => 'video/mp4'];
+        $this->assertEquals('video/mp4', $this->model->mimeType);
+    }
+
+    public function testSetMimeTypeAttribute()
+    {
+        $this->model->mimeType = 'video/mp4';
+        $this->assertEquals(['mimetype' => 'video/mp4'], $this->model->attrs);
+    }
+
+        public function testGetSizeAttribute()
+    {
+        $this->assertNull($this->model->size);
+        $this->model->attrs = ['size' => 123];
+        $this->assertEquals(123, $this->model->size);
+    }
+
+    public function testSetSizeAttribute()
+    {
+        $this->model->size = 123;
+        $this->assertEquals(['size' => 123], $this->model->attrs);
+    }
+
+    public function testHasBeenProcessed()
+    {
+        $this->assertFalse($this->model->hasBeenProcessed());
+        $this->model->size = 123;
+        $this->assertTrue($this->model->hasBeenProcessed());
+    }
+
+    public function testLabels()
+    {
+        $vl = VideoLabelTest::create(['video_id' => $this->model->id]);
+        $this->assertEquals(1, $this->model->labels()->count());
+        $label = $this->model->labels()->first();
+        $this->assertEquals($vl->id, $label->id);
     }
 }

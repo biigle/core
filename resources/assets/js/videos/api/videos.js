@@ -3,6 +3,9 @@
  *
  * let resource = biigle.$require('videos.api.videos');
  *
+ * Get video information:
+ * resource.get({id: videoId}).then(...);
+ *
  * Create a video:
  * resource.save({id: projectId}, {url: 'local://videos', ...}).then(...)
  *

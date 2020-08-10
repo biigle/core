@@ -2,11 +2,13 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\MediaType;
 use Biigle\Project;
-use Biigle\Rules\VolumeImages;
+use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVolume extends FormRequest
 {
@@ -36,12 +38,17 @@ class StoreVolume extends FormRequest
      */
     public function rules()
     {
+
         return [
             'name' => 'required|max:512',
-            'media_type_id' => 'required|id|exists:media_types,id',
+            'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
             'url' => ['required', 'max:256', new VolumeUrl],
-            'images' => ['required', 'array', new VolumeImages($this->input('url'))],
-            'images.*' => ['max:512'],
+            'files' => [
+                'required',
+                'array',
+                new VolumeFiles($this->input('url'), $this->input('media_type_id')),
+            ],
+            'files.*' => ['max:512'],
         ];
     }
 
@@ -52,11 +59,21 @@ class StoreVolume extends FormRequest
      */
     protected function prepareForValidation()
     {
-        $images = $this->input('images');
-        if (is_string($images)) {
-            $this->merge([
-                'images' => Volume::parseImagesQueryString($images),
-            ]);
+        // Allow a string as media_type to be more conventient.
+        $type = $this->input('media_type');
+        if (in_array($type, array_keys(MediaType::INSTANCES))) {
+            $this->merge(['media_type_id' => MediaType::$type()->id]);
+        }
+
+        // This establishes backwards compatibility of the old 'images' attribute which
+        // is now 'files'.
+        if ($this->missing('files') && $this->has('images')) {
+            $this->merge(['files' => $this->input('images')]);
+        }
+
+        $files = $this->input('files');
+        if (is_string($files)) {
+            $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
     }
 }

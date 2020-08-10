@@ -1,15 +1,15 @@
 @extends('manual.base')
 
-@section('manual-title', 'Editing Annotations')
+@section('manual-title', 'Editing Image Annotations')
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn about all the tools to modify or delete existing annotations.
+            Learn about all the tools to modify or delete existing image annotations.
         </p>
 
         <p>
-            The annotation tool offers several ways to edit or delete existing annotations. Most of these functions you can find in the toolbar at the bottom:
+            The image annotation tool offers several ways to edit or delete existing annotations. Most of these functions you can find in the toolbar at the bottom:
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/editing_annotations_1.jpg')}}"><img src="{{asset('assets/images/manual/editing_annotations_1.jpg')}}" width="33%"></a>
@@ -18,7 +18,7 @@
         <h3><a name="modify-annotations"></a> Modify Annotations</h3>
 
         <p>
-            To modify an annotation, select it with a click. Now every time you hover your cursor over a coordinate of the annotation that can be modified a dot is displayed. Grab this dot with the mouse and drag it to modify the annotation.
+            To modify an image annotation, select it with a click. Now every time you hover your cursor over a coordinate of the annotation that can be modified a dot is displayed. Grab this dot with the mouse and drag it to modify the annotation.
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/editing_annotations_modify_1.jpg')}}"><img src="{{asset('assets/images/manual/editing_annotations_modify_1.jpg')}}" width="32%"></a>

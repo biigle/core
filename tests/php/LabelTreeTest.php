@@ -67,12 +67,12 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->labels()->exists());
     }
 
-    public function testCanBeDeletedAnnotationLabel()
+    public function testCanBeDeletedImageAnnotationLabel()
     {
         $this->assertTrue($this->model->canBeDeleted());
         $label = LabelTest::create(['label_tree_id' => $this->model->id]);
         $this->assertTrue($this->model->canBeDeleted());
-        AnnotationLabelTest::create(['label_id' => $label->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 
@@ -85,12 +85,30 @@ class LabelTreeTest extends ModelTestCase
         $this->assertFalse($this->model->canBeDeleted());
     }
 
+    public function testCanBeDeletedVideoAnnotationLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoAnnotationLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
     public function testCanBeDeletedVersionLabel()
     {
         $version = LabelTreeVersionTest::create();
         $this->model->version_id = $version->id;
         $this->model->save();
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])->id,
         ]);
         $this->assertFalse($version->labelTree->canBeDeleted());
@@ -269,7 +287,7 @@ class LabelTreeTest extends ModelTestCase
         $version = LabelTreeVersionTest::create();
         $this->model->version_id = $version->id;
         $this->model->save();
-        AnnotationLabelTest::create([
+        ImageAnnotationLabelTest::create([
             'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])
         ]);
         $this->expectException(QueryException::class);

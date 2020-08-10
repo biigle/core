@@ -12,12 +12,12 @@
     <div>
         <div class="form-group">
             <power-toggle
-                title="Show the labels of each image"
+                title="Show the labels of each {{$type}}"
                 :active="showLabels"
                 v-on:on="enableLabels"
                 v-on:off="disableLabels"
                 >
-                    Show labels of each image
+                    Show labels of each {{$type}}
             </power-toggle>
             <loader :active="loadingLabels"></loader>
         </div>

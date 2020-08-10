@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use Biigle\Jobs\DeleteVolume;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Video;
@@ -256,7 +257,7 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(null, $this->model->thumbnailUrl);
     }
 
-    public function testGetVolumeThumbnailUrlAttribute()
+    public function testGetThumbnailUrlAttributeImage()
     {
         $i1 = ImageTest::create();
         $i2 = ImageTest::create();
@@ -266,11 +267,14 @@ class ProjectTest extends ModelTestCase
         $this->assertStringContainsString($i1->uuid, $this->model->thumbnailUrl);
     }
 
-    public function testGetVideoThumbnailUrlAttribute()
+    public function testGetThumbnailUrlAttributeVideo()
     {
-        $video = VideoTest::create(['project_id' => $this->model->id]);
+        $v1 = VideoTest::create();
+        $v2 = VideoTest::create();
+        $this->model->addVolumeId($v1->volume_id);
+        $this->model->addVolumeId($v2->volume_id);
 
-        $this->assertStringContainsString($video->uuid, $this->model->thumbnailUrl);
+        $this->assertStringContainsString($v1->uuid, $this->model->thumbnailUrl);
     }
 
     public function testHasGeoInfo()
@@ -305,10 +309,23 @@ class ProjectTest extends ModelTestCase
         $this->assertEmpty($projects);
     }
 
-    public function testVideos()
+    public function testImageVolumes()
     {
-        $project = self::create();
-        $video = factory(Video::class)->create(['project_id' => $project->id]);
-        $this->assertEquals($video->id, $project->videos()->first()->id);
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->imageVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->imageVolumes()->count());
+    }
+
+    public function testVideoVolumes()
+    {
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->videoVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->videoVolumes()->count());
     }
 }

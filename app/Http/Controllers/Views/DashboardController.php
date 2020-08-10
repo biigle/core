@@ -2,13 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views;
 
-use Biigle\AnnotationLabel;
 use Biigle\Image;
 use Biigle\ImageLabel;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Guard;
@@ -111,13 +109,13 @@ class DashboardController extends Controller
      */
     public function annotationsActivityItems(User $user, $limit = 3, $newerThan = null)
     {
-        return Image::join('annotations', 'images.id', '=', 'annotations.image_id')
-            ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->where('annotation_labels.user_id', $user->id)
+        return Image::join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
+            ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->where('image_annotation_labels.user_id', $user->id)
             ->when(!is_null($newerThan), function ($query) use ($newerThan) {
-                $query->where('annotation_labels.created_at', '>', $newerThan);
+                $query->where('image_annotation_labels.created_at', '>', $newerThan);
             })
-            ->selectRaw('images.*, max(annotation_labels.created_at) as annotation_labels_created_at')
+            ->selectRaw('images.*, max(image_annotation_labels.created_at) as annotation_labels_created_at')
             ->groupBy('images.id')
             ->orderBy('annotation_labels_created_at', 'desc')
             ->limit($limit)
@@ -133,7 +131,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get the most recently annotated and/or created videos of a user.
+     * Get the most recently annotated videos of a user.
      *
      * @param User $user
      * @param int $limit
@@ -143,8 +141,8 @@ class DashboardController extends Controller
      */
     public function videosActivityItems(User $user, $limit = 3, $newerThan = null)
     {
-        $annotated = Video::join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
-            ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.video_annotation_id')
+        return Video::join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
+            ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->where('video_annotation_labels.user_id', $user->id)
             ->when(!is_null($newerThan), function ($query) use ($newerThan) {
                 $query->where('video_annotation_labels.created_at', '>', $newerThan);
@@ -160,24 +158,8 @@ class DashboardController extends Controller
                     'created_at' => $item->video_annotation_labels_created_at,
                     'include' => 'videos.dashboardActivityItem',
                 ];
-            });
-
-        $created = Video::where('creator_id', $user->id)
-            ->when(!is_null($newerThan), function ($query) use ($newerThan) {
-                $query->where('created_at', '>', $newerThan);
             })
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'item' => $item,
-                    'created_at' => $item->created_at,
-                    'include' => 'videos.dashboardActivityItem',
-                ];
-            });
-
-        return $annotated->concat($created)->all();
+            ->all();
     }
 
     /**

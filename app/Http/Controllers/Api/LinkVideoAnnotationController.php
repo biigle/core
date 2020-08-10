@@ -120,7 +120,7 @@ class LinkVideoAnnotationController extends Controller
                 }
             }
 
-            $label->update(['video_annotation_id' => $first->id]);
+            $label->update(['annotation_id' => $first->id]);
         });
     }
 }

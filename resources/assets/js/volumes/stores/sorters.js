@@ -2,11 +2,12 @@ import SortComponent from '../components/sortComponent';
 
 let filenameSorter = {
     id: 'filename',
+    types: ['image', 'video'],
     component: {
         mixins: [SortComponent],
         data() {
             return {
-                imageIds: [],
+                fileIds: [],
                 title: 'Sort images by filename',
                 text: 'Filename',
                 id: 'filename',
@@ -14,22 +15,23 @@ let filenameSorter = {
         },
         methods: {
             getSequence() {
-                return new Vue.Promise.resolve(this.imageIds);
+                return new Vue.Promise.resolve(this.fileIds);
             },
         },
         created() {
-            this.imageIds = biigle.$require('volumes.imageIds');
+            this.fileIds = biigle.$require('volumes.fileIds');
         },
     },
 };
 
 let randomSorter = {
     id: 'random',
+    types: ['image', 'video'],
     component: {
         mixins: [SortComponent],
         data() {
             return {
-                imageIds: [],
+                fileIds: [],
                 title: 'Sort images randomly',
                 text: 'Random',
                 id: 'random',
@@ -49,7 +51,7 @@ let randomSorter = {
                 return array;
             },
             getSequence() {
-                let ids = this.shuffle(this.imageIds.slice());
+                let ids = this.shuffle(this.fileIds.slice());
 
                 return new Vue.Promise.resolve(ids);
             },
@@ -60,7 +62,7 @@ let randomSorter = {
             },
         },
         created() {
-            this.imageIds = biigle.$require('volumes.imageIds');
+            this.fileIds = biigle.$require('volumes.fileIds');
         },
     },
 };

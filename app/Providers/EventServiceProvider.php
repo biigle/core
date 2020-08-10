@@ -21,6 +21,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         \Biigle\Events\VideoDeleted::class => [
             \Biigle\Listeners\PrepareDeleteVideoThumbnails::class,
+            \Biigle\Listeners\DeleteVideoVolumeThumbnails::class,
         ],
     ];
 

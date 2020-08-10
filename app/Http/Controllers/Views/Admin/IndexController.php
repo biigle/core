@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Annotation;
 use Biigle\Http\Controllers\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\VideoAnnotation;
@@ -28,7 +28,7 @@ class IndexController extends Controller
 
         $installedModules = $modules->getInstalledModules();
 
-        $days = Annotation::selectRaw('cast(created_at as date) as day, count(id)')
+        $days = ImageAnnotation::selectRaw('cast(created_at as date) as day, count(id)')
             ->where('created_at', '>=', Carbon::today()->subWeek())
             ->groupBy('day')
             ->pluck('count', 'day');
@@ -44,7 +44,7 @@ class IndexController extends Controller
                     'percent' => ($max !== 0) ? $count / $max : 0,
                 ];
             });
-        $totalAnnotations = number_format(Annotation::count());
+        $totalAnnotations = number_format(ImageAnnotation::count());
 
         $days = VideoAnnotation::selectRaw('cast(created_at as date) as day, count(id)')
             ->where('created_at', '>=', Carbon::today()->subWeek())

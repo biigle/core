@@ -3,87 +3,87 @@
  *
  * let resource = biigle.$require('api.volumes');
  *
- * Get IDs of all images of the volume that have image labels attached:
- * resource.queryImagesWithImageLabels({id: 1).then(...);
+ * Get IDs of all files of the volume that have labels attached:
+ * resource.queryFilesWithFileLabels({id: 1).then(...);
  *
- * Get IDs of all images of the volume that have a certain image label attached:
- * resource.queryImagesWithImageLabel({id: 1, label_id: 123}).then(...);
+ * Get IDs of all files of the volume that have a certain label attached:
+ * resource.queryFilesWithLabel({id: 1, label_id: 123}).then(...);
  *
- * Get IDs of all images of the volume that have image labels attached by a certain user:
- * resource.queryImagesWithImageLabelFromUser({id: 1, user_id: 123}).then(...);
+ * Get IDs of all file of the volume that have file labels attached by a certain user:
+ * resource.queryFilesWithLabelFromUser({id: 1, user_id: 123}).then(...);
  *
- * Get IDs of all images of the volume that have a filename matching the given pattern:
- * resource.queryImagesWithFilename({id: 1, pattern: '*def.jpg'}).then(...);
+ * Get IDs of all files of the volume that have a filename matching the given pattern:
+ * resource.queryFilesWithFilename({id: 1, pattern: '*def.jpg'}).then(...);
  *
- * Get all image labels that were used in the volume:
- * resource.queryImageLabels({id: 1}).then(...);
+ * Get all file labels that were used in the volume:
+ * resource.queryUsedFileLabels({id: 1}).then(...);
  *
- * Get all image file names of the volume:
+ * Get all file names of the volume:
  * resource.queryFilenames({id: 1}).then(...);
  *
  * Get all users that have access to a volume:
  * resource.queryUsers({id: 1}).then(...);
  *
- * Get IDs of all images of the volume:
- * resource.queryImages({id: 1}).then(...);
+ * Get IDs of all files of the volume:
+ * resource.queryFiles({id: 1}).then(...);
  *
- * Add images to a volume:
- * resource.saveImages({id: 1}, {images: '1.jpg, 2.jpg'}).then(...);
+ * Add files to a volume:
+ * resource.saveFiles({id: 1}, {files: '1.jpg, 2.jpg'}).then(...);
  *
  * @type {Vue.resource}
  */
 export default Vue.resource('api/v1/volumes{/id}', {}, {
-    queryImagesWithImageLabels: {
+    queryFilesWithFileLabels: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/labels',
+        url: 'api/v1/volumes{/id}/files/filter/labels',
     },
-    queryImagesWithImageLabel: {
+    queryFilesWithLabel: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/image-label{/label_id}',
+        url: 'api/v1/volumes{/id}/files/filter/labels{/label_id}',
     },
-    queryImagesWithImageLabelFromUser: {
+    queryFilesWithLabelFromUser: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/image-label-user{/user_id}',
+        url: 'api/v1/volumes{/id}/files/filter/labels/users{/user_id}',
     },
-    queryImagesWithFilename: {
+    queryFilesWithFilename: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/filename{/pattern}',
+        url: 'api/v1/volumes{/id}/files/filter/filename{/pattern}',
     },
-    queryUsedImageLabels: {
+    queryUsedFileLabels: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/image-labels',
+        url: 'api/v1/volumes{/id}/file-labels',
     },
     queryFilenames: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/filenames',
     },
-    queryImageLabels: {
+    queryFileLabels: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/labels',
+        url: 'api/v1/volumes{/id}/files/labels',
     },
     queryUsers: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/users',
     },
-    queryImages: {
+    queryFiles: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images',
+        url: 'api/v1/volumes{/id}/files',
     },
-    saveImages: {
+    saveFiles: {
         method: 'POST',
-        url: 'api/v1/volumes{/id}/images',
+        url: 'api/v1/volumes{/id}/files',
     },
-    queryImagesWithAnnotations: {
+    queryFilesWithAnnotations: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotations',
+        url: 'api/v1/volumes{/id}/files/filter/annotations',
     },
-    queryImagesWithAnnotationLabel: {
+    queryFilesWithAnnotationLabel: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotation-label{/label_id}',
+        url: 'api/v1/volumes{/id}/files/filter/annotation-label{/label_id}',
     },
-    queryImagesWithAnnotationFromUser: {
+    queryFilesWithAnnotationFromUser: {
         method: 'GET',
-        url: 'api/v1/volumes{/id}/images/filter/annotation-user{/user_id}',
+        url: 'api/v1/volumes{/id}/files/filter/annotation-user{/user_id}',
     },
     queryAnnotationLabels: {
         method: 'GET',
