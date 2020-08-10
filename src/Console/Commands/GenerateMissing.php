@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use File;
 use Illuminate\Console\Command;
@@ -58,11 +58,11 @@ class GenerateMissing extends Command
         $pushToQueue = !$this->option('dry-run');
         $storage = Storage::disk(config('largo.patch_storage_disk'));
 
-        $annotations = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+        $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('images.volume_id', $this->option('volume'));
             })
-            ->select('annotations.id', 'images.uuid as uuid');
+            ->select('image_annotations.id', 'images.uuid as uuid');
 
         $total = $annotations->count();
         $progress = $this->output->createProgressBar($total);
@@ -82,7 +82,7 @@ class GenerateMissing extends Command
             $progress->advance($chunk->count());
         };
 
-        $annotations->chunkById(10000, $handleChunk, 'annotations.id', 'id');
+        $annotations->chunkById(10000, $handleChunk, 'image_annotations.id', 'id');
         $progress->finish();
 
         $percent = round($this->count / $total * 100, 2);

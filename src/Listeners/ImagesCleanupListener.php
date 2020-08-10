@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Listeners;
 
-use Biigle\Annotation;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class ImagesCleanupListener
@@ -22,9 +22,9 @@ class ImagesCleanupListener
     public function handle(ImagesDeleted $event)
     {
         if (!empty($event->uuids)) {
-            $annotationIds = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+            $annotationIds = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
                 ->whereIn('images.uuid', $event->uuids)
-                ->pluck('images.uuid', 'annotations.id')
+                ->pluck('images.uuid', 'image_annotations.id')
                 ->toArray();
 
             if (!empty($annotationIds)) {

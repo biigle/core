@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Carbon\Carbon;
 
-class AnnotationExamplesControllerTest extends ApiTestCase
+class ImageAnnotationExamplesControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
@@ -44,39 +44,39 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $al0 = AnnotationLabelTest::create([
+        $al0 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al1 = AnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'label_id' => $parentLabel->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al2 = AnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $siblingLabel->id,
             'annotation_id' => $annotation->id,
         ]);
-        $al3 = AnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'label_id' => $separateLabel->id,
             'annotation_id' => $annotation->id,
         ]);
         // annotation from other volume should not appear
-        AnnotationTest::create();
+        ImageAnnotationTest::create();
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}")
             ->assertStatus(403);
 
         $this->beGuest();
         // take must be integer
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}", ['take' => 'abc'])
+        $this->json('GET', "/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}", ['take' => 'abc'])
             ->assertStatus(422);
 
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+        $this->json('GET', "/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}")
             ->assertStatus(200)
             ->assertExactJson([
                 'label' => $label->toArray(),
@@ -85,7 +85,7 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $al0->delete();
 
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}")
+        $this->json('GET', "/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}")
             ->assertStatus(200)
             ->assertExactJson([
                 'label' => $parentLabel->toArray(),
@@ -98,33 +98,33 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
 
-        $a1 = AnnotationTest::create([
+        $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
         ]);
 
-        $a2 = AnnotationTest::create([
+        $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::today(),
         ]);
 
-        $a3 = AnnotationTest::create([
+        $a3 = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
         ]);
 
-        $l1 = AnnotationLabelTest::create([
+        $l1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->editor()->id,
         ]);
 
-        $l2 = AnnotationLabelTest::create([
+        $l2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'label_id' => $l1->label_id,
             'user_id' => $this->editor()->id,
         ]);
 
-        $l3 = AnnotationLabelTest::create([
+        $l3 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'label_id' => $l1->label_id,
             'user_id' => $this->admin()->id,
@@ -143,7 +143,7 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $session->users()->attach($this->editor());
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/examples/{$l1->label_id}")
             ->assertStatus(200)
             ->assertJsonFragment(['annotations' => [
                 $a2->id => $image->uuid,
@@ -155,7 +155,7 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $session->hide_other_users_annotations = true;
         $session->save();
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/examples/{$l1->label_id}")
             ->assertStatus(200)
             ->assertJsonFragment(['annotations' => [
                 $a1->id => $image->uuid,
@@ -166,13 +166,13 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $session->hide_own_annotations = true;
         $session->save();
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/examples/{$l1->label_id}")
             ->assertStatus(200)
             ->assertJsonFragment(['annotations' => [$a2->id => $image->uuid]]);
 
         $session->users()->detach($this->editor());
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/examples/{$l1->label_id}")
             ->assertStatus(200)
             ->assertJsonFragment(['annotations' => [
                 $a1->id => $image->uuid,
@@ -188,15 +188,15 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $al = AnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $otherLabel->id,
             'annotation_id' => $annotation->id,
         ]);
 
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/image-annotations/examples/{$label->id}");
         $response->assertStatus(200);
         $response->assertExactJson([]);
     }

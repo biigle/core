@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
@@ -23,7 +23,7 @@ class LargoController extends Controller
      * @apiName VolumesStoreLargo
      * @apiParam {Number} id The volume ID.
      * @apiPermission projectEditor
-     * @apiDescription From the `dismissed` map only annotation labels that were attached by the requesting user will be detached (unless `force` is set to `true`). If the map contains annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new annotation labels will be created. If, after detaching `dismissed` annotation labels and attaching `changed` annotation labels, there is an annotation whithout any label, the annotation will be deleted. All affected annotations must belong to the same volume. If the user is not allowed to edit in this volume, the whole request will be denied.
+     * @apiDescription From the `dismissed` map only image annotation labels that were attached by the requesting user will be detached (unless `force` is set to `true`). If the map contains image annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new image annotation labels will be created. If, after detaching `dismissed` image annotation labels and attaching `changed` image annotation labels, there is an image annotation whithout any label, the annotation will be deleted. All affected image annotations must belong to the same volume. If the user is not allowed to edit in this volume, the whole request will be denied. Only available for image volumes.
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
@@ -49,6 +49,10 @@ class LargoController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
+        if (!$volume->isImageVolume()) {
+            abort(400, 'Only available for image volumes.');
+        }
+
         $this->validateLargoInput($request);
 
         $force = $request->input('force', false);
@@ -81,11 +85,11 @@ class LargoController extends Controller
         $this->applySave($user, $dismissed, $changed, $force);
 
         // Remove annotations that now have no more labels attached.
-        $toDeleteQuery = Annotation::whereIn('annotations.id', $affectedAnnotations)
+        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
             ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'annotations.image_id')
-            ->pluck('images.uuid', 'annotations.id')
+        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->pluck('images.uuid', 'image_annotations.id')
             ->toArray();
 
         if (!empty($toDeleteArgs)) {

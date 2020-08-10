@@ -4,8 +4,8 @@ namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 
 class LargoControllerTestBase extends ApiTestCase
@@ -18,9 +18,9 @@ class LargoControllerTestBase extends ApiTestCase
         $this->labelRoot();
 
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $this->annotation = AnnotationTest::create(['image_id' => $image->id]);
+        $this->annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $this->label = AnnotationLabelTest::create([
+        $this->label = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);
@@ -42,7 +42,7 @@ class LargoControllerTestBase extends ApiTestCase
         $response->assertStatus(403);
 
         // Annotation from other volume should not be affected.
-        $other = AnnotationTest::create();
+        $other = ImageAnnotationTest::create();
 
         $this->beEditor();
         $response = $this->post($this->url, [
@@ -55,7 +55,7 @@ class LargoControllerTestBase extends ApiTestCase
         // a4 does not belong to the same volume
         $response->assertStatus(400);
 
-        $otherLabel = AnnotationLabelTest::create();
+        $otherLabel = ImageAnnotationLabelTest::create();
 
         $this->beEditor();
         $response = $this->post($this->url, [
@@ -180,7 +180,7 @@ class LargoControllerTestBase extends ApiTestCase
 
     public function testChangeMultiple()
     {
-        $label2 = AnnotationLabelTest::create([
+        $label2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);

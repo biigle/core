@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo;
 
-use Biigle\Annotation;
 use Biigle\Events\ImagesDeleted;
+use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
-use Biigle\Modules\Largo\Observers\AnnotationObserver;
+use Biigle\Modules\Largo\Observers\ImageAnnotationObserver;
 use Biigle\Services\Modules;
 use Event;
 use Illuminate\Routing\Router;
@@ -40,7 +40,7 @@ class LargoServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        Annotation::observe(new AnnotationObserver);
+        ImageAnnotation::observe(new ImageAnnotationObserver);
         Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
 
         $modules->register('largo', [

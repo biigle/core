@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Contracts\Annotation;
+use Biigle\Contracts\ImageAnnotation;
 use Biigle\Image;
 use Biigle\Jobs\Job;
 use Biigle\Shape;
@@ -35,7 +35,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     /**
      * The the annotation to generate a patch for.
      *
-     * @var Annotation
+     * @var ImageAnnotation
      */
     protected $annotation;
 
@@ -49,12 +49,12 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Annotation $annotation The the annotation to generate a patch for.
+     * @param ImageAnnotation $annotation The the annotation to generate a patch for.
      * @param string|null $targetDisk The storage disk to store the annotation patches to.
      *
      * @return void
      */
-    public function __construct(Annotation $annotation, $targetDisk = null)
+    public function __construct(ImageAnnotation $annotation, $targetDisk = null)
     {
         // We do not use the SerializesModels trait because there is a good chance that
         // the annotation is deleted when this job should be executed. If this is the
@@ -138,13 +138,13 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     /**
      * Calculate the bounding rectangle of the patch to extract.
      *
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      * @param int $thumbWidth
      * @param int $thumbHeight
      *
      * @return array Containing width, height, top and left
      */
-    protected function getPatchRect(Annotation $annotation, $thumbWidth, $thumbHeight)
+    protected function getPatchRect(ImageAnnotation $annotation, $thumbWidth, $thumbHeight)
     {
         $padding = config('largo.patch_padding');
         $points = $annotation->getPoints();
@@ -255,11 +255,11 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     /**
      * Assemble the target path for an annotation patch.
      *
-     * @param Annotation $annotation
+     * @param ImageAnnotation $annotation
      *
      * @return string
      */
-    protected function getTargetPath(Annotation $annotation): string
+    protected function getTargetPath(ImageAnnotation $annotation): string
     {
         $prefix = fragment_uuid_path($annotation->getImage()->uuid);
         $format = config('largo.patch_format');

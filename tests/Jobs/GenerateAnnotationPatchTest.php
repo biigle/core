@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageAnnotationTest;
 use File;
 use Mockery;
 use Storage;
@@ -22,7 +22,7 @@ class GenerateAnnotationPatchTest extends TestCase
     public function testHandleSerialization()
     {
         $this->getImageMock(0);
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $job = serialize(new GenerateAnnotationPatchStub($annotation));
         $annotation->delete();
         $job = unserialize($job);
@@ -34,7 +34,7 @@ class GenerateAnnotationPatchTest extends TestCase
     {
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
 
@@ -56,7 +56,7 @@ class GenerateAnnotationPatchTest extends TestCase
     {
         Storage::fake('test2');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create();
+        $annotation = ImageAnnotationTest::create();
         $job = new GenerateAnnotationPatchStub($annotation, 'test2');
         $job->mock = $image;
 
@@ -79,7 +79,7 @@ class GenerateAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'points' => [100, 100],
             'shape_id' => Shape::pointId(),
         ]);
@@ -100,7 +100,7 @@ class GenerateAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             // Should handle floats correctly.
             // Make the circle large enough so the crop is not affected by the minimum
             // dimension.
@@ -125,7 +125,7 @@ class GenerateAnnotationPatchTest extends TestCase
         Storage::fake('test');
         $image = $this->getImageMock();
         $padding = config('largo.patch_padding');
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             // Make the polygon large enough so the crop is not affected by the minimum
             // dimension.
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
@@ -148,7 +148,7 @@ class GenerateAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'points' => [0, 0],
             'shape_id' => Shape::pointId(),
         ]);
@@ -169,7 +169,7 @@ class GenerateAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'points' => [1000, 750],
             'shape_id' => Shape::pointId(),
         ]);
@@ -193,7 +193,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $image->width = 100;
         $image->height = 100;
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'points' => [50, 50],
             'shape_id' => Shape::pointId(),
         ]);
@@ -214,7 +214,7 @@ class GenerateAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'points' => [60, 60, 10],
             'shape_id' => Shape::circleId(),
         ]);
@@ -245,7 +245,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
-    public function __construct(Annotation $annotation, $targetDisk = null)
+    public function __construct(ImageAnnotation $annotation, $targetDisk = null)
     {
         parent::__construct($annotation, $targetDisk);
         $this->annotation = $annotation;

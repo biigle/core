@@ -8,6 +8,7 @@ use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Storage;
 
 class LargoController extends Controller
@@ -23,6 +24,10 @@ class LargoController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
+
+        if (!$volume->isImageVolume()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
 
         if ($request->user()->can('sudo')) {
             // Global admins have no restrictions.

@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use File;
 use FilesystemIterator;
 use Illuminate\Console\Command;
@@ -77,7 +77,7 @@ class MigratePatchStorage extends Command
                     })
                     ->combine($chunk);
 
-                $annotations = Annotation::with('image')
+                $annotations = ImageAnnotation::with('image')
                     ->findMany($chunk->keys())
                     ->keyBy('id');
 

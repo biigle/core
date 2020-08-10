@@ -6,7 +6,7 @@ export default {
         },
     },
     methods: {
-        getUrl() {
+        getThumbnailUrl() {
             return this.urlTemplate
                 .replace(':prefix', this.patchPrefix)
                 .replace(':id', this.id);

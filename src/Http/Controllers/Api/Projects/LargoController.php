@@ -2,8 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Annotation;
+use Biigle\ImageAnnotation;
 use Biigle\Label;
+use Biigle\MediaType;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Project;
@@ -22,8 +23,8 @@ class LargoController extends Controller
      * @apiPermission projectEditor
      * @apiDescription See the 'Save a volume session' endpoint for more information
      *
-     * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
-     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of image annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of image annotations to which this label should be attached.
      * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @param Request $request
@@ -42,7 +43,7 @@ class LargoController extends Controller
             $this->authorize('force-edit-in', $project);
         }
 
-        $volumeIds = $project->volumes()->pluck('id');
+        $volumeIds = $project->imageVolumes()->pluck('id');
 
         $dismissed = $request->input('dismissed', []);
         $changed = $request->input('changed', []);
@@ -67,11 +68,11 @@ class LargoController extends Controller
         $this->applySave($request->user(), $dismissed, $changed, $force);
 
         // Remove annotations that now have no more labels attached.
-        $toDeleteQuery = Annotation::whereIn('annotations.id', $affectedAnnotations)
+        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
             ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'annotations.image_id')
-            ->pluck('images.uuid', 'annotations.id')
+        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->pluck('images.uuid', 'image_annotations.id')
             ->toArray();
 
         if (!empty($toDeleteArgs)) {

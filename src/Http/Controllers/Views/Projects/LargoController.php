@@ -4,6 +4,7 @@ namespace Biigle\Modules\Largo\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
+use Illuminate\Http\Response;
 use Storage;
 
 class LargoController extends Controller
@@ -18,6 +19,10 @@ class LargoController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
+
+        if (!$project->imageVolumes()->exists()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
 
         $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'version_id')
