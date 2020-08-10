@@ -5,6 +5,7 @@ namespace Biigle\Modules\Reports\Http\Controllers\Views;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
+use Illuminate\Http\Response;
 
 class ProjectReportsController extends Controller
 {
@@ -17,25 +18,25 @@ class ProjectReportsController extends Controller
     public function show($id)
     {
         $project = Project::findOrFail($id);
-        $hasVideo = $project->videos()->exists();
-        $hasVolume = $project->volumes()->exists();
-        if (!$hasVolume && !$hasVideo) {
-            abort(404);
+        $hasVideoVolume = $project->videoVolumes()->exists();
+        $hasImageVolume = $project->imageVolumes()->exists();
+        if (!$hasVideoVolume && !$hasImageVolume) {
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         $this->authorize('access', $project);
 
-        $types = ReportType::when($hasVolume, function ($query) {
-                $query->where('name', 'like', 'Annotations%')
-                    ->orWhere('name', 'like', 'ImageLabels%');
+        $types = ReportType::when($hasImageVolume, function ($query) {
+                $query->where('name', 'like', 'Image%');
             })
-            ->when($hasVideo, function ($query) {
-                $query->orWhere('name', 'like', 'VideoAnnotations%');
+            ->when($hasVideoVolume, function ($query) {
+                $query->orWhere('name', 'like', 'Video%');
             })
+            ->orderBy('name', 'asc')
             ->get();
 
 
-        $hasExportArea = $project->volumes()
+        $hasExportArea = $project->imageVolumes()
             ->whereNotNull('attrs->export_area')
             ->exists();
 
@@ -45,8 +46,8 @@ class ProjectReportsController extends Controller
             'project' => $project,
             'reportTypes' => $types,
             'hasExportArea' => $hasExportArea,
-            'hasVolume' => $hasVolume,
-            'hasVideo' => $hasVideo,
+            'hasImageVolume' => $hasImageVolume,
+            'hasVideoVolume' => $hasVideoVolume,
             'labelTrees' => $labelTrees,
         ]);
     }

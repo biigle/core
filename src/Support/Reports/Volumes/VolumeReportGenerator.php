@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
+use Biigle\AnnotationSession;
 use Biigle\Label;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Volume;
@@ -10,6 +11,13 @@ use File;
 
 class VolumeReportGenerator extends ReportGenerator
 {
+    /**
+     * Cache for the annotation session the report may be restricted to.
+     *
+     * @var \Biigle\AnnotationSession
+     */
+    protected $annotationSession;
+
     /**
      * Object that runs the Python script to generate a report.
      *
@@ -85,5 +93,51 @@ class VolumeReportGenerator extends ReportGenerator
     protected function executeScript($scriptName, $path)
     {
         $this->pythonScriptRunner->run($scriptName, $this->source->name, $path, $this->tmpFiles);
+    }
+
+    /**
+     * Should this report be restricted an annotation session?
+     *
+     * @return bool
+     */
+    protected function isRestrictedToAnnotationSession()
+    {
+        return !is_null($this->options->get('annotationSession', null));
+    }
+
+    /**
+     * Returns the annotation session this report should be restricted to.
+     *
+     * @return AnnotationSession|null
+     */
+    protected function getAnnotationSession()
+    {
+        if (!$this->annotationSession) {
+            $this->annotationSession = AnnotationSession::find($this->options->get('annotationSession', null));
+        }
+
+        return $this->annotationSession;
+    }
+
+    /**
+     * Get the name of the annotation session if it exists.
+     *
+     * @return string
+     */
+    protected function getAnnotationSessionName()
+    {
+        $session = $this->getAnnotationSession();
+
+        return $session ? $session->name : $this->options->get('annotationSession', '');
+    }
+
+    /**
+     * Determines if this report should take only the newest label of each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
     }
 }

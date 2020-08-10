@@ -12,7 +12,7 @@ $factory->define(Biigle\Modules\Reports\Report::class, function ($faker) {
             return factory(Biigle\User::class)->create()->id;
         },
         'type_id' => function () {
-            return Biigle\Modules\Reports\ReportType::annotationsCsvId();
+            return Biigle\Modules\Reports\ReportType::imageAnnotationsCsvId();
         },
         'source_id' => function () {
             return factory(Biigle\Volume::class)->create()->id;

@@ -25,7 +25,7 @@ class ProjectReportGeneratorTest extends TestCase
         ]);
         $project->labelTrees()->attach($root->tree);
 
-        $generator = new ProjectReportGenerator;
+        $generator = new ProjectReportStub;
         $generator->setSource($project);
 
         $this->assertEquals("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
@@ -77,5 +77,10 @@ class ProjectReportStub extends ProjectReportGenerator
     protected function getReportGenerator()
     {
         return $this->mock;
+    }
+
+    protected function getProjectSources()
+    {
+        return $this->source->imageVolumes;
     }
 }

@@ -11,7 +11,7 @@ export default {
         return {
             projectId: null,
             allowedOptions: {
-                'Annotations': [
+                'ImageAnnotations': [
                     'export_area',
                     'newest_label',
                     'separate_label_trees',
@@ -23,6 +23,12 @@ export default {
                     'only_labels',
                 ],
                 'VideoAnnotations': [
+                    'newest_label',
+                    'separate_label_trees',
+                    'annotation_session_id',
+                    'only_labels',
+                ],
+                'VideoLabels': [
                     'separate_label_trees',
                     'only_labels',
                 ],

@@ -10,7 +10,7 @@ export default {
     data() {
         return {
             allowedOptions: {
-                'Annotations': [
+                'ImageAnnotations': [
                     'export_area',
                     'newest_label',
                     'separate_label_trees',
@@ -19,6 +19,17 @@ export default {
                     'aggregate_child_labels',
                 ],
                 'ImageLabels': [
+                    'separate_label_trees',
+                    'annotation_session_id',
+                    'only_labels',
+                ],
+                'VideoAnnotations': [
+                    'newest_label',
+                    'separate_label_trees',
+                    'annotation_session_id',
+                    'only_labels',
+                ],
+                'VideoLabels': [
                     'separate_label_trees',
                     'annotation_session_id',
                     'only_labels',

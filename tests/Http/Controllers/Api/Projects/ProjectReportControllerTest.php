@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
 
 class ProjectReportControllerTest extends ApiTestCase
 {
@@ -15,7 +15,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $projectId = $this->project()->id;
         // Create the volume by calling it.
         $this->volume();
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::imageAnnotationsBasicId();
 
         $this->doTestApiRoute('POST', "api/v1/projects/{$projectId}/reports");
 
@@ -57,31 +57,46 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['newestLabel']);
     }
 
-    public function testStoreEmptyProject()
+    public function testStoreNoImageVolumes()
     {
         $projectId = $this->project()->id;
+        $this->volume(['media_type_id' => MediaType::videoId()]);
         $this->beGuest();
         $this->postJson("api/v1/projects/{$projectId}/reports", [
-                'type_id' => ReportType::first()->id,
+                'type_id' => ReportType::imageAnnotationsBasicId(),
             ])
             ->assertStatus(422);
     }
 
-    public function testStoreVideoAnnotations()
+    public function testStoreNoVideoVolumes()
     {
         $projectId = $this->project()->id;
+        $this->volume();
         $this->beGuest();
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::videoAnnotationsCsvId(),
             ])
             ->assertStatus(422);
+    }
 
-        VideoTest::create(['project_id' => $projectId]);
+    public function testStoreVideoVolume()
+    {
+        $projectId = $this->project()->id;
+        // Create the volume by calling it.
+        $this->volume(['media_type_id' => MediaType::videoId()]);
+        $typeId = ReportType::videoAnnotationsCsvId();
 
-        $this->postJson("api/v1/projects/{$projectId}/reports", [
-                'type_id' => ReportType::videoAnnotationsCsvId(),
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->beGuest();
+        $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
             ])
             ->assertStatus(200);
+
+        $job = end($this->dispatchedJobs);
+        $report = $job->report;
+        $this->assertArrayNotHasKey('exportArea', $report->options);
+        $this->assertArrayNotHasKey('aggregateChildLabels', $report->options);
     }
 
     public function testStoreOnlyLabels()

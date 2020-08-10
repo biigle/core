@@ -25,8 +25,13 @@ class VolumeReportsController extends Controller
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
-        $types = ReportType::where('name', 'like', 'Annotations%')
-            ->orWhere('name', 'like', 'ImageLabels%')
+        $types = ReportType::when($volume->isImageVolume(), function ($query) {
+                $query->where('name', 'like', 'Image%');
+            })
+            ->when($volume->isVideoVolume(), function ($query) {
+                $query->where('name', 'like', 'Video%');
+            })
+            ->orderBy('name', 'asc')
             ->get();
 
         $user = $request->user();
@@ -54,12 +59,15 @@ class VolumeReportsController extends Controller
             })
             ->get();
 
+        $reportPrefix = $volume->isImageVolume() ? 'Image' : 'Video';
+
         return view('reports::volumeReports', [
             'projects' => $volume->projects,
             'volume' => Volume::convert($volume),
             'annotationSessions' => $sessions,
             'reportTypes' => $types,
             'labelTrees' => $labelTrees,
+            'reportPrefix' => $reportPrefix,
         ]);
     }
 }

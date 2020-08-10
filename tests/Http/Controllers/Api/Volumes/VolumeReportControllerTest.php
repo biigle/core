@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\LabelTest;
@@ -12,7 +13,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStore()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::imageAnnotationsBasicId();
 
         $this->doTestApiRoute('POST', "api/v1/volumes/{$volumeId}/reports");
 
@@ -54,10 +55,68 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['newestLabel']);
     }
 
-    public function testStoreVideoAnnotations()
+    public function testStoreInvalidVideoAnnotations()
     {
         $volumeId = $this->volume()->id;
         $typeId = ReportType::videoAnnotationsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
+
+    public function testStoreInvalidVideoLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::videoLabelsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
+
+    public function testStoreVideoVolume()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::videoAnnotationsCsvId();
+
+        $this->beGuest();
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
+            ->assertStatus(422);
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+                'export_area' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+                'aggregate_child_labels' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreInvalidImageAnnotations()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::imageAnnotationsCsvId();
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+            ->assertStatus(422);
+    }
+
+    public function testStoreInvalidImageLabels()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::imageLabelsCsvId();
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])

@@ -13,7 +13,11 @@ class ReportObserver
      */
     public function creating($report)
     {
-        $report->source_name = $report->source->name;
+        if ($report->source->name) {
+            $report->source_name = $report->source->name;
+        } elseif (is_null($report->source_name)) {
+            $report->source_name = '';
+        }
     }
 
     /**

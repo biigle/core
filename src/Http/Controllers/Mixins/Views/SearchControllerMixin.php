@@ -5,7 +5,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Mixins\Views;
 use Biigle\Modules\Reports\Report;
 use Biigle\Project;
 use Biigle\User;
-use Biigle\Video;
 use Biigle\Volume;
 use DB;
 
@@ -32,7 +31,7 @@ class SearchControllerMixin
                             $q->select(DB::raw(1))
                                 ->from('reports')
                                 ->join('volumes', 'reports.source_id', '=', 'volumes.id')
-                                ->where('volumes.name', 'like', "%{$query}%");
+                                ->where('volumes.name', 'ilike', "%{$query}%");
                         });
                 })
                 ->orWhere(function ($q) use ($query) {
@@ -41,18 +40,11 @@ class SearchControllerMixin
                             $q->select(DB::raw(1))
                                 ->from('reports')
                                 ->join('projects', 'reports.source_id', '=', 'projects.id')
-                                ->where('projects.name', 'like', "%{$query}%");
+                                ->where('projects.name', 'ilike', "%{$query}%");
                         });
                 })
-                ->orWhere(function ($q) use ($query) {
-                    $q->where('reports.source_type', Video::class)
-                        ->whereExists(function ($q) use ($query) {
-                            $q->select(DB::raw(1))
-                                ->from('reports')
-                                ->join('videos', 'reports.source_id', '=', 'videos.id')
-                                ->where('videos.name', 'like', "%{$query}%");
-                        });
-                });
+                // Kept for backwards compatibility of single video reports.
+                ->orWhere('reports.source_name', 'ilike', "%{$query}%");
         }
 
         $values = [];

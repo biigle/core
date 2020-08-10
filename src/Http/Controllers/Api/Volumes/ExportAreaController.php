@@ -7,6 +7,7 @@ use Biigle\Modules\Reports\Volume;
 use Biigle\Volume as BaseVolume;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class ExportAreaController extends Controller
@@ -19,7 +20,7 @@ class ExportAreaController extends Controller
      * @apiName IndexVolumesExportArea
      * @apiPermission projectMember
      * @apiDescription The export area is a rectangle defined by two points. This endpoint returns an array containing the coordinates as follows: `[x1, y1, x2, y2]`.
-     * The first point may be any of the 4 points of the rectangle. The second point is the point not directly adjacent to the first.
+     * The first point may be any of the 4 points of the rectangle. The second point is the point not directly adjacent to the first. Only available for image volumes.
      *
      * @apiSuccessExample {json} Success response:
      * [100, 100, 1200, 600]
@@ -32,6 +33,10 @@ class ExportAreaController extends Controller
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('access', $volume);
 
+        if (!$volume->isImageVolume()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
         return Volume::convert($volume)->exportArea;
     }
 
@@ -42,6 +47,7 @@ class ExportAreaController extends Controller
      * @apiGroup Volumes
      * @apiName StoreVolumesExportArea
      * @apiPermission projectAdmin
+     * @apiDescription Only available for image volumes.
      *
      * @apiParam (Required arguments) {Number[]} coordinates Coordinates of the export area formatted as `[x1, y1, x2, y2]` array of integers
      *
@@ -53,6 +59,9 @@ class ExportAreaController extends Controller
     {
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('update', $volume);
+        if (!$volume->isImageVolume()) {
+            throw ValidationException::withMessages(['id' => 'The export area can only be set for image volumes.']);
+        }
         $this->validate($request, ['coordinates' => 'required|array']);
 
         $volume = Volume::convert($volume);
@@ -72,6 +81,7 @@ class ExportAreaController extends Controller
      * @apiGroup Volumes
      * @apiName DestroyVolumesExportArea
      * @apiPermission projectAdmin
+     * @apiDescription Only available for image volumes.
      *
      * @param int $id Volume ID
      * @return \Illuminate\Http\Response
@@ -80,6 +90,9 @@ class ExportAreaController extends Controller
     {
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('update', $volume);
+        if (!$volume->isImageVolume()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
         $volume = Volume::convert($volume);
         $volume->exportArea = null;
         $volume->save();
