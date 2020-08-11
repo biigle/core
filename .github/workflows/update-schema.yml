@@ -3,7 +3,7 @@ name: Update Schema
 on:
   push:
     branches:
-      - master
+      - dev-modules
     paths:
       - 'database/migrations/**'
 
