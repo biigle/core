@@ -31,6 +31,35 @@ class ProjectsController extends Controller
      */
     public function show(Request $request, $id)
     {
+        $showV1 = $request->user()->getSettings('project_overview_v1', false);
+
+        if ($showV1) {
+            return $this->showV1($request, $id);
+        }
+
+        return $this->showV2($request, $id);
+    }
+
+    /**
+     * Shows the project index page.
+     *
+     * @deprecated This is a legacy route and got replaced by the global search.
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return redirect()->route('search', ['t' => 'projects']);
+    }
+
+    /**
+     * Shows the project show page v1.
+     *
+     * @param Request $request
+     * @param int $id project ID
+     * @return \Illuminate\Http\Response
+     */
+    protected function showV1(Request $request, $id)
+    {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
@@ -69,7 +98,7 @@ class ProjectsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        return view('projects.show', [
+        return view('projects.show-v1', [
             'project' => $project,
             'roles' => $roles,
             'labelTrees' => $labelTrees,
@@ -82,13 +111,41 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Shows the project index page.
+     * Shows the project show page v2.
      *
-     * @deprecated This is a legacy route and got replaced by the global search.
+     * @param Request $request
+     * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    protected function showV2(Request $request, $id)
     {
-        return redirect()->route('search', ['t' => 'projects']);
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+
+        $volumes = $project->volumes()
+            ->select('id', 'name', 'updated_at', 'media_type_id')
+            ->with('mediaType')
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->each(function ($item) {
+                $item->append('thumbnailUrl');
+                $item->append('thumbnailsUrl');
+            });
+
+        $userProject = $request->user()->projects()->where('id', $id)->first();
+        $isMember = $userProject !== null;
+        $isPinned = $isMember && $userProject->pivot->pinned;
+        $canPin = $isMember && 3 > $request->user()
+            ->projects()
+            ->wherePivot('pinned', true)
+            ->count();
+
+        return view('projects.show.volumes', [
+            'project' => $project,
+            'volumes' => $volumes,
+            'isMember' => $isMember,
+            'isPinned' => $isPinned,
+            'canPin' => $canPin,
+        ]);
     }
 }

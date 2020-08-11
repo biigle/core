@@ -25,6 +25,15 @@ class UserSettingsControllerTest extends ApiTestCase
         $this->assertFalse($this->globalAdmin()->fresh()->isInSuperUserMode);
     }
 
+    public function testUpdateProjectOverviewV1()
+    {
+        $this->beUser();
+        $this->assertNull($this->user()->getSettings('project_overview_v1'));
+        $this->putJson("/api/v1/users/my/settings", ['project_overview_v1' => true])
+            ->assertStatus(200);
+        $this->assertTrue($this->user()->fresh()->getSettings('project_overview_v1'));
+    }
+
     public function testUpdateAdditionalRules()
     {
         $this->beUser();

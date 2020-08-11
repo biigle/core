@@ -5,7 +5,7 @@
             <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
         </span>
         <span class="pull-right project-buttons" v-else>
-            @include('projects.partials.oldLayoutButton')
+            @include('projects.partials.newLayoutButton')
             @if ($isMember)
                 @include('projects.partials.pinButton')
             @endif
@@ -35,7 +35,7 @@
     @else
         <h2>
             <span class="pull-right">
-                @include('projects.partials.oldLayoutButton')
+                @include('projects.partials.newLayoutButton')
                 @if ($isMember)
                     @include('projects.partials.pinButton')
                     <button class="btn btn-default" v-on:click="leaveProject" :disabled="loading">Leave</button>
