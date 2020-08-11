@@ -43,7 +43,7 @@
         watch: {
             settings: function (settings) {
                 this.startLoading();
-                this.$http.post('api/v1/users/my/settings/reports', {
+                this.$http.put('api/v1/users/my/settings', {
                         report_notifications: this.settings,
                     })
                     .then(this.handleSuccess, this.handleError)

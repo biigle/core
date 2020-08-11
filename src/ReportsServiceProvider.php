@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Reports;
 
+use Biigle\Http\Requests\UpdateUserSettings;
 use Biigle\Modules\Reports\Http\Controllers\Mixins\Views\SearchControllerMixin;
 use Biigle\Services\Modules;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
@@ -66,6 +67,7 @@ class ReportsServiceProvider extends ServiceProvider
 
         if (config('reports.notifications.allow_user_settings')) {
             $modules->registerViewMixin('reports', 'settings.notifications');
+            UpdateUserSettings::addRule('report_notifications', 'filled|in:email,web');
         }
 
         $this->registerPolicies();
