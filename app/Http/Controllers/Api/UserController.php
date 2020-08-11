@@ -241,7 +241,6 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
-     * @apiParam (Attributes that can be updated) {Bool} super_user_mode Global admins can toggle this attribute to act as normal user or as "super user".
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -258,10 +257,6 @@ class UserController extends Controller
     public function updateOwn(UpdateOwnUser $request)
     {
         $user = $request->updateUser;
-
-        if ($request->filled('super_user_mode')) {
-            $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
-        }
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password'));

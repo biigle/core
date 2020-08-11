@@ -392,19 +392,6 @@ class UserControllerTest extends ApiTestCase
         $this->assertNull($this->guest()->fresh()->affiliation);
     }
 
-    public function testUpdateOwnSuperUserMode()
-    {
-        $this->beAdmin();
-        $this->putJson('api/v1/users/my', ['super_user_mode' => true])
-            ->assertStatus(403);
-
-        $this->assertTrue($this->globalAdmin()->can('sudo'));
-        $this->beGlobalAdmin();
-        $this->putJson('api/v1/users/my', ['super_user_mode' => false])
-            ->assertStatus(200);
-        $this->assertFalse($this->globalAdmin()->can('sudo'));
-    }
-
     public function testStoreWithToken()
     {
         // API key authentication **is** allowed for this route.
