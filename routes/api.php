@@ -346,6 +346,8 @@ $router->get('users/my', 'UserController@showOwn');
 $router->put('users/my', 'UserController@updateOwn');
 $router->delete('users/my', 'UserController@destroyOwn');
 
+$router->put('users/my/settings', 'UserSettingsController@update');
+
 $router->resource('users', 'UserController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['users' => 'id'],
