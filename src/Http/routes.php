@@ -38,10 +38,6 @@ $router->group([
             'destroy' => 'destroy-reports',
         ],
     ]);
-
-    $router->post('users/my/settings/reports', [
-        'uses' => 'SettingsController@store',
-    ]);
 });
 
 $router->group([
