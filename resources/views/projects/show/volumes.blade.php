@@ -25,22 +25,28 @@
         </li>
         @mixin('projectsShowV2Tabs')
     </ul>
-    <div id="projects-show-volumes">
-        <div class="row">
-            <div class="col-xs-12">
-                <form v-if="hasVolumes" class="form-inline" :class="filterInputClass">
-                    <span class="form-group has-feedback">
-                        <input class="form-control" type="text" name="filter" placeholder="Filter volumes" v-model="filterString" v-on:keyup.esc="clearFiltering">
-                        <span v-cloak v-show="hasFiltering" v-on:click="clearFiltering" title="Clear filtering" class="form-control-feedback" aria-hidden="true"><i class="fas fa-times fa-sm"></i></span>
-                    </span>
-                </form>
-                @can('update', $project)
+    <div id="projects-show-volumes" class="project-volumes">
+        <div class="top-bar clearfix">
+            <span class="btn-group">
+                <button class="btn btn-default" :class="toggleImageVolumesClass" title="Toggle display of image volumes" v-on:click="toggleImageVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-image"></i></button>
+                <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Toggle display of video volumes" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
+            </span>
+            <form class="volume-filter" :class="filterInputClass">
+                <span class="form-group has-feedback">
+                    <input class="form-control" type="text" name="filter" placeholder="Filter volumes" v-model="filterString" v-on:keyup.esc="clearFiltering" :disabled="!hasVolumes">
+                    <span v-cloak v-show="hasFiltering" v-on:click="clearFiltering" title="Clear filter query" class="form-control-feedback" aria-hidden="true"><i class="fas fa-times fa-sm"></i></span>
+                </span>
+            </form>
+            <span v-if="hasVolumes">
+            </span>
+            @can('update', $project)
+                <span class="pull-right">
                     <a href="{{ route('create-volume') }}?project={{ $project->id }}" class="btn btn-default" title="Create a new volume">Create volume</a>
                     {{-- <button class="btn btn-default btn-xs" title="Edit volumes" v-cloak v-on:click="toggleEditing"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button> --}}
                     <button class="btn btn-default">Attach volumes</button>
-                    <button class="btn btn-default">Detach/delete volumes</button>
-                @endcan
-            </div>
+                    <button v-if="hasVolumes" class="btn btn-default">Detach/delete volumes</button>
+                </span>
+            @endcan
         </div>
         <div class="row">
             <div class="col-sm-4 col-md-3" v-for="volume in filteredVolumes" v-bind:key="volume.id" v-cloak>
@@ -52,8 +58,15 @@
                 </a>
             </div>
         </div>
-        <span class="text-muted" v-if="hasNoMatchingVolumes" v-cloak>No volume matches this query.</span>
-        <span class="text-muted" v-if="!hasVolumes" v-cloak>This project has no volumes.</span>
+        <div v-if="hasNoMatchingVolumes" v-cloak class="well volume-info-well">
+            No volume matches this filter query. <a href="#" v-on:click="clearFiltering">Clear filter query.</a>
+        </div>
+        <div v-if="!hasVolumes" v-cloak class="well volume-info-well">
+            This project has no volumes.
+            @can('update', $project)
+                <a href="{{ route('create-volume') }}?project={{ $project->id }}" title="Create a new volume">Create the first volume.</a>
+            @endcan
+        </div>
     </div>
 </div>
 @endsection

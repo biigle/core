@@ -59,3 +59,36 @@
         margin: 0;
     }
 }
+
+.volume-filter {
+    display: inline-block;
+    vertical-align: middle;
+
+    &.volume-filter--active {
+        input:not(:focus) {
+            border-color: $brand-info;
+        }
+    }
+
+    .form-control-feedback {
+        cursor: pointer;
+        z-index: 1;
+        pointer-events: inherit;
+        color: $brand-info;
+    }
+
+    .form-group {
+        display: inline-block;
+        margin: 0;
+    }
+}
+
+.project-volumes {
+    .top-bar {
+        padding-top: 15px;
+    }
+
+    .volume-info-well {
+        margin-top: 15px;
+    }
+}

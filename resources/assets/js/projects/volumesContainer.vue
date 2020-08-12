@@ -22,6 +22,8 @@ export default {
             attachableVolumes: [],
             filterString: '',
             fullHeight: 0,
+            showImageVolumes: true,
+            showVideoVolumes: true,
         };
     },
     components: {
@@ -30,15 +32,23 @@ export default {
     },
     computed: {
         filteredVolumes() {
+            let volumes = this.volumes;
+
+            if (!this.showImageVolumes) {
+                volumes = volumes.filter((volume) => volume.media_type.name !== 'image');
+            }
+
+            if (!this.showVideoVolumes) {
+                volumes = volumes.filter((volume) => volume.media_type.name !== 'video');
+            }
+
             if (this.hasFiltering) {
                 let filterString = this.filterString.toLowerCase();
 
-                return this.volumes.filter(
-                    (volume) => volume.name.toLowerCase().indexOf(filterString) !== -1
-                );
+                volumes = volumes.filter((volume) => volume.name.toLowerCase().includes(filterString));
             }
 
-            return this.volumes;
+            return volumes;
         },
         hasFiltering() {
             return this.filterString.length > 0;
@@ -60,6 +70,15 @@ export default {
         },
         hasNoMatchingVolumes() {
             return this.hasVolumes && this.filteredVolumes.length === 0;
+        },
+        hasMixedMediaTypes() {
+            return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+        },
+        toggleImageVolumesClass() {
+            return this.showImageVolumes ? 'btn-default' : 'btn-danger active';
+        },
+        toggleVideoVolumesClass() {
+            return this.showVideoVolumes ? 'btn-default' : 'btn-danger active';
         },
     },
     methods: {
@@ -127,11 +146,24 @@ export default {
         attachableVolumesFetched(response) {
             this.attachableVolumes = response.data;
         },
-        clearFiltering() {
+        clearFiltering(e) {
+            e.preventDefault();
             this.filterString = '';
         },
         updateFullHeight() {
             this.fullHeight = this.$el.offsetHeight;
+        },
+        toggleImageVolumes() {
+            this.showImageVolumes = !this.showImageVolumes;
+            if (!this.showImageVolumes && !this.showVideoVolumes) {
+                this.showVideoVolumes = true;
+            }
+        },
+        toggleVideoVolumes() {
+            this.showVideoVolumes = !this.showVideoVolumes;
+            if (!this.showVideoVolumes && !this.showImageVolumes) {
+                this.showImageVolumes = true;
+            }
         },
     },
     created() {
