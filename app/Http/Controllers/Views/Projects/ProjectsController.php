@@ -33,7 +33,7 @@ class ProjectsController extends Controller
     {
         $showV1 = $request->user()->getSettings('project_overview_v1', false);
 
-        if ($showV1) {
+        if (!config('biigle.project_overview_v2_preview') || $showV1) {
             return $this->showV1($request, $id);
         }
 
