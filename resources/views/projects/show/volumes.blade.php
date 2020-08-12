@@ -24,9 +24,6 @@
             <a href="#"><i class="fa fa-users"></i> Members <span class="badge">{{readable_number($project->users()->count())}}</span></a>
         </li>
         @mixin('projectsShowV2Tabs')
-        <li role="presentation" class="pull-right">
-            <a href="mailto:{{config('biigle.admin_email')}}?subject=Feedback%20for%20the%20new%20project%20overview" class="text-success"><i class="fa fa-comment"></i> Give Feedback</a>
-        </li>
     </ul>
     <div id="projects-show-volumes">
         <div class="row">
