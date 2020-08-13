@@ -1,5 +1,6 @@
 <script>
 import AttachableVolumesApi from './api/attachableVolumes';
+import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
 import ProjectsApi from '../core/api/projects';
@@ -156,6 +157,11 @@ export default {
             volume.icon = volume.media_type.name === 'image' ? 'image' : 'film';
 
             return volume;
+        },
+    },
+    watch: {
+        volumes(volumes) {
+            Events.$emit('project.volumes.count', volumes.length)
         },
     },
     created() {

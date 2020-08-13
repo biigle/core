@@ -1,5 +1,5 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
+import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
 import Typeahead from '../core/components/typeahead';
@@ -87,6 +87,11 @@ export default {
             }
 
             return tree;
+        },
+    },
+    watch: {
+        labelTrees(labelTrees) {
+            Events.$emit('project.label-trees.count', labelTrees.length)
         },
     },
     created() {
