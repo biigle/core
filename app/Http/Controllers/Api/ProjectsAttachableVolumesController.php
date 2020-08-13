@@ -43,7 +43,8 @@ class ProjectsAttachableVolumesController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $volumes = Volume::select('id', 'name')
+        $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
+            ->with('mediaType')
             // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', function ($query) use ($request, $id) {
                 return $query->select('volume_id')

@@ -7,7 +7,7 @@ use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 
-class AttachableVolumesControllerTest extends ApiTestCase
+class ProjectsAttachableVolumesControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

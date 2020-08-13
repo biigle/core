@@ -11,21 +11,24 @@
                 class="preview-thumbnail__icon fas fa-lg"
                 :class="iconClass"
                 ></i>
-            <i
+            <button
                 v-if="showRemove"
-                class="preview-thumbnail__icon fas fa-trash"
+                class="btn btn-danger btn-xs preview-thumbnail__icon"
                 @click.prevent="remove"
                 :title="removeTitle"
-                ></i>
-            <div class="preview-thumbnail__images" v-if="showPreview">
+                >
+                <i class="fas fa-trash"></i>
+            </button>
+            <div class="preview-thumbnail__images" v-show="showPreview">
                 <img
+                    v-if="touched"
                     v-for="(uri, i) in uris"
                     v-show="thumbShown(i)"
-                    @error="failed(i)"
+                    @load="uriLoaded(i)"
                     :src="uri"
                     >
             </div>
-            <div v-else class="preview-thumbnail__fallback">
+            <div v-if="!showPreview" class="preview-thumbnail__fallback">
                 <slot></slot>
             </div>
             <slot name="caption"></slot>
@@ -70,6 +73,7 @@ export default {
         return {
             index: 0,
             uris: [],
+            loaded: [],
             touched: false,
             hovered: false,
         };
@@ -86,7 +90,7 @@ export default {
             return this.touched && this.someLoaded;
         },
         someLoaded() {
-            return this.uris.some((item) => item !== false);
+            return this.loaded.some(item => item);
         },
         iconClass() {
             return this.icon ? 'fa-' + this.icon : '';
@@ -104,7 +108,7 @@ export default {
     },
     methods: {
         thumbShown(i) {
-            return this.index === i && !this.failed[i];
+            return this.index === i && this.loaded[i];
         },
         updateIndex(event) {
             let rect = this.$el.getBoundingClientRect();
@@ -113,8 +117,8 @@ export default {
         remove() {
             this.$emit('remove', this.id);
         },
-        failed(i) {
-            this.uris.splice(i, 1, false);
+        uriLoaded(i) {
+            this.loaded.splice(i, 1, true);
         },
         setHovered() {
             this.hovered = true;
@@ -133,6 +137,8 @@ export default {
         } else {
             this.uris = this.thumbUris.split(',');
         }
+
+        this.loaded = this.uris.map(uri => false);
     },
 };
 </script>

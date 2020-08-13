@@ -86,6 +86,10 @@
 .project-volumes {
     .top-bar {
         padding-top: 15px;
+
+        .typeahead {
+            vertical-align: middle;
+        }
     }
 
     .volume-info-well {

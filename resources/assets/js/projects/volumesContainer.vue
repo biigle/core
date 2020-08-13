@@ -1,6 +1,5 @@
 <script>
 import AttachableVolumesApi from './api/attachableVolumes';
-import EditorMixin from '../core/mixins/editor';
 import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
 import ProjectsApi from '../core/api/projects';
@@ -13,15 +12,14 @@ import {handleErrorResponse} from '../core/messages/store';
 export default {
     mixins: [
         LoaderMixin,
-        EditorMixin,
     ],
     data() {
         return {
             project: null,
             volumes: [],
+            fetchedAttachableVolumes: false,
             attachableVolumes: [],
             filterString: '',
-            fullHeight: 0,
             showImageVolumes: true,
             showVideoVolumes: true,
         };
@@ -54,19 +52,10 @@ export default {
             return this.filterString.length > 0;
         },
         filterInputClass() {
-            return this.hasFiltering ? 'panel-filter--active' : '';
+            return this.hasFiltering ? 'volume-filter--active' : '';
         },
         hasVolumes() {
             return this.volumes.length > 0;
-        },
-        panelStyle() {
-            if (this.hasFiltering) {
-                return {
-                    height: this.fullHeight + 'px',
-                };
-            }
-
-            return {};
         },
         hasNoMatchingVolumes() {
             return this.hasVolumes && this.filteredVolumes.length === 0;
@@ -109,8 +98,6 @@ export default {
                     this.volumes.splice(i, 1);
                 }
             }
-
-            this.$nextTick(this.updateFullHeight);
         },
         hasVolume(id) {
             for (let i = this.volumes.length - 1; i >= 0; i--) {
@@ -136,22 +123,22 @@ export default {
                     this.attachableVolumes.splice(i, 1);
                 }
             }
-
-            this.$nextTick(this.updateFullHeight);
         },
         fetchAttachableVolumes() {
-            AttachableVolumesApi.get({id: this.project.id})
-                .then(this.attachableVolumesFetched, handleErrorResponse);
+            if (!this.fetchedAttachableVolumes) {
+                this.fetchedAttachableVolumes = true;
+                this.startLoading();
+                AttachableVolumesApi.get({id: this.project.id})
+                    .then(this.attachableVolumesFetched, handleErrorResponse)
+                    .finally(this.finishLoading);
+            }
         },
         attachableVolumesFetched(response) {
-            this.attachableVolumes = response.data;
+            this.attachableVolumes = response.data.map(this.processVolumes);
         },
         clearFiltering(e) {
             e.preventDefault();
             this.filterString = '';
-        },
-        updateFullHeight() {
-            this.fullHeight = this.$el.offsetHeight;
         },
         toggleImageVolumes() {
             this.showImageVolumes = !this.showImageVolumes;
@@ -165,18 +152,15 @@ export default {
                 this.showImageVolumes = true;
             }
         },
-    },
-    created() {
-        this.project = biigle.$require('projects.project');
-        this.volumes = biigle.$require('projects.volumes').map(function (volume) {
+        processVolumes(volume) {
             volume.icon = volume.media_type.name === 'image' ? 'image' : 'film';
 
             return volume;
-        });
-        this.$once('editing.start', this.fetchAttachableVolumes);
+        },
     },
-    mounted() {
-        this.updateFullHeight();
+    created() {
+        this.project = biigle.$require('projects.project');
+        this.volumes = biigle.$require('projects.volumes').map(this.processVolumes);
     },
 };
 </script>

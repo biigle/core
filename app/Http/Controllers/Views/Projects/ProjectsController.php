@@ -122,14 +122,16 @@ class ProjectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
+        $hidden = ['video_link', 'gis_link', 'doi'];
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
             ->orderBy('updated_at', 'desc')
             ->get()
-            ->each(function ($item) {
-                $item->append('thumbnailUrl');
-                $item->append('thumbnailsUrl');
+            ->each(function ($item) use ($hidden) {
+                $item->append('thumbnailUrl')
+                    ->append('thumbnailsUrl')
+                    ->makeHidden($hidden);
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
