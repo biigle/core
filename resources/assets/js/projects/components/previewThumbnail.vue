@@ -28,7 +28,7 @@
                     :src="uri"
                     >
             </div>
-            <div v-if="!showPreview" class="preview-thumbnail__fallback">
+            <div class="preview-thumbnail__fallback">
                 <slot></slot>
             </div>
             <slot name="caption"></slot>
