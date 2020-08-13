@@ -19,9 +19,8 @@
                 >
                 <i class="fas fa-trash"></i>
             </button>
-            <div class="preview-thumbnail__images" v-show="showPreview">
+            <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
-                    v-if="touched"
                     v-for="(uri, i) in uris"
                     v-show="thumbShown(i)"
                     @load="uriLoaded(i)"
@@ -138,7 +137,7 @@ export default {
             this.uris = this.thumbUris.split(',');
         }
 
-        this.loaded = this.uris.map(uri => false);
+        this.loaded = this.uris.map(() => false);
     },
 };
 </script>
