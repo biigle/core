@@ -232,6 +232,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-label-trees',
             'uses' => 'ProjectLabelTreeController@show',
         ]);
+
+        $router->get('{id}/members', [
+            'as'   => 'project-members',
+            'uses' => 'ProjectUserController@show',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {

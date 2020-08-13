@@ -8,7 +8,7 @@ use Biigle\Tests\UserTest;
 use Cache;
 use TestCase;
 
-class ProjectLabelTreeControllerTest extends TestCase
+class ProjectUserControllerTest extends TestCase
 {
     public function setUp(): void
     {
@@ -22,21 +22,21 @@ class ProjectLabelTreeControllerTest extends TestCase
         $id = $project->id;
         $user = UserTest::create();
 
-        $this->get("projects/{$id}/label-trees")->assertStatus(302);
+        $this->get("projects/{$id}/members")->assertStatus(302);
 
         $this->be($user);
-        $this->get("projects/{$id}/label-trees")->assertStatus(403);
+        $this->get("projects/{$id}/members")->assertStatus(403);
 
         $project->addUserId($user->id, Role::editorId());
         Cache::flush();
-        $this->get("projects/{$id}/label-trees")->assertStatus(200);
+        $this->get("projects/{$id}/members")->assertStatus(200);
 
         config(['biigle.project_overview_v2_preview' => false]);
 
-        $this->get("projects/{$id}/label-trees")->assertStatus(404);
+        $this->get("projects/{$id}/members")->assertStatus(404);
 
         // diesn't exist
-        $this->get('projects/-1/label-trees')->assertStatus(404);
+        $this->get('projects/-1/members')->assertStatus(404);
     }
 
     public function testShowV1()
@@ -45,6 +45,6 @@ class ProjectLabelTreeControllerTest extends TestCase
         $id = $project->id;
         $project->creator->setSettings(['project_overview_v1' => true]);
         $this->be($project->creator);
-        $this->get("projects/{$id}/label-trees")->assertRedirect("projects/{$id}");
+        $this->get("projects/{$id}/members")->assertRedirect("projects/{$id}");
     }
 }
