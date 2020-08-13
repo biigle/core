@@ -13,7 +13,7 @@
                 ></i>
             <button
                 v-if="showRemove"
-                class="btn btn-danger btn-xs preview-thumbnail__icon"
+                class="btn btn-default btn-xs preview-thumbnail__icon"
                 @click.prevent="remove"
                 :title="removeTitle"
                 >

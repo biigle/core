@@ -144,10 +144,11 @@ class ProjectsController extends Controller
 
         return view('projects.show.volumes', [
             'project' => $project,
-            'volumes' => $volumes,
             'isMember' => $isMember,
             'isPinned' => $isPinned,
             'canPin' => $canPin,
+            'activeTab' => 'volumes',
+            'volumes' => $volumes,
         ]);
     }
 }

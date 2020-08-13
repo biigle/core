@@ -83,15 +83,17 @@
     }
 }
 
-.project-volumes {
-    .top-bar {
-        padding-top: 15px;
+.project-tabs {
+    margin-bottom: 15px;
+}
 
-        .typeahead {
-            vertical-align: middle;
-        }
+.project-volumes, .project-label-trees {
+    .typeahead {
+        vertical-align: middle;
     }
+}
 
+.project-volumes {
     .volume-info-well {
         margin-top: 15px;
     }
