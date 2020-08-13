@@ -114,7 +114,7 @@
             </div>
          @endunless
 
-         <div class="row">
+         <div v-if="isImageMediaType" class="row">
              <div class="form-group col-sm-4{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
@@ -130,6 +130,23 @@
                 @endif
             </div>
             <div class="form-group col-sm-4{{ $errors->has('gis_link') ? ' has-error' : '' }}">
+                <label for="gis_link">GIS link</label>
+                <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link') }}" placeholder="http://gis.example.com">
+                @if($errors->has('gis_link'))
+                    <span class="help-block">{{ $errors->first('gis_link') }}</span>
+                @endif
+            </div>
+        </div>
+
+        <div v-else class="row">
+             <div class="form-group col-sm-6{{ $errors->has('doi') ? ' has-error' : '' }}">
+                <label for="doi">DOI</label>
+                <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+                @if($errors->has('doi'))
+                    <span class="help-block">{{ $errors->first('doi') }}</span>
+                @endif
+            </div>
+            <div class="form-group col-sm-6{{ $errors->has('gis_link') ? ' has-error' : '' }}">
                 <label for="gis_link">GIS link</label>
                 <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link') }}" placeholder="http://gis.example.com">
                 @if($errors->has('gis_link'))
