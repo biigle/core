@@ -1,7 +1,7 @@
 <template>
     <ul class="list-group" @mouseleave="handleLeave">
         <member-list-item
-            v-for="member in members"
+            v-for="member in sortedMembers"
             :key="member.id"
             :member="member"
             :own-id="ownId"
@@ -45,6 +45,22 @@ export default {
         return {
             editingMemberId: null,
         };
+    },
+    computed: {
+        sortedMembers() {
+            let members = this.members.slice();
+            members.sort((a, b) => {
+                if (a.id === this.ownId) {
+                    return -1;
+                } else if (b.id === this.ownId) {
+                    return 1;
+                }
+
+                return 0;
+            });
+
+            return members;
+        },
     },
     methods: {
         emitRemove(member) {

@@ -1,7 +1,7 @@
 <template>
     <li class="list-group-item clearfix" @mouseenter="emitEnter">
         <h4 class="list-group-item-heading">
-            <span v-if="editable" v-show="editing" class="pull-right">
+            <span v-if="editable" v-show="isEditing" class="pull-right">
                 <form class="form-inline">
                     <select :disabled="isOwnUser" class="form-control input-sm" :title="`Change the role of ${name}`" v-model="roleId" @change="changeRole">
                         <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
@@ -9,7 +9,7 @@
                     <button :disabled="isOwnUser" type="button" class="btn btn-default btn-sm" :title="`Remove ${name}`" @click="removeMember"><i class="fa fa-trash"></i></button>
                 </form>
             </span>
-            <span v-show="!editing" class="pull-right label" :class="labelClass" v-text="role.name"></span>
+            <span v-show="!isEditing" class="pull-right label" :class="labelClass" v-text="role.name"></span>
             <span v-text="name"></span> <span v-if="isOwnUser" class="text-muted">(you)</span>
         </h4>
         <p v-if="member.affiliation" class="list-group-item-text text-muted" v-text="member.affiliation"></p>
@@ -53,6 +53,9 @@ export default {
     computed: {
         isOwnUser() {
             return this.member.id === this.ownId;
+        },
+        isEditing() {
+            return this.editing && !this.isOwnUser;
         },
         name() {
             return this.member.firstname + ' ' + this.member.lastname;
