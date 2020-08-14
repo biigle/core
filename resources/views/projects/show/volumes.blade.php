@@ -44,6 +44,8 @@
         This project has no volumes.
         @can('update', $project)
             <a href="{{ route('create-volume') }}?project={{ $project->id }}" title="Create a new volume">Create the first volume.</a>
+        @else
+            Ask a project admin to create the first volume.
         @endcan
     </div>
 </div>

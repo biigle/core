@@ -27,9 +27,9 @@
                 >
             </member-list>
         </div>
-        @can('update', $project)
-            <div class="col-xs-6">
-                <span class="top-bar pull-right">
+        <div class="col-xs-6">
+            <span class="top-bar pull-right">
+                @can('update', $project)
                     <loader :active="loading"></loader>
                     <add-member-form
                         class="inline-block-form"
@@ -39,9 +39,11 @@
                         :disabled="loading"
                         v-on:attach="attachMember"
                         ></add-member-form>
-                </span>
-            </div>
-        @endcan
+                @else
+                    <span class="text-muted">Project admins can add and remove members.</span>
+                @endcan
+            </span>
+        </div>
     </div>
 </div>
 @endsection
