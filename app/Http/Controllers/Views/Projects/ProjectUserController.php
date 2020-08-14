@@ -31,10 +31,27 @@ class ProjectUserController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
+        $roles = collect([
+            Role::admin(),
+            Role::expert(),
+            Role::editor(),
+            Role::guest(),
+        ]);
+
+        $roleOrder = [
+            Role::guestId(),
+            Role::editorId(),
+            Role::expertId(),
+            Role::adminId(),
+        ];
+
         $members = $project->users()
             ->select('id', 'firstname', 'lastname', 'project_role_id as role_id', 'affiliation')
-            ->orderBy('project_user.project_role_id', 'asc')
-            ->get();
+            ->get()
+            ->sort(function ($a, $b) use ($roleOrder) {
+                return array_search($b->role_id, $roleOrder) - array_search($a->role_id, $roleOrder);
+            })
+            ->values();
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
@@ -50,6 +67,7 @@ class ProjectUserController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'members',
+            'roles' => $roles,
             'members' => $members,
         ]);
     }

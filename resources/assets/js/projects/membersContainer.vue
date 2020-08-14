@@ -1,9 +1,9 @@
 <script>
 import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
-import MembersPanel from '../core/components/membersPanel';
+import MemberList from './components/memberList';
+import AddMemberForm from './components/addMemberForm';
 import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
@@ -14,14 +14,16 @@ export default {
     data() {
         return {
             project: null,
+            canEdit: false,
             members: [],
-            roles: [],
+            roles: {},
             defaultRole: null,
             userId: null,
         };
     },
     components: {
-        typeahead: Typeahead,
+        memberList: MemberList,
+        addMemberForm: AddMemberForm,
     },
     methods: {
         attachMember(user) {
@@ -67,13 +69,10 @@ export default {
     },
     created() {
         this.project = biigle.$require('projects.project');
-        this.members = biigle.$require('projects.members').map(function (user) {
-            user.name = user.firstname + ' ' + user.lastname;
-
-            return user;
-        });
+        this.canEdit = biigle.$require('projects.canEdit');
         this.roles = biigle.$require('projects.roles');
-        this.defaultRole = biigle.$require('projects.defaultRoleId');
+        this.defaultRole = biigle.$require('projects.defaultRole');
+        this.members = biigle.$require('projects.members');
         this.userId = biigle.$require('projects.userId');
     },
 };
