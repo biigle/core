@@ -9,8 +9,6 @@
 </template>
 
 <script>
-import LabelTreeListItem from './labelTreeListItem';
-
 export default {
     props: {
         tree: {
