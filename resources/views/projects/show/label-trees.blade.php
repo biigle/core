@@ -2,6 +2,11 @@
 
 @push('scripts')
 <script type="text/javascript">
+    @can('update', $project)
+        biigle.$declare('projects.canEdit', true);
+    @else
+        biigle.$declare('projects.canEdit', false);
+    @endcan
     biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
 </script>
 @endpush
@@ -10,17 +15,13 @@
 <div id="projects-show-label-trees" class="project-label-trees">
     <div class="row">
         <div class="col-xs-6">
-            <ul v-if="hasLabelTrees" class="list-group">
-                <li v-cloak class="list-group-item" v-for="tree in labelTrees">
-                    <h4 class="list-group-item-heading">
-                        @can('update', $project)
-                            <button type="button" class="btn btn-default btn-sm pull-right" title="Detach this label tree" v-on:click="removeTree(tree)"><i class="fa fa-trash"></i></button>
-                        @endcan
-                        <a :href="'{{route('label-trees', '')}}/' + tree.id" v-text="tree.name"></a>
-                    </h4>
-                    <p v-if="tree.description" class="list-group-item-text" v-text="tree.description"></p>
-                </li>
-            </ul>
+            <label-tree-list
+                v-if="hasLabelTrees"
+                :label-trees="labelTrees"
+                :editable="canEdit"
+                base-uri="{{route('label-trees', '')}}"
+                >
+            </label-tree-list>
             <div v-else v-cloak class="well">This project has no label trees attached.</div>
         </div>
         @can('update', $project)

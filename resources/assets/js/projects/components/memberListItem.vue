@@ -48,7 +48,6 @@ export default {
     data() {
         return {
             roleId: null,
-            hovering: false,
         };
     },
     computed: {

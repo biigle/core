@@ -1,23 +1,21 @@
 <script>
 import Events from '../core/events';
+import LabelTreeList from './components/labelTreeList';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
 import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
 
-/**
- * The panel for editing the members of a project
- */
 export default {
-    mixins: [
-        LoaderMixin,
-    ],
+    mixins: [LoaderMixin],
     components: {
         typeahead: Typeahead,
+        labelTreeList: LabelTreeList,
     },
     data() {
         return {
             project: null,
+            canEdit: false,
             labelTrees: [],
             fetchedAvailableLabelTrees: false,
             availableLabelTrees: [],
@@ -95,6 +93,7 @@ export default {
         },
     },
     created() {
+        this.canEdit = biigle.$require('projects.canEdit');
         this.labelTrees = biigle.$require('projects.labelTrees')
             .map(this.parseLabelTreeVersionedName);
         this.project = biigle.$require('projects.project');
