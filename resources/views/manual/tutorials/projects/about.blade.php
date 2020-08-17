@@ -60,6 +60,10 @@
             Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs">Create Volume</button> button of the volumes tab in the project overview. A new volume will be automatically attached to the project it was created for. Volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, enter the name of the volume you want to attach in the input field on the top right of the volumes tab and hit enter. Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i></button> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
         </p>
 
+        <p>
+            If a project has lots of volumes, filtering the volumes can help to find a particular volume. To filter the volumes in the project overview, type part of the name of the volume in the input field on the top left of the volumes tab. The volumes list will update as you type. You can also show only image volumes or video volumes with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-image"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-film"></i></button> buttons, respectively.
+        </p>
+
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>
 
         <p>

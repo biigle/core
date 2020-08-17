@@ -65,10 +65,10 @@ export default {
             return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
         },
         toggleImageVolumesClass() {
-            return this.showImageVolumes ? 'btn-default' : 'btn-danger active';
+            return this.showVideoVolumes ? 'btn-default' : 'btn-info active';
         },
         toggleVideoVolumesClass() {
-            return this.showVideoVolumes ? 'btn-default' : 'btn-danger active';
+            return this.showImageVolumes ? 'btn-default' : 'btn-info active';
         },
     },
     methods: {
@@ -142,15 +142,15 @@ export default {
             this.filterString = '';
         },
         toggleImageVolumes() {
-            this.showImageVolumes = !this.showImageVolumes;
+            this.showVideoVolumes = !this.showVideoVolumes;
             if (!this.showImageVolumes && !this.showVideoVolumes) {
-                this.showVideoVolumes = true;
+                this.showImageVolumes = true;
             }
         },
         toggleVideoVolumes() {
-            this.showVideoVolumes = !this.showVideoVolumes;
+            this.showImageVolumes = !this.showImageVolumes;
             if (!this.showVideoVolumes && !this.showImageVolumes) {
-                this.showImageVolumes = true;
+                this.showVideoVolumes = true;
             }
         },
         processVolumes(volume) {

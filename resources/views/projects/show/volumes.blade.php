@@ -10,8 +10,8 @@
 <div id="projects-show-volumes" class="project-volumes">
     <div class="clearfix">
         <span class="btn-group">
-            <button class="btn btn-default" :class="toggleImageVolumesClass" title="Toggle display of image volumes" v-on:click="toggleImageVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-image"></i></button>
-            <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Toggle display of video volumes" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
+            <button class="btn btn-default" :class="toggleImageVolumesClass" title="Show only image volumes" v-on:click="toggleImageVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-image"></i></button>
+            <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Show only video volumes" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
         </span>
         <form class="volume-filter" :class="filterInputClass">
             <span class="form-group has-feedback">
