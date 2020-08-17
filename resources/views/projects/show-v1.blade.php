@@ -17,15 +17,15 @@
 
 @section('content')
 <div class="container">
-    @include('projects.show.title')
-    @include('projects.show.toolbar')
+    @include('projects.show-v1.title')
+    @include('projects.show-v1.toolbar')
     <div class="col-md-6">
-        @include('projects.show.volumes')
+        @include('projects.show-v1.volumes')
         @mixin('projectsShowLeft')
     </div>
     <div class="col-md-6">
-        @include('projects.show.label-trees')
-        @include('projects.show.members')
+        @include('projects.show-v1.label-trees')
+        @include('projects.show-v1.members')
         @mixin('projectsShow')
         @mixin('projectsShowRight')
     </div>

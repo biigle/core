@@ -29,6 +29,9 @@ export default{
         isChanged() {
             return this.name !== this.project.name || this.description !== this.project.description;
         },
+        disabledClass() {
+            return this.loading ? 'disabled' : '';
+        },
     },
     methods: {
         discardChanges() {

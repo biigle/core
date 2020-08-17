@@ -1,18 +1,49 @@
-@can('update', $project)
-    <members-panel id="projects-members" :members="members" :roles="roles" :default-role="defaultRole" :own-id="userId" :loading="loading" v-on:attach="attachMember" v-on:update="updateMember" v-on:remove="removeMember"></members-panel>
-@else
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            Members
+@extends('projects.show.base')
+
+@push('scripts')
+<script type="text/javascript">
+    @can('update', $project)
+        biigle.$declare('projects.canEdit', true);
+    @else
+        biigle.$declare('projects.canEdit', false);
+    @endcan
+    biigle.$declare('projects.roles', {!! $roles !!});
+    biigle.$declare('projects.defaultRole', {!! Biigle\Role::guest() !!});
+    biigle.$declare('projects.members', {!! $members !!});
+</script>
+@endpush
+
+@section('project-content')
+<div id="projects-show-members" class="project-members">
+    <div class="row">
+        <div class="col-xs-6">
+            <member-list
+                :members="members"
+                :own-id="userId"
+                :editable="canEdit"
+                :roles="roles"
+                v-on:remove="removeMember"
+                v-on:update="updateMember"
+                >
+            </member-list>
         </div>
-        <ul class="list-group list-group-restricted">
-            <?php $r = $roles->keyBy('id'); ?>
-            @foreach($members as $member)
-                <li class="list-group-item clearfix">
-                    <span class="text-muted pull-right">{{ $r[$member->project_role_id]->name }}</span>
-                    {{$member->firstname}} {{$member->lastname}} @if($member->id === $user->id) <span class="text-muted">(you)</span> @endif
-                </li>
-            @endforeach
-        </ul>
+        <div class="col-xs-6">
+            <span class="top-bar pull-right">
+                @can('update', $project)
+                    <loader :active="loading"></loader>
+                    <add-member-form
+                        class="inline-block-form"
+                        :members="members"
+                        :roles="roles"
+                        :default-role="defaultRole"
+                        :disabled="loading"
+                        v-on:attach="attachMember"
+                        ></add-member-form>
+                @else
+                    <span class="text-muted">Project admins can add and remove members.</span>
+                @endcan
+            </span>
+        </div>
     </div>
-@endcan
+</div>
+@endsection
