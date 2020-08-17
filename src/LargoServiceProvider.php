@@ -56,6 +56,7 @@ class LargoServiceProvider extends ServiceProvider
                 'labelTreesShowToolbar',
                 'manualTutorial',
                 'labelTreesManual',
+                'projectsShowV2Tabs',
             ],
             'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
