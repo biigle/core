@@ -28,8 +28,8 @@
             <span class="top-bar pull-right">
                 @can('update', $project)
                     <loader :active="loading"></loader>
-                    <a href="{{route('label-trees-create', ['project' => $project->id])}}" class="btn btn-default" title="Create a new label tree and attach it to this project" >Create label tree</a>
-                    <typeahead :items="attachableLabelTrees" placeholder="Attach label trees" :disabled="loading" v-on:select="attachTree" :clear-on-select="true" :template="typeaheadTemplate" title="Attach a label tree" v-on:focus="fetchAvailableLabelTrees"></typeahead>
+                    <a href="{{route('label-trees-create', ['project' => $project->id])}}" class="btn btn-default" title="Create a new label tree and attach it to this project" >Create Label Tree</a>
+                    <typeahead :items="attachableLabelTrees" placeholder="Attach label tree" :disabled="loading" v-on:select="attachTree" :clear-on-select="true" :template="typeaheadTemplate" title="Attach a label tree" v-on:focus="fetchAvailableLabelTrees"></typeahead>
                 @else
                     <span class="text-muted">Project admins can add and remove label trees.</span>
                 @endcan
