@@ -168,11 +168,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-global-label-trees',
             'uses' => 'LabelTreesController@index',
         ]);
-
-        $router->get('volumes', [
-            'as' => 'admin-volumes',
-            'uses' => 'VolumesController@index',
-        ]);
     });
 
     $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {
