@@ -90,6 +90,16 @@ class User extends Authenticatable
     }
 
     /**
+     * The federated search models that the user can access
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function federatedSearchModels()
+    {
+        return $this->belongsToMany(FederatedSearchModel::class);
+    }
+
+    /**
      * Determines if the user has the global admin role.
      *
      * @return bool
