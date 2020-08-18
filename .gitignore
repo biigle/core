@@ -1,4 +1,4 @@
-vendor
+/vendor
 public/vendor
 node_modules
 public/hot

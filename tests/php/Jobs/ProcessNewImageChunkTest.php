@@ -152,7 +152,22 @@ class ProcessNewImageChunkTest extends TestCase
         $this->assertTrue($image->tilingInProgress);
     }
 
-    public function testHandleTileLargeImageSkip()
+    public function testHandleTileLargeImageSkipInProgress()
+    {
+        config(['image.tiles.threshold' => 300]);
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'tiled' => true,
+            'attrs' => ['tilingInProgress' => true],
+        ]);
+
+        Queue::fake();
+        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        Queue::assertNotPushed(TileSingleImage::class);
+    }
+
+    public function testHandleTileLargeImageSkipFinished()
     {
         config(['image.tiles.threshold' => 300, 'image.tiles.disk' => 'tiles']);
         Storage::fake('tiles');
