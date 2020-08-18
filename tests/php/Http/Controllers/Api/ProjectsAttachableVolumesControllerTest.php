@@ -7,7 +7,7 @@ use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 
-class AttachableVolumesControllerTest extends ApiTestCase
+class ProjectsAttachableVolumesControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
@@ -38,6 +38,9 @@ class AttachableVolumesControllerTest extends ApiTestCase
         $response->assertExactJson([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
+            'media_type_id' => $validVolume->media_type_id,
+            'media_type' => $validVolume->mediaType,
+            'updated_at' => $validVolume->getAttributes()['updated_at'],
             'thumbnailUrl' => null,
             'thumbnailsUrl' => [],
         ]]);

@@ -42,7 +42,8 @@ class UpdateUserSettings extends FormRequest
     public function rules()
     {
         return array_merge(static::$additionalRules, [
-            'super_user_mode' => 'nullable|bool',
+            'super_user_mode' => 'filled|bool',
+            'project_overview_v1' => 'filled|bool',
         ]);
     }
 

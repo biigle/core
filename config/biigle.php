@@ -38,4 +38,14 @@ return [
     */
     'user_registration_confirmation' => false,
 
+    /*
+    | Enable the project overview v2 preview.
+    */
+    'project_overview_v2_preview' => env('BIIGLE_PROJECT_OVERVIEW_V2_PREVIEW', false),
+
+    /*
+    | Enable the project overview v2 feedback button.
+    */
+    'project_overview_v2_feedback' => env('BIIGLE_PROJECT_OVERVIEW_V2_FEEDBACK', false),
+
 ];
