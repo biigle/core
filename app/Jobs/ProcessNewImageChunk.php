@@ -100,22 +100,27 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
                 throw new Exception("File '{$path}' does not exist.");
             }
 
-            $this->collectMetadata($image, $path);
-            $this->makeThumbnail($image, $path);
+            if ($this->needsMetadata($image)) {
+                $this->collectMetadata($image, $path);
+            }
+
+            // Do this after collection of metadata so the image has width and height
+            // attributes. But do it before generating the thumbnail so the tile image
+            // job can run while the thumbnail is being generated (which can take a
+            // while for huge images).
+            if ($this->shouldBeTiled($image)) {
+                $this->submitTileJob($image);
+            }
+
+            if ($this->needsThumbnail($image)) {
+                $this->makeThumbnail($image, $path);
+            }
         };
 
         foreach ($images as $image) {
             try {
                 if ($this->needsProcessing($image)) {
                     FileCache::getOnce($image, $callback);
-                }
-
-                // Do this after processing so the image has width and height attributes.
-                if ($this->shouldBeTiled($image)) {
-                    $image->tiled = true;
-                    $image->tilingInProgress = true;
-                    $image->save();
-                    TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
                 if (App::runningUnitTests()) {
@@ -140,7 +145,9 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function needsProcessing(Image $image)
     {
-        return $this->needsThumbnail($image) || $this->needsMetadata($image);
+        return $this->needsThumbnail($image) ||
+            $this->needsMetadata($image) ||
+            $this->shouldBeTiled($image);
     }
 
     /**
@@ -171,23 +178,20 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function makeThumbnail(Image $image, $path)
     {
-        // Skip existing thumbnails.
-        if ($this->needsThumbnail($image)) {
-            $prefix = fragment_uuid_path($image->uuid);
-            $format = config('thumbnails.format');
-            $buffer = VipsImage::thumbnail($path, $this->width, [
-                    'height' => $this->height,
-                ])
-                // Strip EXIF information to not auto rotate thumbnails because
-                // the orientation of AUV captured images is not reliable.
-                ->writeToBuffer(".{$format}", [
-                    'Q' => 85,
-                    'strip' => true,
-                ]);
+        $prefix = fragment_uuid_path($image->uuid);
+        $format = config('thumbnails.format');
+        $buffer = VipsImage::thumbnail($path, $this->width, [
+                'height' => $this->height,
+            ])
+            // Strip EXIF information to not auto rotate thumbnails because
+            // the orientation of AUV captured images is not reliable.
+            ->writeToBuffer(".{$format}", [
+                'Q' => 85,
+                'strip' => true,
+            ]);
 
-            Storage::disk(config('thumbnails.storage_disk'))
-                    ->put("{$prefix}.{$format}", $buffer);
-        }
+        Storage::disk(config('thumbnails.storage_disk'))
+                ->put("{$prefix}.{$format}", $buffer);
     }
 
     /**
@@ -221,10 +225,6 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function collectMetadata(Image $image, $path)
     {
-        if (!$this->needsMetadata($image)) {
-            return;
-        }
-
         if (is_null($image->size)) {
             $image->size = File::size($path);
         }
@@ -403,6 +403,10 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     protected function shouldBeTiled(Image $image)
     {
         if ($image->tiled) {
+            if ($image->tilingInProgress) {
+                return false;
+            }
+
             $disk = Storage::disk(config('image.tiles.disk'));
             $fragment = fragment_uuid_path($image->uuid);
             if ($disk->exists("{$fragment}/ImageProperties.xml")) {
@@ -411,5 +415,18 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         }
 
         return $image->width > $this->threshold || $image->height > $this->threshold;
+    }
+
+    /**
+     * Submit a new tile job if the image needs tiling.
+     *
+     * @param Image $image
+     */
+    protected function submitTileJob(Image $image)
+    {
+        $image->tiled = true;
+        $image->tilingInProgress = true;
+        $image->save();
+        TileSingleImage::dispatch($image);
     }
 }
