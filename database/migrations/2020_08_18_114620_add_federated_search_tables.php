@@ -21,8 +21,8 @@ class AddFederatedSearchTables extends Migration
             $table->string('name', 512);
             $table->string('url', 512);
             // The token the remote instance uses to authenticate with the local
-            // instance (hashed like a password).
-            $table->string('local_token', 60)->nullable();
+            // instance (hashed).
+            $table->string('local_token')->nullable();
             // The token the local instance uses to authenticate with the remote instance
             // (encrypted).
             $table->string('remote_token')->nullable();

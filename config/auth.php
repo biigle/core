@@ -46,6 +46,12 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'fs' => [
+            'driver' => 'fs',
+            'provider' => 'federated-search-instances',
+            'hash' => true,
+        ],
     ],
 
     /*
@@ -69,6 +75,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => Biigle\User::class,
+        ],
+
+        'federated-search-instances' => [
+            'driver' => 'eloquent',
+            'model' => Biigle\FederatedSearchInstance::class,
         ],
 
         // 'users' => [

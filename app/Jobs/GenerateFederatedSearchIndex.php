@@ -68,7 +68,6 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
                     'updated_at' => strval($tree->updated_at),
                     'url' => route('label-trees', $tree->id, false),
                     'members' => $tree->members()->pluck('id')->toArray(),
-                    'projects' => $tree->projects()->pluck('id')->toArray(),
                 ];
             });
 
@@ -93,6 +92,12 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
                     'thumbnail_url' => $project->thumbnailUrl,
                     'url' => route('project', $project->id, false),
                     'members' => $project->users()->pluck('id')->toArray(),
+                    // Versions and global label trees should not be indexed.
+                    'label_trees' => $project->labelTrees()
+                        ->withoutVersions()
+                        ->has('members')
+                        ->pluck('id')
+                        ->toArray(),
                 ];
             });
 

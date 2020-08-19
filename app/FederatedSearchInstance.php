@@ -2,10 +2,14 @@
 
 namespace Biigle;
 
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 
-class FederatedSearchInstance extends Model
+class FederatedSearchInstance extends Model implements AuthenticatableContract
 {
+    use Authenticatable;
+
     /**
      * The attributes excluded from the model's JSON form.
      *
