@@ -10,5 +10,6 @@
 */
 
 $router->get('federated-search-index', [
+    'as' => 'federated-search-index',
     'uses' => 'FederatedSearchIndexController@index',
 ]);

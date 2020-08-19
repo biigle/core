@@ -19,6 +19,42 @@ class FederatedSearchModel extends Model
     ];
 
     /**
+     * Scope a query to all models that represent label trees.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLabelTrees($query)
+    {
+        return $query->where('type', LabelTree::class);
+    }
+
+    /**
+     * Scope a query to all models that represent projects.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeProjects($query)
+    {
+        return $query->where('type', Project::class);
+    }
+
+    /**
+     * Scope a query to all models that represent volumes.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVolumes($query)
+    {
+        return $query->where('type', Volume::class);
+    }
+
+    /**
      * The instance, this model belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

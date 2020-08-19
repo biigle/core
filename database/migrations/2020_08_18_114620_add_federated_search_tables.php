@@ -30,6 +30,9 @@ class AddFederatedSearchTables extends Migration
             $table->unsignedSmallInteger('index_interval')->default(1);
             $table->timestamps();
             $table->timestamp('indexed_at')->nullable();
+
+            $table->unique('url');
+            $table->unique('local_token');
         });
 
         Schema::create('federated_search_models', function (Blueprint $table) {
@@ -60,6 +63,8 @@ class AddFederatedSearchTables extends Migration
                   ->references('id')
                   ->on('users')
                   ->onDelete('cascade');
+
+            $table->unique(['federated_search_model_id', 'user_id']);
         });
     }
 
