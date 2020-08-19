@@ -2,6 +2,8 @@
 
 namespace Biigle\Console;
 
+use Biigle\FederatedSearchInstance;
+use Biigle\Jobs\GenerateFederatedSearchIndex;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -26,6 +28,15 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('prune-notifications')
             ->daily()
+            ->onOneServer();
+
+        $schedule->call(function () {
+                if (FederatedSearchInstance::exists()) {
+                    GenerateFederatedSearchIndex::dispatch();
+                }
+            })
+            ->name('generate-federated-search-index')
+            ->hourly()
             ->onOneServer();
 
         // Insert scheduled tasks here.

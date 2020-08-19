@@ -48,4 +48,12 @@ return [
     */
     'project_overview_v2_feedback' => env('BIIGLE_PROJECT_OVERVIEW_V2_FEEDBACK', false),
 
+    'federated_search' => [
+
+        /*
+        | Cache key to use for the federated search index.
+        */
+        'cache_key' => env('BIIGLE_FEDERATED_SEARCH_CACHE_KEY', 'federated_search_index'),
+    ],
+
 ];

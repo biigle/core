@@ -1,0 +1,125 @@
+<?php
+
+namespace Biigle\Jobs;
+
+use Biigle\LabelTree;
+use Biigle\Project;
+use Biigle\User;
+use Biigle\Volume;
+use Cache;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class GenerateFederatedSearchIndex extends Job implements ShouldQueue
+{
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $index = [];
+        $index['label_trees'] = $this->generateLabelTreeIndex();
+
+        $index['projects'] = $this->generateProjectIndex();
+        $index['volumes'] = $this->generateVolumeIndex();
+
+        $userIds = [];
+        foreach ($index['label_trees'] as $tree) {
+            $userIds = array_merge($userIds, $tree['members']);
+        }
+
+        foreach ($index['projects'] as $project) {
+            $userIds = array_merge($userIds, $project['members']);
+        }
+
+        $index['users'] = [];
+        User::whereIn('id', array_unique($userIds))
+            ->select('id', 'uuid')
+            ->eachById(function ($user) use (&$index) {
+                $index['users'][] = [
+                    'id' => $user->id,
+                    'uuid' => $user->uuid,
+                ];
+            });
+
+        $key = config('biigle.federated_search.cache_key');
+        Cache::put($key, $index, 3600);
+    }
+
+    /**
+     * Generate the label tree index.
+     *
+     * @return array
+     */
+    protected function generateLabelTreeIndex()
+    {
+        $trees = [];
+
+        // Versions and global label trees should not be indexed.
+        LabelTree::withoutVersions()
+            ->whereHas('members')
+            ->eachById(function ($tree) use (&$trees) {
+                $trees[] = [
+                    'id' => $tree->id,
+                    'name' => $tree->name,
+                    'description' => $tree->description,
+                    'created_at' => strval($tree->created_at),
+                    'updated_at' => strval($tree->updated_at),
+                    'url' => route('label-trees', $tree->id, false),
+                    'members' => $tree->members()->pluck('id')->toArray(),
+                    'projects' => $tree->projects()->pluck('id')->toArray(),
+                ];
+            });
+
+        return $trees;
+    }
+
+    /**
+     * Generate the project index.
+     *
+     * @return array
+     */
+    protected function generateProjectIndex()
+    {
+        $projects = [];
+        Project::eachById(function ($project) use (&$projects) {
+                $projects[] = [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                    'description' => $project->description,
+                    'created_at' => strval($project->created_at),
+                    'updated_at' => strval($project->updated_at),
+                    'thumbnail_url' => $project->thumbnailUrl,
+                    'url' => route('project', $project->id, false),
+                    'members' => $project->users()->pluck('id')->toArray(),
+                ];
+            });
+
+        return $projects;
+    }
+
+    /**
+     * Generate the volume index.
+     *
+     * @return array
+     */
+    protected function generateVolumeIndex()
+    {
+        $volumes = [];
+        Volume::eachById(function ($volume) use (&$volumes) {
+                $volumes[] = [
+                    'id' => $volume->id,
+                    'name' => $volume->name,
+                    'created_at' => strval($volume->created_at),
+                    'updated_at' => strval($volume->updated_at),
+                    'url' => route('volume', $volume->id, false),
+                    'thumbnail_url' => $volume->thumbnailUrl,
+                    'thumbnail_urls' => $volume->thumbnailUrls,
+                    'projects' => $volume->projects()->pluck('id')->toArray(),
+                ];
+            });
+
+        return $volumes;
+    }
+}
