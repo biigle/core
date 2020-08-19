@@ -31,6 +31,30 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     ];
 
     /**
+     * Scope a query to all instances that are have a local token.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithLocalToken($query)
+    {
+        return $query->whereNotNull('local_token');
+    }
+
+    /**
+     * Scope a query to all instances that are have a remote token.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithRemoteToken($query)
+    {
+        return $query->whereNotNull('remote_token');
+    }
+
+    /**
      * The models that belong to this instance.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

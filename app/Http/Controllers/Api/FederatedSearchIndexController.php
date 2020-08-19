@@ -71,6 +71,8 @@ class FederatedSearchIndexController extends Controller
         $key = config('biigle.federated_search.cache_key');
 
         if (!Cache::has($key)) {
+            // The index should be continuously regenerated with a scheduled job. This is
+            // a fallback in case the job wasn't performed for some reason.
             GenerateFederatedSearchIndex::dispatchNow();
         }
 

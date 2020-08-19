@@ -31,4 +31,20 @@ class FederatedSearchInstanceTest extends ModelTestCase
         $this->model->delete();
         $this->assertNull($model->fresh());
     }
+
+    public function testScopeWithLocalToken()
+    {
+        $this->assertFalse(FederatedSearchInstance::withLocalToken()->exists());
+        $this->model->local_token = 'test';
+        $this->model->save();
+        $this->assertTrue(FederatedSearchInstance::withLocalToken()->exists());
+    }
+
+    public function testScopeWithRemoteToken()
+    {
+        $this->assertFalse(FederatedSearchInstance::withRemoteToken()->exists());
+        $this->model->remote_token = 'test';
+        $this->model->save();
+        $this->assertTrue(FederatedSearchInstance::withRemoteToken()->exists());
+    }
 }

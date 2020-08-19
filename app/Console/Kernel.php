@@ -31,12 +31,14 @@ class Kernel extends ConsoleKernel
             ->onOneServer();
 
         $schedule->call(function () {
-                if (FederatedSearchInstance::exists()) {
+                if (FederatedSearchInstance::withLocalToken()->exists()) {
                     GenerateFederatedSearchIndex::dispatch();
                 }
             })
             ->name('generate-federated-search-index')
-            ->hourly()
+            // The requests to retrieve the federated search index are sent hourly at 05.
+            // This should not collide with this job to generate the index.
+            ->hourlyAt(55)
             ->onOneServer();
 
         // Insert scheduled tasks here.
