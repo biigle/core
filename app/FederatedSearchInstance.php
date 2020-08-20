@@ -109,7 +109,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * Create a new local token and store the sha256 hash in the attribute of this model.
      *
-     * @return New (unhashed) token
+     * @return string New (unhashed) token
      */
     public function createLocalToken()
     {
