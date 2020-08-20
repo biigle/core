@@ -3,11 +3,6 @@
 @section('title', 'Federated search admin area')
 
 @section('admin-content')
-{{-- @if (session('deleted'))
-    <div class="alert alert-success" role="alert">
-        The user was deleted.
-    </div>
-@endif --}}
 <div class="row">
     <div class="col-xs-6">
         <h4>Connected instances</h4>
@@ -42,12 +37,12 @@
     </div>
     <div class="col-xs-6">
         @if ($editInstance)
-            <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}">
+            <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}" id="edit-form">
                 <div>
                     <h4>Edit {{$editInstance->name}}</h4>
                 </div>
                 <div class="row">
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                             <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $editInstance->name) }}" placeholder="Instance name" required>
                             @if($errors->has('name'))
@@ -55,42 +50,11 @@
                             @endif
                         </div>
                     </div>
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                         <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
                             <input type="url" class="form-control" name="url" id="url" value="{{ old('url', $editInstance->url) }}" placeholder="https://example.com" required>
                             @if($errors->has('url'))
                                 <span class="help-block">{{ $errors->first('url') }}</span>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <input type="submit" class="btn btn-success" value="Save" title="Save changes">
-                    </div>
-                </div>
-                <input type="hidden" name="_redirect" value="{{ route('admin-federated-search', ['edit' => $editInstance->id]) }}">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="_method" value="put">
-            </form>
-            @if (session('new_local_token'))
-                <div class="panel panel-success">
-                    <div class="panel-body bg-success text-success">
-                        <p>
-                            Use this token to enable indexing in the remote instance:
-                        </p>
-                        <pre>{{session('new_local_token')}}</pre>
-                    </div>
-                </div>
-            @endif
-            <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}">
-                <div class="row">
-                    <div class="col-sm-5 col-sm-offset-7">
-                        <div class="form-group">
-                            @if ($editInstance->local_token)
-                                <input type="hidden" name="local_token" value="0">
-                                <input type="submit" class="btn btn-danger btn-block" value="Deny remote access" title="Deny the instance to retrieve the local search index">
-                            @else
-                                <input type="hidden" name="local_token" value="1">
-                                <input type="submit" class="btn btn-success btn-block" value="Allow remote access" title="Allow the instance to retrieve the local search index">
                             @endif
                         </div>
                     </div>
@@ -102,16 +66,16 @@
             <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}">
                 <div class="row">
                     @if ($editInstance->remote_token)
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             <div class="form-group">
                                 <input type="password" class="form-control" name="remote_token" id="remote_token" value="" disabled>
                             </div>
                         </div>
-                        <div class="col-sm-5">
-                            <input type="submit" class="btn btn-danger btn-block" value="Disable indexing" title="Disable indexing of the remote search index">
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-default btn-block" value="Disable indexing" title="Disable indexing of the remote search index">
                         </div>
                     @else
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             <div class="form-group{{ $errors->has('remote_token') ? ' has-error' : '' }}">
                                 <input type="password" class="form-control" name="remote_token" id="remote_token" value="" placeholder="Token from the remote instance" required>
                                 @if($errors->has('remote_token'))
@@ -119,8 +83,8 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-sm-5">
-                            <input type="submit" class="btn btn-success btn-block" value="Enable indexing" title="Enable indexing of the remote search index">
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-default btn-block" value="Enable indexing" title="Enable indexing of the remote search index">
                         </div>
                     @endif
                 </div>
@@ -128,29 +92,69 @@
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="put">
             </form>
+            <div class="row">
+                <div class="col-sm-4">
+                    <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}">
+                        <div class="form-group">
+                            @if ($editInstance->local_token)
+                                <input type="hidden" name="local_token" value="0">
+                                <input type="submit" class="btn btn-default btn-block" value="Deny access" title="Deny the instance to retrieve the local search index">
+                            @else
+                                <input type="hidden" name="local_token" value="1">
+                                <input type="submit" class="btn btn-default btn-block" value="Allow access" title="Allow the instance to retrieve the local search index">
+                            @endif
+                        </div>
+                        <input type="hidden" name="_redirect" value="{{ route('admin-federated-search', ['edit' => $editInstance->id]) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="_method" value="put">
+                    </form>
+                </div>
+                <div class="col-sm-4">
+                    <form method="POST" action="{{ url("api/v1/federated-search-instances/{$editInstance->id}") }}">
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-danger btn-block" value="Delete" title="Delete this instance">
+                        </div>
+                        <input type="hidden" name="_redirect" value="{{ route('admin-federated-search') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="_method" value="delete">
+                    </form>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <button type="submit" form="edit-form" class="btn btn-success btn-block" title="Save changes">Save</button>
+                </div>
+            </div>
+            @if (session('new_local_token'))
+                <div class="panel panel-success">
+                    <div class="panel-body bg-success text-success">
+                        <p>
+                            Use this token to enable indexing in the remote instance:
+                        </p>
+                        <pre>{{session('new_local_token')}}</pre>
+                    </div>
+                </div>
+            @endif
         @else
             <form method="POST" action="{{ url('api/v1/federated-search-instances') }}">
                 <div>
                     <h4>Connect a new instance</h4>
                 </div>
                 <div class="row">
-                    <div class=" col-sm-5 form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                    <div class=" col-sm-6 form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="Instance name" required>
                         @if($errors->has('name'))
                             <span class="help-block">{{ $errors->first('name') }}</span>
                         @endif
                     </div>
-                    <div class=" col-sm-5 form-group{{ $errors->has('url') ? ' has-error' : '' }}">
+                    <div class=" col-sm-6 form-group{{ $errors->has('url') ? ' has-error' : '' }}">
                         <input type="url" class="form-control" name="url" id="url" value="{{ old('url') }}" placeholder="https://example.com" required>
                         @if($errors->has('url'))
                             <span class="help-block">{{ $errors->first('url') }}</span>
                         @endif
                     </div>
-                    <div class="col-sm-2">
-                        <input type="submit" class="btn btn-success" value="Connect" title="Connect the new remote instance">
+                    <div class="col-sm-4 col-sm-offset-8">
+                        <input type="submit" class="btn btn-success btn-block" value="Connect" title="Connect the new remote instance">
                     </div>
                 </div>
-                <input type="hidden" name="_redirect" value="{{ route('admin-federated-search') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
             </form>
         @endif

@@ -41,7 +41,9 @@ class FederatedSearchInstanceController extends Controller
             return $instance;
         }
 
-        return $this->fuzzyRedirect();
+        return $this->fuzzyRedirect('admin-federated-search', ['edit' => $instance->id])
+            ->with('message', 'New instance created')
+            ->with('messageType', 'success');
     }
 
     /**
@@ -120,5 +122,11 @@ class FederatedSearchInstanceController extends Controller
         $instance = FederatedSearchInstance::findOrFail($id);
         $this->authorize('destroy', $instance);
         $instance->delete();
+
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
+                ->with('message', 'The instance was deleted.')
+                ->with('messageType', 'success');
+        }
     }
 }
