@@ -28,23 +28,12 @@ class UpdateFederatedSearchIndexTest extends TestCase
             'indexed_at' => null,
         ]);
 
-        $container = [];
-        $this->app->bind(Client::class, function () use (&$container) {
-            $history = Middleware::history($container);
-            $mock = new MockHandler([
-                new Response(200, [], json_encode([
-                    'label_trees' => [],
-                    'projects' => [],
-                    'volumes' => [],
-                    'users' => [],
-                ])),
-            ]);
-
-            $handlerStack = HandlerStack::create($mock);
-            $handlerStack->push($history);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $container = &$this->mockResponse([
+            'label_trees' => [],
+            'projects' => [],
+            'volumes' => [],
+            'users' => [],
+        ]);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
 
@@ -62,15 +51,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             'indexed_at' => null,
         ]);
 
-        $container = [];
-        $this->app->bind(Client::class, function () use (&$container) {
-            $history = Middleware::history($container);
-            $mock = new MockHandler();
-            $handlerStack = HandlerStack::create($mock);
-            $handlerStack->push($history);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $container = &$this->mockResponse([]);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
 
@@ -83,16 +64,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             'remote_token' => encrypt('my_token'),
         ]);
 
-        $this->app->bind(Client::class, function () {
-            $mock = new MockHandler([
-                new Response(200, [], 'malformed'),
-            ]);
-
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
-
+        $this->mockResponse(['malformed']);
         $this->expectException(Exception::class);
         UpdateFederatedSearchIndex::dispatchNow($instance);
     }
@@ -127,14 +99,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             ],
         ];
 
-        $this->app->bind(Client::class, function () use ($payload) {
-            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
-
-            $mock = new MockHandler([$response]);
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $this->mockResponse($payload);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
 
@@ -183,14 +148,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             ],
         ];
 
-        $this->app->bind(Client::class, function () use ($payload) {
-            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
-
-            $mock = new MockHandler([$response]);
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $this->mockResponse($payload);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
 
@@ -246,14 +204,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             ],
         ];
 
-        $this->app->bind(Client::class, function () use ($payload) {
-            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
-
-            $mock = new MockHandler([$response]);
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $this->mockResponse($payload);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
         // The user has access to the label tree through the project membership although
@@ -303,14 +254,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             ],
         ];
 
-        $this->app->bind(Client::class, function () use ($payload) {
-            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
-
-            $mock = new MockHandler([$response]);
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $this->mockResponse($payload);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
         $this->assertTrue($user->federatedSearchModels()->volumes()->exists());
@@ -360,14 +304,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             ],
         ];
 
-        $this->app->bind(Client::class, function () use ($payload) {
-            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
-
-            $mock = new MockHandler([$response]);
-            $handlerStack = HandlerStack::create($mock);
-
-            return new Client(['handler' => $handlerStack]);
-        });
+        $this->mockResponse($payload);
 
         UpdateFederatedSearchIndex::dispatchNow($instance);
 
@@ -435,16 +372,27 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $user->delete();
 
-        $this->app->bind(Client::class, function () use ($payload) {
+        $this->mockResponse($payload);
+
+        UpdateFederatedSearchIndex::dispatchNow($instance);
+        $this->assertFalse(FederatedSearchModel::exists());
+    }
+
+    protected function &mockResponse($payload)
+    {
+        $container = [];
+        $this->app->bind(Client::class, function () use ($payload, &$container) {
             $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($payload));
 
+            $history = Middleware::history($container);
             $mock = new MockHandler([$response]);
+
             $handlerStack = HandlerStack::create($mock);
+            $handlerStack->push($history);
 
             return new Client(['handler' => $handlerStack]);
         });
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
-        $this->assertFalse(FederatedSearchModel::exists());
+        return $container;
     }
 }
