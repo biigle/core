@@ -55,6 +55,28 @@ class UpdateFederatedSearchIndexTest extends TestCase
         $this->assertNotNull($instance->fresh()->indexed_at);
     }
 
+    public function testHandleMissingToken()
+    {
+        $instance = FederatedSearchInstanceTest::create([
+            'url' => 'https://example.com',
+            'indexed_at' => null,
+        ]);
+
+        $container = [];
+        $this->app->bind(Client::class, function () use (&$container) {
+            $history = Middleware::history($container);
+            $mock = new MockHandler();
+            $handlerStack = HandlerStack::create($mock);
+            $handlerStack->push($history);
+
+            return new Client(['handler' => $handlerStack]);
+        });
+
+        UpdateFederatedSearchIndex::dispatchNow($instance);
+
+        $this->assertCount(0, $container);
+    }
+
     public function testHandleFailedValidation()
     {
         $instance = FederatedSearchInstanceTest::create([

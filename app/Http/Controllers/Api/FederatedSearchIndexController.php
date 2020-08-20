@@ -38,10 +38,11 @@ class FederatedSearchIndexController extends Controller
      *            "description": "this is my test project",
      *            "created_at": "2020-08-19 13:21:49",
      *            "updated_at": "2020-08-19 13:21:49",
-     *            "thumbnail_url": null,
+     *            "thumbnail_url": "https://example.com/thumbs/1.jpg",
      *            "url": "/projects/2",
      *            "members": [2],
-     *            "label_trees": [1]
+     *            "label_trees": [1],
+     *            "volumes": [1]
      *        }
      *    ],
      *    "volumes": [
@@ -51,9 +52,11 @@ class FederatedSearchIndexController extends Controller
      *            "created_at": "2020-08-19 13:23:19",
      *            "updated_at": "2020-08-19 13:23:19",
      *            "url": "/volumes/1",
-     *            "thumbnail_url": null,
-     *            "thumbnail_urls": null,
-     *            "projects": [2]
+     *            "thumbnail_url": "https://example.com/thumbs/2.jpg",
+     *            "thumbnail_urls": [
+     *                "https://example.com/thumbs/2.jpg",
+     *                "https://example.com/thumbs/3.jpg",
+     *            ],
      *        }
      *    ],
      *    "users": [
