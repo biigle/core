@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\FederatedSearchInstance;
+use Biigle\Jobs\UpdateFederatedSearchIndex;
 use Biigle\Tests\FederatedSearchInstanceTest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -12,6 +13,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Bus;
 
 class FederatedSearchInstanceControllerTest extends ApiTestCase
 {
@@ -45,7 +47,6 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->assertNotNull($instance);
         $this->assertEquals('my instance', $instance->name);
         $this->assertEquals('https://example.com', $instance->url);
-        $this->assertEquals(1, $instance->index_interval);
         $this->assertNull($instance->local_token);
         $this->assertNull($instance->remote_token);
         $this->assertNull($instance->indexed_at);
@@ -75,13 +76,11 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'name' => 'my updated instance',
             'url' => 'https://www.example.com',
-            'index_interval' => 2,
         ])->assertStatus(200);
 
         $instance->refresh();
         $this->assertEquals('my updated instance', $instance->name);
         $this->assertEquals('https://www.example.com', $instance->url);
-        $this->assertEquals(2, $instance->index_interval);
     }
 
     public function testUpdateSetRemoteToken()
@@ -102,6 +101,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             return new Client(['handler' => $handlerStack]);
         });
 
+        Bus::fake();
         $this->beGlobalAdmin();
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'remote_token' => 'mytoken',
@@ -113,6 +113,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->assertEquals('https://example.com/api/v1/federated-search-index', strval($request->getUri()));
         $this->assertEquals('Bearer mytoken', $request->getHeaderLine('Authorization'));
         $this->assertEquals('HEAD', $request->getMethod());
+        Bus::assertDispatched(UpdateFederatedSearchIndex::class);
     }
 
     public function testUpdateSetRemoteTokenInvalidToken()
@@ -133,10 +134,12 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             return new Client(['handler' => $handlerStack]);
         });
 
+        Bus::fake();
         $this->beGlobalAdmin();
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'remote_token' => 'mytoken',
         ])->assertStatus(422);
+        Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
     }
 
     public function testUpdateSetRemoteTokenInvalidUrl()
@@ -160,6 +163,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             return new Client(['handler' => $handlerStack]);
         });
 
+        Bus::fake();
         $this->beGlobalAdmin();
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'remote_token' => 'mytoken',
@@ -168,6 +172,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'remote_token' => 'mytoken',
         ])->assertStatus(422);
+        Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
     }
 
     public function testUpdateClearRemoteToken()
@@ -189,6 +194,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             return new Client(['handler' => $handlerStack]);
         });
 
+        Bus::fake();
         $this->beGlobalAdmin();
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'remote_token' => '',
@@ -196,6 +202,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         $this->assertCount(0, $container);
         $this->assertNull($instance->fresh()->remote_token);
+        Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
     }
 
     public function testUpdateUrlWithRemoteToken()
@@ -217,11 +224,13 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             return new Client(['handler' => $handlerStack]);
         });
 
+        Bus::fake();
         $this->beGlobalAdmin();
         $this->putJson("/api/v1/federated-search-instances/{$id}", [
             'url' => 'https://www.example.com',
         ])->assertStatus(200);
 
+        Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
         $this->assertCount(1, $container);
         $request = $container[0]['request'];
         $this->assertEquals('https://www.example.com/api/v1/federated-search-index', strval($request->getUri()));

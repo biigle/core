@@ -19,7 +19,6 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     protected $fillable = [
         'name',
         'url',
-        'index_interval',
         'indexed_at',
         'local_token',
         'remote_token',

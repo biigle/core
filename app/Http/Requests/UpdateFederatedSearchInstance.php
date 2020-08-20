@@ -7,6 +7,7 @@ use Biigle\FederatedSearchInstance;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateFederatedSearchInstance extends FormRequest
 {
@@ -39,8 +40,11 @@ class UpdateFederatedSearchInstance extends FormRequest
     {
         return [
             'name' => 'filled|min:1|max:512',
-            'url' => 'filled|url|unique:federated_search_instances,url',
-            'index_interval' => 'filled|integer|min:1',
+            'url' => [
+                'filled',
+                'url',
+                Rule::unique('federated_search_instances')->ignore($this->instance->id),
+            ],
             'remote_token' => 'nullable|string',
             'local_token' => 'filled|bool',
         ];
@@ -66,7 +70,8 @@ class UpdateFederatedSearchInstance extends FormRequest
                     $this->checkRemoteConnection($url, $this->instance->remote_token);
                 }
             } catch (RequestException $e) {
-                if ($e->getResponse()->getStatusCode() === 401) {
+                $response = $e->getResponse();
+                if ($response && $response->getStatusCode() === 401) {
                     $validator->errors()->add('remote_token', 'The token is not accepted by the remote instance.');
                 } else {
                     $validator->errors()->add('url', 'Could not connect to the remote instance. Is the URL correct?');
