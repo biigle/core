@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\FederatedSearchModel;
 use Biigle\Image;
 use Biigle\LabelTree;
 use Biigle\Project;
@@ -102,18 +103,42 @@ class SearchController extends Controller
             $queryBuilder = $user->projects();
         }
 
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external, null as attrs, null as url");
+
+        $queryBuilder = $queryBuilder->union(
+            $user->federatedSearchModels()->projects()
+                ->selectRaw("id, name, description, updated_at, true as external, attrs::text as attrs, url")
+        );
+
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('projects.name', 'ilike', "%{$query}%")
-                    ->orWhere('projects.description', 'ilike', "%{$query}%");
+                $q->where('name', 'ilike', "%{$query}%")
+                    ->orWhere('description', 'ilike', "%{$query}%");
             });
         }
 
         $values = [];
 
         if (!$type || $type === 'projects') {
-            $values['results'] = $queryBuilder->orderBy('updated_at', 'desc')
+            $results = $queryBuilder->orderBy('updated_at', 'desc')
                 ->paginate(10);
+
+            $results->setCollection($results->getCollection()->map(function ($item) {
+                if ($item->external) {
+                    $model = new FederatedSearchModel;
+                    $model->forceFill($item->getAttributes());
+                    $model->attrs = json_decode($model->attrs, true);
+                    // dd($model->thumbnailUrl);
+
+                    return $model;
+                }
+
+                return $item;
+            }));
+
+            // dd($results);
+
+            $values['results'] = $results;
 
             $values['projectResultCount'] = $values['results']->total();
         } else {

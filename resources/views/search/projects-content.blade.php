@@ -5,7 +5,11 @@
         <li>
             <div class="row">
                 <div class="col-xs-2 search-thumbnail">
-                    <a href="{{route('project', $project->id)}}">
+                    @if($project->external)
+                        <a href="{{$project->url}}">
+                    @else
+                        <a href="{{route('project', $project->id)}}">
+                    @endif
                         @if ($project->thumbnailUrl)
                             <img src="{{ $project->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                         @else
@@ -15,7 +19,13 @@
                 </div>
                 <div class="col-xs-10">
                     <small class="pull-right text-muted">Updated on {{$project->updated_at->toFormattedDateString()}}</small>
-                    <a class="search-results__name" href="{{route('project', $project->id)}}">{{$project->name}}</a><br>
+                    @if ($project->external)
+                        <a class="search-results__name" href="{{$project->url}}">{{$project->name}}</a>
+                        <span class="label label-default label-hollow" title="This project is from another BIIGLE instance">External</span>
+                    @else
+                        <a class="search-results__name" href="{{route('project', $project->id)}}">{{$project->name}}</a>
+                    @endif
+                    <br>
                     {{$project->description}}
                 </div>
             </div>

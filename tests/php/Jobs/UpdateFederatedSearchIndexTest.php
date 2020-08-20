@@ -109,7 +109,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
         $this->assertEquals($labelTree['description'], $model->description);
         $this->assertEquals($labelTree['created_at'], $model->created_at);
         $this->assertEquals($labelTree['updated_at'], $model->updated_at);
-        $this->assertEquals($labelTree['url'], $model->url);
+        $this->assertEquals($instance->url.$labelTree['url'], $model->url);
         $this->assertEquals(LabelTree::class, $model->type);
 
         $this->assertTrue($user->federatedSearchModels()->exists());
@@ -158,7 +158,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
         $this->assertEquals($project['description'], $model->description);
         $this->assertEquals($project['created_at'], $model->created_at);
         $this->assertEquals($project['updated_at'], $model->updated_at);
-        $this->assertEquals($project['url'], $model->url);
+        $this->assertEquals($instance->url.$project['url'], $model->url);
         $this->assertEquals($project['thumbnail_url'], $model->thumbnailUrl);
         $this->assertEquals(Project::class, $model->type);
 
@@ -314,7 +314,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
         $this->assertNull($model->description);
         $this->assertEquals($volume['created_at'], $model->created_at);
         $this->assertEquals($volume['updated_at'], $model->updated_at);
-        $this->assertEquals($volume['url'], $model->url);
+        $this->assertEquals($instance->url.$volume['url'], $model->url);
         $this->assertEquals($volume['thumbnail_url'], $model->thumbnailUrl);
         $this->assertEquals($volume['thumbnail_urls'], $model->thumbnailUrls);
         $this->assertEquals(Volume::class, $model->type);

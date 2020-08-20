@@ -168,7 +168,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
                 $insert[] = [
                     'name' => $tree['name'],
                     'description' => $tree['description'],
-                    'url' => $tree['url'],
+                    'url' => $this->instance->url.$tree['url'],
                     'created_at' => $tree['created_at'],
                     'updated_at' => $tree['updated_at'],
                     'type' => LabelTree::class,
@@ -208,7 +208,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
                 $insert[] = [
                     'name' => $project['name'],
                     'description' => $project['description'],
-                    'url' => $project['url'],
+                    'url' => $this->instance->url.$project['url'],
                     'created_at' => $project['created_at'],
                     'updated_at' => $project['updated_at'],
                     'type' => Project::class,
@@ -250,7 +250,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
             foreach ($chunk as $volume) {
                 $insert[] = [
                     'name' => $volume['name'],
-                    'url' => $volume['url'],
+                    'url' => $this->instance->url.$volume['url'],
                     'created_at' => $volume['created_at'],
                     'updated_at' => $volume['updated_at'],
                     'type' => Volume::class,
