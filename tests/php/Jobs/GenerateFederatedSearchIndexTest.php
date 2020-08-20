@@ -92,6 +92,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
                 'thumbnail_url' => $project->thumbnailUrl,
                 'members' => [$project->creator_id],
                 'label_trees' => [],
+                'volumes' => [],
             ]
         ];
 
@@ -119,11 +120,19 @@ class GenerateFederatedSearchIndexTest extends TestCase
         $this->assertEquals([$tree->id], $index['projects'][0]['label_trees']);
     }
 
+    public function testHandleProjectVolumes()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->volumes()->attach($volume);
+        GenerateFederatedSearchIndex::dispatchNow();
+        $index = Cache::get(config('biigle.federated_search.cache_key'));
+        $this->assertEquals([$volume->id], $index['projects'][0]['volumes']);
+    }
+
     public function testHandleVolume()
     {
         $volume = VolumeTest::create();
-        $project = ProjectTest::create();
-        $volume->projects()->attach($project);
 
         GenerateFederatedSearchIndex::dispatchNow();
         $expect =  [
@@ -135,7 +144,6 @@ class GenerateFederatedSearchIndexTest extends TestCase
                 'url' => "/volumes/{$volume->id}",
                 'thumbnail_url' => $volume->thumbnailUrl,
                 'thumbnail_urls' => $volume->thumbnailUrls,
-                'projects' => [$project->id],
             ]
         ];
 

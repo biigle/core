@@ -84,8 +84,11 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
 
         DB::transaction(function () use ($index) {
             $labelTreeIdMap = $this->updateLabelTreeIndex($index);
+            $projectIdMap = $this->updateProjectIndex($index);
+            $volumeIdMap = $this->updateVolumeIndex($index);
+            $this->updateUserAccess($index, $labelTreeIdMap, $projectIdMap, $volumeIdMap);
 
-            $this->updateUserAccess($index, $labelTreeIdMap);
+            $this->cleanupDanglingModels();
         });
 
         $this->instance->indexed_at = Carbon::now();
@@ -125,17 +128,17 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
             'projects.*.members.*' => 'integer',
             'projects.*.label_trees' => 'present|array',
             'projects.*.label_trees.*' => 'integer',
+            'projects.*.volumes' => 'present|array',
+            'projects.*.volumes.*' => 'integer',
             'volumes' => 'present|array',
             'volumes.*.id' => 'required|integer',
             'volumes.*.name' => 'required|string',
-            'volumes.*.description' => 'required|string',
             'volumes.*.created_at' => 'required|date',
             'volumes.*.updated_at' => 'required|date',
             'volumes.*.url' => 'required|string',
             'volumes.*.thumbnail_url' => 'nullable|string',
-            'volumes.*.thumbnail_urls' => 'nullable|string',
-            'volumes.*.projects' => 'present|array',
-            'volumes.*.projects.*' => 'integer',
+            'volumes.*.thumbnail_urls' => 'nullable|array',
+            'volumes.*.thumbnail_urls.*' => 'string',
             'users' => 'present|array',
             'users.*.id' => 'required|integer',
             'users.*.uuid' => 'required|uuid',
@@ -173,10 +176,101 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         });
 
         $treeIds = $trees->pluck('id')->toArray();
-        $modelIds = $this->instance->models()->labelTrees()->pluck('id')->toArray();
+        $modelIds = $this->instance->models()
+            ->orderBy('id', 'asc')
+            ->labelTrees()
+            ->pluck('id')
+            ->toArray();
 
         return array_combine($treeIds, $modelIds);
     }
+
+    /**
+     * Update the indexed projects.
+     *
+     * @param array $index
+     *
+     * @return array Map of remote project IDs to local federated search model IDs.
+     */
+    protected function updateProjectIndex($index)
+    {
+        $this->instance->models()->projects()->delete();
+
+        $projects = collect($index['projects']);
+
+        $projects->chunk(1000)->each(function ($chunk) {
+            $insert = [];
+            foreach ($chunk as $project) {
+                $insert[] = [
+                    'name' => $project['name'],
+                    'description' => $project['description'],
+                    'url' => $project['url'],
+                    'created_at' => $project['created_at'],
+                    'updated_at' => $project['updated_at'],
+                    'type' => Project::class,
+                    'attrs' => json_encode([
+                        'thumbnailUrl' => $project['thumbnail_url'],
+                    ]),
+                    'federated_search_instance_id' => $this->instance->id,
+                ];
+            }
+
+            FederatedSearchModel::insert($insert);
+        });
+
+        $projectIds = $projects->pluck('id')->toArray();
+        $modelIds = $this->instance->models()
+            ->orderBy('id', 'asc')
+            ->projects()
+            ->pluck('id')
+            ->toArray();
+
+        return array_combine($projectIds, $modelIds);
+    }
+
+    /**
+     * Update the indexed projects.
+     *
+     * @param array $index
+     *
+     * @return array Map of remote volume IDs to local federated search model IDs.
+     */
+    protected function updateVolumeIndex($index)
+    {
+        $this->instance->models()->volumes()->delete();
+
+        $volumes = collect($index['volumes']);
+
+        $volumes->chunk(1000)->each(function ($chunk) {
+            $insert = [];
+            foreach ($chunk as $volume) {
+                $insert[] = [
+                    'name' => $volume['name'],
+                    'url' => $volume['url'],
+                    'created_at' => $volume['created_at'],
+                    'updated_at' => $volume['updated_at'],
+                    'type' => Volume::class,
+                    'attrs' => json_encode([
+                        'thumbnailUrl' => $volume['thumbnail_url'],
+                        'thumbnailUrls' => $volume['thumbnail_urls'],
+                    ]),
+                    'federated_search_instance_id' => $this->instance->id,
+                ];
+            }
+
+            FederatedSearchModel::insert($insert);
+        });
+
+        $volumeIds = $volumes->pluck('id')->toArray();
+        $modelIds = $this->instance->models()
+            ->orderBy('id', 'asc')
+            ->volumes()
+            ->pluck('id')
+            ->toArray();
+
+        return array_combine($volumeIds, $modelIds);
+    }
+
 
     /**
      * Update which user may access which federated search model that was created in
@@ -185,8 +279,12 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
      * @param array $index
      * @param array $labelTreeIdMap Map of remote label tree IDs to local federated
      * search model IDs.
+     * @param array $projectIdMap Map of remote project IDs to local federated search
+     * model IDs.
+     * @param array $volumeIdMap Map of remote volume IDs to local federated search
+     * model IDs.
      */
-    public function updateUserAccess($index, $labelTreeIdMap)
+    protected function updateUserAccess($index, $labelTreeIdMap, $projectIdMap, $volumeIdMap)
     {
         $remoteUsers = collect($index['users'])->pluck('id', 'uuid');
         $localUsers = User::whereIn('uuid', $remoteUsers->keys())->pluck('id', 'uuid');
@@ -201,12 +299,36 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
 
         foreach ($index['label_trees'] as $tree) {
             foreach ($tree['members'] as $id) {
-                $localId = $userIdMap[$id];
-                $userCanAccessModels[$localId][] = $labelTreeIdMap[$tree['id']];
+                if (array_key_exists($id, $userIdMap)) {
+                    $localId = $userIdMap[$id];
+                    $userCanAccessModels[$localId][] = $labelTreeIdMap[$tree['id']];
+                }
             }
         }
 
-        //TODO: chunk this insert
+        foreach ($index['projects'] as $project) {
+            foreach ($project['members'] as $id) {
+                if (array_key_exists($id, $userIdMap)) {
+                    $localId = $userIdMap[$id];
+                    $userCanAccessModels[$localId][] = $projectIdMap[$project['id']];
+
+                    // Members of a project have access to all attached label trees even
+                    // if they are not a member of the tree.
+                    foreach ($project['label_trees'] as $treeId) {
+                        if (array_key_exists($treeId, $labelTreeIdMap)) {
+                            $userCanAccessModels[$localId][] = $labelTreeIdMap[$treeId];
+                        }
+                    }
+
+                    foreach ($project['volumes'] as $volumeId) {
+                        if (array_key_exists($volumeId, $volumeIdMap)) {
+                            $userCanAccessModels[$localId][] = $volumeIdMap[$volumeId];
+                        }
+                    }
+                }
+            }
+        }
+
         $insert = [];
         foreach ($userCanAccessModels as $userId => $modelIds) {
             foreach (array_unique($modelIds) as $modelId) {
@@ -214,9 +336,24 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
                     'user_id' => $userId,
                     'federated_search_model_id' => $modelId,
                 ];
+
+                // Chunk this insert.
+                if (count($insert) >= 1000) {
+                    DB::table('federated_search_model_user')->insert($insert);
+                    $insert = [];
+                }
             }
         }
 
         DB::table('federated_search_model_user')->insert($insert);
+    }
+
+    /**
+     * Delete all federated search models of the current instance that are not
+     * accessible by any user.
+     */
+    protected function cleanupDanglingModels()
+    {
+        $this->instance->models()->whereDoesntHave('users')->delete();
     }
 }

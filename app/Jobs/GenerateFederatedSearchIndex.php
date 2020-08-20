@@ -98,6 +98,9 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
                         ->has('members')
                         ->pluck('id')
                         ->toArray(),
+                    'volumes' => $project->volumes()
+                        ->pluck('id')
+                        ->toArray(),
                 ];
             });
 
@@ -121,7 +124,6 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
                     'url' => route('volume', $volume->id, false),
                     'thumbnail_url' => $volume->thumbnailUrl,
                     'thumbnail_urls' => $volume->thumbnailUrls,
-                    'projects' => $volume->projects()->pluck('id')->toArray(),
                 ];
             });
 
