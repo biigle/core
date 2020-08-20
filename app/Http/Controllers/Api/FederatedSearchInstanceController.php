@@ -82,9 +82,14 @@ class FederatedSearchInstanceController extends Controller
 
         $instance->save();
 
-        // Dispatch the job immediately and don't wait for the scheduled job.
-        if ($request->has('remote_token') && $instance->remote_token) {
-            UpdateFederatedSearchIndex::dispatch($instance);
+        if ($request->has('remote_token')) {
+            if ($instance->remote_token) {
+                // Dispatch the job immediately and don't wait for the scheduled job.
+                UpdateFederatedSearchIndex::dispatch($instance);
+            } else {
+                // Delete indexed models if indexing is disabled.
+                $instance->models()->delete();
+            }
         }
 
         if ($this->isAutomatedRequest()) {

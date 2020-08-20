@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\FederatedSearchInstance;
 use Biigle\Jobs\UpdateFederatedSearchIndex;
 use Biigle\Tests\FederatedSearchInstanceTest;
+use Biigle\Tests\FederatedSearchModelTest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -183,6 +184,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             'remote_token' => 'xyz',
         ]);
         $id = $instance->id;
+        FederatedSearchModelTest::create(['federated_search_instance_id' => $id]);
 
         $container = [];
         $this->app->bind(Client::class, function () use (&$container) {
@@ -203,6 +205,7 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->assertCount(0, $container);
         $this->assertNull($instance->fresh()->remote_token);
         Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
+        $this->assertFalse($instance->models()->exists());
     }
 
     public function testUpdateUrlWithRemoteToken()
