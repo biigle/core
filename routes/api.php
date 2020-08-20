@@ -45,6 +45,11 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
+$router->resource('federated-search-instances', 'FederatedSearchInstanceController', [
+    'only' => ['store', 'update', 'destroy'],
+    'parameters' => ['federated-search-instances' => 'id'],
+]);
+
 $router->resource('image-annotations', 'ImageAnnotationController', [
     'only' => ['show', 'update', 'destroy'],
     'parameters' => ['image-annotations' => 'id'],

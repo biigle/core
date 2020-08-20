@@ -25,7 +25,7 @@ class AddFederatedSearchTables extends Migration
             $table->string('local_token')->nullable();
             // The token the local instance uses to authenticate with the remote instance
             // (encrypted).
-            $table->string('remote_token')->nullable();
+            $table->text('remote_token')->nullable();
             // Interval in hours to fetch the index from the remote instance.
             $table->unsignedSmallInteger('index_interval')->default(1);
             $table->timestamps();

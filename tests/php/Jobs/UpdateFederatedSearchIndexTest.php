@@ -24,7 +24,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     {
         $instance = FederatedSearchInstanceTest::create([
             'url' => 'https://example.com',
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
             'indexed_at' => null,
         ]);
 
@@ -61,7 +61,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleFailedValidation()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $this->mockResponse(['malformed']);
@@ -72,7 +72,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleLabelTrees()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();
@@ -118,7 +118,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleProjects()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();
@@ -168,7 +168,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleProjectLabelTrees()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();
@@ -215,7 +215,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleProjectVolumes()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();
@@ -263,7 +263,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleVolumes()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();
@@ -323,7 +323,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
     public function testHandleCleanupDanglingModels()
     {
         $instance = FederatedSearchInstanceTest::create([
-            'remote_token' => encrypt('my_token'),
+            'remote_token' => 'my_token',
         ]);
 
         $user = UserTest::create();

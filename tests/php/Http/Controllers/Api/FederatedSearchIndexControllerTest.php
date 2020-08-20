@@ -26,6 +26,22 @@ class FederatedSearchIndexControllerTest extends ApiTestCase
         ])->assertStatus(200);
     }
 
+    public function testIndexHeadAuthenticationFailure()
+    {
+        $this->json('HEAD', 'api/v1/federated-search-index')->assertStatus(401);
+    }
+
+    public function testIndexHeadAuthenticationSuccess()
+    {
+        $instance = FederatedSearchInstanceTest::create([
+            'local_token' => hash('sha256', 'mytoken'),
+        ]);
+
+        $this->json('HEAD', 'api/v1/federated-search-index', [], [
+            'Authorization' => 'Bearer mytoken',
+        ])->assertStatus(200);
+    }
+
     public function testIndex()
     {
         Bus::fake();

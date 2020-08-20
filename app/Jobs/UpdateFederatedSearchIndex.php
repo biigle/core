@@ -70,10 +70,9 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         $url = $this->instance->url.route('federated-search-index', '', false);
         $client = App::make(Client::class);
 
-        $token = decrypt($this->instance->remote_token);
         $response = $client->get($url, [
             'headers' => [
-                'Authorization' => "Bearer {$token}",
+                'Authorization' => "Bearer {$this->instance->remote_token}",
             ],
         ]);
 

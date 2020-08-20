@@ -5,10 +5,25 @@ namespace Biigle;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class FederatedSearchInstance extends Model implements AuthenticatableContract
 {
     use Authenticatable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'url',
+        'index_interval',
+        'indexed_at',
+        'local_token',
+        'remote_token',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -62,5 +77,48 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     public function models()
     {
         return $this->hasMany(FederatedSearchModel::class);
+    }
+
+    /**
+     * Set the remote_token attribute.
+     *
+     * @param string|null $value
+     */
+    public function setRemoteTokenAttribute($value)
+    {
+        if (is_null($value)) {
+            $this->attributes['remote_token'] = null;
+        } else {
+            $this->attributes['remote_token'] = encrypt($value);
+        }
+    }
+
+    /**
+     * Get the remote_token attribute.
+     *
+     * @return string|null
+     */
+    public function getRemoteTokenAttribute()
+    {
+        if (!isset($this->attributes['remote_token']) || is_null($this->attributes['remote_token'])) {
+            return null;
+        } else {
+            return decrypt($this->attributes['remote_token']);
+        }
+    }
+
+    /**
+     * Create a new local token and store the sha256 hash in the attribute of this model.
+     *
+     * @return New (unhashed) token
+     */
+    public function createLocalToken()
+    {
+        $token = Str::random(64);
+        // We use sha256 because it is used in the \Illuminate\Auth\TokenGuard of
+        // Laravel.
+        $this->local_token = hash('sha256', $token);
+
+        return $token;
     }
 }
