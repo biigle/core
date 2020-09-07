@@ -316,7 +316,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
         $this->assertEquals($volume['updated_at'], $model->updated_at);
         $this->assertEquals($instance->url.$volume['url'], $model->url);
         $this->assertEquals($volume['thumbnail_url'], $model->thumbnailUrl);
-        $this->assertEquals($volume['thumbnail_urls'], $model->thumbnailUrls);
+        $this->assertEquals($volume['thumbnail_urls'], $model->thumbnailUrls->toArray());
         $this->assertEquals(Volume::class, $model->type);
     }
 

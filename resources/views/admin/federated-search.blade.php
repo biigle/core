@@ -18,7 +18,7 @@
                                 <span class="label label-default" title="The remote instance may not retrieve the local search index"><s>access</s></span>
                             @endif
                             @if ($instance->remote_token)
-                                <span class="label label-success" title="The local instance retrieves the remote search index">indexing</span>
+                                <span class="label label-success" title="The local instance retrieves the remote search index (last request at {{$instance->indexed_at}})">indexing</span>
                             @else
                                 <span class="label label-default" title="The local instance does not retrieve the remote search index"><s>indexing</s></span>
                             @endif

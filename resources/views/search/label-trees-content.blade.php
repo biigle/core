@@ -5,7 +5,11 @@
         <li>
             <small class="pull-right text-muted">Updated on {{$tree->updated_at->toFormattedDateString()}}</small>
             <span class="search-results__name">
-                <a href="{{route('label-trees', $tree->id)}}">{{$tree->name}}</a>
+                @if ($tree instanceof \Biigle\FederatedSearchModel)
+                    <a href="{{$tree->url}}" title="Show {{$tree->name}} in the external BIIGLE instance" onclick="return confirm('You are now being redirected to an external BIIGLE instance.');">{{$tree->name}}</a> <i class="fa fa-external-link-alt" title="This project is from another BIIGLE instance"></i>
+                @else
+                    <a href="{{route('label-trees', $tree->id)}}" title="Show {{$tree->name}}">{{$tree->name}}</a>
+                @endif
             </span>
             @if ($tree->visibility_id === Biigle\Visibility::privateId())
                 <span class="label label-default label-hollow" title="This label tree is private">Private</span>

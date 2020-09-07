@@ -2,7 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Role;
+use Biigle\Volume;
+use Biigle\Tests\FederatedSearchModelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
@@ -84,6 +88,21 @@ class SearchControllerTest extends TestCase
             ->assertDontSeeText('random name');
     }
 
+    public function testIndexLabelTreesFederatedSearch()
+    {
+        $model = FederatedSearchModelTest::create([
+            'name' => 'my remote label tree',
+            'type' => LabelTree::class,
+        ]);
+
+        $user = UserTest::create();
+        $user->federatedSearchModels()->attach($model);
+        $this->be($user);
+        $this->get('search?t=label-trees')
+            ->assertStatus(200)
+            ->assertSeeText('my remote label tree');
+    }
+
     public function testIndexProjects()
     {
         $user = UserTest::create();
@@ -111,6 +130,21 @@ class SearchControllerTest extends TestCase
         $response->assertDontSeeText('and again');
     }
 
+    public function testIndexProjectsFederatedSearch()
+    {
+        $model = FederatedSearchModelTest::create([
+            'name' => 'my remote project',
+            'type' => Project::class,
+        ]);
+
+        $user = UserTest::create();
+        $user->federatedSearchModels()->attach($model);
+        $this->be($user);
+        $this->get('search?t=projects')
+            ->assertStatus(200)
+            ->assertSeeText('my remote project');
+    }
+
     public function testIndexVolumes()
     {
         $user = UserTest::create();
@@ -133,6 +167,21 @@ class SearchControllerTest extends TestCase
         $response->assertSeeText('my volume');
         $response->assertDontSeeText('other volume');
         $response->assertDontSeeText('third volume');
+    }
+
+    public function testIndexVolumesFederatedSearch()
+    {
+        $model = FederatedSearchModelTest::create([
+            'name' => 'my remote volume',
+            'type' => Volume::class,
+        ]);
+
+        $user = UserTest::create();
+        $user->federatedSearchModels()->attach($model);
+        $this->be($user);
+        $this->get('search?t=volumes')
+            ->assertStatus(200)
+            ->assertSeeText('my remote volume');
     }
 
     public function testIndexAnnotations()

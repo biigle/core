@@ -5,10 +5,10 @@
         <li>
             <div class="row">
                 <div class="col-xs-2 search-thumbnail">
-                    @if($project->external)
-                        <a href="{{$project->url}}">
+                    @if($project instanceof \Biigle\FederatedSearchModel)
+                        <a href="{{$project->url}}" title="Show {{$project->name}} in the external BIIGLE instance"  onclick="return confirm('You are now being redirected to an external BIIGLE instance.');">
                     @else
-                        <a href="{{route('project', $project->id)}}">
+                        <a href="{{route('project', $project->id)}}" title="Show {{$project->name}}">
                     @endif
                         @if ($project->thumbnailUrl)
                             <img src="{{ $project->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
@@ -19,11 +19,13 @@
                 </div>
                 <div class="col-xs-10">
                     <small class="pull-right text-muted">Updated on {{$project->updated_at->toFormattedDateString()}}</small>
-                    @if ($project->external)
-                        <a class="search-results__name" href="{{$project->url}}">{{$project->name}}</a>
-                        <span class="label label-default label-hollow" title="This project is from another BIIGLE instance">External</span>
+                    @if ($project instanceof \Biigle\FederatedSearchModel)
+                        <span class="search-results__name">
+                            <a href="{{$project->url}}" title="Show {{$project->name}} in the external BIIGLE instance"  onclick="return confirm('You are now being redirected to an external BIIGLE instance.');">{{$project->name}}</a>
+                            <i class="fa fa-external-link-alt" title="This project is from another BIIGLE instance"></i>
+                        </span>
                     @else
-                        <a class="search-results__name" href="{{route('project', $project->id)}}">{{$project->name}}</a>
+                        <a class="search-results__name" href="{{route('project', $project->id)}}" title="Show {{$project->name}}">{{$project->name}}</a>
                     @endif
                     <br>
                     {{$project->description}}

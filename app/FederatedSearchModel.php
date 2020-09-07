@@ -107,10 +107,10 @@ class FederatedSearchModel extends Model
     /**
      * Get the model thumbnail url attribute.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailUrlsAttribute()
     {
-        return $this->getJsonAttr('thumbnailUrls', []);
+        return collect($this->getJsonAttr('thumbnailUrls', []));
     }
 }

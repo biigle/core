@@ -64,19 +64,39 @@ class SearchController extends Controller
     {
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
+
+        $queryBuilder = $queryBuilder->union(
+            $user->federatedSearchModels()->labelTrees()
+                ->selectRaw("id, name, description, updated_at, true as external")
+        );
+
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('label_trees.name', 'ilike', "%{$query}%")
-                    ->orWhere('label_trees.description', 'ilike', "%{$query}%");
+                $q->where('name', 'ilike', "%{$query}%")
+                    ->orWhere('description', 'ilike', "%{$query}%");
             });
         }
 
         $values = [];
 
         if ($type === 'label-trees') {
-            $values['results'] = $queryBuilder
-                ->orderBy('label_trees.updated_at', 'desc')
-                ->paginate(10);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
+
+            $collection = $results->getCollection();
+            $internal = LabelTree::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                if ($item->external) {
+                    return $external[$item->id];
+                }
+
+                return $internal[$item->id];
+            }));
+
+            $values['results'] = $results;
 
             $values['labelTreeResultCount'] = $values['results']->total();
         } else {
@@ -100,14 +120,14 @@ class SearchController extends Controller
         if ($user->can('sudo')) {
             $queryBuilder = Project::query();
         } else {
-            $queryBuilder = $user->projects();
+            $queryBuilder = Project::accessibleBy($user);
         }
 
-        $queryBuilder->selectRaw("id, name, description, updated_at, false as external, null as attrs, null as url");
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
 
         $queryBuilder = $queryBuilder->union(
             $user->federatedSearchModels()->projects()
-                ->selectRaw("id, name, description, updated_at, true as external, attrs::text as attrs, url")
+                ->selectRaw("id, name, description, updated_at, true as external")
         );
 
         if ($query) {
@@ -120,23 +140,20 @@ class SearchController extends Controller
         $values = [];
 
         if (!$type || $type === 'projects') {
-            $results = $queryBuilder->orderBy('updated_at', 'desc')
-                ->paginate(10);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
 
-            $results->setCollection($results->getCollection()->map(function ($item) {
+            $collection = $results->getCollection();
+            $internal = Project::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
                 if ($item->external) {
-                    $model = new FederatedSearchModel;
-                    $model->forceFill($item->getAttributes());
-                    $model->attrs = json_decode($model->attrs, true);
-                    // dd($model->thumbnailUrl);
-
-                    return $model;
+                    return $external[$item->id];
                 }
 
-                return $item;
+                return $internal[$item->id];
             }));
-
-            // dd($results);
 
             $values['results'] = $results;
 
@@ -159,18 +176,38 @@ class SearchController extends Controller
      */
     protected function searchVolumes(User $user, $query, $type)
     {
-        $queryBuilder = Volume::accessibleBy($user)
-            ->select('volumes.id', 'volumes.updated_at', 'volumes.name', 'volumes.media_type_id');
+        $queryBuilder = Volume::accessibleBy($user);
+
+        $queryBuilder->selectRaw("id, name, updated_at, false as external");
+
+        $queryBuilder = $queryBuilder->union(
+            $user->federatedSearchModels()->volumes()
+                ->selectRaw("id, name, updated_at, true as external")
+        );
 
         if ($query) {
-            $queryBuilder = $queryBuilder->where('volumes.name', 'ilike', "%{$query}%");
+            $queryBuilder = $queryBuilder->where('name', 'ilike', "%{$query}%");
         }
 
         $values = [];
 
         if ($type === 'volumes') {
-            $values['results'] = $queryBuilder->orderBy('volumes.updated_at', 'desc')
-                ->paginate(12);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(12);
+
+            $collection = $results->getCollection();
+            $internal = Volume::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                if ($item->external) {
+                    return $external[$item->id];
+                }
+
+                return $internal[$item->id];
+            }));
+
+            $values['results'] = $results;
 
             $values['volumeResultCount'] = $values['results']->total();
         } else {
