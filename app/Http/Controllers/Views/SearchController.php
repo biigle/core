@@ -29,11 +29,13 @@ class SearchController extends Controller
         // Type (e.g. projects, volumes)
         $type = $request->input('t', '');
         $user = $auth->user();
+        $hasFederatedSearch = $user->FederatedSearchModels()->exists();
+        $includeFederatedSearch = $hasFederatedSearch && $user->getSettings('include_federated_search', true);
 
-        $args = compact('user', 'query', 'type');
-        $values = $this->searchProjects($user, $query, $type);
-        $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
-        $values = array_merge($values, $this->searchVolumes($user, $query, $type));
+        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch');
+        $values = $this->searchProjects($user, $query, $type, $includeFederatedSearch);
+        $values = array_merge($values, $this->searchLabelTrees($user, $query, $type, $includeFederatedSearch));
+        $values = array_merge($values, $this->searchVolumes($user, $query, $type, $includeFederatedSearch));
         $values = array_merge($values, $this->searchAnnotations($user, $query, $type));
         $values = array_merge($values, $this->searchVideos($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
@@ -57,19 +59,22 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchLabelTrees(User $user, $query, $type)
+    protected function searchLabelTrees(User $user, $query, $type, $includeFederatedSearch)
     {
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
         $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
 
-        $queryBuilder = $queryBuilder->union(
-            $user->federatedSearchModels()->labelTrees()
-                ->selectRaw("id, name, description, updated_at, true as external")
-        );
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->labelTrees()
+                    ->selectRaw("id, name, description, updated_at, true as external")
+            );
+        }
 
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
@@ -112,10 +117,11 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchProjects(User $user, $query, $type)
+    protected function searchProjects(User $user, $query, $type, $includeFederatedSearch)
     {
         if ($user->can('sudo')) {
             $queryBuilder = Project::query();
@@ -125,10 +131,12 @@ class SearchController extends Controller
 
         $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
 
-        $queryBuilder = $queryBuilder->union(
-            $user->federatedSearchModels()->projects()
-                ->selectRaw("id, name, description, updated_at, true as external")
-        );
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->projects()
+                    ->selectRaw("id, name, description, updated_at, true as external")
+            );
+        }
 
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
@@ -171,19 +179,22 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchVolumes(User $user, $query, $type)
+    protected function searchVolumes(User $user, $query, $type, $includeFederatedSearch)
     {
         $queryBuilder = Volume::accessibleBy($user);
 
         $queryBuilder->selectRaw("id, name, updated_at, false as external");
 
-        $queryBuilder = $queryBuilder->union(
-            $user->federatedSearchModels()->volumes()
-                ->selectRaw("id, name, updated_at, true as external")
-        );
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->volumes()
+                    ->selectRaw("id, name, updated_at, true as external")
+            );
+        }
 
         if ($query) {
             $queryBuilder = $queryBuilder->where('name', 'ilike', "%{$query}%");

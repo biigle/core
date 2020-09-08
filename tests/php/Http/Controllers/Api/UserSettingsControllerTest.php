@@ -51,4 +51,13 @@ class UserSettingsControllerTest extends ApiTestCase
 
         $this->assertEquals(['test' => 123], $this->user()->fresh()->settings);
     }
+
+    public function testUpdateIncludeFederatedSearch()
+    {
+        $this->beUser();
+        $this->assertNull($this->user()->getSettings('include_federated_search'));
+        $this->putJson("/api/v1/users/my/settings", ['include_federated_search' => true])
+            ->assertStatus(200);
+        $this->assertTrue($this->user()->fresh()->getSettings('include_federated_search'));
+    }
 }
