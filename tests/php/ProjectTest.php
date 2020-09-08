@@ -328,4 +328,12 @@ class ProjectTest extends ModelTestCase
         $this->model->addVolumeId($v->id);
         $this->assertEquals(1, $this->model->videoVolumes()->count());
     }
+
+    public function testScopeAccessibleBy()
+    {
+        $user = UserTest::create();
+        $this->assertFalse(Project::accessibleBy($user)->exists());
+        $this->model->addUserId($user->id, Role::guestId());
+        $this->assertTrue(Project::accessibleBy($user)->exists());
+    }
 }

@@ -1,12 +1,19 @@
 @if($type === 'volumes')
-
-<h2 class="lead">{{number_format($volumeResultCount)}} volume results</h2>
+<div class="clearfix">
+    @include('search.partials.federated-search-toggle')
+    <h2 class="lead">{{number_format($volumeResultCount)}} volume results</h2>
+</div>
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $volume)
         <li class="col-xs-4">
-            <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
-                <preview-thumbnail class="preview-thumbnail" v-bind:id="{{$volume->id}}" thumb-uris="{{$volume->thumbnailsUrl->implode(',')}}" @if ($volume->isImageVolume()) icon="image" @else icon="film" @endif>
-                    @if ($volume->thumbnail)
+            @if ($volume instanceof \Biigle\FederatedSearchModel)
+                <a href="{{$volume->url}}" title="Show volume {{$volume->name}} in the external BIIGLE instance" onclick="return confirm('You are now being redirected to an external BIIGLE instance.');">
+                    <preview-thumbnail class="preview-thumbnail" id="external-{{$volume->id}}'" thumb-uris="{{$volume->thumbnailUrls->implode(',')}}" icon="external-link-alt">
+            @else
+                <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
+                    <preview-thumbnail class="preview-thumbnail" id="internal-{{$volume->id}}" thumb-uris="{{$volume->thumbnailsUrl->implode(',')}}" @if ($volume->isImageVolume()) icon="image" @else icon="film" @endif>
+            @endif
+                    @if ($volume->thumbnailUrl)
                         <img src="{{ $volume->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">

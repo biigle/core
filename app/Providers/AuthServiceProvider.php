@@ -3,6 +3,8 @@
 namespace Biigle\Providers;
 
 use Biigle\Services\Auth\ApiGuard;
+use Biigle\Services\Auth\FederatedSearchGuard;
+use Illuminate\Auth\TokenGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -43,6 +45,12 @@ class AuthServiceProvider extends ServiceProvider
             // Return an instance of Illuminate\Contracts\Auth\Guard...
 
             return new ApiGuard(Auth::createUserProvider($config['provider']), $app['request']);
+        });
+
+        Auth::extend('fs', function ($app, $name, array $config) {
+            // Return an instance of Illuminate\Contracts\Auth\Guard...
+
+            return new TokenGuard(Auth::createUserProvider($config['provider']), $app['request'], 'token', 'local_token', true);
         });
     }
 }

@@ -168,6 +168,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-global-label-trees',
             'uses' => 'LabelTreesController@index',
         ]);
+
+        $router->get('federated-search', [
+            'as' => 'admin-federated-search',
+            'uses' => 'FederatedSearchController@index',
+        ]);
     });
 
     $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {

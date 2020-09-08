@@ -44,6 +44,7 @@ class UpdateUserSettings extends FormRequest
         return array_merge(static::$additionalRules, [
             'super_user_mode' => 'filled|bool',
             'project_overview_v1' => 'filled|bool',
+            'include_federated_search' => 'filled|bool',
         ]);
     }
 

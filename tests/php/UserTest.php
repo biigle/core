@@ -223,4 +223,12 @@ class UserTest extends ModelTestCase
         $this->model->isInSuperUserMode = false;
         $this->assertFalse($this->model->can('sudo'));
     }
+
+    public function testFederatedSearchModels()
+    {
+        $model = FederatedSearchModelTest::create();
+        $this->assertFalse($this->model->federatedSearchModels()->exists());
+        $model->users()->attach($this->model);
+        $this->assertTrue($this->model->federatedSearchModels()->exists());
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\FederatedSearchModel;
 use Biigle\Image;
 use Biigle\LabelTree;
 use Biigle\Project;
@@ -28,11 +29,13 @@ class SearchController extends Controller
         // Type (e.g. projects, volumes)
         $type = $request->input('t', '');
         $user = $auth->user();
+        $hasFederatedSearch = $user->FederatedSearchModels()->exists();
+        $includeFederatedSearch = $hasFederatedSearch && $user->getSettings('include_federated_search', true);
 
-        $args = compact('user', 'query', 'type');
-        $values = $this->searchProjects($user, $query, $type);
-        $values = array_merge($values, $this->searchLabelTrees($user, $query, $type));
-        $values = array_merge($values, $this->searchVolumes($user, $query, $type));
+        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch');
+        $values = $this->searchProjects($user, $query, $type, $includeFederatedSearch);
+        $values = array_merge($values, $this->searchLabelTrees($user, $query, $type, $includeFederatedSearch));
+        $values = array_merge($values, $this->searchVolumes($user, $query, $type, $includeFederatedSearch));
         $values = array_merge($values, $this->searchAnnotations($user, $query, $type));
         $values = array_merge($values, $this->searchVideos($user, $query, $type));
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
@@ -56,26 +59,49 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchLabelTrees(User $user, $query, $type)
+    protected function searchLabelTrees(User $user, $query, $type, $includeFederatedSearch)
     {
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
+
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->labelTrees()
+                    ->selectRaw("id, name, description, updated_at, true as external")
+            );
+        }
+
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('label_trees.name', 'ilike', "%{$query}%")
-                    ->orWhere('label_trees.description', 'ilike', "%{$query}%");
+                $q->where('name', 'ilike', "%{$query}%")
+                    ->orWhere('description', 'ilike', "%{$query}%");
             });
         }
 
         $values = [];
 
         if ($type === 'label-trees') {
-            $values['results'] = $queryBuilder
-                ->orderBy('label_trees.updated_at', 'desc')
-                ->paginate(10);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
+
+            $collection = $results->getCollection();
+            $internal = LabelTree::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                if ($item->external) {
+                    return $external[$item->id];
+                }
+
+                return $internal[$item->id];
+            }));
+
+            $values['results'] = $results;
 
             $values['labelTreeResultCount'] = $values['results']->total();
         } else {
@@ -91,29 +117,53 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchProjects(User $user, $query, $type)
+    protected function searchProjects(User $user, $query, $type, $includeFederatedSearch)
     {
         if ($user->can('sudo')) {
             $queryBuilder = Project::query();
         } else {
-            $queryBuilder = $user->projects();
+            $queryBuilder = Project::accessibleBy($user);
+        }
+
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
+
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->projects()
+                    ->selectRaw("id, name, description, updated_at, true as external")
+            );
         }
 
         if ($query) {
             $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('projects.name', 'ilike', "%{$query}%")
-                    ->orWhere('projects.description', 'ilike', "%{$query}%");
+                $q->where('name', 'ilike', "%{$query}%")
+                    ->orWhere('description', 'ilike', "%{$query}%");
             });
         }
 
         $values = [];
 
         if (!$type || $type === 'projects') {
-            $values['results'] = $queryBuilder->orderBy('updated_at', 'desc')
-                ->paginate(10);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
+
+            $collection = $results->getCollection();
+            $internal = Project::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                if ($item->external) {
+                    return $external[$item->id];
+                }
+
+                return $internal[$item->id];
+            }));
+
+            $values['results'] = $results;
 
             $values['projectResultCount'] = $values['results']->total();
         } else {
@@ -129,23 +179,46 @@ class SearchController extends Controller
      * @param User $user
      * @param string $query
      * @param string $type
+     * @param bool $includeFederatedSearch
      *
      * @return array
      */
-    protected function searchVolumes(User $user, $query, $type)
+    protected function searchVolumes(User $user, $query, $type, $includeFederatedSearch)
     {
-        $queryBuilder = Volume::accessibleBy($user)
-            ->select('volumes.id', 'volumes.updated_at', 'volumes.name', 'volumes.media_type_id');
+        $queryBuilder = Volume::accessibleBy($user);
+
+        $queryBuilder->selectRaw("id, name, updated_at, false as external");
+
+        if ($includeFederatedSearch) {
+            $queryBuilder = $queryBuilder->union(
+                $user->federatedSearchModels()->volumes()
+                    ->selectRaw("id, name, updated_at, true as external")
+            );
+        }
 
         if ($query) {
-            $queryBuilder = $queryBuilder->where('volumes.name', 'ilike', "%{$query}%");
+            $queryBuilder = $queryBuilder->where('name', 'ilike', "%{$query}%");
         }
 
         $values = [];
 
         if ($type === 'volumes') {
-            $values['results'] = $queryBuilder->orderBy('volumes.updated_at', 'desc')
-                ->paginate(12);
+            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(12);
+
+            $collection = $results->getCollection();
+            $internal = Volume::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
+
+            $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
+
+            $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                if ($item->external) {
+                    return $external[$item->id];
+                }
+
+                return $internal[$item->id];
+            }));
+
+            $values['results'] = $results;
 
             $values['volumeResultCount'] = $values['results']->total();
         } else {
