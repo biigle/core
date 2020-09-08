@@ -38,7 +38,10 @@ class LogsController extends Controller
                 ->skip(($paginator->currentPage() - 1) * $perPage)
                 ->take($perPage)
                 ->map(function ($message) {
-                    return json_decode($message, true);
+                    $message = json_decode($message, true);
+                    $message['date'] = $message['datetime']['date'];
+
+                    return $message;
                 });
 
             $paginator->setCollection($messages);
