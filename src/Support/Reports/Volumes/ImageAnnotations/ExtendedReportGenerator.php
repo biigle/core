@@ -38,7 +38,7 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
     {
         $rows = $this->query()->get();
 
-        if ($this->shouldSeparateLabelTrees()) {
+        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
