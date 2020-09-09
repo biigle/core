@@ -44,6 +44,27 @@ class Project extends Model
     }
 
     /**
+     * Scope a query to all projects that are accessible by a user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessibleBy($query, User $user)
+    {
+        if ($user->can('sudo')) {
+            return $query;
+        }
+
+        return $query->whereIn('id', function ($query) use ($user) {
+            return $query->select('project_user.project_id')
+                ->from('project_user')
+                ->where('project_user.user_id', $user->id)
+                ->distinct();
+        });
+    }
+
+    /**
      * The members of this project. Every member has a project-specific
      * `project_role_id` besides their global user role.
      *

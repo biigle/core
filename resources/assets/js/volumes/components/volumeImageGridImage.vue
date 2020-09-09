@@ -1,6 +1,6 @@
 <template>
     <div class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">
-        <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">
+        <a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" :title="linkTitle" class="image-link">
             <preview-thumbnail :id="image.id" :thumb-uris="image.thumbnailUrl">
                 <img :src="srcUrl" @error="showEmptyImage">
             </preview-thumbnail>
@@ -99,6 +99,9 @@ export default {
         },
         title() {
             return this.canBeSelected ? 'Attach ' + this.selectedLabel.name : '';
+        },
+        linkTitle() {
+            return `Annotate this ${this.type}`;
         },
     },
     methods: {

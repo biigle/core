@@ -47,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->mapWebRoutes();
         $this->mapApiRoutes();
+        $this->mapFederatedSearchRoutes();
 
         //
     }
@@ -78,5 +79,20 @@ class RouteServiceProvider extends ServiceProvider
             ->namespace($this->namespace.'\Api')
             ->prefix('api/v1')
             ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * Define the "federated search" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapFederatedSearchRoutes()
+    {
+        Route::middleware(['auth:fs'])
+            ->namespace($this->namespace.'\Api')
+            ->prefix('api/v1')
+            ->group(base_path('routes/federated-search.php'));
     }
 }

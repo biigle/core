@@ -169,9 +169,9 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@index',
         ]);
 
-        $router->get('volumes', [
-            'as' => 'admin-volumes',
-            'uses' => 'VolumesController@index',
+        $router->get('federated-search', [
+            'as' => 'admin-federated-search',
+            'uses' => 'FederatedSearchController@index',
         ]);
     });
 

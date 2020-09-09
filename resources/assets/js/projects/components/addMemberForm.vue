@@ -70,6 +70,7 @@ export default {
                 role_id: this.selectedRole,
                 firstname: this.selectedMember.firstname,
                 lastname: this.selectedMember.lastname,
+                affiliation: this.selectedMember.affiliation,
             };
             this.$emit('attach', member);
             this.selectedMember = null;

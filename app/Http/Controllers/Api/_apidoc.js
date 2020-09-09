@@ -39,3 +39,9 @@
  * @apiDefine labelTreeAdmin Label tree admin
  * The authenticated user needs to be admin of the label tree.
  */
+
+/**
+ * @apiDefine federatedSearchInstance Federated search instance
+ * The request must provide an authentication token of a remote instance configured for
+ * federated search.
+ */

@@ -94,7 +94,7 @@ export default {
             this.thumbnailUrl = this.image.thumbnailUrl;
         } else if (this.image.blob) {
             this.thumbnailUrl = this.image.blob;
-        } else if (this.getUrl) {
+        } else if (this.getThumbnailUrl) {
             this.thumbnailUrl = this.getThumbnailUrl();
         } else if (this.getBlob) {
             // use a timeout to skip requests when scrolling fast
