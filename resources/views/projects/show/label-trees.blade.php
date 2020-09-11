@@ -20,6 +20,7 @@
                 :label-trees="labelTrees"
                 :editable="canEdit"
                 base-uri="{{route('label-trees', '')}}"
+                v-on:remove="removeTree"
                 >
             </label-tree-list>
             <div v-else v-cloak class="well">This project has no label trees attached.</div>
