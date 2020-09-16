@@ -148,6 +148,7 @@ export default {
             mapSize: [0, 0],
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
+            modifyInProgress: false,
         };
     },
     computed: {
@@ -372,11 +373,13 @@ export default {
             return feature;
         },
         handleFeatureModifyStart(e) {
+            this.modifyInProgress = true;
             e.features.getArray().forEach((feature) => {
                 this.featureRevisionMap[feature.getId()] = feature.getRevision();
             });
         },
         handleFeatureModifyEnd(e) {
+            this.modifyInProgress = false;
             let annotations = e.features.getArray()
                 .filter((feature) => {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
@@ -424,10 +427,14 @@ export default {
             );
         },
         handlePrevious() {
-            this.$emit('previous');
+            if (!this.modifyInProgress) {
+                this.$emit('previous');
+            }
         },
         handleNext() {
-            this.$emit('next');
+            if (!this.modifyInProgress) {
+               this.$emit('next');
+            }
         },
         resetInteractionMode() {
             this.interactionMode = 'default';
@@ -479,7 +486,7 @@ export default {
             }
         },
         deleteSelectedAnnotations() {
-            if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
+            if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
                 this.$emit('delete', this.selectedAnnotations);
             }
         },

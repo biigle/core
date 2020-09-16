@@ -19,7 +19,7 @@ export default {
         toggleTranslating() {
             if (this.isTranslating) {
                 this.resetInteractionMode();
-            } else {
+            } else if (!this.modifyInProgress) {
                 this.interactionMode = 'translate';
             }
         },
