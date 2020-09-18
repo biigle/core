@@ -49,7 +49,7 @@ export default {
         },
     },
     created() {
-        this.url = this.getUrl();
+        this.url = this.getThumbnailUrl();
     },
 };
 </script>
