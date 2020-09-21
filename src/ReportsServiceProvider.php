@@ -58,6 +58,7 @@ class ReportsServiceProvider extends ServiceProvider
                 'annotationsManualSidebarSettings',
                 'searchTab',
                 'searchTabContent',
+                'projectsShowV2Tabs',
             ],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',

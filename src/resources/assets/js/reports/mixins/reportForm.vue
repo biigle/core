@@ -149,7 +149,18 @@ export default {
         this.reportTypes = biigle.$require('reports.reportTypes');
         this.selectedType = Object.keys(this.variants)[0];
         this.selectedVariant = this.availableVariants[0];
-        this.labelTrees = biigle.$require('reports.labelTrees');
+        let trees = biigle.$require('reports.labelTrees');
+        // The "selected" property is automatically set by the label trees component.
+        // However, this may not be fast enough for very large label trees to complete
+        // before the selectedLabels computed property is evaluated. The computed
+        // property won't work correctly in that case so we explicitly set the "selected"
+        // property here.
+        trees.forEach(function (tree) {
+            tree.labels.forEach(function (label) {
+                label.selected = false;
+            });
+        });
+        this.labelTrees = trees;
     },
 };
 </script>

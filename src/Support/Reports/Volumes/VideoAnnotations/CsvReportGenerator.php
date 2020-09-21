@@ -99,7 +99,7 @@ class CsvReportGenerator extends VolumeReportGenerator
         $rows = $this->query()->get();
         $toZip = [];
 
-        if ($this->shouldSeparateLabelTrees()) {
+        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 

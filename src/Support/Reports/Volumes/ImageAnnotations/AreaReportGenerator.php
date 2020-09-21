@@ -54,7 +54,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
             ->get()
             ->keyBy('id');
 
-        if ($this->shouldSeparateLabelTrees()) {
+        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
