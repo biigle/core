@@ -129,11 +129,8 @@ class LargoController extends Controller
     {
         $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
 
-        // Roll back changes if any errors occur.
-        DB::transaction(function () use ($user, $filtered, $force) {
-            $this->applyDismissedLabels($user, $filtered['dismissed'], $force);
-            $this->applyChangedLabels($user, $filtered['changed']);
-        });
+        $this->applyDismissedLabels($user, $filtered['dismissed'], $force);
+        $this->applyChangedLabels($user, $filtered['changed']);
     }
 
     /**

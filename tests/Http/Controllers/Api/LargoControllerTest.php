@@ -137,83 +137,12 @@ class LargoControllerTest extends ApiTestCase
         $this->assertEquals($this->labelRoot()->id, $a1->labels()->first()->label_id);
         $this->assertEquals($this->labelChild()->id, $a2->labels()->first()->label_id);
     }
-
-    public function testErrorRollbackDismissed()
-    {
-        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
-        $l1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $this->editor()->id,
-            'label_id' => $this->labelRoot()->id,
-        ]);
-
-        $request = [
-            'dismissed' => [
-                $l1->label_id => [$a1->id],
-            ],
-            'changed' => [],
-        ];
-
-        $controller = new LargoControllerStub;
-        $controller->throw = true;
-
-        try {
-            $controller->save($this->editor(), $request);
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertEquals(1, $a1->labels()->count());
-            $this->assertEquals($l1->label_id, $a1->labels()->first()->label_id);
-        }
-    }
-
-    public function testErrorRollbackChanged()
-    {
-        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
-        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
-        $l1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $this->editor()->id,
-            'label_id' => $this->labelRoot()->id,
-        ]);
-
-        $request = [
-            'dismissed' => [
-                $l1->label_id => [$a1->id],
-            ],
-            'changed' => [
-                $this->labelChild()->id => [$a1->id],
-            ],
-        ];
-
-        $controller = new LargoControllerStub;
-        $controller->throw = true;
-
-        try {
-            $controller->save($this->editor(), $request);
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertEquals($l1->label_id, $a1->labels()->first()->label_id);
-        }
-    }
 }
 
 class LargoControllerStub extends LargoController
 {
-    public $throw;
     public function save($user, $request)
     {
         $this->applySave($user, $request['dismissed'], $request['changed']);
-    }
-
-    protected function applyChangedLabels($user, $changed)
-    {
-        $r = parent::applyChangedLabels($user, $changed);
-
-        if ($this->throw) {
-            throw new Exception('Throwing up');
-        }
-
-        return $r;
     }
 }

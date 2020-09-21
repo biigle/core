@@ -8,6 +8,7 @@ use Biigle\MediaType;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Project;
+use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 
@@ -65,21 +66,24 @@ class LargoController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the project.');
         }
 
-        $this->applySave($request->user(), $dismissed, $changed, $force);
+        // Roll back changes if any errors occur.
+        DB::transaction(function () use ($request, $dismissed, $changed, $force, $affectedAnnotations) {
+            $this->applySave($request->user(), $dismissed, $changed, $force);
 
-        // Remove annotations that now have no more labels attached.
-        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
-            ->whereDoesntHave('labels');
+            // Remove annotations that now have no more labels attached.
+            $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
+                ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->pluck('images.uuid', 'image_annotations.id')
-            ->toArray();
+            $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
+                ->pluck('images.uuid', 'image_annotations.id')
+                ->toArray();
 
-        if (!empty($toDeleteArgs)) {
-            $toDeleteQuery->delete();
-            // The annotation model observer does not fire for this query so we dispatch
-            // the remove patch job manually here.
-            RemoveAnnotationPatches::dispatch($toDeleteArgs);
-        }
+            if (!empty($toDeleteArgs)) {
+                $toDeleteQuery->delete();
+                // The annotation model observer does not fire for this query so we
+                // dispatch the remove patch job manually here.
+                RemoveAnnotationPatches::dispatch($toDeleteArgs);
+            }
+        });
     }
 }
