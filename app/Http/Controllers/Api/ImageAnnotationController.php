@@ -87,7 +87,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {get} annotations/:id Get an annotation
-     * @apiDeprecated use now (#ImageAnnotations:ShowAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:ShowImageAnnotation).
      * @apiGroup Annotations
      * @apiName ShowAnnotation
      * @apiParam {Number} id The annotation ID.
@@ -138,7 +138,7 @@ class ImageAnnotationController extends Controller
      * Creates a new annotation in the specified image.
      *
      * @api {post} images/:id/annotations Create a new annotation
-     * @apiGroup Annotations
+     * @apiGroup ImageAnnotations
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by one of
@@ -232,7 +232,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {put} annotations/:id Update an annotation
-     * @apiDeprecated use now (#ImageAnnotations:UpdateAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotation).
      * @apiGroup Annotations
      * @apiName UpdateAnnotation
      * @apiPermission projectEditor
@@ -293,7 +293,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {delete} annotations/:id Delete an annotation
-     * @apiDeprecated use now (#ImageAnnotations:DestroyAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:DestroyImageAnnotation).
      * @apiGroup Annotations
      * @apiName DestroyAnnotation
      * @apiPermission projectEditor

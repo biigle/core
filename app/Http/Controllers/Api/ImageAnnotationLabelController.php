@@ -14,7 +14,7 @@ class ImageAnnotationLabelController extends Controller
 {
     /**
      * @api {get} annotations/:id/labels Get all labels
-     * @apiDeprecated use now (#ImageAnnotations:IndexImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:IndexImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName IndexAnnotationLabels
      * @apiPermission projectMember
@@ -85,7 +85,7 @@ class ImageAnnotationLabelController extends Controller
 
     /**
      * @api {post} annotations/:id/labels Attach a label
-     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
@@ -190,7 +190,7 @@ class ImageAnnotationLabelController extends Controller
 
     /**
      * @api {put} annotation-labels/:id Update a label
-     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName UpdateAnnotationLabels
      * @apiPermission projectEditor
@@ -232,7 +232,7 @@ class ImageAnnotationLabelController extends Controller
 
     /**
      * @api {delete} annotation-labels/:id Detach a label
-     * @apiDeprecated use now (#ImageAnnotations:DeleteImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:DeleteImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
      * @apiPermission projectEditor
