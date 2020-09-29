@@ -65,7 +65,6 @@ class ImageAnnotationLabelController extends Controller
      *       },
      *       "user": {
      *          "id": 1,
-     *          "role_id": 2,
      *          "firstname": "Joe",
      *          "lastname": "User"
      *       }
@@ -80,7 +79,14 @@ class ImageAnnotationLabelController extends Controller
         $annotation = ImageAnnotation::findOrFail($id);
         $this->authorize('access', $annotation);
 
-        return $annotation->labels;
+        $load = [
+            // Hide label_source_id and source_id.
+            'label:id,name,parent_id,color,label_tree_id',
+            // Hide role_id.
+            'user:id,firstname,lastname',
+        ];
+
+        return $annotation->labels()->with($load)->get();
     }
 
     /**

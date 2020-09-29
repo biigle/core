@@ -33,10 +33,12 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
 
     public function index($url)
     {
-        ImageAnnotationLabelTest::create([
-            'label_id' => $this->labelRoot()->id,
+        $user = $this->editor();
+        $label = $this->labelRoot();
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
             'annotation_id' => $this->annotation->id,
-            'user_id' => $this->editor()->id,
+            'user_id' => $user->id,
         ]);
         $id = $this->annotation->id;
         $this->doTestApiRoute('GET', "{$url}/{$id}/labels");
@@ -49,10 +51,22 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("{$url}/{$id}/labels");
         $response->assertStatus(200);
-
-        $content = $response->getContent();
-        $this->assertStringStartsWith('[{', $content);
-        $this->assertStringEndsWith('}]', $content);
+        $response->assertJsonFragment([
+            'id' => $al->id,
+            'confidence' => $al->confidence,
+            'user' => [
+                'id' => $user->id,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+            ],
+            'label' => [
+                'id' => $label->id,
+                'name' => $label->name,
+                'color' => $label->color,
+                'parent_id' => $label->parent_id,
+                'label_tree_id' => $label->label_tree_id,
+            ],
+        ]);
     }
 
     public function testIndexAnnotationSession()
