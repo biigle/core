@@ -5,6 +5,7 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
+use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Project;
 use Biigle\Role;
@@ -82,25 +83,7 @@ class LargoController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified volume.');
         }
 
-        // Roll back changes if any errors occur.
-        DB::transaction(function () use ($user, $dismissed, $changed, $force, $affectedAnnotations) {
-            $this->applySave($user, $dismissed, $changed, $force);
-
-            // Remove annotations that now have no more labels attached.
-            $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affectedAnnotations)
-                ->whereDoesntHave('labels');
-
-            $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
-                ->pluck('images.uuid', 'image_annotations.id')
-                ->toArray();
-
-            if (!empty($toDeleteArgs)) {
-                $toDeleteQuery->delete();
-                // The annotation model observer does not fire for this query so we
-                // dispatch the remove patch job manually here.
-                RemoveAnnotationPatches::dispatch($toDeleteArgs);
-            }
-        });
+        ApplyLargoSession::dispatchNow($user, $dismissed, $changed, $force);
     }
 
     /**
