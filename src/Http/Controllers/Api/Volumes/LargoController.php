@@ -5,6 +5,7 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
+use Biigle\Modules\Largo\Http\Requests\StoreVolumeLargoSession;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Project;
@@ -13,6 +14,7 @@ use Biigle\Volume;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class LargoController extends Controller
 {
@@ -42,76 +44,27 @@ class LargoController extends Controller
      *    }
      * }
      *
-     * @param Request $request
-     * @param int $id Volume ID
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": "b02d5d09-df21-4385-9f1a-c3c7d5095e13"
+     * }
+     *
+     * @param StoreVolumeLargoSession $request
      * @return \Illuminate\Http\Response
      */
-    public function save(Request $request, $id)
+    public function save(StoreVolumeLargoSession $request)
     {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('edit-in', $volume);
-        if (!$volume->isImageVolume()) {
-            abort(400, 'Only available for image volumes.');
-        }
-
-        $this->validateLargoInput($request);
-
-        $force = $request->input('force', false);
-
-        if ($force) {
-            $this->authorize('force-edit-in', $volume);
-        }
-
-        $dismissed = $request->input('dismissed', []);
-        $changed = $request->input('changed', []);
-
-        if (count($dismissed) === 0 && count($changed) === 0) {
+        if (count($request->dismissed) === 0 && count($request->changed) === 0) {
             return;
         }
 
-        $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
+        $attrs = $request->volume->attrs;
+        $attrs['largo_job_id'] = Uuid::uuid4();
+        $request->volume->attrs = $attrs;
+        $request->volume->save();
 
-        if (!$this->anotationsBelongToVolumes($affectedAnnotations, [$id])) {
-            abort(400, 'All annotations must belong to the specified volume.');
-        }
+        ApplyLargoSession::dispatch($request->user(), $request->dismissed, $request->changed, $request->force);
 
-        $user = $request->user();
-        $availableLabelTreeIds = $this->getAvailableLabelTrees($user, $volume);
-        $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
-
-        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
-            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified volume.');
-        }
-
-        ApplyLargoSession::dispatchNow($user, $dismissed, $changed, $force);
-    }
-
-    /**
-     * Get label trees of projects that the user and the volume have in common.
-     *
-     * @param User $user
-     * @param Volume $volume
-     *
-     * @return Collection
-     */
-    protected function getAvailableLabelTrees($user, $volume)
-    {
-        if ($user->can('sudo')) {
-            // Global admins have no restrictions.
-            $projects = $volume->projects()->pluck('id');
-        } else {
-            // All projects that the user and the volume have in common
-            // and where the user is editor, expert or admin.
-            $projects = Project::inCommon($user, $volume->id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
-            ])->pluck('id');
-        }
-
-        return DB::table('label_tree_project')
-            ->whereIn('project_id', $projects)
-            ->distinct()
-            ->pluck('label_tree_id');
+        return ['id' => $attrs['largo_job_id']];
     }
 }

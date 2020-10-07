@@ -46,7 +46,7 @@ class LargoControllerTestBase extends ApiTestCase
         $other = ImageAnnotationTest::create();
 
         $this->beEditor();
-        $response = $this->post($this->url, [
+        $response = $this->postJson($this->url, [
             'dismissed' => [
             ],
             'changed' => [
@@ -54,12 +54,12 @@ class LargoControllerTestBase extends ApiTestCase
             ],
         ]);
         // a4 does not belong to the same volume
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $otherLabel = ImageAnnotationLabelTest::create();
 
         $this->beEditor();
-        $response = $this->post($this->url, [
+        $response = $this->postJson($this->url, [
             'dismissed' => [
             ],
             'changed' => [
@@ -67,7 +67,7 @@ class LargoControllerTestBase extends ApiTestCase
             ],
         ]);
         // a label in 'changed' does not belong to a label tree available for the volume
-        $response->assertStatus(403);
+        $response->assertStatus(422);
     }
 
     public function testDismiss()

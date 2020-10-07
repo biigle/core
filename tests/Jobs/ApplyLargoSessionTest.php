@@ -254,4 +254,14 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertContains($l1->id, $labels);
         $this->assertContains($l2->id, $labels);
     }
+
+    public function testRemoveJobIdOnFinish()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testRemoveJobIdOnError()
+    {
+        $this->markTestIncomplete();
+    }
 }
