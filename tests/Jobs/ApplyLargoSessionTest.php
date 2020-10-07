@@ -36,7 +36,7 @@ class ApplyLargoSessionTest extends TestCase
         $dismissed = [$al1->label_id => [$a1->id]];
         // This already exists from the same user!
         $changed = [$al2->label_id => [$a1->id]];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
         $job->handle();
 
         $this->assertEquals(1, $a1->labels()->count());
@@ -61,7 +61,7 @@ class ApplyLargoSessionTest extends TestCase
         // The same annotation may occur multiple times e.g. if it should be
         // changed "from A to C" and "from B to C" at the same time.
         $changed = [$l2->id => [$a1->id, $a1->id]];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
         $job->handle();
 
         $this->assertEquals(1, $a1->labels()->count());
@@ -92,7 +92,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $dismissed = [$al1->label_id => [$a1->id, $a2->id]];
         $changed = [$l2->id => [$a1->id, $a1->id]];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
         // annotation was deleted during the Largo session but saving should still work
         $a2->delete();
         $job->handle();
@@ -125,7 +125,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $dismissed = [$al1->label_id => [$a1->id, $a2->id]];
         $changed = [$l2->id => [$a1->id], $l3->id => [$a2->id]];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
 
         $l2->delete();
         $job->handle();
@@ -141,7 +141,7 @@ class ApplyLargoSessionTest extends TestCase
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
 
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
-        $job = new ApplyLargoSession($user, $dismissed, [], false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, [], false);
         $job->handle();
 
         // al1 was dismissed but not changed, should be deleted.
@@ -157,7 +157,7 @@ class ApplyLargoSessionTest extends TestCase
         $user2 = UserTest::create();
 
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
-        $job = new ApplyLargoSession($user2, $dismissed, [], true);
+        $job = new ApplyLargoSession('job_id', $user2, $dismissed, [], true);
         $job->handle();
 
         $this->assertFalse($al1->exists());
@@ -174,7 +174,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
         $changed = [$l1->id => [$al1->annotation_id]];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
         $job->handle();
 
         // al1 was dismissed and then changed, should have a new annotation label
@@ -193,7 +193,7 @@ class ApplyLargoSessionTest extends TestCase
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
         $changed = [$l1->id => [$al1->annotation_id]];
         $user2 = UserTest::create();
-        $job = new ApplyLargoSession($user2, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user2, $dismissed, $changed, false);
         $job->handle();
 
         // a1 was dismissed and changed but the label does not belong to the user,
@@ -214,7 +214,7 @@ class ApplyLargoSessionTest extends TestCase
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
         $changed = [$l1->id => [$al1->annotation_id]];
         $user2 = UserTest::create();
-        $job = new ApplyLargoSession($user2, $dismissed, $changed, true);
+        $job = new ApplyLargoSession('job_id', $user2, $dismissed, $changed, true);
         $job->handle();
 
         $this->assertNull($al1->fresh());
@@ -243,7 +243,7 @@ class ApplyLargoSessionTest extends TestCase
             $l1->id => [$al1->annotation_id],
             $l2->id => [$al1->annotation_id],
         ];
-        $job = new ApplyLargoSession($user, $dismissed, $changed, false);
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
         $job->handle();
 
         $this->assertNull($al1->fresh());
@@ -257,11 +257,49 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testRemoveJobIdOnFinish()
     {
-        $this->markTestIncomplete();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $volume = $al1->annotation->image->volume;
+        $l1 = LabelTest::create();
+
+        $volume->attrs = ['largo_job_id' => 'job_id'];
+        $volume->save();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, false);
+        $job->handle();
+
+        $this->assertEmpty($volume->fresh()->attrs);
     }
 
     public function testRemoveJobIdOnError()
     {
-        $this->markTestIncomplete();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $volume = $al1->annotation->image->volume;
+        $l1 = LabelTest::create();
+
+        $volume->attrs = ['largo_job_id' => 'job_id'];
+        $volume->save();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSessionStub('job_id', $user, $dismissed, $changed, false);
+        try {
+            $job->handle();
+        } catch (\Exception $e) {
+            // ignore
+        }
+
+        $this->assertEmpty($volume->fresh()->attrs);
+    }
+}
+
+class ApplyLargoSessionStub extends ApplyLargoSession
+{
+    protected function ignoreDeletedLabels($dismissed, $changed)
+    {
+        throw new \Exception;
     }
 }

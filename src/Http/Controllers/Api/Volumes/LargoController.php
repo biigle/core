@@ -2,9 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
-use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
 use Biigle\Modules\Largo\Http\Requests\StoreVolumeLargoSession;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
@@ -58,13 +58,14 @@ class LargoController extends Controller
             return;
         }
 
+        $uuid = Uuid::uuid4();
         $attrs = $request->volume->attrs;
-        $attrs['largo_job_id'] = Uuid::uuid4();
+        $attrs['largo_job_id'] = $uuid;
         $request->volume->attrs = $attrs;
         $request->volume->save();
 
-        ApplyLargoSession::dispatch($request->user(), $request->dismissed, $request->changed, $request->force);
+        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissed, $request->changed, $request->force);
 
-        return ['id' => $attrs['largo_job_id']];
+        return ['id' => $uuid];
     }
 }

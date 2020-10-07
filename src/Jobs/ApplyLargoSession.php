@@ -8,6 +8,7 @@ use Biigle\Jobs\Job;
 use Biigle\Label;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\User;
+use Biigle\Volume;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,6 +17,13 @@ use Illuminate\Queue\InteractsWithQueue;
 class ApplyLargoSession extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
+
+    /**
+     * The job ID.
+     *
+     * @var string
+     */
+    public $id;
 
     /**
      * The user who submitted the Largo session.
@@ -48,14 +56,16 @@ class ApplyLargoSession extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
+     * @param string $id
      * @param \Biigle\User $user
      * @param array $dismissed
      * @param array $changed
      *
      * @return void
      */
-    public function __construct(User $user, $dismissed, $changed, $force)
+    public function __construct($id, User $user, $dismissed, $changed, $force)
     {
+        $this->id = $id;
         $this->user = $user;
         $this->dismissed = $dismissed;
         $this->changed = $changed;
@@ -69,13 +79,22 @@ class ApplyLargoSession extends Job implements ShouldQueue
      */
     public function handle()
     {
-        DB::transaction(function () {
-            [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissed, $this->changed);
+        try {
+            DB::transaction(function () {
+                [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissed, $this->changed);
 
-            $this->applyDismissedLabels($this->user, $dismissed, $this->force);
-            $this->applyChangedLabels($this->user, $changed);
-            $this->deleteDanglingAnnotations($dismissed, $changed);
-        });
+                $this->applyDismissedLabels($this->user, $dismissed, $this->force);
+                $this->applyChangedLabels($this->user, $changed);
+                $this->deleteDanglingAnnotations($dismissed, $changed);
+            });
+        } finally {
+            Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
+                $attrs = $volume->attrs;
+                unset($attrs['largo_job_id']);
+                $volume->attrs = $attrs;
+                $volume->save();
+            });
+        }
     }
 
     /**
