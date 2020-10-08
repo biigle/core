@@ -48,4 +48,8 @@ $router->group([
     $router->get('labels/{id}/image-annotations', [
         'uses' => 'Labels\ImageAnnotationsController@index',
     ]);
+
+    $router->get('largo-jobs/{uuid}', [
+        'uses' => 'LargoJobController@show',
+    ]);
 });

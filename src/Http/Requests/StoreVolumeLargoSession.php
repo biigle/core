@@ -47,7 +47,7 @@ class StoreVolumeLargoSession extends StoreLargoSession
     {
         $validator->after(function ($validator) {
             if (is_array($this->volume->attrs) && array_key_exists('largo_job_id', $this->volume->attrs)) {
-                $validator->errors()->add('id', 'A Largo session is currently being saved, please retry later.');
+                $validator->errors()->add('id', 'A Largo session is currently being saved, please try again in a few minutes.');
             }
 
             if (!$this->volume->isImageVolume()) {

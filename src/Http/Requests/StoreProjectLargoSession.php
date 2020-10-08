@@ -66,7 +66,7 @@ class StoreProjectLargoSession extends StoreLargoSession
             });
 
             if ($inProgress) {
-                $validator->errors()->add('id', 'A Largo session is currently being saved, please retry later.');
+                $validator->errors()->add('id', 'A Largo session is currently being saved, please try again in a few minutes.');
             }
 
             $volumeIds = $this->project->imageVolumes()->pluck('id');
