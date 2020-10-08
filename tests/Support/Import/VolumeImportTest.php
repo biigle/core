@@ -111,10 +111,10 @@ class VolumeImportTest extends TestCase
     public function testGetImportVolumes()
     {
         $import = $this->getDefaultImport();
-        $volumes = $import->getImportVolumes();
+        $volumes = $import->getImportVolumes()->pluck('name');
         $this->assertCount(2, $volumes);
-        $this->assertEquals($this->imageVolume->name, $volumes[0]['name']);
-        $this->assertEquals($this->videoVolume->name, $volumes[1]['name']);
+        $this->assertContains($this->imageVolume->name, $volumes);
+        $this->assertContains($this->videoVolume->name, $volumes);
     }
 
     public function testGetImportLabelTreesImages()
