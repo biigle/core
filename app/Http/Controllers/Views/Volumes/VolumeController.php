@@ -26,7 +26,7 @@ class VolumeController extends Controller
         $this->authorize('update', $project);
         $disks = array_intersect(array_keys(config('filesystems.disks')), config('volumes.browser_disks'));
         $mediaType = old('media_type', 'image');
-        $filenames = str_replace(["\r", "\n"], '', old('files'));
+        $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
 
         return view('volumes.create', [
             'project' => $project,
