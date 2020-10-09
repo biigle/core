@@ -1,5 +1,6 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
+import LargoJobApi from '../api/jobs';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
@@ -200,10 +201,23 @@ export default {
                     changed: this.changedToSave,
                     force: this.forceChange,
                 })
-                .then(this.saved, handleErrorResponse)
-                .finally(this.finishLoading);
+                .then(this.waitForJobToFinish, (response) => {
+                    this.finishLoading();
+                    handleErrorResponse(response);
+                });
+        },
+        waitForJobToFinish(response) {
+            let id = response.body.id;
+            let wait = () => {
+                window.setTimeout(() => {
+                    LargoJobApi.get({id: id}).then(wait, this.saved);
+                }, 2000);
+            };
+
+            wait();
         },
         saved() {
+            this.finishLoading();
             Messages.success('Saved. You can now start a new re-evaluation session.');
             this.step = 0;
             for (let key in this.annotationsCache) {
