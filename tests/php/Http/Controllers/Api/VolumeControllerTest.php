@@ -13,8 +13,6 @@ class VolumeControllerTest extends ApiTestCase
     public function testIndex()
     {
         $project = ProjectTest::create();
-
-        // Create the volume.
         $project->addVolumeId($this->volume()->id);
 
         $this->doTestApiRoute('GET', '/api/v1/volumes/');
@@ -30,24 +28,29 @@ class VolumeControllerTest extends ApiTestCase
             ->assertJsonFragment(['id' => $this->volume()->id])
             ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
             ->assertJsonFragment(['name' => $this->project()->name])
+            // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
     }
 
     public function testShow()
     {
+        $project = ProjectTest::create();
         $id = $this->volume()->id;
-        $this->doTestApiRoute('GET', '/api/v1/volumes/'.$id);
+        $project->addVolumeId($id);
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}");
 
         $this->beUser();
-        $response = $this->get('/api/v1/volumes/'.$id);
+        $response = $this->get("/api/v1/volumes/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get('/api/v1/volumes/'.$id);
-        $content = $response->getContent();
-        $response->assertStatus(200);
-        $this->assertStringStartsWith('{', $content);
-        $this->assertStringEndsWith('}', $content);
+        $this->get("/api/v1/volumes/{$id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            // Only include projects to which the user has access.
+            ->assertJsonMissing(['name' => $project->name]);
     }
 
     public function testUpdate()

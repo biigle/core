@@ -75,16 +75,29 @@ class VolumeController extends Controller
      *    "creator_id": 7,
      *    "created_at": "2015-02-20 17:51:03",
      *    "updated_at": "2015-02-20 17:51:03",
-     *    "url": "local://images/"
+     *    "url": "local://images/",
+     *    "projects": [
+     *        {
+     *            "id": 11,
+     *            "name": "Example project",
+     *            "description": "This is an example project"
+     *        }
+     *    ]
      * }
      *
+     * @param Request $request
      * @param  int  $id
      * @return Volume
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
+        $volume->load(['projects' => function ($query) use ($request) {
+            $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                ->where('project_user.user_id', $request->user()->id)
+                ->select('projects.id', 'projects.name', 'projects.description');
+        }]);
 
         return $volume;
     }
