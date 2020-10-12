@@ -3,7 +3,6 @@
 namespace Biigle;
 
 use Biigle\Shape;
-use Biigle\Traits\HasPointsAttribute;
 use Exception;
 
 class VideoAnnotation extends Annotation

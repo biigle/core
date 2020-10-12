@@ -115,6 +115,17 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->validatePoints();
     }
 
+    public function testValidatePointsPolygonFirstLastEqual()
+    {
+        $this->model->shape_id = Shape::polygonId();
+        $this->model->points = [[10, 10, 20, 20, 10, 10]];
+        $this->model->frames = [0.0];
+        $this->model->validatePoints();
+        $this->expectException(Exception::class);
+        $this->model->points = [[10, 10, 20, 20, 30, 30]];
+        $this->model->validatePoints();
+    }
+
     public function testInterpolatePointsPoint()
     {
         $this->model->shape_id = Shape::pointId();
