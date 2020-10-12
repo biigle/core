@@ -18,6 +18,8 @@ class VolumeController extends Controller
      * @apiGroup Volumes
      * @apiName IndexVolumes
      * @apiPermission user
+     * @apiDescription Only projects in which the user is a member are listed for each
+     * volume.
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -42,9 +44,13 @@ class VolumeController extends Controller
      */
     public function index(Request $request)
     {
-        return Volume::accessibleBy($request->user())
-            ->with(['projects' => function ($query) {
-                $query->select('id', 'name', 'description');
+        $user = $request->user();
+
+        return Volume::accessibleBy($user)
+            ->with(['projects' => function ($query) use ($user) {
+                $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                    ->where('project_user.user_id', $user->id)
+                    ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')

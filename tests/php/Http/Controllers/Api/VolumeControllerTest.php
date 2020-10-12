@@ -5,14 +5,18 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
+use Biigle\Tests\ProjectTest;
 use Storage;
 
 class VolumeControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
+        $project = ProjectTest::create();
+
         // Create the volume.
-        $this->volume();
+        $project->addVolumeId($this->volume()->id);
+
         $this->doTestApiRoute('GET', '/api/v1/volumes/');
 
         $this->beUser();
@@ -25,7 +29,8 @@ class VolumeControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
             ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
-            ->assertJsonFragment(['name' => $this->project()->name]);
+            ->assertJsonFragment(['name' => $this->project()->name])
+            ->assertJsonMissing(['name' => $project->name]);
     }
 
     public function testShow()
