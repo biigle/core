@@ -34,4 +34,9 @@ return [
      */
     'generate_annotation_patch_queue' => env('LARGO_GENERATE_ANNOTATION_PATCH_QUEUE', 'default'),
     'remove_annotation_patches_queue' => env('LARGO_REMOVE_ANNOTATION_PATCHES_QUEUE', 'default'),
+
+    /*
+     | Specifies which queue should be used for the job to save a Largo session.
+     */
+    'apply_session_queue' => env('LARGO_APPLY_SESSION_QUEUE', 'high'),
 ];

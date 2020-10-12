@@ -1,80 +1,115 @@
 <?php
 
-namespace Biigle\Modules\Largo\Http\Controllers\Api;
+namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
+use Biigle\Jobs\Job;
 use Biigle\Label;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\User;
+use Biigle\Volume;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class LargoController extends Controller
+class ApplyLargoSession extends Job implements ShouldQueue
 {
+    use InteractsWithQueue;
+
     /**
-     * Validates the input for saving an Largo session.
+     * The queue to push this job to.
      *
-     * @param Request $request
+     * @var string
      */
-    protected function validateLargoInput(Request $request)
+    public $queue;
+
+    /**
+     * Number of times to retry this job.
+     *
+     * @var integer
+     */
+    public $tries = 1;
+
+    /**
+     * The job ID.
+     *
+     * @var string
+     */
+    public $id;
+
+    /**
+     * The user who submitted the Largo session.
+     *
+     * @var \Biigle\User
+     */
+    public $user;
+
+    /**
+     * Array of all dismissed annotation IDs for each label.
+     *
+     * @var array
+     */
+    public $dismissed;
+
+    /**
+     * Array of all changed annotation IDs for each label.
+     *
+     * @var array
+     */
+    public $changed;
+
+    /**
+     * Whether to dismiss labels even if they were created by other users.
+     *
+     * @var bool
+     */
+    public $force;
+
+    /**
+     * Create a new job instance.
+     *
+     * @param string $id
+     * @param \Biigle\User $user
+     * @param array $dismissed
+     * @param array $changed
+     *
+     * @return void
+     */
+    public function __construct($id, User $user, $dismissed, $changed, $force)
     {
-        $this->validate($request, [
-            'dismissed' => 'array',
-            'changed' => 'array',
-            'force' => 'bool',
-        ]);
+        $this->queue = config('largo.apply_session_queue');
+        $this->id = $id;
+        $this->user = $user;
+        $this->dismissed = $dismissed;
+        $this->changed = $changed;
+        $this->force = $force;
     }
 
     /**
-     * Get a list of unique annotation IDs that are either dismissed or changed.
+     * Execute the job.
      *
-     * @param array $dismissed Array of all dismissed annotation IDs for each label
-     * @param array $changed Array of all changed annotation IDs for each label
-     *
-     * @return array
+     * @return void
      */
-    protected function getAffectedAnnotations($dismissed, $changed)
+    public function handle()
     {
-        if (!empty($dismissed)) {
-            $dismissed = array_merge(...$dismissed);
+        try {
+            DB::transaction(function () {
+                [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissed, $this->changed);
+
+                $this->applyDismissedLabels($this->user, $dismissed, $this->force);
+                $this->applyChangedLabels($this->user, $changed);
+                $this->deleteDanglingAnnotations($dismissed, $changed);
+            });
+        } finally {
+            Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
+                $attrs = $volume->attrs;
+                unset($attrs['largo_job_id']);
+                $volume->attrs = $attrs;
+                $volume->save();
+            });
         }
-
-        if (!empty($changed)) {
-            $changed = array_merge(...$changed);
-        }
-
-        return array_values(array_unique(array_merge($dismissed, $changed)));
-    }
-
-    /**
-     * Check if all given annotations belong to the given volumes.
-     *
-     * @param array $annotations ImageAnnotation IDs
-     * @param array $volumes Volume IDs
-     *
-     * @return bool
-     */
-    protected function anotationsBelongToVolumes($annotations, $volumes)
-    {
-        return !ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->whereIn('image_annotations.id', $annotations)
-            ->whereNotIn('images.volume_id', $volumes)
-            ->exists();
-    }
-
-    /**
-     * Returns the IDs of all label trees that must be available to apply the changes.
-     *
-     * @param array $changed Array of all changed annotation IDs for each label
-     *
-     * @return array
-     */
-    protected function getRequiredLabelTrees($changed)
-    {
-        return Label::whereIn('id', array_keys($changed))
-            ->groupBy('label_tree_id')
-            ->pluck('label_tree_id');
     }
 
     /**
@@ -112,25 +147,7 @@ class LargoController extends Controller
             }, $dismissed));
         }
 
-        return compact('dismissed', 'changed');
-    }
-
-    /**
-     * Apply the changes of an Largo session.
-     *
-     * Removes the dismissed annotation labels and creates the changed annotation labels.
-     *
-     * @param \Biigle\User $user
-     * @param array $dismissed Array of all dismissed annotation IDs for each label
-     * @param array $changed Array of all changed annotation IDs for each label
-     * @param bool $force Dismiss labels even if they were created by other users
-     */
-    protected function applySave($user, $dismissed, $changed, $force = false)
-    {
-        $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
-
-        $this->applyDismissedLabels($user, $filtered['dismissed'], $force);
-        $this->applyChangedLabels($user, $filtered['changed']);
+        return [$dismissed, $changed];
     }
 
     /**
@@ -219,5 +236,38 @@ class LargoController extends Controller
         }
 
         ImageAnnotationLabel::insert($newAnnotationLabels);
+    }
+
+    /**
+     * Delete annotations that now have no more labels attached.
+     *
+     * @param array $dismissed [description]
+     * @param array $changed [description]
+     */
+    protected function deleteDanglingAnnotations($dismissed, $changed)
+    {
+        if (!empty($dismissed)) {
+            $dismissed = array_merge(...$dismissed);
+        }
+
+        if (!empty($changed)) {
+            $changed = array_merge(...$changed);
+        }
+
+        $affected = array_values(array_unique(array_merge($dismissed, $changed)));
+
+        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affected)
+            ->whereDoesntHave('labels');
+
+        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->pluck('images.uuid', 'image_annotations.id')
+            ->toArray();
+
+        if (!empty($toDeleteArgs)) {
+            $toDeleteQuery->delete();
+            // The annotation model observer does not fire for this query so we
+            // dispatch the remove patch job manually here.
+            RemoveAnnotationPatches::dispatch($toDeleteArgs);
+        }
     }
 }
