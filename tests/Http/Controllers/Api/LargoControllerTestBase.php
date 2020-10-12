@@ -70,6 +70,19 @@ class LargoControllerTestBase extends ApiTestCase
         $response->assertStatus(422);
     }
 
+    public function testQueue()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $response = $this->post($this->url, [
+            'dismissed' => [
+                $this->label->label_id => [$this->annotation->id],
+            ],
+            'changed' => [],
+        ]);
+        $this->assertEquals('high', $this->dispatchedJobs[0]->queue);
+    }
+
     public function testDismiss()
     {
         $this->expectsJobs(ApplyLargoSession::class);

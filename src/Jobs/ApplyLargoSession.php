@@ -19,6 +19,20 @@ class ApplyLargoSession extends Job implements ShouldQueue
     use InteractsWithQueue;
 
     /**
+     * The queue to push this job to.
+     *
+     * @var string
+     */
+    public $queue;
+
+    /**
+     * Number of times to retry this job.
+     *
+     * @var integer
+     */
+    public $tries = 1;
+
+    /**
      * The job ID.
      *
      * @var string
@@ -65,6 +79,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
      */
     public function __construct($id, User $user, $dismissed, $changed, $force)
     {
+        $this->queue = config('largo.apply_session_queue');
         $this->id = $id;
         $this->user = $user;
         $this->dismissed = $dismissed;
