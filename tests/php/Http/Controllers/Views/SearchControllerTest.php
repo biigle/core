@@ -102,6 +102,10 @@ class SearchControllerTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText('my remote label tree');
 
+        $this->get('search?t=label-trees&q=xyz')
+            ->assertStatus(200)
+            ->assertDontSeeText('my remote label tree');
+
         $user->setSettings(['include_federated_search' => false]);
         $this->get('search?t=label-trees')
             ->assertStatus(200)
@@ -149,6 +153,10 @@ class SearchControllerTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText('my remote project');
 
+        $this->get('search?t=projects&q=xyz')
+            ->assertStatus(200)
+            ->assertDontSeeText('my remote project');
+
         $user->setSettings(['include_federated_search' => false]);
         $this->get('search?t=projects')
             ->assertStatus(200)
@@ -192,6 +200,10 @@ class SearchControllerTest extends TestCase
         $this->get('search?t=volumes')
             ->assertStatus(200)
             ->assertSeeText('my remote volume');
+
+        $this->get('search?t=volumes&q=xyz')
+            ->assertStatus(200)
+            ->assertDontSeeText('my remote volume');
 
         $user->setSettings(['include_federated_search' => false]);
         $this->get('search?t=volumes')
