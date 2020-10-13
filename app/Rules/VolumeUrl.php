@@ -3,6 +3,7 @@
 namespace Biigle\Rules;
 
 use App;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -77,6 +78,10 @@ class VolumeUrl implements Rule
             return true;
         } catch (RequestException $e) {
             $this->message = 'The remote volume URL does not seem to exist. '.$e->getMessage();
+
+            return false;
+        } catch (Exception $e) {
+            $this->message = 'There was an error with the remote volume URL. '.$e->getMessage();
 
             return false;
         }
