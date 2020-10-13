@@ -392,9 +392,7 @@ export default {
         handleVideoInformationResponse(response) {
             let video = response.body;
 
-            if (video.size === null) {
-                throw new VideoNotProcessedError();
-            } else if (video.error === this.errors['not-found']) {
+            if (video.error === this.errors['not-found']) {
                 throw new VideoNotFoundError();
             } else if (video.error === this.errors['mimetype']) {
                 throw new VideoMimeTypeError();
@@ -402,6 +400,8 @@ export default {
                 throw new VideoCodecError();
             } else if (video.error === this.errors['malformed']) {
                 throw new VideoMalformedError();
+            } else if (video.size === null) {
+                throw new VideoNotProcessedError();
             }
 
             this.error = null;
