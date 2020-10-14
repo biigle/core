@@ -67,21 +67,30 @@ class SearchController extends Controller
     {
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
-        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($q) use ($query) {
+                    $q->where('name', 'ilike', "%{$query}%")
+                        ->orWhere('description', 'ilike', "%{$query}%");
+                });
+            });
 
         if ($includeFederatedSearch) {
-            $queryBuilder = $queryBuilder->union(
-                $user->federatedSearchModels()->labelTrees()
-                    ->selectRaw("id, name, description, updated_at, true as external")
-            );
+            $queryBuilder2 = $user->federatedSearchModels()
+                ->labelTrees()
+                ->selectRaw("id, name, description, updated_at, true as external")
+                ->when($query, function ($q) use ($query) {
+                    // The where must be added separately to the second select statement
+                    // of the union. See: https://github.com/laravel/framework/pull/34813
+                    $q->where(function ($q) use ($query) {
+                        $q->where('name', 'ilike', "%{$query}%")
+                            ->orWhere('description', 'ilike', "%{$query}%");
+                    });
+                });
+
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
-        if ($query) {
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('name', 'ilike', "%{$query}%")
-                    ->orWhere('description', 'ilike', "%{$query}%");
-            });
-        }
 
         $values = [];
 
@@ -129,21 +138,30 @@ class SearchController extends Controller
             $queryBuilder = Project::accessibleBy($user);
         }
 
-        $queryBuilder->selectRaw("id, name, description, updated_at, false as external");
+        $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($q) use ($query) {
+                    $q->where('name', 'ilike', "%{$query}%")
+                        ->orWhere('description', 'ilike', "%{$query}%");
+                });
+            });
 
         if ($includeFederatedSearch) {
-            $queryBuilder = $queryBuilder->union(
-                $user->federatedSearchModels()->projects()
-                    ->selectRaw("id, name, description, updated_at, true as external")
-            );
+            $queryBuilder2 = $user->federatedSearchModels()
+                ->projects()
+                ->selectRaw("id, name, description, updated_at, true as external")
+                ->when($query, function ($q) use ($query) {
+                    // The where must be added separately to the second select statement
+                    // of the union. See: https://github.com/laravel/framework/pull/34813
+                    $q->where(function ($q) use ($query) {
+                        $q->where('name', 'ilike', "%{$query}%")
+                            ->orWhere('description', 'ilike', "%{$query}%");
+                    });
+                });
+
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
-        if ($query) {
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('name', 'ilike', "%{$query}%")
-                    ->orWhere('description', 'ilike', "%{$query}%");
-            });
-        }
 
         $values = [];
 
@@ -187,18 +205,28 @@ class SearchController extends Controller
     {
         $queryBuilder = Volume::accessibleBy($user);
 
-        $queryBuilder->selectRaw("id, name, updated_at, false as external");
+        $queryBuilder->selectRaw("id, name, updated_at, false as external")
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($q) use ($query) {
+                    $q->where('name', 'ilike', "%{$query}%");
+                });
+            });
 
         if ($includeFederatedSearch) {
-            $queryBuilder = $queryBuilder->union(
-                $user->federatedSearchModels()->volumes()
-                    ->selectRaw("id, name, updated_at, true as external")
-            );
+            $queryBuilder2 = $user->federatedSearchModels()
+                ->volumes()
+                ->selectRaw("id, name, updated_at, true as external")
+                ->when($query, function ($q) use ($query) {
+                    // The where must be added separately to the second select statement
+                    // of the union. See: https://github.com/laravel/framework/pull/34813
+                    $q->where(function ($q) use ($query) {
+                        $q->where('name', 'ilike', "%{$query}%");
+                    });
+                });
+
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
-        if ($query) {
-            $queryBuilder = $queryBuilder->where('name', 'ilike', "%{$query}%");
-        }
 
         $values = [];
 
@@ -246,13 +274,15 @@ class SearchController extends Controller
                 ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
                 // Use distinct as volumes may be attached to more than one project.
-                ->distinct()
-                ->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id');
+                ->distinct();
         }
 
-        if ($query) {
-            $imageQuery = $imageQuery->where('images.filename', 'ilike', "%{$query}%");
-        }
+        $imageQuery = $imageQuery->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id')
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($q) use ($query) {
+                    $q->where('images.filename', 'ilike', "%{$query}%");
+                });
+            });
 
         $values = [
             'imageResultCount' => $imageQuery->count('images.id'),
@@ -285,15 +315,15 @@ class SearchController extends Controller
                 ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
                 // Use distinct as volumes may be attached to more than one project.
-                ->distinct()
-                ->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id');
+                ->distinct();
         }
 
-        if ($query) {
-            $queryBuilder = $queryBuilder->where(function ($q) use ($query) {
-                $q->where('videos.filename', 'ilike', "%{$query}%");
+        $queryBuilder = $queryBuilder->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id')
+            ->when($query, function ($q) use ($query) {
+                $q->where(function ($q) use ($query) {
+                    $q->where('videos.filename', 'ilike', "%{$query}%");
+                });
             });
-        }
 
         $values = [];
 
