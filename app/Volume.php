@@ -74,7 +74,8 @@ class Volume extends Model
      */
     public static function parseFilesQueryString(string $string)
     {
-        return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
+        // Remove whitespace as well as enclosing '' or "".
+        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), null, PREG_SPLIT_NO_EMPTY);
     }
 
     /**

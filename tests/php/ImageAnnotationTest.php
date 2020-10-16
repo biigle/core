@@ -124,6 +124,14 @@ class ImageAnnotationTest extends ModelTestCase
         $this->model->validatePoints([10]);
     }
 
+    public function testValidatePointsPolygonFirstLastEqual()
+    {
+        $this->model->shape_id = Shape::polygonId();
+        $this->model->validatePoints([10, 10, 20, 20, 10, 10]);
+        $this->expectException(Exception::class);
+        $this->model->validatePoints([10, 10, 20, 20, 30, 30]);
+    }
+
     public function testScopeAllowedBySessionHideOwn()
     {
         $ownUser = UserTest::create();

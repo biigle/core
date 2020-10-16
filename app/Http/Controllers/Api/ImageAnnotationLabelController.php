@@ -14,7 +14,7 @@ class ImageAnnotationLabelController extends Controller
 {
     /**
      * @api {get} annotations/:id/labels Get all labels
-     * @apiDeprecated use now (#ImageAnnotations:IndexImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:IndexImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName IndexAnnotationLabels
      * @apiPermission projectMember
@@ -65,7 +65,6 @@ class ImageAnnotationLabelController extends Controller
      *       },
      *       "user": {
      *          "id": 1,
-     *          "role_id": 2,
      *          "firstname": "Joe",
      *          "lastname": "User"
      *       }
@@ -80,12 +79,19 @@ class ImageAnnotationLabelController extends Controller
         $annotation = ImageAnnotation::findOrFail($id);
         $this->authorize('access', $annotation);
 
-        return $annotation->labels;
+        $load = [
+            // Hide label_source_id and source_id.
+            'label:id,name,parent_id,color,label_tree_id',
+            // Hide role_id.
+            'user:id,firstname,lastname',
+        ];
+
+        return $annotation->labels()->with($load)->get();
     }
 
     /**
      * @api {post} annotations/:id/labels Attach a label
-     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
@@ -190,7 +196,7 @@ class ImageAnnotationLabelController extends Controller
 
     /**
      * @api {put} annotation-labels/:id Update a label
-     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName UpdateAnnotationLabels
      * @apiPermission projectEditor
@@ -232,7 +238,7 @@ class ImageAnnotationLabelController extends Controller
 
     /**
      * @api {delete} annotation-labels/:id Detach a label
-     * @apiDeprecated use now (#ImageAnnotations:DeleteImageAnnotationLabels).)
+     * @apiDeprecated use now (#ImageAnnotations:DeleteImageAnnotationLabels).
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
      * @apiPermission projectEditor

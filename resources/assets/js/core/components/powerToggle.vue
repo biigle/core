@@ -1,6 +1,6 @@
 <template>
     <span class="power-toggle">
-        <button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle">
+        <button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle" :disabled="disabled">
             <i class="fa fa-fw" :class="iconClass"></i>
         </button>
         <span v-if="label" class="power-toggle__label" v-text="label"></span>
@@ -38,6 +38,10 @@ export default {
         icon: {
             type: String,
             default: 'power-off',
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {

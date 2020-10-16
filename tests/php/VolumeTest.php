@@ -130,6 +130,12 @@ class VolumeTest extends ModelTestCase
 
         $return = Volume::parseFilesQueryString(' 1.jpg ');
         $this->assertEquals(['1.jpg'], $return);
+
+        $return = Volume::parseFilesQueryString("'1.jpg', '2.jpg'");
+        $this->assertEquals(['1.jpg', '2.jpg'], $return);
+
+        $return = Volume::parseFilesQueryString('"1.jpg", "2.jpg"');
+        $this->assertEquals(['1.jpg', '2.jpg'], $return);
     }
 
     public function testImagesDeletedEventOnDelete()

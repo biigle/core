@@ -27,7 +27,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     /**
      * The new video that should be processed.
@@ -44,7 +44,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
     protected $ffmpegVideo;
 
     /**
-     * Ignore this job if the volume does not exist any more.
+     * Ignore this job if the video does not exist any more.
      *
      * @var bool
      */

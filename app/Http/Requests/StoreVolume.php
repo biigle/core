@@ -41,7 +41,7 @@ class StoreVolume extends FormRequest
 
         return [
             'name' => 'required|max:512',
-            'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
+            'media_type' => ['filled', Rule::in(array_keys(MediaType::INSTANCES))],
             'url' => ['required', 'max:256', new VolumeUrl],
             'files' => [
                 'required',
@@ -60,7 +60,8 @@ class StoreVolume extends FormRequest
     protected function prepareForValidation()
     {
         // Allow a string as media_type to be more conventient.
-        $type = $this->input('media_type');
+        // Default is image to be backwards compatible with custom import scripts.
+        $type = $this->input('media_type', 'image');
         if (in_array($type, array_keys(MediaType::INSTANCES))) {
             $this->merge(['media_type_id' => MediaType::$type()->id]);
         }

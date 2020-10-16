@@ -87,7 +87,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {get} annotations/:id Get an annotation
-     * @apiDeprecated use now (#ImageAnnotations:ShowAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:ShowImageAnnotation).
      * @apiGroup Annotations
      * @apiName ShowAnnotation
      * @apiParam {Number} id The annotation ID.
@@ -138,7 +138,7 @@ class ImageAnnotationController extends Controller
      * Creates a new annotation in the specified image.
      *
      * @api {post} images/:id/annotations Create a new annotation
-     * @apiGroup Annotations
+     * @apiGroup ImageAnnotations
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by one of
@@ -152,7 +152,7 @@ class ImageAnnotationController extends Controller
      * @apiParam (Required arguments) {Number[]} points Array of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
      * **Rectangle:** The first four points are the vertices of the rectangle (in the given order).
-     * **Polygon:** Like rectangle with one or more vertices.
+     * **Polygon:** Like rectangle with one or more vertices. The first and last vertices of a polygon must have the same coordinates.
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
@@ -232,7 +232,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {put} annotations/:id Update an annotation
-     * @apiDeprecated use now (#ImageAnnotations:UpdateAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:UpdateImageAnnotation).
      * @apiGroup Annotations
      * @apiName UpdateAnnotation
      * @apiPermission projectEditor
@@ -293,7 +293,7 @@ class ImageAnnotationController extends Controller
 
     /**
      * @api {delete} annotations/:id Delete an annotation
-     * @apiDeprecated use now (#ImageAnnotations:DestroyAnnotation).
+     * @apiDeprecated use now (#ImageAnnotations:DestroyImageAnnotation).
      * @apiGroup Annotations
      * @apiName DestroyAnnotation
      * @apiPermission projectEditor

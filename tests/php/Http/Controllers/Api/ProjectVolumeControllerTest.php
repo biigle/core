@@ -258,6 +258,37 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ->assertSuccessful();
     }
 
+    public function testStoreNoMediaTypeAttribute()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'files' => '1.jpg',
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreUnableToParseUri()
+    {
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+        Storage::disk('test')->put('images/2.jpg', 'abc');
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https:///my/images',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+    }
+
     public function testStoreVideos()
     {
         $id = $this->project()->id;

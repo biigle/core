@@ -6,7 +6,7 @@
    <script type="text/javascript">
       biigle.$declare('volumes.url', '{!! old('url') !!}');
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
-      biigle.$declare('volumes.filenames', '{!! $filenames !!}');
+      biigle.$declare('volumes.filenames', '{{ $filenames }}');
       @if ($hasBrowser)
          biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
       @endif

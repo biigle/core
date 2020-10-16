@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Jobs;
 
 use Biigle\Image;
-use Biigle\Jobs\ProcessNewImageChunk;
+use Biigle\Jobs\ProcessNewImage;
 use Biigle\Jobs\TileSingleImage;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
@@ -14,7 +14,7 @@ use Storage;
 use TestCase;
 use VipsImage;
 
-class ProcessNewImageChunkTest extends TestCase
+class ProcessNewImageTest extends TestCase
 {
     public function setUp(): void
     {
@@ -31,7 +31,7 @@ class ProcessNewImageChunkTest extends TestCase
         ]);
         $this->assertFalse($volume->hasGeoInfo());
 
-        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        with(new ProcessNewImageMock($image))->handle();
 
         $image = $image->fresh();
 
@@ -55,7 +55,7 @@ class ProcessNewImageChunkTest extends TestCase
         ]);
         $this->assertFalse($volume->hasGeoInfo());
 
-        $job = new ProcessNewImageChunkMock([$image->id]);
+        $job = new ProcessNewImageMock($image);
         $job->exif = ['DateTimeOriginal' => '0000-00-00 00:00:00'];
         $job->handle();
         $image = $image->fresh();
@@ -72,7 +72,7 @@ class ProcessNewImageChunkTest extends TestCase
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
-        with(new ProcessNewImageChunk([$image->id]))->handle();
+        with(new ProcessNewImage($image))->handle();
 
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
@@ -92,7 +92,7 @@ class ProcessNewImageChunkTest extends TestCase
         Storage::disk('test')->put('files/broken.jpg', '');
         $image = ImageTest::create(['filename' => 'broken.jpg']);
         try {
-            (new ProcessNewImageChunk([$image->id]))->handle();
+            (new ProcessNewImage($image))->handle();
             $this->assertFalse(true);
         } catch (VipsException $e) {
             $this->assertStringContainsString('not a known file format', $e->getMessage());
@@ -109,7 +109,7 @@ class ProcessNewImageChunkTest extends TestCase
         $format = config('thumbnails.format');
         Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
 
-        with(new ProcessNewImageChunk([$image->id]))->handle();
+        with(new ProcessNewImage($image))->handle();
     }
 
     public function testHandleTileSmallImage()
@@ -124,7 +124,7 @@ class ProcessNewImageChunkTest extends TestCase
             ->andReturn(new ImageMock(100, 200));
 
         Queue::fake();
-        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        with(new ProcessNewImageMock($image))->handle();
 
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tiled);
@@ -142,7 +142,7 @@ class ProcessNewImageChunkTest extends TestCase
             ->andReturn(new ImageMock(400, 200));
 
         Queue::fake();
-        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        with(new ProcessNewImageMock($image))->handle();
 
         Queue::assertPushed(TileSingleImage::class, function ($job) use ($image) {
             return $job->image->id === $image->id;
@@ -163,7 +163,7 @@ class ProcessNewImageChunkTest extends TestCase
         ]);
 
         Queue::fake();
-        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        with(new ProcessNewImageMock($image))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
     }
 
@@ -178,7 +178,7 @@ class ProcessNewImageChunkTest extends TestCase
         Storage::disk('tiles')->put("{$fragment}/ImageProperties.xml", 'test');
 
         Queue::fake();
-        with(new ProcessNewImageChunkMock([$image->id]))->handle();
+        with(new ProcessNewImageMock($image))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tilingInProgress);
     }
@@ -196,7 +196,7 @@ class ImageMock extends \Jcupitt\Vips\Image
     }
 }
 
-class ProcessNewImageChunkMock extends ProcessNewImageChunk
+class ProcessNewImageMock extends ProcessNewImage
 {
     public $exif = false;
     protected function makeThumbnail(Image $image, $path)

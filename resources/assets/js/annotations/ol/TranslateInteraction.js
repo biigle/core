@@ -53,7 +53,7 @@ class Translate extends BaseTranslate {
     }
 
     translate(deltaX, deltaY) {
-        if (this.features && this.features.getLength() > 0) {
+        if (this.lastCoordinate_ === null && this.features && this.features.getLength() > 0) {
             if (!this.translating) {
                 this.dispatchEvent({type: 'translatestart', features: this.features});
                 this.translating = true;

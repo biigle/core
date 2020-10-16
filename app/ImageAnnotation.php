@@ -3,7 +3,6 @@
 namespace Biigle;
 
 use Biigle\Contracts\ImageAnnotation as AnnotationContract;
-use Biigle\Traits\HasPointsAttribute;
 use DB;
 
 /**

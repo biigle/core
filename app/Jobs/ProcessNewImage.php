@@ -15,7 +15,7 @@ use Log;
 use Storage;
 use VipsImage;
 
-class ProcessNewImageChunk extends Job implements ShouldQueue
+class ProcessNewImage extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -24,16 +24,21 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     /**
-     * IDs of the images to generate thumbnails for.
+     * Ignore this job if the image does not exist any more.
      *
-     * Public for testability.
-     *
-     * @var \Illuminate\Support\Collection
+     * @var bool
      */
-    public $ids;
+    protected $deleteWhenMissingModels = true;
+
+    /**
+     * The image to process
+     *
+     * @var Image
+     */
+    public $image;
 
     /**
      * The desired thumbnail width.
@@ -73,13 +78,13 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \Illuminate\Support\Collection $ids IDs oth the images to generate thumbnails for.
+     * @param Image $image The image to generate process.
      *
      * @return void
      */
-    public function __construct($ids)
+    public function __construct(Image $image)
     {
-        $this->ids = $ids;
+        $this->image = $image;
         $this->needsThumbnailCache = [];
         $this->needsMetadataCache = [];
     }
@@ -94,46 +99,39 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         $this->width = config('thumbnails.width');
         $this->height = config('thumbnails.height');
         $this->threshold = config('image.tiles.threshold');
-        $images = Image::with('volume')->whereIn('id', $this->ids)->get();
-        $callback = function ($image, $path) {
-            if (!File::exists($path)) {
-                throw new Exception("File '{$path}' does not exist.");
-            }
 
-            if ($this->needsMetadata($image)) {
-                $this->collectMetadata($image, $path);
-            }
+        try {
+            if ($this->needsProcessing($this->image)) {
+                FileCache::getOnce($this->image, function ($image, $path) {
+                    if (!File::exists($path)) {
+                        throw new Exception("File '{$path}' does not exist.");
+                    }
 
-            // Do this after collection of metadata so the image has width and height
-            // attributes. But do it before generating the thumbnail so the tile image
-            // job can run while the thumbnail is being generated (which can take a
-            // while for huge images).
-            if ($this->shouldBeTiled($image)) {
-                $this->submitTileJob($image);
-            }
+                    if ($this->needsMetadata($image)) {
+                        $this->collectMetadata($image, $path);
+                        $image->volume->flushGeoInfoCache();
+                    }
 
-            if ($this->needsThumbnail($image)) {
-                $this->makeThumbnail($image, $path);
-            }
-        };
+                    // Do this after collection of metadata so the image has width and
+                    // height attributes. But do it before generating the thumbnail so
+                    // the tile image job can run while the thumbnail is being generated
+                    // (which can take a while for huge images).
+                    if ($this->shouldBeTiled($image)) {
+                        $this->submitTileJob($image);
+                    }
 
-        foreach ($images as $image) {
-            try {
-                if ($this->needsProcessing($image)) {
-                    FileCache::getOnce($image, $callback);
-                }
-            } catch (Exception $e) {
-                if (App::runningUnitTests()) {
-                    throw $e;
-                } else {
-                    Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
-                }
+                    if ($this->needsThumbnail($image)) {
+                        $this->makeThumbnail($image, $path);
+                    }
+                });
+            }
+        } catch (Exception $e) {
+            if (App::runningUnitTests()) {
+                throw $e;
+            } else {
+                Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
             }
         }
-
-        $images->pluck('volume')->unique()->each(function ($volume) {
-            $volume->flushGeoInfoCache();
-        });
     }
 
     /**
