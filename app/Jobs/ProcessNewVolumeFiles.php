@@ -62,9 +62,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
             });
 
         if ($this->volume->isImageVolume()) {
-            $query->chunkById(100, function ($images) {
-                ProcessNewImageChunk::dispatch($images->pluck('id'));
-            });
+            $query->eachById([ProcessNewImage::class, 'dispatch']);
         } else {
             $query->eachById([ProcessNewVideo::class, 'dispatch']);
         }

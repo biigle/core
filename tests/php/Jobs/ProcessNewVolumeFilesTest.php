@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\ProcessNewImageChunk;
+use Biigle\Jobs\ProcessNewImage;
 use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
@@ -24,8 +24,12 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume))->handle();
 
-        Queue::assertPushed(ProcessNewImageChunk::class, function ($job) use ($i1, $i2) {
-            return $job->ids[0] === $i1->id && $job->ids[1] === $i2->id;
+        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i1) {
+            return $job->image->id === $i1->id;
+        });
+
+        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i2) {
+            return $job->image->id === $i2->id;
         });
     }
 
@@ -39,8 +43,12 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume, [$i1->id]))->handle();
 
-        Queue::assertPushed(ProcessNewImageChunk::class, function ($job) use ($i1) {
-            return $job->ids[0] === $i1->id && count($job->ids) === 1;
+        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i1) {
+            return $job->image->id === $i1->id;
+        });
+
+        Queue::assertNotPushed(ProcessNewImage::class, function ($job) use ($i2) {
+            return $job->image->id === $i2->id;
         });
     }
 
