@@ -68,15 +68,15 @@ return [
             'block_for' => null,
         ],
 
-        'gpu' => [
-            'driver' => 'remote',
-            // Default queue of the remote host to push jobs to.
-            'queue' => 'default',
-            // The remote queue API endpoint of the remote host.
-            'url' => env('QUEUE_GPU_URL'),
-            // Token to use for authentication on the remote host.
-            'token' => env('QUEUE_GPU_TOKEN'),
-        ],
+        // 'gpu' => [
+        //     'driver' => 'remote',
+        //     // Default queue of the remote host to push jobs to.
+        //     'queue' => 'default',
+        //     // The remote queue API endpoint of the remote host.
+        //     'url' => env('QUEUE_GPU_URL'),
+        //     // Token to use for authentication on the remote host.
+        //     'token' => env('QUEUE_GPU_TOKEN'),
+        // ],
 
     ],
 
