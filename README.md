@@ -38,6 +38,10 @@ Reference publications that you should cite if you use BIIGLE for one of your st
     [Zurowietz, M., Langenkämper, D., Hosking, B., Ruhl, H. A., & Nattkemper, T. W. (2018). MAIA—A machine learning assisted image annotation method for environmental monitoring and exploration.](https://doi.org/10.1371/journal.pone.0207498)
     PloS one, 13(11), e0207498. doi: `10.1371/journal.pone.0207498`
 
+- **UnKnoT**
+    [Zurowietz, M., & Nattkemper, T. W. (2020). Unsupervised Knowledge Transfer for Object Detection in Marine Environmental Monitoring and Exploration.](https://doi.org/10.1109/ACCESS.2020.3014441)
+    IEEE Access, 8, 143558-143568. doi: `10.1109/ACCESS.2020.3014441`
+
 - **Video Object Tracking**
     [Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.](https://doi.org/10.1109/CVPR.2017.515)
     In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: `10.1109/CVPR.2017.515`
