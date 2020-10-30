@@ -59,7 +59,7 @@ class ModulesTest extends TestCase
         });
         Modules::registerControllerMixin('myModule2', 'dashboard', ControllerMixinStub::class.'@call');
 
-        $values = Modules::callControllerMixins('dashboard', ['arg']);
+        $values = Modules::callControllerMixins('dashboard', ['arg' => 1]);
         $this->assertEquals(['callable' => true, 'callableWithAtSign' => true], $values);
     }
 }
