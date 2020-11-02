@@ -20,24 +20,3 @@
         z-index: 0;
     }
 }
-
-.annotation-clip--whole-frame {
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.3) 2px,
-        rgba(0, 0, 0, 0.3) 4px
-    );
-    background-size: 100% 200%;
-
-    &.annotation-clip--dark {
-        background: repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 2px,
-            rgba(255, 255, 255, 0.3) 2px,
-            rgba(255, 255, 255, 0.3) 4px
-        );
-    }
-}

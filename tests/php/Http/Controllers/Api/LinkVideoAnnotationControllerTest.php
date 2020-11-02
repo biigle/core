@@ -286,4 +286,31 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // This is the same than overlapping times of an annotation clip.
             ->assertStatus(422);
     }
+
+    public function testStoreWholeFrame()
+    {
+        $a1 = VideoAnnotationTest::create([
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [],
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $this->video->id,
+            'frames' => [2.0],
+            'points' => [],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(200);
+
+        $a1->refresh();
+        $this->assertEquals([1.0, null, 2.0], $a1->frames);
+        $this->assertEquals([], $a1->points);
+    }
 }

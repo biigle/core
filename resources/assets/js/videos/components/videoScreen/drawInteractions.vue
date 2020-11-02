@@ -132,8 +132,8 @@ export default {
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
-                    if (this.isDrawingWholeFrame) {
-                        this.extendWholeFrameAnnotation();
+                    if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
+                        this.pendingAnnotation.frames.push(this.video.currentTime);
                     }
                     this.$emit('create-annotation', this.pendingAnnotation);
                 }
@@ -174,11 +174,6 @@ export default {
                 });
             }
         },
-        extendWholeFrameAnnotation() {
-            if (!this.pendingAnnotation.frames.includes(this.video.currentTime)) {
-                this.pendingAnnotation.frames.push(this.video.currentTime);
-            }
-        },
     },
     created() {
         this.$once('map-ready', this.initPendingAnnotationLayer);
@@ -190,6 +185,7 @@ export default {
             Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
             Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
+            Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
             Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
         }
     },

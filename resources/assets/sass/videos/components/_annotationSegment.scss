@@ -32,3 +32,28 @@
     border-top: 3px dotted transparent;
     z-index: -1;
 }
+
+.annotation-clip--whole-frame {
+    .annotation-segment {
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.3) 2px,
+            rgba(0, 0, 0, 0.3) 4px
+        );
+        background-size: 100% 200%;
+    }
+
+    &.annotation-clip--dark {
+        .annotation-segment {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.3) 2px,
+                rgba(255, 255, 255, 0.3) 4px
+            );
+        }
+    }
+}

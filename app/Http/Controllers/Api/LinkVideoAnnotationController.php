@@ -86,7 +86,10 @@ class LinkVideoAnnotationController extends Controller
         } else {
             // Add a gap if the annotations do not touch.
             $first->frames = array_merge($firstFrames, [null], $secondFrames);
-            $first->points = array_merge($firstPoints, [[]], $secondPoints);
+            if (!empty($firstPoints)) {
+                // Don't do this for whole frame annotations without points.
+                $first->points = array_merge($firstPoints, [[]], $secondPoints);
+            }
         }
 
         DB::transaction(function () use ($first, $second) {

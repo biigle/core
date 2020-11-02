@@ -23,7 +23,7 @@ export default {
     },
     computed: {
         cannotSplitAnnotation() {
-            let allowedShapes = ['Point', 'Circle', 'Rectangle'];
+            let allowedShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
 
             return this.selectedAnnotations.length !== 1 ||
                 allowedShapes.indexOf(this.selectedAnnotations[0].shape) === -1;

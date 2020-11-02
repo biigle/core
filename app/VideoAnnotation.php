@@ -172,6 +172,8 @@ class VideoAnnotation extends Annotation
             case Shape::lineId():
             case Shape::polygonId():
                 throw new Exception('Interpolation of line strings or polygons is not implemented.');
+            case Shape::wholeFrameId():
+                throw new Exception('Whole frame annotations cannot be interpolated.');
             default:
                 return $this->interpolateNaive($points1, $points2, $progress);
         }

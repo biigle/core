@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\SplitVideoAnnotation;
+use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use DB;
@@ -17,7 +18,7 @@ class SplitVideoAnnotationController extends Controller
      * @apiGroup VideoAnnotations
      * @apiName SplitVideoAnnotation
      * @apiPermission projectEditor
-     * @apiDescription Only point, rectangle and circle annotations can be split.
+     * @apiDescription Only point, rectangle, circle and whole frame annotations can be split.
      * Returns an array with the updated old annotation as first element and the split
      * new annotation as the second element.
      *
@@ -116,11 +117,14 @@ class SplitVideoAnnotationController extends Controller
                 array_unshift($newFrames, $time);
                 array_unshift($newPoints, $oldPoints[$i]);
             } else {
-                $middlePoint = $oldAnnotation->interpolatePoints($time);
+                // Disable interpolation for whole frame annotations without points.
+                if (!empty($oldPoints)) {
+                    $middlePoint = $oldAnnotation->interpolatePoints($time);
+                    array_push($oldPoints, $middlePoint);
+                    array_unshift($newPoints, $middlePoint);
+                }
                 array_push($oldFrames, $time);
-                array_push($oldPoints, $middlePoint);
                 array_unshift($newFrames, $time);
-                array_unshift($newPoints, $middlePoint);
             }
         }
 

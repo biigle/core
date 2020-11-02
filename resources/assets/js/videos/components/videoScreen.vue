@@ -159,12 +159,6 @@
                     @click="drawWholeFrame"
                     >
                         <control-button
-                            icon="fa-plus"
-                            title="Extend the whole frame annotation 𝗛"
-                            :disabled="cantFinishDrawAnnotation"
-                            @click="extendWholeFrameAnnotation"
-                            ></control-button>
-                        <control-button
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation"

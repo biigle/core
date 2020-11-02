@@ -450,6 +450,25 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testUpdateWholeFrameAnnotation()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [],
+        ]);
+
+        $this->beAdmin();
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'frames' => [1.0, 10.0],
+            ])
+            ->assertStatus(200);
+
+        $annotation = $annotation->fresh();
+        $this->assertEquals([1.0, 10.0], $annotation->frames);
+    }
+
     public function testDestroy()
     {
         $annotation = VideoAnnotationTest::create([
