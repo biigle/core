@@ -61,6 +61,9 @@ export default Vue.extend({
         isClip() {
             return this.frames.length > 1;
         },
+        wholeFrame() {
+            return this.shape === 'WholeFrame';
+        },
     },
     methods: {
         startPollTracking() {

@@ -106,7 +106,8 @@ export default {
                 'annotation-clip--compact': this.shouldBeCompact,
                 'annotation-clip--more-compact': this.shouldBeMoreCompact,
                 'annotation-clip--tracking': this.annotation.tracking,
-                'annotation-clip--dark': this.annotation.tracking && this.hasDarkColor,
+                'annotation-clip--whole-frame': this.annotation.wholeFrame,
+                'annotation-clip--dark': this.annotation.wholeFrame && this.hasDarkColor,
             };
         },
         minTimeBetweenFrames() {
