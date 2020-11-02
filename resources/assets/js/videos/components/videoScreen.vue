@@ -31,12 +31,6 @@
                     :disabled="hasError"
                     @click="play"
                     ></control-button>
-                <!-- <control-button
-                    v-if="canAdd"
-                    icon="fa-bookmark"
-                    title="Create a bookmark 𝗕"
-                    @click="emitCreateBookmark"
-                    ></control-button> -->
                 <control-button
                     v-if="showPrevNext"
                     icon="fa-step-forward"
@@ -415,9 +409,6 @@ export default {
             map.addInteraction(this.selectInteraction);
         },
 
-        emitCreateBookmark() {
-            this.$emit('create-bookmark', this.video.currentTime);
-        },
         resetInteractionMode() {
             this.interactionMode = 'default';
         },
@@ -503,10 +494,6 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-
-        // if (this.canAdd) {
-        //     Keyboard.on('b', this.emitCreateBookmark);
-        // }
     },
     mounted() {
         this.map.setTarget(this.$el);

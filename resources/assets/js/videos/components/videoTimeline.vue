@@ -19,7 +19,6 @@
             :tracks="annotationTracks"
             :duration="duration"
             :current-time="currentTime"
-            :bookmarks="bookmarks"
             :seeking="seeking"
             @seek="emitSeek"
             @select="emitSelect"
@@ -51,12 +50,6 @@ export default {
         video: {
             type: HTMLVideoElement,
             required: true,
-        },
-        bookmarks: {
-            type: Array,
-            default() {
-                return [];
-            },
         },
         seeking: {
             type: Boolean,

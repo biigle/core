@@ -23,7 +23,6 @@
       :height-offset="screenHeightOffset"
       :show-prev-next="hasSiblingVideos"
       :has-error="hasError"
-      v-on:create-bookmark="createBookmark"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"
@@ -40,7 +39,6 @@
 <video-timeline
       ref="videoTimeline"
       :annotations="filteredAnnotations"
-      :bookmarks="bookmarks"
       :video="video"
       :seeking="seeking"
       :height-offset="timelineHeightOffset"

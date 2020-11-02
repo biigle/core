@@ -50,7 +50,6 @@ export default {
             video: null,
             labelTrees: [],
             selectedLabel: null,
-            bookmarks: [],
             annotations: [],
             seeking: false,
             settings: {
@@ -199,15 +198,6 @@ export default {
                 this.selectedAnnotations.forEach(function (annotation) {
                     annotation.selected = false;
                 });
-            }
-        },
-        createBookmark(time) {
-            let hasBookmark = this.bookmarks.reduce(function (has, b) {
-                return has || b.time === time;
-            }, false);
-
-            if (!hasBookmark) {
-                this.bookmarks.push({time: time});
             }
         },
         createAnnotation(pendingAnnotation) {
@@ -459,7 +449,6 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         reset() {
-            this.bookmarks = [];
             this.annotations = [];
             this.seeking = false;
             this.initialCurrentTime = 0;
