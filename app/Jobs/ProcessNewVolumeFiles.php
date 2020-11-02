@@ -56,7 +56,6 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
     public function handle()
     {
         $query = $this->volume->files()
-            ->select('id')
             ->when($this->only, function ($query) {
                 return $query->whereIn('id', $this->only);
             });

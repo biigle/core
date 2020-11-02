@@ -85,6 +85,17 @@ class ProcessNewVideoTest extends TestCase
         $job->handle();
         $this->assertEquals(Video::ERROR_CODEC, $video->fresh()->error);
     }
+
+    public function testHandleRemoveErrorOnSuccess()
+    {
+        $video = VideoTest::create([
+            'filename' => 'test.mp4',
+            'attrs' => ['error' => Video::ERROR_NOT_FOUND],
+        ]);
+        $job = new ProcessNewVideoStub($video);
+        $job->handle();
+        $this->assertNull($video->fresh()->error);
+    }
 }
 
 class ProcessNewVideoStub extends ProcessNewVideo

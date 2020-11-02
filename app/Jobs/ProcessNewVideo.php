@@ -112,6 +112,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
         $this->video->size = File::size($path);
         $this->video->duration = $this->getVideoDuration($path);
+        if ($this->video->error) {
+            $this->video->error = null;
+        }
         $this->video->save();
 
         $times = $this->getThumbnailTimes($this->video->duration);
