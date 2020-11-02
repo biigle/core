@@ -368,6 +368,46 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreWholeFrameAnnotation()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[0, 0], [1, 1]],
+                'frames' => [0.0, 1.5],
+            ])
+            // Points must be empty.
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'frames' => [0.0, 1.5],
+            ])
+            ->assertStatus(201);
+
+        $annotation = $this->video->annotations()->first();
+        $this->assertNotNull($annotation);
+        $this->assertEquals([], $annotation->points);
+        $this->assertEquals([0.0, 1.5], $annotation->frames);
+        $this->assertEquals(1, $annotation->labels()->count());
+    }
+
+    public function testStoreAndTrackWholeFrameAnnotation()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11, 12, 13, 14, 15]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            // Whole frame anotations cannot be tracked.
+            ->assertStatus(422);
+    }
+
     public function testUpdate()
     {
         $annotation = VideoAnnotationTest::create([

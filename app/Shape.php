@@ -24,6 +24,7 @@ class Shape extends Model
         'circle' => 'Circle',
         'rectangle' => 'Rectangle',
         'ellipse' => 'Ellipse',
+        'wholeFrame' => 'WholeFrame',
     ];
 
     /**

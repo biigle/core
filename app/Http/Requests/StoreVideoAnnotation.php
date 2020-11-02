@@ -37,7 +37,10 @@ class StoreVideoAnnotation extends FormRequest
         return [
             'label_id' => 'required|id|exists:labels,id',
             'shape_id' => 'required|id|exists:shapes,id',
-            'points' => 'required|array',
+            'points' => [
+                'required_unless:shape_id,'.Shape::wholeFrameId(),
+                'array',
+            ],
             'frames' => 'required|array',
             'track' => 'filled|boolean',
         ];

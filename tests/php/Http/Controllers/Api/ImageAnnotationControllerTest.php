@@ -284,6 +284,17 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
     }
 
+    public function testStoreDenyWholeFrameShape()
+    {
+        $this->beEditor();
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::wholeFrameId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [1],
+        ])->assertStatus(422);
+    }
+
     public function testUpdate()
     {
         $this->update('api/v1/image-annotations');
