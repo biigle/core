@@ -74,6 +74,12 @@ class StoreVideoAnnotation extends FormRequest
                 }
             });
         }
+
+        $validator->after(function ($validator) {
+            if ($this->input('shape_id') === Shape::wholeFrameId() && count($this->input('frames', [])) !== 2) {
+                $validator->errors()->add('frames', 'A new whole frame annotation must have exactly two frames.');
+            }
+        });
     }
 
     /**

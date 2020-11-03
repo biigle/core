@@ -383,6 +383,15 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
+                'points' => [],
+                'frames' => [0.0, 1.5, 3.0],
+            ])
+            // Only two frames for a new whole frame annotation.
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
                 'frames' => [0.0, 1.5],
             ])
             ->assertStatus(201);
@@ -461,12 +470,12 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->putJson("api/v1/video-annotations/{$annotation->id}", [
-                'frames' => [1.0, 10.0],
+                'frames' => [1.0, 2.0, null, 3.0, 4.0],
             ])
             ->assertStatus(200);
 
         $annotation = $annotation->fresh();
-        $this->assertEquals([1.0, 10.0], $annotation->frames);
+        $this->assertEquals([1.0, 2.0, null, 3.0, 4.0], $annotation->frames);
     }
 
     public function testDestroy()
