@@ -12,13 +12,6 @@
 
     }
 
-    // The last keyframe be aligned with the end of the annotation clip.
-    &:last-child:not(:only-child) {
-        .annotation-keyframe {
-            transform: translateX(-100%);
-        }
-    }
-
     .annotation-keyframe--selected {
         border: 2px solid white;
         background-color: #ff5e00 !important;
