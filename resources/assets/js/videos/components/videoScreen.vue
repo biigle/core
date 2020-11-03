@@ -150,7 +150,7 @@
                             ></control-button>
                 </control-button>
                 <control-button
-                    icon="fa-image"
+                    icon="icon-wholeframe"
                     title="Start a whole frame annotation 𝗛"
                     :hover="false"
                     :open="isDrawingWholeFrame"
