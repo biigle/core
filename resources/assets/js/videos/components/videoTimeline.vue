@@ -59,6 +59,12 @@ export default {
             type: Number,
             default: 0,
         },
+        pendingAnnotation: {
+            type: Object,
+            default() {
+                return null;
+            },
+        },
     },
     data() {
         return {
@@ -75,7 +81,14 @@ export default {
     computed: {
         labelMap() {
             let map = {};
-            this.annotations.forEach(function (annotation) {
+            let annotations = this.annotations;
+
+            if (this.pendingAnnotation) {
+                annotations = annotations.slice();
+                annotations.push(this.pendingAnnotation);
+            }
+
+            annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
                         map[label.label_id] = label.label;
@@ -87,7 +100,14 @@ export default {
         },
         annotationTracks() {
             let map = {};
-            this.annotations.forEach(function (annotation) {
+            let annotations = this.annotations;
+
+            if (this.pendingAnnotation) {
+                annotations = annotations.slice();
+                annotations.push(this.pendingAnnotation);
+            }
+
+            annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
                         map[label.label_id] = [];

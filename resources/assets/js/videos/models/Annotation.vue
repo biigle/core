@@ -24,6 +24,7 @@ export default Vue.extend({
             selected: false,
             revision: 1,
             tracking: false,
+            pending: false,
         };
     },
     computed: {

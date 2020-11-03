@@ -118,6 +118,7 @@ export default {
 
                 if (this.isDrawingWholeFrame) {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
+                    this.$emit('pending-annotation', this.pendingAnnotation);
                 } else {
                     this.drawInteraction = new DrawInteraction({
                         source: this.pendingAnnotationSource,
@@ -155,6 +156,7 @@ export default {
                 frames: [],
                 points: [],
             };
+            this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
@@ -173,6 +175,8 @@ export default {
                     this.removeFeature(e.feature);
                 });
             }
+
+            this.$emit('pending-annotation', this.pendingAnnotation);
         },
     },
     created() {

@@ -11,12 +11,6 @@
         left: 0;
 
     }
-
-    .annotation-keyframe--selected {
-        border: 2px solid white;
-        background-color: #ff5e00 !important;
-        z-index: 1;
-    }
 }
 
 .annotation-segment--gap {
@@ -32,8 +26,8 @@
             45deg,
             transparent,
             transparent 2px,
-            rgba(0, 0, 0, 0.3) 2px,
-            rgba(0, 0, 0, 0.3) 4px
+            rgba(0, 0, 0, 0.2) 2px,
+            rgba(0, 0, 0, 0.2) 4px
         );
         background-size: 100% 200%;
     }
@@ -44,8 +38,8 @@
                 45deg,
                 transparent,
                 transparent 2px,
-                rgba(255, 255, 255, 0.3) 2px,
-                rgba(255, 255, 255, 0.3) 4px
+                rgba(255, 255, 255, 0.2) 2px,
+                rgba(255, 255, 255, 0.2) 4px
             );
         }
     }
