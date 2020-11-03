@@ -330,10 +330,15 @@ export default {
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
+            let reverseShapes = {};
+            for (let name in this.shapes) {
+                reverseShapes[this.shapes[name]] = name;
+            }
+
             this.annotationFilters = [
                 new LabelAnnotationFilter({data: {annotations: this.annotations}}),
                 new UserAnnotationFilter({data: {annotations: this.annotations}}),
-                new ShapeAnnotationFilter({data: {shapes: this.shapes}}),
+                new ShapeAnnotationFilter({data: {shapes: reverseShapes}}),
             ];
         },
         updateAnnotationFilters() {
