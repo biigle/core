@@ -1,19 +1,5 @@
 <div class="clearfix" id="projects-title">
     <span class="pull-right project-buttons">
-        <span v-if="!editing">
-            @if (config('biigle.project_overview_v2_feedback'))
-                <a href="mailto:{{config('biigle.admin_email')}}?subject=Feedback%20for%20the%20new%20project%20overview&body=[please%20tell%20us%20what%20you%20think%20about%20the%20new%20project%20overview]" class="btn btn-info" title="Give feedback on the new project overview"><i class="fa fa-heart"></i> Give Feedback</a>
-            @endif
-            <form class="inline-block-form" method="POST" action="{{ url('api/v1/users/my/settings') }}">
-                <input type="hidden" name="project_overview_v1" value="1">
-                <input type="hidden" name="_redirect" value="{{route('project', $project->id)}}">
-                <input type="hidden" name="_method" value="PUT">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <div class="form-group">
-                    <button type="submit" class="btn btn-default" title="Switch to the old layout of the project overview">Old layout</button>
-                </div>
-            </form>
-        </span>
         @can('update', $project)
             <span v-if="editing" v-cloak>
                 <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
