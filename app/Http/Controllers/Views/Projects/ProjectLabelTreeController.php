@@ -20,14 +20,6 @@ class ProjectLabelTreeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if (!config('biigle.project_overview_v2_preview')) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        if ($request->user()->getSettings('project_overview_v1', false)) {
-            return redirect()->route('project', $id);
-        }
-
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 

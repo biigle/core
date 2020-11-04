@@ -10,12 +10,6 @@ use TestCase;
 
 class ProjectUserControllerTest extends TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-        config(['biigle.project_overview_v2_preview' => true]);
-    }
-
     public function testShow()
     {
         $project = ProjectTest::create();
@@ -31,20 +25,7 @@ class ProjectUserControllerTest extends TestCase
         Cache::flush();
         $this->get("projects/{$id}/members")->assertStatus(200);
 
-        config(['biigle.project_overview_v2_preview' => false]);
-
-        $this->get("projects/{$id}/members")->assertStatus(404);
-
-        // diesn't exist
+        // doesn't exist
         $this->get('projects/-1/members')->assertStatus(404);
-    }
-
-    public function testShowV1()
-    {
-        $project = ProjectTest::create();
-        $id = $project->id;
-        $project->creator->setSettings(['project_overview_v1' => true]);
-        $this->be($project->creator);
-        $this->get("projects/{$id}/members")->assertRedirect("projects/{$id}");
     }
 }

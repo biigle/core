@@ -38,16 +38,6 @@ return [
     */
     'user_registration_confirmation' => env('BIIGLE_USER_REGISTRATION_CONFIRMATION', false),
 
-    /*
-    | Enable the project overview v2 preview.
-    */
-    'project_overview_v2_preview' => env('BIIGLE_PROJECT_OVERVIEW_V2_PREVIEW', false),
-
-    /*
-    | Enable the project overview v2 feedback button.
-    */
-    'project_overview_v2_feedback' => env('BIIGLE_PROJECT_OVERVIEW_V2_FEEDBACK', false),
-
     'federated_search' => [
 
         /*

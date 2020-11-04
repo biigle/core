@@ -8,5 +8,5 @@
     <li role="presentation" @if ($activeTab === 'members') class="active" @endif>
         <a href="{{route('project-members', $project->id)}}" title="Show the members of the project"><i class="fa fa-users"></i> Members <span class="badge" id="project-members-count">{{readable_number($project->users()->count())}}</span></a>
     </li>
-    @mixin('projectsShowV2Tabs')
+    @mixin('projectsShowTabs')
 </ul>
