@@ -50,7 +50,6 @@ class ReportsServiceProvider extends ServiceProvider
 
         $modules->register('reports', [
             'viewMixins' => [
-                'projectsShowToolbar',
                 'annotationsSettingsTab',
                 'annotationsScripts',
                 'manualTutorial',
@@ -58,7 +57,7 @@ class ReportsServiceProvider extends ServiceProvider
                 'annotationsManualSidebarSettings',
                 'searchTab',
                 'searchTabContent',
-                'projectsShowV2Tabs',
+                'projectsShowTabs',
             ],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',

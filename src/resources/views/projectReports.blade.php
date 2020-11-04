@@ -1,4 +1,4 @@
-@extends('app')
+@extends('projects.show.base')
 
 @section('title', "Reports for {$project->name}")
 
@@ -15,21 +15,14 @@
 <link href="{{ cachebust_asset('vendor/reports/styles/main.css') }}" rel="stylesheet">
 @endpush
 
-@section('navbar')
-<div class="navbar-text navbar-volumes-breadcrumbs">
-    <a href="{{route('project', $project->id)}}" class="navbar-link" title="Show project {{$project->name}}">{{$project->name}}</a> / <strong>Reports</strong>
-</div>
-@endsection
-
-@section('content')
+@section('project-content')
 <div id="project-report-form" class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <h2>Request report for {{$project->name}}</h2>
-            <p>
-                Request a project report to consolidate data of image or video volumes of the project into downloadable files.
-            </p>
-            <form v-on:submit.prevent="submit">
+    <p>
+        Request a project report to consolidate data of image or video volumes of the project into downloadable files.
+    </p>
+    <form v-on:submit.prevent="submit">
+        <div class="row">
+            <div class="col-xs-6">
                 <div class="form-group">
                     <label>Report type</label>
                     @if ($hasImageVolume)
@@ -64,6 +57,14 @@
                     </select>
                     @include('reports::partials.reportTypeInfo')
                 </div>
+                <div class="alert alert-success" v-if="success" v-cloak>
+                    The requested report will be prepared. You will get notified when it is ready.
+                </div>
+                <div class="form-group clearfix">
+                    <button class="btn btn-success pull-right" type="submit" :disabled="loading">Request this report</button>
+                </div>
+            </div>
+            <div class="col-xs-6">
                 <div v-if="wantsType('ImageAnnotations')" v-cloak>
                     <div class="form-group" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
@@ -117,15 +118,8 @@
                     </div>
                 </div>
                 @include('reports::partials.restrictLabels')
-                <div class="alert alert-success" v-if="success" v-cloak>
-                    The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="alert-link">go back</a> to the project.
-                </div>
-                <div class="form-group">
-                    <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="btn btn-default">back</a>
-                    <button class="btn btn-success pull-right" type="submit" :disabled="loading">Request this report</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 @endsection
