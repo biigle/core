@@ -86,6 +86,21 @@ class ProcessNewVideoTest extends TestCase
         $this->assertEquals(Video::ERROR_CODEC, $video->fresh()->error);
     }
 
+    public function testHandleKeepErrorOnError()
+    {
+        $video = VideoTest::create([
+            'filename' => 'abc.mp4',
+            'attrs' => ['error' => Video::ERROR_MALFORMED],
+        ]);
+        $job = new ProcessNewVideoStub($video);
+        try {
+            $job->handle();
+            $this->fail('Expected an exception.');
+        } catch (Exception $e) {
+            $this->assertEquals(Video::ERROR_MALFORMED, $video->fresh()->error);
+        }
+    }
+
     public function testHandleRemoveErrorOnSuccess()
     {
         $video = VideoTest::create([
