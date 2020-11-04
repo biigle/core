@@ -34,15 +34,30 @@
     }
 }
 
-@keyframes keyframe-stripes {
+@keyframes blink {
+    49% {
+        border-color: rgba(255, 0, 0, 1);
+    }
+    50% {
+        border-color: rgba(255, 0, 0, 0);
+    }
+    99% {
+        border-color: rgba(255, 0, 0, 0);
+    }
     100% {
-        background-position: 0 6px;
+        border-color: rgba(255, 0, 0, 1);
     }
 }
 
 .annotation-clip--tracking {
     .annotation-keyframe {
-        animation: .5s linear keyframe-stripes infinite;
+        border: 2px solid rgba(255, 0, 0, 1);
+        animation: 1s blink infinite;
+    }
+}
+
+.annotation-clip--whole-frame {
+    .annotation-keyframe {
         background: repeating-linear-gradient(
             45deg,
             transparent,
@@ -62,7 +77,6 @@
                 rgba(255, 255, 255, 0.3) 2px,
                 rgba(255, 255, 255, 0.3) 4px
             );
-            background-size: 100% 200%;
         }
     }
 }

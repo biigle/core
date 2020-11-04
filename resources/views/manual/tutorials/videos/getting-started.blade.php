@@ -8,7 +8,7 @@
             An introduction to the video annotation tool.
         </p>
         <p>
-            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can create new video annotations as well as modify or delete existing ones. Each video belongs to a project. You can access a video by clicking on its thumbnail in the video volume overview.
+            The video annotation tool can be used to explore videos and their annotations. Project editors, experts or admins can create new video annotations as well as modify or delete existing ones. Each video belongs to a volume. You can access a video by clicking on its thumbnail in the video volume overview.
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/videos/getting_started_1.jpg')}}"><img src="{{asset('assets/images/manual/videos/getting_started_1.jpg')}}" width="75%" style="border: 1px solid #111;"></a>

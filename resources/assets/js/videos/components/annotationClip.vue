@@ -106,7 +106,9 @@ export default {
                 'annotation-clip--compact': this.shouldBeCompact,
                 'annotation-clip--more-compact': this.shouldBeMoreCompact,
                 'annotation-clip--tracking': this.annotation.tracking,
-                'annotation-clip--dark': this.annotation.tracking && this.hasDarkColor,
+                'annotation-clip--whole-frame': this.annotation.wholeFrame,
+                'annotation-clip--dark': this.hasDarkColor,
+                'annotation-clip--pending': this.annotation.pending,
             };
         },
         minTimeBetweenFrames() {
@@ -133,7 +135,15 @@ export default {
             return this.minDistanceBetweenFrames <= 6;
         },
         title() {
-            return this.annotation.tracking ? 'Tracking in progress' : '';
+            if (this.annotation.pending) {
+                return 'Pending annotation';
+            }
+
+            if (this.annotation.tracking) {
+                return 'Tracking in progress';
+            }
+
+            return '';
         },
         hasDarkColor() {
             // see: https://stackoverflow.com/a/12043228/1796523

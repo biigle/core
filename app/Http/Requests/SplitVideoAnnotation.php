@@ -63,6 +63,7 @@ class SplitVideoAnnotation extends FormRequest
                 Shape::pointId(),
                 Shape::rectangleId(),
                 Shape::circleId(),
+                Shape::wholeFrameId(),
             ];
 
             if (!in_array($this->annotation->shape_id, $allowedShapes)) {

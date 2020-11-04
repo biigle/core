@@ -149,7 +149,8 @@ class VideoAnnotationController extends Controller
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
-     * @apiParam (Optional arguments) {Boolean} track Set to true to start automatic object tracking for the new annotation. This can only be done for single frame point annotations. Poll the show video annotation endpoint to see when the object tracking is finished. On success, the annotation gets additional frames. On failure the annotation is deleted.
+     * **WholeFrame:** The points array must be empty for this shape.
+     * @apiParam (Optional arguments) {Boolean} track Set to true to start automatic object tracking for the new annotation. This can only be done for single frame point or circle annotations. Poll the show video annotation endpoint to see when the object tracking is finished. On success, the annotation gets additional frames. On failure the annotation is deleted.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -192,7 +193,7 @@ class VideoAnnotationController extends Controller
     public function store(StoreVideoAnnotation $request)
     {
         // from a JSON request, the array may already be decoded
-        $points = $request->input('points');
+        $points = $request->input('points', []);
 
         if (is_string($points)) {
             $points = json_decode($points);
@@ -201,7 +202,7 @@ class VideoAnnotationController extends Controller
         $annotation = VideoAnnotation::make([
             'video_id' => $request->video->id,
             'shape_id' => $request->input('shape_id'),
-            'points' => $request->input('points'),
+            'points' => $points,
             'frames' => $request->input('frames'),
         ]);
 
@@ -259,7 +260,7 @@ class VideoAnnotationController extends Controller
     public function update(UpdateVideoAnnotation $request)
     {
         // from a JSON request, the array may already be decoded
-        $points = $request->input('points');
+        $points = $request->input('points', []);
 
         if (is_string($points)) {
             $points = json_decode($points);

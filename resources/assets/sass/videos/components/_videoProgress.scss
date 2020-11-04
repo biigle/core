@@ -3,20 +3,6 @@
     overflow: hidden;
     cursor: pointer;
 
-    .bookmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 3px;
-        background-color: $gray-light;
-        transform: translateX(-1px);
-
-        &:hover {
-            background-color: $gray;
-        }
-    }
-
     .tick {
         position: absolute;
         left: 0;

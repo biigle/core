@@ -11,7 +11,6 @@
                 @mousemove="handleUpdateHoverTime"
                 >
                     <video-progress
-                        :bookmarks="bookmarks"
                         :duration="duration"
                         :element-width="elementWidth"
                         @seek="emitSeek"
@@ -61,12 +60,6 @@ export default {
     },
     props: {
         tracks: {
-            type: Array,
-            required() {
-                return [];
-            },
-        },
-        bookmarks: {
             type: Array,
             required() {
                 return [];

@@ -19,7 +19,6 @@
             :tracks="annotationTracks"
             :duration="duration"
             :current-time="currentTime"
-            :bookmarks="bookmarks"
             :seeking="seeking"
             @seek="emitSeek"
             @select="emitSelect"
@@ -52,12 +51,6 @@ export default {
             type: HTMLVideoElement,
             required: true,
         },
-        bookmarks: {
-            type: Array,
-            default() {
-                return [];
-            },
-        },
         seeking: {
             type: Boolean,
             default: false,
@@ -65,6 +58,12 @@ export default {
         heightOffset: {
             type: Number,
             default: 0,
+        },
+        pendingAnnotation: {
+            type: Object,
+            default() {
+                return null;
+            },
         },
     },
     data() {
@@ -82,7 +81,14 @@ export default {
     computed: {
         labelMap() {
             let map = {};
-            this.annotations.forEach(function (annotation) {
+            let annotations = this.annotations;
+
+            if (this.pendingAnnotation) {
+                annotations = annotations.slice();
+                annotations.push(this.pendingAnnotation);
+            }
+
+            annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
                         map[label.label_id] = label.label;
@@ -94,7 +100,14 @@ export default {
         },
         annotationTracks() {
             let map = {};
-            this.annotations.forEach(function (annotation) {
+            let annotations = this.annotations;
+
+            if (this.pendingAnnotation) {
+                annotations = annotations.slice();
+                annotations.push(this.pendingAnnotation);
+            }
+
+            annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (label) {
                     if (!map.hasOwnProperty(label.label_id)) {
                         map[label.label_id] = [];

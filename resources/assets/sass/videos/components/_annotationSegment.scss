@@ -11,19 +11,6 @@
         left: 0;
 
     }
-
-    // The last keyframe be aligned with the end of the annotation clip.
-    &:last-child:not(:only-child) {
-        .annotation-keyframe {
-            transform: translateX(-100%);
-        }
-    }
-
-    .annotation-keyframe--selected {
-        border: 2px solid white;
-        background-color: #ff5e00 !important;
-        z-index: 1;
-    }
 }
 
 .annotation-segment--gap {
@@ -31,4 +18,29 @@
     height: 0px;
     border-top: 3px dotted transparent;
     z-index: -1;
+}
+
+.annotation-clip--whole-frame {
+    .annotation-segment {
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.2) 2px,
+            rgba(0, 0, 0, 0.2) 4px
+        );
+        background-size: 100% 200%;
+    }
+
+    &.annotation-clip--dark {
+        .annotation-segment {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.2) 2px,
+                rgba(255, 255, 255, 0.2) 4px
+            );
+        }
+    }
 }

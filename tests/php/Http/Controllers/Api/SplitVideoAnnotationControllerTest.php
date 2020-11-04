@@ -172,6 +172,25 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreWholeFrame()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [],
+        ]);
+
+        $this->beEditor();
+        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+                'time' => 1.5,
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['frames' => [1.0, 1.5]])
+            ->assertJsonFragment(['points' => []])
+            ->assertJsonFragment(['frames' => [1.5, 2.0]]);
+    }
+
     public function testStorePointAtGap()
     {
         $annotation = VideoAnnotationTest::create([

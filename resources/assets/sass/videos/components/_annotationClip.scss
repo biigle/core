@@ -20,3 +20,16 @@
         z-index: 0;
     }
 }
+
+.annotation-clip--pending {
+    &:after {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        border: 2px dashed white;
+        border-radius: $border-radius-small;
+        pointer-events: none;
+        z-index: 0;
+    }
+}

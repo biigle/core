@@ -24,6 +24,7 @@ export default Vue.extend({
             selected: false,
             revision: 1,
             tracking: false,
+            pending: false,
         };
     },
     computed: {
@@ -60,6 +61,9 @@ export default Vue.extend({
         },
         isClip() {
             return this.frames.length > 1;
+        },
+        wholeFrame() {
+            return this.shape === 'WholeFrame';
         },
     },
     methods: {
