@@ -30,6 +30,10 @@
     &.icon-ellipse {
         background-image: url(/assets/images/annotations/ellipse.svg);
     }
+
+    &.icon-wholeframe {
+        background-image: url(/assets/images/annotations/wholeframe.svg);
+    }
 }
 
 .icon.icon-white, .icon.active {
@@ -56,6 +60,10 @@
     &.icon-ellipse {
         background-image: url(/assets/images/annotations/ellipse_white.svg);
     }
+
+    &.icon-wholeframe {
+        background-image: url(/assets/images/annotations/wholeframe_white.svg);
+    }
 }
 
 .icon.icon-highlight {
@@ -81,5 +89,9 @@
 
     &.icon-ellipse {
         background-image: url(/assets/images/annotations/ellipse_highlight.svg);
+    }
+
+    &.icon-wholeframe {
+        background-image: url(/assets/images/annotations/wholeframe_highlight.svg);
     }
 }

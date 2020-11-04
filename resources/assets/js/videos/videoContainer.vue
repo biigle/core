@@ -50,7 +50,7 @@ export default {
             video: null,
             labelTrees: [],
             selectedLabel: null,
-            bookmarks: [],
+            pendingAnnotation: null,
             annotations: [],
             seeking: false,
             settings: {
@@ -81,6 +81,7 @@ export default {
             currentTimelineOffset: 0,
             errors: {},
             error: null,
+            user: null,
         };
     },
     computed: {
@@ -88,7 +89,7 @@ export default {
             return this.filteredAnnotations.filter((a) => a.isSelected);
         },
         filteredAnnotations() {
-            if (this.activeAnnotationFilter) {
+            if (this.hasActiveAnnotationFilter) {
                 return this.activeAnnotationFilter.filter(this.annotations);
             }
 
@@ -201,24 +202,42 @@ export default {
                 });
             }
         },
-        createBookmark(time) {
-            let hasBookmark = this.bookmarks.reduce(function (has, b) {
-                return has || b.time === time;
-            }, false);
+        updatePendingAnnotation(pendingAnnotation) {
+            if (pendingAnnotation) {
+                let data = Object.assign({}, pendingAnnotation, {
+                    shape_id: this.shapes[pendingAnnotation.shape],
+                    labels: [{
+                        label_id: this.selectedLabel.id,
+                        label: this.selectedLabel,
+                        user: this.user,
+                    }],
+                    pending: true,
+                });
 
-            if (!hasBookmark) {
-                this.bookmarks.push({time: time});
+                this.pendingAnnotation = new Annotation({data});
+            } else {
+                this.pendingAnnotation = null;
             }
         },
         createAnnotation(pendingAnnotation) {
-            let annotation = Object.assign(pendingAnnotation, {
+            this.updatePendingAnnotation(pendingAnnotation);
+            let tmpAnnotation = this.pendingAnnotation;
+            this.annotations.push(tmpAnnotation);
+
+            let annotation = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
                 label_id: this.selectedLabel ? this.selectedLabel.id : 0,
             });
             delete annotation.shape;
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
-                .then(this.addCreatedAnnotation, handleErrorResponse);
+                .then(this.addCreatedAnnotation, handleErrorResponse)
+                .finally(() => {
+                    let index = this.annotations.indexOf(tmpAnnotation);
+                    if (index !== -1) {
+                        this.annotations.splice(index, 1);
+                    }
+                });
         },
         trackAnnotation(pendingAnnotation) {
             pendingAnnotation.track = true;
@@ -340,10 +359,15 @@ export default {
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
+            let reverseShapes = {};
+            for (let name in this.shapes) {
+                reverseShapes[this.shapes[name]] = name;
+            }
+
             this.annotationFilters = [
                 new LabelAnnotationFilter({data: {annotations: this.annotations}}),
                 new UserAnnotationFilter({data: {annotations: this.annotations}}),
-                new ShapeAnnotationFilter({data: {shapes: this.shapes}}),
+                new ShapeAnnotationFilter({data: {shapes: reverseShapes}}),
             ];
         },
         updateAnnotationFilters() {
@@ -459,7 +483,6 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         reset() {
-            this.bookmarks = [];
             this.annotations = [];
             this.seeking = false;
             this.initialCurrentTime = 0;
@@ -512,6 +535,7 @@ export default {
         this.canEdit = biigle.$require('videos.isEditor');
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
+        this.user = biigle.$require('videos.user');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();

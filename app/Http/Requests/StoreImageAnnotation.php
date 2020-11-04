@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Image;
+use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreImageAnnotation extends StoreImageAnnotationLabel
@@ -37,5 +38,20 @@ class StoreImageAnnotation extends StoreImageAnnotationLabel
             'shape_id' => 'required|id|exists:shapes,id',
             'points'   => 'required|array',
         ]);
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('shape_id') === Shape::wholeFrameId()) {
+                $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
+            }
+        });
     }
 }

@@ -61,6 +61,10 @@
                     <td>Select the polygon fill tool</td>
                 </tr>
                 <tr>
+                    <td><kbd>h</kbd></td>
+                    <td>Select the whole frame annotation tool</td>
+                </tr>
+                <tr>
                     <td><kbd>m</kbd></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>

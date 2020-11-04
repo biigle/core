@@ -31,12 +31,6 @@
                     :disabled="hasError"
                     @click="play"
                     ></control-button>
-                <!-- <control-button
-                    v-if="canAdd"
-                    icon="fa-bookmark"
-                    title="Create a bookmark 𝗕"
-                    @click="emitCreateBookmark"
-                    ></control-button> -->
                 <control-button
                     v-if="showPrevNext"
                     icon="fa-step-forward"
@@ -153,6 +147,22 @@
                             title="Modify selected polygons using the fill tool 𝗧"
                             :active="isUsingPolygonFill"
                             @click="togglePolygonFill"
+                            ></control-button>
+                </control-button>
+                <control-button
+                    icon="icon-wholeframe"
+                    title="Start a whole frame annotation 𝗛"
+                    :hover="false"
+                    :open="isDrawingWholeFrame"
+                    :active="isDrawingWholeFrame"
+                    :disabled="hasError"
+                    @click="drawWholeFrame"
+                    >
+                        <control-button
+                            icon="fa-check"
+                            title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
+                            :disabled="cantFinishDrawAnnotation"
+                            @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
             </div>
@@ -415,9 +425,6 @@ export default {
             map.addInteraction(this.selectInteraction);
         },
 
-        emitCreateBookmark() {
-            this.$emit('create-bookmark', this.video.currentTime);
-        },
         resetInteractionMode() {
             this.interactionMode = 'default';
         },
@@ -503,10 +510,6 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-
-        // if (this.canAdd) {
-        //     Keyboard.on('b', this.emitCreateBookmark);
-        // }
     },
     mounted() {
         this.map.setTarget(this.$el);

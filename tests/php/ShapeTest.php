@@ -62,4 +62,10 @@ class ShapeTest extends ModelTestCase
         $this->assertNotNull(Shape::ellipse());
         $this->assertNotNull(Shape::ellipseId());
     }
+
+    public function testWholeFrame()
+    {
+        $this->assertNotNull(Shape::wholeFrame());
+        $this->assertNotNull(Shape::wholeFrameId());
+    }
 }

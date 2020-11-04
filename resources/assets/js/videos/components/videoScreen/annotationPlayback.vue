@@ -29,7 +29,9 @@ export default {
         annotationsPreparedToRender() {
             // Extract start and end times of the annotations as well as sort them so
             // they can be accessed fast during rendering.
-            return this.annotations.map(function (annotation) {
+            return this.annotations
+                .filter(a => a.shape !== 'WholeFrame')
+                .map(function (annotation) {
                     return {
                         id: annotation.id,
                         start: annotation.startFrame,

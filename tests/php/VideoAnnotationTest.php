@@ -169,6 +169,13 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->interpolatePoints(0.5);
     }
 
+    public function testInterpolatePointsWholeFrame()
+    {
+        $this->model->shape_id = Shape::wholeFrameId();
+        $this->expectException(Exception::class);
+        $this->model->interpolatePoints(0.5);
+    }
+
     public function testScopeAllowedBySessionHideOwn()
     {
         $ownUser = UserTest::create();

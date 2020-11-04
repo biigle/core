@@ -3,11 +3,6 @@
         class="video-progress"
         @click="emitSeek"
         >
-            <bookmark v-for="mark in bookmarks"
-                :bookmark="mark"
-                :key="mark.time"
-                @select="emitSelectBookmark"
-                ></bookmark>
             <tick
                 v-for="time in ticks"
                 :key="time"
@@ -17,7 +12,6 @@
 </template>
 
 <script>
-import Bookmark from './videoProgressBookmark';
 import Tick from './videoProgressTick';
 
 export default {
@@ -26,19 +20,12 @@ export default {
             type: Number,
             required: true,
         },
-        bookmarks: {
-            type: Array,
-            default() {
-                return [];
-            },
-        },
         elementWidth: {
             type: Number,
             required: true,
         },
     },
     components: {
-        bookmark: Bookmark,
         tick: Tick,
     },
     data() {
@@ -67,9 +54,6 @@ export default {
     methods: {
         emitSeek(e) {
             this.$emit('seek', (e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.duration);
-        },
-        emitSelectBookmark(bookmark) {
-            this.$emit('seek', bookmark.time);
         },
     },
 };

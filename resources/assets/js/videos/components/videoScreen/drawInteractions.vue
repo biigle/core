@@ -42,7 +42,14 @@ export default {
         isDrawingPolygon() {
             return this.interactionMode === 'drawPolygon';
         },
+        isDrawingWholeFrame() {
+            return this.interactionMode === 'drawWholeFrame';
+        },
         hasPendingAnnotation() {
+            if (this.isDrawingWholeFrame) {
+                return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length === 0;
+            }
+
             return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length > 0;
         },
         cantFinishDrawAnnotation() {
@@ -93,6 +100,9 @@ export default {
         drawPolygon() {
             this.draw('Polygon');
         },
+        drawWholeFrame() {
+            this.draw('WholeFrame');
+        },
         maybeUpdateDrawInteractionMode(mode) {
             this.resetPendingAnnotation();
 
@@ -104,19 +114,28 @@ export default {
             if (this.isDrawing && this.hasSelectedLabel) {
                 let shape = mode.slice(4); // Remove the 'draw' prefix.
                 this.pause();
-                this.drawInteraction = new DrawInteraction({
-                    source: this.pendingAnnotationSource,
-                    type: shape,
-                    style: Styles.editing,
-                });
-                this.drawInteraction.on('drawend', this.extendPendingAnnotation);
-                this.map.addInteraction(this.drawInteraction);
                 this.pendingAnnotation.shape = shape;
+
+                if (this.isDrawingWholeFrame) {
+                    this.pendingAnnotation.frames.push(this.video.currentTime);
+                    this.$emit('pending-annotation', this.pendingAnnotation);
+                } else {
+                    this.drawInteraction = new DrawInteraction({
+                        source: this.pendingAnnotationSource,
+                        type: shape,
+                        style: Styles.editing,
+                    });
+                    this.drawInteraction.on('drawend', this.extendPendingAnnotation);
+                    this.map.addInteraction(this.drawInteraction);
+                }
             }
         },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
+                    if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
+                        this.pendingAnnotation.frames.push(this.video.currentTime);
+                    }
                     this.$emit('create-annotation', this.pendingAnnotation);
                 }
                 this.resetInteractionMode();
@@ -137,6 +156,7 @@ export default {
                 frames: [],
                 points: [],
             };
+            this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
@@ -155,6 +175,8 @@ export default {
                     this.removeFeature(e.feature);
                 });
             }
+
+            this.$emit('pending-annotation', this.pendingAnnotation);
         },
     },
     created() {
@@ -167,6 +189,7 @@ export default {
             Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
             Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
+            Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
             Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
         }
     },

@@ -68,7 +68,7 @@
     biigle.$declare('videos.isEditor', @can('addAnnotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
-    biigle.$declare('videos.userId', {!! $user->id !!});
+    biigle.$declare('videos.user', {!! $user !!});
     biigle.$declare('videos.isAdmin', @can('update', $volume) true @else false @endcan);
 </script>
 @endpush
