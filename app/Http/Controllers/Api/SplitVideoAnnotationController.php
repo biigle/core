@@ -115,9 +115,12 @@ class SplitVideoAnnotationController extends Controller
                 // interpolate a new point in this case, just add the keyframe to the
                 // new annotation.
                 array_unshift($newFrames, $time);
-                array_unshift($newPoints, $oldPoints[$i]);
+                // Exclude whole frame annotations without points.
+                if (!empty($oldPoints)) {
+                    array_unshift($newPoints, $oldPoints[$i]);
+                }
             } else {
-                // Disable interpolation for whole frame annotations without points.
+                // Exclude whole frame annotations without points.
                 if (!empty($oldPoints)) {
                     $middlePoint = $oldAnnotation->interpolatePoints($time);
                     array_push($oldPoints, $middlePoint);
