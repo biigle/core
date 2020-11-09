@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
+use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeUserControllerTest extends ApiTestCase

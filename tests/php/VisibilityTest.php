@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\Visibility;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class VisibilityTest extends ModelTestCase
 {

@@ -2,13 +2,18 @@
 
 namespace Biigle;
 
-use Illuminate\Database\Eloquent\Model;
-
-/**
- * Pivot object for the connection between Images and Labels.
- */
-class ImageLabel extends Model
+class ImageLabel extends VolumeFileLabel
 {
+    /**
+     * The file, this volume file label belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function file()
+    {
+        return $this->image();
+    }
+
     /**
      * The image, this image label belongs to.
      *
@@ -20,23 +25,12 @@ class ImageLabel extends Model
     }
 
     /**
-     * The label, this image label belongs to.
+     * Get the file ID attribute.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return int
      */
-    public function label()
+    public function getFileIdAttribute()
     {
-        return $this->belongsTo(Label::class);
-    }
-
-    /**
-     * The user who created this image label.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class)
-            ->select('id', 'firstname', 'lastname', 'role_id');
+        return $this->image_id;
     }
 }

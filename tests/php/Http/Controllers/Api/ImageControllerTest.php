@@ -2,17 +2,18 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use File;
 use ApiTestCase;
 use Biigle\Image;
-use Biigle\Volume;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Volume;
+use File;
 
 class ImageControllerTest extends ApiTestCase
 {
     private $image;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();
@@ -38,7 +39,7 @@ class ImageControllerTest extends ApiTestCase
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"volume"', $content);
+        $this->assertStringContainsString('"volume"', $content);
     }
 
     public function testShowFile()
@@ -78,35 +79,38 @@ class ImageControllerTest extends ApiTestCase
                 'width' => 123,
                 'height' => 456,
                 'tiled' => true,
+                'tilingInProgress' => false,
             ]);
     }
 
     public function testDestroy()
     {
-        $id = $this->image->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $id = $image->id;
 
         $this->doTestApiRoute('DELETE', "/api/v1/images/{$id}");
 
-        $this->beUser();
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(403);
-
-        $this->beGuest();
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(403);
-
         $this->beEditor();
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(403);
+        $this->delete("/api/v1/images/{$id}")->assertStatus(403);
 
         $this->beAdmin();
-        $response = $this->delete('/api/v1/images/999');
-        $response->assertStatus(404);
+        $this->deleteJson("/api/v1/images/{$id}")->assertStatus(200);
+        $this->assertNull($image->fresh());
+    }
 
-        $this->assertNotNull($this->image->fresh()->volume_id);
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(200);
-        // only the volume ID is set to null so the image is marked for deletion
-        $this->assertNull($this->image->fresh());
+    public function testDestroyForce()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $id = $image->id;
+        $annotation = ImageAnnotationTest::create(['image_id' => $id]);
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/images/{$id}")->assertStatus(422);
+        $this->assertNotNull($image->fresh());
+        $this->assertNotNull($annotation->fresh());
+
+        $this->deleteJson("/api/v1/images/{$id}", ['force' => true])->assertStatus(200);
+        $this->assertNull($image->fresh());
+        $this->assertNull($annotation->fresh());
     }
 }

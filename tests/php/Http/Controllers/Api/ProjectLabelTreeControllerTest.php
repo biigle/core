@@ -3,10 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Project;
 use Biigle\LabelTree;
-use Biigle\Visibility;
+use Biigle\Project;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Visibility;
 
 class ProjectLabelTreeControllerTest extends ApiTestCase
 {
@@ -45,6 +46,9 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
         $authorized->authorizedProjects()->attach($p->id);
         $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $version = LabelTreeVersionTest::create();
+        $public->version_id = $version->id;
+        $public->save();
 
         $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available");
 
@@ -55,21 +59,24 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available");
         $response->assertStatus(200);
-        $response->assertJsonFragment([
+        $response->assertJsonFragment([[
             'id' => $authorized->id,
             'name' => $authorized->name,
             'description' => $authorized->description,
-        ]);
-        $response->assertJsonFragment([
+            'version' => null,
+        ]]);
+        $response->assertJsonFragment([[
             'id' => $public->id,
             'name' => $public->name,
             'description' => $public->description,
-        ]);
-        $response->assertJsonMissing([
+            'version' => $version->toArray(),
+        ]]);
+        $response->assertJsonMissing([[
             'id' => $private->id,
             'name' => $private->name,
             'description' => $private->description,
-        ]);
+            'version' => null,
+        ]]);
     }
 
     public function testStore()

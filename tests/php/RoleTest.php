@@ -3,8 +3,8 @@
 namespace Biigle\Tests;
 
 use Biigle\Role;
-use ModelTestCase;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class RoleTest extends ModelTestCase
 {

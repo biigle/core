@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Jobs;
 
-use File;
-use Storage;
-use Mockery;
-use TestCase;
-use Jcupitt\Vips\Image;
-use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;
+use Biigle\Tests\ImageTest;
+use File;
+use Jcupitt\Vips\Image;
+use Mockery;
+use Storage;
+use TestCase;
 
 class TileSingleImageTest extends TestCase
 {
@@ -22,7 +22,7 @@ class TileSingleImageTest extends TestCase
             ->once()
             ->with($job->tempPath, [
                 'layout' => 'zoomify',
-                'container' => 'zip',
+                'container' => 'fs',
                 'strip' => true,
             ]);
 
@@ -33,17 +33,20 @@ class TileSingleImageTest extends TestCase
 
     public function testUploadToStorage()
     {
+        config(['image.tiles.disk' => 'tiles']);
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
         $job = new TileSingleImageStub($image);
-        File::put($job->tempPath, 'test');
+        File::makeDirectory($job->tempPath);
+        File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
-            Storage::fake('local-tiles');
+            Storage::fake('tiles');
             $job->uploadToStorage();
-            Storage::disk('local-tiles')->assertExists($fragment);
+            Storage::disk('tiles')->assertExists($fragment);
+            Storage::disk('tiles')->assertExists("{$fragment}/test.txt");
         } finally {
-            File::delete($job->tempPath);
+            File::deleteDirectory($job->tempPath);
         }
     }
 }

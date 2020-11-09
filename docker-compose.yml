@@ -3,15 +3,13 @@ version: '2.2'
 services:
   # The application
   app:
-    image: biigle/app:arm32v6
+    image: docker.pkg.github.com/biigle/core/app:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - cache
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
-      args:
-        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
     working_dir: /var/www
     volumes:
       - ./:/var/www
@@ -20,7 +18,7 @@ services:
       - "REDIS_HOST=cache"
 
   worker:
-    image: biigle/worker:arm32v6
+    image: docker.pkg.github.com/biigle/core/worker:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - app
@@ -39,7 +37,7 @@ services:
 
   # The web server
   web:
-    image: biigle/web:arm32v6
+    image: docker.pkg.github.com/biigle/core/web:arm32v6
     depends_on:
       - app
     build:

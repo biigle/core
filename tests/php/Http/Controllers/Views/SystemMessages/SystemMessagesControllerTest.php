@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\SystemMessages;
 
-use TestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\SystemMessageTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
-class SystemMessageControllerTest extends TestCase
+class SystemMessagesControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {

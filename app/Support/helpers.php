@@ -23,7 +23,7 @@ if (!function_exists('readable_number')) {
     /**
      * Shorten a large number to a readable size, e.g. 154222 => 154k.
      *
-     * @param  number  $n
+     * @param  int|float  $n
      * @return string
      */
     function readable_number($n)
@@ -65,14 +65,24 @@ if (!function_exists('thumbnail_url')) {
      * @param  string $uuid
      * @return string
      */
-    function thumbnail_url($uuid = null)
+    function thumbnail_url($uuid = null, $disk = null, $format = null)
     {
-        $path = '';
-
-        if ($uuid) {
-            $path = fragment_uuid_path($uuid).'.'.config('thumbnails.format');
+        if (is_null($format)) {
+            $format = config('thumbnails.format');
         }
 
-        return Storage::disk(config('thumbnails.storage_disk'))->url($path);
+        if (is_null($disk)) {
+            $disk = config('thumbnails.storage_disk');
+        }
+
+        if (is_null($uuid)) {
+            return Storage::disk($disk)->url('');
+        } elseif (strpos($uuid, ':') !== 0) {
+            // If the uuid starts with a : it is a template string and should not be
+            // fragmented.
+            $uuid = fragment_uuid_path($uuid);
+        }
+
+        return Storage::disk($disk)->url("{$uuid}.{$format}");
     }
 }

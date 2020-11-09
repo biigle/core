@@ -9,18 +9,11 @@
                 <li role="presentation"@if(Route::is('admin-users')) class="active" @endif><a href="{{route('admin-users')}}">Users</a></li>
                 <li role="presentation"@if(Route::is('admin-system-messages')) class="active" @endif><a href="{{route('admin-system-messages')}}">System Messages</a></li>
                 @if (config('biigle.admin_logs'))
-                    <?php
-                        // I know this is hacky but it gets the job done.
-                        $logs = File::glob(storage_path('logs').'/*.log');
-                        $yesterday = \Carbon\Carbon::now()->subDay()->toDateString();
-                        $today = \Carbon\Carbon::now()->toDateString();
-                        $errorCount = array_reduce($logs, function ($carry, $file) use ($yesterday, $today) {
-                            $content = File::get($file);
-                            return $carry + substr_count($content, $yesterday) + substr_count($content, $today);
-                        }, 0);
-                    ?>
+                    <?php $errorCount = with(new \Biigle\Logging\LogManager)->getRecentCount() ?>
                     <li role="presentation"@if(Route::is('admin-logs-index')) class="active" @endif><a href="{{route('admin-logs-index')}}">Logs @if ($errorCount > 0 )<span class="badge" title="{{$errorCount}} errors in the last two days">{{$errorCount}}</span>@endif</a></li>
                 @endif
+                <li role="presentation"@if(Request::is('admin/global-label-trees')) class="active" @endif><a href="{{route('admin-global-label-trees')}}">Global Label Trees</a></li>
+                <li role="presentation"@if(Request::is('admin/federated-search')) class="active" @endif><a href="{{route('admin-federated-search')}}">Federated Search</a></li>
                 @mixin('adminMenu')
             </ul>
         </div>

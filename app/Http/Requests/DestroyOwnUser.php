@@ -5,12 +5,14 @@ namespace Biigle\Http\Requests;
 class DestroyOwnUser extends DestroyUser
 {
     /**
-     * Get the user instance to update;
+     * Determine if the user is authorized to make this request.
      *
-     * @return user
+     * @return bool
      */
-    protected function getDestroyUser()
+    public function authorize()
     {
-        return $this->user();
+        $this->destroyUser = $this->user();
+
+        return $this->user()->can('destroy', $this->destroyUser);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\User;
-use Biigle\Role;
 use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabelTreeUser extends FormRequest
@@ -53,8 +53,8 @@ class StoreLabelTreeUser extends FormRequest
         }
 
         return [
-            'id' => 'required|integer|exists:users,id',
-            'role_id' => "required|integer|in:{$roles}",
+            'id' => 'required|id|exists:users,id',
+            'role_id' => "required|id|in:{$roles}",
         ];
     }
 

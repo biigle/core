@@ -1,0 +1,22 @@
+.annotator-tab {
+    > h4 {
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .sidebar-tab__section {
+        &:not(:first-child) {
+            padding-top: 10px;
+        }
+
+        > h5 {
+            margin-top: 0;
+        }
+    }
+}
+
+@import "labels";
+@import "annotation-modes";
+@import "image-labels";
+

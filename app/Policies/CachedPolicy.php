@@ -16,7 +16,7 @@ class CachedPolicy
      *
      * @var int
      */
-    const TIME = 1;
+    const TIME = 60;
 
     /**
      * The cache instance to use for caching policies.

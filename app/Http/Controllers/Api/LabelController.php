@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\UpdateLabel;
 use Biigle\Http\Requests\DestroyLabel;
+use Biigle\Http\Requests\UpdateLabel;
 
 class LabelController extends Controller
 {

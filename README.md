@@ -1,72 +1,55 @@
 # BIIGLE
 
-The Bio-Image Indexing and Graphical Labelling Environment
+[![Test status](https://github.com/biigle/core/workflows/Tests/badge.svg)](https://github.com/biigle/core/actions?query=workflow%3ATests)
 
-## Requirements
+The Bio-Image Indexing and Graphical Labelling Environment (BIIGLE) is a web service for the efficient and rapid annotation of still images and videos. Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="https://biigle.de/manual">the manual</a>.
 
-- [Docker](https://docs.docker.com/install/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+BIIGLE is available at [biigle.de](https://biigle.de).
 
 ## Installation
 
+BIIGLE requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to run.
+
 ### For Production
 
-Run `./build.sh` to build the `biigle/app`, `biigle/web` and `biigle/worker` Docker images.
-
-Now head over to [biigle/distribution](https://github.com/biigle/distribution) to configure and build your production setup.
+Head over to [biigle/distribution](https://github.com/biigle/distribution) to configure and build your production setup.
 
 ### For Development
 
-To develop BIIGLE on your local machine you may use Docker containers, too. This way you don't need to install any of the requirements like Python or special PHP extensions and keep your development environment clearly separated from your regular OS.
+Take a look at [`DEVELOPING.md`](DEVELOPING.md) for a detailed explanation on how to develop BIIGLE.
 
-#### Download the project files
+### Versions
 
-Set up the project in the `biigle` directory (using [Composer](https://getcomposer.org/doc/00-intro.md)):
+Although BIIGLE versions and BIIGLE module versions look like [semantic versioning](https://semver.org/), they are not. Only the most recent versions are compatible with each other. Patch versions are mostly backwards compatible, though.
 
-```
-composer create-project biigle/core:dev-dev-modules --repository='{"type":"vcs","url":"git@github.com:biigle/core.git"}' --keep-vcs --ignore-platform-reqs --prefer-source biigle
-```
+## References
 
-Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
+Reference publications that you should cite if you use BIIGLE for one of your studies.
 
-This will set up the project in the `dev-modules` branch of this repository. The `dev-modules` branch is configured with all BIIGLE modules which makes it easy to start module development. However, changes to the BIIGLE core should be done only in the `master` branch and then merged back into `dev-modules`.
+- **BIIGLE 2.0**
+    [Langenkämper, D., Zurowietz, M., Schoening, T., & Nattkemper, T. W. (2017). Biigle 2.0-browsing and annotating large marine image collections.](https://doi.org/10.3389/fmars.2017.00083)
+    Frontiers in Marine Science, 4, 83. doi: `10.3389/fmars.2017.00083`
 
-#### Build and run the application
+- **Laser Point Detection**
+    [Schoening, T., Kuhn, T., Bergmann, M., & Nattkemper, T. W. (2015). DELPHI—fast and adaptive computational laser point detection and visual footprint quantification for arbitrary underwater image collections.](https://doi.org/10.3389/fmars.2015.00020)
+    Frontiers in Marine Science, 2, 20. doi: `10.3389/fmars.2015.00020`
 
-Now you have to configure `GITHUB_OAUTH_TOKEN` in the `.env` file with a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) of GitHub (with authorization for the **repo** scope).
+- **MAIA**
+    [Zurowietz, M., Langenkämper, D., Hosking, B., Ruhl, H. A., & Nattkemper, T. W. (2018). MAIA—A machine learning assisted image annotation method for environmental monitoring and exploration.](https://doi.org/10.1371/journal.pone.0207498)
+    PloS one, 13(11), e0207498. doi: `10.1371/journal.pone.0207498`
 
-This allows you to build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
+- **UnKnoT**
+    [Zurowietz, M., & Nattkemper, T. W. (2020). Unsupervised Knowledge Transfer for Object Detection in Marine Environmental Monitoring and Exploration.](https://doi.org/10.1109/ACCESS.2020.3014441)
+    IEEE Access, 8, 143558-143568. doi: `10.1109/ACCESS.2020.3014441`
 
-#### Initialize the application
+- **Video Object Tracking**
+    [Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.](https://doi.org/10.1109/CVPR.2017.515)
+    In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: `10.1109/CVPR.2017.515`
 
-Before you can start using or developing BIIGLE, you need to perform a few initialization steps:
+## Contributions and bug reports
 
-1. Apply the database migrations: `docker-compose exec app php artisan migrate`
+Contributions to BIIGLE are always welcome. Check out [`CONTRIBUTING.md`](CONTRIBUTING.md) to get started.
 
-2. Publish the assets of the BIIGLE modules: `php artisan vendor:publish --tag public`
+## Security Vulnerabilities
 
-3. Create the first user: `docker-compose exec app php artisan user:new`
-
-#### Run the tests
-
-Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit`. The first time might fail since the testing database container needs to start up.
-
-#### Develop a module
-
-The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applid in the running development instance.
-
-Before you start developing, you should run `git checkout master && git pull` to get the most recent development version of a module.
-
-Module assets like CSS and JavaScript are processed with [Gulp](https://gulpjs.com/). To modify and reprocess the assets, you need to install Gulp first:
-
-1. Install the Gulp CLI: `npm install -g gulp-cli`
-
-2. Install the JavaScript dependencies of a module (in `vendor/biigle/<name>/`): `npm install`
-
-Now you can use three commands to process the assets:
-
-- `gulp watch`: Keeps running, processes the assets and publishes the files to the running development instance whenever a source file has been modified. Use this during development.
-- `gulp`: This processes the assets and publishes the files to the running development instance once.
-- `gulp --production`: Like `gulp` but also minifies the CSS and JavaScript files. Always run this command before you commit new versions of the asset files to Git.
-
-Processing of the assets of the BIIGLE core works just the same.
+If you discover a security vulnerability within BIIGLE, please send an email to the BIIGLE team via <info@biigle.de>. All security vulnerabilities will be promptly addressed.

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Biigle\Http\Controllers\Controller;
 use Biigle\SystemMessage;
 use Biigle\SystemMessageType;
-use Biigle\Http\Controllers\Controller;
 
 class SystemMessagesController extends Controller
 {
@@ -17,7 +17,7 @@ class SystemMessagesController extends Controller
     {
         $messages = SystemMessage::orderBy('published_at', 'desc')
             ->with('type')
-            ->get();
+            ->paginate(20);
 
         return view('admin.system-messages.index', [
             'messages' => $messages,

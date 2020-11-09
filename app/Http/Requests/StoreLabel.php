@@ -34,10 +34,10 @@ class StoreLabel extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => 'required|max:512',
             'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-            'parent_id' => 'integer|exists:labels,id',
-            'label_source_id' => 'integer|exists:label_sources,id',
+            'parent_id' => 'id|exists:labels,id',
+            'label_source_id' => 'id|exists:label_sources,id',
             'source_id' => 'required_with:label_source_id',
         ];
     }

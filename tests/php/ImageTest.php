@@ -2,15 +2,14 @@
 
 namespace Biigle\Tests;
 
-use Event;
-use Response;
-use TileCache;
-use Biigle\Image;
-use Carbon\Carbon;
-use ModelTestCase;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Image;
+use Carbon\Carbon;
+use Event;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
+use Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImageTest extends ModelTestCase
@@ -73,8 +72,8 @@ class ImageTest extends ModelTestCase
 
     public function testAnnotations()
     {
-        $annotation = AnnotationTest::create(['image_id' => $this->model->id]);
-        AnnotationTest::create(['image_id' => $this->model->id]);
+        $annotation = ImageAnnotationTest::create(['image_id' => $this->model->id]);
+        ImageAnnotationTest::create(['image_id' => $this->model->id]);
         $this->assertEquals(2, $this->model->annotations()->count());
         $this->assertNotNull($this->model->annotations()->find($annotation->id));
     }
@@ -101,11 +100,8 @@ class ImageTest extends ModelTestCase
     public function testGetFileRemote()
     {
         $this->model->volume->url = 'http://localhost';
-        Response::shouldReceive('redirectTo')
-            ->once()
-            ->with($this->model->url)
-            ->andReturn(true);
-        $this->assertTrue($this->model->getFile());
+        $response = $this->model->getFile();
+        $this->assertEquals($this->model->url, $response->getTargetUrl());
     }
 
     public function testGetFileTiled()
@@ -119,8 +115,25 @@ class ImageTest extends ModelTestCase
             'tiled' => true,
             'width' => 6000,
             'height' => 7000,
+            'tilingInProgress' => false,
         ];
-        TileCache::shouldReceive('get')->once()->with($this->model);
+        $this->assertEquals($expect, $this->model->getFile());
+    }
+
+    public function testGetFileTiledRemote()
+    {
+        $this->model->volume->url = 'http://localhost';
+        $this->model->tiled = true;
+        $this->model->width = 6000;
+        $this->model->height = 7000;
+        $expect = [
+            'id' => $this->model->id,
+            'uuid' => $this->model->uuid,
+            'tiled' => true,
+            'width' => 6000,
+            'height' => 7000,
+            'tilingInProgress' => false,
+        ];
         $this->assertEquals($expect, $this->model->getFile());
     }
 
@@ -220,5 +233,14 @@ class ImageTest extends ModelTestCase
         $this->model->save();
         $this->model->refresh();
         $this->assertEquals('image/jpeg', $this->model->mimetype);
+    }
+
+    public function testSetGetTilingInProgress()
+    {
+        $this->assertFalse($this->model->tilingInProgress);
+        $this->model->tilingInProgress = true;
+        $this->model->save();
+        $this->model->refresh();
+        $this->assertTrue($this->model->tilingInProgress);
     }
 }

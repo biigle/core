@@ -2,15 +2,19 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Image;
+use Exception;
 use File;
+use FileCache;
+use FilesystemIterator;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Storage;
 use VipsImage;
-use FileCache;
-use SplFileInfo;
-use Biigle\Image;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class TileSingleImage extends Job implements ShouldQueue
 {
@@ -47,7 +51,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}.zip";
+        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
     }
 
     /**
@@ -60,10 +64,10 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
             $this->uploadToStorage();
-            $this->image->tiled = true;
+            $this->image->tilingInProgress = false;
             $this->image->save();
         } finally {
-            File::delete($this->tempPath);
+            File::deleteDirectory($this->tempPath);
         }
     }
 
@@ -77,7 +81,7 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $this->getVipsImage($path)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
-            'container' => 'zip',
+            'container' => 'fs',
             'strip' => true,
         ]);
     }
@@ -87,9 +91,19 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function uploadToStorage()
     {
-        $directory = $this->image->uuid[0].$this->image->uuid[1].'/'.$this->image->uuid[2].$this->image->uuid[3];
-        $file = new SplFileInfo($this->tempPath);
-        Storage::disk(config('image.tiles.disk'))->putFileAs($directory, $file, $this->image->uuid);
+        // +1 for the connecting slash.
+        $prefixLength = strlen($this->tempPath) + 1;
+        $iterator = $this->getIterator($this->tempPath);
+        $disk = Storage::disk(config('image.tiles.disk'));
+        $fragment = fragment_uuid_path($this->image->uuid);
+        try {
+            foreach ($iterator as $pathname => $fileInfo) {
+                $disk->putFileAs($fragment, $fileInfo, substr($pathname, $prefixLength));
+            }
+        } catch (Exception $e) {
+            $disk->deleteDirectory($fragment);
+            throw $e;
+        }
     }
 
     /**
@@ -102,5 +116,24 @@ class TileSingleImage extends Job implements ShouldQueue
     protected function getVipsImage($path)
     {
         return VipsImage::newFromFile($path, ['access' => 'sequential']);
+    }
+
+    /**
+     * Get the recursive directory iterator for the given path.
+     *
+     * @param string $path
+     *
+     * @return RecursiveIteratorIterator
+     */
+    protected function getIterator($path)
+    {
+        return new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $path,
+                FilesystemIterator::KEY_AS_PATHNAME |
+                    FilesystemIterator::CURRENT_AS_FILEINFO |
+                    FilesystemIterator::SKIP_DOTS
+            )
+        );
     }
 }

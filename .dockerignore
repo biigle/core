@@ -5,7 +5,7 @@ node_modules
 public/thumbs/**
 public/tiles/**
 public/vendor/**
-public/doc/api/**
+public/doc/**
 storage
 tmp
 vendor
@@ -13,3 +13,4 @@ vendor
 *.phar
 *.php_cs.cache
 *.sh
+*.tar.gz

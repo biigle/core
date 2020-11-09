@@ -31,6 +31,11 @@ $router->get('privacy', [
     'uses' => 'Views\\PrivacyController@show',
 ]);
 
+$router->get('terms', [
+    'as'   => 'terms',
+    'uses' => 'Views\\TermsController@show',
+]);
+
 $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory
@@ -38,6 +43,8 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'as' => 'manual',
         'uses' => 'ManualController@index',
     ]);
+
+    $router->permanentRedirect('/tutorials/volumes/image-labels', '/manual/tutorials/volumes/file-labels');
 
     $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
@@ -156,6 +163,128 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-logs-show',
             'uses' => 'LogsController@show',
         ]);
+
+        $router->get('label-trees', [
+            'as' => 'admin-global-label-trees',
+            'uses' => 'LabelTreesController@index',
+        ]);
+
+        $router->get('federated-search', [
+            'as' => 'admin-federated-search',
+            'uses' => 'FederatedSearchController@index',
+        ]);
+    });
+
+    $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {
+        $router->get('/', [
+            'as'   => 'label-trees-index',
+            'uses' => 'LabelTreesController@index',
+        ]);
+
+        $router->get('create', [
+            'as'   => 'label-trees-create',
+            'uses' => 'LabelTreesController@create',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'label-trees',
+            'uses' => 'LabelTreesController@show',
+        ]);
+
+        $router->get('{id}/merge', [
+            'as'   => 'label-trees-merge-index',
+            'uses' => 'LabelTreeMergeController@index',
+        ]);
+
+        $router->get('{id}/merge/{id2}', [
+            'as'   => 'label-trees-merge',
+            'uses' => 'LabelTreeMergeController@show',
+        ]);
+
+        $router->get('{id}/versions/{id2}', [
+            'as'   => 'label-tree-versions',
+            'uses' => 'LabelTreeVersionsController@show',
+        ]);
+
+        $router->get('{id}/versions/create', [
+            'as'   => 'create-label-tree-versions',
+            'uses' => 'LabelTreeVersionsController@create',
+        ]);
+    });
+
+    $router->group(['namespace' => 'Projects', 'prefix' => 'projects'], function ($router) {
+        $router->get('create', [
+            'as'   => 'projects-create',
+            'uses' => 'ProjectsController@create',
+        ]);
+
+        $router->get('/', [
+            'as'   => 'projects-index',
+            'uses' => 'ProjectsController@index',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'project',
+            'uses' => 'ProjectsController@show',
+        ]);
+
+        $router->get('{id}/label-trees', [
+            'as'   => 'project-label-trees',
+            'uses' => 'ProjectLabelTreeController@show',
+        ]);
+
+        $router->get('{id}/members', [
+            'as'   => 'project-members',
+            'uses' => 'ProjectUserController@show',
+        ]);
+    });
+
+    $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {
+        $router->get('create', [
+            'as'   => 'create-volume',
+            'uses' => 'VolumeController@create',
+        ]);
+
+        $router->get('edit/{id}', [
+            'as'   => 'volume-edit',
+            'uses' => 'VolumeController@edit',
+        ]);
+
+        $router->get('{id}', [
+            'as'   => 'volume',
+            'uses' => 'VolumeController@index',
+        ]);
+    });
+
+    $router->get('images/{id}', [
+        'as'   => 'image',
+        'uses' => 'Volumes\ImageController@index',
+    ]);
+
+    $router->group(['namespace' => 'Annotations'], function ($router) {
+        $router->get('images/{id}/annotations', [
+            'as'   => 'annotate',
+            'uses' => 'AnnotationToolController@show',
+        ]);
+
+        $router->get('image-annotations/{id}', [
+            'as'   => 'show-annotation',
+            'uses' => 'AnnotationController@show',
+        ]);
+
+        // Legacy support.
+        $router->redirect('annotate/{id}', '/images/{id}/annotations');
+        $router->redirect('annotations/{id}', '/image-annotations/{id}');
+    });
+
+    $router->group(['namespace' => 'Videos', 'prefix' => 'videos'], function ($router) {
+        $router->get('{id}/annotations', [
+            'as' => 'video',
+            'uses' => 'VideoController@show',
+        ]);
+
+        // Legacy support.
+        $router->redirect('{id}', '/videos/{id}/annotations');
     });
 
 });

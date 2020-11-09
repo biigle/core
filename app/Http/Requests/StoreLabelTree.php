@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Project;
 use Biigle\LabelTree;
+use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabelTree extends FormRequest
@@ -14,6 +14,13 @@ class StoreLabelTree extends FormRequest
      * @var Project
      */
     public $project;
+
+    /**
+     * The upstream label tree that should be forked (if any)
+     *
+     * @var LabelTree
+     */
+    public $upstreamLabelTree;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -34,8 +41,9 @@ class StoreLabelTree extends FormRequest
     {
         return [
             'name' => 'required|max:256',
-            'visibility_id' => 'required|integer|exists:visibilities,id',
-            'project_id' => 'integer|exists:projects,id',
+            'visibility_id' => 'required|id|exists:visibilities,id',
+            'project_id' => 'id|exists:projects,id',
+            'upstream_label_tree_id' => 'id|exists:label_trees,id',
         ];
     }
 
@@ -53,6 +61,14 @@ class StoreLabelTree extends FormRequest
 
                 if (!$this->project || !$this->user()->can('update', $this->project)) {
                     $validator->errors()->add('project_id', 'You have no permission to create a label tree for this project.');
+                }
+            }
+
+            if ($this->filled('upstream_label_tree_id')) {
+                $this->upstreamLabelTree = LabelTree::find($this->input('upstream_label_tree_id'));
+
+                if (!$this->upstreamLabelTree || !$this->user()->can('access', $this->upstreamLabelTree)) {
+                    $validator->errors()->add('upstream_label_tree_id', 'You have no permission to fork this label tree.');
                 }
             }
         });

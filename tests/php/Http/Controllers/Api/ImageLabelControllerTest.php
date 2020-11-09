@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
 
 class ImageLabelControllerTest extends ApiTestCase
 {
     private $image;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create(['volume_id' => $this->volume()->id]);
@@ -72,7 +72,7 @@ class ImageLabelControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertEquals(1, $this->image->labels()->count());
 
         $this->beAdmin();
@@ -86,7 +86,7 @@ class ImageLabelControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelChild()->id,
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertEquals(2, $this->image->labels()->count());
         $response->assertJsonFragment([
             'id' => $this->labelChild()->id,

@@ -1,0 +1,56 @@
+.activity-items {
+    margin-bottom: $navbar-margin-bottom;
+}
+
+.activity-item {
+    height: 180px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    border-radius: $border-radius-base;
+    background-color: $gray-lighter;
+    border: 2px solid $gray-lighter;
+
+    .icon {
+        position: absolute;
+        top: .5em;
+        right: .5em;
+        color: white;
+        opacity: 0.75;
+    }
+}
+
+.activity-item-image {
+    height: 100%;
+
+    img {
+        width: auto;
+        height: 100%;
+        image-orientation: none;
+    }
+
+    figcaption {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        color: white;
+        opacity: 0.75;
+        padding: 0.5em;
+        transition: opacity 0.25s ease;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center;
+    }
+
+    &:hover {
+        figcaption {
+            opacity: 1;
+        }
+    }
+}
+
+@supports (object-fit: contain) {
+    .activity-item-image img {
+        width: 100%;
+        object-fit: contain;
+    }
+}

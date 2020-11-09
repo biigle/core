@@ -23,9 +23,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labels', Vue.resource('api/v1/labels{/id}', {}, {
+export default Vue.resource('api/v1/labels{/id}', {}, {
     save: {
         method: 'POST',
         url: 'api/v1/label-trees{/label_tree_id}/labels',
     }
-}));
+});

@@ -1,0 +1,51 @@
+.video-container {
+    &.resizing-timeline {
+        cursor: row-resize;
+
+        .video-screen, .video-timeline {
+            pointer-events: none;
+        }
+    }
+
+    .video-screen {
+        height: 65%;
+        min-height: 50%;
+        max-height: calc(100% - 36px);
+    }
+
+    .video-timeline {
+        height: 35%;
+        max-height: 50%;
+        min-height: 36px;
+    }
+
+    .error-message {
+        position: absolute;
+        padding: 1em 0;
+        width: 100%;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.settings-tab {
+    .form-control--small {
+        display: inline-block;
+        width: 70px;
+        vertical-align: middle;
+    }
+}
+
+@import 'components/videoScreen';
+@import 'components/videoTimeline';
+@import 'components/currentTime';
+@import 'components/trackHeaders';
+@import 'components/scrollStrip';
+@import 'components/videoProgress';
+@import 'components/annotationTracks';
+@import 'components/annotationTrack';
+@import 'components/annotationClip';
+@import 'components/annotationSegment';
+@import 'components/annotationKeyframe';

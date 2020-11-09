@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\User;
 use Biigle\Role;
+use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy

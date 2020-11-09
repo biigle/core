@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {

@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
-use DB;
-use Biigle\Project;
 use Biigle\LabelTree;
+use Biigle\Project;
 use Biigle\Visibility;
+use DB;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectLabelTree extends FormRequest
@@ -37,7 +37,7 @@ class StoreProjectLabelTree extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|exists:label_trees,id',
+            'id' => 'required|id|exists:label_trees,id',
         ];
     }
 

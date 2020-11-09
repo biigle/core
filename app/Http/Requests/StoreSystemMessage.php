@@ -25,9 +25,9 @@ class StoreSystemMessage extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
+            'title' => 'required|max:255',
             'body' => 'required',
-            'type_id' => 'exists:system_message_types,id',
+            'type_id' => 'id|exists:system_message_types,id',
             'publish' => 'boolean',
         ];
     }

@@ -3,13 +3,13 @@
 namespace Biigle\Tests\Http\Controllers\Auth;
 
 use Auth;
+use Biigle\Tests\UserTest;
 use Session;
 use TestCase;
-use Biigle\Tests\UserTest;
 
 class ControllerTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         // enable XSRF tokens

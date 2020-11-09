@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Role;
-use Notification;
-use Biigle\Tests\UserTest;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Notification;
 
 class UserRegistrationControllerTest extends ApiTestCase
 {

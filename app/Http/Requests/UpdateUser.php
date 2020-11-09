@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
-use Hash;
 use Biigle\Role;
 use Biigle\User;
+use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUser extends FormRequest
@@ -14,7 +14,7 @@ class UpdateUser extends FormRequest
      *
      * @var User
      */
-    public $user;
+    public $updateUser;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,9 @@ class UpdateUser extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('update', $this->user) && $this->user()->can('sudo');
+        $this->updateUser = User::findOrFail($this->route('id'));
+
+        return $this->user()->can('update', $this->updateUser) && $this->user()->can('sudo');
     }
 
     /**
@@ -33,7 +35,6 @@ class UpdateUser extends FormRequest
      */
     public function rules()
     {
-        $this->user = $this->getUpdateUser();
         $roles = implode(',', [
             Role::guestId(),
             Role::editorId(),
@@ -42,7 +43,7 @@ class UpdateUser extends FormRequest
 
         return [
             // Ignore the email of the own user.
-            'email' => "filled|email|unique:users,email,{$this->user->id}|max:255",
+            'email' => "filled|email|unique:users,email,{$this->updateUser->id}|max:255",
             'password' => 'nullable|min:8',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
@@ -78,15 +79,5 @@ class UpdateUser extends FormRequest
         if ($this->filled('email')) {
             $this->merge(['email' => strtolower($this->input('email'))]);
         }
-    }
-
-    /**
-     * Get the user instance to update;
-     *
-     * @return user
-     */
-    protected function getUpdateUser()
-    {
-        return User::findOrFail($this->route('id'));
     }
 }

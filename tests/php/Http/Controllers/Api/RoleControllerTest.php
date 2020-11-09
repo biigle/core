@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
+use Biigle\Role;
 
 class RoleControllerTest extends ApiTestCase
 {
@@ -29,6 +29,6 @@ class RoleControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('admin', $content);
+        $this->assertStringContainsString('admin', $content);
     }
 }

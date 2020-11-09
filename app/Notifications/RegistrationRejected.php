@@ -2,8 +2,8 @@
 
 namespace Biigle\Notifications;
 
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class RegistrationRejected extends Notification
 {

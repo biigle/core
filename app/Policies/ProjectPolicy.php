@@ -2,10 +2,10 @@
 
 namespace Biigle\Policies;
 
-use DB;
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\User;
+use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy extends CachedPolicy
@@ -146,7 +146,7 @@ class ProjectPolicy extends CachedPolicy
      * @param User $user
      * @param Project $project
      *
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Query\Builder
      */
     protected function getBaseQuery(User $user, Project $project)
     {

@@ -1,8 +1,8 @@
 <?php
 
 use Biigle\Label;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateLabelSourcesTable extends Migration
 {

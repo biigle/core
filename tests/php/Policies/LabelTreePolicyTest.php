@@ -2,14 +2,15 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Visibility;
 use Cache;
 use TestCase;
-use Biigle\Role;
-use Biigle\LabelTree;
-use Biigle\Visibility;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeTest;
 
 class LabelTreePolicyTest extends TestCase
 {
@@ -19,7 +20,7 @@ class LabelTreePolicyTest extends TestCase
     private $admin;
     private $globalAdmin;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
@@ -67,6 +68,21 @@ class LabelTreePolicyTest extends TestCase
         $this->assertTrue($project->creator->can('access', $this->tree));
     }
 
+    public function testAccessViaMasterLabelTree()
+    {
+        $this->tree->visibility_id = Visibility::privateId();
+        $this->tree->save();
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $this->tree->id]);
+        $tree = LabelTreeTest::create([
+            'version_id' => $version->id,
+            'visibility_id' => Visibility::privateId(),
+        ]);
+        $this->assertFalse($this->user->can('access', $tree));
+        $this->assertTrue($this->editor->can('access', $tree));
+        $this->assertTrue($this->admin->can('access', $tree));
+        $this->assertTrue($this->globalAdmin->can('access', $tree));
+    }
+
     public function testCreateLabel()
     {
         $this->assertFalse($this->user->can('create-label', $this->tree));
@@ -75,12 +91,30 @@ class LabelTreePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('create-label', $this->tree));
     }
 
+    public function testCreateLabelVersionedTree()
+    {
+        $this->tree->version_id = LabelTreeVersionTest::create();
+        $this->assertFalse($this->user->can('create-label', $this->tree));
+        $this->assertFalse($this->editor->can('create-label', $this->tree));
+        $this->assertFalse($this->admin->can('create-label', $this->tree));
+        $this->assertFalse($this->globalAdmin->can('create-label', $this->tree));
+    }
+
     public function testUpdate()
     {
         $this->assertFalse($this->user->can('update', $this->tree));
         $this->assertFalse($this->editor->can('update', $this->tree));
         $this->assertTrue($this->admin->can('update', $this->tree));
         $this->assertTrue($this->globalAdmin->can('update', $this->tree));
+    }
+
+    public function testUpdateVersionedTree()
+    {
+        $this->tree->version_id = LabelTreeVersionTest::create();
+        $this->assertFalse($this->user->can('update', $this->tree));
+        $this->assertFalse($this->editor->can('update', $this->tree));
+        $this->assertFalse($this->admin->can('update', $this->tree));
+        $this->assertFalse($this->globalAdmin->can('update', $this->tree));
     }
 
     public function testDestroy()
@@ -97,6 +131,15 @@ class LabelTreePolicyTest extends TestCase
         $this->assertFalse($this->editor->can('add-member', $this->tree));
         $this->assertTrue($this->admin->can('add-member', $this->tree));
         $this->assertTrue($this->globalAdmin->can('add-member', $this->tree));
+    }
+
+    public function testAddMemberVersionedTree()
+    {
+        $this->tree->version_id = LabelTreeVersionTest::create();
+        $this->assertFalse($this->user->can('add-member', $this->tree));
+        $this->assertFalse($this->editor->can('add-member', $this->tree));
+        $this->assertFalse($this->admin->can('add-member', $this->tree));
+        $this->assertFalse($this->globalAdmin->can('add-member', $this->tree));
     }
 
     public function testUpdateMember()

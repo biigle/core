@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Exception;
-use Biigle\Volume;
-use Illuminate\Http\Request;
-use Biigle\Jobs\ProcessNewImages;
 use Biigle\Http\Requests\UpdateVolume;
+use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\Volume;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller
@@ -18,12 +18,15 @@ class VolumeController extends Controller
      * @apiGroup Volumes
      * @apiName IndexVolumes
      * @apiPermission user
+     * @apiDescription Only projects in which the user is a member are listed for each
+     * volume.
      *
      * @apiSuccessExample {json} Success response:
      * [
      *    {
      *       "id": 1,
      *       "name": "My Volume",
+     *       "media_type_id": 1,
      *       "created_at": "2015-02-10 09:45:30",
      *       "updated_at": "2015-02-10 09:45:30",
      *       "projects": [
@@ -41,12 +44,16 @@ class VolumeController extends Controller
      */
     public function index(Request $request)
     {
-        return Volume::accessibleBy($request->user())
-            ->with(['projects' => function ($query) {
-                $query->select('id', 'name', 'description');
+        $user = $request->user();
+
+        return Volume::accessibleBy($user)
+            ->with(['projects' => function ($query) use ($user) {
+                $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                    ->where('project_user.user_id', $user->id)
+                    ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
-            ->select('id', 'name', 'created_at', 'updated_at')
+            ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
             ->get();
     }
 
@@ -68,16 +75,29 @@ class VolumeController extends Controller
      *    "creator_id": 7,
      *    "created_at": "2015-02-20 17:51:03",
      *    "updated_at": "2015-02-20 17:51:03",
-     *    "url": "local://images/"
+     *    "url": "local://images/",
+     *    "projects": [
+     *        {
+     *            "id": 11,
+     *            "name": "Example project",
+     *            "description": "This is an example project"
+     *        }
+     *    ]
      * }
      *
+     * @param Request $request
      * @param  int  $id
      * @return Volume
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
+        $volume->load(['projects' => function ($query) use ($request) {
+            $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                ->where('project_user.user_id', $request->user()->id)
+                ->select('projects.id', 'projects.name', 'projects.description');
+        }]);
 
         return $volume;
     }
@@ -93,9 +113,8 @@ class VolumeController extends Controller
      * @apiParam {Number} id The volume ID.
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
-     * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the volume.
-     * @apiParam (Attributes that can be updated) {String} url The base URL of the image files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
-     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this volume.
+     * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
+     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
      *
@@ -107,7 +126,6 @@ class VolumeController extends Controller
         $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
         $volume->url = $request->input('url', $volume->url);
-        $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
         $volume->video_link = $request->input('video_link', $volume->video_link);
         $volume->gis_link = $request->input('gis_link', $volume->gis_link);
         $volume->doi = $request->input('doi', $volume->doi);
@@ -119,7 +137,7 @@ class VolumeController extends Controller
 
         // Do this *after* saving.
         if ($newUrl || $shouldReread) {
-            ProcessNewImages::dispatch($volume);
+            ProcessNewVolumeFiles::dispatch($volume);
         }
 
         if (!$this->isAutomatedRequest()) {

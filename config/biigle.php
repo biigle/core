@@ -10,7 +10,7 @@ return [
     /*
     | Show the logfiles in the admin area.
     */
-    'admin_logs' => true,
+    'admin_logs' => env('BIIGLE_ADMIN_LOGS', true),
 
     /*
     | Email address of the admins of this BIIGLE instance.
@@ -20,12 +20,12 @@ return [
     /*
     | Disable all features that require a working internet connection.
     */
-    'offline_mode' => false,
+    'offline_mode' => env('BIIGLE_OFFLINE_MODE', false),
 
     /*
     | Enable user registration. This allows everybody to create a new user account.
     */
-    'user_registration' => false,
+    'user_registration' => env('BIIGLE_USER_REGISTRATION', false),
 
     /*
     | Enable user registration confirmation by admins. Whenever a new user is registered,
@@ -36,6 +36,14 @@ return [
     |
     | This feature cannot be enabled in offline mode as it relies on emails.
     */
-    'user_registration_confirmation' => false,
+    'user_registration_confirmation' => env('BIIGLE_USER_REGISTRATION_CONFIRMATION', false),
+
+    'federated_search' => [
+
+        /*
+        | Cache key to use for the federated search index.
+        */
+        'cache_key' => env('BIIGLE_FEDERATED_SEARCH_CACHE_KEY', 'federated_search_index'),
+    ],
 
 ];

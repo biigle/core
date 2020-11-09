@@ -2,9 +2,10 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ForgotPasswordController extends Controller
 {
@@ -42,7 +43,7 @@ class ForgotPasswordController extends Controller
     public function sendResetLinkEmail(Request $request)
     {
         if (config('biigle.offline_mode')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         // Transform the username/email to lowercase because we want this to be case

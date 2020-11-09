@@ -3,8 +3,8 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -56,7 +56,7 @@ class User extends Authenticatable
      */
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class)->withPivot('pinned');
     }
 
     /**
@@ -87,6 +87,16 @@ class User extends Authenticatable
     public function apiTokens()
     {
         return $this->hasMany(ApiToken::class, 'owner_id');
+    }
+
+    /**
+     * The federated search models that the user can access
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function federatedSearchModels()
+    {
+        return $this->belongsToMany(FederatedSearchModel::class);
     }
 
     /**

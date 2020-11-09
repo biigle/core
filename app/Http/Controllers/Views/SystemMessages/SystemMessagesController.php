@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\SystemMessages;
 
-use Biigle\SystemMessage;
-use Illuminate\Http\Request;
-use Biigle\SystemMessageType;
 use Biigle\Http\Controllers\Controller;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
+use Illuminate\Http\Request;
 
 class SystemMessagesController extends Controller
 {

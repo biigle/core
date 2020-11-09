@@ -12,6 +12,10 @@
 	height: 100vh;
 }
 
+.inline-block-form {
+    display: inline-block;
+}
+
 .info-text__sign {
 	position: absolute;
 	right: 14px;
@@ -31,9 +35,15 @@
 @import "search";
 @import "admin";
 @import "footer";
+@import "dashboard";
 @import "components/loader";
 @import "components/loaderBlock";
 @import "components/typeahead";
 @import "components/sidebar";
 @import "components/membersPanel";
 @import "components/powerToggle";
+@import "label-trees/main";
+@import "projects/main";
+@import "volumes/main";
+@import "annotations/main";
+@import "videos/main";

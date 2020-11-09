@@ -3,8 +3,9 @@
 namespace Biigle\Exceptions;
 
 use Exception;
-use Illuminate\Session\TokenMismatchException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -31,8 +32,6 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
      * @param  \Exception  $exception
      * @return void
      */
@@ -57,5 +56,22 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Prepare exception for rendering.
+     *
+     * @param  \Exception  $e
+     * @return \Exception
+     */
+    protected function prepareException(Exception $e)
+    {
+        if ($e instanceof MethodNotAllowedHttpException) {
+            // Add a helpful message to this exception.
+            $allow = explode(', ', $e->getHeaders()['Allow']);
+            $e = new MethodNotAllowedHttpException($allow, 'The HTTP method is not allowed.', $e);
+        }
+
+        return parent::prepareException($e);
     }
 }

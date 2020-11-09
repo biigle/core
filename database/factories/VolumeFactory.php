@@ -6,7 +6,7 @@ $factory->define(Biigle\Volume::class, function (Faker $faker) {
     return [
         'name' => $faker->company(),
         'media_type_id' => function () {
-            return factory(Biigle\MediaType::class)->create()->id;
+            return Biigle\MediaType::imageId();
         },
         'creator_id' => function () {
             return factory(Biigle\User::class)->create()->id;

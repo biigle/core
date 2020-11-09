@@ -2,11 +2,11 @@
 
 namespace Biigle;
 
-use DB;
-use Cache;
-use Exception;
-use Carbon\Carbon;
 use Biigle\Traits\HasJsonAttributes;
+use Cache;
+use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -26,7 +26,17 @@ class Volume extends Model
      *
      * @var string
      */
-    const FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
+    const IMAGE_FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
+
+    /**
+     * Regular expression that matches the supported video file extensions.
+     * This regex allows optional HTTP query parameters after the file names, too.
+     * Example "video.mp4?raw=1".
+     * This may be required for remote files with services like Dropbox.
+     *
+     * @var string
+     */
+    const VIDEO_FILE_REGEX = '/\.(mpeg|mp4|webm)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -45,6 +55,7 @@ class Volume extends Model
      */
     protected $casts = [
         'attrs' => 'array',
+        'media_type_id' => 'int',
     ];
 
     /**
@@ -55,15 +66,16 @@ class Volume extends Model
     protected $appends = ['video_link', 'gis_link', 'doi'];
 
     /**
-     * Parses a comma separated list of image filenames to an array.
+     * Parses a comma separated list of filenames to an array.
      *
      * @param string $string
      *
      * @return array
      */
-    public static function parseImagesQueryString($string)
+    public static function parseFilesQueryString(string $string)
     {
-        return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
+        // Remove whitespace as well as enclosing '' or "".
+        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), null, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -110,32 +122,6 @@ class Volume extends Model
     }
 
     /**
-     * Sets the media type of this volume.
-     *
-     * @param Biigle\MediaType $mediaType
-     * @return void
-     */
-    public function setMediaType($mediaType)
-    {
-        $this->mediaType()->associate($mediaType);
-    }
-
-    /**
-     * Sets the media type of this volume to the media type with the given ID.
-     *
-     * @param int $id media type ID
-     * @return void
-     */
-    public function setMediaTypeId($id)
-    {
-        $type = MediaType::find($id);
-        if ($type === null) {
-            abort(400, 'The media type "'.$id.'" does not exist!');
-        }
-        $this->setMediaType($type);
-    }
-
-    /**
      * The images belonging to this volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -146,13 +132,48 @@ class Volume extends Model
     }
 
     /**
+     * The videos belonging to this volume.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
+    }
+
+    /**
+     * The images or videos belonging to this volume.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function files()
+    {
+        if ($this->isImageVolume()) {
+            return $this->images();
+        }
+
+        return $this->videos();
+    }
+
+    /**
      * The images belonging to this volume ordered by filename (ascending).
      *
+     * @deprecated Use `orderedFiles` instead.
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function orderedImages()
     {
-        return $this->images()->orderBy('filename', 'asc');
+        return $this->orderedFiles();
+    }
+
+    /**
+     * The images belonging to this volume ordered by filename (ascending).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderedFiles()
+    {
+        return $this->files()->orderBy('filename', 'asc');
     }
 
     /**
@@ -274,18 +295,60 @@ class Volume extends Model
     }
 
     /**
-     * An image that can be used a unique thumbnail for this volume.
+     * An image that can be used as unique thumbnail for this volume.
      *
      * @return Image
      */
     public function getThumbnailAttribute()
     {
-        return Cache::remember("volume-thumbnail-{$this->id}", 60, function () {
-            // Choose an image from the middle of the volume because the first and last
-            // ones are often of bad quality.
-            $index = round($this->images()->count() / 2) - 1;
+        $thumbnails = $this->thumbnails;
 
-            return $this->orderedImages()->skip($index)->first();
+        return $thumbnails->get(intdiv($thumbnails->count() - 1, 2));
+    }
+
+    /**
+     * URL to the thumbnail image of this volume.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return $this->thumbnail ? $this->thumbnail->thumbnailUrl : null;
+    }
+
+    /**
+     * Several images or videos that can be used for the preview thumbnail of a volume.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getThumbnailsAttribute()
+    {
+        // We can cache this for 1 hour because it's unlikely to change as long as the
+        // volume exists.
+        return Cache::remember("volume-thumbnails-{$this->id}", 3600, function () {
+            $number = 10;
+            $total = $this->files()->count();
+            $query = $this->orderedFiles();
+            $step = intdiv($total, $number);
+
+            return $this->orderedFiles()
+                ->when($step > 1, function ($query) use ($step) {
+                    $query->whereRaw("(id % {$step}) = 0");
+                })
+                ->limit($number)
+                ->get();
+        });
+    }
+
+    /**
+     * URLs to the thumbnail images of this volume.
+     *
+     * @return array
+     */
+    public function getThumbnailsUrlAttribute()
+    {
+        return $this->thumbnails->map(function ($file) {
+            return $file->thumbnailUrl;
         });
     }
 
@@ -294,7 +357,7 @@ class Volume extends Model
      */
     public function flushThumbnailCache()
     {
-        Cache::forget("volume-thumbnail-{$this->id}");
+        Cache::forget("volume-thumbnails-{$this->id}");
     }
 
     /**
@@ -304,7 +367,7 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("volume-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("volume-{$this->id}-has-geo-info", 3600, function () {
             return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
         });
     }
@@ -402,8 +465,28 @@ class Volume extends Model
     public function hasTiledImages()
     {
         // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 1, function () {
+        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, function () {
             return $this->images()->where('tiled', true)->exists();
         });
+    }
+
+    /**
+     * Specifies whether the volume is an image volume.
+     *
+     * @return boolean
+     */
+    public function isImageVolume()
+    {
+        return $this->media_type_id === MediaType::imageId();
+    }
+
+    /**
+     * Specifies whether the volume is a video volume.
+     *
+     * @return boolean
+     */
+    public function isVideoVolume()
+    {
+        return $this->media_type_id === MediaType::videoId();
     }
 }

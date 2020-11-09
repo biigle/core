@@ -4,7 +4,7 @@
 
 @push('scripts')
     <script type="text/javascript">
-        biigle.notifications.store.all = {!! $notifications !!};
+        biigle.$declare('initialNotifications', {!! $notifications !!})
     </script>
 @endpush
 
@@ -19,7 +19,7 @@
             </ul>
         </div>
         <div id="notifications-list" class="col-sm-9 col-md-7 col-md-offset-1" v-cloak>
-            <notification v-for="item in notifications" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}" inline-template>
+            <notification v-for="item in notifications" v-bind:key="item.id" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}" inline-template>
                 <div class="panel" v-bind:class="classObject">
                     <div class="panel-heading">
                         <span class="pull-right">

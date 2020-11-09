@@ -1,9 +1,31 @@
 FROM arm32v6/php:7.2-rc-fpm-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
-RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
+RUN apk add --no-cache \
+        openssl \
+        postgresql-dev \
+        libxml2-dev \
+        libzip-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql json zip fileinfo exif mbstring soap
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        json \
+        zip \
+        fileinfo \
+        exif \
+        soap
+
+ARG PHPREDIS_VERSION=5.0.0
+RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
+    && tar -xzf /tmp/redis.tar.gz \
+    && rm /tmp/redis.tar.gz \
+    && mkdir -p /usr/src/php/ext \
+    && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
+    && docker-php-ext-install redis
+
+RUN apk add --no-cache ffmpeg
 
 ADD .docker/app-php.ini /usr/local/etc/php/conf.d/php.ini
 
@@ -13,7 +35,6 @@ COPY database /var/www/database
 
 WORKDIR /var/www
 
-ARG GITHUB_OAUTH_TOKEN
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 # Ignore platform reqs because the app image is stripped down to the essentials
@@ -23,8 +44,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
     && rm composer-setup.php \
-    && COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"${GITHUB_OAUTH_TOKEN}\"}}" \
-        php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
+    && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
     && rm -r ~/.composer
 
 COPY . /var/www
@@ -34,9 +54,6 @@ RUN mkdir -p /var/www/storage/framework/views
 
 RUN php composer.phar dump-autoload -o \
     && rm composer.phar
-
-# Make this writable for whatever user the app is running as.
-RUN chmod o+w /var/www/bootstrap/cache
 
 ARG BIIGLE_VERSION
 ENV BIIGLE_VERSION=${BIIGLE_VERSION}

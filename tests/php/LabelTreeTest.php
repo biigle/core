@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests;
 
-use Exception;
-use Biigle\Role;
-use ModelTestCase;
 use Biigle\LabelTree;
+use Biigle\Role;
 use Biigle\Visibility;
+use Exception;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class LabelTreeTest extends ModelTestCase
@@ -67,12 +67,12 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->labels()->exists());
     }
 
-    public function testCanBeDeletedAnnotationLabel()
+    public function testCanBeDeletedImageAnnotationLabel()
     {
         $this->assertTrue($this->model->canBeDeleted());
         $label = LabelTest::create(['label_tree_id' => $this->model->id]);
         $this->assertTrue($this->model->canBeDeleted());
-        AnnotationLabelTest::create(['label_id' => $label->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 
@@ -83,6 +83,35 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->canBeDeleted());
         ImageLabelTest::create(['label_id' => $label->id]);
         $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoAnnotationLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoAnnotationLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVideoLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        VideoLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedVersionLabel()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        ImageAnnotationLabelTest::create([
+            'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])->id,
+        ]);
+        $this->assertFalse($version->labelTree->canBeDeleted());
     }
 
     public function testAddMember()
@@ -166,6 +195,22 @@ class LabelTreeTest extends ModelTestCase
         $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
     }
 
+    public function testDetachUnauthorizedProjectsPropagateToVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        // The master label tree is global and attached by default.
+        $unauthorized = ProjectTest::create();
+        $unauthorized->labelTrees()->attach($this->model->id);
+        $authorized = ProjectTest::create();
+        $authorized->labelTrees()->attach($this->model->id);
+        $version->labelTree->authorizedProjects()->attach($authorized->id);
+        $this->model->authorizedProjects()->attach($authorized->id);
+        $version->labelTree->detachUnauthorizedProjects();
+        $this->assertEquals([$authorized->id], $this->model->projects()->pluck('id')->all());
+    }
+
     public function testOrderLabelsByName()
     {
         LabelTest::create([
@@ -210,5 +255,94 @@ class LabelTreeTest extends ModelTestCase
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertContains($tree->id, $ids);
+    }
+
+    public function testVersion()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->assertFalse($this->model->version()->exists());
+        $this->model->version_id = $version->id;
+        $this->assertTrue($this->model->version()->exists());
+    }
+
+    public function testVersions()
+    {
+        $this->assertEquals(0, $this->model->versions()->count());
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertEquals(1, $this->model->versions()->count());
+    }
+
+    public function testCascadeDeleteMaster()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        $version->labelTree()->delete();
+        $this->assertNull($version->fresh());
+        $this->assertNull($this->model->fresh());
+    }
+
+    public function testRestrictDeleteMasterIfLabelIsUsed()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        ImageAnnotationLabelTest::create([
+            'label_id' => LabelTest::create(['label_tree_id' => $this->model->id])
+        ]);
+        $this->expectException(QueryException::class);
+        $version->labelTree()->delete();
+    }
+
+    public function testScopeWithoutVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+        $this->assertEquals([$version->label_tree_id], LabelTree::withoutVersions()->pluck('id')->all());
+    }
+
+    public function testScopeGlobal()
+    {
+        $version = LabelTreeVersionTest::create();
+        $this->model->version_id = $version->id;
+        $this->model->save();
+
+        $ids = LabelTree::global()->pluck('id')->all();
+        $this->assertEquals([$version->label_tree_id], $ids);
+        $version->labelTree->addMember(UserTest::create(), Role::adminId());
+        $this->assertFalse(LabelTree::global()->exists());
+    }
+
+    public function testGetVersionedNameAttribute()
+    {
+        $version = LabelTreeVersionTest::create([
+            'name' => 'v1.0',
+            'label_tree_id' => static::create(['name' => 'master tree'])->id
+        ]);
+        $this->model->name = 'versioned tree';
+        $this->model->version_id = $version->id;
+        $this->model->save();
+
+        $this->assertEquals('master tree', $version->labelTree->versionedName);
+        $this->assertEquals('versioned tree @ v1.0', $this->model->versionedName);
+    }
+
+    public function testReplicateLabelsOf()
+    {
+        $parent = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $child = LabelTest::create([
+            'label_tree_id' => $this->model->id,
+            'parent_id' => $parent->id,
+        ]);
+
+        $tree = static::create();
+        $tree->replicateLabelsOf($this->model);
+
+        $newParent = $tree->labels()->where('name', $parent->name)->first();
+        $this->assertNotNull($newParent);
+        $newChild = $tree->labels()->where('name', $child->name)->first();
+        $this->assertNotNull($newChild);
+        $this->assertEquals($newParent->id, $newChild->parent_id);
     }
 }

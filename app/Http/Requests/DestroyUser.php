@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Hash;
 use Biigle\User;
+use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -14,7 +14,7 @@ class DestroyUser extends FormRequest
      *
      * @var User
      */
-    public $user;
+    public $destroyUser;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,9 @@ class DestroyUser extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('destroy', $this->user);
+        $this->destroyUser = User::findOrFail($this->route('id'));
+
+        return $this->user()->can('destroy', $this->destroyUser);
     }
 
     /**
@@ -33,8 +35,6 @@ class DestroyUser extends FormRequest
      */
     public function rules()
     {
-        $this->user = $this->getDestroyUser();
-
         return [
             'password' => 'required|min:8',
         ];
@@ -54,20 +54,10 @@ class DestroyUser extends FormRequest
             }
 
             try {
-                $this->user->checkCanBeDeleted();
+                $this->destroyUser->checkCanBeDeleted();
             } catch (HttpException $e) {
                 $validator->errors()->add('password', $e->getMessage());
             }
         });
-    }
-
-    /**
-     * Get the user instance to update;
-     *
-     * @return user
-     */
-    protected function getDestroyUser()
-    {
-        return User::findOrFail($this->route('id'));
     }
 }

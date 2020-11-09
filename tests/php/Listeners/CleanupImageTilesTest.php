@@ -2,26 +2,27 @@
 
 namespace Biigle\Tests\Listeners;
 
+use Biigle\Events\TiledImagesDeleted;
+use Biigle\Listeners\CleanupImageTiles;
+use Biigle\Tests\ImageTest;
+use Illuminate\Events\CallQueuedListener;
 use Queue;
 use Storage;
 use TestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Events\TiledImagesDeleted;
-use Biigle\Listeners\CleanupImageTiles;
-use Illuminate\Events\CallQueuedListener;
 
-class ListenersCleanupImageTilesTest extends TestCase
+class CleanupImageTilesTest extends TestCase
 {
     public function testHandle()
     {
+        config(['image.tiles.disk' => 'tiles']);
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
-        Storage::fake('local-tiles');
-        Storage::disk('local-tiles')->put($fragment, 'test');
+        Storage::fake('tiles');
+        Storage::disk('tiles')->put("{$fragment}/test.txt", 'test');
 
         with(new CleanupImageTiles)->handle(new TiledImagesDeleted([$image->uuid]));
 
-        Storage::disk('local-tiles')->assertMissing($fragment);
+        Storage::disk('tiles')->assertMissing("{$fragment}/test.txt");
     }
 
     public function testListen()

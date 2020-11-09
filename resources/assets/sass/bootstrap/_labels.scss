@@ -1,0 +1,58 @@
+@mixin label-hollow-variant($color) {
+  border-color: $color;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      border-color: darken($color, 10%);
+    }
+  }
+}
+
+.label-hollow {
+    background-color: transparent;
+    color: $text-color;
+    font-weight: normal;
+    border: 1px solid transparent;
+
+
+    &[href] {
+        &:hover,
+        &:focus {
+            background-color: transparent;
+        }
+    }
+
+    &.label-default {
+      @include label-hollow-variant($label-default-bg);
+    }
+
+    &.label-primary {
+      @include label-hollow-variant($label-primary-bg);
+    }
+
+    &.label-success {
+      @include label-hollow-variant($label-success-bg);
+    }
+
+    &.label-info {
+      @include label-hollow-variant($label-info-bg);
+    }
+
+    &.label-warning {
+      @include label-hollow-variant($label-warning-bg);
+    }
+
+    &.label-danger {
+      @include label-hollow-variant($label-danger-bg);
+    }
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3 {
+  small.label,
+  .small.label {
+    font-size: 65%;
+  }
+}

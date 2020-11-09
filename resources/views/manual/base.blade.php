@@ -14,5 +14,9 @@
         @yield('manual-content')
     </div>
 </div>
-@include('partials.footer')
+@include('partials.footer', [
+    'links' => [
+        'GitHub' => 'https://github.com/biigle',
+    ],
+])
 @endsection

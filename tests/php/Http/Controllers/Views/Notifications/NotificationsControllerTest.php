@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Notifications;
 
-use TestCase;
 use Biigle\Tests\UserTest;
+use TestCase;
 
 class NotificationsControllerTest extends TestCase
 {

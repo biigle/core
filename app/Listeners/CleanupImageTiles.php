@@ -2,9 +2,9 @@
 
 namespace Biigle\Listeners;
 
-use Storage;
 use Biigle\Events\TiledImagesDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Storage;
 
 class CleanupImageTiles implements ShouldQueue
 {
@@ -19,7 +19,7 @@ class CleanupImageTiles implements ShouldQueue
         $disk = Storage::disk(config('image.tiles.disk'));
 
         foreach ($event->uuids as $uuid) {
-            $disk->delete(fragment_uuid_path($uuid));
+            $disk->deleteDirectory(fragment_uuid_path($uuid));
         }
     }
 }

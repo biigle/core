@@ -3,11 +3,15 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Carbon\Carbon;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Carbon\Carbon;
 
 class AnnotationSessionControllerTest extends ApiTestCase
 {
@@ -124,12 +128,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -162,12 +166,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -186,7 +190,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $response->assertStatus(200);
     }
 
-    public function testUpdateForceUsers()
+    public function testUpdateForceUsersImageVolume()
     {
         $session = AnnotationSessionTest::create([
             'volume_id' => $this->volume()->id,
@@ -200,12 +204,50 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beAdmin();
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [$this->admin()->id],
+        ]);
+        // the annotation would no longer belong to the session
+        $response->assertStatus(400);
+
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [$this->admin()->id],
+            'force' => true,
+        ]);
+        $response->assertStatus(200);
+    }
+
+    public function testUpdateForceUsersVideoVolume()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $video = VideoTest::create([
+            'volume_id' => $session->volume_id,
+        ]);
+
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $label = VideoAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);
@@ -257,12 +299,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'volume_id' => $session->volume_id,
         ]);
 
-        $annotation = AnnotationTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
 
-        $label = AnnotationLabelTest::create([
+        $label = ImageAnnotationLabelTest::create([
             'user_id' => $this->editor()->id,
             'annotation_id' => $annotation->id,
         ]);

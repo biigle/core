@@ -2,10 +2,14 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Role;
-use ModelTestCase;
+use Biigle\Jobs\DeleteVolume;
+use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\Video;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
+use Queue;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase
@@ -178,8 +182,12 @@ class ProjectTest extends ModelTestCase
         }
 
         // use the force to detach and delete the volume
+        Queue::fake();
         $this->model->removeVolume($volume, true);
-        $this->assertNull($volume->fresh());
+        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
+            return $volume->id === $job->volume->id;
+        });
+        $this->assertFalse($this->model->volumes()->exists());
     }
 
     public function testRemoveAllVolumes()
@@ -204,8 +212,12 @@ class ProjectTest extends ModelTestCase
         }
 
         // use the force to detach and delete the volume
+        Queue::fake();
         $this->model->removeAllVolumes(true);
-        $this->assertNull($volume->fresh());
+        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
+            return $volume->id === $job->volume->id;
+        });
+        $this->assertFalse($this->model->volumes()->exists());
     }
 
     public function testLabelTrees()
@@ -231,19 +243,38 @@ class ProjectTest extends ModelTestCase
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 
-    public function testGetThumbnailAttributeNull()
+    public function testDefaultLabelTreesWithoutVersions()
     {
-        $this->assertEquals(null, $this->model->thumbnail);
+        $version = LabelTreeVersionTest::create();
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $project = self::create();
+        $ids = $project->labelTrees()->pluck('id')->all();
+        $this->assertEquals([$version->labelTree->id], $ids);
     }
 
-    public function testGetThumbnailAttribute()
+    public function testGetThumbnailUrlAttributeNull()
+    {
+        $this->assertEquals(null, $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailUrlAttributeImage()
     {
         $i1 = ImageTest::create();
         $i2 = ImageTest::create();
         $this->model->addVolumeId($i1->volume_id);
         $this->model->addVolumeId($i2->volume_id);
 
-        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+        $this->assertStringContainsString($i1->uuid, $this->model->thumbnailUrl);
+    }
+
+    public function testGetThumbnailUrlAttributeVideo()
+    {
+        $v1 = VideoTest::create();
+        $v2 = VideoTest::create();
+        $this->model->addVolumeId($v1->volume_id);
+        $this->model->addVolumeId($v2->volume_id);
+
+        $this->assertStringContainsString($v1->uuid, $this->model->thumbnailUrl);
     }
 
     public function testHasGeoInfo()
@@ -276,5 +307,33 @@ class ProjectTest extends ModelTestCase
 
         $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
         $this->assertEmpty($projects);
+    }
+
+    public function testImageVolumes()
+    {
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->imageVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->imageVolumes()->count());
+    }
+
+    public function testVideoVolumes()
+    {
+        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(0, $this->model->videoVolumes()->count());
+        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->model->addVolumeId($v->id);
+        $this->assertEquals(1, $this->model->videoVolumes()->count());
+    }
+
+    public function testScopeAccessibleBy()
+    {
+        $user = UserTest::create();
+        $this->assertFalse(Project::accessibleBy($user)->exists());
+        $this->model->addUserId($user->id, Role::guestId());
+        $this->assertTrue(Project::accessibleBy($user)->exists());
     }
 }

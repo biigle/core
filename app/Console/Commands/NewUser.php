@@ -2,10 +2,11 @@
 
 namespace Biigle\Console\Commands;
 
-use Biigle\User;
 use Biigle\Role;
-use Ramsey\Uuid\Uuid;
+use Biigle\User;
 use Illuminate\Console\Command;
+use Ramsey\Uuid\Uuid;
+use Str;
 
 class NewUser extends Command
 {
@@ -41,7 +42,7 @@ class NewUser extends Command
         }
 
         if ($this->confirm('Do you wish to auto-generate a password? [y|N]')) {
-            $password = str_random(10);
+            $password = Str::random(10);
             $this->info("The password is <comment>{$password}</comment>");
         } else {
             $password = $this->secret('Please enter the password (min. 8 characters)');

@@ -2,17 +2,19 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use View;
-use Validator;
-use Biigle\User;
+use Biigle\Http\Controllers\Controller;
+use Biigle\Http\Requests\StoreUser;
+use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Role;
+use Biigle\User;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Notification;
 use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Request;
-use Biigle\Http\Requests\StoreUser;
-use Biigle\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Biigle\Notifications\RegistrationConfirmation;
+use Validator;
+use View;
 
 class RegisterController extends Controller
 {
@@ -73,6 +75,10 @@ class RegisterController extends Controller
             $additionalRules['privacy'] = 'required|accepted';
         }
 
+        if (View::exists('terms')) {
+            $additionalRules['terms'] = 'required|accepted';
+        }
+
         return Validator::make($data, array_merge($rules, $additionalRules));
     }
 
@@ -89,7 +95,7 @@ class RegisterController extends Controller
         $user->lastname = $data['lastname'];
         $user->affiliation = $data['affiliation'];
         $user->email = $data['email'];
-        $user->password = bcrypt($data['password']);
+        $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
         if ($this->isAdminConfirmationEnabled()) {
             $user->role_id = Role::guestId();
@@ -109,7 +115,7 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
         if ($this->isRegistrationDisabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return $this->baseShowRegistrationForm();
@@ -124,7 +130,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         if ($this->isRegistrationDisabled()) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return $this->baseRegister($request);

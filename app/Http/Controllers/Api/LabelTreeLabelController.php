@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Label;
-use Ramsey\Uuid\Uuid;
-use Biigle\LabelSource;
 use Biigle\Http\Requests\StoreLabel;
+use Biigle\Label;
+use Biigle\LabelSource;
+use Ramsey\Uuid\Uuid;
 
 class LabelTreeLabelController extends Controller
 {
