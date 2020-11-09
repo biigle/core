@@ -1,0 +1,12 @@
+.filter-select {
+    display: flex;
+
+    .typeahead {
+        flex: 1;
+        margin-right: $padding-base-horizontal;
+
+        .form-control {
+            display: block;
+        }
+    }
+}

@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
+use Biigle\ApiToken;
 use Biigle\Role;
 use Biigle\User;
-use Biigle\ApiToken;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ApiTokenPolicy
@@ -26,7 +26,7 @@ class ApiTokenPolicy
      * Determine if the given token can be deleted by the user.
      *
      * @param  User  $user
-     * @param  ApiToken  $project
+     * @param  ApiToken  $token
      * @return bool
      */
     public function destroy(User $user, ApiToken $token)

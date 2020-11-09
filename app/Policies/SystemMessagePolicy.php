@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\User;
 use Biigle\SystemMessage;
+use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SystemMessagePolicy
@@ -13,7 +13,7 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can create systemMessages.
      *
-     * @param  Biigle\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function create(User $user)
@@ -24,8 +24,8 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can update the systemMessage.
      *
-     * @param  Biigle\User  $user
-     * @param  Biigle\SystemMessage  $systemMessage
+     * @param  User  $user
+     * @param  SystemMessage  $systemMessage
      * @return mixed
      */
     public function update(User $user, SystemMessage $systemMessage)
@@ -36,14 +36,14 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can delete the systemMessage.
      *
-     * @param  Biigle\User  $user
-     * @param  Biigle\SystemMessage  $systemMessage
+     * @param  User  $user
+     * @param  SystemMessage  $systemMessage
      * @return mixed
      */
     public function destroy(User $user, SystemMessage $systemMessage)
     {
         if ($systemMessage->published_at !== null) {
-            $this->deny('Published system messages cannot be deleted.');
+            return $this->deny('Published system messages cannot be deleted.');
         }
 
         return $user->can('sudo');

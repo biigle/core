@@ -18,7 +18,9 @@ class ModulesTest extends TestCase
 
     public function testGetControllerMixins()
     {
-        $func = function () {};
+        $func = function () {
+            //
+        };
         Modules::registerControllerMixin('myModule', 'dashboard', $func);
 
         $this->assertEmpty(Modules::getControllerMixins('nonexistent'));
@@ -27,7 +29,9 @@ class ModulesTest extends TestCase
 
     public function testRegister()
     {
-        $func = function () {};
+        $func = function () {
+            //
+        };
 
         Modules::register('myModule', [
             'viewMixins' => ['dashboard', 'settings'],
@@ -55,7 +59,7 @@ class ModulesTest extends TestCase
         });
         Modules::registerControllerMixin('myModule2', 'dashboard', ControllerMixinStub::class.'@call');
 
-        $values = Modules::callControllerMixins('dashboard', ['arg']);
+        $values = Modules::callControllerMixins('dashboard', ['arg' => 1]);
         $this->assertEquals(['callable' => true, 'callableWithAtSign' => true], $values);
     }
 }

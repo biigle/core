@@ -2,6 +2,8 @@
 
 namespace Biigle\Traits;
 
+use Arr;
+
 trait HasJsonAttributes
 {
     /**
@@ -16,9 +18,9 @@ trait HasJsonAttributes
         $a = $this->{$attrs} ?: [];
 
         if ($value === null) {
-            array_forget($a, $key);
+            Arr::forget($a, $key);
         } else {
-            array_set($a, $key, $value);
+            Arr::set($a, $key, $value);
         }
 
         $this->{$attrs} = $a ?: null;
@@ -35,6 +37,6 @@ trait HasJsonAttributes
      */
     protected function getJsonAttr($key, $default = null, $attrs = 'attrs')
     {
-        return array_get($this->{$attrs}, $key, $default);
+        return Arr::get($this->{$attrs}, $key, $default);
     }
 }

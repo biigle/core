@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\User;
-use Biigle\Role;
-use Ramsey\Uuid\Uuid;
-use Illuminate\Http\Request;
-use Biigle\Http\Requests\StoreUser;
-use Biigle\Http\Requests\UpdateUser;
-use Biigle\Http\Requests\DestroyUser;
-use Biigle\Http\Requests\UpdateOwnUser;
 use Biigle\Http\Requests\DestroyOwnUser;
+use Biigle\Http\Requests\DestroyUser;
+use Biigle\Http\Requests\StoreUser;
+use Biigle\Http\Requests\UpdateOwnUser;
+use Biigle\Http\Requests\UpdateUser;
+use Biigle\Role;
+use Biigle\User;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Uuid;
 
 class UserController extends Controller
 {
@@ -201,7 +201,7 @@ class UserController extends Controller
      */
     public function update(UpdateUser $request)
     {
-        $user = $request->user;
+        $user = $request->updateUser;
 
         if ($user->id === $request->user()->id) {
             throw ValidationException::withMessages([
@@ -241,7 +241,6 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
-     * @apiParam (Attributes that can be updated) {Bool} super_user_mode Global admins can toggle this attribute to act as normal user or as "super user".
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -257,11 +256,7 @@ class UserController extends Controller
      */
     public function updateOwn(UpdateOwnUser $request)
     {
-        $user = $request->user;
-
-        if ($request->filled('super_user_mode')) {
-            $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
-        }
+        $user = $request->updateUser;
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password'));
@@ -371,7 +366,7 @@ class UserController extends Controller
      */
     public function destroy(DestroyUser $request)
     {
-        $user = $request->user;
+        $user = $request->destroyUser;
         if ($user->id === $request->user()->id) {
             throw ValidationException::withMessages([
                 'id' => ['The own user cannot be updated using this endpoint.'],
@@ -403,7 +398,7 @@ class UserController extends Controller
         auth()->logout();
         // delete the user AFTER logging them out, otherwise logout would save
         // them again
-        $request->user->delete();
+        $request->destroyUser->delete();
 
         if (!$this->isAutomatedRequest()) {
             return redirect('login');

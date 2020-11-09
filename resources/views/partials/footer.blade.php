@@ -14,6 +14,9 @@
             @if (View::exists('privacy'))
                 <li><a href="{{route('privacy')}}" title="Privacy">Privacy</a></li>
             @endif
+            @if (View::exists('terms'))
+                <li><a href="{{route('terms')}}" title="Terms">Terms</a></li>
+            @endif
             @if (isset($links) && is_array($links))
                 @foreach($links as $link => $url)
                     <li><a href="{{$url}}">{{$link}}</a></li>

@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Project;
-use Biigle\LabelTree;
-use Biigle\Visibility;
-use Illuminate\Http\Request;
 use Biigle\Http\Requests\StoreProjectLabelTree;
+use Biigle\LabelTree;
+use Biigle\Project;
+use Biigle\Visibility;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 
 class ProjectLabelTreeController extends Controller
 {
@@ -76,12 +76,14 @@ class ProjectLabelTreeController extends Controller
      *    {
      *       "id": 1,
      *       "name": "Global",
-     *       "description": "The global label tree"
+     *       "description": "The global label tree",
+     *       "version": null
      *    },
      *    {
      *       "id": 2,
      *       "name": "Special",
-     *       "description": "The project specific label tree"
+     *       "description": "The project specific label tree",
+     *       "version": null
      *    }
      * ]
      *
@@ -94,9 +96,13 @@ class ProjectLabelTreeController extends Controller
         $this->authorize('access', $project);
 
         $public = LabelTree::publicTrees()
-            ->select('id', 'name', 'description')->get();
+            ->select('id', 'name', 'description', 'version_id')
+            ->with('version')
+            ->get();
         $authorized = $project->authorizedLabelTrees()
-            ->select('id', 'name', 'description')->get();
+            ->select('id', 'name', 'description', 'version_id')
+            ->with('version')
+            ->get();
 
         return $public->merge($authorized)->unique('id')->all();
     }

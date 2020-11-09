@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class ImagePolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->image = ImageTest::create();

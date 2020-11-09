@@ -8,6 +8,10 @@ figcaption {
     max-width: 100%;
     max-height: 100%;
     overflow: hidden;
+    background-color: $gray-lighter;
+    border: 2px solid $gray-lighter;
+    border-radius: $border-radius-base;
+
 
     &:hover .caption {
         opacity: 1;
@@ -18,11 +22,8 @@ figcaption {
         height: 100%;
     }
 
-    img, .caption {
-        border-radius: $border-radius-base;
-    }
-
     img {
+        width: auto;
         height: 100%;
     }
 
@@ -38,6 +39,13 @@ figcaption {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+}
+
+@supports (object-fit: contain) {
+    .image-thumbnail img {
+        width: 100%;
+        object-fit: contain;
     }
 }
 

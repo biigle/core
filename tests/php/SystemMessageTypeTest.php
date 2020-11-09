@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\SystemMessageType;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class SystemMessageTypeTest extends ModelTestCase
 {

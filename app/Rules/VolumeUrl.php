@@ -3,12 +3,13 @@
 namespace Biigle\Rules;
 
 use App;
-use Storage;
+use Exception;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Validation\Rule;
-use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Illuminate\Contracts\Validation\Rule;
+use Storage;
 
 class VolumeUrl implements Rule
 {
@@ -79,6 +80,10 @@ class VolumeUrl implements Rule
             $this->message = 'The remote volume URL does not seem to exist. '.$e->getMessage();
 
             return false;
+        } catch (Exception $e) {
+            $this->message = 'There was an error with the remote volume URL. '.$e->getMessage();
+
+            return false;
         }
 
         return true;
@@ -106,7 +111,8 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (empty(Storage::disk($url[0])->files($url[1]))) {
+        $disk = Storage::disk($url[0]);
+        if (empty($disk->files($url[1])) && empty($disk->directories($url[1]))) {
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
             return false;

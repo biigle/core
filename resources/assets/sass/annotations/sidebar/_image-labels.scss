@@ -1,0 +1,45 @@
+.file-label-tab {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow-x: hidden;
+
+    h4 {
+        padding: 14px;
+        margin: 0;
+        position: relative;
+    }
+
+    .file-label__buttons {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+        z-index: 1;
+    }
+
+    .file-label-list {
+        .text-muted {
+            padding: 0 1em;
+        }
+    }
+
+    .file-label {
+        border-bottom: 1px solid #353535;
+        padding: 1em;
+        padding-left: 32px;
+
+        &:first-child {
+            border-top: 1px solid #353535;
+        }
+    }
+
+    .file-label__color {
+        top: 1.2em;
+        left: 1em;
+    }
+
+    .file-label__delete {
+        top: 12px;
+        right: 14px;
+    }
+}

@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Volume;
 use Biigle\Rules\VolumeUrl;
+use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVolume extends FormRequest
@@ -36,7 +36,6 @@ class UpdateVolume extends FormRequest
     {
         return [
             'name' => 'filled|max:512',
-            'media_type_id' => 'filled|exists:media_types,id',
             'url' => ['filled', new VolumeUrl],
         ];
     }

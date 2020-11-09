@@ -32,7 +32,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labelTree', Vue.resource('api/v1/label-trees{/id}', {}, {
+export default Vue.resource('api/v1/label-trees{/id}', {}, {
     addAuthorizedProject: {
         method: 'POST',
         url: 'api/v1/label-trees{/id}/authorized-projects',
@@ -53,4 +53,4 @@ biigle.$declare('api.labelTree', Vue.resource('api/v1/label-trees{/id}', {}, {
         method: 'DELETE',
         url: 'api/v1/label-trees{/id}/users{/user_id}',
     },
-}));
+});

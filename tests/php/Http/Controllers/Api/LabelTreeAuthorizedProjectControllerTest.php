@@ -2,10 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
-use Biigle\Visibility;
+use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeVersionTest;
+use Biigle\Visibility;
 
 class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
 {
@@ -67,6 +68,31 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $this->assertEquals(1, $tree->authorizedProjects()->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
+    }
+
+    public function testStoreVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/authorized-projects", [
+                'id' => $this->project()->id,
+            ])
+            ->assertStatus(403);
+    }
+
+    public function testStorePropagateVersions()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $this->beAdmin();
+        $this->postJson("/api/v1/label-trees/{$version->labelTree->id}/authorized-projects", [
+                'id' => $this->project()->id,
+            ])
+            ->assertStatus(200);
+        $this->assertNotNull($tree->authorizedProjects()->find($this->project()->id));
     }
 
     public function testDestroy()
@@ -134,5 +160,31 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $this->assertFalse($tree->authorizedProjects()->exists());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('deleted', true);
+    }
+
+    public function testDestroyVersions()
+    {
+        $id = $this->project()->id;
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $tree->authorizedProjects()->attach($id);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$tree->id}/authorized-projects/{$id}")
+            ->assertStatus(403);
+    }
+
+    public function testDestroyPropagateVersions()
+    {
+        $id = $this->project()->id;
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->authorizedProjects()->attach($id);
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $tree->authorizedProjects()->attach($id);
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$version->labelTree->id}/authorized-projects/{$id}")
+            ->assertStatus(200);
+        $this->assertNull($tree->authorizedProjects()->find($id));
     }
 }

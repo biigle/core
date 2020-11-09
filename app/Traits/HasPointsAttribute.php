@@ -2,8 +2,8 @@
 
 namespace Biigle\Traits;
 
-use Exception;
 use Biigle\Shape;
+use Exception;
 
 trait HasPointsAttribute
 {
@@ -43,6 +43,13 @@ trait HasPointsAttribute
 
         if (!$valid) {
             throw new Exception('Invalid number of points for shape '.$this->shape->name.'!');
+        }
+
+        if ($this->shape_id === Shape::polygonId()) {
+            $length = count($points);
+            if ($points[0] !== $points[$length - 2] || $points[1] !== $points[$length - 1]) {
+                throw new Exception('The first and last coordinate of a polygon must be the same.');
+            }
         }
     }
 

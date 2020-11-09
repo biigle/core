@@ -2,15 +2,15 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Route;
-use Biigle\Role;
-use Ramsey\Uuid\Uuid;
-use Biigle\LabelTree;
-use Biigle\Visibility;
-use Illuminate\Http\Request;
+use Biigle\Http\Requests\DestroyLabelTree;
 use Biigle\Http\Requests\StoreLabelTree;
 use Biigle\Http\Requests\UpdateLabelTree;
-use Biigle\Http\Requests\DestroyLabelTree;
+use Biigle\LabelTree;
+use Biigle\Role;
+use Biigle\Visibility;
+use DB;
+use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class LabelTreeController extends Controller
 {
@@ -40,7 +40,8 @@ class LabelTreeController extends Controller
     {
         return LabelTree::accessibleBy($request->user())
             ->orderByDesc('id')
-            ->select('id', 'name', 'description', 'created_at', 'updated_at')
+            ->select('id', 'name', 'description', 'created_at', 'updated_at', 'version_id')
+            ->with('version')
             ->get();
     }
 
@@ -83,7 +84,13 @@ class LabelTreeController extends Controller
      *          "lastname": "Beier",
      *          "role_id": 2
      *       }
-     *    ]
+     *    ],
+     *    "version": {
+     *       "id": 1,
+     *       "name": "v1.0",
+     *       "description": null
+     *    },
+     *    "versions": []
      * }
      *
      *
@@ -94,7 +101,7 @@ class LabelTreeController extends Controller
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
 
-        return $tree->load('labels', 'members');
+        return $tree->load('labels', 'members', 'version', 'versions');
     }
 
     /**
@@ -111,6 +118,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam (Optional attributes) {String} description Description of the new label tree.
      * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
+     * @apiParam (Optional attributes) {Number} upstream_label_tree_id ID of a label tree to fork. All labels of the upstream label tree will be copied to the new label tree.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -128,18 +136,27 @@ class LabelTreeController extends Controller
      */
     public function store(StoreLabelTree $request)
     {
-        $tree = new LabelTree;
-        $tree->name = $request->input('name');
-        $tree->visibility_id = (int) $request->input('visibility_id');
-        $tree->description = $request->input('description');
-        $tree->uuid = Uuid::uuid4();
-        $tree->save();
-        $tree->addMember($request->user(), Role::admin());
+        $tree = DB::transaction(function () use ($request) {
+            $tree = new LabelTree;
+            $tree->name = $request->input('name');
+            $tree->visibility_id = $request->input('visibility_id');
+            $tree->description = $request->input('description');
+            $tree->uuid = Uuid::uuid4();
+            $tree->save();
+            $tree->addMember($request->user(), Role::admin());
 
-        if (isset($request->project)) {
-            $tree->projects()->attach($request->project);
-            $tree->authorizedProjects()->attach($request->project);
-        }
+            if (isset($request->project)) {
+                $tree->projects()->attach($request->project);
+                $tree->authorizedProjects()->attach($request->project);
+            }
+
+            if (isset($request->upstreamLabelTree)) {
+                $tree->replicateLabelsOf($request->upstreamLabelTree);
+                $tree->load('labels');
+            }
+
+            return $tree;
+        });
 
         if ($this->isAutomatedRequest()) {
             return $tree;
@@ -174,16 +191,30 @@ class LabelTreeController extends Controller
         $tree = $request->tree;
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
-
         $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
 
-        // Compare the ID of the label tree attribute because it is cast to an int.
-        // The request value is a string and can't be used for strict comparison.
-        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::privateId()) {
-            $tree->detachUnauthorizedProjects();
-        }
+        DB::transaction(function () use ($tree) {
+            if ($tree->isDirty('visibility_id')) {
+                // Propoagate the visibility change to all versions of the label tree.
+                LabelTree::join('label_tree_versions', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                    ->where('label_tree_versions.label_tree_id', $tree->id)
+                    ->update(['visibility_id' => $tree->visibility_id]);
 
-        $tree->save();
+                if ($tree->visibility_id === Visibility::privateId()) {
+                    $tree->detachUnauthorizedProjects();
+                }
+            }
+
+            if ($tree->isDirty('name')) {
+                // Propoagate the name change to all versions of the label tree.
+                LabelTree::join('label_tree_versions', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                    ->where('label_tree_versions.label_tree_id', $tree->id)
+                    ->update(['name' => $tree->name]);
+            }
+
+            $tree->save();
+        });
+
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()
@@ -200,7 +231,7 @@ class LabelTreeController extends Controller
      * @apiGroup Label Trees
      * @apiName DestroyLabelTrees
      * @apiPermission labelTreeAdmin
-     * @apiDescription A label tree cannot be deleted if it contains labels that are still used somewhere.
+     * @apiDescription A label tree cannot be deleted if it or any of its versions contain labels that are still used.
      *
      * @apiParam {Number} id The label tree ID.
      *

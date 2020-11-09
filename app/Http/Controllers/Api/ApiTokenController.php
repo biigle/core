@@ -4,6 +4,8 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\ApiToken;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Str;
 
 class ApiTokenController extends Controller
 {
@@ -75,12 +77,12 @@ class ApiTokenController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', ApiToken::class);
-        $this->validate($request, ['purpose' => 'required']);
+        $this->validate($request, ['purpose' => 'required|max:255']);
 
         $token = new ApiToken;
         $token->owner_id = $request->user()->id;
         $token->purpose = $request->input('purpose');
-        $secret = str_random(32);
+        $secret = Str::random(32);
         $token->hash = bcrypt($secret);
         $token->save();
         // return the un-hashed token only this time
@@ -120,7 +122,7 @@ class ApiTokenController extends Controller
             }
         } else {
             // Dont't disclose existing token IDs to other users.
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
     }
 }

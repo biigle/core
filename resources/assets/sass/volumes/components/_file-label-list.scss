@@ -1,0 +1,30 @@
+.file-label-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-label {
+    position: relative;
+    padding: $padding-small-vertical $padding-small-horizontal $padding-small-vertical 22px;
+
+    &.file-label--deleting {
+        color: $text-muted;
+    }
+
+    .file-label__color {
+        position: absolute;
+        top: 9px;
+        left: .25em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .file-label__delete {
+        position: absolute;
+        top: $padding-small-vertical;
+        right: 5px;
+    }
+}

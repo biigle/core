@@ -2,8 +2,12 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use File;
 use Biigle\Http\Controllers\Controller;
+use Biigle\Logging\LogManager;
+use Carbon\Carbon;
+use File;
+use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LogsController extends Controller
 {
@@ -15,13 +19,38 @@ class LogsController extends Controller
     public function index()
     {
         if (!config('biigle.admin_logs')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
-        $logs = File::glob(storage_path('logs').'/*.log');
-        $logs = array_map(function ($path) {
-            return File::name($path);
-        }, $logs);
+        $manager = new LogManager;
+
+        if ($manager->isFile()) {
+            $logs = $manager->getLogFilenames();
+        } elseif ($manager->isRedis()) {
+            $perPage = 10;
+            $messages = $manager->getRedisLogMessages();
+            $total = count($messages);
+            $paginator = new LengthAwarePaginator([], $total, $perPage);
+            $paginator->setPath(LengthAwarePaginator::resolveCurrentPath());
+
+            $messages = collect($messages)
+                ->reverse()
+                ->skip(($paginator->currentPage() - 1) * $perPage)
+                ->take($perPage)
+                ->map(function ($message) {
+                    $message = json_decode($message, true);
+                    $message['date'] = $message['datetime']['date'];
+
+                    return $message;
+                });
+
+            $paginator->setCollection($messages);
+
+            return view('admin.logs.index-redis', compact('paginator'));
+        } else {
+            $logs = [];
+        }
+
 
         return view('admin.logs.index', compact('logs'));
     }
@@ -34,17 +63,18 @@ class LogsController extends Controller
     public function show($file)
     {
         if (!config('biigle.admin_logs')) {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
 
-        $path = storage_path('logs')."/{$file}.log";
-        if (!File::exists($path)) {
-            abort(404);
+        $manager = new LogManager;
+
+        if (!$manager->isFile() || !in_array($file, $manager->getLogFilenames())) {
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return view('admin.logs.show', [
             'file' => $file,
-            'content' => File::get($path),
+            'content' => $manager->getLogFileContent($file),
         ]);
     }
 }

@@ -34,7 +34,7 @@ class UpdateAnnotationSession extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'filled',
+            'name' => 'filled|max:256',
             'starts_at' => 'filled|date',
             'ends_at' => 'filled|date',
             'users' => 'filled|array',

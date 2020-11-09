@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use TestCase;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
+use TestCase;
 
 class SettingsControllerTest extends TestCase
 {

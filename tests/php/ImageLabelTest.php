@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\ImageLabel;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class ImageLabelTest extends ModelTestCase
 {
@@ -15,11 +15,13 @@ class ImageLabelTest extends ModelTestCase
 
     public function testAttributes()
     {
+        $this->assertNotNull($this->model->file);
         $this->assertNotNull($this->model->image);
         $this->assertNotNull($this->model->label);
         $this->assertNotNull($this->model->user);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->file_id);
     }
 
     public function testImageOnDeleteCascade()

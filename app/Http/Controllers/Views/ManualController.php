@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Illuminate\Http\Response;
 use View;
 
 class ManualController extends Controller
@@ -27,17 +28,15 @@ class ManualController extends Controller
     {
         $view = 'manual.tutorials.';
 
-        if (is_null($article)) {
-            $view .= $module;
-        } else {
-            $view = "{$module}::{$view}{$article}";
+        if (is_null($article) && View::exists("{$view}{$module}")) {
+            return View::make("{$view}{$module}");
+        } elseif (View::exists("{$view}{$module}.{$article}")) {
+            return View::make("{$view}{$module}.{$article}");
+        } elseif (View::exists("{$module}::{$view}{$article}")) {
+            return View::make("{$module}::{$view}{$article}");
         }
 
-        if (View::exists($view)) {
-            return View::make($view);
-        } else {
-            abort(404);
-        }
+        abort(Response::HTTP_NOT_FOUND);
     }
 
     /**
@@ -60,7 +59,7 @@ class ManualController extends Controller
         if (View::exists($view)) {
             return View::make($view);
         } else {
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
     }
 }

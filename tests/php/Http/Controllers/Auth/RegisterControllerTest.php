@@ -2,20 +2,20 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
-use View;
-use Session;
-use TestCase;
-use Honeypot;
-use Biigle\User;
+use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
-use Illuminate\Support\Facades\Notification;
+use Biigle\User;
+use Honeypot;
 use Illuminate\Notifications\AnonymousNotifiable;
-use Biigle\Notifications\RegistrationConfirmation;
+use Illuminate\Support\Facades\Notification;
+use Session;
+use TestCase;
+use View;
 
 class RegisterControllerTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         config(['biigle.user_registration' => true]);
@@ -149,6 +149,7 @@ class RegisterControllerTest extends TestCase
     {
         Notification::fake();
         View::shouldReceive('exists')->with('privacy')->andReturn(true);
+        View::shouldReceive('exists')->with('terms')->andReturn(false);
         View::shouldReceive('share')->passthru();
         View::shouldReceive('make')->andReturn('');
         $this->get('register');
@@ -173,6 +174,40 @@ class RegisterControllerTest extends TestCase
             'affiliation' => 'something',
             'homepage' => 'honeypotvalue',
             'privacy' => '1',
+        ])->assertRedirect('/');
+
+        $this->assertEquals(1, User::count());
+    }
+
+    public function testRegisterTerms()
+    {
+        Notification::fake();
+        View::shouldReceive('exists')->with('privacy')->andReturn(false);
+        View::shouldReceive('exists')->with('terms')->andReturn(true);
+        View::shouldReceive('share')->passthru();
+        View::shouldReceive('make')->andReturn('');
+        $this->get('register');
+        $response = $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ])->assertRedirect('register');
+
+        $this->assertEquals(0, User::count());
+
+        $response = $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+            'terms' => '1',
         ])->assertRedirect('/');
 
         $this->assertEquals(1, User::count());

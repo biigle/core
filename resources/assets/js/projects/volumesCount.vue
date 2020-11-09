@@ -1,0 +1,17 @@
+<script>
+import Events from '../core/events';
+
+/**
+ * The panel for editing the members of a project
+ */
+export default {
+    methods: {
+        updateCount(count) {
+            this.$el.textContent = count;
+        },
+    },
+    created() {
+        Events.$on('project.volumes.count', this.updateCount);
+    },
+};
+</script>

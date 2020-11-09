@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
 use Biigle\SystemMessage;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\SystemMessageTest;
+use Biigle\Tests\UserTest;
+use TestCase;
 
 class SystemMessagePolicyTest extends TestCase
 {
@@ -14,7 +14,7 @@ class SystemMessagePolicyTest extends TestCase
     private $globalAdmin;
     private $message;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->user = UserTest::create();

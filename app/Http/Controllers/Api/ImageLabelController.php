@@ -2,16 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Image;
-use Biigle\Label;
-use Biigle\ImageLabel;
 use Biigle\Http\Requests\StoreImageLabel;
+use Biigle\Image;
+use Biigle\ImageLabel;
 
-class ImageLabelController extends Controller
+class ImageLabelController extends VolumeFileLabelController
 {
     /**
-     * Shows all labels of the specified image.
-     *
      * @api {get} images/:id/labels Get all labels
      * @apiGroup Images
      * @apiName IndexImageLabels
@@ -40,18 +37,7 @@ class ImageLabelController extends Controller
      *    }
      * ]
      *
-     * @param int $id Annotation ID
-     * @return \Illuminate\Http\Response
      */
-    public function index($id)
-    {
-        $image = Image::findOrFail($id);
-        $this->authorize('access', $image);
-
-        return $image->labels()
-            ->select('id', 'label_id', 'user_id')
-            ->get();
-    }
 
     /**
      * Creates a new label for the specified image.
@@ -90,45 +76,35 @@ class ImageLabelController extends Controller
      */
     public function store(StoreImageLabel $request)
     {
-        $imageLabel = new ImageLabel;
-        $imageLabel->user()->associate($request->user());
-        $imageLabel->label()->associate($request->label);
-        $imageLabel->image()->associate($request->image);
-
-        $exists = ImageLabel::where('label_id', $imageLabel->label_id)
-            ->where('image_id', $imageLabel->image_id)
-            ->exists();
-
-        if ($exists) {
-            abort(400, 'This label is already attached to the image.');
-        } else {
-            $imageLabel->save();
-        }
-
-        // should not be returned
-        unset($imageLabel->image);
-
-        return $imageLabel;
+        return parent::baseStore($request);
     }
 
     /**
-     * Deletes the specified image label.
-     *
      * @api {delete} image-labels/:id Detach a label
      * @apiGroup Images
      * @apiName DeleteImageLabels
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The image **label** ID (not the image ID).
-     *
-     * @param int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        $imageLabel = ImageLabel::findOrFail($id);
-        $this->authorize('destroy', $imageLabel);
 
-        $imageLabel->delete();
+     /**
+     * Get the file model class name.
+     *
+     * @return string
+     */
+    protected function getFileModel()
+    {
+        return Image::class;
+    }
+
+     /**
+     * Get the file label model class name.
+     *
+     * @return string
+     */
+    protected function getFileLabelModel()
+    {
+        return ImageLabel::class;
     }
 }

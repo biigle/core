@@ -3,12 +3,34 @@
 namespace Biigle\Providers;
 
 use Auth;
-use Illuminate\Support\Facades\View;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton('modules', function () {
+            return new \Biigle\Services\Modules;
+        });
+        // Use the singleton in any instances where the modules service should be used
+        // via dependency injection.
+        $this->app->alias('modules', \Biigle\Services\Modules::class);
+
+        $this->app->bind('vips-image', function () {
+            return new \Jcupitt\Vips\Image(null);
+        });
+    }
+
     /**
      * Bootstrap any application services.
      *
@@ -32,30 +54,16 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('mixin', function ($name) {
             // Used code from:
             // Illuminate\View\Compilers\Concerns\CompilesIncludes::compileInclude
-            return "<?php foreach (app('modules')->getViewMixins({$name}) as \$module => \$nestedMixins): ?><?php echo \$__env->make(\$module.'::'.{$name}, ['mixins' => \$nestedMixins], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?><?php endforeach; ?>";
-        });
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('modules', function () {
-            return new \Biigle\Services\Modules;
-        });
-        // Use the singleton in any instances where the modules service should be used
-        // via dependency injection.
-        $this->app->alias('modules', \Biigle\Services\Modules::class);
-
-        $this->app->bind('vips-image', function () {
-            return new \Jcupitt\Vips\Image(null);
+            return "<?php foreach (app('modules')->getViewMixins({$name}) as \$module => \$nestedMixins): ?><?php echo \$__env->make(\$module.'::'.{$name}, ['mixins' => \$nestedMixins], \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?><?php endforeach; ?>";
         });
 
-        $this->app->bind('tile-cache', function () {
-            return new \Biigle\Services\TileCache;
+        // Backwards compatibility after upgrade from Laravel 5.5 to 5.6.
+        Paginator::useBootstrapThree();
+
+        Validator::extend('id', function ($attribute, $value, $parameters, $validator) {
+            $int = intval($value);
+
+            return $int > 0 && $int < 2147483647;
         });
     }
 }

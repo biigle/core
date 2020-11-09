@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use TestCase;
 use Biigle\Role;
 use Illuminate\Database\QueryException;
+use TestCase;
 
 class ProjectUserIntegrityTest extends TestCase
 {

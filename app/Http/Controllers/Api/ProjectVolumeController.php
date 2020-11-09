@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Queue;
-use Biigle\Volume;
-use Biigle\Project;
-use Illuminate\Http\Request;
-use Biigle\Jobs\CreateNewImages;
 use Biigle\Http\Requests\StoreVolume;
+use Biigle\Jobs\CreateNewImagesOrVideos;
+use Biigle\Project;
+use Biigle\Volume;
+use DB;
+use Illuminate\Http\Request;
+use Queue;
 
 class ProjectVolumeController extends Controller
 {
@@ -57,19 +57,21 @@ class ProjectVolumeController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {String} name The name of the new volume.
-     * @apiParam (Required attributes) {String} url The base URL of the image files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`.
-     * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new volume.
-     * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
+     * @apiParam (Required attributes) {String} url The base URL of the image/video files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`.
+     * @apiParam (Required attributes) {String} media_type The media type of the new volume (`image` or `video`). If this attribute is missing, `image` is assumed for backwards compatibility.
+     * @apiParam (Required attributes) {String} files List of file names of the images/videos that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
-     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this volume.
+     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
+     *
+     * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
      * @apiParamExample {String} Request example:
      * name: 'New volume'
      * url: 'local://volumes/test-volume'
      * media_type_id: 1
-     * images: '1.jpg,2.jpg,3.jpg'
+     * files: '1.jpg,2.jpg,3.jpg'
      * video_link: 'http://example.com'
      * gis_link: 'http://gis.example.com'
      * doi: '10.3389/fmars.2017.00083'
@@ -96,7 +98,7 @@ class ProjectVolumeController extends Controller
         $volume = new Volume;
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
-        $volume->setMediaTypeId($request->input('media_type_id'));
+        $volume->media_type_id = $request->input('media_type_id');
         $volume->video_link = $request->input('video_link');
         $volume->gis_link = $request->input('gis_link');
         $volume->doi = $request->input('doi');
@@ -104,12 +106,12 @@ class ProjectVolumeController extends Controller
         $volume->save();
         $request->project->volumes()->attach($volume);
 
-        $images = $request->input('images');
+        $files = $request->input('files');
 
-        // If too many images should be created, do this asynchronously in the
+        // If too many files should be created, do this asynchronously in the
         // background. Else the script will run in the 30 s execution timeout.
-        $job = new CreateNewImages($volume, $images);
-        if (count($images) > 10000) {
+        $job = new CreateNewImagesOrVideos($volume, $files);
+        if (count($files) > 10000) {
             Queue::pushOn('high', $job);
         } else {
             Queue::connection('sync')->push($job);

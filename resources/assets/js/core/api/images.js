@@ -28,7 +28,7 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.images', Vue.resource('api/v1/images{/id}', {}, {
+export default Vue.resource('api/v1/images{/id}', {}, {
     getFile: {
         method: 'GET',
         url: 'api/v1/images{/id}/file',
@@ -41,4 +41,4 @@ biigle.$declare('api.images', Vue.resource('api/v1/images{/id}', {}, {
         method: 'POST',
         url: 'api/v1/images{/id}/annotations',
     },
-}));
+});

@@ -2,10 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 use Biigle\LabelTree;
 use Biigle\Visibility;
+use DB;
 use Illuminate\Http\Request;
-use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 
 class LabelTreeAuthorizedProjectController extends Controller
 {
@@ -27,9 +28,23 @@ class LabelTreeAuthorizedProjectController extends Controller
     public function store(StoreLabelTreeAuthorizedProject $request)
     {
         $id = $request->input('id');
+        $tree = $request->tree;
+        if (!$tree->authorizedProjects()->where('id', $id)->exists()) {
+            DB::transaction(function () use ($tree, $id) {
+                $rows = $tree->versions()
+                    ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                    ->pluck('label_trees.id')
+                    ->concat([$tree->id])
+                    ->map(function ($treeId) use ($id) {
+                        return [
+                            'label_tree_id' => $treeId,
+                            'project_id' => $id,
+                        ];
+                    })
+                    ->all();
 
-        if (!$request->tree->authorizedProjects()->where('id', $id)->exists()) {
-            $request->tree->authorizedProjects()->attach($id);
+                DB::table('label_tree_authorized_project')->insert($rows);
+            });
         }
 
         if (!$this->isAutomatedRequest()) {
@@ -44,8 +59,7 @@ class LabelTreeAuthorizedProjectController extends Controller
      * @apiGroup Label Trees
      * @apiName DestroyLabelTreesAuthorizedProjects
      * @apiPermission labelTreeAdmin
-     * @apiDescription If the label tree is private, this action will remove the label tree
-     * from the list of label trees used by the project.
+     * @apiDescription If the label tree is private, this action will remove the label tree or any of its versions from the list of label trees used by the project.
      *
      * @apiParam {Number} lid The label tree ID.
      * @apiParam {Number} pid The project ID.
@@ -60,11 +74,24 @@ class LabelTreeAuthorizedProjectController extends Controller
         $tree = LabelTree::findOrFail($lid);
         $this->authorize('update', $tree);
 
-        $tree->authorizedProjects()->detach($pid);
+        DB::transaction(function () use ($tree, $pid) {
+            $treeIds = $tree->versions()
+                ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                ->pluck('label_trees.id')
+                ->concat([$tree->id]);
 
-        if ((int) $tree->visibility_id === Visibility::privateId()) {
-            $tree->projects()->detach($pid);
-        }
+            DB::table('label_tree_authorized_project')
+                ->where('project_id', $pid)
+                ->whereIn('label_tree_id', $treeIds)
+                ->delete();
+
+            if ($tree->visibility_id === Visibility::privateId()) {
+                DB::table('label_tree_project')
+                    ->where('project_id', $pid)
+                    ->whereIn('label_tree_id', $treeIds)
+                    ->delete();
+            }
+        });
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()->with('deleted', true);

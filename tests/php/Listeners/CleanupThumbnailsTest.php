@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Listeners;
 
+use Biigle\Events\ImagesDeleted;
+use Biigle\Listeners\CleanupThumbnails;
+use Biigle\Tests\ImageTest;
+use Illuminate\Events\CallQueuedListener;
 use Queue;
 use Storage;
 use TestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Events\ImagesDeleted;
-use Biigle\Listeners\CleanupThumbnails;
-use Illuminate\Events\CallQueuedListener;
 
 class CleanupThumbnailsTest extends TestCase
 {

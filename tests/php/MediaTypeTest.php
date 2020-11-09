@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests;
 
-use ModelTestCase;
 use Biigle\MediaType;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class MediaTypeTest extends ModelTestCase
 {
@@ -29,20 +29,20 @@ class MediaTypeTest extends ModelTestCase
 
     public function testNameUnique()
     {
-        self::create(['name' => 'images']);
+        self::create(['name' => 'test']);
         $this->expectException(QueryException::class);
-        self::create(['name' => 'images']);
+        self::create(['name' => 'test']);
     }
 
-    public function testTimeSeries()
+    public function testImage()
     {
-        $this->assertNotNull(MediaType::timeSeries());
-        $this->assertNotNull(MediaType::timeSeriesId());
+        $this->assertNotNull(MediaType::image());
+        $this->assertNotNull(MediaType::imageId());
     }
 
-    public function testLocationSeries()
+    public function testVideo()
     {
-        $this->assertNotNull(MediaType::locationSeries());
-        $this->assertNotNull(MediaType::locationSeriesId());
+        $this->assertNotNull(MediaType::video());
+        $this->assertNotNull(MediaType::videoId());
     }
 }

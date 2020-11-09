@@ -1,0 +1,26 @@
+.filter-tab {
+    .filter-tab__buttons, .select-component {
+        margin-bottom: $form-group-margin-bottom;
+    }
+
+    .list-group-item {
+        position: relative;
+        padding-right: 30px;
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+    }
+}
+
+
+.filter-form__selects {
+    display: flex;
+
+    .filter-select {
+        flex: 1;
+        margin-left: $padding-base-horizontal;
+    }
+}

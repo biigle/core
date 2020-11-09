@@ -2,10 +2,18 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\User;
+use Biigle\Http\Controllers\Controller;
+use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Services\Modules;
-use Biigle\Http\Controllers\Controller;
+use Biigle\User;
+use Biigle\Video;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
+use Biigle\Volume;
 
 class UsersController extends Controller
 {
@@ -21,7 +29,7 @@ class UsersController extends Controller
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(100);
 
         $roleNames = [
             Role::adminId() => 'Admin',
@@ -84,7 +92,11 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         $roleClass = $this->roleClassMap($user->role_id);
-        $values = $modules->callControllerMixins('adminShowUser', ['user' => $user]);
+        $values = $this->showProject($user);
+        $values = array_merge($values, $this->showVolume($user));
+        $values = array_merge($values, $this->showAnnotations($user));
+        $values = array_merge($values, $this->showVideos($user));
+        $values = array_merge($values, $modules->callControllerMixins('adminShowUser', ['user' => $user]));
 
         return view('admin.users.show', array_merge([
             'shownUser' => $user,
@@ -112,5 +124,126 @@ class UsersController extends Controller
         }
 
         return $map;
+    }
+
+    /**
+     * Add project statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function showProject(User $user)
+    {
+        $projectsTotal = Project::count();
+
+        $creatorProjects = Project::where('creator_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+        $creatorCount = $creatorProjects->count();
+        $creatorPercent = $creatorCount > 0 ? round($creatorCount / $projectsTotal * 100, 2) : 0;
+
+        $memberProjects = Project::join('project_user', 'projects.id', '=', 'project_user.project_id')
+            ->orderBy('projects.created_at', 'desc')
+            ->where('project_user.user_id', $user->id)
+            ->select('projects.id', 'projects.name')
+            ->get();
+        $memberCount = $memberProjects->count();
+        $memberPercent = $memberCount > 0 ? round($memberCount / $projectsTotal * 100, 2) : 0;
+
+        return compact('creatorProjects', 'creatorCount', 'creatorPercent', 'memberProjects', 'memberCount', 'memberPercent');
+    }
+
+    /**
+     * Add volume statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function showVolume(User $user)
+    {
+        $volumesTotal = Volume::count();
+
+        $volumes = Volume::where('creator_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+        $volumesCount = $volumes->count();
+        $volumesPercent = $volumesCount > 0 ? round($volumesCount / $volumesTotal * 100, 2) : 0;
+
+        $imagesTotal = Image::count();
+        $imagesCount = Image::join('volumes', 'volumes.id', '=', 'images.volume_id')
+            ->where('volumes.creator_id', $user->id)
+            ->count();
+        $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
+
+        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent');
+    }
+
+    /**
+     * Add annotation statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    protected function showAnnotations(User $user)
+    {
+        $totalAnnotationLabels = ImageAnnotationLabel::where('user_id', $user->id)->count();
+
+        if ($totalAnnotationLabels > 0) {
+            $annotationQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                ->where('image_annotation_labels.user_id', $user->id);
+
+            $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
+
+            $labelsPerAnnotation = round($totalAnnotationLabels / $totalAnnotations);
+
+            $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
+            $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
+
+            $recentAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
+                ->take(10)
+                ->select('image_annotation_labels.created_at', 'image_annotations.id')
+                ->get();
+        } else {
+            $totalAnnotations = 0;
+            $labelsPerAnnotation = 0;
+            $relativeAnnotationLabels = 0;
+            $relativeAnnotations = 0;
+            $recentAnnotations = [];
+        }
+
+        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentAnnotations');
+    }
+
+    /**
+     * Add project statistics to the view.
+     *
+     * @param User $user
+     *
+     * @return array
+     */
+    public function showVideos(User $user)
+    {
+        $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
+
+        if ($totalVideoAnnotationLabels > 0) {
+            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+                ->where('video_annotation_labels.user_id', $user->id)
+                ->distinct()
+                ->count('video_annotations.id');
+
+            $relativeVideoAnnotationLabels = $totalVideoAnnotationLabels / VideoAnnotationLabel::count();
+            $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::count();
+        } else {
+            $totalVideoAnnotations = 0;
+            $relativeVideoAnnotationLabels = 0;
+            $relativeVideoAnnotations = 0;
+        }
+
+        return compact('totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
     }
 }

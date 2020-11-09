@@ -2,29 +2,16 @@
 
 namespace Biigle;
 
-use Response;
 use Exception;
-use TileCache;
 use FileCache;
-use Biigle\Traits\HasJsonAttributes;
-use Illuminate\Database\Eloquent\Model;
-use Biigle\FileCache\Contracts\File as FileContract;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model implements FileContract
+class Image extends VolumeFile
 {
-    use HasJsonAttributes;
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
     /**
      * The attributes hidden in the model's JSON form.
      *
@@ -56,31 +43,13 @@ class Image extends Model implements FileContract
     ];
 
     /**
-     * {@inheritdoc}
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * The volume, this image belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function volume()
-    {
-        return $this->belongsTo(Volume::class);
-    }
-
-    /**
      * The annotations on this image.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function annotations()
     {
-        return $this->hasMany(Annotation::class);
+        return $this->hasMany(ImageAnnotation::class);
     }
 
     /**
@@ -91,17 +60,6 @@ class Image extends Model implements FileContract
     public function labels()
     {
         return $this->hasMany(ImageLabel::class)->with('label', 'user');
-    }
-
-    /**
-     * Adds the `url` attribute to the image model. The url is the absolute path
-     * to the original image file.
-     *
-     * @return string
-     */
-    public function getUrlAttribute()
-    {
-        return "{$this->volume->url}/{$this->filename}";
     }
 
     /**
@@ -131,10 +89,6 @@ class Image extends Model implements FileContract
      */
     public function getFile()
     {
-        if ($this->volume->isRemote()) {
-            return Response::redirectTo($this->url);
-        }
-
         if ($this->tiled === true) {
             $response = [
                 'id' => $this->id,
@@ -142,19 +96,20 @@ class Image extends Model implements FileContract
                 'width' => $this->width,
                 'height' => $this->height,
                 'tiled' => true,
+                'tilingInProgress' => $this->tilingInProgress,
             ];
 
-            // Instruct the image tile cache to load and extract the tiles. This is done
-            // syncronously so the tiles are ready when this request returns.
-            TileCache::get($this);
-
             return $response;
+        }
+
+        if ($this->volume->isRemote()) {
+            return redirect($this->url);
         }
 
         try {
             $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
-                abort(404);
+                abort(Response::HTTP_NOT_FOUND);
             }
 
             return response()->stream(function () use ($stream) {
@@ -247,5 +202,35 @@ class Image extends Model implements FileContract
     public function getMimetypeAttribute()
     {
         return $this->getJsonAttr('mimetype');
+    }
+
+    /**
+     * Set the tilingInProgress attribute.
+     *
+     * @param bool $value
+     */
+    public function setTilingInProgressAttribute($value)
+    {
+        $this->setJsonAttr('tilingInProgress', $value === true ? $value : null);
+    }
+
+    /**
+     * Get the tilingInProgress attribute.
+     *
+     * @return bool|null
+     */
+    public function getTilingInProgressAttribute()
+    {
+        return $this->getJsonAttr('tilingInProgress', false);
+    }
+
+    /**
+     * URL to the thumbnail of this image.
+     *
+     * @return string
+     */
+    public function getThumbnailUrlAttribute()
+    {
+        return thumbnail_url($this->uuid);
     }
 }

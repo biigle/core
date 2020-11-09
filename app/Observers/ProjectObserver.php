@@ -2,10 +2,9 @@
 
 namespace Biigle\Observers;
 
-use Exception;
-use Biigle\Role;
 use Biigle\LabelTree;
-use Biigle\Visibility;
+use Biigle\Role;
+use Exception;
 
 class ProjectObserver
 {
@@ -36,9 +35,9 @@ class ProjectObserver
         $project->addUserId($project->creator_id, Role::adminId());
 
         // add global label trees (used by default)
-        $ids = LabelTree::whereDoesntHave('members')
-            ->where('visibility_id', Visibility::publicId())
-            ->pluck('id');
-        $project->labelTrees()->attach($ids->toArray());
+        $ids = LabelTree::global()
+            ->pluck('id')
+            ->all();
+        $project->labelTrees()->attach($ids);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Biigle\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -23,11 +23,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // sometimes there are multiple IDs in the same route but they cannot have the
-        // same name
+        // IDs are integers which can have the maximum value of 2147483647 (10 digits).
+        // Regex validation of a 32bit integer is very messy so we only do a rough check
+        // for the length of the number. Queries for IDs above 2147483647 with 10 digits
+        // will still result in database exceptions but anything else is not worth the
+        // effort.
+        // Sometimes there are multiple IDs in the same route but they cannot have the
+        // same name, hence id and id2.
         Route::patterns([
-            'id' => '[0-9]+',
-            'id2' => '[0-9]+',
+            'id' => '[0-9]{1,10}',
+            'id2' => '[0-9]{1,10}',
         ]);
 
         parent::boot();
@@ -42,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->mapWebRoutes();
         $this->mapApiRoutes();
+        $this->mapFederatedSearchRoutes();
 
         //
     }
@@ -73,5 +79,20 @@ class RouteServiceProvider extends ServiceProvider
             ->namespace($this->namespace.'\Api')
             ->prefix('api/v1')
             ->group(base_path('routes/api.php'));
+    }
+
+    /**
+     * Define the "federated search" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function mapFederatedSearchRoutes()
+    {
+        Route::middleware(['auth:fs'])
+            ->namespace($this->namespace.'\Api')
+            ->prefix('api/v1')
+            ->group(base_path('routes/federated-search.php'));
     }
 }

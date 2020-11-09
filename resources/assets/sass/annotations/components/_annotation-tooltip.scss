@@ -1,0 +1,22 @@
+.annotation-tooltip {
+    z-index: 1;
+    display: block;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.annotation-tooltip__annotations, .annotation-tooltip__labels {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.annotation-tooltip__annotations {
+    > li {
+        @extend %info-box;
+
+        &:not(:first-child) {
+            margin-top: .25em;
+        }
+    }
+}

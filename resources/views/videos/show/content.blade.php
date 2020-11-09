@@ -1,0 +1,51 @@
+<loader-block :active="loading"></loader-block>
+<div v-if="hasVideoError" class="error-message">
+    <div class="panel" :class="errorClass">
+        <div class="panel-body" v-text="errorMessage"></div>
+    </div>
+</div>
+<video-screen
+      ref="videoScreen"
+      :annotations="filteredAnnotations"
+      :annotation-opacity="settings.annotationOpacity"
+      :autoplay-draw="settings.autoplayDraw"
+      :can-add="canEdit"
+      :can-modify="canEdit"
+      :can-delete="canEdit"
+      :initial-center="initialMapCenter"
+      :initial-resolution="initialMapResolution"
+      :selected-annotations="selectedAnnotations"
+      :selected-label="selectedLabel"
+      :show-label-tooltip="settings.showLabelTooltip"
+      :show-minimap="settings.showMinimap"
+      :show-mouse-position="settings.showMousePosition"
+      :video="video"
+      :height-offset="screenHeightOffset"
+      :show-prev-next="hasSiblingVideos"
+      :has-error="hasError"
+      v-on:create-annotation="createAnnotation"
+      v-on:track-annotation="trackAnnotation"
+      v-on:split-annotation="splitAnnotation"
+      v-on:link-annotations="linkAnnotations"
+      v-on:pending-annotation="updatePendingAnnotation"
+      v-on:attach-label="attachAnnotationLabel"
+      v-on:select="selectAnnotations"
+      v-on:modify="modifyAnnotations"
+      v-on:delete="deleteAnnotationsOrKeyframes"
+      v-on:moveend="updateMapUrlParams"
+      v-on:requires-selected-label="handleRequiresSelectedLabel"
+      v-on:previous="showPreviousVideo"
+      v-on:next="showNextVideo"
+      ></video-screen>
+<video-timeline
+      ref="videoTimeline"
+      :annotations="filteredAnnotations"
+      :video="video"
+      :seeking="seeking"
+      :height-offset="timelineHeightOffset"
+      :pending-annotation="pendingAnnotation"
+      v-on:seek="seek"
+      v-on:select="selectAnnotation"
+      v-on:deselect="deselectAnnotation"
+      v-on:start-resize="startUpdateTimelineHeight"
+      ></video-timeline>

@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
 use Biigle\Project;
+use Biigle\Role;
 
 class ProjectUserControllerTest extends ApiTestCase
 {
@@ -25,11 +25,11 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
-        $this->assertContains('"firstname":"'.$this->admin()->firstname.'"', $content);
-        $this->assertContains('"lastname":"'.$this->admin()->lastname.'"', $content);
-        $this->assertNotContains('"email":"'.$this->admin()->email.'"', $content);
-        $this->assertContains('project_role_id', $content);
-        $this->assertNotContains('pivot', $content);
+        $this->assertStringContainsString('"firstname":"'.$this->admin()->firstname.'"', $content);
+        $this->assertStringContainsString('"lastname":"'.$this->admin()->lastname.'"', $content);
+        $this->assertStringNotContainsString('"email":"'.$this->admin()->email.'"', $content);
+        $this->assertStringContainsString('project_role_id', $content);
+        $this->assertStringNotContainsString('pivot', $content);
     }
 
     public function testUpdate()
@@ -53,7 +53,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         // user doesn't exist
         $this->beAdmin();
-        $response = $this->put("/api/v1/projects/{$id}/users/999");
+        $response = $this->put("/api/v1/projects/{$id}/users/0");
         $response->assertStatus(404);
 
         // missing arguments

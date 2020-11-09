@@ -34,7 +34,7 @@ class StoreAnnotationSession extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => 'required|max:256',
             'starts_at' => 'required|date',
             'ends_at' => 'required|date|after:starts_at',
             'users' => 'required|array',

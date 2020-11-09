@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Shape;
 use ApiTestCase;
+use Biigle\Shape;
 
 class ShapeControllerTest extends ApiTestCase
 {
@@ -29,6 +29,6 @@ class ShapeControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('Circle', $content);
+        $this->assertStringContainsString('Circle', $content);
     }
 }

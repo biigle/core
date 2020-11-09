@@ -2,11 +2,12 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
+use Biigle\Role;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\LabelTreeVersionTest;
 
 class LabelControllerTest extends ApiTestCase
 {
@@ -62,6 +63,17 @@ class LabelControllerTest extends ApiTestCase
         $this->assertEquals($sibling->id, $label->parent_id);
     }
 
+    public function testUpdateVersionedTree()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->editor(), Role::editor());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $this->beEditor();
+        $this->putJson("/api/v1/labels/{$label->id}", ['name' => 'new name'])
+            ->assertStatus(403);
+    }
+
     public function testDestroy()
     {
         $label = LabelTest::create();
@@ -75,7 +87,7 @@ class LabelControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         // make sure the label is used somewhere
-        $a = AnnotationLabelTest::create(['label_id' => $label->id]);
+        $a = ImageAnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
         $response = $this->json('DELETE', "/api/v1/labels/{$label->id}");
@@ -120,5 +132,16 @@ class LabelControllerTest extends ApiTestCase
         $this->assertNull($label->fresh());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('deleted', true);
+    }
+
+    public function testDestroyVersionedTree()
+    {
+        $version = LabelTreeVersionTest::create();
+        $version->labelTree->addMember($this->editor(), Role::editor());
+        $tree = LabelTreeTest::create(['version_id' => $version->id]);
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $this->beEditor();
+        $this->deleteJson("/api/v1/labels/{$label->id}", ['name' => 'new name'])
+            ->assertStatus(403);
     }
 }

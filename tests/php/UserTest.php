@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests;
 
-use Biigle\User;
 use Biigle\Role;
-use ModelTestCase;
+use Biigle\User;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserTest extends ModelTestCase
@@ -98,7 +98,9 @@ class UserTest extends ModelTestCase
         $role = RoleTest::create();
         $project->addUserId($this->model->id, $role->id);
 
-        $this->assertEquals($this->model->projects()->first()->id, $project->id);
+        $p = $this->model->projects()->first();
+        $this->assertEquals($project->id, $p->id);
+        $this->assertFalse($p->pivot->pinned);
     }
 
     public function testLabelTrees()
@@ -220,5 +222,13 @@ class UserTest extends ModelTestCase
         $this->assertTrue($this->model->can('sudo'));
         $this->model->isInSuperUserMode = false;
         $this->assertFalse($this->model->can('sudo'));
+    }
+
+    public function testFederatedSearchModels()
+    {
+        $model = FederatedSearchModelTest::create();
+        $this->assertFalse($this->model->federatedSearchModels()->exists());
+        $model->users()->attach($this->model);
+        $this->assertTrue($this->model->federatedSearchModels()->exists());
     }
 }

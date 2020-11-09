@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Carbon\Carbon;
 use Biigle\Tests\AnnotationSessionTest;
+use Carbon\Carbon;
 
 class VolumeAnnotationSessionControllerTest extends ApiTestCase
 {
@@ -118,7 +118,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'ends_at' => '2016-09-06',
             'users' => [$this->admin()->id],
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
         $this->assertEquals(2, $this->volume()->annotationSessions()->count());
 
         $session = $this->volume()->annotationSessions()
@@ -139,7 +139,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'ends_at' => '2016-09-21T00:00:00.000+02:00',
             'users' => [$this->admin()->id],
         ]);
-        $response->assertStatus(200);
+        $response->assertSuccessful();
 
         $session = $this->volume()->annotationSessions()->first();
 

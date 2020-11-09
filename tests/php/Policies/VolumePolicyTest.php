@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Policies;
 
-use TestCase;
 use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
+use TestCase;
 
 class VolumePolicyTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $project = ProjectTest::create();

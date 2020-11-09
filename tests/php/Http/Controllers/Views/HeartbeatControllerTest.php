@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use TestCase;
 use Biigle\Tests\UserTest;
+use TestCase;
 
 class HeartbeatControllerTest extends TestCase
 {

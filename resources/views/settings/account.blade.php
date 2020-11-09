@@ -11,7 +11,7 @@
 </div>
 @if ($user->isGlobalAdmin)
     @can('sudo')
-        <form method="POST" action="{{ url('api/v1/users/my') }}">
+        <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
             <input type="hidden" name="super_user_mode" value="0">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -20,7 +20,7 @@
             </div>
         </form>
     @else
-        <form method="POST" action="{{ url('api/v1/users/my') }}">
+        <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
             <input type="hidden" name="super_user_mode" value="1">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">

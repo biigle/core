@@ -1,0 +1,100 @@
+.project-tree-title {
+    display: inline-block;
+}
+
+.project-info-form {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+
+    .project-description {
+        width: 500px;
+        margin-top: 2px;
+    }
+
+    .project-name {
+        width: 300px;
+    }
+}
+
+.preview-thumbnail--projects {
+    height: 150px;
+    margin: 15px 0;
+}
+
+.volumes-grid {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.project-buttons {
+    margin-top: 20px;
+}
+
+.panel-filter {
+    display: inline-block;
+    vertical-align: middle;
+
+    &.panel-filter--active {
+        input:not(:focus) {
+            border-color: $brand-info;
+        }
+    }
+
+    input, .form-control-feedback {
+        height: 21.6px;
+        line-height: 21.6px;
+    }
+
+    .form-control-feedback {
+        width: 21.6px;
+        cursor: pointer;
+        z-index: 1;
+        pointer-events: inherit;
+        color: $brand-info;
+    }
+
+    .form-group {
+        display: inline-block;
+        margin: 0;
+    }
+}
+
+.volume-filter {
+    display: inline-block;
+    vertical-align: middle;
+
+    &.volume-filter--active {
+        input:not(:focus) {
+            border-color: $brand-info;
+        }
+    }
+
+    .form-control-feedback {
+        cursor: pointer;
+        z-index: 1;
+        pointer-events: inherit;
+        color: $brand-info;
+    }
+
+    .form-group {
+        display: inline-block;
+        margin: 0;
+    }
+}
+
+.project-tabs {
+    margin-bottom: 15px;
+}
+
+.project-volumes, .project-label-trees {
+    .typeahead {
+        vertical-align: middle;
+    }
+}
+
+.project-volumes {
+    .volume-info-well {
+        margin-top: 15px;
+    }
+}

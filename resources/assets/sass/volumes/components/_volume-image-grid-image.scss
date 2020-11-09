@@ -1,0 +1,74 @@
+.image-grid__image--volume {
+    position: relative;
+
+    &.image-grid__image--selected {
+        &:before {
+            position: absolute;
+            content: '';
+            top: $padding-base-horizontal;
+            left: $padding-base-horizontal;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: $brand-info;
+            border: 2px solid white;
+        }
+    }
+
+    &.image-grid__image--selectable {
+        &:hover {
+            border-color: $brand-info;
+        }
+    }
+
+    &.image-grid__image--success {
+        border-color: $brand-success;
+    }
+
+    &.image-grid__image--error {
+        border-color: $brand-danger;
+    }
+
+    &.image-grid__image--saving {
+        border-color: $brand-warning;
+    }
+
+    .preview-thumbnail {
+        width: 100%;
+        height: 100%;
+        border-radius: $border-radius-base;
+        transition: opacity .25s ease;
+        border: 0;
+    }
+
+    .image-labels {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 135px;
+        max-height: 100%;
+        padding: 0.3em 0.5em;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: $border-radius-base;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .image-link {
+        width: 100%;
+        text-align: center;
+    }
+
+    .image-filename {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 2px 5px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: $border-radius-base;
+        white-space: nowrap;
+    }
+}

@@ -2,16 +2,19 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Storage;
 use ApiTestCase;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
+use Biigle\Tests\ProjectTest;
+use Storage;
 
 class VolumeControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        // Create the volume.
-        $this->volume();
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+
         $this->doTestApiRoute('GET', '/api/v1/volumes/');
 
         $this->beUser();
@@ -23,33 +26,38 @@ class VolumeControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['name' => $this->project()->name]);
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            // Only include projects to which the user has access.
+            ->assertJsonMissing(['name' => $project->name]);
     }
 
     public function testShow()
     {
+        $project = ProjectTest::create();
         $id = $this->volume()->id;
-        $this->doTestApiRoute('GET', '/api/v1/volumes/'.$id);
+        $project->addVolumeId($id);
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}");
 
         $this->beUser();
-        $response = $this->get('/api/v1/volumes/'.$id);
+        $response = $this->get("/api/v1/volumes/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get('/api/v1/volumes/'.$id);
-        $content = $response->getContent();
-        $response->assertStatus(200);
-        $this->assertStringStartsWith('{', $content);
-        $this->assertStringEndsWith('}', $content);
+        $this->get("/api/v1/volumes/{$id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            // Only include projects to which the user has access.
+            ->assertJsonMissing(['name' => $project->name]);
     }
 
     public function testUpdate()
     {
-        $this->doesntExpectJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->doesntExpectJobs(ProcessNewVolumeFiles::class);
 
-        $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::timeSeriesId();
-        $this->volume()->save();
+        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
@@ -64,11 +72,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::locationSeriesId(),
+            'media_type_id' => MediaType::videoId(),
         ]);
         $response->assertStatus(200);
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
-        $this->assertEquals(MediaType::locationSeriesId(), $this->volume()->fresh()->media_type_id);
+        // Media type cannot be updated.
+        $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
     }
 
     public function testUpdateJsonAttrs()
@@ -110,7 +119,7 @@ class VolumeControllerTest extends ApiTestCase
         Storage::disk('test')->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'test://volumes',
         ]);
@@ -123,7 +132,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         // A request that changes no attributes performed by a global admin triggers
         // a reread.
-        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
+        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id)
             ->assertStatus(200);
     }
@@ -137,18 +146,6 @@ class VolumeControllerTest extends ApiTestCase
             'name' => '',
         ]);
         // name must not be empty if present
-        $response->assertStatus(422);
-
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'media_type_id' => '',
-        ]);
-        // media type id must not be empty if present
-        $response->assertStatus(422);
-
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'media_type_id' => 999,
-        ]);
-        // media type id does not exist
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [

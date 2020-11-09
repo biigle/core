@@ -2,8 +2,9 @@
 
 namespace Biigle;
 
-use DB;
+use Biigle\Jobs\DeleteVolume;
 use Cache;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
@@ -39,6 +40,27 @@ class Project extends Model
                     return $query->whereIn('project_user.project_role_id', $roles);
                 })
                 ->where('project_volume.volume_id', $volumeId);
+        });
+    }
+
+    /**
+     * Scope a query to all projects that are accessible by a user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessibleBy($query, User $user)
+    {
+        if ($user->can('sudo')) {
+            return $query;
+        }
+
+        return $query->whereIn('id', function ($query) use ($user) {
+            return $query->select('project_user.project_id')
+                ->from('project_user')
+                ->where('project_user.user_id', $user->id)
+                ->distinct();
         });
     }
 
@@ -157,6 +179,27 @@ class Project extends Model
     }
 
     /**
+     * The image volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function imageVolumes()
+    {
+        return $this->volumes()->where('media_type_id', MediaType::imageId());
+    }
+
+    /**
+     * The video volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function videoVolumes()
+    {
+        return $this->volumes()->where('media_type_id', MediaType::videoId());
+    }
+
+
+    /**
      * Adds a volume to this project if it wasn't already.
      *
      * @deprecated Use `$project->volumes()->attach($id)` instead.
@@ -167,7 +210,7 @@ class Project extends Model
     {
         $this->volumes()->syncWithoutDetaching($id);
         // Maybe we get a new thumbnail now.
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -193,13 +236,13 @@ class Project extends Model
                 abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
             }
 
-            $volume->delete();
+            DeleteVolume::dispatch($volume);
         }
 
         // if the volume still belongs to other projects, just detach it
         $this->volumes()->detach($volume->id);
         // Maybe we get a new thumbnail now.
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -223,7 +266,7 @@ class Project extends Model
         foreach ($volumes as $volume) {
             $this->removeVolume($volume, $force);
         }
-        Cache::forget("project-thumbnail-{$this->id}");
+        Cache::forget("project-thumbnail-url-{$this->id}");
     }
 
     /**
@@ -247,19 +290,23 @@ class Project extends Model
     }
 
     /**
-     * An image that can be used a unique thumbnail for this project.
+     * URL to a unique thumbnail image for this project.
      *
-     * @return Image
+     * @return string
      */
-    public function getThumbnailAttribute()
+    public function getThumbnailUrlAttribute()
     {
-        return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
+        return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
-                ->select('id')
+                ->select('id', 'media_type_id')
                 ->orderBy('id')
                 ->first();
 
-            return $volume ? $volume->thumbnail : null;
+            if ($volume) {
+                return $volume->thumbnailUrl;
+            }
+
+            return null;
         });
     }
 
@@ -270,15 +317,15 @@ class Project extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("project-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("project-{$this->id}-has-geo-info", 3600, function () {
             return Image::whereIn('volume_id', function ($query) {
-                    return $query->select('volume_id')
-                        ->from('project_volume')
-                        ->where('project_id', $this->id);
-                })
-                ->whereNotNull('lng')
-                ->whereNotNull('lat')
-                ->exists();
+                return $query->select('volume_id')
+                    ->from('project_volume')
+                    ->where('project_id', $this->id);
+            })
+            ->whereNotNull('lng')
+            ->whereNotNull('lat')
+            ->exists();
         });
     }
 
