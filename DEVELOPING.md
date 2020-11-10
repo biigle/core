@@ -32,13 +32,13 @@ This will set up the project in the `dev-modules` branch of this repository. The
 
 ### 2. Build and run the application
 
-**Optional:** To speed up the build process, download the pre-built Docker images form GitHub. First [configure Docker](https://help.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages#authenticating-to-github-packages) to authenticate to GitHub Packages. Then pull the images:
+**Optional:** To speed up the build process, download the pre-built Docker images form GitHub:
 
 ```
 docker pull \
-    docker.pkg.github.com/biigle/core/app:latest \
-    docker.pkg.github.com/biigle/core/web:latest \
-    docker.pkg.github.com/biigle/core/worker:latest
+    ghcr.io/biigle/app:latest \
+    ghcr.io/biigle/web:latest \
+    ghcr.io/biigle/worker:latest
 ```
 
 Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
@@ -95,4 +95,4 @@ Learn more on module development and how to create a new module in the [biigle/m
 
 To publish a new version of the `biigle/app`, `biigle/web` and `biigle/worker` Docker images, create a new version as Git tag, first. This can be done on GitHub, too. Pull the new version tag with `git pull --tags`. If you do not set a version tag, only the `latest` Docker images will be built.
 
-To build the Docker images, run `./build.sh`. The script asks you if you want to publish the new images to the GitHub package registry. Before you can do this, you have to [configure Docker](https://help.github.com/en/articles/configuring-docker-for-use-with-github-package-registry) to use the package registry and you obviously need package write permissions in this repository.
+To build the Docker images, run `./build.sh`. The script asks you if you want to publish the new images to the GitHub container registry. Before you can do this, you have to [configure Docker](https://docs.github.com/en/free-pro-team@latest/packages/managing-container-images-with-github-container-registry/pushing-and-pulling-docker-images#authenticating-to-github-container-registry) to use the container registry and you obviously need package write permissions in this organization.

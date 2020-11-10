@@ -36,6 +36,7 @@
       v-on:requires-selected-label="handleRequiresSelectedLabel"
       v-on:previous="showPreviousVideo"
       v-on:next="showNextVideo"
+      v-on:attaching-active="handleAttachingLabelActive"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

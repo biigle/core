@@ -282,24 +282,13 @@
         </div>
         <div class="row">
             <h3><a name="developer-tutorials"></a>Developer Tutorials</h3>
-            <h4><a href="{{ route('manual-documentation', 'package-development') }}">Package development</a></h4>
+
             <p>
-                Learn about PHP package development and how to add custom functionality to your BIIGLE installation by developing your own modules.
+                The tutorials for module development can be found in the admin documentation.
             </p>
 
-            <h4><a href="{{ route('manual-documentation', 'advanced-package-development') }}">Advanced package development</a></h4>
             <p>
-                Learn how to add new views and routes with a custom package and how to properly test them using the BIIGLE testing environment.
-            </p>
-
-            <h4><a href="{{ route('manual-documentation', 'using-custom-assets-in-packages') }}">Using custom assets in packages</h4></a>
-            <p>
-                Learn how to handle custom assets like CSS and JavaScript in addition to the defaults provided by the core application.
-            </p>
-
-            <h4><a href="{{ route('manual-documentation', 'mastering-view-mixins') }}">Mastering view mixins</a></h4>
-            <p>
-                Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of BIIGLE, allowing other modules to extend yours.
+                <a class="btn btn-default btn-lg btn-block" href="https://biigle-admin-documentation.readthedocs.io">Admin documentation</a>
             </p>
         </div>
     </div>

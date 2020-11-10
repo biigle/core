@@ -1,8 +1,9 @@
-FROM docker.pkg.github.com/biigle/core/app as intermediate
+FROM ghcr.io/biigle/app as intermediate
 
 # FROM php:7.4-alpine
 FROM php@sha256:f7a0acfde4042d1f27464a2848b965d553cd48d7f2bdad570958be507b1431ef
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
+LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 RUN apk add --no-cache \
         openssl \

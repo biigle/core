@@ -70,8 +70,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->video, [$this, 'handleFile']);
         } catch (Exception $e) {
-            $this->video->error = Video::ERROR_NOT_FOUND;
-            $this->video->save();
+            if (!$this->video->error) {
+                $this->video->error = Video::ERROR_NOT_FOUND;
+                $this->video->save();
+            }
 
             if (App::runningUnitTests()) {
                 throw $e;
@@ -124,9 +126,17 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $width = config('thumbnails.width');
         $height = config('thumbnails.height');
 
-        foreach ($times as $index => $time) {
-            $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
-            $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+        try {
+            foreach ($times as $index => $time) {
+                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
+                $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+            }
+        } catch (Exception $e) {
+            // The video seems to be fine if it passed the previous checks. There may be
+            // errors in the actual video data but we can ignore that and skip generating
+            // thumbnails. The browser can deal with the video and see if it can be
+            // displayed.
+            Log::warning("Could not generate thumbnails for new video {$this->video->id}: {$e->getMessage()}");
         }
     }
 

@@ -137,7 +137,7 @@ export default {
             this.map.addInteraction(this.attachInteraction);
         },
         handleAttachLabel(e) {
-            this.$emit('attach-label', e.feature.get('annotation'), this.selectedLabel);
+            this.$emit('attach-label', e.feature.get('annotation'));
         },
         maybeResetAttaching(hasNoLabel) {
             if (this.isAttaching && hasNoLabel) {
@@ -160,6 +160,8 @@ export default {
             if (this.attachInteraction) {
                 this.attachInteraction.setActive(attaching);
             }
+
+            this.$emit('attaching-active', attaching);
         },
     },
     created() {

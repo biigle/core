@@ -1,7 +1,8 @@
-FROM docker.pkg.github.com/biigle/core/app as intermediate
+FROM ghcr.io/biigle/app as intermediate
 
 FROM nginx:1.16-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
+LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
 
