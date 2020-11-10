@@ -6,6 +6,8 @@ This is the BIIGLE module to generate reports for projects, volumes and videos.
 
 ## Installation
 
+This module is already included in [`biigle/biigle`](https://github.com/biigle/biigle).
+
 1. Run `composer require biigle/reports`.
 2. Add `Biigle\Modules\Reports\ReportsServiceProvider::class` to the `providers` array in `config/app.php`.
 3. Run `php artisan vendor:publish --tag=public` to publish the public assets of this module.
