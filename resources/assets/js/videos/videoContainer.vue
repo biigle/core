@@ -82,6 +82,7 @@ export default {
             errors: {},
             error: null,
             user: null,
+            attachingLabel: false,
         };
     },
     computed: {
@@ -170,10 +171,14 @@ export default {
             }
         },
         selectAnnotation(annotation, time, shift) {
-            if (shift) {
-                this.selectAnnotations([annotation], [], time);
+            if (this.attachingLabel) {
+                this.attachAnnotationLabel(annotation);
             } else {
-                this.selectAnnotations([annotation], this.selectedAnnotations, time);
+                if (shift) {
+                    this.selectAnnotations([annotation], [], time);
+                } else {
+                    this.selectAnnotations([annotation], this.selectedAnnotations, time);
+                }
             }
         },
         selectAnnotations(selected, deselected, time) {
@@ -354,8 +359,8 @@ export default {
                     .catch(handleErrorResponse);
             }
         },
-        attachAnnotationLabel(annotation, label) {
-            annotation.attachAnnotationLabel(label)
+        attachAnnotationLabel(annotation) {
+            annotation.attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
@@ -507,6 +512,9 @@ export default {
             }
 
             return ids;
+        },
+        handleAttachingLabelActive(attaching) {
+            this.attachingLabel = attaching;
         },
     },
     watch: {
