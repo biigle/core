@@ -68,15 +68,10 @@ jobs:
       run: php artisan key:generate
       working-directory: ../core
 
-    - name: Docker login
-      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
     - name: Fetch base images
       run: |
-        docker pull docker.pkg.github.com/biigle/core/app:latest
-        docker pull docker.pkg.github.com/biigle/core/worker:latest
+        docker pull ghcr.io/biigle/app:latest
+        docker pull ghcr.io/biigle/worker:latest
 
     - name: Start test database
       run: docker-compose up -d --no-build database_testing
