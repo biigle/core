@@ -235,7 +235,14 @@ class ApplyLargoSession extends Job implements ShouldQueue
             }
         }
 
-        ImageAnnotationLabel::insert($newAnnotationLabels);
+        collect($newAnnotationLabels)
+            // Chuk for huge requests which may run into the 65535 parameters limit of a
+            // single database call.
+            // See: https://github.com/biigle/largo/issues/76
+            ->chunk(5000)
+            ->each(function ($chunk) {
+                ImageAnnotationLabel::insert($chunk->toArray());
+            });
     }
 
     /**
