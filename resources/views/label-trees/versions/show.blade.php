@@ -1,27 +1,7 @@
-@extends('app')
+@extends('label-trees.versions.show.base')
 
-@section('title', "{$tree->name} @ {$version->name}")
-
-@push('styles')
-@mixin('labelTreesShowStyles')
-@endpush
-
-@push('scripts')
-<script type="text/javascript">
-    biigle.$declare('labelTrees.version', {!! $version !!});
-    biigle.$declare('labelTrees.labels', {!! $labels !!});
-    @can('destroy', $version)
-        biigle.$declare('labelTrees.redirectUrl', '{{route('label-trees', $version->label_tree_id)}}');
-    @endcan
-</script>
-@mixin('labelTreesShowScripts')
-@endpush
-
-
-@section('content')
-<div class="container">
-    @include('label-trees.versions.show.title')
-    @include('label-trees.versions.show.toolbar')
+@section('label-tree-version-content')
+<div class="row">
     <div class="col-md-6">
         @include('label-trees.show.labels')
     </div>

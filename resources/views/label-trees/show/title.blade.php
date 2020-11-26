@@ -1,4 +1,4 @@
-<div class="col-md-12 clearfix" id="label-trees-title">
+<div class="clearfix" id="label-trees-title">
     <span class="pull-right label-tree-buttons">
         @can('update', $tree)
             <span v-if="editing" v-cloak>
@@ -6,6 +6,7 @@
                 <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
             </span>
         @endcan
+        @include('label-trees.show.version-button')
         <span class="dropdown">
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu">
