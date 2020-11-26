@@ -7,6 +7,8 @@ use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
+use Exception;
+use FileCache;
 use Storage;
 
 class VolumeFileControllerTest extends ApiTestCase
@@ -241,4 +243,17 @@ class VolumeFileControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreFilesExistException()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+        FileCache::shouldReceive('exists')
+            ->andThrow(new Exception('Invalid MIME type.'));
+
+        $response = $this->postJson("/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpg',
+            ])
+            ->assertStatus(422);
+        $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
+    }
 }

@@ -16,6 +16,8 @@ use Biigle\Video;
 use Biigle\Volume;
 use Cache;
 use Event;
+use Exception;
+use FileCache;
 use Queue;
 use Storage;
 
@@ -287,6 +289,23 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'files' => ['1.jpg', '2.jpg'],
             ])
             ->assertStatus(422);
+    }
+
+    public function testStoreFilesExistException()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        FileCache::shouldReceive('exists')
+            ->andThrow(new Exception('Invalid MIME type.'));
+
+        $response = $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type' => 'image',
+                'files' => '1.jpg',
+            ])
+            ->assertStatus(422);
+        $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
     }
 
     public function testStoreVideos()

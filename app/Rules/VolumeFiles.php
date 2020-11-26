@@ -94,8 +94,14 @@ class VolumeFiles implements Rule
             }
         }
 
-        if (!$this->sampleFilesExist($value)) {
-            $this->message = 'Some files could not be accessed. Please make sure all files exist.';
+        try {
+            if (!$this->sampleFilesExist($value)) {
+                $this->message = 'Some files could not be accessed. Please make sure all files exist.';
+
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->message = "Some files could not be accessed. {$e->getMessage()}";
 
             return false;
         }
@@ -129,14 +135,10 @@ class VolumeFiles implements Rule
                 return new GenericFile("{$this->url}/{$file}");
             });
 
-        try {
-            foreach ($samples as $file) {
-                if (!FileCache::exists($file)) {
-                    return false;
-                }
+        foreach ($samples as $file) {
+            if (!FileCache::exists($file)) {
+                return false;
             }
-        } catch (Exception $e) {
-            return false;
         }
 
         return true;
