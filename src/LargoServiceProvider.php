@@ -52,7 +52,7 @@ class LargoServiceProvider extends ServiceProvider
                 'annotationsLabelsTab',
                 'annotationsManualSidebarSettings',
                 'annotationsManualSidebarLabelTrees',
-                'labelTreesShowToolbar',
+                'labelTreesShowTabs',
                 'manualTutorial',
                 'labelTreesManual',
                 'projectsShowTabs',
