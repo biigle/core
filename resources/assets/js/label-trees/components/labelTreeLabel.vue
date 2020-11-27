@@ -15,10 +15,12 @@
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
                     <span class="fa fa-star" aria-hidden="true" title=""></span>
                 </button>
-                <button v-if="editable && !editing" :title="editTitle" @click.stop="editThis"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
-                <button v-if="editing" class="text-danger" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true" class="fa fa-trash"></span></button>
-                <button v-if="editing" title="Revert changes" @click.stop="revertThis"><span aria-hidden="true" class="fa fa-times"></span></button>
-                <button v-if="editing" class="text-success" title="Save changes" @click.stop="saveThis"><span aria-hidden="true" class="fa fa-check"></span></button>
+                <span if="editable">
+                    <button v-show="showEditButton" :title="editTitle" @click.stop="editThis" class="btn btn-default btn-xs"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
+                    <button v-show="editing" :title="deleteTitle" @click.stop="deleteThis" class="btn btn-danger btn-sm"><span aria-hidden="true" class="fa fa-trash"></span></button>
+                    <button v-show="editing" title="Save changes" @click.stop="saveThis" class="btn btn-success btn-sm"><span aria-hidden="true" class="fa fa-check"></span></button>
+                    <button v-show="editing" title="Revert changes" @click.stop="revertThis" class="btn btn-default btn-sm"><span aria-hidden="true" class="fa fa-times"></span></button>
+                </span>
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
@@ -106,6 +108,9 @@ export default {
         },
         expandable() {
             return !this.flat && !!this.label.children;
+        },
+        showEditButton() {
+            return this.editable && this.hover && !this.editing;
         },
     },
     methods: {

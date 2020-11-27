@@ -1,5 +1,4 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
 import Events from '../core/events';
 import LabelsApi from '../core/api/labels';
 import LabelTree from './components/labelTree';
@@ -15,7 +14,6 @@ import {randomColor} from './utils';
 export default {
     mixins: [
         LoaderMixin,
-        EditorMixin,
     ],
     data() {
         return {
@@ -24,6 +22,7 @@ export default {
             selectedColor: randomColor(),
             selectedLabel: null,
             selectedName: '',
+            canEdit: false,
         };
     },
     components: {
@@ -34,10 +33,8 @@ export default {
         wormsLabelForm: WormsLabelForm,
     },
     computed: {
-        classObject() {
-            return {
-                'panel-warning': this.editing
-            };
+        editable() {
+            return !this.loading && this.canEdit;
         },
     },
     methods: {
@@ -125,9 +122,15 @@ export default {
             this.selectedName = '';
         },
     },
+    watch: {
+        labels(labels) {
+            Events.$emit('label-trees.labels.count', labels.length)
+        },
+    },
     created() {
         this.labelTree = biigle.$require('labelTrees.labelTree');
         this.labels = biigle.$require('labelTrees.labels');
+        this.canEdit = biigle.$require('labelTrees.canEdit');
     },
 };
 </script>

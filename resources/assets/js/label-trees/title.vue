@@ -34,6 +34,9 @@ export default {
         isChanged() {
             return this.name !== this.labelTree.name || this.description !== this.labelTree.description || parseInt(this.visibility_id) !== this.labelTree.visibility_id;
         },
+        disabledClass() {
+            return this.loading ? 'disabled' : '';
+        },
     },
     methods: {
         discardChanges() {

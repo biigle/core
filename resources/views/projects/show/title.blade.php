@@ -29,11 +29,6 @@
                         @endif
                     </li>
                 @endif
-                @can('update', $project)
-                    <li :class="disabledClass">
-                        <a title="Edit project title and description" v-on:click="startEditing">Edit</a>
-                    </li>
-                @endcan
                 @if ($isMember)
                     <li :class="disabledClass">
                         <a title="Revoke membership of this project" v-on:click="leaveProject">Leave</a>
@@ -41,6 +36,9 @@
                 @endif
                 @can('update', $project)
                     <li role="separator" class="divider"></li>
+                    <li :class="disabledClass">
+                        <a title="Edit project title and description" v-on:click="startEditing">Edit</a>
+                    </li>
                     <li :class="disabledClass">
                         <a title="Delete this project" v-on:click="deleteProject">Delete</a>
                     </li>

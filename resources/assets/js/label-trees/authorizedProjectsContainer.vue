@@ -1,5 +1,4 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
@@ -12,7 +11,6 @@ import {handleErrorResponse} from '../core/messages/store';
 export default {
     mixins: [
         LoaderMixin,
-        EditorMixin,
     ],
     data() {
         return {
@@ -30,11 +28,6 @@ export default {
     computed: {
         isPrivate() {
             return this.labelTree.visibility_id === this.privateId;
-        },
-        classObject() {
-            return {
-                'panel-warning': this.editing,
-            };
         },
         authorizableProjects() {
             return this.ownProjects.filter((project) => {
@@ -98,7 +91,7 @@ export default {
         this.labelTree = biigle.$require('labelTrees.labelTree');
         this.authorizedProjects = biigle.$require('labelTrees.authorizedProjects');
         this.authorizedOwnProjects = biigle.$require('labelTrees.authorizedOwnProjects');
-        this.$once('editing.start', this.fetchOwnProjects);
+        this.fetchOwnProjects();
     },
 };
 </script>

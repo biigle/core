@@ -15,6 +15,11 @@ export default {
             redirectUrl: null,
         };
     },
+    computed: {
+        disabledClass() {
+            return this.loading ? 'disabled' : '';
+        },
+    },
     methods: {
         deleteVersion() {
             this.startLoading();

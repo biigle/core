@@ -1,7 +1,9 @@
 <script>
+import AddMemberForm from '../projects/components/addMemberForm';
+import Events from '../core/events';
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
-import MembersPanel from '../core/components/membersPanel';
+import MemberList from '../projects/components/memberList';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
@@ -19,7 +21,13 @@ export default {
         };
     },
     components: {
-        membersPanel: MembersPanel,
+        memberList: MemberList,
+        addMemberForm: AddMemberForm,
+    },
+    computed: {
+        hasMembers() {
+            return this.members.length !== 0;
+        },
     },
     methods: {
         attachMember(user) {
@@ -59,11 +67,16 @@ export default {
             }
         },
     },
+    watch: {
+        members(members) {
+            Events.$emit('label-trees.members.count', members.length)
+        },
+    },
     created() {
         this.labelTree = biigle.$require('labelTrees.labelTree');
         this.members = biigle.$require('labelTrees.members');
         this.roles = biigle.$require('labelTrees.roles');
-        this.defaultRole = biigle.$require('labelTrees.defaultRoleId');
+        this.defaultRole = biigle.$require('labelTrees.defaultRole');
         this.userId = biigle.$require('labelTrees.userId');
     },
 };
