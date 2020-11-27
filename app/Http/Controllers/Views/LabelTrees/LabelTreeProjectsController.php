@@ -43,7 +43,7 @@ class LabelTreeProjectsController extends Controller
     protected function showMasterLabelTree(LabelTree $tree, User $user)
     {
         $authorizedProjects = $tree->authorizedProjects()
-            ->select('id', 'name')
+            ->select('id', 'name', 'description')
             ->get();
 
         if ($user->can('sudo')) {

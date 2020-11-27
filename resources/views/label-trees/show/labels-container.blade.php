@@ -1,7 +1,7 @@
 <div id="label-trees-labels">
     <div class="row">
         <div class="col-xs-6">
-            <div class="panel panel-default">
+            <div v-cloak class="panel panel-default">
                 <label-tree class="label-tree--panel" name="{{$tree->name}}" :labels="labels" :show-title="false" :collapsible="false" :editable="editable" v-on:save="saveLabel" v-on:delete="deleteLabel" v-on:select="selectLabel" v-on:deselect="deselectLabel"></label-tree>
             </div>
         </div>

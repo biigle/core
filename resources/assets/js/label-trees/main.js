@@ -1,17 +1,17 @@
 import './export';
-import AuthorizedProjectsPanel from './authorizedProjectsPanel';
+import AuthorizedProjectsContainer from './authorizedProjectsContainer';
 import LabelsContainer from './labelsContainer';
 import LabelsCount from './labelsCount';
 import MembersPanel from './membersPanel';
 import MergeContainer from './mergeContainer';
 import MergeIndexContainer from './mergeIndexContainer';
 import Title from './title';
-import VersionTitle from './versionTitle';
 import VersionDoi from './versionDoi';
+import VersionTitle from './versionTitle';
 
 biigle.$mount('label-tree-version-doi', VersionDoi);
 biigle.$mount('label-tree-version-title', VersionTitle);
-biigle.$mount('label-trees-authorized-projects', AuthorizedProjectsPanel);
+biigle.$mount('label-trees-authorized-projects', AuthorizedProjectsContainer);
 biigle.$mount('label-trees-labels', LabelsContainer);
 biigle.$mount('label-trees-labels-count', LabelsCount);
 biigle.$mount('label-trees-members', MembersPanel);

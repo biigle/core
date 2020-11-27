@@ -36,6 +36,16 @@
     margin-right: .5em;
 }
 
+.authorized-project-item {
+    .btn {
+        display: none;
+    }
+
+    &:hover .btn {
+        display: inline-block;
+    }
+}
+
 @import 'components/labelTypeahead';
 @import 'components/labelTreeLabel';
 @import 'components/labelTree';

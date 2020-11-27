@@ -11,8 +11,10 @@
 
 @section('label-tree-content')
 <div class="row">
-    <div class="col-md-6">
-        @include('label-trees.show.projects-panel')
+    <div class="col-xs-6">
+        @include('label-trees.show.projects-list')
+    </div>
+    <div class="col-xs-6">
         @can('update', $tree)
             @include('label-trees.show.authorized-projects')
         @endcan
