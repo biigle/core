@@ -9,7 +9,6 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('labelTrees.version', {!! $version !!});
-    biigle.$declare('labelTrees.labels', {!! $labels !!});
     @can('destroy', $version)
         biigle.$declare('labelTrees.redirectUrl', '{{route('label-trees', $version->label_tree_id)}}');
     @endcan

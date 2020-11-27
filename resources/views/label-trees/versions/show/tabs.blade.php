@@ -1,6 +1,11 @@
-@extends('label-trees.show.tabs')
-
-@section('tabs-right')
+<ul class="nav nav-tabs project-tabs">
+    <li role="presentation" @if ($activeTab === 'labels') class="active" @endif>
+        <a href="{{route('label-trees', $tree->id)}}" title="Show the labels of this label tree"><i class="fa fa-tags"></i> Labels <span class="badge" id="label-trees-labels-count">{{$tree->labels()->count()}}</span></a>
+    </li>
+    <li role="presentation" @if ($activeTab === 'projects') class="active" @endif>
+        <a href="{{route('label-tree-projects', $tree->id)}}" title="Show the projects that belong to this label tree"><i class="fa fa-folder"></i> Projects <span class="badge" id="label-trees-projects-count">{{$tree->projects()->count()}}</span></a>
+    </li>
+    @mixin('labelTreesShowTabs')
     @if ($version->doi)
         <li class="pull-right">
             <a href="https://doi.org/{{$version->doi}}" title="DOI: {{$version->doi}}">
@@ -19,4 +24,4 @@
             </li>
         @endcan
     @endif
-@endsection
+</ul>

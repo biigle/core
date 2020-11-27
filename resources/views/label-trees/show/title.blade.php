@@ -17,7 +17,7 @@
                     <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" title="Create a fork of this label tree" >Fork</a>
                 </li>
                 @mixin('labelTreesShowDropdown')
-                @if ($members->pluck('id')->contains($user->id))
+                @if ($tree->members()->where('id', $user->id)->exists())
                     <li :class="disabledClass">
                         <a title="Revoke your membership of this label tree" v-on:click="leaveTree">Leave</a>
                     </li>
