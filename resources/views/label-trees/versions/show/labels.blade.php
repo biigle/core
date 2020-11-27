@@ -3,13 +3,10 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('labelTrees.labels', {!! $labels !!});
+    biigle.$declare('labelTrees.canEdit', false);
 </script>
 @endpush
 
 @section('label-tree-version-content')
-<div class="row">
-    <div class="col-md-6">
-        @include('label-trees.show.labels-panel')
-    </div>
-</div>
+    @include('label-trees.show.labels-container')
 @endsection
