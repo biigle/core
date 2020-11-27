@@ -1,8 +1,8 @@
 <p class="text-muted">
     @if (isset($version))
-        Projects using this label tree version:
+        {{$tree->projects()->count()}} projects use this label tree version. Your projects:
     @else
-        Projects using this label tree:
+        {{$tree->projects()->count()}} projects use this label tree. Your projects:
     @endif
 </p>
 <div class="panel panel-default">

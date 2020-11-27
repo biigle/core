@@ -1,9 +1,10 @@
 <script>
+import AddMemberForm from '../projects/components/addMemberForm';
+import Events from '../core/events';
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
-import {handleErrorResponse} from '../core/messages/store';
 import MemberList from '../projects/components/memberList';
-import AddMemberForm from '../projects/components/addMemberForm';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * The panel for editing the members of a label tree
@@ -64,6 +65,11 @@ export default {
                     this.members.splice(i, 1);
                 }
             }
+        },
+    },
+    watch: {
+        members(members) {
+            Events.$emit('label-trees.members.count', members.length)
         },
     },
     created() {
