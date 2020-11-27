@@ -7,6 +7,7 @@
                 <li>
                     <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" title="Create a fork of this label tree" >Fork</a>
                 </li>
+                @mixin('labelTreesShowDropdown')
                 @can('destroy', $version)
                     <li role="separator" class="divider"></li>
                     <li :class="disabledClass">

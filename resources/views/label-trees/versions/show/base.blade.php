@@ -21,7 +21,7 @@
 @section('content')
 <div class="container">
     @include('label-trees.versions.show.title')
-    @include('label-trees.show.tabs')
+    @include('label-trees.versions.show.tabs')
     @yield('label-tree-version-content')
 </div>
 @endsection

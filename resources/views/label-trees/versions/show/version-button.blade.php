@@ -11,17 +11,3 @@
         @endforeach
     </ul>
 </span>
-@if ($version->doi)
-    <a class="btn btn-default" href="https://doi.org/{{$version->doi}}" title="DOI: {{$version->doi}}">
-        DOI: <strong>{{$version->doi}}</strong>
-    </a>
-@else
-    @can('update', $version)
-        <a v-if="doiSaved" v-cloak class="btn btn-default" v-bind:href="doiUrl" v-bind:title="doiTitle">
-            DOI: <strong v-text="doi"></strong>
-        </a>
-        <span v-else class="form-inline">
-            <input type="text" class="form-control" name="doi" id="doi" placeholder="Set a DOI..." v-model="doi" v-on:keyup.enter="saveDoi" title="Insert a DOI for this label tree version and press enter">
-        </span>
-    @endcan
-@endif
