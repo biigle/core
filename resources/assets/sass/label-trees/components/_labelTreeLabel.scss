@@ -23,10 +23,12 @@
         top: 9px;
         border: 2px solid white;
         border-radius: 50%;
+        left: $padding-small-vertical;
     }
 
     .label-tree-label__chevron {
         top: 6px;
+        left: $padding-small-vertical;
         text-shadow:
             -1.5px 0 white,
             1.5px 0 white,
@@ -54,7 +56,7 @@
 
     .label-tree-label__name {
         position: relative;
-        padding: $padding-small-vertical 22px;
+        padding: $padding-small-vertical 27px;
         border-radius: $border-radius-small;
         word-wrap: break-word;
 
@@ -83,21 +85,14 @@
         padding-top: $padding-small-vertical 0;
         position: absolute;
         right: 5px;
-
-        > button {
-            background: none;
-            padding: 0;
-            border: 0;
-
-            &:not(:last-child) {
-                margin-right: 1em;
-            }
-        }
     }
 
     .label-tree-label__favourite {
         color: $gray-light;
         display: none;
+        background: none;
+        border: 0;
+        padding: 0;
 
         &:hover, &.selected {
             color: inherit;

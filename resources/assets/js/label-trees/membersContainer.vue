@@ -1,17 +1,19 @@
 <script>
+import AddMemberForm from '../projects/components/addMemberForm';
+import Events from '../core/events';
+import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
-import MembersPanel from '../core/components/membersPanel';
-import ProjectsApi from '../core/api/projects';
+import MemberList from '../projects/components/memberList';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
- * The panel for editing the members of a project
+ * The panel for editing the members of a label tree
  */
 export default {
     mixins: [LoaderMixin],
     data() {
         return {
-            project: null,
+            labelTree: null,
             members: [],
             roles: [],
             defaultRole: null,
@@ -19,13 +21,20 @@ export default {
         };
     },
     components: {
-        membersPanel: MembersPanel,
+        memberList: MemberList,
+        addMemberForm: AddMemberForm,
+    },
+    computed: {
+        hasMembers() {
+            return this.members.length !== 0;
+        },
     },
     methods: {
         attachMember(user) {
             this.startLoading();
-            ProjectsApi.addUser({id: this.project.id, user_id: user.id}, {
-                    project_role_id: user.role_id,
+            LabelTreesApi.addUser({id: this.labelTree.id}, {
+                    id: user.id,
+                    role_id: user.role_id,
                 })
                 .then(() => this.memberAttached(user), handleErrorResponse)
                 .finally(this.finishLoading);
@@ -35,8 +44,8 @@ export default {
         },
         updateMember(user, props) {
             this.startLoading();
-            ProjectsApi.updateUser({id: this.project.id, user_id: user.id}, {
-                    project_role_id: props.role_id,
+            LabelTreesApi.updateUser({id: this.labelTree.id, user_id: user.id}, {
+                    role_id: props.role_id,
                 })
                 .then(() => this.memberUpdated(user, props), handleErrorResponse)
                 .finally(this.finishLoading);
@@ -46,7 +55,7 @@ export default {
         },
         removeMember(user) {
             this.startLoading();
-            ProjectsApi.removeUser({id: this.project.id, user_id: user.id})
+            LabelTreesApi.removeUser({id: this.labelTree.id, user_id: user.id})
                 .then(() => this.memberRemoved(user), handleErrorResponse)
                 .finally(this.finishLoading);
         },
@@ -58,12 +67,17 @@ export default {
             }
         },
     },
+    watch: {
+        members(members) {
+            Events.$emit('label-trees.members.count', members.length)
+        },
+    },
     created() {
-        this.project = biigle.$require('projects.project');
-        this.members = biigle.$require('projects.members');
-        this.roles = biigle.$require('projects.roles');
-        this.defaultRole = biigle.$require('projects.defaultRoleId');
-        this.userId = biigle.$require('projects.userId');
+        this.labelTree = biigle.$require('labelTrees.labelTree');
+        this.members = biigle.$require('labelTrees.members');
+        this.roles = biigle.$require('labelTrees.roles');
+        this.defaultRole = biigle.$require('labelTrees.defaultRole');
+        this.userId = biigle.$require('labelTrees.userId');
     },
 };
 </script>

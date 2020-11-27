@@ -3,22 +3,19 @@
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\LabelSource;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\User;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
 
-class LabelTreesController extends Controller
+class LabelTreeProjectsController extends Controller
 {
     /**
-     * Show the label tree page.
+     * Shows the label tree projects page.
      *
      * @param Request $request
-     * @param int $id Label tree ID
-     *
+     * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
@@ -36,57 +33,7 @@ class LabelTreesController extends Controller
     }
 
     /**
-     * Show the label tree list.
-     *
-     * @deprecated This is a legacy route and got replaced by the global search.
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return redirect()->route('search', ['t' => 'label-trees']);
-    }
-
-    /**
-     * Show the create label tree page.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        $this->authorize('create', LabelTree::class);
-
-        $visibilities = [
-            Visibility::private(),
-            Visibility::public(),
-        ];
-
-        if ($request->filled('project')) {
-            $project = Project::findOrFail($request->input('project'));
-            $this->authorize('update', $project);
-        } else {
-            $project = null;
-        }
-
-        if ($request->filled('upstream_label_tree')) {
-            $upstreamLabelTree = LabelTree::findOrFail($request->input('upstream_label_tree'));
-            $this->authorize('access', $upstreamLabelTree);
-        } else {
-            $upstreamLabelTree = null;
-        }
-
-        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
-
-        return view('label-trees.create', compact(
-            'visibilities',
-            'selectedVisibility',
-            'project',
-            'upstreamLabelTree'
-        ));
-    }
-
-    /**
-     * Show the label tree page of a master label tree.
+     * Show the label tree projects page of a master label tree.
      *
      * @param LabelTree $tree
      * @param User $user
@@ -95,27 +42,51 @@ class LabelTreesController extends Controller
      */
     protected function showMasterLabelTree(LabelTree $tree, User $user)
     {
-        $labels = $tree->labels()
-            ->select('id', 'name', 'parent_id', 'color', 'source_id')
+        $authorizedProjects = $tree->authorizedProjects()
+            ->select('id', 'name', 'description')
             ->get();
+
+        if ($user->can('sudo')) {
+            $projects = $tree->projects;
+            $authorizedOwnProjects = $authorizedProjects->pluck('id');
+        } else {
+            // all projects of the user that use the label tree
+            $projects = Project::whereIn('id', function ($query) use ($user, $tree) {
+                $query->select('project_user.project_id')
+                    ->from('project_user')
+                    ->join('label_tree_project', 'project_user.project_id', '=', 'label_tree_project.project_id')
+                    ->where('project_user.user_id', $user->id)
+                    ->where('label_tree_project.label_tree_id', $tree->id);
+            })->get();
+
+            // all projects of the user that are authorized to use the label tree
+            $authorizedOwnProjects = Project::whereIn('id', function ($query) use ($user, $tree) {
+                $query->select('project_user.project_id')
+                    ->from('project_user')
+                    ->join('label_tree_authorized_project', 'project_user.project_id', '=', 'label_tree_authorized_project.project_id')
+                    ->where('project_user.user_id', $user->id)
+                    ->where('label_tree_authorized_project.label_tree_id', $tree->id);
+            })->pluck('id');
+        }
 
         $visibilities = collect([
             Visibility::publicId() => Visibility::public()->name,
             Visibility::privateId() => Visibility::private()->name,
         ]);
 
-        return view('label-trees.show.labels', [
+        return view('label-trees.show.projects', [
             'tree' => $tree,
-            'labels' => $labels,
+            'projects' => $projects,
             'visibilities' => $visibilities,
+            'authorizedProjects' => $authorizedProjects,
+            'authorizedOwnProjects' => $authorizedOwnProjects,
             'private' => $tree->visibility_id === Visibility::privateId(),
-            'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
-            'activeTab' => 'labels',
+            'activeTab' => 'projects',
         ]);
     }
 
     /**
-     * Show the label tree page of a versioned label tree.
+     * Show the label tree page projects of a versioned label tree.
      *
      * @param LabelTree $tree
      * @param User $user
@@ -124,10 +95,6 @@ class LabelTreesController extends Controller
      */
     protected function showVersionedLabelTree(LabelTree $tree, User $user)
     {
-        $labels = $tree->labels()
-            ->select('id', 'name', 'parent_id', 'color', 'source_id')
-            ->get();
-
         if ($user->can('sudo')) {
             $projects = $tree->projects;
         } else {
@@ -141,14 +108,13 @@ class LabelTreesController extends Controller
             })->get();
         }
 
-        return view('label-trees.versions.show.labels', [
+        return view('label-trees.versions.show.projects', [
             'version' => $tree->version,
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
-            'labels' => $labels,
             'projects' => $projects,
             'private' => $tree->visibility_id === Visibility::privateId(),
-            'activeTab' => 'labels',
+            'activeTab' => 'projects',
         ]);
     }
 }

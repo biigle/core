@@ -191,6 +191,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@show',
         ]);
 
+        $router->get('{id}/projects', [
+            'as'   => 'label-tree-projects',
+            'uses' => 'LabelTreeProjectsController@show',
+        ]);
+
+        $router->get('{id}/members', [
+            'as'   => 'label-tree-members',
+            'uses' => 'LabelTreeMembersController@show',
+        ]);
+
         $router->get('{id}/merge', [
             'as'   => 'label-trees-merge-index',
             'uses' => 'LabelTreeMergeController@index',
