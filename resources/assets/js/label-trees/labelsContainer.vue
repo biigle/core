@@ -1,5 +1,4 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
 import Events from '../core/events';
 import LabelsApi from '../core/api/labels';
 import LabelTree from './components/labelTree';
