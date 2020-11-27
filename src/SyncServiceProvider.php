@@ -34,7 +34,7 @@ class SyncServiceProvider extends ServiceProvider
         $modules->register('sync', [
             'viewMixins' => [
                 'adminMenu',
-                'labelTreesShowToolbar',
+                'labelTreesShowDropdown',
                 'newLabelTreeButtons',
                 'labelTreesManual',
             ],
