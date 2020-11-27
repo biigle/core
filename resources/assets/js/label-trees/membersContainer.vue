@@ -1,8 +1,9 @@
 <script>
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
-import MembersPanel from '../core/components/membersPanel';
 import {handleErrorResponse} from '../core/messages/store';
+import MemberList from '../projects/components/memberList';
+import AddMemberForm from '../projects/components/addMemberForm';
 
 /**
  * The panel for editing the members of a label tree
@@ -19,7 +20,13 @@ export default {
         };
     },
     components: {
-        membersPanel: MembersPanel,
+        memberList: MemberList,
+        addMemberForm: AddMemberForm,
+    },
+    computed: {
+        hasMembers() {
+            return this.members.length !== 0;
+        },
     },
     methods: {
         attachMember(user) {
@@ -63,7 +70,7 @@ export default {
         this.labelTree = biigle.$require('labelTrees.labelTree');
         this.members = biigle.$require('labelTrees.members');
         this.roles = biigle.$require('labelTrees.roles');
-        this.defaultRole = biigle.$require('labelTrees.defaultRoleId');
+        this.defaultRole = biigle.$require('labelTrees.defaultRole');
         this.userId = biigle.$require('labelTrees.userId');
     },
 };
