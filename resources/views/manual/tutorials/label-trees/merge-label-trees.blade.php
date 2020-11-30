@@ -10,7 +10,7 @@
             BIIGLE allows you to compare two label trees and resolve the differences between them. This is called a "merge". If the changes of a label tree <em>B</em> should be applied to a "base" label tree <em>A</em>, the label tree <em>B</em> is "merged into" label tree <em>A</em>.
         </p>
         <p>
-            To perform a merge, you must be a member of the base label tree, i.e. you must be able to modify the labels of the tree. Click the <button class="btn btn-default btn-xs">Merge</button> button at the top right of the label tree overview to start a new merge. The next view asks you to select a label tree that should be merged into the base label tree. Type the name of the label tree and select it from the list, then click <button class="btn btn-success btn-xs">Continue</button>.
+            To perform a merge, you must be a member of the base label tree, i.e. you must be able to modify the labels of the tree. Click <button class="btn btn-default btn-xs">Merge</button> in the <button class="btn btn-default btn-xs"><i class="fa fa-cog"></i> <span class="caret"></span></button> dropdown menu at the top of the label tree overview to start a new merge. The next view asks you to select a label tree that should be merged into the base label tree. Type the name of the label tree and select it from the list, then click <button class="btn btn-success btn-xs">Continue</button>.
         </p>
 
         <p class="text-center">
