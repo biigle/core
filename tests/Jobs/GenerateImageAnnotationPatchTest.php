@@ -19,17 +19,6 @@ class GenerateImageAnnotationPatchTest extends TestCase
         config(['largo.patch_storage_disk' => 'test']);
     }
 
-    public function testHandleSerialization()
-    {
-        $this->getImageMock(0);
-        $annotation = ImageAnnotationTest::create();
-        $job = serialize(new GenerateImageAnnotationPatchStub($annotation));
-        $annotation->delete();
-        $job = unserialize($job);
-        // This should throw no error and should not perform any processing.
-        $job->handle();
-    }
-
     public function testHandleStorage()
     {
         Storage::fake('test');
@@ -46,7 +35,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
@@ -68,7 +57,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
@@ -92,7 +81,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleCircle()
@@ -116,7 +105,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleOther()
@@ -140,7 +129,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleContainedNegative()
@@ -161,7 +150,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleContainedPositive()
@@ -182,7 +171,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleContainedTooLarge()
@@ -206,7 +195,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     public function testHandleMinDimension()
@@ -227,7 +216,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once();
-        $job->handleImage($annotation->image, 'abc');
+        $job->handleFile($annotation->image, 'abc');
     }
 
     protected function getImageMock($times = 1)

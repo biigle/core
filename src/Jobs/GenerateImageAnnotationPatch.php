@@ -2,99 +2,23 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Contracts\ImageAnnotation;
-use Biigle\Image;
-use Biigle\Jobs\Job;
+use Biigle\Contracts\Annotation;
 use Biigle\Shape;
+use Biigle\VolumeFile;
 use Exception;
 use FileCache;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Storage;
-use Str;
 use VipsImage;
 
-class GenerateImageAnnotationPatch extends Job implements ShouldQueue
+class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
 {
-    use InteractsWithQueue;
-
-    /**
-     * The class of the annotation model.
-     *
-     * @var string
-     */
-    protected $annotationClass;
-
-    /**
-     * The ID of the annotation model.
-     *
-     * @var int
-     */
-    protected $annotationId;
-
-    /**
-     * The the annotation to generate a patch for.
-     *
-     * @var ImageAnnotation
-     */
-    protected $annotation;
-
-    /**
-     * The storage disk to store the annotation patches to.
-     *
-     * @var string
-     */
-    protected $targetDisk;
-
-    /**
-     * Create a new job instance.
-     *
-     * @param ImageAnnotation $annotation The the annotation to generate a patch for.
-     * @param string|null $targetDisk The storage disk to store the annotation patches to.
-     *
-     * @return void
-     */
-    public function __construct(ImageAnnotation $annotation, $targetDisk = null)
-    {
-        // We do not use the SerializesModels trait because there is a good chance that
-        // the annotation is deleted when this job should be executed. If this is the
-        // case, this job should be ignored (see handle method).
-        $this->annotationId = $annotation->getQueueableId();
-        $this->annotationClass = get_class($annotation);
-        $this->targetDisk = $targetDisk !== null ? $targetDisk : config('largo.patch_storage_disk');
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $this->annotation = $this->annotationClass::find($this->annotationId);
-        if ($this->annotation === null) {
-            return;
-        }
-
-        try {
-            FileCache::get($this->annotation->getImage(), [$this, 'handleImage']);
-        } catch (Exception $e) {
-            if ($this->shouldRetryAfterException($e)) {
-                // Retry in 10 minutes.
-                $this->release(600);
-            } else {
-                throw new Exception("Could not generate annotation patch for annotation {$this->annotationId}: {$e->getMessage()}");
-            }
-        }
-    }
-
     /**
      * Handle a single image.
      *
-     * @param Image $image
+     * @param VolumeFile $file
      * @param string $path Path to the cached image file.
      */
-    public function handleImage(Image $image, $path)
+    public function handleFile(VolumeFile $file, $path)
     {
         // Do not get the path in the constructor because that would require fetching all
         // the images of the annotations. This would be really slow when lots of
@@ -138,13 +62,13 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * Calculate the bounding rectangle of the patch to extract.
      *
-     * @param ImageAnnotation $annotation
+     * @param Annotation $annotation
      * @param int $thumbWidth
      * @param int $thumbHeight
      *
      * @return array Containing width, height, top and left
      */
-    protected function getPatchRect(ImageAnnotation $annotation, $thumbWidth, $thumbHeight)
+    protected function getPatchRect(Annotation $annotation, $thumbWidth, $thumbHeight)
     {
         $padding = config('largo.patch_padding');
         $points = $annotation->getPoints();
@@ -255,33 +179,15 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * Assemble the target path for an annotation patch.
      *
-     * @param ImageAnnotation $annotation
+     * @param Annotation $annotation
      *
      * @return string
      */
-    protected function getTargetPath(ImageAnnotation $annotation): string
+    protected function getTargetPath(Annotation $annotation): string
     {
-        $prefix = fragment_uuid_path($annotation->getImage()->uuid);
+        $prefix = fragment_uuid_path($annotation->getFile()->uuid);
         $format = config('largo.patch_format');
 
         return "{$prefix}/{$annotation->id}.{$format}";
-    }
-
-    /**
-     * Determine if this job should retry instead of fail after an exception
-     *
-     * @param Exception $e
-     *
-     * @return bool
-     */
-    protected function shouldRetryAfterException(Exception $e)
-    {
-        $message = $e->getMessage();
-        return $this->attempts() < 3 && (
-            // The remote source might be available again after a while.
-            Str::contains($message, 'The source resource could not be established') ||
-            // This error presumably occurs due to worker concurrency.
-            Str::contains($message, 'Impossible to create the root directory')
-        );
     }
 }
