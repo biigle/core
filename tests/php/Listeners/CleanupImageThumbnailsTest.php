@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Listeners;
 
 use Biigle\Events\ImagesDeleted;
-use Biigle\Listeners\CleanupThumbnails;
+use Biigle\Listeners\CleanupImageThumbnails;
 use Biigle\Tests\ImageTest;
 use Illuminate\Events\CallQueuedListener;
 use Queue;
 use Storage;
 use TestCase;
 
-class CleanupThumbnailsTest extends TestCase
+class CleanupImageThumbnailsTest extends TestCase
 {
     public function testHandle()
     {
@@ -21,7 +21,7 @@ class CleanupThumbnailsTest extends TestCase
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
         Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
-        with(new CleanupThumbnails)->handle(new ImagesDeleted($image->uuid));
+        with(new CleanupImageThumbnails)->handle(new ImagesDeleted($image->uuid));
         $this->assertFalse(Storage::disk('test-thumbs')->exists("{$prefix}.{$format}"));
     }
 
@@ -30,7 +30,7 @@ class CleanupThumbnailsTest extends TestCase
         $image = ImageTest::create();
         event(new ImagesDeleted($image->uuid));
         Queue::assertPushed(CallQueuedListener::class, function ($job) {
-            return $job->class === CleanupThumbnails::class;
+            return $job->class === CleanupImageThumbnails::class;
         });
     }
 }

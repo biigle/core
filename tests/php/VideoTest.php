@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Events\VideoDeleted;
+use Biigle\Events\VideosDeleted;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Video;
@@ -31,13 +31,6 @@ class VideoTest extends ModelTestCase
         $this->assertFalse($this->model->annotations()->exists());
         VideoAnnotationTest::create(['video_id' => $this->model->id]);
         $this->assertTrue($this->model->annotations()->exists());
-    }
-
-    public function testDispatchesDeletedEvent()
-    {
-        Event::fake();
-        $this->model->delete();
-        Event::assertDispatched(VideoDeleted::class);
     }
 
     public function testGetThumbnailAttribute()
@@ -120,5 +113,14 @@ class VideoTest extends ModelTestCase
         $this->assertEquals(1, $this->model->labels()->count());
         $label = $this->model->labels()->first();
         $this->assertEquals($vl->id, $label->id);
+    }
+
+    public function testImagesDeletedEventOnDelete()
+    {
+        Event::fake([VideosDeleted::class]);
+        $this->model->delete();
+        Event::assertDispatched(VideosDeleted::class, function ($event) {
+            return $event->uuids[0] === $this->model->uuid;
+        });
     }
 }

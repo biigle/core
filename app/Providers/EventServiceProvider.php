@@ -14,14 +14,13 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         \Biigle\Events\ImagesDeleted::class => [
-            \Biigle\Listeners\CleanupThumbnails::class,
+            \Biigle\Listeners\CleanupImageThumbnails::class,
         ],
         \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
-        \Biigle\Events\VideoDeleted::class => [
-            \Biigle\Listeners\PrepareDeleteVideoThumbnails::class,
-            \Biigle\Listeners\DeleteVideoVolumeThumbnails::class,
+        \Biigle\Events\VideosDeleted::class => [
+            \Biigle\Listeners\CleanupVideoThumbnails::class,
         ],
     ];
 
@@ -37,5 +36,6 @@ class EventServiceProvider extends ServiceProvider
         \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
         \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
+        \Biigle\Video::observe(new \Biigle\Observers\VideoObserver);
     }
 }
