@@ -382,6 +382,22 @@ class VideoAnnotationTest extends ModelTestCase
         $this->assertEquals($al1->annotation->id, VideoAnnotation::withLabel($al1->label)->first()->id);
     }
 
+    public function testGetPoints()
+    {
+        $annotation = static::make(['points' => [[1, 2]]]);
+        $this->assertEquals([[1, 2]], $annotation->getPoints());
+    }
+
+    public function testGetShape()
+    {
+        $this->assertEquals($this->model->shape, $this->model->getShape());
+    }
+
+    public function testGetFile()
+    {
+        $this->assertEquals($this->model->video, $this->model->getFile());
+    }
+
     public function testGetFileIdAttribute()
     {
         $this->assertEquals($this->model->video_id, $this->model->file_id);
