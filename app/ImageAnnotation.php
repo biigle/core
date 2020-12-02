@@ -2,14 +2,13 @@
 
 namespace Biigle;
 
-use Biigle\Contracts\ImageAnnotation as AnnotationContract;
 use DB;
 
 /**
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-class ImageAnnotation extends Annotation implements AnnotationContract
+class ImageAnnotation extends Annotation
 {
      /**
      * The attributes that should be casted to native types.
@@ -60,29 +59,5 @@ class ImageAnnotation extends Annotation implements AnnotationContract
     public function labels()
     {
         return $this->hasMany(ImageAnnotationLabel::class, 'annotation_id');
-    }
-
-        /**
-     * {@inheritdoc}
-     */
-    public function getPoints(): array
-    {
-        return $this->points;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getShape(): Shape
-    {
-        return $this->shape;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getImage(): Image
-    {
-        return $this->image;
     }
 }
