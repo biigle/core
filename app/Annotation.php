@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
 use DB;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-abstract class Annotation extends Model
+abstract class Annotation extends Model implements AnnotationContract
 {
     use HasPointsAttribute;
 
@@ -177,5 +178,29 @@ abstract class Annotation extends Model
     public function shape()
     {
         return $this->belongsTo(Shape::class);
+    }
+
+        /**
+     * {@inheritdoc}
+     */
+    public function getPoints(): array
+    {
+        return $this->points;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getShape(): Shape
+    {
+        return $this->shape;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFile(): VolumeFile
+    {
+        return $this->file;
     }
 }

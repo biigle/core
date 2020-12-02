@@ -2,14 +2,13 @@
 
 namespace Biigle\Contracts;
 
-use Biigle\Image;
 use Biigle\Shape;
-use Illuminate\Contracts\Queue\QueueableEntity;
+use Biigle\VolumeFile;
 
 /**
  * An annotation model.
  */
-interface ImageAnnotation extends QueueableEntity
+interface Annotation
 {
     /**
      * Get the points array of the annotation.
@@ -26,9 +25,9 @@ interface ImageAnnotation extends QueueableEntity
     public function getShape(): Shape;
 
     /**
-     * Get the image, the annotation belongs to.
+     * Get the image/video, the annotation belongs to.
      *
-     * @return Image
+     * @return VolumeFIle
      */
-    public function getImage(): Image;
+    public function getFile(): VolumeFile;
 }
