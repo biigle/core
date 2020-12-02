@@ -80,7 +80,7 @@ class LargoControllerTestBase extends ApiTestCase
             ],
             'changed' => [],
         ]);
-        $this->assertEquals('high', $this->dispatchedJobs[0]->queue);
+        $this->assertEquals('default', $this->dispatchedJobs[0]->queue);
     }
 
     public function testDismiss()
