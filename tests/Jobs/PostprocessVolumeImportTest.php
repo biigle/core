@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Sync\Jobs;
 
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -18,7 +18,7 @@ class PostprocessVolumeImportTest extends TestCase
         $job = new PostprocessVolumeImport(collect([$image->volume]));
         $job->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertNotPushed(GenerateAnnotationPatch::class);
+        Queue::assertNotPushed(GenerateImageAnnotationPatch::class);
     }
 
     public function testHandleAnnotationPatches()
@@ -28,6 +28,6 @@ class PostprocessVolumeImportTest extends TestCase
         $job->handle();
         // One job for the creation of the annotation and one job by
         // PostprocessVolumeImport.
-        $this->assertCount(2, Queue::pushed(GenerateAnnotationPatch::class));
+        $this->assertCount(2, Queue::pushed(GenerateImageAnnotationPatch::class));
     }
 }
