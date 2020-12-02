@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Contracts\ImageAnnotation;
+use Biigle\Contracts\Annotation;
 use Biigle\Image;
 use Biigle\Jobs\Job;
 use Biigle\Shape;
@@ -35,7 +35,7 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * The the annotation to generate a patch for.
      *
-     * @var ImageAnnotation
+     * @var Annotation
      */
     protected $annotation;
 
@@ -49,12 +49,12 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param ImageAnnotation $annotation The the annotation to generate a patch for.
+     * @param Annotation $annotation The the annotation to generate a patch for.
      * @param string|null $targetDisk The storage disk to store the annotation patches to.
      *
      * @return void
      */
-    public function __construct(ImageAnnotation $annotation, $targetDisk = null)
+    public function __construct(Annotation $annotation, $targetDisk = null)
     {
         // We do not use the SerializesModels trait because there is a good chance that
         // the annotation is deleted when this job should be executed. If this is the
@@ -77,7 +77,7 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
         }
 
         try {
-            FileCache::get($this->annotation->getImage(), [$this, 'handleImage']);
+            FileCache::get($this->annotation->getFile(), [$this, 'handleImage']);
         } catch (Exception $e) {
             if ($this->shouldRetryAfterException($e)) {
                 // Retry in 10 minutes.
@@ -138,13 +138,13 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * Calculate the bounding rectangle of the patch to extract.
      *
-     * @param ImageAnnotation $annotation
+     * @param Annotation $annotation
      * @param int $thumbWidth
      * @param int $thumbHeight
      *
      * @return array Containing width, height, top and left
      */
-    protected function getPatchRect(ImageAnnotation $annotation, $thumbWidth, $thumbHeight)
+    protected function getPatchRect(Annotation $annotation, $thumbWidth, $thumbHeight)
     {
         $padding = config('largo.patch_padding');
         $points = $annotation->getPoints();
@@ -255,13 +255,13 @@ class GenerateImageAnnotationPatch extends Job implements ShouldQueue
     /**
      * Assemble the target path for an annotation patch.
      *
-     * @param ImageAnnotation $annotation
+     * @param Annotation $annotation
      *
      * @return string
      */
-    protected function getTargetPath(ImageAnnotation $annotation): string
+    protected function getTargetPath(Annotation $annotation): string
     {
-        $prefix = fragment_uuid_path($annotation->getImage()->uuid);
+        $prefix = fragment_uuid_path($annotation->getFile()->uuid);
         $format = config('largo.patch_format');
 
         return "{$prefix}/{$annotation->id}.{$format}";
