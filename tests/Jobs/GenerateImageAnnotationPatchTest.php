@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
-use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
@@ -234,12 +233,6 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
 class GenerateImageAnnotationPatchStub extends GenerateImageAnnotationPatch
 {
-    public function __construct(ImageAnnotation $annotation, $targetDisk = null)
-    {
-        parent::__construct($annotation, $targetDisk);
-        $this->annotation = $annotation;
-    }
-
     public function getVipsImage($path)
     {
         return $this->mock;
