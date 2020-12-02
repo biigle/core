@@ -3,9 +3,13 @@
 namespace Biigle\Modules\Largo;
 
 use Biigle\Events\ImagesDeleted;
+use Biigle\Events\VideosDeleted;
 use Biigle\ImageAnnotation;
+use Biigle\VideoAnnotation;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
+use Biigle\Modules\Largo\Listeners\VideosCleanupListener;
 use Biigle\Modules\Largo\Observers\ImageAnnotationObserver;
+use Biigle\Modules\Largo\Observers\VideoAnnotationObserver;
 use Biigle\Services\Modules;
 use Event;
 use Illuminate\Routing\Router;
@@ -41,7 +45,9 @@ class LargoServiceProvider extends ServiceProvider
         });
 
         ImageAnnotation::observe(new ImageAnnotationObserver);
+        VideoAnnotation::observe(new VideoAnnotationObserver);
         Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
+        Event::listen(VideosDeleted::class, VideosCleanupListener::class);
 
         $modules->register('largo', [
             'viewMixins' => [
