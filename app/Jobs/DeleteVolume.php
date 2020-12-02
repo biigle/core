@@ -37,8 +37,8 @@ class DeleteVolume extends Job implements ShouldQueue
     public function handle()
     {
         // This is done in a queued job because it can take some time if the volume has
-        // many images and/or annotations. This should not stall the HTTP request of the
-        // user.
+        // many images, videos and/or annotations. This should not stall the HTTP
+        // request of the user.
         $this->volume->delete();
     }
 }

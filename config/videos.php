@@ -43,7 +43,6 @@ return [
     /*
      | Specifies which queue should be used for which job.
      */
-    'delete_video_thumbnails_queue' => env('VIDEOS_DELETE_VIDEO_THUMBNAILS_QUEUE', 'default'),
     'process_new_video_queue' => env('VIDEOS_PROCESS_NEW_VIDEO_QUEUE', 'default'),
     'track_object_queue' => env('VIDEOS_TRACK_OBJECT_QUEUE', 'high'),
 

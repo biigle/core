@@ -19,7 +19,7 @@
                 There are no projects authorized to use this label tree.
             </li>
             <li v-if="!isPrivate" class="list-group-item text-muted">
-                All projects are authorized to use this label tree.
+                All projects are authorized to use this public label tree.
             </li>
         </ul>
     </div>

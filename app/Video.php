@@ -2,7 +2,6 @@
 
 namespace Biigle;
 
-use Biigle\Events\VideoDeleted;
 use Biigle\User;
 use DB;
 
@@ -90,15 +89,6 @@ class Video extends VolumeFile
      */
     protected $hidden = [
         'attrs',
-    ];
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'deleted' => VideoDeleted::class,
     ];
 
     /**
