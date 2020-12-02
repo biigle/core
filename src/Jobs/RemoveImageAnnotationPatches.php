@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Queue;
 use Storage;
 
-class RemoveAnnotationPatches extends Job implements ShouldQueue
+class RemoveImageAnnotationPatches extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
 

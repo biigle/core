@@ -14,7 +14,7 @@ use Storage;
 use Str;
 use VipsImage;
 
-class GenerateAnnotationPatch extends Job implements ShouldQueue
+class GenerateImageAnnotationPatch extends Job implements ShouldQueue
 {
     use InteractsWithQueue;
 

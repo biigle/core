@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -98,7 +98,7 @@ class LargoControllerTestBase extends ApiTestCase
 
     public function testDismissForceDeny()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $this->label->user_id = $this->admin()->id;
         $this->label->save();
         $this->beEditor();

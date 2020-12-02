@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -136,7 +136,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testDismiss()
     {
-        $this->expectsJobs(RemoveAnnotationPatches::class);
+        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
 
@@ -151,7 +151,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testDismissForce()
     {
-        $this->expectsJobs(RemoveAnnotationPatches::class);
+        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $user2 = UserTest::create();
@@ -166,7 +166,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testChangeOwn()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -184,7 +184,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testChangeOther()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -205,7 +205,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testChangeOtherForce()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -224,7 +224,7 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testChangeMultiple()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;

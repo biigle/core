@@ -5,14 +5,14 @@ namespace Biigle\Modules\Largo\Listeners;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 
 class ImagesCleanupListener
 {
     /**
      * Handle the event.
      *
-     * Assembles the volume ID and annotation IDs for the RemoveAnnotationPatches job.
+     * Assembles the volume ID and annotation IDs for the RemoveImageAnnotationPatches job.
      * The job will be queued and when it is run, the volume, images and annotations
      * may no longer exist in the DB.
      *
@@ -28,7 +28,7 @@ class ImagesCleanupListener
                 ->toArray();
 
             if (!empty($annotationIds)) {
-                RemoveAnnotationPatches::dispatch($annotationIds);
+                RemoveImageAnnotationPatches::dispatch($annotationIds);
             }
         }
     }

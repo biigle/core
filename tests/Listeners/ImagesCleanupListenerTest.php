@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Listeners;
 
 use Biigle\Events\ImagesDeleted;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -15,7 +15,7 @@ class ImagesCleanupListenerTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([]));
     }
 
@@ -27,7 +27,7 @@ class ImagesCleanupListenerTest extends TestCase
 
     public function testNotThere()
     {
-        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $faker = Faker::create();
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$faker->uuid()]));
     }
@@ -39,7 +39,7 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        $this->expectsJobs(RemoveAnnotationPatches::class);
+        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid, $image2->uuid]));
 
         $job = end($this->dispatchedJobs);
@@ -58,7 +58,7 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        $this->expectsJobs(RemoveAnnotationPatches::class);
+        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid]));
 
         $job = end($this->dispatchedJobs);

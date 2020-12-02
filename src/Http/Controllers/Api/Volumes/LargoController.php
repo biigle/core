@@ -7,7 +7,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\Modules\Largo\Http\Requests\StoreVolumeLargoSession;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;

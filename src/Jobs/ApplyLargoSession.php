@@ -6,7 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Jobs\Job;
 use Biigle\Label;
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -274,7 +274,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
             $toDeleteQuery->delete();
             // The annotation model observer does not fire for this query so we
             // dispatch the remove patch job manually here.
-            RemoveAnnotationPatches::dispatch($toDeleteArgs);
+            RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
         }
     }
 }

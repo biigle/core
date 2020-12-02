@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Largo\Console\Commands;
 
 use Biigle\ImageAnnotation;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use File;
 use Illuminate\Console\Command;
 use Storage;
@@ -74,7 +74,7 @@ class GenerateMissing extends Command
                 if (!$storage->exists("{$prefix}/{$annotation->id}.{$this->format}")) {
                     $this->count++;
                     if ($pushToQueue) {
-                        GenerateAnnotationPatch::dispatch($annotation)
+                        GenerateImageAnnotationPatch::dispatch($annotation)
                             ->onQueue(config('largo.generate_annotation_patch_queue'));
                     }
                 }

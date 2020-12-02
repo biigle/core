@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
-use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Tests\ImageAnnotationTest;
 use File;
 use Queue;
 use Storage;
 use TestCase;
 
-class RemoveAnnotationPatchesTest extends TestCase
+class RemoveImageAnnotationPatchesTest extends TestCase
 {
     public function testHandle()
     {
@@ -21,7 +21,7 @@ class RemoveAnnotationPatchesTest extends TestCase
         Storage::disk('test')->put($path, 'test');
 
         $args = [$annotation->id => $annotation->image->uuid];
-        (new RemoveAnnotationPatches($args))->handle();
+        (new RemoveImageAnnotationPatches($args))->handle();
         $this->assertFalse(Storage::disk('test')->exists($path));
     }
 
@@ -37,7 +37,7 @@ class RemoveAnnotationPatchesTest extends TestCase
             $annotation->id => $annotation->image->uuid,
             $annotation2->id => $annotation2->image->uuid,
         ];
-        (new RemoveAnnotationPatches($args, 1))->handle();
-        Queue::assertPushed(RemoveAnnotationPatches::class, 2);
+        (new RemoveImageAnnotationPatches($args, 1))->handle();
+        Queue::assertPushed(RemoveImageAnnotationPatches::class, 2);
     }
 }
