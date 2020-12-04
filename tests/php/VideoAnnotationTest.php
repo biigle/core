@@ -134,6 +134,14 @@ class VideoAnnotationTest extends ModelTestCase
         $this->assertEquals([5, 5], $this->model->interpolatePoints(0.5));
     }
 
+    public function testInterpolatePointsInt()
+    {
+        $this->model->shape_id = Shape::pointId();
+        $this->model->points = [[0, 0], [10, 10]];
+        $this->model->frames = [0, 1];
+        $this->assertEquals([10, 10], $this->model->interpolatePoints(1));
+    }
+
     public function testInterpolatePointsRectangle()
     {
         $this->model->shape_id = Shape::rectangleId();
