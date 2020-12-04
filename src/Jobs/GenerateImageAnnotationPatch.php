@@ -24,25 +24,9 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
         // the images of the annotations. This would be really slow when lots of
         // annotation patchs should be generated.
         $targetPath = $this->getTargetPath($this->annotation);
-
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
-
         $image = $this->getVipsImage($path);
-        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
-        $rect = $this->makeRectContained($rect, $image);
 
-        $buffer = $image->crop(
-                $rect['left'],
-                $rect['top'],
-                $rect['width'],
-                $rect['height']
-            )
-            ->resize(floatval($thumbWidth) / $rect['width'])
-            ->writeToBuffer('.'.config('largo.patch_format'), [
-                'Q' => 85,
-                'strip' => true,
-            ]);
+        $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
 
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
     }
@@ -57,123 +41,6 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
     protected function getVipsImage($path)
     {
         return VipsImage::newFromFile($path, ['access' => 'sequential']);
-    }
-
-    /**
-     * Calculate the bounding rectangle of the patch to extract.
-     *
-     * @param Annotation $annotation
-     * @param int $thumbWidth
-     * @param int $thumbHeight
-     *
-     * @return array Containing width, height, top and left
-     */
-    protected function getPatchRect(Annotation $annotation, $thumbWidth, $thumbHeight)
-    {
-        $padding = config('largo.patch_padding');
-        $points = $annotation->getPoints();
-
-        switch ($annotation->getShape()->id) {
-            case Shape::pointId():
-                $pointPadding = config('largo.point_padding');
-                $left = $points[0] - $pointPadding;
-                $right = $points[0] + $pointPadding;
-                $top = $points[1] - $pointPadding;
-                $bottom = $points[1] + $pointPadding;
-                break;
-
-            case Shape::circleId():
-                $left = $points[0] - $points[2];
-                $right = $points[0] + $points[2];
-                $top = $points[1] - $points[2];
-                $bottom = $points[1] + $points[2];
-                break;
-
-            default:
-                $left = INF;
-                $right = -INF;
-                $top = INF;
-                $bottom = -INF;
-                foreach ($points as $index => $value) {
-                    if ($index % 2 === 0) {
-                        $left = min($left, $value);
-                        $right = max($right, $value);
-                    } else {
-                        $top = min($top, $value);
-                        $bottom = max($bottom, $value);
-                    }
-                }
-        }
-
-        $left -= $padding;
-        $right += $padding;
-        $top -= $padding;
-        $bottom += $padding;
-
-        $width = $right - $left;
-        $height = $bottom - $top;
-
-        // Ensure the minimum width so the annotation patch is not "zoomed in".
-        if ($width < $thumbWidth) {
-            $delta = ($thumbWidth - $width) / 2.0;
-            $left -= $delta;
-            $right += $delta;
-            $width = $thumbWidth;
-        }
-
-        // Ensure the minimum height so the annotation patch is not "zoomed in".
-        if ($height < $thumbHeight) {
-            $delta = ($thumbHeight - $height) / 2.0;
-            $top -= $delta;
-            $bottom += $delta;
-            $height = $thumbHeight;
-        }
-
-        $widthRatio = $width / $thumbWidth;
-        $heightRatio = $height / $thumbHeight;
-
-        // increase the size of the patch so its aspect ratio is the same than the
-        // ratio of the thumbnail dimensions
-        if ($widthRatio > $heightRatio) {
-            $newHeight = round($thumbHeight * $widthRatio);
-            $top -= round(($newHeight - $height) / 2);
-            $height = $newHeight;
-        } else {
-            $newWidth = round($thumbWidth * $heightRatio);
-            $left -= round(($newWidth - $width) / 2);
-            $width = $newWidth;
-        }
-
-        return [
-            'width' => intval(round($width)),
-            'height' => intval(round($height)),
-            'left' => intval(round($left)),
-            'top' => intval(round($top)),
-        ];
-    }
-
-    /**
-     * Adjust the position and size of the patch rectangle so it is contained in the
-     * image.
-     *
-     * @param array $rect
-     * @param Jcupitt\Vips\Image $image
-     *
-     * @return array
-     */
-    protected function makeRectContained($rect, $image)
-    {
-        // Order of min max is importans so the point gets no negative coordinates.
-        $rect['left'] = min($image->width - $rect['width'], $rect['left']);
-        $rect['left'] = max(0, $rect['left']);
-        $rect['top'] = min($image->height - $rect['height'], $rect['top']);
-        $rect['top'] = max(0, $rect['top']);
-
-        // Adjust dimensions of rect if it is larger than the image.
-        $rect['width'] = min($image->width, $rect['width']);
-        $rect['height'] = min($image->height, $rect['height']);
-
-        return $rect;
     }
 
     /**

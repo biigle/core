@@ -6,6 +6,7 @@ use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
 use File;
+use Jcupitt\Vips\Image;
 use Mockery;
 use Storage;
 use TestCase;
@@ -112,7 +113,6 @@ class GenerateImageAnnotationPatchTest extends TestCase
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
         Storage::fake('test');
         $image = $this->getImageMock();
-        $padding = config('largo.patch_padding');
         $annotation = ImageAnnotationTest::create([
             // Make the polygon large enough so the crop is not affected by the minimum
             // dimension.
