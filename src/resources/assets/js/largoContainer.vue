@@ -15,7 +15,7 @@ export default {
     },
         methods: {
         queryAnnotations(label) {
-            return VolumesApi.queryAnnotations({id: this.volumeId, label_id: label.id});
+            return VolumesApi.queryImageAnnotations({id: this.volumeId, label_id: label.id});
         },
         performSave(payload) {
             return VolumesApi.save({id: this.volumeId}, payload);
