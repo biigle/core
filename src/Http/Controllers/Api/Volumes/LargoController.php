@@ -18,19 +18,21 @@ class LargoController extends Controller
      * @apiName VolumesStoreLargo
      * @apiParam {Number} id The volume ID.
      * @apiPermission projectEditor
-     * @apiDescription From the `dismissed` map only image annotation labels that were attached by the requesting user will be detached (unless `force` is set to `true`). If the map contains image annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new image annotation labels will be created. If, after detaching `dismissed` image annotation labels and attaching `changed` image annotation labels, there is an image annotation whithout any label, the annotation will be deleted. All affected image annotations must belong to the same volume. If the user is not allowed to edit in this volume, the whole request will be denied. Only available for image volumes.
+     * @apiDescription From the `dismissed` map only annotation labels that were attached by the requesting user will be detached (unless `force` is set to `true`). If the map contains annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new annotation labels will be created. If, after detaching `dismissed` annotation labels and attaching `changed` annotation labels, there is an annotation whithout any label, the annotation will be deleted. All affected annotations must belong to the same volume.
      *
-     * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
-     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} dismissed_image_annotations Map from a label ID to a list of IDs of image annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed_image_annotations Map from a label ID to a list of IDs of image annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} dismissed_video_annotations Map from a label ID to a list of IDs of video annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed_video_annotations Map from a label ID to a list of IDs of video annotations to which this label should be attached.
      * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
-     *    dismissed: {
+     *    dismissed_image_annotations: {
      *       12: [1, 2, 3, 4],
      *       24: [15, 2, 10]
      *    },
-     *    changed: {
+     *    changed_image_annotations: {
      *       5: [1, 3],
      *       13: [10],
      *    }
@@ -46,7 +48,7 @@ class LargoController extends Controller
      */
     public function save(StoreVolumeLargoSession $request)
     {
-        if (count($request->dismissed) === 0 && count($request->changed) === 0) {
+        if ($request->emptyRequest) {
             return;
         }
 
@@ -56,7 +58,7 @@ class LargoController extends Controller
         $request->volume->attrs = $attrs;
         $request->volume->save();
 
-        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissed, $request->changed, $request->force);
+        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
 
         return ['id' => $uuid];
     }

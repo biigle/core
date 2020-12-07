@@ -4,6 +4,7 @@ namespace Biigle\Modules\Largo\Http\Requests;
 
 use Biigle\ImageAnnotation;
 use Biigle\Project;
+use Biigle\VideoAnnotation;
 
 class StoreProjectLargoSession extends StoreLargoSession
 {
@@ -39,6 +40,11 @@ class StoreProjectLargoSession extends StoreLargoSession
             return $this->user()->can('force-edit-in', $this->project);
         }
 
+        $this->emptyRequest = count($this->dismissedImageAnnotations) === 0 &&
+            count($this->changedImageAnnotations) === 0 &&
+            count($this->dismissedVideoAnnotations) === 0 &&
+            count($this->changedVideoAnnotations) === 0;
+
         return true;
     }
 
@@ -51,15 +57,23 @@ class StoreProjectLargoSession extends StoreLargoSession
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (count($this->dismissed) === 0 && count($this->changed) === 0) {
+            if ($this->emptyRequest) {
                 return;
             }
 
-            $affectedAnnotations = $this->getAffectedAnnotations($this->dismissed, $this->changed);
+            $affectedImageAnnotations = $this->getAffectedAnnotations($this->dismissedImageAnnotations, $this->changedImageAnnotations);
 
-            $this->volumes = $this->project->imageVolumes()
-                ->whereIn('id', $this->getAffectedVolumes($affectedAnnotations))
+            $imageVolumes = $this->project->imageVolumes()
+                ->whereIn('id', $this->getAffectedImageVolumes($affectedImageAnnotations))
                 ->get();
+
+            $affectedVideoAnnotations = $this->getAffectedAnnotations($this->dismissedVideoAnnotations, $this->changedVideoAnnotations);
+
+            $videoVolumes = $this->project->videoVolumes()
+                ->whereIn('id', $this->getAffectedVideoVolumes($affectedVideoAnnotations))
+                ->get();
+
+            $this->volumes = $imageVolumes->concat($videoVolumes);
 
             $inProgress = $this->volumes->contains(function ($volume) {
                 return is_array($volume->attrs) && array_key_exists('largo_job_id', $volume->attrs);
@@ -71,32 +85,60 @@ class StoreProjectLargoSession extends StoreLargoSession
 
             $volumeIds = $this->project->imageVolumes()->pluck('id');
 
-            if (!$this->anotationsBelongToVolumes($affectedAnnotations, $volumeIds)) {
+            if (!$this->imageAnotationsBelongToVolumes($affectedImageAnnotations, $volumeIds)) {
+                $validator->errors()->add('id', 'All annotations must belong to the volumes of the project.');
+            }
+
+            $volumeIds = $this->project->videoVolumes()->pluck('id');
+
+            if (!$this->videoAnotationsBelongToVolumes($affectedVideoAnnotations, $volumeIds)) {
                 $validator->errors()->add('id', 'All annotations must belong to the volumes of the project.');
             }
 
             $availableLabelTreeIds = $this->project->labelTrees()->pluck('id');
-            $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changed);
+            $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changedImageAnnotations);
 
             if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
-                $validator->errors()->add('changed', 'You may only attach labels that belong to one of the label trees available for the project.');
+                $validator->errors()->add('changed_image_annotations', 'You may only attach labels that belong to one of the label trees available for the project.');
+            }
+
+            $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changedVideoAnnotations);
+
+            if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
+                $validator->errors()->add('changed_video_annotations', 'You may only attach labels that belong to one of the label trees available for the project.');
             }
         });
     }
 
     /**
-     * Get the IDs of the volumes that are associated with the referenced image
+     * Get the IDs of the image volumes that are associated with the referenced image
      * annotations.
      *
-     * @param array $affectedAnnotations
+     * @param array $annotations
      *
      * @return array
      */
-    protected function getAffectedVolumes($affectedAnnotations)
+    protected function getAffectedImageVolumes($annotations)
     {
         return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->whereIn('image_annotations.id', $affectedAnnotations)
+            ->whereIn('image_annotations.id', $annotations)
             ->distinct()
             ->pluck('images.volume_id');
+    }
+
+    /**
+     * Get the IDs of the video volumes that are associated with the referenced video
+     * annotations.
+     *
+     * @param array $annotations
+     *
+     * @return array
+     */
+    protected function getAffectedVideoVolumes($annotations)
+    {
+        return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+            ->whereIn('video_annotations.id', $annotations)
+            ->distinct()
+            ->pluck('videos.volume_id');
     }
 }

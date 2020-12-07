@@ -2,49 +2,446 @@
 
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Tests\Modules\Largo\Http\Controllers\Api\LargoControllerTestBase;
+use ApiTestCase;
+use Biigle\MediaType;
+use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
+use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 
-class LargoControllerTest extends LargoControllerTestBase
+class LargoControllerTest extends ApiTestCase
 {
-    protected function getUrl()
+    public function setUp(): void
     {
-        $id = $this->project()->id;
+        parent::setUp();
+        // make sure the label tree and label are set up
+        $this->labelRoot();
 
-        return "/api/v1/projects/{$id}/largo";
+        $this->imageVolume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+        ]);
+        $this->project()->addVolumeId($this->imageVolume->id);
+
+        $image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
+        $this->imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+
+        $this->imageAnnotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $this->imageAnnotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->videoVolume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $this->project()->addVolumeId($this->videoVolume->id);
+
+        $video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
+        $this->videoAnnotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+
+        $this->videoAnnotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $this->videoAnnotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
     }
 
-    public function testStoreSetJobId()
+    public function testRoute()
+    {
+        $this->doTestApiRoute('POST', "/api/v1/projects/{$this->project()->id}/largo");
+    }
+
+    public function testErrorsImageAnnotations()
+    {
+        $this->beUser();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [])
+            ->assertStatus(403);
+
+        $this->beGuest();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [])
+            ->assertStatus(403);
+
+        // Annotation from other project should not be affected.
+        $other = ImageAnnotationTest::create();
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$other->id],
+                ],
+            ])
+            // other does not belong to the same project
+            ->assertStatus(422);
+
+        $otherLabel = ImageAnnotationLabelTest::create();
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                ],
+                'changed_image_annotations' => [
+                    $otherLabel->label_id => [$this->imageAnnotation->id],
+                ],
+            ])
+            // a label in 'changed_image_annotations' does not belong to a label tree available for the project
+            ->assertStatus(422);
+    }
+
+    public function testErrorsVideoAnnotations()
+    {
+        $this->beUser();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [])
+            ->assertStatus(403);
+
+        $this->beGuest();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [])
+            ->assertStatus(403);
+
+        // Annotation from other project should not be affected.
+        $other = VideoAnnotationTest::create();
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$other->id],
+                ],
+            ])
+            // other does not belong to the same project
+            ->assertStatus(422);
+
+        $otherLabel = VideoAnnotationLabelTest::create();
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                ],
+                'changed_video_annotations' => [
+                    $otherLabel->label_id => [$this->videoAnnotation->id],
+                ],
+            ])
+            // a label in 'changed_image_annotations' does not belong to a label tree available for the project
+            ->assertStatus(422);
+    }
+
+    public function testQueueImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+        ]);
+        $this->assertEquals('default', $this->dispatchedJobs[0]->queue);
+    }
+
+    public function testQueueVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+        ]);
+        $this->assertEquals('default', $this->dispatchedJobs[0]->queue);
+    }
+
+    public function testDismissImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testDismissVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testDismissForceDenyImageAnnotations()
+    {
+        $this->doesntExpectJobs(ApplyLargoSession::class);
+        $this->imageAnnotationLabel->user_id = $this->admin()->id;
+        $this->imageAnnotationLabel->save();
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+                'force' => true,
+            ])
+            ->assertStatus(403);
+    }
+
+    public function testDismissForceDenyVideoAnnotations()
+    {
+        $this->doesntExpectJobs(ApplyLargoSession::class);
+        $this->videoAnnotationLabel->user_id = $this->admin()->id;
+        $this->videoAnnotationLabel->save();
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [],
+                'force' => true,
+            ])
+            ->assertStatus(403);
+    }
+
+    public function testDismissForceImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beExpert();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+                'force' => true,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testDismissForceVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beExpert();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [],
+                'force' => true,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOwnImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$this->imageAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOwnVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$this->videoAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOtherImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$this->imageAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOtherVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$this->videoAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOtherForceImageAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beExpert();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$this->imageAnnotation->id],
+                ],
+                'force' => true,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeOtherForceVideoAnnotations()
+    {
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beExpert();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$this->videoAnnotation->id],
+                ],
+                'force' => true,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeMultipleImageAnnotations()
+    {
+        $label2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $this->imageAnnotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                    $label2->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$this->imageAnnotation->id],
+                    $this->labelChild()->id => [$this->imageAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testChangeMultipleVideoAnnotations()
+    {
+        $label2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $this->videoAnnotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->expectsJobs(ApplyLargoSession::class);
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                    $label2->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$this->videoAnnotation->id],
+                    $this->labelChild()->id => [$this->videoAnnotation->id],
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreSetJobIdImageAnnotations()
     {
         $volume2 = VolumeTest::create();
         $this->project()->addVolumeId($volume2->id);
         $this->beEditor();
-        $response = $this->post($this->url, [
-            'dismissed' => [
-                $this->label->label_id => [$this->annotation->id],
-            ],
-            'changed' => [],
-        ]);
-        $response->assertStatus(200);
+        $response = $this->post("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+            ])->assertStatus(200);
 
-        $attrs = $this->volume()->fresh()->attrs;
+        $attrs = $this->imageVolume->fresh()->attrs;
         $this->assertNotNull($attrs);
         $this->assertArrayHasKey('largo_job_id', $attrs);
         $this->assertStringContainsString($attrs['largo_job_id'], $response->getContent());
         $this->assertNull($volume2->fresh()->attrs);
     }
 
-    public function testStoreJobStillRunning()
+    public function testStoreSetJobIdVideoAnnotations()
     {
-        $this->volume()->attrs = ['largo_job_id' => 'my_job_id'];
-        $this->volume()->save();
+        $volume2 = VolumeTest::create();
+        $this->project()->addVolumeId($volume2->id);
+        $this->beEditor();
+        $response = $this->post("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [],
+            ])->assertStatus(200);
+
+        $attrs = $this->videoVolume->fresh()->attrs;
+        $this->assertNotNull($attrs);
+        $this->assertArrayHasKey('largo_job_id', $attrs);
+        $this->assertStringContainsString($attrs['largo_job_id'], $response->getContent());
+        $this->assertNull($volume2->fresh()->attrs);
+    }
+
+    public function testStoreJobStillRunningImageAnnotations()
+    {
+        $this->imageVolume->attrs = ['largo_job_id' => 'my_job_id'];
+        $this->imageVolume->save();
 
         $this->beEditor();
-        $this->postJson($this->url, [
-            'dismissed' => [
-                $this->label->label_id => [$this->annotation->id],
-            ],
-            'changed' => [],
-        ])->assertStatus(422);
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+            ])->assertStatus(422);
+    }
+
+    public function testStoreJobStillRunningVideoAnnotations()
+    {
+        $this->videoVolume->attrs = ['largo_job_id' => 'my_job_id'];
+        $this->videoVolume->save();
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                ],
+                'changed_video_annotations' => [],
+            ])->assertStatus(422);
     }
 }

@@ -197,8 +197,8 @@ export default {
 
             this.startLoading();
             this.performSave({
-                    dismissed: this.dismissedToSave,
-                    changed: this.changedToSave,
+                    dismissed_image_annotations: this.dismissedToSave,
+                    changed_image_annotations: this.changedToSave,
                     force: this.forceChange,
                 })
                 .then(this.waitForJobToFinish, (response) => {
