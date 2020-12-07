@@ -20,6 +20,7 @@ class LargoController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
 
+        // TODO: Abort if no volume exists?
         if (!$project->imageVolumes()->exists()) {
             abort(Response::HTTP_NOT_FOUND);
         }

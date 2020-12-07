@@ -49,6 +49,10 @@ $router->group([
         'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
     ]);
 
+    $router->get('projects/{id}/video-annotations/filter/label/{id2}', [
+        'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
+    ]);
+
     $router->get('labels/{id}/image-annotations', [
         'uses' => 'Labels\ImageAnnotationsController@index',
     ]);
