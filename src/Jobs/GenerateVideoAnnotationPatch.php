@@ -8,6 +8,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use FileCache;
 use Storage;
