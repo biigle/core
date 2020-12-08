@@ -20,8 +20,7 @@ class LargoController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
 
-        // TODO: Abort if no volume exists?
-        if (!$project->imageVolumes()->exists()) {
+        if (!$project->volumes()->exists()) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
@@ -33,11 +32,14 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
+        $patchCount = config('largo.video_patch_count');
+
         return view('largo::project', [
             'project' => $project,
             'labelTrees' => $labelTrees,
             'target' => $project,
             'patchUrlTemplate' => $patchUrlTemplate,
+            'patchCount' => $patchCount,
         ]);
     }
 }

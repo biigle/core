@@ -7,7 +7,9 @@
     <script type="text/javascript">
         biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
-        biigle.$declare('largo.showAnnotationRoute', '{{ route('show-annotation', '') }}/');
+        biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
+        biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
+        biigle.$declare('largo.videoAnnotationPatchCount', {{ $patchCount }});
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
     </script>
 @endpush
