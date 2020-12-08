@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Views\Annotations;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\ImageAnnotation;
 
-class AnnotationController extends Controller
+class ImageAnnotationController extends Controller
 {
     /**
      * Redirect to the annotator link that shows a specified annotation.

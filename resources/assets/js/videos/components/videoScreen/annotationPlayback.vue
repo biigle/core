@@ -18,6 +18,10 @@ export default {
             // A map of annotation IDs to OpenLayers feature objects for all
             // currently rendered annotations.
             renderedAnnotationMap: {},
+            viewFitOptions: {
+                padding: [50, 50, 50, 50],
+                minResolution: 1,
+            },
         };
     },
     computed: {
@@ -200,6 +204,12 @@ export default {
             }
 
             return newPoints;
+        },
+        focusAnnotation(annotation) {
+            let feature = this.annotationSource.getFeatureById(annotation.id);
+            if (feature) {
+                this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
+            }
         },
     },
     created() {

@@ -8,7 +8,7 @@ use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Carbon\Carbon;
 
-class AnnotationControllerTest extends ApiTestCase
+class ImageAnnotationControllerTest extends ApiTestCase
 {
     public function testShow()
     {
