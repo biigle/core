@@ -278,23 +278,29 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
 
         $router->get('image-annotations/{id}', [
-            'as'   => 'show-annotation',
-            'uses' => 'AnnotationController@show',
+            'as'   => 'show-image-annotation',
+            'uses' => 'ImageAnnotationController@show',
         ]);
+
 
         // Legacy support.
         $router->redirect('annotate/{id}', '/images/{id}/annotations');
         $router->redirect('annotations/{id}', '/image-annotations/{id}');
     });
 
-    $router->group(['namespace' => 'Videos', 'prefix' => 'videos'], function ($router) {
-        $router->get('{id}/annotations', [
+    $router->group(['namespace' => 'Videos'], function ($router) {
+        $router->get('videos/{id}/annotations', [
             'as' => 'video',
             'uses' => 'VideoController@show',
         ]);
 
+        $router->get('video-annotations/{id}', [
+            'as'   => 'show-video-annotation',
+            'uses' => 'VideoAnnotationController@show',
+        ]);
+
         // Legacy support.
-        $router->redirect('{id}', '/videos/{id}/annotations');
+        $router->redirect('videos/{id}', '/videos/{id}/annotations');
     });
 
 });

@@ -72,6 +72,7 @@ export default {
             initialCurrentTime: 0,
             initialMapCenter: [0, 0],
             initialMapResolution: 0,
+            initialFocussedAnnotation: 0,
             annotationFilters: [],
             activeAnnotationFilter: null,
             resizingTimeline: false,
@@ -166,19 +167,28 @@ export default {
         },
         seek(time) {
             if (!this.seeking && this.video.currentTime !== time) {
+                let promise = new Vue.Promise((resolve, reject) => {
+                    this.video.addEventListener('seeked', resolve);
+                    this.video.addEventListener('error', reject);
+                });
                 this.seeking = true;
                 this.video.currentTime = time;
+
+                return promise;
             }
+
+            return Vue.Promise.resolve();
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
                 this.attachAnnotationLabel(annotation);
+
+                return Vue.Promise.resolve();
+            }
+            if (shift) {
+                return this.selectAnnotations([annotation], [], time);
             } else {
-                if (shift) {
-                    this.selectAnnotations([annotation], [], time);
-                } else {
-                    this.selectAnnotations([annotation], this.selectedAnnotations, time);
-                }
+                return this.selectAnnotations([annotation], this.selectedAnnotations, time);
             }
         },
         selectAnnotations(selected, deselected, time) {
@@ -195,8 +205,10 @@ export default {
             });
 
             if (time !== undefined && hadSelected === false) {
-                this.seek(time);
+                return this.seek(time);
             }
+
+            return Vue.Promise.resolve();
         },
         deselectAnnotation(annotation) {
             if (annotation) {
@@ -335,19 +347,29 @@ export default {
             if (UrlParams.get('t') !== undefined) {
                 this.initialCurrentTime = parseInt(UrlParams.get('t'), 10) / 100;
             }
+
+            if (UrlParams.get('annotation') !== undefined) {
+                this.initialFocussedAnnotation = parseInt(UrlParams.get('annotation'), 10);
+            }
         },
         maybeInitCurrentTime() {
-            if (this.initialCurrentTime === 0) {
+            // Ignore initial time if an initial annotation is selected.
+            if (this.initialCurrentTime === 0 || this.selectedAnnotations.length > 0) {
                 return Vue.Promise.resolve();
             }
 
-            let promise = new Vue.Promise((resolve, reject) => {
-                this.video.addEventListener('seeked', resolve);
-                this.video.addEventListener('error', reject);
-            });
-            this.seek(this.initialCurrentTime);
+            return this.seek(this.initialCurrentTime);
+        },
+        maybeFocusInitialAnnotation() {
+            if (this.initialFocussedAnnotation) {
+                let annotation = this.annotations.find(annotation => annotation.id === this.initialFocussedAnnotation);
+                if (annotation) {
+                    return this.selectAnnotation(annotation, annotation.startFrame)
+                        .then(() => this.$refs.videoScreen.focusAnnotation(annotation));
+                }
+            }
 
-            return promise;
+            return Vue.Promise.resolve();
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
@@ -453,6 +475,7 @@ export default {
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.updateAnnotationFilters)
+                .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
             this.video.src = this.videoFileUri.replace(':id', video.id);
@@ -491,6 +514,7 @@ export default {
             this.annotations = [];
             this.seeking = false;
             this.initialCurrentTime = 0;
+            this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
             this.$refs.videoScreen.reset();
         },
