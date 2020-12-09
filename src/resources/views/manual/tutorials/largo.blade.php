@@ -19,7 +19,7 @@
         <h3>How to use Largo</h3>
 
         <p>
-            There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of an volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
+            There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of a volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
         </p>
 
         <p class="text-center">
