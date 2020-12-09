@@ -82,6 +82,12 @@ jobs:
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
 
+    - name: Remove BIIGLE modules
+      run: rm -r vendor/biigle
+
+    - name: Update BIIGLE modules from source
+      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
+
     - name: Generate key
       run: php artisan key:generate
 
