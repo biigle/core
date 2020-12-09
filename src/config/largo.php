@@ -30,11 +30,6 @@ return [
     'patch_generation_delay' => 10,
 
     /*
-    | Number of patches that should be generated for video annotation clips.
-    */
-    'video_patch_count' => 10,
-
-    /*
      | Specifies which queue should be used for which job.
      */
     'generate_annotation_patch_queue' => env('LARGO_GENERATE_ANNOTATION_PATCH_QUEUE', 'default'),

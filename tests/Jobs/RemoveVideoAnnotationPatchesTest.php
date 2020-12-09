@@ -14,21 +14,15 @@ class RemoveVideoAnnotationPatchesTest extends TestCase
     public function testHandle()
     {
         Storage::fake('test');
-        config([
-            'largo.patch_storage_disk' => 'test',
-            'largo.video_patch_count' => 2,
-        ]);
+        config(['largo.patch_storage_disk' => 'test']);
         $annotation = VideoAnnotationTest::create();
         $prefix = fragment_uuid_path($annotation->video->uuid);
-        $path1 = "{$prefix}/{$annotation->id}/0.jpg";
-        $path2 = "{$prefix}/{$annotation->id}/1.jpg";
+        $path1 = "{$prefix}/v-{$annotation->id}.jpg";
         Storage::disk('test')->put($path1, 'test');
-        Storage::disk('test')->put($path2, 'test');
 
         $args = [$annotation->id => $annotation->video->uuid];
         (new RemoveVideoAnnotationPatches($args))->handle();
         $this->assertFalse(Storage::disk('test')->exists($path1));
-        $this->assertFalse(Storage::disk('test')->exists($path2));
     }
 
     public function testHandleChunk()

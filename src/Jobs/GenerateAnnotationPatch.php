@@ -5,6 +5,7 @@ namespace Biigle\Modules\Largo\Jobs;
 use Biigle\Contracts\Annotation;
 use Biigle\Jobs\Job;
 use Biigle\Shape;
+use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
 use FileCache;
@@ -82,6 +83,29 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      * @param string $path Path to the cached file.
      */
     abstract public function handleFile(VolumeFile $file, $path);
+
+    /**
+     * Assemble the target path for an annotation patch.
+     *
+     * @param Annotation $annotation
+     *
+     * @return string
+     */
+    protected function getTargetPath(Annotation $annotation): string
+    {
+        $prefix = fragment_uuid_path($annotation->getFile()->uuid);
+        $format = config('largo.patch_format');
+
+        if ($annotation instanceof VideoAnnotation) {
+            // Add "v-" to make absolutely sure that no collisions (same UUID, same ID)
+            // occur because patches are stored on the same disk.
+            return "{$prefix}/v-{$annotation->id}.{$format}";
+        }
+
+        // This is the old patch storage scheme, so we don't add "i-" for backwards
+        // compatibility.
+        return "{$prefix}/{$annotation->id}.{$format}";
+    }
 
     /**
      * Determine if this job should retry instead of fail after an exception

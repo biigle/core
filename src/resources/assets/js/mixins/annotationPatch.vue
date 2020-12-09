@@ -12,7 +12,7 @@ export default {
             if (this.type === VIDEO_ANNOTATION) {
                 return this.urlTemplate
                     .replace(':prefix', this.patchPrefix)
-                    .replace(':id', `${this.id}/0`);
+                    .replace(':id', `v-${this.id}`);
             }
 
             return this.urlTemplate

@@ -17,10 +17,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        config([
-            'largo.patch_storage_disk' => 'test',
-            'largo.video_patch_count' => 2,
-        ]);
+        config(['largo.patch_storage_disk' => 'test']);
     }
 
     public function testHandleStorage()
@@ -37,15 +34,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')
             ->with('.jpg', ['Q' => 85, 'strip' => true])
-            ->twice()
+            ->once()
             ->andReturn('abc123');
 
         $job->handleFile($annotation->video, 'abc');
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}/0.jpg");
-        $this->assertEquals('abc123', $content);
-        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}/1.jpg");
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
     }
 
@@ -63,15 +58,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')
             ->with('.jpg', ['Q' => 85, 'strip' => true])
-            ->twice()
+            ->once()
             ->andReturn('abc123');
 
         $job->handleFile($annotation->video, 'abc');
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}/0.jpg");
-        $this->assertEquals('abc123', $content);
-        $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}/1.jpg");
+        $content = Storage::disk('test2')->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
     }
 
@@ -80,10 +73,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(3);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Should handle floats correctly.
             'points' => [[100.4, 100.4], [200, 200]],
@@ -98,19 +90,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('crop')
-            ->with(76, 76, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('crop')
-            ->with(126, 126, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->times(3);
+        $video->shouldReceive('writeToBuffer')->once();
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1, 1.5, 2], $job->times);
+        $this->assertEquals([1], $job->times);
     }
 
     public function testHandleCircle()
@@ -118,10 +100,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(3);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Make the circle large enough so the crop is not affected by the minimum
             // dimension.
@@ -137,19 +118,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('crop')
-            ->with(140, 140, 420, 420)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('crop')
-            ->with(190, 190, 420, 420)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->times(3);
+        $video->shouldReceive('writeToBuffer')->once();
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1, 1.5, 2], $job->times);
+        $this->assertEquals([1], $job->times);
     }
 
     public function testHandleOther()
@@ -157,10 +128,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(3);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Make the polygon large enough so the crop is not affected by the minimum
             // dimension.
@@ -179,17 +149,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('crop')
-            ->with(140, 140, 120, 120)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('crop')
-            ->with(190, 190, 120, 120)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->times(3);
+        $video->shouldReceive('writeToBuffer')->once();
         $job->handleFile($annotation->video, 'abc');
     }
 
@@ -198,10 +158,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(1);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
@@ -225,10 +184,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(1);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [[0, 0]],
             'frames' => [1],
@@ -252,10 +210,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(1);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [[1000, 750]],
             'frames' => [1],
@@ -279,10 +236,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(1);
+        $video = $this->getFrameMock();
         $video->width = 100;
         $video->height = 100;
 
@@ -309,10 +265,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
-            'largo.video_patch_count' => 3,
         ]);
         Storage::fake('test');
-        $video = $this->getFrameMock(1);
+        $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [[60, 60, 10]],
             'frames' => [1],
@@ -330,7 +285,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $job->handleFile($annotation->video, 'abc');
     }
 
-    protected function getFrameMock($times = 2)
+    protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
         $video->width = 1000;

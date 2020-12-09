@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Contracts\Annotation;
 use Biigle\Shape;
 use Biigle\VolumeFile;
 use Exception;
@@ -41,20 +40,5 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
     protected function getVipsImage($path)
     {
         return VipsImage::newFromFile($path, ['access' => 'sequential']);
-    }
-
-    /**
-     * Assemble the target path for an annotation patch.
-     *
-     * @param Annotation $annotation
-     *
-     * @return string
-     */
-    protected function getTargetPath(Annotation $annotation): string
-    {
-        $prefix = fragment_uuid_path($annotation->getFile()->uuid);
-        $format = config('largo.patch_format');
-
-        return "{$prefix}/{$annotation->id}.{$format}";
     }
 }
