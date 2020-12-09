@@ -1,10 +1,24 @@
 <script>
-import {VIDEO_ANNOTATION} from '../constants';
+import {VIDEO_ANNOTATION, IMAGE_ANNOTATION} from '../constants';
 
 export default {
     computed: {
+        id() {
+            return this.image.id;
+        },
+        uuid() {
+            return this.image.uuid;
+        },
+        type() {
+            return this.image.type;
+        },
         patchPrefix() {
             return this.uuid[0] + this.uuid[1] + '/' + this.uuid[2] + this.uuid[3] + '/' + this.uuid;
+        },
+        urlTemplate() {
+            // Usually this would be set in the created function but in this special
+            // case this is not possible.
+            return biigle.$require('largo.patchUrlTemplate');
         },
     },
     methods: {
@@ -19,6 +33,13 @@ export default {
                 .replace(':prefix', this.patchPrefix)
                 .replace(':id', this.id);
         },
+    },
+    created() {
+        if (this.type === IMAGE_ANNOTATION) {
+            this.showAnnotationRoute = biigle.$require('largo.showImageAnnotationRoute');
+        } else {
+            this.showAnnotationRoute = biigle.$require('largo.showVideoAnnotationRoute');
+        }
     },
 };
 </script>

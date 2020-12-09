@@ -18,7 +18,6 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
-import {IMAGE_ANNOTATION} from '../constants';
 import {ImageGridImage} from '../import';
 
 /**
@@ -51,27 +50,6 @@ export default {
                 'background-color': '#' + this.image.newLabel.color,
             };
         },
-        id() {
-            return this.image.id;
-        },
-        uuid() {
-            return this.image.uuid;
-        },
-        type() {
-            return this.image.type;
-        },
-        urlTemplate() {
-            // Usually this would be set in the created function but in this special
-            // case this is not possible.
-            return biigle.$require('largo.patchUrlTemplate');
-        },
-    },
-    created() {
-        if (this.type === IMAGE_ANNOTATION) {
-            this.showAnnotationRoute = biigle.$require('largo.showImageAnnotationRoute');
-        } else {
-            this.showAnnotationRoute = biigle.$require('largo.showVideoAnnotationRoute');
-        }
     },
 };
 </script>

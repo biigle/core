@@ -9,6 +9,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
+import {IMAGE_ANNOTATION} from '../constants';
 import {ImageGridImage} from '../import';
 
 /**
@@ -30,20 +31,13 @@ export default {
         showAnnotationLink() {
             return this.showAnnotationRoute ? (this.showAnnotationRoute + this.image.id) : '';
         },
-        id() {
-            return this.image.id;
-        },
-        uuid() {
-            return this.image.uuid;
-        },
-        urlTemplate() {
-            // Usually this would be set in the created function but in this special
-            // case this is not possible.
-            return biigle.$require('largo.patchUrlTemplate');
-        },
     },
     created() {
-        this.showAnnotationRoute = biigle.$require('annotationCatalog.showAnnotationRoute');
+        if (this.type === IMAGE_ANNOTATION) {
+            this.showAnnotationRoute = biigle.$require('annotationCatalog.showImageAnnotationRoute');
+        } else {
+            this.showAnnotationRoute = biigle.$require('annotationCatalog.showVideoAnnotationRoute');
+        }
     },
 };
 </script>

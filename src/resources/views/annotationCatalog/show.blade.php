@@ -6,7 +6,8 @@
 <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('annotationCatalog.labelTree', {!! $tree !!});
-    biigle.$declare('annotationCatalog.showAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
+    biigle.$declare('annotationCatalog.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
+    biigle.$declare('annotationCatalog.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
     biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
 </script>
 @endpush
