@@ -34,6 +34,14 @@ class StoreVolumeLargoSession extends StoreLargoSession
             return $this->user()->can('force-edit-in', $this->volume);
         }
 
+        if ($this->volume->isImageVolume()) {
+            $this->emptyRequest = count($this->dismissedImageAnnotations) === 0 &&
+                count($this->changedImageAnnotations) === 0;
+        } else {
+            $this->emptyRequest = count($this->dismissedVideoAnnotations) === 0 &&
+                count($this->changedVideoAnnotations) === 0;
+        }
+
         return true;
     }
 
@@ -50,27 +58,56 @@ class StoreVolumeLargoSession extends StoreLargoSession
                 $validator->errors()->add('id', 'A Largo session is currently being saved, please try again in a few minutes.');
             }
 
-            if (!$this->volume->isImageVolume()) {
-                $validator->errors()->add('id', 'Only available for image volumes.');
-            }
-
-            if (count($this->dismissed) === 0 && count($this->changed) === 0) {
-                return;
-            }
-
-            $affectedAnnotations = $this->getAffectedAnnotations($this->dismissed, $this->changed);
-
-            if (!$this->anotationsBelongToVolumes($affectedAnnotations, [$this->volume->id])) {
-                $validator->errors()->add('id', 'All annotations must belong to the specified volume.');
-            }
-
-            $availableLabelTreeIds = $this->getAvailableLabelTrees($this->volume);
-            $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changed);
-
-            if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
-                $validator->errors()->add('changed', 'You may only attach labels that belong to one of the label trees available for the specified volume.');
+            if (!$this->emptyRequest) {
+                if ($this->volume->isImageVolume()) {
+                    $this->validateImageVolume($validator);
+                } else {
+                    $this->validateVideoVolume($validator);
+                }
             }
         });
+    }
+
+    /**
+     * Validate the request for an image volume.
+     *
+     * @param \Illuminate\Validation\Validator  $validator
+     */
+    protected function validateImageVolume($validator)
+    {
+        $affectedAnnotations = $this->getAffectedAnnotations($this->dismissedImageAnnotations, $this->changedImageAnnotations);
+
+        if (!$this->imageAnotationsBelongToVolumes($affectedAnnotations, [$this->volume->id])) {
+            $validator->errors()->add('id', 'All annotations must belong to the specified volume.');
+        }
+
+        $availableLabelTreeIds = $this->getAvailableLabelTrees($this->volume);
+        $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changedImageAnnotations);
+
+        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
+            $validator->errors()->add('changed_image_annotations', 'You may only attach labels that belong to one of the label trees available for the specified volume.');
+        }
+    }
+
+    /**
+     * Validate the request for an video volume.
+     *
+     * @param \Illuminate\Validation\Validator  $validator
+     */
+    protected function validateVideoVolume($validator)
+    {
+        $affectedAnnotations = $this->getAffectedAnnotations($this->dismissedVideoAnnotations, $this->changedVideoAnnotations);
+
+        if (!$this->videoAnotationsBelongToVolumes($affectedAnnotations, [$this->volume->id])) {
+            $validator->errors()->add('id', 'All annotations must belong to the specified volume.');
+        }
+
+        $availableLabelTreeIds = $this->getAvailableLabelTrees($this->volume);
+        $requiredLabelTreeIds = $this->getRequiredLabelTrees($this->changedVideoAnnotations);
+
+        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
+            $validator->errors()->add('changed_video_annotations', 'You may only attach labels that belong to one of the label trees available for the specified volume.');
+        }
     }
 
     /**

@@ -14,10 +14,10 @@ class FilterImageAnnotationsByLabelController extends Controller
      *
      * @api {get} projects/:tid/image-annotations/filter/label/:lid Get image annotations with a label
      * @apiGroup Projects
-     * @apiName ShowProjectsAnnotationsFilterLabels
+     * @apiName ShowProjectsImageAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID
      * @apiParam {Number} lit The Label ID
-     * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
+     * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs.
      *

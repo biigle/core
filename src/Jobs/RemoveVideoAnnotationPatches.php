@@ -4,7 +4,7 @@ namespace Biigle\Modules\Largo\Jobs;
 
 use Storage;
 
-class RemoveImageAnnotationPatches extends RemoveAnnotationPatches
+class RemoveVideoAnnotationPatches extends RemoveAnnotationPatches
 {
     /**
      * {@inheritdoc}
@@ -16,7 +16,7 @@ class RemoveImageAnnotationPatches extends RemoveAnnotationPatches
 
         foreach ($this->annotationIds as $id => $uuid) {
             $prefix = fragment_uuid_path($uuid);
-            $disk->delete("{$prefix}/{$id}.{$format}");
+            $disk->delete("{$prefix}/v-{$id}.{$format}");
         }
     }
 }

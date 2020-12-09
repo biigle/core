@@ -6,8 +6,11 @@
     <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
     <script type="text/javascript">
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
+        biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
-        biigle.$declare('largo.showAnnotationRoute', '{{ route('show-annotation', '') }}/');
+        biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
+        biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
+        biigle.$declare('largo.videoAnnotationPatchCount', {{ $patchCount }});
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
     </script>
 @endpush

@@ -4,6 +4,7 @@ namespace Biigle\Modules\Largo\Http\Requests;
 
 use Biigle\ImageAnnotation;
 use Biigle\Label;
+use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLargoSession extends FormRequest
@@ -16,18 +17,39 @@ class StoreLargoSession extends FormRequest
     public $force;
 
     /**
-     * The dismissed request attribute.
+     * The dismissed_image_annotations request attribute.
      *
      * @var array
      */
-    public $dismissed;
+    public $dismissedImageAnnotations;
 
     /**
-     * The changed request attribute.
+     * The changed_image_annotations request attribute.
      *
      * @var array
      */
-    public $changed;
+    public $changedImageAnnotations;
+
+    /**
+     * The dismissed_video_annotations request attribute.
+     *
+     * @var array
+     */
+    public $dismissedVideoAnnotations;
+
+    /**
+     * The changed_video_annotations request attribute.
+     *
+     * @var array
+     */
+    public $changedVideoAnnotations;
+
+    /**
+     * Specifies whether the request is empty.
+     *
+     * @var bool
+     */
+    public $emptyRequest;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -37,8 +59,10 @@ class StoreLargoSession extends FormRequest
     public function authorize()
     {
         $this->force = $this->input('force', false);
-        $this->dismissed = $this->input('dismissed', []);
-        $this->changed = $this->input('changed', []);
+        $this->dismissedImageAnnotations = $this->input('dismissed_image_annotations', []);
+        $this->changedImageAnnotations = $this->input('changed_image_annotations', []);
+        $this->dismissedVideoAnnotations = $this->input('dismissed_video_annotations', []);
+        $this->changedVideoAnnotations = $this->input('changed_video_annotations', []);
     }
 
     /**
@@ -49,8 +73,10 @@ class StoreLargoSession extends FormRequest
     public function rules()
     {
         return [
-            'dismissed' => 'array',
-            'changed' => 'array',
+            'dismissed_image_annotations' => 'array',
+            'changed_image_annotations' => 'array',
+            'dismissed_video_annotations' => 'array',
+            'changed_video_annotations' => 'array',
             'force' => 'bool',
         ];
     }
@@ -77,18 +103,34 @@ class StoreLargoSession extends FormRequest
     }
 
     /**
-     * Check if all given annotations belong to the given volumes.
+     * Check if all given image annotations belong to the given volumes.
      *
      * @param array $annotations ImageAnnotation IDs
      * @param array $volumes Volume IDs
      *
      * @return bool
      */
-    protected function anotationsBelongToVolumes($annotations, $volumes)
+    protected function imageAnotationsBelongToVolumes($annotations, $volumes)
     {
         return !ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
             ->whereIn('image_annotations.id', $annotations)
             ->whereNotIn('images.volume_id', $volumes)
+            ->exists();
+    }
+
+    /**
+     * Check if all given video annotations belong to the given volumes.
+     *
+     * @param array $annotations VideoAnnotation IDs
+     * @param array $volumes Volume IDs
+     *
+     * @return bool
+     */
+    protected function videoAnotationsBelongToVolumes($annotations, $volumes)
+    {
+        return !VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+            ->whereIn('video_annotations.id', $annotations)
+            ->whereNotIn('videos.volume_id', $volumes)
             ->exists();
     }
 

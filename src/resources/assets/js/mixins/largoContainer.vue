@@ -4,6 +4,7 @@ import LargoJobApi from '../api/jobs';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
+import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants';
 import {LabelTrees} from '../import';
 import {LoaderMixin} from '../import';
 import {Messages} from '../import';
@@ -61,45 +62,33 @@ export default {
             return this.selectedLabel && !this.loading && this.annotations.length === 0;
         },
         dismissedAnnotations() {
-            return this.allAnnotations.filter(function (item) {
-                return item.dismissed;
-            });
+            return this.allAnnotations.filter(item => item.dismissed);
         },
         annotationsWithNewLabel() {
-            return this.dismissedAnnotations.filter(function (item) {
-                return !!item.newLabel;
-            });
+            return this.dismissedAnnotations.filter(item => !!item.newLabel);
         },
         hasDismissedAnnotations() {
             return this.dismissedAnnotations.length > 0;
         },
-        dismissedToSave() {
-            let annotations = this.dismissedAnnotations;
-            let dismissed = {};
-
-            for (let i = annotations.length - 1; i >= 0; i--) {
-                if (dismissed.hasOwnProperty(annotations[i].label_id)) {
-                    dismissed[annotations[i].label_id].push(annotations[i].id);
-                } else {
-                    dismissed[annotations[i].label_id] = [annotations[i].id];
-                }
-            }
-
-            return dismissed;
+        dismissedImageAnnotationsToSave() {
+            return this.packDismissedToSave(
+                this.dismissedAnnotations.filter(a => a.type === IMAGE_ANNOTATION)
+            );
         },
-        changedToSave() {
-            let annotations = this.annotationsWithNewLabel;
-            let changed = {};
-
-            for (let i = annotations.length - 1; i >= 0; i--) {
-                if (changed.hasOwnProperty(annotations[i].newLabel.id)) {
-                    changed[annotations[i].newLabel.id].push(annotations[i].id);
-                } else {
-                    changed[annotations[i].newLabel.id] = [annotations[i].id];
-                }
-            }
-
-            return changed;
+        dismissedVideoAnnotationsToSave() {
+            return this.packDismissedToSave(
+                this.dismissedAnnotations.filter(a => a.type === VIDEO_ANNOTATION)
+            );
+        },
+        changedImageAnnotationsToSave() {
+            return this.packChangedToSave(
+                this.annotationsWithNewLabel.filter(a => a.type === IMAGE_ANNOTATION)
+            );
+        },
+        changedVideoAnnotationsToSave() {
+            return this.packChangedToSave(
+                this.annotationsWithNewLabel.filter(a => a.type === VIDEO_ANNOTATION)
+            );
         },
         toDeleteCount() {
             return this.dismissedAnnotations.length - this.annotationsWithNewLabel.length;
@@ -115,14 +104,32 @@ export default {
                 Vue.set(this.annotationsCache, label.id, []);
                 this.startLoading();
                 this.queryAnnotations(label)
-                    .then((response) => this.gotAnnotations(label, response.data), handleErrorResponse)
+                    .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
                     .finally(this.finishLoading);
             }
         },
-        gotAnnotations(label, annotations) {
+        gotAnnotations(label, response) {
+            let imageAnnotations = response[0].data;
+            let videoAnnotations = response[1].data;
+
             // This is the object that we will use to store information for each
             // annotation patch.
-            annotations = Object.keys(annotations)
+            let annotations = [];
+
+            if (imageAnnotations) {
+                annotations = annotations.concat(this.initAnnotations(label, imageAnnotations, IMAGE_ANNOTATION));
+            }
+
+            if (videoAnnotations) {
+                annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION));
+            }
+            // Show the newest annotations (with highest ID) first.
+            annotations = annotations.sort((a, b) => b.id - a.id);
+
+            Vue.set(this.annotationsCache, label.id, annotations);
+        },
+        initAnnotations(label, annotations, type) {
+            return Object.keys(annotations)
                 .map(function (id) {
                     return {
                         id: id,
@@ -130,14 +137,9 @@ export default {
                         label_id: label.id,
                         dismissed: false,
                         newLabel: null,
+                        type: type,
                     };
-                })
-                // Show the newest annotations (with highest ID) first.
-                .sort(function (a, b) {
-                    return b.id - a.id;
                 });
-
-            Vue.set(this.annotationsCache, label.id, annotations);
         },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
@@ -197,8 +199,10 @@ export default {
 
             this.startLoading();
             this.performSave({
-                    dismissed: this.dismissedToSave,
-                    changed: this.changedToSave,
+                    dismissed_image_annotations: this.dismissedImageAnnotationsToSave,
+                    changed_image_annotations: this.changedImageAnnotationsToSave,
+                    dismissed_video_annotations: this.dismissedVideoAnnotationsToSave,
+                    changed_video_annotations: this.changedVideoAnnotationsToSave,
                     force: this.forceChange,
                 })
                 .then(this.waitForJobToFinish, (response) => {
@@ -258,6 +262,32 @@ export default {
         },
         disableForceChange() {
             this.forceChange = false;
+        },
+        packDismissedToSave(annotations) {
+            let dismissed = {};
+
+            for (let i = annotations.length - 1; i >= 0; i--) {
+                if (dismissed.hasOwnProperty(annotations[i].label_id)) {
+                    dismissed[annotations[i].label_id].push(annotations[i].id);
+                } else {
+                    dismissed[annotations[i].label_id] = [annotations[i].id];
+                }
+            }
+
+            return dismissed;
+        },
+        packChangedToSave(annotations) {
+            let changed = {};
+
+            for (let i = annotations.length - 1; i >= 0; i--) {
+                if (changed.hasOwnProperty(annotations[i].newLabel.id)) {
+                    changed[annotations[i].newLabel.id].push(annotations[i].id);
+                } else {
+                    changed[annotations[i].newLabel.id] = [annotations[i].id];
+                }
+            }
+
+            return changed;
         },
     },
     watch: {

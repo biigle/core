@@ -27,8 +27,10 @@ class LargoController extends Controller
      * @apiPermission projectEditor
      * @apiDescription See the 'Save a volume session' endpoint for more information
      *
-     * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of image annotations from which this label should be detached.
-     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of image annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} dismissed_image_annotations Map from a label ID to a list of IDs of image annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed_image_annotations Map from a label ID to a list of IDs of image annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} dismissed_video_annotations Map from a label ID to a list of IDs of video annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed_video_annotations Map from a label ID to a list of IDs of video annotations to which this label should be attached.
      * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @param StoreProjectLargoSession $request
@@ -37,7 +39,7 @@ class LargoController extends Controller
      */
     public function save(StoreProjectLargoSession $request, $id)
     {
-        if (count($request->dismissed) === 0 && count($request->changed) === 0) {
+        if ($request->emptyRequest) {
             return;
         }
 
@@ -49,7 +51,7 @@ class LargoController extends Controller
             $volume->save();
         });
 
-        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissed, $request->changed, $request->force);
+        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
 
         return ['id' => $uuid];
     }

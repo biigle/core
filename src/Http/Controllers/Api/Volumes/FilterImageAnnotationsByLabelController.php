@@ -14,10 +14,10 @@ class FilterImageAnnotationsByLabelController extends Controller
      *
      * @api {get} volumes/:vid/image-annotations/filter/label/:lid Get image annotations with a label
      * @apiGroup Volumes
-     * @apiName ShowVolumesAnnotationsFilterLabels
+     * @apiName ShowVolumesImageAnnotationsFilterLabels
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
-     * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
+     * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
      *

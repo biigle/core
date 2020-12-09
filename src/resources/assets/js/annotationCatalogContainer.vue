@@ -18,7 +18,10 @@ export default {
     },
     methods: {
         queryAnnotations(label) {
-            return LabelsApi.queryImageAnnotations({id: label.id});
+            let imagePromise = LabelsApi.queryImageAnnotations({id: label.id});
+            let videoPromise = Vue.Promise.resolve([]);
+
+            return Vue.Promise.all([imagePromise, videoPromise]);
         },
     },
     created() {

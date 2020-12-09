@@ -11,11 +11,22 @@ export default {
         return {
             volumeId: null,
             labelTrees: [],
+            mediaType: '',
         };
     },
-        methods: {
+    methods: {
         queryAnnotations(label) {
-            return VolumesApi.queryAnnotations({id: this.volumeId, label_id: label.id});
+            let imagePromise;
+            let videoPromise;
+            if (this.mediaType === 'image') {
+                imagePromise = VolumesApi.queryImageAnnotations({id: this.volumeId, label_id: label.id});
+                videoPromise = Vue.Promise.resolve([]);
+            } else {
+                imagePromise = Vue.Promise.resolve([]);
+                videoPromise = VolumesApi.queryVideoAnnotations({id: this.volumeId, label_id: label.id});
+            }
+
+            return Vue.Promise.all([imagePromise, videoPromise]);
         },
         performSave(payload) {
             return VolumesApi.save({id: this.volumeId}, payload);
@@ -24,6 +35,7 @@ export default {
     created() {
         this.volumeId = biigle.$require('largo.volumeId');
         this.labelTrees = biigle.$require('largo.labelTrees');
+        this.mediaType = biigle.$require('largo.mediaType');
     },
 };
 </script>

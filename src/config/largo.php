@@ -38,5 +38,5 @@ return [
     /*
      | Specifies which queue should be used for the job to save a Largo session.
      */
-    'apply_session_queue' => env('LARGO_APPLY_SESSION_QUEUE', 'high'),
+    'apply_session_queue' => env('LARGO_APPLY_SESSION_QUEUE', 'default'),
 ];

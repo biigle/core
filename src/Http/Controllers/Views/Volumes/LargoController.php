@@ -25,10 +25,6 @@ class LargoController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
 
-        if (!$volume->isImageVolume()) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
         if ($request->user()->can('sudo')) {
             // Global admins have no restrictions.
             $projects = $volume->projects;
@@ -55,12 +51,15 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
+        $patchCount = config('largo.video_patch_count');
+
         return view('largo::show', [
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
             'target' => $volume,
             'patchUrlTemplate' => $patchUrlTemplate,
+            'patchCount' => $patchCount,
         ]);
     }
 }

@@ -4,9 +4,12 @@ namespace Biigle\Modules\Largo\Jobs;
 
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Jobs\Job;
 use Biigle\Label;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -47,18 +50,32 @@ class ApplyLargoSession extends Job implements ShouldQueue
     public $user;
 
     /**
-     * Array of all dismissed annotation IDs for each label.
+     * Array of all dismissed image annotation IDs for each label.
      *
      * @var array
      */
-    public $dismissed;
+    public $dismissedImageAnnotations;
 
     /**
-     * Array of all changed annotation IDs for each label.
+     * Array of all changed image annotation IDs for each label.
      *
      * @var array
      */
-    public $changed;
+    public $changedImageAnnotations;
+
+    /**
+     * Array of all dismissed video annotation IDs for each label.
+     *
+     * @var array
+     */
+    public $dismissedVideoAnnotations;
+
+    /**
+     * Array of all changed video annotation IDs for each label.
+     *
+     * @var array
+     */
+    public $changedVideoAnnotations;
 
     /**
      * Whether to dismiss labels even if they were created by other users.
@@ -72,18 +89,20 @@ class ApplyLargoSession extends Job implements ShouldQueue
      *
      * @param string $id
      * @param \Biigle\User $user
-     * @param array $dismissed
-     * @param array $changed
+     * @param array $dismissedImageAnnotations
+     * @param array $changedImageAnnotations
      *
      * @return void
      */
-    public function __construct($id, User $user, $dismissed, $changed, $force)
+    public function __construct($id, User $user, $dismissedImageAnnotations, $changedImageAnnotations, $dismissedVideoAnnotations, $changedVideoAnnotations, $force)
     {
         $this->queue = config('largo.apply_session_queue');
         $this->id = $id;
         $this->user = $user;
-        $this->dismissed = $dismissed;
-        $this->changed = $changed;
+        $this->dismissedImageAnnotations = $dismissedImageAnnotations;
+        $this->changedImageAnnotations = $changedImageAnnotations;
+        $this->dismissedVideoAnnotations = $dismissedVideoAnnotations;
+        $this->changedVideoAnnotations = $changedVideoAnnotations;
         $this->force = $force;
     }
 
@@ -96,11 +115,8 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         try {
             DB::transaction(function () {
-                [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissed, $this->changed);
-
-                $this->applyDismissedLabels($this->user, $dismissed, $this->force);
-                $this->applyChangedLabels($this->user, $changed);
-                $this->deleteDanglingAnnotations($dismissed, $changed);
+                $this->handleImageAnnotations();
+                $this->handleVideoAnnotations();
             });
         } finally {
             Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
@@ -110,6 +126,30 @@ class ApplyLargoSession extends Job implements ShouldQueue
                 $volume->save();
             });
         }
+    }
+
+    /**
+     * Process the image annotations.
+     */
+    protected function handleImageAnnotations()
+    {
+        [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedImageAnnotations, $this->changedImageAnnotations);
+
+        $this->applyDismissedLabels($this->user, $dismissed, $this->force, ImageAnnotationLabel::class);
+        $this->applyChangedLabels($this->user, $changed, ImageAnnotation::class, ImageAnnotationLabel::class);
+        $this->deleteDanglingAnnotations($dismissed, $changed, ImageAnnotation::class);
+    }
+
+    /**
+     * Process the video annotations.
+     */
+    protected function handleVideoAnnotations()
+    {
+        [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedVideoAnnotations, $this->changedVideoAnnotations);
+
+        $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
+        $this->applyChangedLabels($this->user, $changed, VideoAnnotation::class, VideoAnnotationLabel::class);
+        $this->deleteDanglingAnnotations($dismissed, $changed, VideoAnnotation::class);
     }
 
     /**
@@ -156,11 +196,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
      * @param \Biigle\User $user
      * @param array $dismissed
      * @param bool $force
+     * @param string $labelModel The annotation label model class.
      */
-    protected function applyDismissedLabels($user, $dismissed, $force)
+    protected function applyDismissedLabels($user, $dismissed, $force, $labelModel)
     {
         foreach ($dismissed as $labelId => $annotationIds) {
-            ImageAnnotationLabel::whereIn('annotation_id', $annotationIds)
+            $labelModel::whereIn('annotation_id', $annotationIds)
                 ->when(!$force, function ($query) use ($user) {
                     return $query->where('user_id', $user->id);
                 })
@@ -174,8 +215,10 @@ class ApplyLargoSession extends Job implements ShouldQueue
      *
      * @param \Biigle\User $user
      * @param array $changed
+     * @param string $annotationModel The annotation model class.
+     * @param string $labelModel The annotation label model class.
      */
-    protected function applyChangedLabels($user, $changed)
+    protected function applyChangedLabels($user, $changed, $annotationModel, $labelModel)
     {
         // Skip the rest if no annotations have been changed.
         // The alreadyThereQuery below would FETCH ALL annotation labels if $changed were
@@ -186,7 +229,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
 
         // Get all labels that are already there exactly like they should be created
         // in the next step.
-        $alreadyThere = ImageAnnotationLabel::select('annotation_id', 'label_id')
+        $alreadyThere = $labelModel::select('annotation_id', 'label_id')
             ->where('user_id', $user->id)
             ->where(function ($query) use ($changed) {
                 foreach ($changed as $labelId => $annotationIds) {
@@ -199,7 +242,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
             ->get();
 
         $annotationIds = array_unique(array_merge(...$changed));
-        $existingAnnotations = ImageAnnotation::whereIn('id', $annotationIds)
+        $existingAnnotations = $annotationModel::whereIn('id', $annotationIds)
             ->pluck('id')
             ->toArray();
 
@@ -220,7 +263,6 @@ class ApplyLargoSession extends Job implements ShouldQueue
                         'annotation_id' => $annotationId,
                         'label_id' => $labelId,
                         'user_id' => $user->id,
-                        'confidence' => 1,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
@@ -236,22 +278,30 @@ class ApplyLargoSession extends Job implements ShouldQueue
         }
 
         collect($newAnnotationLabels)
+            ->when($labelModel === ImageAnnotationLabel::class, function ($labels) {
+                return $labels->map(function ($item) {
+                    $item['confidence'] = 1;
+
+                    return $item;
+                });
+            })
             // Chuk for huge requests which may run into the 65535 parameters limit of a
             // single database call.
             // See: https://github.com/biigle/largo/issues/76
             ->chunk(5000)
-            ->each(function ($chunk) {
-                ImageAnnotationLabel::insert($chunk->toArray());
+            ->each(function ($chunk) use ($labelModel) {
+                $labelModel::insert($chunk->toArray());
             });
     }
 
     /**
      * Delete annotations that now have no more labels attached.
      *
-     * @param array $dismissed [description]
-     * @param array $changed [description]
+     * @param array $dismissed
+     * @param array $changed
+     * @param string $annotationModel The annotation model class.
      */
-    protected function deleteDanglingAnnotations($dismissed, $changed)
+    protected function deleteDanglingAnnotations($dismissed, $changed, $annotationModel)
     {
         if (!empty($dismissed)) {
             $dismissed = array_merge(...$dismissed);
@@ -263,18 +313,25 @@ class ApplyLargoSession extends Job implements ShouldQueue
 
         $affected = array_values(array_unique(array_merge($dismissed, $changed)));
 
-        $toDeleteQuery = ImageAnnotation::whereIn('image_annotations.id', $affected)
+        $relation = (new $annotationModel)->file();
+        $fileTable = $relation->getRelated()->getTable();
+
+        $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
             ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->pluck('images.uuid', 'image_annotations.id')
+        $toDeleteArgs = $toDeleteQuery->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
+            ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
             ->toArray();
 
         if (!empty($toDeleteArgs)) {
             $toDeleteQuery->delete();
             // The annotation model observer does not fire for this query so we
             // dispatch the remove patch job manually here.
-            RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
+            if ($annotationModel === ImageAnnotation::class) {
+                RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
+            } else {
+                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs);
+            }
         }
     }
 }

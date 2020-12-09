@@ -5,7 +5,7 @@ import ProjectsApi from './api/projects';
 /**
  * View model for the main Largo container (for projects)
  */
-export default{
+export default {
     mixins: [LargoContainer],
     data() {
         return {
@@ -15,7 +15,10 @@ export default{
     },
     methods: {
         queryAnnotations(label) {
-            return ProjectsApi.queryImageAnnotations({id: this.projectId, label_id: label.id});
+            let imagePromise = ProjectsApi.queryImageAnnotations({id: this.projectId, label_id: label.id});
+            let videoPromise = ProjectsApi.queryVideoAnnotations({id: this.projectId, label_id: label.id});
+
+            return Vue.Promise.all([imagePromise, videoPromise]);
         },
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);

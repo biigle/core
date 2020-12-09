@@ -33,6 +33,10 @@ $router->group([
         'uses' => 'Volumes\FilterImageAnnotationsByLabelController@index',
     ]);
 
+    $router->get('volumes/{id}/video-annotations/filter/label/{id2}', [
+        'uses' => 'Volumes\FilterVideoAnnotationsByLabelController@index',
+    ]);
+
     $router->get('volumes/{id}/image-annotations/examples/{id2}', [
         'uses' => 'Volumes\ImageAnnotationExamplesController@index',
     ]);
@@ -43,6 +47,10 @@ $router->group([
 
     $router->get('projects/{id}/image-annotations/filter/label/{id2}', [
         'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('projects/{id}/video-annotations/filter/label/{id2}', [
+        'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
     ]);
 
     $router->get('labels/{id}/image-annotations', [
