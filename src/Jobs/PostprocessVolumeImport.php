@@ -3,10 +3,11 @@
 namespace Biigle\Modules\Sync\Jobs;
 
 use Biigle\ImageAnnotation;
+use Biigle\VideoAnnotation;
 use Biigle\Jobs\Job;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
-use Biigle\Modules\Largo\LargoServiceProvider;
+use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -46,7 +47,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
             ProcessNewVolumeFiles::dispatch($volume);
         });
 
-        if (class_exists(LargoServiceProvider::class)) {
+        if (class_exists(GenerateImageAnnotationPatch::class)) {
             ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
                 ->whereIn('images.volume_id', $this->ids)
                 ->select('image_annotations.id')
@@ -54,6 +55,16 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
                     GenerateImageAnnotationPatch::dispatch($annotation)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
                 }, 1000, 'image_annotations.id', 'id');
+        }
+
+        if (class_exists(GenerateVideoAnnotationPatch::class)) {
+            VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+                ->whereIn('videos.volume_id', $this->ids)
+                ->select('video_annotations.id')
+                ->eachById(function ($annotation) {
+                    GenerateVideoAnnotationPatch::dispatch($annotation)
+                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                }, 1000, 'video_annotations.id', 'id');
         }
     }
 }
