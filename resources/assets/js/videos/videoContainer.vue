@@ -249,8 +249,6 @@ export default {
             // the actual video duration.
             // See: https://github.com/biigle/core/issues/305
             let frameCount = tmpAnnotation.frames.length;
-            // console.log(tmpAnnotation.frames[frameCount - 1]);
-            // tmpAnnotation.frames[frameCount - 1] += 1;
             if (this.videoDuration > 0 && frameCount > 0 && tmpAnnotation.frames[frameCount - 1] > this.videoDuration) {
                 tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
             }
