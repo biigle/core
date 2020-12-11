@@ -17,7 +17,7 @@ class GenerateMissing extends Command
      *
      * @var string
      */
-    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations}';
+    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations} {--queue=}';
 
     /**
      * The console command description.
@@ -59,13 +59,14 @@ class GenerateMissing extends Command
     {
         $pushToQueue = !$this->option('dry-run');
         $storage = Storage::disk(config('largo.patch_storage_disk'));
+        $queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
 
         if (!$this->option('no-image-annotations')) {
-            $this->handleImageAnnotations($storage, $pushToQueue);
+            $this->handleImageAnnotations($storage, $pushToQueue, $queue);
         }
 
         if (!$this->option('no-video-annotations')) {
-            $this->handleVideoAnnotations($storage, $pushToQueue);
+            $this->handleVideoAnnotations($storage, $pushToQueue, $queue);
         }
     }
 
@@ -74,8 +75,9 @@ class GenerateMissing extends Command
      *
      * @param \Illuminate\Filesystem\FilesystemAdapter $storage
      * @param bool $pushToQueue
+     * @param string $queue
      */
-    protected function handleImageAnnotations($storage, $pushToQueue)
+    protected function handleImageAnnotations($storage, $pushToQueue, $queue)
     {
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
@@ -93,7 +95,7 @@ class GenerateMissing extends Command
                 $this->count++;
                 if ($pushToQueue) {
                     GenerateImageAnnotationPatch::dispatch($annotation)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                        ->onQueue($this->queue);
                 }
             }
             $progress->advance();
@@ -106,7 +108,7 @@ class GenerateMissing extends Command
         $percent = round($this->count / $total * 100, 2);
         $this->info("\nFound {$this->count} image annotations with missing patches ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$this->count} jobs to the queue.");
+            $this->info("Pushed {$this->count} jobs to queue {$queue}.");
         }
     }
 
@@ -115,8 +117,9 @@ class GenerateMissing extends Command
      *
      * @param \Illuminate\Filesystem\FilesystemAdapter $storage
      * @param bool $pushToQueue
+     * @param string $queue
      */
-    protected function handleVideoAnnotations($storage, $pushToQueue)
+    protected function handleVideoAnnotations($storage, $pushToQueue, $queue)
     {
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->when($this->option('volume'), function ($query) {
@@ -134,7 +137,7 @@ class GenerateMissing extends Command
                 $this->count++;
                 if ($pushToQueue) {
                     GenerateVideoAnnotationPatch::dispatch($annotation)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                        ->onQueue($this->queue);
                 }
             }
             $progress->advance();
@@ -147,7 +150,7 @@ class GenerateMissing extends Command
         $percent = round($this->count / $total * 100, 2);
         $this->info("\nFound {$this->count} video annotations with missing patches ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$this->count} jobs to the queue.");
+            $this->info("Pushed {$this->count} jobs to queue {$queue}.");
         }
     }
 }
