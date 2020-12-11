@@ -48,11 +48,19 @@ export default new Vue({
         maxCacheSize: 10,
         supportsColorAdjustment: false,
         currentlyDrawnImage: null,
+        colorAdjustmentDefaults: {
+            brightnessContrast: [0, 0],
+            brightnessRGB: [0, 0, 0],
+            hueSaturation: [0, 0],
+            vibrance: [0],
+            gamma: [1],
+        },
         colorAdjustment: {
             brightnessContrast: [0, 0],
             brightnessRGB: [0, 0, 0],
             hueSaturation: [0, 0],
             vibrance: [0],
+            gamma: [1],
         },
     },
     computed: {
@@ -84,9 +92,9 @@ export default new Vue({
             return image.tiled === true;
         },
         isAdjustmentActive(type) {
-            return this.colorAdjustment[type].reduce(function (acc, value) {
-                return acc + value;
-            }) !== 0;
+            return this.colorAdjustment[type].some((v, i) => {
+                return v !== this.colorAdjustmentDefaults[type][i];
+            });
         },
         checkSupportsColorAdjustment(image) {
             if (!fxCanvas || image.crossOrigin) {

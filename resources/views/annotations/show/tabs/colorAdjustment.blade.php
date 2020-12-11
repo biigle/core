@@ -60,6 +60,14 @@
             </div>
 
             <div class="sidebar-tab__section clearfix">
+                <button class="btn btn-default btn-xs pull-right" v-on:click="resetType('gamma', 0)" title="Reset gamma adjustment">
+                    <span class="fa fa-times" aria-hidden="true"></span>
+                </button>
+                <label title="Gamma adjust the image">Gamma (<span v-text="colorAdjustment.gamma[0]"></span>)</label>
+                <input type="range" min="0" max="5" step="0.01" v-model="colorAdjustment.gamma[0]">
+            </div>
+
+            <div class="sidebar-tab__section clearfix">
                 <button class="btn btn-default btn-xs pull-right" v-on:click="resetType('hueSaturation', 0)" title="Reset hue">
                     <span class="fa fa-times" aria-hidden="true"></span>
                 </button>
