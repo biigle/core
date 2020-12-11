@@ -44,6 +44,21 @@ class ProcessNewVideoTest extends TestCase
         }
     }
 
+    public function testHandleTooLargeFound()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        FileCache::shouldReceive('getOnce')
+            ->andThrow(new Exception('The file is too large with more than 0 bytes.'));
+
+        try {
+            $job->handle();
+            $this->fail('Expected an exception.');
+        } catch (Exception $e) {
+            $this->assertEquals(Video::ERROR_TOO_LARGE, $video->fresh()->error);
+        }
+    }
+
     public function testHandleMimeType()
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
