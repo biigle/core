@@ -21,7 +21,10 @@ class VideoAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
-        $this->video = VideoTest::create(['volume_id' => $id]);
+        $this->video = VideoTest::create([
+            'volume_id' => $id,
+            'duration' => 2,
+        ]);
     }
 
     public function testIndex()
@@ -432,6 +435,31 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             // Whole frame anotations cannot be tracked.
             ->assertStatus(422);
+    }
+
+    public function testStoreInvalidKeyFrames()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'frames' => [-1, 1.5],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'frames' => [0, 2.5],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'frames' => [0, 2.0],
+            ])
+            ->assertStatus(201);
     }
 
     public function testUpdate()

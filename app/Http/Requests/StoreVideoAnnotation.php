@@ -42,6 +42,7 @@ class StoreVideoAnnotation extends FormRequest
                 'array',
             ],
             'frames' => 'required|array',
+            'frames.*' => 'required|numeric|min:0|max:'.$this->video->duration,
             'track' => 'filled|boolean',
         ];
     }
