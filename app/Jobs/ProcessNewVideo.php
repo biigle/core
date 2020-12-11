@@ -13,6 +13,7 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 use Log;
 use Storage;
 use Throwable;
@@ -71,7 +72,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
             FileCache::getOnce($this->video, [$this, 'handleFile']);
         } catch (Exception $e) {
             if (!$this->video->error) {
-                $this->video->error = Video::ERROR_NOT_FOUND;
+                if (Str::startsWith($e->getMessage(), 'The file is too large')) {
+                    $this->video->error = Video::ERROR_TOO_LARGE;
+                } else {
+                    $this->video->error = Video::ERROR_NOT_FOUND;
+                }
+
                 $this->video->save();
             }
 

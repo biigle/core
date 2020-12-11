@@ -60,6 +60,13 @@ class Video extends VolumeFile
     const ERROR_MALFORMED = 4;
 
     /**
+     * Error if a video file is too large.
+     *
+     * @var int
+     */
+    const ERROR_TOO_LARGE = 5;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

@@ -26,6 +26,7 @@ class VideoNotFoundError extends VideoError {}
 class VideoMimeTypeError extends VideoError {}
 class VideoCodecError extends VideoError {}
 class VideoMalformedError extends VideoError {}
+class VideoTooLargeError extends VideoError {}
 
 export default {
     mixins: [LoaderMixin],
@@ -134,6 +135,8 @@ export default {
                     return 'The video codec is invalid.'
                 } else if (this.error instanceof VideoMalformedError) {
                     return 'The video file is malformed.'
+                } else if (this.error instanceof VideoTooLargeError) {
+                    return 'The video file is too large.'
                 }
             }
 
@@ -451,6 +454,8 @@ export default {
                 throw new VideoCodecError();
             } else if (video.error === this.errors['malformed']) {
                 throw new VideoMalformedError();
+            } else if (video.error === this.errors['too-large']) {
+                throw new VideoTooLargeError();
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }

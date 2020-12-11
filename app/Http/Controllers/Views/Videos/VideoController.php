@@ -69,6 +69,7 @@ class VideoController extends Controller
             'mimetype' => Video::ERROR_MIME_TYPE,
             'codec' => Video::ERROR_CODEC,
             'malformed' => VIDEO::ERROR_MALFORMED,
+            'too-large' => VIDEO::ERROR_TOO_LARGE,
         ]);
 
         return view('videos.show', compact(
