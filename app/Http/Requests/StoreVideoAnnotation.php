@@ -54,13 +54,19 @@ class StoreVideoAnnotation extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($this->shouldTrack()) {
-            $validator->after(function ($validator) {
-                if (count($this->input('frames')) !== 1) {
+        $validator->after(function ($validator) {
+            $frameCount = count($this->input('frames', []));
+
+            if ($this->input('shape_id') === Shape::wholeFrameId() && $frameCount > 2) {
+                $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
+            }
+
+            if ($this->shouldTrack()) {
+                if ($frameCount !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
-                if (count($this->input('points')) !== 1) {
+                if (count($this->input('points', [])) !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
@@ -70,14 +76,8 @@ class StoreVideoAnnotation extends FormRequest
                 ];
 
                 if (!in_array(intval($this->input('shape_id')), $allowedShapes)) {
-                    $validator->errors()->add('id', 'Only point annotations can be tracked.');
+                    $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
-            });
-        }
-
-        $validator->after(function ($validator) {
-            if ($this->input('shape_id') === Shape::wholeFrameId() && count($this->input('frames', [])) !== 2) {
-                $validator->errors()->add('frames', 'A new whole frame annotation must have exactly two frames.');
             }
         });
     }
