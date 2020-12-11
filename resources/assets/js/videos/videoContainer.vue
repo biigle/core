@@ -44,6 +44,7 @@ export default {
         return {
             volumeId: null,
             videoId: null,
+            videoDuration: 0,
             videoIds: [],
             videoFileUri: '',
             shapes: [],
@@ -243,6 +244,14 @@ export default {
             this.updatePendingAnnotation(pendingAnnotation);
             let tmpAnnotation = this.pendingAnnotation;
             this.annotations.push(tmpAnnotation);
+
+            // Catch an edge case where the time of the last key frame is greater than
+            // the actual video duration.
+            // See: https://github.com/biigle/core/issues/305
+            let frameCount = tmpAnnotation.frames.length;
+            if (this.videoDuration > 0 && frameCount > 0 && tmpAnnotation.frames[frameCount - 1] > this.videoDuration) {
+                tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
+            }
 
             let annotation = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
@@ -461,6 +470,7 @@ export default {
             }
 
             this.error = null;
+            this.videoDuration = video.duration;
 
             return video;
         },
