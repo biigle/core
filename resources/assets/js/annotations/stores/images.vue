@@ -26,7 +26,6 @@ try {
     var loadedImageTexture = null;
 } catch (error) {
     console.warn('WebGL not supported. Color adjustment disabled.');
-    console.log(error);
 }
 
 window.addEventListener('beforeunload', function () {
