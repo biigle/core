@@ -386,7 +386,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'points' => [],
                 'frames' => [0.0, 1.5, 3.0],
             ])
-            // Only two frames for a new whole frame annotation.
+            // No more than two frames for a new whole frame annotation.
             ->assertStatus(422);
 
         $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
@@ -400,6 +400,23 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->assertNotNull($annotation);
         $this->assertEquals([], $annotation->points);
         $this->assertEquals([0.0, 1.5], $annotation->frames);
+        $this->assertEquals(1, $annotation->labels()->count());
+    }
+
+    public function testStoreWholeFrameSingleFrameAnnotation()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::wholeFrameId(),
+                'label_id' => $this->labelRoot()->id,
+                'frames' => [0.0],
+            ])
+            ->assertStatus(201);
+
+        $annotation = $this->video->annotations()->first();
+        $this->assertNotNull($annotation);
+        $this->assertEquals([], $annotation->points);
+        $this->assertEquals([0.0], $annotation->frames);
         $this->assertEquals(1, $annotation->labels()->count());
     }
 
