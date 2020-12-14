@@ -204,7 +204,7 @@ class UsersController extends Controller
             $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
             $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
-            $recentAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
+            $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
                 ->select('image_annotation_labels.created_at', 'image_annotations.id')
                 ->get();
@@ -213,10 +213,10 @@ class UsersController extends Controller
             $labelsPerAnnotation = 0;
             $relativeAnnotationLabels = 0;
             $relativeAnnotations = 0;
-            $recentAnnotations = [];
+            $recentImageAnnotations = [];
         }
 
-        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentAnnotations');
+        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentImageAnnotations');
     }
 
     /**
@@ -231,19 +231,25 @@ class UsersController extends Controller
         $totalVideoAnnotationLabels = VideoAnnotationLabel::where('user_id', $user->id)->count();
 
         if ($totalVideoAnnotationLabels > 0) {
-            $totalVideoAnnotations = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
-                ->where('video_annotation_labels.user_id', $user->id)
-                ->distinct()
-                ->count('video_annotations.id');
+            $annotationQuery = VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+                ->where('video_annotation_labels.user_id', $user->id);
+
+            $totalVideoAnnotations = (clone $annotationQuery)->distinct()->count('video_annotations.id');
 
             $relativeVideoAnnotationLabels = $totalVideoAnnotationLabels / VideoAnnotationLabel::count();
             $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::count();
+
+            $recentVideoAnnotations = $annotationQuery->orderBy('video_annotation_labels.created_at', 'desc')
+                ->take(10)
+                ->select('video_annotation_labels.created_at', 'video_annotations.id')
+                ->get();
         } else {
             $totalVideoAnnotations = 0;
             $relativeVideoAnnotationLabels = 0;
             $relativeVideoAnnotations = 0;
+            $recentVideoAnnotations = [];
         }
 
-        return compact('totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations');
+        return compact('totalVideoAnnotationLabels', 'totalVideoAnnotations', 'relativeVideoAnnotationLabels', 'relativeVideoAnnotations', 'recentVideoAnnotations');
     }
 }

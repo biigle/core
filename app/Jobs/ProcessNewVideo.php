@@ -74,6 +74,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
             if (!$this->video->error) {
                 if (Str::startsWith($e->getMessage(), 'The file is too large')) {
                     $this->video->error = Video::ERROR_TOO_LARGE;
+                } else if (Str::startsWith($e->getMessage(), 'MIME type')) {
+                    $this->video->error = Video::ERROR_MIME_TYPE;
                 } else {
                     $this->video->error = Video::ERROR_NOT_FOUND;
                 }

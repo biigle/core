@@ -44,7 +44,7 @@ class ProcessNewVideoTest extends TestCase
         }
     }
 
-    public function testHandleTooLargeFound()
+    public function testHandleTooLarge()
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
@@ -74,6 +74,21 @@ class ProcessNewVideoTest extends TestCase
         $job->handle();
         $this->assertEquals('image/jpeg', $video->fresh()->mimeType);
         $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
+    }
+
+    public function testHandleInvalidMimeTypeFileCache()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        FileCache::shouldReceive('getOnce')
+            ->andThrow(new Exception("MIME type 'video/x-m4v' not allowed."));
+
+        try {
+            $job->handle();
+            $this->fail('Expected an exception.');
+        } catch (Exception $e) {
+            $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
+        }
     }
 
     public function testHandleSize()

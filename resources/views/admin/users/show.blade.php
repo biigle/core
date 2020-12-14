@@ -96,8 +96,8 @@
             @endif
         </div>
         <ul class="list-group user-stats-list-group">
-            @foreach ($recentAnnotations as $annotation)
-                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @foreach ($recentImageAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-image-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
             @endforeach
         </ul>
     </div>
@@ -112,6 +112,11 @@
                 Created no video annotations yet.
             @endif
         </div>
+        <ul class="list-group user-stats-list-group">
+            @foreach ($recentVideoAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-video-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
