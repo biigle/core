@@ -204,7 +204,7 @@ class UsersController extends Controller
             $relativeAnnotationLabels = $totalAnnotationLabels / ImageAnnotationLabel::count();
             $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
-            $recentAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
+            $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
                 ->select('image_annotation_labels.created_at', 'image_annotations.id')
                 ->get();
@@ -213,10 +213,10 @@ class UsersController extends Controller
             $labelsPerAnnotation = 0;
             $relativeAnnotationLabels = 0;
             $relativeAnnotations = 0;
-            $recentAnnotations = [];
+            $recentImageAnnotations = [];
         }
 
-        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentAnnotations');
+        return compact('totalAnnotationLabels', 'totalAnnotations', 'labelsPerAnnotation', 'relativeAnnotationLabels', 'relativeAnnotations', 'recentImageAnnotations');
     }
 
     /**

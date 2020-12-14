@@ -3,7 +3,12 @@
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
 use Biigle\Role;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
 use TestCase;
 
 class UsersControllerTest extends TestCase
@@ -134,5 +139,22 @@ class UsersControllerTest extends TestCase
         $admin->role()->associate(Role::admin());
         $this->be($admin);
         $this->get("admin/users/{$id}")->assertStatus(200);
+    }
+
+    public function testShowWithContent()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role()->associate(Role::admin());
+
+        $volume = VolumeTest::create(['creator_id' => $user->id]);
+        $video = VideoTest::create(['volume_id' => $volume->id]);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        VideoAnnotationLabelTest::create(['user_id' => $user->id]);
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")->assertStatus(200);
     }
 }
