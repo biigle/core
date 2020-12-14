@@ -49,6 +49,13 @@ class ImageMetadataController extends Controller
         'longitude' => 'lng',
         'latitude' => 'lat',
         'heading' => 'yaw',
+        'sub_datetime' => 'taken_at',
+        'sub_longitude' => 'lng',
+        'sub_latitude' => 'lat',
+        'sub_heading' => 'yaw',
+        'sub_distance' => 'distance_to_ground',
+        'sub_altitude' => 'gps_altitude',
+
     ];
 
     /**
