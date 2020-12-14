@@ -112,6 +112,11 @@
                 Created no video annotations yet.
             @endif
         </div>
+        <ul class="list-group user-stats-list-group">
+            @foreach ($recentVideoAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-video-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
