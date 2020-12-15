@@ -20,8 +20,8 @@
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-vips": "*",
         "ext-soap": "*",
+        "ext-vips": "*",
         "biigle/ananas": "dev-master",
         "biigle/color-sort": "dev-master",
         "biigle/demo": "dev-master",
@@ -39,13 +39,14 @@
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",
+        "jmikola/geojson": "^1.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "msurguy/honeypot": "^1.0",
         "mzur/laravel-openstack-swift": "^1.0",
+        "php-ffmpeg/php-ffmpeg": "^0.14",
         "ramsey/uuid": "^3.5",
-        "ramsey/uuid-doctrine": "^1.2",
-        "php-ffmpeg/php-ffmpeg": "^0.14"
+        "ramsey/uuid-doctrine": "^1.2"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
