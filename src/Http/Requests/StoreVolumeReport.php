@@ -44,6 +44,7 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageAnnotationsAbundanceId(),
                 ReportType::imageLabelsBasicId(),
                 ReportType::imageLabelsCsvId(),
+                ReportType::imageLabelsImageLocationId(),
             ];
         } else {
             $types = [
@@ -55,6 +56,24 @@ class StoreVolumeReport extends StoreReport
             'type_id' => ['required', Rule::in($types)],
             'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
         ]);
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        parent::withValidator($validator);
+
+        $validator->after(function ($validator) {
+            $typeId = intval($this->input('type_id'));
+            if ($typeId === ReportType::imageLabelsImageLocationId() && !$this->volume->hasGeoInfo()) {
+                $validator->errors()->add('id', 'The volume images have no geo coordinates.');
+            }
+        });
     }
 
     /**

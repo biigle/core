@@ -46,8 +46,10 @@ class CsvFile extends File
      *
      * @param array $items Row items
      */
-    public function put(array $items)
+    public function put($items)
     {
-        fputcsv($this->handle, $items, $this->delimiter, $this->enclosure, $this->escape_char);
+        if (is_array($items)) {
+            fputcsv($this->handle, $items, $this->delimiter, $this->enclosure, $this->escape_char);
+        }
     }
 }

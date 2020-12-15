@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
 class VolumeReportControllerTest extends ApiTestCase
@@ -138,6 +139,29 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
                 'only_labels' => [$label->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageLabelImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
             ])
             ->assertStatus(200);
     }
