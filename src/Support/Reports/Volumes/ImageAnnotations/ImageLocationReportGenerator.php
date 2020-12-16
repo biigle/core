@@ -1,18 +1,17 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
-use Biigle\ImageLabel;
+use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
-use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use DB;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
 use GeoJson\Geometry\Point;
 
-class ImageLocationReportGenerator extends VolumeReportGenerator
+class ImageLocationReportGenerator extends AnnotationReportGenerator
 {
     use MakesZipArchives;
 
@@ -21,14 +20,14 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
      *
      * @var string
      */
-    protected $name = 'image location image label report';
+    protected $name = 'image location image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_location_image_label_report';
+    protected $filename = 'image_location_image_annotation_report';
 
     /**
      * File extension of the report file.
@@ -45,52 +44,42 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
     public function generateReport($path)
     {
         $toZip = [];
-        $usedImageLabelsQuery = ImageLabel::join('images', 'image_labels.image_id', '=', 'images.id')
-            ->join('labels', 'image_labels.label_id', '=', 'labels.id')
+        $usedLabelsQuery = ImageAnnotationLabel::join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
+            ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
             ->distinct();
 
-        $imageLabels = $this->query()->get();
+        $labels = $this->query()->get();
 
         $images = $this->source->images()
             ->whereNotNull('lng')
             ->whereNotNull('lat');
 
-        if ($this->shouldSeparateLabelTrees() && $imageLabels->isNotEmpty()) {
-            $imageLabels = $imageLabels->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $imageLabels->keys())->pluck('name', 'id');
+        if ($this->shouldSeparateLabelTrees() && $labels->isNotEmpty()) {
+            $labels = $labels->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $labels->keys())->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
-                $usedImageLabels = (clone $usedImageLabelsQuery)
+                $usedLabels = (clone $usedLabelsQuery)
                     ->where('labels.label_tree_id', $id)
                     ->pluck('labels.name', 'labels.id');
 
-                $tmpImageLabels = $imageLabels->get($id)->groupBy('image_id');
-                $file = $this->createNdJSON($images, $usedImageLabels, $tmpImageLabels);
+                $tmpLabels = $labels->get($id)->groupBy('image_id');
+                $file = $this->createNdJSON($images, $usedLabels, $tmpLabels);
                 $this->tmpFiles[] = $file;
                 $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
             }
         } else {
-            $usedImageLabels = $usedImageLabelsQuery->pluck('labels.name', 'labels.id');
-            $imageLabels = $imageLabels->groupBy('image_id');
-            $file = $this->createNdJSON($images, $usedImageLabels, $imageLabels);
+            $usedLabels = $usedLabelsQuery->pluck('labels.name', 'labels.id');
+            $labels = $labels->groupBy('image_id');
+            $file = $this->createNdJSON($images, $usedLabels, $labels);
             $this->tmpFiles[] = $file;
             $toZip[$file->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'ndjson');
         }
 
         $this->makeZip($toZip, $path);
-    }
-
-    /**
-     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function restrictToLabelsQuery($query)
-    {
-        return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
     }
 
     /**
@@ -100,17 +89,18 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
      */
     public function query()
     {
-        $query = DB::table('image_labels')
-            ->join('images', 'image_labels.image_id', '=', 'images.id')
+        $query = DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->select([
-                'image_labels.image_id',
-                'image_labels.label_id',
+                'image_annotations.image_id',
+                'image_annotation_labels.label_id',
             ])
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery']);
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'labels.id', '=', 'image_labels.label_id')
+            $query->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')
                 ->addSelect('labels.label_tree_id');
         }
 
@@ -121,25 +111,24 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
      * Create the newline delimited GeoJSON file.
      *
      * @param \Illuminate\Database\Query\Builder $query
-     * @param \Illuminate\Support\Collection $usedImageLabels
-     * @param \Illuminate\Support\Collection $imageLabels
+     * @param \Illuminate\Support\Collection $usedLabels
+     * @param \Illuminate\Support\Collection $labels
      *
      * @return File
      */
-    protected function createNdJSON($query, $usedImageLabels, $imageLabels)
+    protected function createNdJSON($query, $usedLabels, $labels)
     {
         $file = File::makeTmp();
 
-        $query->each(function ($image) use ($usedImageLabels, $imageLabels, $file) {
+        $query->each(function ($image) use ($usedLabels, $labels, $file) {
             $properties = [
                 '_id' => $image->id,
                 '_filename' => $image->filename,
             ];
-
-            foreach ($usedImageLabels as $id => $name) {
-                $item = $imageLabels->get($image->id);
-                if ($item && $item->firstWhere('label_id', $id)) {
-                    $properties["{$name} (#{$id})"] = 1;
+            foreach ($usedLabels as $id => $name) {
+                $item = $labels->get($image->id);
+                if ($item) {
+                    $properties["{$name} (#{$id})"] = $item->where('label_id', $id)->count();
                 } else {
                     $properties["{$name} (#{$id})"] = 0;
                 }

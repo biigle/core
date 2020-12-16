@@ -1,11 +1,12 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageLabels;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
 use Biigle\Modules\Reports\Support\File;
-use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\ImageLocationReportGenerator;
-use Biigle\Tests\ImageLabelTest;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\ImageLocationReportGenerator;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
@@ -19,14 +20,16 @@ class ImageLocationReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new ImageLocationReportGenerator;
-        $this->assertEquals('image location image label report', $generator->getName());
-        $this->assertEquals('image_location_image_label_report', $generator->getFilename());
+        $this->assertEquals('image location image annotation report', $generator->getName());
+        $this->assertEquals('image_location_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
     public function testGenerateReport()
     {
-        $volume = VolumeTest::create(['name' => 'volume1']);
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
 
         $root = LabelTest::create();
         $child = LabelTest::create([
@@ -34,14 +37,18 @@ class ImageLocationReportGeneratorTest extends TestCase
             'label_tree_id' => $root->label_tree_id,
         ]);
 
-        $il = ImageLabelTest::create([
-            'image_id' => ImageTest::create([
-                'volume_id' => $volume->id,
-                'filename' => 'foo.jpg',
-                'lng' => 80.2,
-                'lat' => 52.5,
-            ])->id,
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $child->id,
+        ]);
+        $al->annotation->image->volume_id = $volume->id;
+        $al->annotation->image->attrs = ['image' => 'attrs'];
+        $al->annotation->image->lng = 80.2;
+        $al->annotation->image->lat = 52.5;
+        $al->annotation->image->save();
+
+        ImageAnnotationLabelTest::create([
+            'label_id' => $child->id,
+            'annotation_id' => $al->annotation_id,
         ]);
 
         $mock = Mockery::mock();
@@ -57,9 +64,9 @@ class ImageLocationReportGeneratorTest extends TestCase
                 'coordinates' => [80.2, 52.5],
             ],
             'properties' => [
-                '_id' => $il->image_id,
-                '_filename' => 'foo.jpg',
-                "{$child->name} (#{$child->id})" => 1,
+                '_id' => $al->annotation->image_id,
+                '_filename' => 'test-image.jpg',
+                "{$child->name} (#{$child->id})" => 2,
             ],
         ];
 
@@ -82,7 +89,8 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$volume->id}-{$volume->name}.ndjson");
+            ->with('abc', "{$volume->id}-my-cool-volume.ndjson");
+
         $mock->shouldReceive('close')->once();
 
         App::singleton(ZipArchive::class, function () use ($mock) {
@@ -98,11 +106,9 @@ class ImageLocationReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create();
 
-        $il = ImageLabelTest::create([
-            'image_id' => ImageTest::create([
-                'volume_id' => $volume->id,
-            ])->id,
-        ]);
+        $al = ImageAnnotationLabelTest::create();
+        $al->annotation->image->volume_id = $volume->id;
+        $al->annotation->image->save();
 
         $mock = Mockery::mock();
 
@@ -110,9 +116,8 @@ class ImageLocationReportGeneratorTest extends TestCase
             ->once()
             ->andReturn('abc');
 
-        $mock->shouldReceive('put')->never();
-
-        $mock->shouldReceive('close')->once();
+        $mock->shouldReceive('close')
+            ->once();
 
         App::singleton(File::class, function () use ($mock) {
             return $mock;
@@ -149,12 +154,16 @@ class ImageLocationReportGeneratorTest extends TestCase
             'lat' => 52.5,
         ]);
 
-        $il1 = ImageLabelTest::create([
+        $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $il2 = ImageLabelTest::create([
-            'image_id' => $image->id,
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
 
@@ -229,21 +238,5 @@ class ImageLocationReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($image->volume);
         $generator->generateReport('my/path');
-    }
-
-    public function testRestrictToLabels()
-    {
-        $image = ImageTest::create();
-        $il1 = ImageLabelTest::create(['image_id' => $image->id]);
-        $il2 = ImageLabelTest::create(['image_id' => $image->id]);
-
-        $generator = new ImageLocationReportGenerator([
-            'onlyLabels' => [$il1->label_id],
-        ]);
-        $generator->setSource($image->volume);
-        $results = $generator->query()->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($il1->image_id, $results[0]->image_id);
-        $this->assertEquals($il1->label_id, $results[0]->label_id);
     }
 }
