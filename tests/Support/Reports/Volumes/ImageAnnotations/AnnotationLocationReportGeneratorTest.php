@@ -1,0 +1,275 @@
+<?php
+
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
+
+use App;
+use Biigle\Modules\Reports\Support\File;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AnnotationLocationReportGenerator;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
+use ZipArchive;
+
+class AnnotationLocationReportGeneratorTest extends TestCase
+{
+    public function testProperties()
+    {
+        $generator = new AnnotationLocationReportGenerator;
+        $this->assertEquals('annotation location image annotation report', $generator->getName());
+        $this->assertEquals('annotation_location_image_annotation_report', $generator->getFilename());
+        $this->assertStringEndsWith('.zip', $generator->getFullFilename());
+    }
+
+    public function testGenerateReportPoint()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'lat' => 51.0,
+            'lng' => 0.0,
+            'attrs' => [
+                'width' => 100,
+                'height' => 100,
+                'metadata' => [
+                    'yaw' => 90,
+                    'distance_to_ground' => 10,
+                ],
+            ],
+        ]);
+
+        $a = ImageAnnotationTest::create([
+            'points' => [10, 10],
+            'image_id' => $image->id,
+        ]);
+
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $child->id,
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $jsonContent = [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [0.000114194969290087, 51.00007186522273],
+            ],
+            'properties' => [
+                '_id' => $al->id,
+                '_image_id' => $image->id,
+                '_image_filename' => 'test-image.jpg',
+                '_image_latitude' => $image->lat,
+                '_image_longitude' => $image->lng,
+                '_label_name' => $child->name,
+                '_label_id' => $child->id,
+            ],
+        ];
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent)."\n");
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(File::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$volume->id}-my-cool-volume.ndjson");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AnnotationLocationReportGenerator;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportCircle()
+    {
+
+    }
+
+    public function testGenerateReportLineString()
+    {
+
+    }
+
+    public function testGenerateReportPolygon()
+    {
+
+    }
+
+    public function testGenerateReportNoCoordinates()
+    {
+        $volume = VolumeTest::create();
+
+        $al = ImageAnnotationLabelTest::create();
+        $al->annotation->image->volume_id = $volume->id;
+        $al->annotation->image->save();
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(File::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')->once();
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AnnotationLocationReportGenerator;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateLabelTrees()
+    {
+        $tree1 = LabelTreeTest::create(['name' => 'tree1']);
+        $tree2 = LabelTreeTest::create(['name' => 'tree2']);
+
+        $label1 = LabelTest::create(['label_tree_id' => $tree1->id]);
+        $label2 = LabelTest::create(['label_tree_id' => $tree2->id]);
+
+        $image = ImageTest::create([
+            'lat' => 51.0,
+            'lng' => 0.0,
+            'attrs' => [
+                'width' => 100,
+                'height' => 100,
+                'metadata' => [
+                    'yaw' => 90,
+                    'distance_to_ground' => 10,
+                ],
+            ],
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'points' => [10, 10],
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label1->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $jsonContent = [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [0.000114194969290087, 51.00007186522273],
+            ],
+            'properties' => [
+                '_id' => $al1->id,
+                '_image_id' => $image->id,
+                '_image_filename' => 'test-image.jpg',
+                '_image_latitude' => $image->lat,
+                '_image_longitude' => $image->lng,
+                '_label_name' => $label1->name,
+                '_label_id' => $label1->id,
+            ],
+        ];
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent)."\n");
+
+        $jsonContent['properties']['_id'] = $al2->id;
+        $jsonContent['properties']['_label_name'] = $label2->name;
+        $jsonContent['properties']['_label_id'] = $label2->id;
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent)."\n");
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(File::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$tree1->id}-{$tree1->name}.ndjson");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', "{$tree2->id}-{$tree2->name}.ndjson");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AnnotationLocationReportGenerator([
+            'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+}
