@@ -136,9 +136,10 @@ export default {
         return {
             initialized: false,
             // Options to use for the view.fit function.
-            viewFitOptions: {
-                padding: [50, 50, 50, 50],
-                minResolution: 1,
+            focusOptions: {
+                padding: 50,
+                duration: 250,
+                resolution: 1,
             },
             // There are several interaction modes like 'drawPoint', 'attach' or
             // 'translate' etc. For each mode the allowed/active OpenLayers map
@@ -399,19 +400,25 @@ export default {
         focusAnnotation(annotation, fast, keepResolution) {
             let feature = this.annotationSource.getFeatureById(annotation.id);
             if (feature) {
-                if (fast) {
-                    delete this.viewFitOptions.duration;
-                } else {
-                    this.viewFitOptions.duration = 250;
+                let view = this.map.getView();
+                let duration = fast ? 0 : this.focusOptions.duration;
+                let resolution = keepResolution ? this.resolution : this.focusOptions.resolution;
+                let extent = feature.getGeometry().getExtent().slice();
+                extent[0] -= this.focusOptions.padding;
+                extent[1] -= this.focusOptions.padding;
+                extent[2] += this.focusOptions.padding;
+                extent[3] += this.focusOptions.padding;
+
+                if (!keepResolution) {
+                    let exactResolution = view.getResolutionForExtent(extent);
+                    resolution = exactResolution > this.focusOptions.resolution ? exactResolution : resolution;
                 }
 
-                if (keepResolution) {
-                    this.viewFitOptions.minResolution = this.resolution;
-                } else {
-                    this.viewFitOptions.minResolution = 1;
-                }
-
-                this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
+                view.animate({
+                    center: getCenter(extent),
+                    resolution: resolution,
+                    duration: duration,
+                });
             }
         },
         fitImage() {

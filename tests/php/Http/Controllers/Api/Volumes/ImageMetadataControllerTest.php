@@ -178,6 +178,27 @@ class ImageMetadataControllerTest extends ApiTestCase
         $this->assertEquals(28.123, $image->lat);
     }
 
+    public function testStoreSynonyms3()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+        $this->beAdmin();
+        $csv = $this->getCsv('image-metadata-synonyms3.csv');
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+        $image->refresh();
+        $this->assertEquals('2016-12-19 12:27:00', $image->taken_at);
+        $this->assertEquals(52.220, $image->lng);
+        $this->assertEquals(28.123, $image->lat);
+        $this->assertEquals(-1500, $image->metadata['gps_altitude']);
+        $this->assertEquals(2.6, $image->metadata['area']);
+        $this->assertEquals(10, $image->metadata['distance_to_ground']);
+        $this->assertEquals(180, $image->metadata['yaw']);
+    }
+
     public function testStoreEmptyCells()
     {
         $id = $this->volume()->id;
