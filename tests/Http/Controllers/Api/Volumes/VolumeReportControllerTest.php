@@ -56,6 +56,33 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['newestLabel']);
     }
 
+    public function testStoreImageVolumeTypes()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+
+        $types = [
+            ReportType::imageAnnotationsAreaId(),
+            ReportType::imageAnnotationsBasicId(),
+            ReportType::imageAnnotationsCsvId(),
+            ReportType::imageAnnotationsExtendedId(),
+            ReportType::imageAnnotationsFullId(),
+            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::imageLabelsBasicId(),
+            ReportType::imageLabelsCsvId(),
+            // imageAnnotationImageLocation is tested below
+            // imageAnnotationAnnotationLocation is tested below
+            // imageLabelImageLocation is tested below
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(200);
+        }
+    }
+
     public function testStoreInvalidVideoAnnotations()
     {
         $volumeId = $this->volume()->id;
@@ -102,6 +129,25 @@ class VolumeReportControllerTest extends ApiTestCase
                 'type_id' => $typeId,
             ])
             ->assertStatus(200);
+    }
+
+
+    public function testStoreVideoVolumeTypes()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+
+        $types = [
+            ReportType::videoAnnotationsCsvId(),
+            ReportType::videoLabelsCsvId(),
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(200);
+        }
     }
 
     public function testStoreInvalidImageAnnotations()
@@ -222,7 +268,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image->save();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
             ->assertStatus(200);
     }

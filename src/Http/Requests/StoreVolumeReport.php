@@ -43,6 +43,7 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageAnnotationsFullId(),
                 ReportType::imageAnnotationsAbundanceId(),
                 ReportType::imageAnnotationsImageLocationId(),
+                ReportType::imageAnnotationsAnnotationLocationId(),
                 ReportType::imageLabelsBasicId(),
                 ReportType::imageLabelsCsvId(),
                 ReportType::imageLabelsImageLocationId(),
@@ -50,6 +51,7 @@ class StoreVolumeReport extends StoreReport
         } else {
             $types = [
                 ReportType::videoAnnotationsCsvId(),
+                ReportType::videoLabelsCsvId(),
             ];
         }
 
@@ -70,17 +72,17 @@ class StoreVolumeReport extends StoreReport
         parent::withValidator($validator);
 
         $validator->after(function ($validator) {
-            $typeId = intval($this->input('type_id'));
             $needsGeoInfo = [
+                ReportType::imageAnnotationsAnnotationLocationId(),
                 ReportType::imageAnnotationsImageLocationId(),
                 ReportType::imageLabelsImageLocationId(),
             ];
 
-            if (in_array($typeId, $needsGeoInfo) && !$this->volume->hasGeoInfo()) {
+            if ($this->isType($needsGeoInfo) && !$this->volume->hasGeoInfo()) {
                 $validator->errors()->add('id', 'The volume images have no geo coordinates.');
             }
 
-            if ($typeId === ReportType::imageAnnotationsAnnotationLocationId()) {
+            if ($this->isType(ReportType::imageAnnotationsAnnotationLocationId())) {
                 $hasImagesWithMetadata = $this->volume->images()
                     ->whereNotNull('attrs->metadata->yaw')
                     ->whereNotNull('attrs->metadata->distance_to_ground')

@@ -76,13 +76,19 @@ class StoreReport extends FormRequest
     /**
      * Check if the requested reporty type ID is in the supplied array.
      *
-     * @param array $allowed
+     * @param array|int $allowed
      *
      * @return boolean
      */
     protected function isType($allowed)
     {
-        return in_array(intval($this->input('type_id')), $allowed);
+        $id = intval($this->input('type_id'));
+
+        if (is_array($allowed)) {
+            return in_array($id, $allowed);
+        }
+
+        return $id === $allowed;
     }
 
     /**
