@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
 use Biigle\Modules\Reports\Support\Reports\Projects\ProjectImageReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\ImageLocationReportGenerator as ReportGenerator;
+use DB;
 
 class ImageLocationReportGenerator extends ProjectImageReportGenerator
 {
@@ -27,4 +28,22 @@ class ImageLocationReportGenerator extends ProjectImageReportGenerator
      * @var string
      */
     protected $filename = 'image_location_image_label_report';
+
+    /**
+     * Get sources for the sub-reports that should be generated for this project.
+     *
+     * @return mixed
+     */
+    public function getProjectSources()
+    {
+        return $this->source->imageVolumes()
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('images')
+                    ->whereColumn('images.volume_id', 'volumes.id')
+                    ->whereNotNull('images.lat')
+                    ->whereNotNull('images.lng');
+            })
+            ->get();
+    }
 }

@@ -7,7 +7,7 @@ class ProjectImageReportGenerator extends ProjectReportGenerator
     /**
      * {@inheritdoc}
      */
-    protected function getProjectSources()
+    public function getProjectSources()
     {
         return $this->source->imageVolumes;
     }

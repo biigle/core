@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\ImageLocationReportGenerator as ReportGenerator;
+use DB;
 
 class ImageLocationReportGenerator extends AnnotationReportGenerator
 {
@@ -26,4 +27,22 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
      * @var string
      */
     protected $filename = 'image_location_image_annotation_report';
+
+    /**
+     * Get sources for the sub-reports that should be generated for this project.
+     *
+     * @return mixed
+     */
+    public function getProjectSources()
+    {
+        return $this->source->imageVolumes()
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('images')
+                    ->whereColumn('images.volume_id', 'volumes.id')
+                    ->whereNotNull('images.lat')
+                    ->whereNotNull('images.lng');
+            })
+            ->get();
+    }
 }

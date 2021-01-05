@@ -79,7 +79,7 @@ class ProjectReportStub extends ProjectReportGenerator
         return $this->mock;
     }
 
-    protected function getProjectSources()
+    public function getProjectSources()
     {
         return $this->source->imageVolumes;
     }
