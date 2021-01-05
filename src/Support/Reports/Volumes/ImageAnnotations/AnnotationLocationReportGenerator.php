@@ -6,14 +6,24 @@ use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use Biigle\Shape;
 use DB;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
+use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\Point;
+use GeoJson\Geometry\Polygon;
 
 class AnnotationLocationReportGenerator extends AnnotationReportGenerator
 {
     use MakesZipArchives;
+
+    /**
+     * Earth radius in cm.
+     *
+     * @var int
+     */
+    const EARTH_RADIUS = 6378137;
 
     /**
      * Name of the report for use in text.
@@ -76,6 +86,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             'image_annotation_labels.id as annotation_label_id',
             'image_annotation_labels.label_id',
             'image_annotations.image_id',
+            'image_annotations.shape_id',
             'images.filename',
             'images.attrs->metadata->yaw as yaw',
             'images.attrs->metadata->distance_to_ground as distance_to_ground',
@@ -139,15 +150,28 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // First calculate the offset of the annotation from the image center in pixels.
 
         $imageCenter = [$item->width / 2, $item->height / 2];
-        $points = json_decode($item->points);
+        $flatPoints = json_decode($item->points);
+
+        // GeoJSON does no support circles so we treat them as points.
+        if ($item->shape_id === Shape::circleId()) {
+            unset($flatPoints[2]);
+        }
+
+        $points = [];
+        $limit = count($flatPoints) - 1;
+        for ($i = 0; $i < $limit; $i += 2) {
+            $points[] = [$flatPoints[$i], $flatPoints[$i + 1]];
+        }
 
         // Annotation position relative to the image center. Also, change the y axis from
         // going top down to going bottom up. This is required for the correct rotation
         // and shift calculation below.
-        $pointsOffsetInPx = [
-            $points[0] - $imageCenter[0],
-            ($item->height - $points[1]) - $imageCenter[1],
-        ];
+        $pointsOffsetInPx = array_map(function ($point) use ($item, $imageCenter) {
+            return [
+                $point[0] - $imageCenter[0],
+                ($item->height - $point[1]) - $imageCenter[1],
+            ];
+        }, $points);
 
         // Now rotate the annotation position around the image center according to the
         // yaw. This assumes that 0° yaw is north and 90° yaw is east.
@@ -160,10 +184,12 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // We don't need to shift the rotated coordinates back by adding $imageCenter,
         // as we assume that latitude and longitude describe the image center point and
         // not [0, 0], so the center is the "origin" here.
-        $rotatedOffsetInPx = [
-            $pointsOffsetInPx[0] * cos($angle) - $pointsOffsetInPx[1] * sin($angle),
-            $pointsOffsetInPx[0] * sin($angle) + $pointsOffsetInPx[1] * cos($angle),
-        ];
+        $rotatedOffsetInPx = array_map(function ($point) use ($angle) {
+            return [
+                $point[0] * cos($angle) - $point[1] * sin($angle),
+                $point[0] * sin($angle) + $point[1] * cos($angle),
+            ];
+        }, $pointsOffsetInPx);
 
         // Then convert the pixel offset to meters.
 
@@ -185,24 +211,51 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         $scalingFactor = $imageWidthInM / $item->width;
 
         $rotatedOffsetInM = array_map(function($point) use ($scalingFactor) {
-          return $point * $scalingFactor;
+          return [
+                $point[0] * $scalingFactor,
+                $point[1] * $scalingFactor,
+            ];
         }, $rotatedOffsetInPx);
 
         // Finally, shift the image coordinates by the offset in meters to estimate the
         // annotation position.
         // See: https://gis.stackexchange.com/a/2980/50820
 
-        $R = 6378137;
+        $rotatedOffsetInRadians = array_map(function ($point) use ($item) {
+            return [
+                $point[0] / (self::EARTH_RADIUS * cos(M_PI * $item->lat / 180)),
+                $point[1] / self::EARTH_RADIUS,
+            ];
+        }, $rotatedOffsetInM);
 
-        $rotatedOffsetInRadians = [
-            $rotatedOffsetInM[0] / ($R * cos(M_PI * $item->lat / 180)),
-            $rotatedOffsetInM[1] / $R,
-        ];
+        $coordinates = array_map(function ($point) use ($item) {
+            // Shifted image center position.
+            return [
+                $item->lng + $point[0] * 180 / M_PI,
+                $item->lat + $point[1] * 180 / M_PI,
+            ];
+        }, $rotatedOffsetInRadians);
 
-        // Shifted image center position.
-        return new Point([
-            $item->lng + $rotatedOffsetInRadians[0] * 180 / M_PI,
-            $item->lat + $rotatedOffsetInRadians[1] * 180 / M_PI,
-        ]);
+        switch ($item->shape_id) {
+            case Shape::pointId():
+            case Shape::circleId():
+                return new Point($coordinates[0]);
+            case Shape::lineId():
+                return new LineString($coordinates);
+        }
+
+        // The last polygon coordinate must equal the first.
+        $last = count($coordinates) - 1;
+        if ($coordinates[0][0] !== $coordinates[$last][0] || $coordinates[0][1] !== $coordinates[$last][1]) {
+            $coordinates[] = $coordinates[0];
+        }
+
+        // Catch some edge cases where a polygon does not have at least three unique
+        // coordinates (triangle).
+        while (count($coordinates) < 4) {
+            $coordinates[] = $coordinates[0];
+        }
+
+        return new Polygon([$coordinates]);
     }
 }
