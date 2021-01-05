@@ -80,7 +80,7 @@ class StoreVolumeReport extends StoreReport
                 $validator->errors()->add('id', 'The volume images have no geo coordinates.');
             }
 
-            if ($typeId === ReportType::imageAnnotationsImageLocationId()) {
+            if ($typeId === ReportType::imageAnnotationsAnnotationLocationId()) {
                 $hasImagesWithMetadata = $this->volume->images()
                     ->whereNotNull('attrs->metadata->yaw')
                     ->whereNotNull('attrs->metadata->distance_to_ground')

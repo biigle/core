@@ -197,7 +197,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
             // Metadata missing.
             ->assertStatus(422);
@@ -212,7 +212,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
             // Width/height missing.
             ->assertStatus(422);
