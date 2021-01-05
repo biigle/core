@@ -42,6 +42,7 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageAnnotationsExtendedId(),
                 ReportType::imageAnnotationsFullId(),
                 ReportType::imageAnnotationsAbundanceId(),
+                ReportType::imageAnnotationsImageLocationId(),
                 ReportType::imageLabelsBasicId(),
                 ReportType::imageLabelsCsvId(),
                 ReportType::imageLabelsImageLocationId(),
@@ -70,8 +71,33 @@ class StoreVolumeReport extends StoreReport
 
         $validator->after(function ($validator) {
             $typeId = intval($this->input('type_id'));
-            if ($typeId === ReportType::imageLabelsImageLocationId() && !$this->volume->hasGeoInfo()) {
+            $needsGeoInfo = [
+                ReportType::imageAnnotationsImageLocationId(),
+                ReportType::imageLabelsImageLocationId(),
+            ];
+
+            if (in_array($typeId, $needsGeoInfo) && !$this->volume->hasGeoInfo()) {
                 $validator->errors()->add('id', 'The volume images have no geo coordinates.');
+            }
+
+            if ($typeId === ReportType::imageAnnotationsImageLocationId()) {
+                $hasImagesWithMetadata = $this->volume->images()
+                    ->whereNotNull('attrs->metadata->yaw')
+                    ->whereNotNull('attrs->metadata->distance_to_ground')
+                    ->exists();
+
+                if (!$hasImagesWithMetadata) {
+                    $validator->errors()->add('id', 'The volume images have no yaw and/or distance to ground metadata.');
+                }
+
+                $hasImagesWithDimensions = $this->volume->images()
+                    ->whereNotNull('attrs->width')
+                    ->whereNotNull('attrs->height')
+                    ->exists();
+
+                if (!$hasImagesWithDimensions) {
+                    $validator->errors()->add('id', 'The volume images have no dimension information. Try again later if the images are new and still being processed.');
+                }
             }
         });
     }

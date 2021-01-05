@@ -165,4 +165,65 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
     }
+
+    public function testStoreImageAnnotationImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageAnnotationAnnotationLocationWithoutLatLngYawDistance()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            // Metadata missing.
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->metadata = [
+            'yaw' => 90,
+            'distance_to_ground' => 10,
+        ];
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            // Width/height missing.
+            ->assertStatus(422);
+
+        $image->width = 1;
+        $image->height = 1;
+        $image->save();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
 }
