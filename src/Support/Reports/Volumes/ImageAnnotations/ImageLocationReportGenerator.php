@@ -89,22 +89,10 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
      */
     public function query()
     {
-        $query = DB::table('image_annotation_labels')
-            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->select([
-                'image_annotations.image_id',
-                'image_annotation_labels.label_id',
-            ])
-            ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery']);
-
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')
-                ->addSelect('labels.label_tree_id');
-        }
-
-        return $query;
+        return $this->initQuery([
+            'image_annotations.image_id',
+            'image_annotation_labels.label_id',
+        ]);
     }
 
     /**
@@ -125,6 +113,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
                 '_id' => $image->id,
                 '_filename' => $image->filename,
             ];
+
             foreach ($usedLabels as $id => $name) {
                 $item = $labels->get($image->id);
                 if ($item) {
