@@ -54,7 +54,7 @@
                         <code>SUB_longitude</code>
                     </td>
                     <td>
-                        Longitude where the image was taken in decimal form. If this column is present, <code>lat</code> must be present, too. Example: 52.3211
+                        Longitude where the image was taken in decimal form. If this column is present, <code>lat</code> must be present, too. Should be in the <a href="https://epsg.io/4326">EPSG:4326</a> coordinate reference system. Example: 52.3211
                     </td>
                 </tr>
                 <tr>
@@ -64,7 +64,7 @@
                         <code>SUB_latitude</code>
                     </td>
                     <td>
-                        Latitude where the image was taken in decimal form. If this column is present, <code>lng</code> must be present, too. Example: 28.775
+                        Latitude where the image was taken in decimal form. If this column is present, <code>lng</code> must be present, too. Should be in the <a href="https://epsg.io/4326">EPSG:4326</a> coordinate reference system. Example: 28.775
                     </td>
                 </tr>
                 <tr>
