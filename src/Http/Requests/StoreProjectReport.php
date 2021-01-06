@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Http\Requests;
 
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Image;
 use Biigle\Project;
 use Illuminate\Validation\Rule;
 
@@ -50,27 +51,100 @@ class StoreProjectReport extends StoreReport
         parent::withValidator($validator);
 
         $validator->after(function ($validator) {
-            $imageReports = [
-                ReportType::imageAnnotationsAreaId(),
-                ReportType::imageAnnotationsBasicId(),
-                ReportType::imageAnnotationsCsvId(),
-                ReportType::imageAnnotationsExtendedId(),
-                ReportType::imageAnnotationsFullId(),
-                ReportType::imageAnnotationsAbundanceId(),
-                ReportType::imageLabelsBasicId(),
-                ReportType::imageLabelsCsvId(),
-            ];
-
-            $videoReports = [
-                ReportType::videoAnnotationsCsvId(),
-                ReportType::videoLabelsCsvId(),
-            ];
-
-            if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
-                $validator->errors()->add('type_id', 'The project does not contain any image volumes.');
-            } elseif ($this->isType($videoReports) && !$this->project->videoVolumes()->exists()) {
-                $validator->errors()->add('type_id', 'The project does not contain any video volumes.');
-            }
+            $this->validateReportType($validator);
+            $this->validateGeoInfo($validator);
+            $this->validateImageMetadata($validator);
         });
+    }
+
+    /**
+     * Validate the report types.
+     *
+     * @param \Illuminate\Validator\Validator $validator
+     */
+    protected function validateReportType($validator)
+    {
+        $imageReports = [
+            ReportType::imageAnnotationsAreaId(),
+            ReportType::imageAnnotationsBasicId(),
+            ReportType::imageAnnotationsCsvId(),
+            ReportType::imageAnnotationsExtendedId(),
+            ReportType::imageAnnotationsFullId(),
+            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::imageAnnotationsImageLocationId(),
+            ReportType::imageAnnotationsAnnotationLocationId(),
+            ReportType::imageLabelsBasicId(),
+            ReportType::imageLabelsCsvId(),
+            ReportType::imageLabelsImageLocationId(),
+        ];
+
+        $videoReports = [
+            ReportType::videoAnnotationsCsvId(),
+            ReportType::videoLabelsCsvId(),
+        ];
+
+        if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
+            $validator->errors()->add('type_id', 'The project does not contain any image volumes.');
+        } elseif ($this->isType($videoReports) && !$this->project->videoVolumes()->exists()) {
+            $validator->errors()->add('type_id', 'The project does not contain any video volumes.');
+        }
+    }
+
+    /**
+     * Validate the geo info for certain types.
+     *
+     * @param \Illuminate\Validator\Validator $validator
+     */
+    protected function validateGeoInfo($validator)
+    {
+        $needsGeoInfo = [
+            ReportType::imageAnnotationsAnnotationLocationId(),
+            ReportType::imageAnnotationsImageLocationId(),
+            ReportType::imageLabelsImageLocationId(),
+        ];
+
+        if ($this->isType($needsGeoInfo)) {
+            $hasGeoInfo = $this->project->imageVolumes()
+                ->select('id')
+                ->get()
+                ->reduce(function ($carry, $volume) {
+                    return $carry && $volume->hasGeoInfo();
+                }, true);
+
+            if (!$hasGeoInfo) {
+                $validator->errors()->add('id', 'No volume has images with geo coordinates.');
+            }
+        }
+    }
+
+    /**
+     * Validate image metadata for certain types.
+     *
+     * @param \Illuminate\Validator\Validator $validator
+     */
+    protected function validateImageMetadata($validator)
+    {
+        if ($this->isType(ReportType::imageAnnotationsAnnotationLocationId())) {
+            $query = Image::join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
+                ->where('project_volume.project_id', $this->project->id);
+
+            $hasImagesWithMetadata = (clone $query)
+                ->whereNotNull('attrs->metadata->yaw')
+                ->whereNotNull('attrs->metadata->distance_to_ground')
+                ->exists();
+
+            if (!$hasImagesWithMetadata) {
+                $validator->errors()->add('id', 'No volume has images with yaw and/or distance to ground metadata.');
+            }
+
+            $hasImagesWithDimensions = (clone $query)
+                ->whereNotNull('attrs->width')
+                ->whereNotNull('attrs->height')
+                ->exists();
+
+            if (!$hasImagesWithDimensions) {
+                $validator->errors()->add('id', 'No volume has images with dimension information. Try again later if the images are new and still being processed.');
+            }
+        }
     }
 }

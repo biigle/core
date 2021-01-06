@@ -82,4 +82,17 @@ class File
     {
         return $this->path;
     }
+
+    /**
+     * Add content to the file.
+     *
+     * @param string $content File content
+     * @return int
+     */
+    public function put($content)
+    {
+        if (is_string($content)) {
+            return fwrite($this->handle, $content);
+        }
+    }
 }

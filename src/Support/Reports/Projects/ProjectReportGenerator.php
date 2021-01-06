@@ -45,6 +45,13 @@ abstract class ProjectReportGenerator extends ReportGenerator
     }
 
     /**
+     * Get sources for the sub-reports that should be generated for this project.
+     *
+     * @return mixed
+     */
+    abstract public function getProjectSources();
+
+    /**
      * Get the report generator.
      *
      * @return \Biigle\Modules\Reports\Support\Reports\ReportGenerator
@@ -54,10 +61,4 @@ abstract class ProjectReportGenerator extends ReportGenerator
         return new $this->reportClass($this->options);
     }
 
-    /**
-     * Get sources for the sub-reports that should be generated for this project.
-     *
-     * @return mixed
-     */
-    abstract protected function getProjectSources();
 }

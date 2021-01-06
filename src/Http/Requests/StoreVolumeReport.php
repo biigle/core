@@ -42,12 +42,16 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageAnnotationsExtendedId(),
                 ReportType::imageAnnotationsFullId(),
                 ReportType::imageAnnotationsAbundanceId(),
+                ReportType::imageAnnotationsImageLocationId(),
+                ReportType::imageAnnotationsAnnotationLocationId(),
                 ReportType::imageLabelsBasicId(),
                 ReportType::imageLabelsCsvId(),
+                ReportType::imageLabelsImageLocationId(),
             ];
         } else {
             $types = [
                 ReportType::videoAnnotationsCsvId(),
+                ReportType::videoLabelsCsvId(),
             ];
         }
 
@@ -55,6 +59,49 @@ class StoreVolumeReport extends StoreReport
             'type_id' => ['required', Rule::in($types)],
             'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
         ]);
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        parent::withValidator($validator);
+
+        $validator->after(function ($validator) {
+            $needsGeoInfo = [
+                ReportType::imageAnnotationsAnnotationLocationId(),
+                ReportType::imageAnnotationsImageLocationId(),
+                ReportType::imageLabelsImageLocationId(),
+            ];
+
+            if ($this->isType($needsGeoInfo) && !$this->volume->hasGeoInfo()) {
+                $validator->errors()->add('id', 'The volume images have no geo coordinates.');
+            }
+
+            if ($this->isType(ReportType::imageAnnotationsAnnotationLocationId())) {
+                $hasImagesWithMetadata = $this->volume->images()
+                    ->whereNotNull('attrs->metadata->yaw')
+                    ->whereNotNull('attrs->metadata->distance_to_ground')
+                    ->exists();
+
+                if (!$hasImagesWithMetadata) {
+                    $validator->errors()->add('id', 'The volume images have no yaw and/or distance to ground metadata.');
+                }
+
+                $hasImagesWithDimensions = $this->volume->images()
+                    ->whereNotNull('attrs->width')
+                    ->whereNotNull('attrs->height')
+                    ->exists();
+
+                if (!$hasImagesWithDimensions) {
+                    $validator->errors()->add('id', 'The volume images have no dimension information. Try again later if the images are new and still being processed.');
+                }
+            }
+        });
     }
 
     /**

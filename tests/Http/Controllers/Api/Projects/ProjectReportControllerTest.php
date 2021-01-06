@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
 class ProjectReportControllerTest extends ApiTestCase
@@ -57,28 +58,6 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals(true, $report->options['newestLabel']);
     }
 
-    public function testStoreNoImageVolumes()
-    {
-        $projectId = $this->project()->id;
-        $this->volume(['media_type_id' => MediaType::videoId()]);
-        $this->beGuest();
-        $this->postJson("api/v1/projects/{$projectId}/reports", [
-                'type_id' => ReportType::imageAnnotationsBasicId(),
-            ])
-            ->assertStatus(422);
-    }
-
-    public function testStoreNoVideoVolumes()
-    {
-        $projectId = $this->project()->id;
-        $this->volume();
-        $this->beGuest();
-        $this->postJson("api/v1/projects/{$projectId}/reports", [
-                'type_id' => ReportType::videoAnnotationsCsvId(),
-            ])
-            ->assertStatus(422);
-    }
-
     public function testStoreVideoVolume()
     {
         $projectId = $this->project()->id;
@@ -99,6 +78,53 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertArrayNotHasKey('aggregateChildLabels', $report->options);
     }
 
+    public function testStoreNoVideoVolumes()
+    {
+        $projectId = $this->project()->id;
+        $this->volume(['media_type_id' => MediaType::imageId()]);
+
+        $types = [
+            ReportType::videoAnnotationsCsvId(),
+            ReportType::videoLabelsCsvId(),
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(422);
+        }
+    }
+
+    public function testStoreNoImageVolumes()
+    {
+        $projectId = $this->project()->id;
+        $this->volume(['media_type_id' => MediaType::videoId()]);
+
+        $types = [
+            ReportType::imageAnnotationsAreaId(),
+            ReportType::imageAnnotationsBasicId(),
+            ReportType::imageAnnotationsCsvId(),
+            ReportType::imageAnnotationsExtendedId(),
+            ReportType::imageAnnotationsFullId(),
+            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::imageAnnotationsImageLocationId(),
+            ReportType::imageAnnotationsAnnotationLocationId(),
+            ReportType::imageLabelsBasicId(),
+            ReportType::imageLabelsCsvId(),
+            ReportType::imageLabelsImageLocationId(),
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(422);
+        }
+    }
+
     public function testStoreOnlyLabels()
     {
         $this->beGuest();
@@ -116,6 +142,90 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
                 'only_labels' => [$label->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageLabelImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $projectId = $this->project()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageAnnotationImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $projectId = $this->project()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageAnnotationAnnotationLocationWithoutLatLngYawDistance()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $projectId = $this->project()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            ])
+            // Metadata missing.
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->metadata = [
+            'yaw' => 90,
+            'distance_to_ground' => 10,
+        ];
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            ])
+            // Width/height missing.
+            ->assertStatus(422);
+
+        $image->width = 1;
+        $image->height = 1;
+        $image->save();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
             ->assertStatus(200);
     }

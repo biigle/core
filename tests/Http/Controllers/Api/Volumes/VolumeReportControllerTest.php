@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 
 class VolumeReportControllerTest extends ApiTestCase
@@ -53,6 +54,33 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+    }
+
+    public function testStoreImageVolumeTypes()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+
+        $types = [
+            ReportType::imageAnnotationsAreaId(),
+            ReportType::imageAnnotationsBasicId(),
+            ReportType::imageAnnotationsCsvId(),
+            ReportType::imageAnnotationsExtendedId(),
+            ReportType::imageAnnotationsFullId(),
+            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::imageLabelsBasicId(),
+            ReportType::imageLabelsCsvId(),
+            // imageAnnotationImageLocation is tested below
+            // imageAnnotationAnnotationLocation is tested below
+            // imageLabelImageLocation is tested below
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(200);
+        }
     }
 
     public function testStoreInvalidVideoAnnotations()
@@ -103,6 +131,25 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(200);
     }
 
+
+    public function testStoreVideoVolumeTypes()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+
+        $types = [
+            ReportType::videoAnnotationsCsvId(),
+            ReportType::videoLabelsCsvId(),
+        ];
+
+        $this->beGuest();
+        foreach ($types as $typeId) {
+            $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                    'type_id' => $typeId,
+                ])
+                ->assertStatus(200);
+        }
+    }
+
     public function testStoreInvalidImageAnnotations()
     {
         $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
@@ -138,6 +185,90 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
                 'only_labels' => [$label->id],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageLabelImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageLabelsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageAnnotationImageLocationWithoutLatLng()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreImageAnnotationAnnotationLocationWithoutLatLngYawDistance()
+    {
+        $this->beGuest();
+        $label = LabelTest::create();
+        $volumeId = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $volumeId]);
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            ])
+            // Metadata missing.
+            ->assertStatus(422);
+
+        $image->lat = 1;
+        $image->lng = 1;
+        $image->metadata = [
+            'yaw' => 90,
+            'distance_to_ground' => 10,
+        ];
+        $image->save();
+        $this->volume()->flushGeoInfoCache();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            ])
+            // Width/height missing.
+            ->assertStatus(422);
+
+        $image->width = 1;
+        $image->height = 1;
+        $image->save();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
             ->assertStatus(200);
     }

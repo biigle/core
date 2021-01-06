@@ -50,12 +50,13 @@
                         </div>
                     @endif
                 </div>
-                <div class="form-group">
+                <div class="form-group" :class="{'has-error': errors.id}">
                     <label for="report-variant">Report variant</label>
                     <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="onlyOneAvailableVariant">
                         <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
                     </select>
                     @include('reports::partials.reportTypeInfo')
+                    <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                 </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready.

@@ -50,12 +50,13 @@
                         @endif
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" :class="{'has-error': errors.id}">
                     <label for="report-variant">Report variant</label>
                     <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="availableVariants.length === 1">
                         <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
                     </select>
                     @include('reports::partials.reportTypeInfo')
+                    <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                 </div>
                 @if ($annotationSessions->count() > 0)
                     <div v-if="wantsType('{{$reportPrefix}}Annotations')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">

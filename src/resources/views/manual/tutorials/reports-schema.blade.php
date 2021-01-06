@@ -20,16 +20,19 @@
                 <strong><a href="#image-annotation-reports">Image annotation reports</a></strong>
                 <ul>
                     <li><a href="#annotation-abundance-report">Abundance</a></li>
+                    <li><a href="#annotation-location-report">AnnotationLocation</a></li>
                     <li><a href="#annotation-area-report">Area</a></li>
                     <li><a href="#annotation-basic-report">Basic</a></li>
                     <li><a href="#annotation-csv-report">CSV</a></li>
                     <li><a href="#annotation-extended-report">Extended</a></li>
                     <li><a href="#annotation-full-report">Full</a></li>
+                    <li><a href="#annotation-image-location-report">ImageLocation</a></li>
                 </ul>
                 <strong><a href="#image-label-reports">Image label reports</a></strong>
                 <ul>
                     <li><a href="#image-label-basic-report">Basic</a></li>
                     <li><a href="#image-label-csv-report">CSV</a></li>
+                    <li><a href="#image-label-image-location-report">ImageLocation</a></li>
                 </ul>
             </div>
             <div class="col-xs-6">
@@ -65,20 +68,49 @@
             If "aggregate child labels" was enabled for this report, the abundances of all child labels will be added to the abundance of the highest parent label and the child labels will be excluded from the report.
         </p>
 
+        <h4><a name="annotation-location-report"></a>AnnotationLocation</h4>
+
+        <p>
+            The image annotation annotation location report is a newline delimited <a href="https://geojson.org/">GeoJSON</a> file that contains the estimated positions of image annotations on a world map. This report can be used to import annotations in a GIS software such as <a href="https://www.qgis.org">QGIS</a>. You can find a description of how to import and use a GeoJSON report in QGIS <a href="{{route('manual-tutorials', ['reports', 'image-location-reports'])}}">here</a>.
+        </p>
+
+        <p>
+            The annotation position estimation is based on several assumptions. You can find a detailed description <a href="{{route('manual-tutorials', ['reports', 'annotation-location-reports'])}}">here</a>.
+        </p>
+
+        <p>
+            The report contains one GeoJSON feature for each annotation label. This means that there may be multiple features for a single annotation if the annotation has multiple labels attached. The following properties are included for each feature:
+        </p>
+        <ul>
+            <li><strong>_id</strong><br>The annotation label ID (unique for a GeoJSON feature).</li>
+            <li><strong>_image_id</strong><br>The ID of the image to which the annotation belongs.</li>
+            <li><strong>_image_filename</strong><br>The filename of the image to which the annotation belongs.</li>
+            <li><strong>_image_latitude</strong><br>The latitude coordinate of the image to which the annotation belongs.</li>
+            <li><strong>_image_longitude</strong><br>The longitude coordinate of the image to which the annotation belongs.</li>
+            <li><strong>_label_name</strong><br>The name of the label that belongs to the annotation label.</li>
+            <li><strong>_label_id</strong><br>The ID of the label that belongs to the annotation label.</li>
+        </ul>
+
+        <div class="panel panel-warning">
+            <div class="panel-body text-warning">
+                The GeoJSON format does not support circle features. Circle annotations are converted to point features in this report.
+            </div>
+        </div>
+
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
             The image annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well.
         </p>
-        <div class="panel panel-danger">
-            <div class="panel-body text-danger">
+        <div class="panel panel-warning">
+            <div class="panel-body text-warning">
                 The computed area of self-intersecting polygons like these will not be correct!
                 <svg style="width:100px;margin:5px auto -5px;display:block;" xmlns="http://www.w3.org/2000/svg" width="100px" height="50px" viewBox="0 0 100 50" xmlns:svg="http://www.w3.org/2000/svg">
-                    <polygon stroke="#de6764" stroke-width="2" points="10,10 10,40 90,10 90,40" fill="rgba(0, 0, 0, 0.25)"></polygon>
-                    <circle cx="10" cy="10" r="3" fill="#de6764" />
-                    <circle cx="10" cy="40" r="3" fill="#de6764" />
-                    <circle cx="90" cy="10" r="3" fill="#de6764" />
-                    <circle cx="90" cy="40" r="3" fill="#de6764" />
+                    <polygon stroke="#f2b866" stroke-width="2" points="10,10 10,40 90,10 90,40" fill="rgba(255, 255, 255, 0.25)"></polygon>
+                    <circle cx="10" cy="10" r="3" fill="#f2b866" />
+                    <circle cx="10" cy="40" r="3" fill="#f2b866" />
+                    <circle cx="90" cy="10" r="3" fill="#f2b866" />
+                    <circle cx="90" cy="40" r="3" fill="#f2b866" />
                 </svg>
             </div>
         </div>
@@ -220,6 +252,21 @@ Animalia
             </li>
         </ul>
 
+        <h4><a name="annotation-image-location-report"></a>ImageLocation</h4>
+
+        <p>
+            The image annotation image location report is a newline delimited <a href="https://geojson.org/">GeoJSON</a> file that contains image positions as points on a world map. This report can be used to import image positions in a GIS software such as <a href="https://www.qgis.org">QGIS</a>. You can find a description of how to import and use a GeoJSON report in QGIS <a href="{{route('manual-tutorials', ['reports', 'image-location-reports'])}}">here</a>.
+        </p>
+
+        <p>
+            The report contains one GeoJSON feature for each image. The following properties are included for each feature:
+        </p>
+        <ul>
+            <li><strong>_id</strong><br>The image ID (unique for a GeoJSON feature).</li>
+            <li><strong>_filename</strong><br>The filename of the image.</li>
+            <li>Additional properties list the number of annotations with a certain label for each image. The format of the property title is "<strong>label_name (#label_id)</strong>"</li>
+        </ul>
+
         <h3><a name="image-label-reports"></a>Image label reports</h3>
         <h4><a name="image-label-basic-report"></a>Basic</h4>
         <p>
@@ -251,6 +298,21 @@ Animalia
             <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
+
+        <h4><a name="image-label-image-location-report"></a>ImageLocation</h4>
+
+        <p>
+            The image label image location report is a newline delimited <a href="https://geojson.org/">GeoJSON</a> file that contains image positions as points on a world map. This report can be used to import image positions in a GIS software such as <a href="https://www.qgis.org">QGIS</a>. You can find a description of how to import and use a GeoJSON report in QGIS <a href="{{route('manual-tutorials', ['reports', 'image-location-reports'])}}">here</a>.
+        </p>
+
+        <p>
+            The report contains one GeoJSON feature for each image. The following properties are included for each feature:
+        </p>
+        <ul>
+            <li><strong>_id</strong><br>The image ID (unique for a GeoJSON feature).</li>
+            <li><strong>_filename</strong><br>The filename of the image.</li>
+            <li>Additional properties list the image labels that have been used in the volume and whether a label was attached to an image (<code>1</code>) or not (<code>0</code>). The format of the property title is "<strong>label_name (#label_id)</strong>"</li>
+        </ul>
 
         <h3><a name="video-annotation-reports"></a>Video annotation reports</h3>
         <h4><a name="video-annotation-csv-report"></a>CSV</h4>
