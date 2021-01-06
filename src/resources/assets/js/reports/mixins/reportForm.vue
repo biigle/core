@@ -102,7 +102,11 @@ export default {
         },
         handleError(response) {
             if (response.status === 422) {
-                this.errors = response.data;
+                if (response.data.hasOwnProperty('errors')) {
+                    this.errors = response.data.errors;
+                } else {
+                    this.errors = response.data;
+                }
             } else {
                 handleErrorResponse(response);
             }
