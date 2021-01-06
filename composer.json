@@ -16,7 +16,7 @@
     ],
     "require": {
         "ext-zip": "*",
-        "jmikola/geojson=^1.0"
+        "jmikola/geojson":"^1.0"
     },
     "autoload": {
         "psr-4": {
