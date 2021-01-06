@@ -20,7 +20,7 @@
     The image annotation annotation location report returns the estimated annotation positions on a world map in the newline delimited GeoJSON format. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-location-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'ImageLocation')">
-    The image annotation image location report returns the image positions as points on a world map in the newline delimited GeoJSON format. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#image-annotation-image-location-report">report schema</a>.
+    The image annotation image location report returns the image positions as points on a world map in the newline delimited GeoJSON format. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-image-location-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageLabels', 'Basic')">
     The basic image label report lists the image labels of all images (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#image-label-basic-report">report schema</a>.
