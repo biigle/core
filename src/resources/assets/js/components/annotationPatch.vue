@@ -1,5 +1,6 @@
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
+import {IMAGE_ANNOTATION} from '../constants';
 
 /**
  * An example annotation patch image.
@@ -9,11 +10,11 @@ import AnnotationPatch from '../mixins/annotationPatch';
 export default {
     mixins: [AnnotationPatch],
     props: {
-        id: {
+        _id: {
             type: String,
             required: true,
         },
-        uuid: {
+        _uuid: {
             type: String,
             required: true,
         },
@@ -25,7 +26,7 @@ export default {
             type: String,
             required: true,
         },
-        urlTemplate: {
+        _urlTemplate: {
             type: String,
             required: true,
         },
@@ -41,6 +42,16 @@ export default {
         },
         src() {
             return this.url || this.emptySrc;
+        },
+        image() {
+            return {
+                id: this._id,
+                uuid: this._uuid,
+                type: IMAGE_ANNOTATION,
+            };
+        },
+        urlTemplate() {
+            return this._urlTemplate;
         },
     },
     methods: {
