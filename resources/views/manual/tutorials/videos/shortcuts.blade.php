@@ -17,6 +17,22 @@
             </thead>
             <tbody>
                 <tr>
+                    <td><kbd>Arrow left</kbd></td>
+                    <td>Previous video</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow right</kbd></td>
+                    <td>Next video</td>
+                </tr>
+                <tr>
+                    <td><kbd>+</kbd></td>
+                    <td>Zoom the video to the original resolution</td>
+                </tr>
+                <tr>
+                    <td><kbd>-</kbd></td>
+                    <td>Zoom to show the whole video</td>
+                </tr>
+                <tr>
                     <td><kbd>Space</kbd></td>
                     <td>Play/pause the video</td>
                 </tr>
