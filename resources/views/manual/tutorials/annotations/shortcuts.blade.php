@@ -25,6 +25,14 @@
                     <td>Next image</td>
                 </tr>
                 <tr>
+                    <td><kbd>+</kbd></td>
+                    <td>Zoom the image to the original resolution</td>
+                </tr>
+                <tr>
+                    <td><kbd>-</kbd></td>
+                    <td>Zoom to show the whole image</td>
+                </tr>
+                <tr>
                     <td><kbd>1</kbd> - <kbd>9</kbd></td>
                     <td>Select favourite label 1-9</td>
                 </tr>

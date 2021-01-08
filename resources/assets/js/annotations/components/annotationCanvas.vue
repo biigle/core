@@ -222,14 +222,18 @@ export default {
     },
     methods: {
         createMap() {
+            let control = new ZoomToExtentControl({
+                tipLabel: 'Zoom to show whole image',
+                // fontawesome compress icon
+                label: '\uf066'
+            });
+
+            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+
             let map = new Map({
                 controls: [
                     new ZoomControl(),
-                    new ZoomToExtentControl({
-                        tipLabel: 'Zoom to show whole image',
-                        // fontawesome compress icon
-                        label: '\uf066'
-                    }),
+                    control,
                 ],
                 interactions: defaultInteractions({
                     altShiftDragRotate: false,
@@ -241,10 +245,14 @@ export default {
                 }),
             });
 
-            map.addControl(new ZoomToNativeControl({
+            control = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
-            }));
+            });
+
+            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+
+            map.addControl(control);
 
             return map;
         },
