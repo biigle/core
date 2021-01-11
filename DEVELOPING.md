@@ -35,10 +35,9 @@ This will set up the project in the `dev-modules` branch of this repository. The
 **Optional:** To speed up the build process, download the pre-built Docker images form GitHub:
 
 ```
-docker pull \
-    ghcr.io/biigle/app:latest \
-    ghcr.io/biigle/web:latest \
-    ghcr.io/biigle/worker:latest
+docker pull ghcr.io/biigle/app:latest
+docker pull ghcr.io/biigle/web:latest
+docker pull ghcr.io/biigle/worker:latest
 ```
 
 Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
