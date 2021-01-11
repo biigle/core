@@ -64,7 +64,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
-            'users' => [999],
+            'users' => [-1],
         ]);
         // user does not exist
         $response->assertStatus(422);
