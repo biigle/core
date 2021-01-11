@@ -4,10 +4,10 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
+use Exception;
 use FileCache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use League\Flysystem\FileNotFoundException;
 use Storage;
 
 class VideoFileController extends Controller
@@ -44,7 +44,7 @@ class VideoFileController extends Controller
 
         try {
             $response = Storage::disk($disk)->response("{$path}/{$video->filename}");
-        } catch (FileNotFoundException $e) {
+        } catch (Exception $e) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
