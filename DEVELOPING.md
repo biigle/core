@@ -44,21 +44,24 @@ Now perform these steps:
 
 1. Build the Docker images with `docker-compose build`. This may take a while.
 
-2. Run `docker-compose exec app php artisan queue:table` to create the database table for the job queue.
+2. Start the first containers: `docker-compose up -d app database`
 
-3. Start the application with `docker-compose up`. The BIIGLE application is now running at `http://localhost:8000`. You can stop the containers with `docker-compose stop` or destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+3. Apply the database migrations: `docker-compose exec app php artisan migrate`
+
+4. Start the whole application with `docker-compose up -d`. The BIIGLE application is now running at `http://localhost:8000`. You can stop the containers with `docker-compose stop` or destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
-Before you can start using or developing BIIGLE, you need to perform these initialization steps:
+Before you can start using or developing BIIGLE, you need to create the first user with:
 
-1. Apply the database migrations: `docker-compose exec app php artisan migrate`
-
-2. Create the first user: `docker-compose exec app php artisan user:new`
+```
+docker-compose exec app php artisan user:new
+```
 
 Follow these steps to create a new project and volume with test images:
 
 1. Create a new directory containing a few images in the `storage/images` directory. Example: `storage/images/test`.
+
 2. Create a new project and volume in BIIGLE with the volume URL `local://test` and the list of image filenames. The `local://` storage disk resolves to the `storage/images` directory, the `test` suffix is the name of the directory containing the images.
 
 ## Runing the tests
