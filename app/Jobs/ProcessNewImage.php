@@ -11,13 +11,14 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
 use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
