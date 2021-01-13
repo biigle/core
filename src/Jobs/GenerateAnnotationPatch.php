@@ -11,12 +11,13 @@ use Exception;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Jcupitt\Vips\Image;
 use Str;
 
 abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The the annotation to generate a patch for.
@@ -62,13 +63,6 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handle()
     {
-        if (is_null($this->annotation->file)) {
-            // This edge case happened a few times where the volume/project was deleted
-            // just as the new annotation patch should be generated and
-            // $deleteWhenMissingModels didn't work for some reason.
-            return;
-        }
-
         try {
             FileCache::get($this->annotation->getFile(), [$this, 'handleFile']);
         } catch (Exception $e) {
