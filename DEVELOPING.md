@@ -40,7 +40,13 @@ docker pull ghcr.io/biigle/web:latest
 docker pull ghcr.io/biigle/worker:latest
 ```
 
-Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+Now perform these steps:
+
+1. Build the Docker images with `docker-compose build`. This may take a while.
+
+2. Run `docker-compose exec app php artisan queue:table` to create the database table for the job queue.
+
+3. Start the application with `docker-compose up`. The BIIGLE application is now running at `http://localhost:8000`. You can stop the containers with `docker-compose stop` or destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
