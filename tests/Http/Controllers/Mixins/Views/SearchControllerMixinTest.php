@@ -69,4 +69,24 @@ class SearchControllerMixinTest extends TestCase
         $this->be($r1->user);
         $this->get('search?t=reports')->assertSeeText('my volume');
     }
+
+    public function testIndexWhereExists()
+    {
+        $r1 = ReportTest::create([
+            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
+            'source_type' => Volume::class,
+        ]);
+        $r2 = ReportTest::create([
+            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'source_id' => ProjectTest::create(['name' => 'my project'])->id,
+            'source_type' => Project::class,
+        ]);
+
+        $this->be($r1->user);
+        $this->get('search?t=reports&q=my')
+            ->assertStatus(200)
+            ->assertSeeText('my volume')
+            ->assertDontSeeText('my project');
+    }
 }
