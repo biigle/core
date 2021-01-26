@@ -5,8 +5,11 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
+use Exception;
 use File;
+use FileCache;
 use Jcupitt\Vips\Image;
+use Log;
 use Mockery;
 use Storage;
 use TestCase;
@@ -216,6 +219,16 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once();
         $job->handleFile($annotation->image, 'abc');
+    }
+
+    public function testHandleError()
+    {
+        FileCache::shouldReceive('get')->andThrow(new Exception('error'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new GenerateImageAnnotationPatch($annotation);
+        $job->handle();
     }
 
     protected function getImageMock($times = 1)

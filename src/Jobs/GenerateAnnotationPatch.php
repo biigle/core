@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Jcupitt\Vips\Image;
+use Log;
 use Str;
 
 abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
@@ -71,8 +72,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $this->release($this->attempts() * 600);
             } else {
                 $class = get_class($this->annotation);
-
-                throw new Exception("Could not generate annotation patch for {$class} {$this->annotation->id}: {$e->getMessage()}");
+                Log::warning("Could not generate annotation patch for {$class} {$this->annotation->id}: {$e->getMessage()}");
             }
         }
     }

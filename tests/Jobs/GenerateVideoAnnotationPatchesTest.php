@@ -6,8 +6,11 @@ use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\VideoAnnotation;
+use Exception;
 use FFMpeg\Media\Video;
 use File;
+use FileCache;
+use Log;
 use Mockery;
 use Storage;
 use TestCase;
@@ -283,6 +286,16 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once();
         $job->handleFile($annotation->video, 'abc');
+    }
+
+    public function testHandleError()
+    {
+        FileCache::shouldReceive('get')->andThrow(new Exception('error'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = VideoAnnotationTest::create();
+        $job = new GenerateVideoAnnotationPatch($annotation);
+        $job->handle();
     }
 
     protected function getFrameMock($times = 1)
