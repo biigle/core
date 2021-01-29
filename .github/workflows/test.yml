@@ -7,10 +7,12 @@ on:
   pull_request:
 
 jobs:
-
   test-module:
 
     runs-on: ubuntu-latest
+
+    env:
+      MODULE_NAME: Largo
 
     steps:
     - uses: actions/checkout@v1
@@ -20,7 +22,7 @@ jobs:
     - uses: actions/checkout@v1
       with:
         repository: biigle/core
-        ref: dev-modules
+        ref: master
         fetch-depth: 1
         path: core
 
@@ -32,36 +34,17 @@ jobs:
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       working-directory: ../core
 
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer
-        restore-keys: |
-          ${{ runner.os }}-composer
-
     - name: Install Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
+      run: composer install --no-ansi --no-interaction --no-scripts --prefer-dist --ignore-platform-reqs
       working-directory: ../core
 
-    - name: Remove BIIGLE modules
-      run: rm -r vendor/biigle
-      working-directory: ../core
-
-    - name: Update BIIGLE modules from source
-      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
-      working-directory: ../core
-
-    - name: Remove installed package
-      run: rm -r vendor/${GITHUB_REPOSITORY}
-      working-directory: ../core
-
-    - name: Copy current repository
-      run: cp -r ${GITHUB_WORKSPACE} vendor/biigle
+    - name: Install current repository
+      run: |
+        composer config repositories.module --json '{"type": "path", "url": "'${GITHUB_WORKSPACE}'", "options": {"symlink": false}}'
+        composer require --no-ansi --no-interaction --no-scripts --ignore-platform-reqs ${GITHUB_REPOSITORY}
+        sed -i "/Insert Biigle module service providers/i Biigle\\\\Modules\\\\${MODULE_NAME}\\\\${MODULE_NAME}ServiceProvider::class," config/app.php
+        mkdir -p tests/php/Modules
+        ln -sf ../../../vendor/${GITHUB_REPOSITORY}/tests tests/php/Modules/${MODULE_NAME}
       working-directory: ../core
 
     - name: Generate key
@@ -78,5 +61,5 @@ jobs:
       working-directory: ../core
 
     - name: Run tests
-      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order --filter 'Biigle\\Tests\\Modules\\'${GITHUB_REPOSITORY##*/}
+      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order --filter 'Biigle\\Tests\\Modules\\'${MODULE_NAME}
       working-directory: ../core
