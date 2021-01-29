@@ -51,15 +51,12 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $patchCount = config('largo.video_patch_count');
-
         return view('largo::show', [
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
             'target' => $volume,
             'patchUrlTemplate' => $patchUrlTemplate,
-            'patchCount' => $patchCount,
         ]);
     }
 }

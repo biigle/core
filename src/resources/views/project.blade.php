@@ -9,7 +9,6 @@
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
         biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
-        biigle.$declare('largo.videoAnnotationPatchCount', {{ $patchCount }});
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
     </script>
 @endpush
