@@ -27,35 +27,35 @@ jobs:
     - name: Run ESLint
       run: npm run lint
 
-  lint-php:
+  # lint-php:
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #     with:
+  #       fetch-depth: 1
 
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
+  #   - name: Get Composer Cache Directory
+  #     id: composer-cache
+  #     run: |
+  #       echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer
-        restore-keys: |
-          ${{ runner.os }}-composer
+  #   - uses: actions/cache@v1
+  #     with:
+  #       path: ${{ steps.composer-cache.outputs.dir }}
+  #       key: ${{ runner.os }}-composer
+  #       restore-keys: |
+  #         ${{ runner.os }}-composer
 
-    - name: Install Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
+  #   - name: Install Dependencies
+  #     run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+  #   - name: Copy .env
+  #     run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-    - name: Generate key
-      run: php artisan key:generate
+  #   - name: Generate key
+  #     run: php artisan key:generate
 
-    - name: Run Psalm
-      run: composer lint
+  #   - name: Run Psalm
+  #     run: composer lint
