@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'database/migrations/**'
+      - 'src/database/migrations/**'
 
 jobs:
   update-schema:
