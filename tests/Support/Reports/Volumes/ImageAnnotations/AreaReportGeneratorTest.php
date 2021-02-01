@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use App;
+use Biigle\Modules\Laserpoints\Image as LImage;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AreaReportGenerator;
 use Biigle\Shape;
@@ -313,6 +314,10 @@ class AreaReportGeneratorTest extends TestCase
 
     public function testGenerateReportSqm()
     {
+        if (!class_exists(LImage::class)) {
+            $this->markTestSkipped('Reqires the biigle/laserpoints module.');
+        }
+
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
         ]);
