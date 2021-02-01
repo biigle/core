@@ -11,6 +11,7 @@ class ReportsControllerTest extends ApiTestCase
 {
     public function testGet()
     {
+        config(['reports.storage_disk' => null]);
         $report = ReportTest::create();
 
         $this->doTestApiRoute('GET', "api/v1/reports/{$report->id}");
@@ -23,14 +24,15 @@ class ReportsControllerTest extends ApiTestCase
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(404);
 
-        Storage::fake(config('reports.storage_disk'));
-        Storage::disk(config('reports.storage_disk'))->put($report->id, 'content');
+        Storage::fake();
+        Storage::disk()->put($report->id, 'content');
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(200);
     }
 
     public function testDestroy()
     {
+        config(['reports.storage_disk' => null]);
         $report = ReportTest::create();
         $this->doTestApiRoute('DELETE', "api/v1/reports/{$report->id}");
 
