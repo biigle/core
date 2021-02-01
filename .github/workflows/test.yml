@@ -47,6 +47,12 @@ jobs:
         ln -sf ../../../vendor/${GITHUB_REPOSITORY}/tests tests/php/Modules/${MODULE_NAME}
       working-directory: ../core
 
+    - name: Install biigle/laserpoints module
+      run: |
+        composer require --no-ansi --no-interaction --no-scripts --ignore-platform-reqs biigle/laserpoints:dev-master
+        sed -i "/Insert Biigle module service providers/i Biigle\\\\Modules\\\\Laserpoints\\\\LaserpointsServiceProvider::class," config/app.php
+      working-directory: ../core
+
     - name: Generate key
       run: php artisan key:generate
       working-directory: ../core
