@@ -7,6 +7,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Image;
 use Biigle\Volume;
 use Carbon\Carbon;
+use duncan3dc\Bom\Util;
 use Exception;
 use File;
 use Illuminate\Http\Request;
@@ -99,11 +100,13 @@ class ImageMetadataController extends Controller
         $csv = $request->file('file')->openFile();
         $columns = $csv->fgetcsv();
 
-        if (!is_array($columns)) {
+        if (!is_array($columns) || count($columns) === 0) {
             throw ValidationException::withMessages([
                 'file' => 'CSV file could not be read or is empty.',
             ]);
         }
+
+        $columns[0] = Util::removeBom($columns[0]);
 
         // Column names should be case insensitive.
         $columns = array_map('strtolower', $columns);

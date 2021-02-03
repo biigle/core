@@ -227,4 +227,21 @@ class ImageMetadataControllerTest extends ApiTestCase
             ->assertStatus(200);
         $this->assertEquals('2019-05-01 10:35:00', $image->fresh()->taken_at);
     }
+
+    public function testStoreWithBOM()
+    {
+        // BOM is the byte order mark
+        $id = $this->volume()->id;
+
+        $csv = $this->getCsv('image-metadata-with-bom.csv');
+        $this->beAdmin();
+
+        $jpg = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+        ]);
+
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertStatus(200);
+    }
 }

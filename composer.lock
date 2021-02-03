@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d39725c53d61defef30178e7425626b7",
+    "content-hash": "18533e97c7715d398dc3dfdfccebdf5b",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -898,6 +898,63 @@
                 }
             ],
             "time": "2020-10-13T00:52:37+00:00"
+        },
+        {
+            "name": "duncan3dc/bom-string",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/duncan3dc/bom-string.git",
+                "reference": "7310a919404cff41d8c268251cc794052cbbfab7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/duncan3dc/bom-string/zipball/7310a919404cff41d8c268251cc794052cbbfab7",
+                "reference": "7310a919404cff41d8c268251cc794052cbbfab7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "maglnet/composer-require-checker": "^2.0",
+                "phpstan/phpstan": "^0.11.7",
+                "phpunit/phpunit": "^8.1",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "duncan3dc\\Bom\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Craig Duncan",
+                    "email": "git@duncanc.co.uk",
+                    "homepage": "https://github.com/duncan3dc",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A small PHP library to handle byte order marks (BOM)",
+            "homepage": "https://github.com/duncan3dc/bom-string",
+            "keywords": [
+                "bom",
+                "utf-16",
+                "utf-8",
+                "utf16",
+                "utf8"
+            ],
+            "support": {
+                "issues": "https://github.com/duncan3dc/bom-string/issues",
+                "source": "https://github.com/duncan3dc/bom-string/tree/1.1.0"
+            },
+            "time": "2020-10-04T15:23:04+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -8884,9 +8941,9 @@
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-vips": "*",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-vips": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
