@@ -36,6 +36,7 @@
         "biigle/sync": "dev-master",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
+        "duncan3dc/bom-string": "^1.1",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",

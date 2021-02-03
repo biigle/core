@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44fbeee5784c68da82bc87468d6c42c9",
+    "content-hash": "a5794e1f63a90e31cc905a4b9cbeea52",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -113,7 +113,7 @@
                 "issues": "https://github.com/biigle/ananas/issues",
                 "source": "https://github.com/biigle/ananas"
             },
-            "time": "2020-11-10T09:04:55+00:00"
+            "time": "2021-01-29T14:22:04+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -159,7 +159,7 @@
                 "issues": "https://github.com/biigle/color-sort/issues",
                 "source": "https://github.com/biigle/color-sort"
             },
-            "time": "2020-11-10T09:04:58+00:00"
+            "time": "2021-01-29T14:14:31+00:00"
         },
         {
             "name": "biigle/demo",
@@ -202,7 +202,7 @@
                 "issues": "https://github.com/biigle/demo/issues",
                 "source": "https://github.com/biigle/demo"
             },
-            "time": "2020-11-10T09:05:00+00:00"
+            "time": "2021-01-29T14:34:33+00:00"
         },
         {
             "name": "biigle/geo",
@@ -245,7 +245,7 @@
                 "issues": "https://github.com/biigle/geo/issues",
                 "source": "https://github.com/biigle/geo"
             },
-            "time": "2020-12-14T13:53:19+00:00"
+            "time": "2021-01-29T14:19:51+00:00"
         },
         {
             "name": "biigle/laravel-cached-openstack",
@@ -450,7 +450,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2021-01-13T12:53:38+00:00"
+            "time": "2021-01-29T09:56:37+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -496,7 +496,7 @@
                 "issues": "https://github.com/biigle/laserpoints/issues",
                 "source": "https://github.com/biigle/laserpoints"
             },
-            "time": "2020-11-10T09:05:05+00:00"
+            "time": "2021-01-29T14:37:33+00:00"
         },
         {
             "name": "biigle/maia",
@@ -543,7 +543,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2021-01-25T12:54:46+00:00"
+            "time": "2021-01-29T15:02:28+00:00"
         },
         {
             "name": "biigle/module",
@@ -586,7 +586,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2021-01-18T14:09:45+00:00"
+            "time": "2021-01-29T09:07:55+00:00"
         },
         {
             "name": "biigle/reports",
@@ -633,7 +633,7 @@
                 "issues": "https://github.com/biigle/reports/issues",
                 "source": "https://github.com/biigle/reports"
             },
-            "time": "2021-01-15T08:36:34+00:00"
+            "time": "2021-02-01T15:40:26+00:00"
         },
         {
             "name": "biigle/sync",
@@ -679,7 +679,7 @@
                 "issues": "https://github.com/biigle/sync/issues",
                 "source": "https://github.com/biigle/sync"
             },
-            "time": "2020-12-09T13:44:27+00:00"
+            "time": "2021-01-29T14:24:00+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1503,6 +1503,63 @@
             "time": "2020-10-13T00:52:37+00:00"
         },
         {
+            "name": "duncan3dc/bom-string",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/duncan3dc/bom-string.git",
+                "reference": "7310a919404cff41d8c268251cc794052cbbfab7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/duncan3dc/bom-string/zipball/7310a919404cff41d8c268251cc794052cbbfab7",
+                "reference": "7310a919404cff41d8c268251cc794052cbbfab7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "maglnet/composer-require-checker": "^2.0",
+                "phpstan/phpstan": "^0.11.7",
+                "phpunit/phpunit": "^8.1",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "duncan3dc\\Bom\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Craig Duncan",
+                    "email": "git@duncanc.co.uk",
+                    "homepage": "https://github.com/duncan3dc",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A small PHP library to handle byte order marks (BOM)",
+            "homepage": "https://github.com/duncan3dc/bom-string",
+            "keywords": [
+                "bom",
+                "utf-16",
+                "utf-8",
+                "utf16",
+                "utf8"
+            ],
+            "support": {
+                "issues": "https://github.com/duncan3dc/bom-string/issues",
+                "source": "https://github.com/duncan3dc/bom-string/tree/1.1.0"
+            },
+            "time": "2020-10-04T15:23:04+00:00"
+        },
+        {
             "name": "egulias/email-validator",
             "version": "2.1.25",
             "source": {
@@ -2309,6 +2366,10 @@
                 "framework",
                 "laravel"
             ],
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
             "time": "2021-01-21T14:10:27+00:00"
         },
         {
@@ -4048,7 +4109,7 @@
             "description": "Eases the creation of beautiful and testable command line interfaces",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/console/tree/v4.4.18"
+                "source": "https://github.com/symfony/console/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4113,7 +4174,7 @@
             "description": "Converts CSS selectors to XPath expressions",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/css-selector/tree/v5.2.1"
+                "source": "https://github.com/symfony/css-selector/tree/v5.2.3"
             },
             "funding": [
                 {
@@ -4182,7 +4243,7 @@
             "description": "Provides tools to ease debugging PHP code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/debug/tree/v4.4.18"
+                "source": "https://github.com/symfony/debug/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4318,7 +4379,7 @@
             "description": "Provides tools to manage errors and ease debugging PHP code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/error-handler/tree/v4.4.18"
+                "source": "https://github.com/symfony/error-handler/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4401,7 +4462,7 @@
             "description": "Provides tools that allow your application components to communicate with each other by dispatching events and listening to them",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher/tree/v4.4.18"
+                "source": "https://github.com/symfony/event-dispatcher/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4603,7 +4664,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.18"
+                "source": "https://github.com/symfony/finder/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4750,7 +4811,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v4.4.18"
+                "source": "https://github.com/symfony/http-foundation/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4854,7 +4915,7 @@
             "description": "Provides a structured process for converting a Request into a Response",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-kernel/tree/v4.4.18"
+                "source": "https://github.com/symfony/http-kernel/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -4936,7 +4997,7 @@
                 "mime-type"
             ],
             "support": {
-                "source": "https://github.com/symfony/mime/tree/v5.2.1"
+                "source": "https://github.com/symfony/mime/tree/v5.2.3"
             },
             "funding": [
                 {
@@ -5645,7 +5706,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v4.4.18"
+                "source": "https://github.com/symfony/process/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -5733,7 +5794,7 @@
                 "url"
             ],
             "support": {
-                "source": "https://github.com/symfony/routing/tree/v4.4.18"
+                "source": "https://github.com/symfony/routing/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -5900,7 +5961,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v4.4.18"
+                "source": "https://github.com/symfony/translation/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -6067,7 +6128,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v4.4.18"
+                "source": "https://github.com/symfony/var-dumper/tree/v4.4.19"
             },
             "funding": [
                 {
@@ -6201,7 +6262,7 @@
             ],
             "support": {
                 "issues": "https://github.com/vlucas/phpdotenv/issues",
-                "source": "https://github.com/vlucas/phpdotenv/tree/v3.6.7"
+                "source": "https://github.com/vlucas/phpdotenv/tree/v3.6.8"
             },
             "funding": [
                 {
