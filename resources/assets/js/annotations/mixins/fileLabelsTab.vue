@@ -1,8 +1,9 @@
 <script>
 import FileLabelList from '../../volumes/components/fileLabelList';
 import ImageLabelsApi from '../../volumes/api/imageLabels';
-import VideoLabelsApi from '../../volumes/api/videoLabels';
+import Keyboard from '../../core/keyboard';
 import Loader from '../../core/mixins/loader';
+import VideoLabelsApi from '../../volumes/api/videoLabels';
 import {handleErrorResponse} from '../../core/messages/store';
 
 export default {
@@ -49,7 +50,7 @@ export default {
                     }
                 }
 
-                return true;
+                return !this.saving;
             }
 
             return false;
@@ -101,14 +102,28 @@ export default {
             let promise;
             if (this.type === 'image') {
                 promise = ImageLabelsApi
-                    .save({image_id: this.fileId}, {label_id: this.selectedLabel.id});
+                    .save(
+                        {image_id: this.fileId},
+                        {label_id: this.selectedLabel.id}
+                    );
             } else {
                 promise = VideoLabelsApi
-                    .save({video_id: this.fileId}, {label_id: this.selectedLabel.id});
+                    .save(
+                        {video_id: this.fileId},
+                        {label_id: this.selectedLabel.id}
+                    );
             }
 
             promise.then((r) => this.currentLabels.push(r.data), handleErrorResponse)
                 .finally(this.finishSaving);
+        },
+        attachSelectedLabelIfPossible() {
+            if (this.canAttachSelectedLabel) {
+                this.attachSelectedLabel();
+
+                // Stop the keyboard event handler in this case.
+                return false;
+            }
         },
     },
     watch: {
@@ -120,11 +135,15 @@ export default {
         open(open) {
             if (open) {
                 this.showFileLabels(this.fileId);
+                Keyboard.on('Enter', this.attachSelectedLabelIfPossible);
+            } else {
+                Keyboard.off('Enter', this.attachSelectedLabelIfPossible);
             }
         },
     },
     created() {
         this.$parent.$watch('open', (open) => this.open = open);
+
     },
 };
 </script>

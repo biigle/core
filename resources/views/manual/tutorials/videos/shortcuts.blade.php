@@ -102,5 +102,24 @@
                 </tr>
             </tbody>
         </table>
+
+        <p>
+            When the video labels tab is open:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Attach the currently selected label to the current video</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 @endsection
