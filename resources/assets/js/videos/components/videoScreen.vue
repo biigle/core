@@ -174,7 +174,15 @@
                     :active="isAttaching"
                     :disabled="hasNoSelectedLabel || hasError"
                     @click="toggleAttaching"
-                    ></control-button>
+                    >
+                        <control-button
+                            icon="fa-sync-alt"
+                            title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟"
+                            :active="isSwapping"
+                            :disabled="hasNoSelectedLabel || hasError"
+                            @click="toggleSwapping"
+                            ></control-button>
+                    </control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-arrows-alt"

@@ -86,6 +86,7 @@ export default {
             error: null,
             user: null,
             attachingLabel: false,
+            swappingLabel: false,
         };
     },
     computed: {
@@ -188,7 +189,12 @@ export default {
                 this.attachAnnotationLabel(annotation);
 
                 return Vue.Promise.resolve();
+            } else if (this.swappingLabel) {
+                this.swapAnnotationLabel(annotation);
+
+                return Vue.Promise.resolve();
             }
+
             if (shift) {
                 return this.selectAnnotations([annotation], [], time);
             } else {
@@ -394,7 +400,24 @@ export default {
             }
         },
         attachAnnotationLabel(annotation) {
-            annotation.attachAnnotationLabel(this.selectedLabel)
+            let promise = annotation.attachAnnotationLabel(this.selectedLabel);
+            promise.catch(handleErrorResponse);
+
+            return promise;
+        },
+        swapAnnotationLabel(annotation) {
+            let lastLabel = annotation.labels
+                .filter(l => l.user_id === this.user.id)
+                .sort((a, b) => a.id - b.id)
+                .pop();
+                console.log(lastLabel);
+
+            this.attachAnnotationLabel(annotation)
+                .then(() => {
+                    if (lastLabel) {
+                        this.detachAnnotationLabel(annotation, lastLabel);
+                    }
+                })
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
@@ -553,7 +576,12 @@ export default {
             return ids;
         },
         handleAttachingLabelActive(attaching) {
+            this.swappingLabel = false;
             this.attachingLabel = attaching;
+        },
+        handleSwappingLabelActive(swapping) {
+            this.attachingLabel = false;
+            this.swappingLabel = swapping;
         },
     },
     watch: {
