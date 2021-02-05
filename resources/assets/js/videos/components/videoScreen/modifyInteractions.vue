@@ -6,6 +6,8 @@ import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
+const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
+
 /**
  * Mixin for the videoScreen component that contains logic for the edit/delete
  * interactions.
@@ -23,10 +25,9 @@ export default {
     },
     computed: {
         cannotSplitAnnotation() {
-            let allowedShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
-
             return this.selectedAnnotations.length !== 1 ||
-                allowedShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
+                this.selectedAnnotations[0].frames.length <= 1 ||
+                allowedSplitShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
         },
         cannotLinkAnnotations() {
             return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
