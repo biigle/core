@@ -34,6 +34,9 @@ export default {
         isAttaching() {
             return this.interactionMode === 'attachLabel';
         },
+        isSwapping() {
+            return this.interactionMode === 'swapLabel';
+        },
     },
     methods: {
         initModifyInteraction(map) {
@@ -127,6 +130,13 @@ export default {
                 this.interactionMode = 'attachLabel';
             }
         },
+        toggleSwapping() {
+            if (this.isSwapping) {
+                this.resetInteractionMode();
+            } else {
+                this.interactionMode = 'swapLabel';
+            }
+        },
         initAttachInteraction(map) {
             this.attachInteraction = new AttachLabelInteraction({
                 features: this.annotationFeatures,
@@ -136,11 +146,28 @@ export default {
             this.attachInteraction.on('attach', this.handleAttachLabel);
             this.map.addInteraction(this.attachInteraction);
         },
+        initSwapInteraction(map) {
+            this.swapInteraction = new AttachLabelInteraction({
+                features: this.annotationFeatures,
+                map: map,
+            });
+            this.swapInteraction.setActive(false);
+            this.swapInteraction.on('attach', this.handleSwapLabel);
+            this.map.addInteraction(this.swapInteraction);
+        },
         handleAttachLabel(e) {
             this.$emit('attach-label', e.feature.get('annotation'));
         },
+        handleSwapLabel(e) {
+            this.$emit('swap-label', e.feature.get('annotation'));
+        },
         maybeResetAttaching(hasNoLabel) {
             if (this.isAttaching && hasNoLabel) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeResetSwapping(hasNoLabel) {
+            if (this.isSwapping && hasNoLabel) {
                 this.resetInteractionMode();
             }
         },
@@ -163,6 +190,13 @@ export default {
 
             this.$emit('attaching-active', attaching);
         },
+        isSwapping(swapping) {
+            if (this.swapInteraction) {
+                this.swapInteraction.setActive(swapping);
+            }
+
+            this.$emit('swapping-active', swapping);
+        },
     },
     created() {
         if (this.canModify) {
@@ -173,14 +207,17 @@ export default {
                 this.$once('map-ready', this.initModifyInteraction);
                 this.$once('map-ready', this.initTranslateInteraction);
                 this.$once('map-ready', this.initAttachInteraction);
+                this.$once('map-ready', this.initSwapInteraction);
             });
 
             this.$watch('isDefaultInteractionMode', this.maybeUpdateModifyInteractionMode);
             this.$watch('isDefaultInteractionMode', this.maybeUpdateIsTranslating);
             this.$watch('hasNoSelectedLabel', this.maybeResetAttaching);
+            this.$watch('hasNoSelectedLabel', this.maybeResetSwapping);
             Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
             Keyboard.on('Escape', this.resetTranslating, 0, this.listenerSet);
             Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
+            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
         }
 
         if (this.canDelete) {

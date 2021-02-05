@@ -97,6 +97,10 @@
                     <td>Select tool to attach labels to existing annotations</td>
                 </tr>
                 <tr>
+                    <td><kbd>Shift</kbd>+<kbd>l</kbd></td>
+                    <td>Select tool to swap labels of existing annotations</td>
+                </tr>
+                <tr>
                     <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
                     <td>Select multiple annotation at the same time</td>
                 </tr>
