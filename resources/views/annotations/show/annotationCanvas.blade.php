@@ -43,7 +43,9 @@
                 </control-button>
             </div>
             <div class="btn-group edit-controls">
-                <control-button icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching"></control-button>
+                <control-button icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching">
+                    <control-button icon="fa-sync-alt" title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟" :active="isSwapping" v-on:click="toggleSwapping"></control-button>
+                </control-button>
                 <control-button icon="fa-arrows-alt" title="Move selected annotations 𝗠" :active="isTranslating" v-on:click="toggleTranslating" :disabled="modifyInProgress"></control-button>
                 <control-button v-if="hasLastCreatedAnnotation" icon="fa-undo" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" v-on:click="deleteLastCreatedAnnotation"></control-button>
                 <control-button v-else icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="modifyInProgress||!hasSelectedAnnotations" v-on:click="deleteSelectedAnnotations"></control-button>

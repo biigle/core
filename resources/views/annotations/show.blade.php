@@ -78,6 +78,7 @@
             v-on:select="handleSelectAnnotations"
             v-on:update="handleUpdateAnnotations"
             v-on:attach="handleAttachLabel"
+            v-on:swap="handleSwapLabel"
             v-on:delete="handleDeleteAnnotations"
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"

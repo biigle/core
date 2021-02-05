@@ -72,6 +72,7 @@ export default {
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
+            userId: null,
         };
     },
     computed: {
@@ -406,7 +407,28 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
-                AnnotationsStore.attachLabel(annotation, annotationLabel)
+                let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
+                promise.catch(handleErrorResponse);
+
+                return promise;
+            }
+
+            return Vue.Promise.reject();
+        },
+        handleSwapLabel(annotation, label) {
+            label = label || this.selectedLabel;
+            if (this.isEditor && label) {
+                let lastLabel = annotation.labels
+                    .filter(l => l.user_id === this.userId)
+                    .sort((a, b) => a.id - b.id)
+                    .pop();
+
+                this.handleAttachLabel(annotation, label)
+                    .then(() => {
+                        if (lastLabel) {
+                            this.handleDetachAnnotationLabel(annotation, lastLabel);
+                        }
+                    })
                     .catch(handleErrorResponse);
             }
         },
@@ -567,6 +589,7 @@ export default {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
+        this.userId = biigle.$require('annotations.userId');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),
