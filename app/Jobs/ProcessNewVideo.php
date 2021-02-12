@@ -6,6 +6,7 @@ use App;
 use Biigle\Jobs\Job;
 use Biigle\Video;
 use Exception;
+use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
@@ -122,6 +123,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
         $this->video->size = File::size($path);
         $this->video->duration = $this->getVideoDuration($path);
+
+        try {
+            $dimensions = $this->getVideoDimensions($path);
+            $this->video->width = $dimensions->getWidth();
+            $this->video->height = $dimensions->getHeight();
+        } catch (Throwable $e) {
+            // ignore and leave dimensions at null.
+        }
+
         if ($this->video->error) {
             $this->video->error = null;
         }
@@ -180,6 +190,22 @@ class ProcessNewVideo extends Job implements ShouldQueue
         return (float) FFProbe::create()
             ->format($path)
             ->get('duration');
+    }
+
+    /**
+     * Get the dimensions of a video
+     *
+     * @param string $url URL/path to the video file
+     *
+     * @return Dimension
+     */
+    protected function getVideoDimensions($url)
+    {
+        if (!isset($this->ffprobe)) {
+            $this->ffprobe = FFProbe::create();
+        }
+
+        return $this->ffprobe->streams($url)->videos()->first()->getDimensions();
     }
 
     /**

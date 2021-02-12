@@ -371,6 +371,96 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreAndTrackPointOutsideBoundary()
+    {
+        config(['videos.tracking_point_padding' => 10]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[0, 0]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertSuccessful();
+
+        $this->video->width = 100;
+        $this->video->height = 100;
+        $this->video->save();
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[0, 0]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[100, 100]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[90, 90]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreAndTrackCircleOutsideBoundary()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::circleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[0, 0, 10]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertSuccessful();
+
+        $this->video->width = 100;
+        $this->video->height = 100;
+        $this->video->save();
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::circleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[0, 0, 10]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::circleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[100, 100, 10]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::circleId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[90, 90, 10]],
+                'frames' => [0.0],
+                'track' => true,
+            ])
+            ->assertSuccessful();
+    }
+
     public function testStoreWholeFrameAnnotation()
     {
         $this->beEditor();

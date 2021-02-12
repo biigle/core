@@ -79,6 +79,13 @@ class StoreVideoAnnotation extends FormRequest
                 if (!in_array(intval($this->input('shape_id')), $allowedShapes)) {
                     $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
+
+                // Only do this for videos with stored dimensions for backwards
+                // compatibility. Older videos may not have stored dimensions, yet.
+                // In this case, the Python script will fail without a graceful error.
+                if (!is_null($this->video->width) && !is_null($this->video->height) && !$this->annotationContained()) {
+                    $validator->errors()->add('points', 'An annotation to track must be fully contained by the video boundaries.');
+                }
             }
         });
     }
@@ -91,5 +98,29 @@ class StoreVideoAnnotation extends FormRequest
     public function shouldTrack()
     {
         return boolval($this->input('track', false));
+    }
+
+    /**
+     * Check if the point or circle annotation is fully contained by the video.
+     *
+     * @return bool
+     */
+    protected function annotationContained()
+    {
+        $radius = 0;
+        $points = $this->input('points')[0];
+
+        if (intval($this->input('shape_id')) === Shape::pointId()) {
+            $radius = config('videos.tracking_point_padding');
+        } elseif (intval($this->input('shape_id')) === Shape::circleId()) {
+            $radius = $points[2];
+        } else {
+            return false;
+        }
+
+        return ($points[0] - $radius) >= 0 &&
+            ($points[1] - $radius) >= 0 &&
+            ($points[0] + $radius) <= $this->video->width &&
+            ($points[1] + $radius) <= $this->video->height;
     }
 }

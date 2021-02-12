@@ -410,7 +410,6 @@ export default {
                 .filter(l => l.user_id === this.user.id)
                 .sort((a, b) => a.id - b.id)
                 .pop();
-                console.log(lastLabel);
 
             this.attachAnnotationLabel(annotation)
                 .then(() => {

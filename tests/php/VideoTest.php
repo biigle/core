@@ -100,6 +100,18 @@ class VideoTest extends ModelTestCase
         $this->assertEquals(['size' => 123], $this->model->attrs);
     }
 
+    public function testSetWidthAttribute()
+    {
+        $this->model->width = 123;
+        $this->assertEquals(['width' => 123], $this->model->attrs);
+    }
+
+    public function testSetHeightAttribute()
+    {
+        $this->model->height = 123;
+        $this->assertEquals(['height' => 123], $this->model->attrs);
+    }
+
     public function testHasBeenProcessed()
     {
         $this->assertFalse($this->model->hasBeenProcessed());
