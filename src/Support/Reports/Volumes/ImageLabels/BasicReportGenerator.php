@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use DB;
@@ -46,6 +47,15 @@ class BasicReportGenerator extends VolumeReportGenerator
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name);
         }
@@ -81,6 +91,8 @@ class BasicReportGenerator extends VolumeReportGenerator
         if ($this->shouldSeparateLabelTrees()) {
             $query->join('labels', 'labels.id', '=', 'image_labels.label_id')
                 ->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateusers()) {
+            $query->addSelect('image_labels.user_id');
         }
 
         return $query;

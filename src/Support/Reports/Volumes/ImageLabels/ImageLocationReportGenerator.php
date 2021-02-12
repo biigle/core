@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use Biigle\ImageLabel;
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
@@ -49,6 +50,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
             ->join('labels', 'image_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->orderBy('labels.id')
             ->distinct();
 
         $imageLabels = $this->query()->get();
@@ -66,6 +68,19 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
                     ->where('labels.label_tree_id', $id)
                     ->pluck('labels.name', 'labels.id');
 
+                $tmpImageLabels = $imageLabels->get($id)->groupBy('image_id');
+                $file = $this->createNdJSON($images, $usedImageLabels, $tmpImageLabels);
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+        } elseif ($this->shouldSeparateUsers() && $imageLabels->isNotEmpty()) {
+            $usedImageLabels = $usedImageLabelsQuery->pluck('labels.name', 'labels.id');
+            $imageLabels = $imageLabels->groupBy('user_id');
+            $users = User::whereIn('id', $imageLabels->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
                 $tmpImageLabels = $imageLabels->get($id)->groupBy('image_id');
                 $file = $this->createNdJSON($images, $usedImageLabels, $tmpImageLabels);
                 $this->tmpFiles[] = $file;
@@ -112,6 +127,8 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
         if ($this->shouldSeparateLabelTrees()) {
             $query->join('labels', 'labels.id', '=', 'image_labels.label_id')
                 ->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_labels.user_id');
         }
 
         return $query;

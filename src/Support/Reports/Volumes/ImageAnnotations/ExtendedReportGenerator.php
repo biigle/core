@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
-use DB;
 
 class ExtendedReportGenerator extends AnnotationReportGenerator
 {
@@ -45,6 +45,15 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name);
         }
@@ -63,10 +72,13 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count, labels.label_tree_id'))
+            $query->selectRaw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count, labels.label_tree_id')
                 ->groupBy('image_annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->selectRaw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count, image_annotation_labels.user_id')
+                ->groupBy('image_annotation_labels.label_id', 'images.id', 'image_annotation_labels.user_id');
         } else {
-            $query->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
+            $query->selectRaw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count')
                 ->groupBy('image_annotation_labels.label_id', 'images.id');
         }
 

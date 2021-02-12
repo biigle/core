@@ -9,6 +9,7 @@ use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
@@ -196,6 +197,104 @@ class CsvReportGeneratorTest extends TestCase
 
         $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateUsers()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $user2 = UserTest::create([
+            'firstname' => 'Jane',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create();
+
+        $il1 = ImageLabelTest::create([
+            'image_id' => $image->id,
+            'user_id' => $user1->id,
+        ]);
+        $il2 = ImageLabelTest::create([
+            'image_id' => $image->id,
+            'user_id' => $user2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $il1->id,
+                $image->id,
+                $image->filename,
+                null,
+                null,
+                $il1->user_id,
+                $il1->user->firstname,
+                $il1->user->lastname,
+                $il1->label->id,
+                $il1->label->name,
+                $il1->label->name,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $il2->id,
+                $image->id,
+                $image->filename,
+                null,
+                null,
+                $il2->user_id,
+                $il2->user->firstname,
+                $il2->user->lastname,
+                $il2->label->id,
+                $il2->label->name,
+                $il2->label->name,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', "{$user2->id}-jane-user.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
         ]);
         $generator->setSource($image->volume);
         $generator->generateReport('my/path');

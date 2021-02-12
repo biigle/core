@@ -10,6 +10,7 @@ use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
@@ -225,6 +226,118 @@ class CsvReportGeneratorTest extends TestCase
 
         $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateUsers()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $user2 = UserTest::create([
+            'firstname' => 'Jane',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create();
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user1->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $al1->label->name,
+                $al1->user_id,
+                $al1->user->firstname,
+                $al1->user->lastname,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+                $annotation->id,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $al2->label->name,
+                $al2->user_id,
+                $al2->user->firstname,
+                $al2->user->lastname,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+                $annotation->id,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', "{$user2->id}-jane-user.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
         ]);
         $generator->setSource($image->volume);
         $generator->generateReport('my/path');

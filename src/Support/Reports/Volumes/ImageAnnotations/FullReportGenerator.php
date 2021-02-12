@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Arr;
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use DB;
 
@@ -44,6 +45,15 @@ class FullReportGenerator extends AnnotationReportGenerator
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
         } else {

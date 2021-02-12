@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\VideoLabels;
 
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
@@ -48,6 +49,17 @@ class CsvReportGenerator extends VolumeReportGenerator
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
+                $csv = $this->createCsv($rows->get($id));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
+            }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
                 $csv = $this->createCsv($rows->get($id));
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
@@ -99,6 +111,8 @@ class CsvReportGenerator extends VolumeReportGenerator
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('video_labels.user_id');
         }
 
         return $query;
