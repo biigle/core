@@ -216,6 +216,46 @@ class Video extends VolumeFile
     }
 
     /**
+     * Get the width attribute.
+     *
+     * @return int
+     */
+    public function getWidthAttribute()
+    {
+        return $this->getJsonAttr('width');
+    }
+
+    /**
+     * Set the width attribute.
+     *
+     * @param int $value
+     */
+    public function setWidthAttribute($value)
+    {
+        $this->setJsonAttr('width', $value);
+    }
+
+    /**
+     * Get the height attribute.
+     *
+     * @return int
+     */
+    public function getHeightAttribute()
+    {
+        return $this->getJsonAttr('height');
+    }
+
+    /**
+     * Set the height attribute.
+     *
+     * @param int $value
+     */
+    public function setHeightAttribute($value)
+    {
+        $this->setJsonAttr('height', $value);
+    }
+
+    /**
      * Determine whether the (new) video has been processed.
      *
      * @return boolean

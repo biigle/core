@@ -99,6 +99,15 @@ class ProcessNewVideoTest extends TestCase
         $this->assertEquals(104500, $video->fresh()->size);
     }
 
+    public function testHandleDimensions()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->handle();
+        $this->assertEquals(120, $video->fresh()->width);
+        $this->assertEquals(144, $video->fresh()->height);
+    }
+
     public function testHandleMalformed()
     {
         $video = VideoTest::create(['filename' => 'test_malformed.mp4']);
