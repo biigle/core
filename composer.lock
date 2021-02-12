@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "fd8e3a329c5584d49e5175d3449ca97cde3d8968"
+                "reference": "3a3253a87f4143e04cac65f9401dcfb53bbd0167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/fd8e3a329c5584d49e5175d3449ca97cde3d8968",
-                "reference": "fd8e3a329c5584d49e5175d3449ca97cde3d8968",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/3a3253a87f4143e04cac65f9401dcfb53bbd0167",
+                "reference": "3a3253a87f4143e04cac65f9401dcfb53bbd0167",
                 "shasum": ""
             },
             "default-branch": true,
@@ -121,12 +121,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "699f42cb4b2b20a1a27cd16071553e08a98d5b3b"
+                "reference": "569a22435b016bc9fa3ab10ce450afb0946ebd46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/699f42cb4b2b20a1a27cd16071553e08a98d5b3b",
-                "reference": "699f42cb4b2b20a1a27cd16071553e08a98d5b3b",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/569a22435b016bc9fa3ab10ce450afb0946ebd46",
+                "reference": "569a22435b016bc9fa3ab10ce450afb0946ebd46",
                 "shasum": ""
             },
             "require": {
@@ -167,12 +167,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "8ff59cddfd3504225ac4dabc98c89b3c889728f1"
+                "reference": "681e4b3769b6d6eba3d5779eb2936f2a4262010a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/8ff59cddfd3504225ac4dabc98c89b3c889728f1",
-                "reference": "8ff59cddfd3504225ac4dabc98c89b3c889728f1",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/681e4b3769b6d6eba3d5779eb2936f2a4262010a",
+                "reference": "681e4b3769b6d6eba3d5779eb2936f2a4262010a",
                 "shasum": ""
             },
             "default-branch": true,
@@ -210,12 +210,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "e5b9389961f3033a24c8ce3422bbfe56a0a42447"
+                "reference": "3780bdfd4f09376821fb042b751e00744c20500e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/e5b9389961f3033a24c8ce3422bbfe56a0a42447",
-                "reference": "e5b9389961f3033a24c8ce3422bbfe56a0a42447",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/3780bdfd4f09376821fb042b751e00744c20500e",
+                "reference": "3780bdfd4f09376821fb042b751e00744c20500e",
                 "shasum": ""
             },
             "default-branch": true,
@@ -249,20 +249,20 @@
         },
         {
             "name": "biigle/laravel-cached-openstack",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-cached-openstack.git",
-                "reference": "5a6c60e62a47e4f7febe35e0c415163a9ec07fdc"
+                "reference": "7dc549a5ea90fbf0bc34737eccfa0ba32cdc0f44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-cached-openstack/zipball/5a6c60e62a47e4f7febe35e0c415163a9ec07fdc",
-                "reference": "5a6c60e62a47e4f7febe35e0c415163a9ec07fdc",
+                "url": "https://api.github.com/repos/biigle/laravel-cached-openstack/zipball/7dc549a5ea90fbf0bc34737eccfa0ba32cdc0f44",
+                "reference": "7dc549a5ea90fbf0bc34737eccfa0ba32cdc0f44",
                 "shasum": ""
             },
             "require": {
-                "illuminate/cache": "^5.1|^6.0|^7.0",
+                "illuminate/cache": "^5.1|^6.0|^7.0|^8.0",
                 "php-opencloud/openstack": "^3.0"
             },
             "type": "library",
@@ -284,9 +284,9 @@
             "description": "A wrapper for the OpenStack SDK that caches and renews the authentication token",
             "support": {
                 "issues": "https://github.com/biigle/laravel-cached-openstack/issues",
-                "source": "https://github.com/biigle/laravel-cached-openstack/tree/v1.2.0"
+                "source": "https://github.com/biigle/laravel-cached-openstack/tree/v1.3.0"
             },
-            "time": "2020-03-09T10:08:57+00:00"
+            "time": "2021-01-21T12:30:49+00:00"
         },
         {
             "name": "biigle/laravel-file-cache",
@@ -409,12 +409,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "6506ab566302bccb66a2376bd52af6b79f68d202"
+                "reference": "ef427338b861c9e24932e3b85028abe2fb1a7671"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/6506ab566302bccb66a2376bd52af6b79f68d202",
-                "reference": "6506ab566302bccb66a2376bd52af6b79f68d202",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/ef427338b861c9e24932e3b85028abe2fb1a7671",
+                "reference": "ef427338b861c9e24932e3b85028abe2fb1a7671",
                 "shasum": ""
             },
             "require": {
@@ -458,12 +458,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "8ee200d51f52e92d2ed89f8995dee3cdaf079139"
+                "reference": "b2cf766b13e626fe4d049d3095c4e160304cd3bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/8ee200d51f52e92d2ed89f8995dee3cdaf079139",
-                "reference": "8ee200d51f52e92d2ed89f8995dee3cdaf079139",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/b2cf766b13e626fe4d049d3095c4e160304cd3bf",
+                "reference": "b2cf766b13e626fe4d049d3095c4e160304cd3bf",
                 "shasum": ""
             },
             "require": {
@@ -504,12 +504,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "be45a0e13900111fa955641e58da253471bbc100"
+                "reference": "0e4b86742985d827ce4364960caff3dc14169c66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/be45a0e13900111fa955641e58da253471bbc100",
-                "reference": "be45a0e13900111fa955641e58da253471bbc100",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/0e4b86742985d827ce4364960caff3dc14169c66",
+                "reference": "0e4b86742985d827ce4364960caff3dc14169c66",
                 "shasum": ""
             },
             "require": {
@@ -551,12 +551,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/module.git",
-                "reference": "87a8179151e8d5dc0de630a8acb75abbff975bdd"
+                "reference": "db42e95730bfde59b2918e5c7de06b67c196f560"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/module/zipball/87a8179151e8d5dc0de630a8acb75abbff975bdd",
-                "reference": "87a8179151e8d5dc0de630a8acb75abbff975bdd",
+                "url": "https://api.github.com/repos/biigle/module/zipball/db42e95730bfde59b2918e5c7de06b67c196f560",
+                "reference": "db42e95730bfde59b2918e5c7de06b67c196f560",
                 "shasum": ""
             },
             "default-branch": true,
@@ -594,12 +594,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "681ed2d2547b0869dafc4b03b4e39f3a8f25bf4e"
+                "reference": "43d03fffc4cb6f4ffca60ff4a56ffd4891b94bea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/681ed2d2547b0869dafc4b03b4e39f3a8f25bf4e",
-                "reference": "681ed2d2547b0869dafc4b03b4e39f3a8f25bf4e",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/43d03fffc4cb6f4ffca60ff4a56ffd4891b94bea",
+                "reference": "43d03fffc4cb6f4ffca60ff4a56ffd4891b94bea",
                 "shasum": ""
             },
             "require": {
@@ -641,12 +641,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/sync.git",
-                "reference": "ead0f63c1904959f8d3c1eaf6abb51204f766f3b"
+                "reference": "d50f0b74631cff8e8aaffac309a9d7e32bacc6e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/ead0f63c1904959f8d3c1eaf6abb51204f766f3b",
-                "reference": "ead0f63c1904959f8d3c1eaf6abb51204f766f3b",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/d50f0b74631cff8e8aaffac309a9d7e32bacc6e9",
+                "reference": "d50f0b74631cff8e8aaffac309a9d7e32bacc6e9",
                 "shasum": ""
             },
             "require": {
