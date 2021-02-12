@@ -256,6 +256,16 @@ class ReportGenerator
     }
 
     /**
+     * Should this report separate the output files for different user?
+     *
+     * @return bool
+     */
+    protected function shouldSeparateUsers()
+    {
+        return $this->options->get('separateUsers', false);
+    }
+
+    /**
      * Returns the array of label ids to which this report should be restricted.
      *
      * @return array

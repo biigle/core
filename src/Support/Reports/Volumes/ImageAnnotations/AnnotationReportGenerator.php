@@ -217,6 +217,8 @@ class AnnotationReportGenerator extends VolumeReportGenerator
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_annotation_labels.user_id');
         }
 
         return $query;

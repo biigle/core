@@ -11,6 +11,7 @@ use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
@@ -531,6 +532,114 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $generator = new AnnotationLocationReportGenerator([
             'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateUsers()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'John Jack',
+            'lastname' => 'User',
+        ]);
+
+        $user2 = UserTest::create([
+            'firstname' => 'Jane',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create([
+            'lat' => 51.0,
+            'lng' => 0.0,
+            'attrs' => [
+                'width' => 100,
+                'height' => 100,
+                'metadata' => [
+                    'yaw' => 90,
+                    'distance_to_ground' => 10,
+                ],
+            ],
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'points' => [10, 10],
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user1->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $jsonContent = [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [0.000114194969290087, 51.00007186522273],
+            ],
+            'properties' => [
+                '_id' => $al1->id,
+                '_image_id' => $image->id,
+                '_image_filename' => 'test-image.jpg',
+                '_image_latitude' => $image->lat,
+                '_image_longitude' => $image->lng,
+                '_label_name' => $al1->label->name,
+                '_label_id' => $al1->label->id,
+            ],
+        ];
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent)."\n");
+
+        $jsonContent['properties']['_id'] = $al2->id;
+        $jsonContent['properties']['_label_name'] = $al2->label->name;
+        $jsonContent['properties']['_label_id'] = $al2->label->id;
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent)."\n");
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(File::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$al1->user->id}-john-jack-user.ndjson");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', "{$al2->user->id}-jane-user.ndjson");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AnnotationLocationReportGenerator([
+            'separateUsers' => true,
         ]);
         $generator->setSource($image->volume);
         $generator->generateReport('my/path');
