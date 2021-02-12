@@ -19,6 +19,7 @@ class StoreReport extends FormRequest
     {
         return [
             'separate_label_trees' => 'nullable|boolean',
+            'separate_users' => 'nullable|boolean',
             'export_area' => 'nullable|boolean',
             'newest_label' => 'nullable|boolean',
             'only_labels' => 'nullable|array',
@@ -46,6 +47,10 @@ class StoreReport extends FormRequest
             if ($aggregate && !$this->isAllowedForAggregateChildLabels()) {
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
             }
+
+            if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
+                $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
+            }
         });
     }
 
@@ -58,6 +63,7 @@ class StoreReport extends FormRequest
     {
         $options = [
             'separateLabelTrees' => boolval($this->input('separate_label_trees', false)),
+            'separateUsers' => boolval($this->input('separate_users', false)),
             'newestLabel' => boolval($this->input('newest_label', false)),
             'onlyLabels' => $this->input('only_labels', []),
         ];

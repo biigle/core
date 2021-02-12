@@ -229,4 +229,40 @@ class ProjectReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
     }
+
+    public function testStoreSeparateLabelTreesUsersConflict()
+    {
+        $projectId = $this->project()->id;
+        // Create volume.
+        $this->volume();
+        $typeId = ReportType::imageAnnotationsBasicId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+                'separate_label_trees' => true,
+                'separate_users' => true,
+            ])
+            ->assertStatus(422);
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+                'separate_label_trees' => true,
+            ])
+            ->assertStatus(200);
+
+        $job = end($this->dispatchedJobs);
+        $this->assertTrue($job->report->options['separateLabelTrees']);
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+                'separate_users' => true,
+            ])
+            ->assertStatus(200);
+
+        $job = end($this->dispatchedJobs);
+        $this->assertTrue($job->report->options['separateUsers']);
+    }
 }
