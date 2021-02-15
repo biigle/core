@@ -27,6 +27,7 @@ export default {
                 export_area: false,
                 newest_label: false,
                 separate_label_trees: false,
+                separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
             },
@@ -146,6 +147,16 @@ export default {
                 this.flatLabels.forEach(function (label) {
                     label.selected = false;
                 });
+            }
+        },
+        'options.separate_label_trees'(separate) {
+            if (separate) {
+                this.options.separate_users = false;
+            }
+        },
+        'options.separate_users'(separate) {
+            if (separate) {
+                this.options.separate_label_trees = false;
             }
         },
     },

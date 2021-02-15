@@ -116,14 +116,26 @@
                     </div>
                 </div>
                 <div class="form-group" :class="{'has-error': errors.separate_label_trees}">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
-                        </label>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" v-model="options.separate_users"> Separate users
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div class="help-block" v-if="errors.separate_label_trees" v-cloak v-text="getError('separate_label_trees')"></div>
-                    <div v-else class="help-block">
-                        Annotations belonging to different label trees will be separated to different files/sheets.
+                    <div class="help-block" v-if="errors.separate_users" v-cloak v-text="getError('separate_users')"></div>
+                    <div v-if="!errors.separate_label_trees && !errors.separate_users" class="help-block">
+                        Split the report to separate files/sheets for label trees or users.
                     </div>
                 </div>
                 @include('reports::partials.restrictLabels')
