@@ -7,6 +7,7 @@ use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Shape;
+use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;
@@ -61,6 +62,18 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             $trees = LabelTree::whereIn('id', $items->keys())->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
+                $tmpItems = $items->get($id);
+                $file = $this->createNdJSON($tmpItems);
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+        } elseif ($this->shouldSeparateUsers() && $items->isNotEmpty()) {
+            $items = $items->groupBy('user_id');
+            $users = User::whereIn('id', $items->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
                 $tmpItems = $items->get($id);
                 $file = $this->createNdJSON($tmpItems);
                 $this->tmpFiles[] = $file;

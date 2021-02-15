@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use DB;
@@ -49,6 +50,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
             ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->orderBy('labels.id')
             ->distinct();
 
         $labels = $this->query()->get();
@@ -66,6 +68,19 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
                     ->where('labels.label_tree_id', $id)
                     ->pluck('labels.name', 'labels.id');
 
+                $tmpLabels = $labels->get($id)->groupBy('image_id');
+                $file = $this->createNdJSON($images, $usedLabels, $tmpLabels);
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+        } elseif ($this->shouldSeparateUsers() && $labels->isNotEmpty()) {
+            $usedLabels = $usedLabelsQuery->pluck('labels.name', 'labels.id');
+            $labels = $labels->groupBy('user_id');
+            $users = User::whereIn('id', $labels->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
                 $tmpLabels = $labels->get($id)->groupBy('image_id');
                 $file = $this->createNdJSON($images, $usedLabels, $tmpLabels);
                 $this->tmpFiles[] = $file;

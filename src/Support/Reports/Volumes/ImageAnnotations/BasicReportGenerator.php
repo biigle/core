@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\LabelTree;
+use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use DB;
 
@@ -45,6 +46,15 @@ class BasicReportGenerator extends AnnotationReportGenerator
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($labels->get($id), $name);
             }
+        } elseif ($this->shouldSeparateUsers() && $labels->isNotEmpty()) {
+            $labels = $labels->groupBy('user_id');
+            $users = User::whereIn('id', $labels->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($labels->get($id), $name);
+            }
         } else {
             $this->tmpFiles[] = $this->createCsv($labels);
         }
@@ -59,9 +69,16 @@ class BasicReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery(DB::raw('labels.name, labels.label_tree_id, labels.color, count(labels.id) as count'))
+        $query = $this->initQuery(DB::raw('labels.name, labels.color, count(labels.id) as count'))
             ->groupBy('labels.id')
             ->orderBy('labels.id');
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_annotation_labels.user_id')
+                ->groupBy('user_id', 'labels.id');
+        }
 
         return $query;
     }

@@ -5,6 +5,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\User;
 use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
@@ -48,6 +49,17 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $rowGroup = $rows->get($id);
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+            }
         } else {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
@@ -71,6 +83,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         if ($this->shouldSeparateLabelTrees()) {
             $query->addSelect('labels.label_tree_id')
                 ->groupBy('image_annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_annotation_labels.user_id')
+                ->groupBy('image_annotation_labels.label_id', 'images.id', 'image_annotation_labels.user_id');
         }
 
         return $query;

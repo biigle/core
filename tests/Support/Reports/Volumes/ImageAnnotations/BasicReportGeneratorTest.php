@@ -128,4 +128,60 @@ class BasicReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+
+    public function testGenerateReportSeparateUsers()
+    {
+        $image = ImageTest::create();
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$al1->label->name, $al1->label->color, 1]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$al2->label->name, $al2->label->color, 1]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+        $mock->code = 0;
+        App::singleton(Exec::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new BasicReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
 }

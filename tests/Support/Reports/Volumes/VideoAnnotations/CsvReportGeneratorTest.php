@@ -225,6 +225,112 @@ class CsvReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsers()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $user2 = UserTest::create([
+            'firstname' => 'Jane',
+            'lastname' => 'User',
+        ]);
+
+        $video = VideoTest::create();
+
+        $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user1->id,
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $al1->label->name,
+                $al1->user_id,
+                $al1->user->firstname,
+                $al1->user->lastname,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $al2->label->name,
+                $al2->user_id,
+                $al2->user->firstname,
+                $al2->user->lastname,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', "{$user2->id}-jane-user.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
+    }
+
     public function testRestrictToLabels()
     {
         $video = VideoTest::create();

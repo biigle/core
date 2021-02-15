@@ -52,10 +52,10 @@
         <h4><a name="annotation-abundance-report"></a>Abundance</h4>
 
         <p>
-            Similar to the extended report, this report is an XLSX spreadsheet that contains the abundances of each label and image. In this report, there is one row for each image and one column for each label. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
+            Similar to the extended report, this report is an XLSX spreadsheet that contains the abundances of each label and image. In this report, there is one row for each image and one column for each label. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user that was used.
         </p>
         <p>
-            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+            For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image filename</strong></li>
@@ -115,7 +115,7 @@
             </div>
         </div>
         <p>
-            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+            For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Annotation ID</strong></li>
@@ -135,7 +135,7 @@
 
         <h4><a name="annotation-basic-report"></a>Basic</h4>
         <p>
-            The basic image annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree, there will be one plot for each label tree that was used.
+            The basic image annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree or user, there will be one plot for each label tree or user.
         </p>
         <p>
             Example plot:
@@ -151,7 +151,7 @@
 
         <h4><a name="annotation-csv-report"></a>CSV</h4>
         <p>
-            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the volume ID and the volume name (cleaned up so it can be a file name) separated by an underscore. If the image annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
+            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the volume ID and the volume name (cleaned up so it can be a file name) separated by an underscore. If the image annotations should be separated by label tree or user, there will be one CSV file for each label tree or user and the CSV file name will consist of the label tree or user ID and name instead.
         </p>
         <p>
             Each CSV file contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The first row always contains the column headers. The columns are as follows:
@@ -188,10 +188,10 @@
         <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
-            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
+            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user.
         </p>
         <p>
-            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+            For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image filename</strong></li>

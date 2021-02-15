@@ -152,4 +152,74 @@ class FullReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+
+    public function testGenerateReportSeparateUsers()
+    {
+        $image = ImageTest::create([
+            'attrs' => ['some' => 'attrs'],
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $al1->label->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $al2->label->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new FullReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
 }
