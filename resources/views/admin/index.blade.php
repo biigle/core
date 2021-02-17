@@ -9,14 +9,14 @@
             <div class="panel-heading">
                 <h3 class="panel-title">
                     <span class="pull-right">
-                        <span title="Users who have been logged in once">{{ $loginUsers }}</span> <span title="All users" class="text-muted">/ {{$allUsers}}</span>
+                        <span title="Users who have been logged in once">{{ number_format($loginUsers) }}</span> <span title="All users" class="text-muted">/ {{number_format($allUsers)}}</span>
                     </span>
                     <a href="{{route('admin-users')}}" title="Users">Users</a>
                 </h3>
             </div>
             <div class="panel-body">
                 <p class="h1 text-center">
-                    <span title="Active users in the last 24 hours">{{$activeUsersLastDay}}</span> <span class="text-muted">/</span> <span title="Active users in the last week">{{$activeUsersLastWeek}}</span> <span class="text-muted">/</span> <span title="Active users in the last month">{{$activeUsersLastMonth}}</span>
+                    <span title="Active users in the last 24 hours">{{number_format($activeUsersLastDay)}}</span> <span class="text-muted">/</span> <span title="Active users in the last week">{{number_format($activeUsersLastWeek)}}</span> <span class="text-muted">/</span> <span title="Active users in the last month">{{number_format($activeUsersLastMonth)}}</span>
                 </p>
             </div>
         </div>
@@ -50,7 +50,7 @@
                 <a href="{{route('projects-index')}}" title="Projects"><h3 class="panel-title">Projects</h3></a>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center">{{ Biigle\Project::count() }}</p>
+                <p class="h1 text-center">{{ number_format(Biigle\Project::count()) }}</p>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
                 <a href="{{route('search', ['t' => 'volumes'])}}" title="Volumes"><h3 class="panel-title">Volumes</h3></a>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center">{{ Biigle\Volume::count() }}</p>
+                <p class="h1 text-center">{{ number_format(Biigle\Volume::count()) }}</p>
             </div>
         </div>
     </div>
@@ -105,11 +105,11 @@
             <div class="panel-heading">
                 <h3 class="panel-title">
                     <a href="{{route('search', ['t' => 'videos'])}}" title="Videos">Videos</a>
-                    <span class="pull-right">{{Biigle\Video::count()}}</span>
+                    <span class="pull-right">{{number_format(Biigle\Video::count())}}</span>
                 </h3>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center">{{round(Biigle\Video::sum('duration') / 3600, 2)}}&nbsp;h</p>
+                <p class="h1 text-center">{{number_format(round(Biigle\Video::sum('duration') / 3600))}}&nbsp;h</p>
             </div>
         </div>
     </div>
