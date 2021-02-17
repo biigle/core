@@ -91,6 +91,9 @@ class ApplyLargoSession extends Job implements ShouldQueue
      * @param \Biigle\User $user
      * @param array $dismissedImageAnnotations
      * @param array $changedImageAnnotations
+     * @param array $dismissedVideoAnnotations
+     * @param array $changedVideoAnnotations
+     * @param bool $force
      *
      * @return void
      */
