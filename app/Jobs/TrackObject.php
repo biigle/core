@@ -165,7 +165,7 @@ class TrackObject extends Job implements ShouldQueue
     /**
      * Delete a file if it exists.
      *
-     * @param string path
+     * @param string $path
      */
     protected function maybeDeleteFile($path)
     {
