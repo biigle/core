@@ -63,6 +63,8 @@ if (!function_exists('thumbnail_url')) {
      * Assemble the public URL to an image thumbnail.
      *
      * @param  string $uuid
+     * @param string $disk
+     * @param string $format
      * @return string
      */
     function thumbnail_url($uuid = null, $disk = null, $format = null)

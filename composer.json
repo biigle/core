@@ -113,7 +113,7 @@
         ],
         "doc": [
             "rm -rf public/doc/server",
-            "php sami.phar update sami.php -v"
+            "php doctum.phar update doctum.php"
         ],
         "lint": [
             "@php vendor/bin/psalm"

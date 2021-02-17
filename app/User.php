@@ -82,7 +82,7 @@ class User extends Authenticatable
     /**
      * Api tokens of this user.
      *
-     * @return @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function apiTokens()
     {
