@@ -51,7 +51,7 @@ export default {
             }, handleErrorResponse);
         },
         addAuthorizedProject(project) {
-            if (project) {
+            if (project && !this.loading) {
                 this.startLoading();
                 LabelTreesApi.addAuthorizedProject({id: this.labelTree.id}, {id: project.id})
                     .then(() => this.authorizedProjectAdded(project), handleErrorResponse)
