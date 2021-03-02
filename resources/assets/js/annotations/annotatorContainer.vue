@@ -646,9 +646,17 @@ export default {
         }
 
         if (Settings.has('openTab')) {
-            this.openTab = Settings.get('openTab');
+            let openTab = Settings.get('openTab');
+            if (openTab === 'color-adjustment') {
+                Events.$once('images.change', () => {
+                    if (this.supportsColorAdjustment) {
+                        this.openTab = openTab;
+                    }
+                });
+            } else {
+                this.openTab = openTab;
+            }
         }
-
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);

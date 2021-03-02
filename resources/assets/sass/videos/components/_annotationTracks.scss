@@ -3,4 +3,10 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
+
+    // Hide scroll bar, see: https://stackoverflow.com/a/13184693/1796523
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
