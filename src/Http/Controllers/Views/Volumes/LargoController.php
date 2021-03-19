@@ -23,7 +23,9 @@ class LargoController extends Controller
     public function index(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
-        $this->authorize('edit-in', $volume);
+        if (!$request->user()->can('sudo')) {
+            $this->authorize('edit-in', $volume);
+        }
 
         if ($request->user()->can('sudo')) {
             // Global admins have no restrictions.

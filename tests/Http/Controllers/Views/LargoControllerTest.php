@@ -18,6 +18,9 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->get("volumes/{$id}/largo")->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->get("volumes/{$id}/largo")->assertStatus(200);
     }
 
     public function testIndexVideoVolume()
@@ -29,6 +32,9 @@ class LargoControllerTest extends ApiTestCase
         $this->get("volumes/{$id}/largo")->assertStatus(403);
 
         $this->beEditor();
+        $this->get("volumes/{$id}/largo")->assertStatus(200);
+
+        $this->beGlobalAdmin();
         $this->get("volumes/{$id}/largo")->assertStatus(200);
     }
 
@@ -47,6 +53,9 @@ class LargoControllerTest extends ApiTestCase
         $this->get("projects/{$id}/largo")->assertStatus(200);
         $volume->media_type_id = MediaType::videoId();
         $volume->save();
+        $this->get("projects/{$id}/largo")->assertStatus(200);
+
+        $this->beGlobalAdmin();
         $this->get("projects/{$id}/largo")->assertStatus(200);
     }
 }
