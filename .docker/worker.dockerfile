@@ -76,14 +76,18 @@ RUN apk add --no-cache \
     ffmpeg \
     python3 \
     py3-numpy \
-    py3-pillow \
     py3-scipy
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-    py3-scikit-learn
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
+    py3-pillow
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-    py3-matplotlib
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
+    --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
+        py3-scikit-learn
+
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
+    --allow-untrusted \
+        py3-matplotlib
 
 # Set this library path to the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
