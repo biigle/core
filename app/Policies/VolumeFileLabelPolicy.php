@@ -13,20 +13,6 @@ class VolumeFileLabelPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks.
-     *
-     * @param User $user
-     * @param string $ability
-     * @return bool|null
-     */
-    public function before($user, $ability)
-    {
-        if ($user->can('sudo')) {
-            return true;
-        }
-    }
-
-    /**
      * Determine if the user can delete the given image label.
      *
      * If the user created the image label, they must be editor or admin of one

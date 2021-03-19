@@ -26,7 +26,9 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->can('sudo')) {
+        $only = ['access'];
+
+        if ($user->can('sudo') && in_array($ability, $only)) {
             return true;
         }
     }
