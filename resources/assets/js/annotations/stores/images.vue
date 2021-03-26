@@ -5,44 +5,9 @@ import fx from '../vendor/glfx';
 /**
 * Store for the images of the annotation tool
 */
-let fxCanvas;
-
-// This canvas is used as workaround to the auto-rotation of images according to EXIF
-// in Chrome (and maybe other browsers). The canvas and image need CSS
-// "image-orientation: none" to disable auto-rotation. For the style to be applied,
-// the elements need to be placed in the DOM. This single canvas is used for all
-// images so each image does not have to append a new canvas to the DOM.
-// See: https://bugs.chromium.org/p/chromium/issues/detail?id=158753#c114
-let drawCanvas = document.createElement('canvas');
-drawCanvas.style.imageOrientation = 'none';
-drawCanvas.style.visibility = 'hidden';
-drawCanvas.style.position = 'fixed';
-document.body.appendChild(drawCanvas);
-
-try {
-    // If fxCanvas is not initialized WebGL is not supported at all.
-    fxCanvas = fx.canvas();
-    var fxTexture = null;
-    var loadedImageTexture = null;
-} catch (error) {
-    console.warn('WebGL not supported. Color adjustment disabled.');
-}
-
-window.addEventListener('beforeunload', function () {
-    // Make sure the texture is destroyed when the page is left.
-    // The browser may take its time to garbage collect it and it may cause
-    // crashes due to lack of memory if not explicitly destroyed like this.
-    if (fxTexture) {
-        fxTexture.destroy();
-        // tell the browser that we *really* no longer want to use the resources
-        // see: http://stackoverflow.com/a/23606581/1796523
-        fxCanvas.width = 1;
-        fxCanvas.height = 1;
-    }
-});
-
 export default new Vue({
     data: {
+        initialized: false,
         cache: {},
         cachedIds: [],
         maxCacheSize: 10,
@@ -71,8 +36,8 @@ export default new Vue({
             return biigle.$require('annotations.tilesUri');
         },
         supportedTextureSize() {
-            if (fxCanvas) {
-                return fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
+            if (this.fxCanvas) {
+                return this.fxCanvas._.gl.getParameter(this.fxCanvas._.gl.MAX_TEXTURE_SIZE);
             }
 
             return 0;
@@ -88,6 +53,47 @@ export default new Vue({
         },
     },
     methods: {
+        initialize() {
+            // The properties defined in this function are intentionally no reactive
+            // properties of this Vue instance.
+            this.initialized = true;
+
+            // This canvas is used as workaround to the auto-rotation of images
+            // according to EXIF in Chrome, Firefox and other browsers. The canvas and
+            // image need CSS "image-orientation: none" to disable auto-rotation. For
+            // the style to be applied, the elements need to be placed in the DOM. This
+            // single canvas is used for all images so each image does not have to
+            // append a new canvas to the DOM.
+            // See: https://bugs.chromium.org/p/chromium/issues/detail?id=158753#c114
+            this.drawCanvas = document.createElement('canvas');
+            this.drawCanvas.style.imageOrientation = 'none';
+            this.drawCanvas.style.visibility = 'hidden';
+            this.drawCanvas.style.position = 'fixed';
+            document.body.appendChild(this.drawCanvas);
+
+            try {
+                // If this.fxCanvas is not initialized WebGL is not supported at all.
+                this.fxCanvas = fx.canvas();
+                this.fxTexture = null;
+                this.loadedImageTexture = null;
+            } catch (error) {
+                console.warn('WebGL not supported. Color adjustment disabled.');
+            }
+
+            window.addEventListener('beforeunload', function () {
+                // Make sure the texture is destroyed when the page is left.
+                // The browser may take its time to garbage collect it and it may cause
+                // crashes due to lack of memory if not explicitly destroyed like this.
+                if (this.fxTexture) {
+                    this.fxTexture.destroy();
+                    // tell the browser that we *really* no longer want to use the resources
+                    // see: http://stackoverflow.com/a/23606581/1796523
+                    this.fxCanvas.width = 1;
+                    this.fxCanvas.height = 1;
+                }
+            });
+
+        },
         isTiledImage(image) {
             return image.tiled === true;
         },
@@ -97,7 +103,7 @@ export default new Vue({
             });
         },
         checkSupportsColorAdjustment(image) {
-            if (!fxCanvas || image.crossOrigin) {
+            if (!this.fxCanvas || image.crossOrigin) {
                 return false;
             }
 
@@ -206,49 +212,53 @@ export default new Vue({
         },
         drawSimpleImage(image) {
             document.body.appendChild(image.source);
-            drawCanvas.width = image.width;
-            drawCanvas.height = image.height;
-            drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+            this.drawCanvas.width = image.width;
+            this.drawCanvas.height = image.height;
+            this.drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
             document.body.removeChild(image.source);
 
             image.canvas.width = image.width;
             image.canvas.height = image.height;
-            image.canvas.getContext('2d').drawImage(drawCanvas, 0, 0);
+            image.canvas.getContext('2d').drawImage(this.drawCanvas, 0, 0);
 
             return image;
         },
         drawColorAdjustedImage(image) {
-            if (loadedImageTexture !== image.source.src) {
+            if (this.loadedImageTexture !== image.source.src) {
                 document.body.appendChild(image.source);
-                drawCanvas.width = image.width;
-                drawCanvas.height = image.height;
-                drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
+                this.drawCanvas.width = image.width;
+                this.drawCanvas.height = image.height;
+                this.drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
                 document.body.removeChild(image.source);
 
-                if (fxTexture) {
-                    fxTexture.loadContentsOf(drawCanvas);
+                if (this.fxTexture) {
+                    this.fxTexture.loadContentsOf(this.drawCanvas);
                 } else {
-                    fxTexture = fxCanvas.texture(drawCanvas);
+                    this.fxTexture = this.fxCanvas.texture(this.drawCanvas);
                 }
-                loadedImageTexture = image.source.src;
+                this.loadedImageTexture = image.source.src;
             }
 
-            fxCanvas.draw(fxTexture);
+            this.fxCanvas.draw(this.fxTexture);
 
             for (let type in this.colorAdjustment) {
                 if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
-                    fxCanvas[type].apply(fxCanvas, this.colorAdjustment[type]);
+                    this.fxCanvas[type].apply(this.fxCanvas, this.colorAdjustment[type]);
                 }
             }
 
-            fxCanvas.update();
+            this.fxCanvas.update();
             image.canvas.width = image.width;
             image.canvas.height = image.height;
-            image.canvas.getContext('2d').drawImage(fxCanvas, 0, 0);
+            image.canvas.getContext('2d').drawImage(this.fxCanvas, 0, 0);
 
             return image;
         },
         drawImage(image) {
+            if (!this.initialized) {
+                this.initialize();
+            }
+
             this.checkSupportsColorAdjustment(image);
             this.currentlyDrawnImage = image;
 
