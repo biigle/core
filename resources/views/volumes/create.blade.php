@@ -138,7 +138,7 @@
             </div>
         </div>
 
-        <div v-else class="row">
+        <div v-cloak v-else class="row">
              <div class="form-group col-sm-6{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
