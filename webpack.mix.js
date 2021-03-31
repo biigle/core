@@ -17,8 +17,8 @@ mix.options({processCssUrls: false});
 
 mix.setPublicPath('src/public');
 
-mix.js('src/resources/assets/js/reports/main.js', 'assets/scripts')
-    .js('src/resources/assets/js/annotations/annotations.js', 'assets/scripts')
+mix.js('src/resources/assets/js/reports/main.js', 'assets/scripts').vue()
+    .js('src/resources/assets/js/annotations/annotations.js', 'assets/scripts').vue()
     .sass('src/resources/assets/sass/main.scss', 'assets/styles')
     .publish({
         provider: 'Biigle\\Modules\\Reports\\ReportsServiceProvider',
