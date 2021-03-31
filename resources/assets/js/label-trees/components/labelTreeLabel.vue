@@ -45,6 +45,7 @@ export default {
             oldColor: '',
             newName: '',
             newColor: '',
+            internalLabel: null,
         };
     },
     props: {
@@ -132,8 +133,8 @@ export default {
             this.newColor = '#' + this.label.color;
         },
         saveThis() {
-            this.label.name = this.newName;
-            this.label.color = this.newColor.substr(1);
+            this.internalLabel.name = this.newName;
+            this.internalLabel.color = this.newColor.substr(1);
             this.editing = false;
 
             if (this.oldName !== this.label.name || this.oldColor !== this.label.color) {
@@ -142,8 +143,8 @@ export default {
         },
         revertThis() {
             this.editing = false;
-            this.label.name = this.oldName;
-            this.label.color = this.oldColor;
+            this.internalLabel.name = this.oldName;
+            this.internalLabel.color = this.oldColor;
         },
         // a method called 'delete' didn't work
         deleteThis() {
@@ -154,7 +155,7 @@ export default {
 
             // If the label cannot be opened, it will be selected here instead.
             if (this.expandable) {
-                this.label.open = !this.label.open;
+                this.internalLabel.open = !this.label.open;
             } else {
                 this.toggleSelect(e);
             }
@@ -190,6 +191,10 @@ export default {
         dontHover() {
             this.hover = false;
         },
+    },
+    created() {
+        // Dirty workarount for ESlint error that props should not be modified.
+        this.internalLabel = this.label;
     },
 };
 </script>
