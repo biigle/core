@@ -20,6 +20,10 @@ Take a look at [`DEVELOPING.md`](DEVELOPING.md) for a detailed explanation on ho
 
 Although BIIGLE versions and BIIGLE module versions look like [semantic versioning](https://semver.org/), they are not. Only the most recent versions are compatible with each other. Patch versions are mostly backwards compatible, though.
 
+## Support
+
+If you have a question or request that is not a [bug report or feature request](CONTRIBUTING.md), please start a new [discussion](https://github.com/biigle/core/discussions) about it.
+
 ## Contributions and bug reports
 
 Contributions to BIIGLE are always welcome. Check out [`CONTRIBUTING.md`](CONTRIBUTING.md) to get started.
