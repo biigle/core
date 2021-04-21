@@ -47,7 +47,7 @@ class ImageAnnotationBulkController extends Controller
      *
      * @api {post} image-annotations Create new annotations
      * @apiGroup ImageAnnotations
-     * @apiName StoreImageAnnotations
+     * @apiName BulkStoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Accepts an array of new annotations that should be batch-created. A maximum of 100 annotations can be created with a single request.
      *
