@@ -387,7 +387,7 @@ class ApplyLargoSessionTest extends TestCase
         $dismissed = [$al1->label_id => [$al1->annotation_id]];
         $changed = [$l1->id => [$al1->annotation_id]];
         $user2 = UserTest::create();
-        $job = new ApplyLargoSession('job_id', $user2, [], [], $dismissed, $changed,false);
+        $job = new ApplyLargoSession('job_id', $user2, [], [], $dismissed, $changed, false);
         $job->handle();
 
         // a1 was dismissed and changed but the label does not belong to the user,

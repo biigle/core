@@ -3,9 +3,9 @@
 namespace Biigle\Modules\Largo\Listeners;
 
 use Biigle\Events\VideosDeleted;
+use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 
 class VideosCleanupListener
 {

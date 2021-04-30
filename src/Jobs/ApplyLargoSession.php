@@ -4,13 +4,13 @@ namespace Biigle\Modules\Largo\Jobs;
 
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Jobs\Job;
 use Biigle\Label;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\User;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use DB;

@@ -3,9 +3,9 @@
 namespace Biigle\Modules\Largo\Console\Commands;
 
 use Biigle\ImageAnnotation;
-use Biigle\VideoAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\VideoAnnotation;
 use File;
 use Illuminate\Console\Command;
 use Storage;

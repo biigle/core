@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\VideoAnnotation;
 use Biigle\Label;
+use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
 
 class VideoAnnotationsController extends Controller
