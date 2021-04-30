@@ -68,9 +68,19 @@ Follow these steps to create a new project and volume with test images:
 
 ## Building JavaScript and assets
 
-JavaScript and assets are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub as described [here](https://stackoverflow.com/a/63243950/1796523).
+JavaScript and assets are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub:
 
-Now run `npm install` to install the dependencies. Important commands for development are:
+1. Create a new [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with the `read:packages` scope.
+
+2. Create a new file `~/.npmrc` and insert the following content:
+    ```
+    //npm.pkg.github.com/:_authToken=TOKEN
+    ```
+    Replace `TOKEN` with the personal access token of step 1.
+
+3. Now run `npm install` to install the dependencies.
+
+Important commands for development are:
 
 - `npm run watch`: Starts a continuous process to watch for file changes. Rebuilds the assets whenever a file is changed. This can be used during development.
 
