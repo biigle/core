@@ -60,5 +60,4 @@ abstract class ProjectReportGenerator extends ReportGenerator
     {
         return new $this->reportClass($this->options);
     }
-
 }

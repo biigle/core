@@ -3,10 +3,10 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\VideoLabels;
 
 use Biigle\LabelTree;
-use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\User;
 use DB;
 
 class CsvReportGenerator extends VolumeReportGenerator

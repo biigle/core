@@ -3,10 +3,10 @@
 namespace Biigle\Modules\Reports\Support\Reports;
 
 use Biigle\Label;
-use Biigle\Video;
-use Biigle\Volume;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\File as FileHelper;
+use Biigle\Video;
+use Biigle\Volume;
 use Exception;
 use File;
 use ReflectionClass;

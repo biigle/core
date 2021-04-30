@@ -4,9 +4,9 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
-use Biigle\User;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;

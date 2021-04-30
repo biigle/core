@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\ImageAnnotations;
 
 use Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations\AnnotationLocationReportGenerator;
-use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
+use TestCase;
 
 class AnnotationLocationReportGeneratorTest extends TestCase
 {

@@ -4,10 +4,10 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use Biigle\ImageLabel;
 use Biigle\LabelTree;
-use Biigle\User;
 use Biigle\Modules\Reports\Support\File;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
 use GeoJson\Feature\FeatureCollection;

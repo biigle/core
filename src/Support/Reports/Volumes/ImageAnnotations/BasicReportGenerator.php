@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations;
 
 use Biigle\LabelTree;
-use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\User;
 use DB;
 
 class BasicReportGenerator extends AnnotationReportGenerator

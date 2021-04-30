@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Reports\Http\Requests;
 
-use Biigle\Modules\Reports\ReportType;
 use Biigle\Image;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
 use Illuminate\Validation\Rule;
 

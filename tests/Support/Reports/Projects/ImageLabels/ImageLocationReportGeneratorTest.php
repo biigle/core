@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
 use Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels\ImageLocationReportGenerator;
-use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
+use TestCase;
 
 class ImageLocationReportGeneratorTest extends TestCase
 {

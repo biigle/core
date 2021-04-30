@@ -4,10 +4,10 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes\VideoAnnotations;
 
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\User;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\User;
 use DB;
 use Illuminate\Support\Str;
 

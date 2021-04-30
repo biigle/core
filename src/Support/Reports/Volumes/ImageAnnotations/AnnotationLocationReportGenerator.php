@@ -223,8 +223,8 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // The ratio of meter per pixel.
         $scalingFactor = $imageWidthInM / $item->width;
 
-        $rotatedOffsetInM = array_map(function($point) use ($scalingFactor) {
-          return [
+        $rotatedOffsetInM = array_map(function ($point) use ($scalingFactor) {
+            return [
                 $point[0] * $scalingFactor,
                 $point[1] * $scalingFactor,
             ];
