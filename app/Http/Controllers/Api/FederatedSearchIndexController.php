@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Cache;
 use Biigle\Jobs\GenerateFederatedSearchIndex;
+use Cache;
 
 class FederatedSearchIndexController extends Controller
 {

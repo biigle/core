@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Role;
-use Biigle\Tests\VideoLabelTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoLabelTest;
+use Biigle\Tests\VideoTest;
 use TestCase;
 
 class VideoLabelPolicyTest extends TestCase

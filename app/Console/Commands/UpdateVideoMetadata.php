@@ -58,7 +58,6 @@ class UpdateVideoMetadata extends Command
         } else {
             $query->eachById([$this, 'processVolume']);
         }
-
     }
 
     public function processVolume(Volume $volume)

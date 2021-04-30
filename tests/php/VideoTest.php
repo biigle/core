@@ -87,7 +87,7 @@ class VideoTest extends ModelTestCase
         $this->assertEquals(['mimetype' => 'video/mp4'], $this->model->attrs);
     }
 
-        public function testGetSizeAttribute()
+    public function testGetSizeAttribute()
     {
         $this->assertNull($this->model->size);
         $this->model->attrs = ['size' => 123];
