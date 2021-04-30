@@ -66,6 +66,16 @@ Follow these steps to create a new project and volume with test images:
 
 3. Create a new project and volume in BIIGLE with the volume URL `local://test` and the list of image filenames. The `local://` storage disk resolves to the `storage/images` directory, the `test` suffix is the name of the directory containing the images.
 
+## Building JavaScript and assets
+
+JavaScript and assets are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub as described [here](https://stackoverflow.com/a/63243950/1796523).
+
+Now run `npm install` to install the dependencies. Important commands for development are:
+
+- `npm run watch`: Starts a continuous process to watch for file changes. Rebuilds the assets whenever a file is changed. This can be used during development.
+
+- `npm run prod`: Builds and minifies the assets. This command should be run before each new commit that changes assets.
+
 ## Runing the tests
 
 You can run the tests with `composer test`. The first time might fail since the testing database container needs to start up. To run only a subset of the tests, use `composer testf <pattern>` with `<pattern>` being a string that matches the test class or function that you want to run.
