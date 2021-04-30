@@ -3,11 +3,11 @@
 namespace Biigle\Modules\Sync\Jobs;
 
 use Biigle\ImageAnnotation;
-use Biigle\VideoAnnotation;
 use Biigle\Jobs\Job;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;

@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
-use Biigle\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\MediaType;
 
 class ExportAdminController extends Controller
 {
