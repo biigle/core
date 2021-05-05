@@ -534,6 +534,11 @@ export default {
                 Messages.warning('This image is currently being processed. Please retry later.');
             }
         },
+        handleScroll: function (event) {
+            if (event.shiftKey) {
+                console.log('shit');
+            }
+        },
     },
     watch: {
         imageId(id) {
