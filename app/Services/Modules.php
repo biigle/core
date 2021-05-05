@@ -161,8 +161,6 @@ class Modules
         $installed = json_decode(File::get(base_path('vendor/composer/installed.json')), true);
 
         return array_filter($installed['packages'], function ($item) {
-            if (!array_key_exists('name', $item))
-                dd($item);
             return strpos($item['name'], 'biigle/') === 0;
         });
     }

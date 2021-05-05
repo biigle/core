@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests;
 
+use Biigle\FederatedSearchModel;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Volume;
-use Biigle\FederatedSearchModel;
 use ModelTestCase;
 
 class FederatedSearchModelTest extends ModelTestCase

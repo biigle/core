@@ -5,7 +5,6 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
-use Biigle\Volume;
 use Biigle\Tests\FederatedSearchModelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTreeTest;
@@ -15,6 +14,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Visibility;
+use Biigle\Volume;
 use TestCase;
 
 class SearchControllerTest extends TestCase

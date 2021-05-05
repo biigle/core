@@ -30,7 +30,6 @@ class AnnotationLabelPolicy extends CachedPolicy
 
         return $this->remember("{$fileTable}-annotation-label-can-update-{$user->id}-{$annotationLabel->id}", function () use ($user, $annotationLabel, $fileTable, $model) {
             $projectIdsQuery = function ($query) use ($annotationLabel, $fileTable, $model) {
-
                 $annotationsTable = $model->getTable();
                 $foreignKeyName = $model->file()->getQualifiedForeignKeyName();
 

@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
-use Biigle\VolumeFileLabel;
 use Biigle\Role;
 use Biigle\User;
+use Biigle\VolumeFileLabel;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

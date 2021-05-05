@@ -38,7 +38,6 @@ class StoreVolume extends FormRequest
      */
     public function rules()
     {
-
         return [
             'name' => 'required|max:512',
             'media_type' => ['filled', Rule::in(array_keys(MediaType::INSTANCES))],

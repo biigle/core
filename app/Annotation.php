@@ -180,7 +180,7 @@ abstract class Annotation extends Model implements AnnotationContract
         return $this->belongsTo(Shape::class);
     }
 
-        /**
+    /**
      * {@inheritdoc}
      */
     public function getPoints(): array
