@@ -1,7 +1,7 @@
 <div class="clearfix" id="label-tree-version-title">
     <span class="pull-right label-tree-buttons">
         @include('label-trees.versions.show.version-button')
-        <span class="dropdown">
+        <span class="dropdown dropdown-simple">
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li>

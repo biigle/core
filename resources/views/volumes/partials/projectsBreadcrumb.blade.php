@@ -1,5 +1,5 @@
 @if ($projects->count() > 1)
-    <span class="dropdown">
+    <span class="dropdown dropdown-simple">
         <a href="#" class="dropdown-toggle navbar-link">Projects <span class="caret"></span></a>
         <ul class="dropdown-menu">
             @foreach ($projects as $project)

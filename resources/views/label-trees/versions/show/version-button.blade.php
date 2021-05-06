@@ -1,4 +1,4 @@
-<span class="dropdown">
+<span class="dropdown dropdown-simple">
     <button type="button" class="btn btn-default">
         Version: <strong>{{$version->name}}</strong>
         <span class="caret"></span>

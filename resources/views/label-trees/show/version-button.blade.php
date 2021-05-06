@@ -1,5 +1,5 @@
 @can('create', [Biigle\LabelTreeVersion::class, $tree])
-    <span class="dropdown">
+    <span class="dropdown dropdown-simple">
         <button type="button" class="btn btn-default">
             Version: <strong>latest</strong>
             <span class="caret"></span>
@@ -16,7 +16,7 @@
     </span>
 @else
     @if ($tree->versions->isNotEmpty())
-        <span class="dropdown">
+        <span class="dropdown dropdown-simple">
             <button type="button" class="btn btn-default">
                 Version: <strong>latest</strong>
                 <span class="caret"></span>

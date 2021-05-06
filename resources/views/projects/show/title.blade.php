@@ -6,7 +6,7 @@
                 <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
             </span>
         @endcan
-        <span class="dropdown">
+        <span class="dropdown dropdown-simple">
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 @if ($isMember)

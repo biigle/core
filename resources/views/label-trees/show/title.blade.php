@@ -7,7 +7,7 @@
             </span>
         @endcan
         @include('label-trees.show.version-button')
-        <span class="dropdown">
+        <span class="dropdown dropdown-simple">
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li>
