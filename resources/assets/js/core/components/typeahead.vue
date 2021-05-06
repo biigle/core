@@ -1,18 +1,41 @@
 <template>
-    <typeahead
-        class="typeahead clearfix"
-        match-property="name"
-        ref="typeahead"
-        :data="items"
+<div class="typeahead clearfix">
+    <input
+        ref="input"
+        class="form-control"
+        type="text"
         :disabled="disabled"
-        :on-hit="selectItem"
         :placeholder="placeholder"
-        :template="template"
-        @clear="clear"
-        ></typeahead>
+        @focus="emitFocus"
+        @blue="emitBlur"
+        >
+    <typeahead
+        v-model="internalValue"
+        :target="inputElement"
+        :data="items"
+        :force-select="true"
+        :limit="limit"
+        item-key="name"
+        >
+        <template slot="item" slot-scope="props">
+            <li
+                v-for="(item, index) in props.items"
+                :class="{active:props.activeIndex === index}"
+                >
+                <component
+                    :is="templateComponent"
+                    :props="props"
+                    :item="item"
+                    ></component>
+            </li>
+        </template>
+    </typeahead>
+</div>
 </template>
 
 <script>
+import Typeahead from 'uiv/dist/Typeahead';
+
 /**
  * A component that displays a typeahead to find items.
  *
@@ -20,7 +43,7 @@
  */
 export default {
     components: {
-        typeahead: VueStrap.typeahead,
+        typeahead: Typeahead,
     },
     props: {
         items: {
@@ -44,21 +67,43 @@ export default {
             default: false,
         },
         template: {
-            default: '{{item.name}}',
+            default: null,
+        },
+        limit: {
+            type: Number,
+            default: 5,
+        },
+    },
+    data() {
+        return {
+            inputElement: null,
+            internalValue: undefined,
+        };
+    },
+    computed: {
+        templateComponent() {
+            let template = `
+                <a href="#" @click.prevent="props.select(item)">
+            `;
+
+            if (this.template) {
+                template += this.template;
+            } else {
+                template += '<span v-html="props.highlight(item)"></span>';
+            }
+
+            template += '</a>';
+
+            return {
+                props: ['props', 'item'],
+                template: template,
+            };
         },
     },
     methods: {
-        selectItem(item) {
-            if (!item) return;
-            this.$emit('select', item);
-
-            return this.clearOnSelect ? null : item.name;
-        },
         clear() {
-            this.$emit('select', undefined);
-        },
-        updateValue() {
-            this.$refs.typeahead.setValue(this.value);
+            this.internalValue = undefined;
+            this.$refs.input.value = '';
         },
         emitFocus(e) {
             this.$emit('focus', e);
@@ -68,15 +113,24 @@ export default {
         },
     },
     watch: {
-        value() {
-            this.updateValue();
+        internalValue(value) {
+            if (typeof value === 'object') {
+                this.$emit('input', value);
+                this.$emit('select', value);
+                if (this.clearOnSelect) {
+                    this.clear();
+                }
+            }
+        },
+        value(value) {
+            this.internalValue = this.value;
         },
     },
+    created() {
+        this.internalValue = this.value;
+    },
     mounted() {
-        this.updateValue();
-        // Monkey patch additional events to the input.
-        this.$refs.typeahead.$el.firstChild.addEventListener('focus', this.emitFocus);
-        this.$refs.typeahead.$el.firstChild.addEventListener('blur', this.emitBlur);
+        this.inputElement = this.$refs.input;
     },
 };
 </script>
