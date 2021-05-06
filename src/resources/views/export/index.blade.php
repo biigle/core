@@ -19,7 +19,7 @@
 <div id="export-container">
     <tabs v-on:active="handleSwitchedTab">
         @if (in_array('volumes', $allowedExports))
-            <tab header="Volumes" v-cloak>
+            <tab title="Volumes" v-cloak>
                 {{-- Implement: Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
                 <p>
                     Select volumes to export:
@@ -34,7 +34,7 @@
             </tab>
         @endif
         @if (in_array('labelTrees', $allowedExports))
-            <tab header="Label Trees" v-cloak>
+            <tab title="Label Trees" v-cloak>
                 <p>
                     Select label trees to export:
                 </p>
@@ -48,7 +48,7 @@
             </tab>
         @endif
         @if (in_array('users', $allowedExports))
-            <tab header="Users" v-cloak>
+            <tab title="Users" v-cloak>
                 <p>
                     Select users to export:
                 </p>
