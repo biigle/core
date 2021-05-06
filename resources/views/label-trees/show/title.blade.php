@@ -7,9 +7,9 @@
             </span>
         @endcan
         @include('label-trees.show.version-button')
-        <span class="dropdown dropdown-simple">
+        <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <ul class="dropdown-menu">
+            <template slot="dropdown">
                 <li>
                     <a href="{{route('label-trees-merge-index', $tree->id)}}" title="Merge another label tree into this one">Merge</a>
                 </li>
@@ -31,8 +31,8 @@
                         <a title="Delete this label tree" v-on:click="deleteTree">Delete</a>
                     </li>
                 @endcan
-            </ul>
-        </span>
+            </template>
+        </dropdown>
     </span>
     @can('update', $tree)
         <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">
