@@ -1,7 +1,7 @@
-<div class="annotation-canvas" v-on:wheel="">
-    <minimap v-if="showMinimap" :extent="extent"></minimap>
-    <div class="annotation-canvas__left-indicators">
-        <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template>
+<div class="annotation-canvas" v-on:wheel="handleScroll">
+    <minimap v-if="showMinimap" :extent="extent" ></minimap>
+    <div class="annotation-canvas__left-indicators" >
+        <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template >
             <div class="scale-line-indicator" title="Scale">
                 <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
             </div>

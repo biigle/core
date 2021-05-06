@@ -311,6 +311,8 @@ export default {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
+
+
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -444,6 +446,18 @@ export default {
         handlePrevious() {
             if (!this.modifyInProgress) {
                 this.$emit('previous');
+            }
+        },
+        handleScroll(event) {
+            if (event.shiftKey) {
+                const deltaY = event.deltaY;
+                // didn't work, need to find zoom function to stop zooming.
+                // event.preventDefault();
+                if (deltaY < 0) {
+                    this.handleNext();
+                } else {
+                    this.handlePrevious();
+                }
             }
         },
         handleNext() {
