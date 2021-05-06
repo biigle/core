@@ -123,7 +123,7 @@ export default {
             }
         },
         value(value) {
-            this.internalValue = this.value;
+            this.internalValue = value;
         },
     },
     created() {
