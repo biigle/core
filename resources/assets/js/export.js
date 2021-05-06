@@ -25,6 +25,8 @@ import {debounce, urlParams, throttle} from './core/utils';
 import Events from './core/events';
 import Keyboard from './core/keyboard';
 
+import Popover from 'uiv/dist/Popover';
+
 window.biigle = {};
 window.biigle.$mount = mount;
 window.biigle.$declare = declare;
@@ -61,3 +63,5 @@ biigle.$declare('utils.throttle', throttle);
 biigle.$declare('events', Events);
 biigle.$declare('keyboard', Keyboard);
 biigle.$declare('core.keyboard', Keyboard); // Legacy support.
+
+biigle.$declare('uiv.popover', Popover);
