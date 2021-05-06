@@ -41,7 +41,7 @@ ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 # Ignore platform reqs because the app image is stripped down to the essentials
 # and doens't meet some of the requirements. We do this for the worker, though.
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+RUN curl https://getcomposer.org/installer -o composer-setup.php \
     && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
