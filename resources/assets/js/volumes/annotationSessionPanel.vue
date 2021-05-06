@@ -7,6 +7,7 @@ import Typeahead from '../core/components/typeahead';
 import UserTag from './components/annotationSessionUserTag';
 import VolumesApi from './api/volumes';
 import {handleErrorResponse} from '../core/messages/store';
+import DatepickerDropdown from '../uiv/datepickerDropdown';
 
 /**
  * The panel for editing annotation sessions
@@ -44,7 +45,7 @@ export default {
         typeahead: Typeahead,
         listItem: ListItem,
         userTag: UserTag,
-        datepicker: VueStrap.datepicker,
+        datepickerDropdown: DatepickerDropdown,
     },
     computed: {
         classObject() {
@@ -228,14 +229,6 @@ export default {
 
             return session;
         },
-        setStartsAt(date) {
-            this.editedSession.starts_at_iso8601 = this.parseDate(date);
-            this.editedSession.starts_at = date;
-        },
-        setEndsAt(date) {
-            this.editedSession.ends_at_iso8601 = this.parseDate(date);
-            this.editedSession.ends_at = date;
-        },
     },
     watch: {
         editedSession() {
@@ -245,6 +238,12 @@ export default {
             if (loading) {
                 this.errors = {};
             }
+        },
+        'editedSession.starts_at'(date) {
+            this.editedSession.starts_at_iso8601 = this.parseDate(date);
+        },
+        'editedSession.ends_at'(date) {
+            this.editedSession.ends_at_iso8601 = this.parseDate(date);
         },
     },
     created() {
