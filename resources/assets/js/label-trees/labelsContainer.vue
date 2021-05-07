@@ -7,6 +7,8 @@ import ManualLabelForm from './components/manualLabelForm';
 import WormsLabelForm from './components/wormsLabelForm';
 import {handleErrorResponse} from '../core/messages/store';
 import {randomColor} from './utils';
+import Tabs from 'uiv/dist/Tabs';
+import Tab from 'uiv/dist/Tab';
 
 /**
  * The panel for editing the labels of a label tree
@@ -26,8 +28,8 @@ export default {
         };
     },
     components: {
-        tabs: VueStrap.tabs,
-        tab: VueStrap.tab,
+        tabs: Tabs,
+        tab: Tab,
         labelTree: LabelTree,
         manualLabelForm: ManualLabelForm,
         wormsLabelForm: WormsLabelForm,

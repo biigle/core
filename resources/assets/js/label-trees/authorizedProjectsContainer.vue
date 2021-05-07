@@ -18,7 +18,6 @@ export default {
             ownProjects: [],
             authorizedProjects: [],
             authorizedOwnProjects: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
             privateId: null,
         };
     },
