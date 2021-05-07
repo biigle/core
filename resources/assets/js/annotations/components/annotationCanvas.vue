@@ -249,6 +249,8 @@ export default {
 
             map.addInteraction(new MouseWheelZoom({
                 condition: function (mapBrowserEvent) {
+                    // If Shift is pressed, the event should be handled by the parent
+                    // component to scroll through the images of a volume.
                     return !shiftKeyOnlyCondition(mapBrowserEvent);
                 },
             }));
