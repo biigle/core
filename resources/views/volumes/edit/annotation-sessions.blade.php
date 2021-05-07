@@ -24,19 +24,19 @@
             <div class="row">
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('starts_at')}">
                     <label class="control-label" for="as-starts-at">Start date</label>
-                    <datepicker class="datepicker-block" :value="editedSession.starts_at" format="yyyy-MM-dd" placeholder="{{$today->toDateString()}}" v-on:input="setStartsAt"></datepicker>
+                    <datepicker-dropdown v-model="editedSession.starts_at" placeholder="{{$today->toDateString()}}"></datepicker-dropdown>
                     <p class="help-block" v-text="getError('starts_at')" v-if="hasError('starts_at')"></p>
                 </div>
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('ends_at')}">
                     <label class="control-label" for="as-ends-at">End date</label>
-                    <datepicker class="datepicker-block" :value="editedSession.ends_at" format="yyyy-MM-dd" placeholder="{{$today->addDay()->toDateString()}}" v-on:input="setEndsAt"></datepicker>
+                    <datepicker-dropdown v-model="editedSession.ends_at" placeholder="{{$today->addDay()->toDateString()}}"></datepicker-dropdown>
                     <p class="help-block" v-text="getError('ends_at')" v-if="hasError('ends_at')"></p>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('users')}">
                     <label class="control-label" for="new-user">New user</label>
-                    <typeahead class="typeahead--block" :items="availableUsers" title="Add a new user to the session" placeholder="Joe User" v-on:select="selectUser" :clear-on-select="true" :template="typeaheadTemplate"></typeahead>
+                    <typeahead class="typeahead--block" :items="availableUsers" title="Add a new user to the session" placeholder="Joe User" v-on:select="selectUser" :clear-on-select="true" more-info="affiliation"></typeahead>
                 </div>
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('users')}">
                     <label class="control-label" for="users">Users</label>

@@ -12,7 +12,6 @@ export default {
         return {
             mergeUrlTemplate: null,
             mergeCandidates: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
             chosenCandidate: null,
         };
     },

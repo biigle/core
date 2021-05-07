@@ -1,18 +1,41 @@
 <template>
-    <typeahead
-        class="typeahead clearfix"
-        match-property="name"
-        ref="typeahead"
-        :data="items"
+<div class="typeahead clearfix">
+    <input
+        ref="input"
+        class="form-control"
+        type="text"
         :disabled="disabled"
-        :on-hit="selectItem"
         :placeholder="placeholder"
-        :template="template"
-        @clear="clear"
-        ></typeahead>
+        @focus="emitFocus"
+        @blue="emitBlur"
+        >
+    <typeahead
+        v-model="internalValue"
+        :target="inputElement"
+        :data="items"
+        :force-select="true"
+        :limit="limit"
+        item-key="name"
+        >
+        <template slot="item" slot-scope="props">
+            <typeahead-item
+                v-for="(item, index) in props.items"
+                :key="index"
+                :props="props"
+                :item="item"
+                :item-key="moreInfo"
+                :class="{active: props.activeIndex === index}"
+                >
+            </typeahead-item>
+        </template>
+    </typeahead>
+</div>
 </template>
 
 <script>
+import Typeahead from 'uiv/dist/Typeahead';
+import TypeaheadItem from './typeaheadItem';
+
 /**
  * A component that displays a typeahead to find items.
  *
@@ -20,7 +43,8 @@
  */
 export default {
     components: {
-        typeahead: VueStrap.typeahead,
+        typeahead: Typeahead,
+        typeaheadItem: TypeaheadItem,
     },
     props: {
         items: {
@@ -43,22 +67,25 @@ export default {
             type: Boolean,
             default: false,
         },
-        template: {
-            default: '{{item.name}}',
+        moreInfo: {
+            type: String,
+            default: '',
+        },
+        limit: {
+            type: Number,
+            default: 5,
         },
     },
+    data() {
+        return {
+            inputElement: null,
+            internalValue: undefined,
+        };
+    },
     methods: {
-        selectItem(item) {
-            if (!item) return;
-            this.$emit('select', item);
-
-            return this.clearOnSelect ? null : item.name;
-        },
         clear() {
-            this.$emit('select', undefined);
-        },
-        updateValue() {
-            this.$refs.typeahead.setValue(this.value);
+            this.internalValue = undefined;
+            this.$refs.input.value = '';
         },
         emitFocus(e) {
             this.$emit('focus', e);
@@ -68,15 +95,24 @@ export default {
         },
     },
     watch: {
-        value() {
-            this.updateValue();
+        internalValue(value) {
+            if (typeof value === 'object') {
+                this.$emit('input', value);
+                this.$emit('select', value);
+                if (this.clearOnSelect) {
+                    this.clear();
+                }
+            }
+        },
+        value(value) {
+            this.internalValue = value;
         },
     },
+    created() {
+        this.internalValue = this.value;
+    },
     mounted() {
-        this.updateValue();
-        // Monkey patch additional events to the input.
-        this.$refs.typeahead.$el.firstChild.addEventListener('focus', this.emitFocus);
-        this.$refs.typeahead.$el.firstChild.addEventListener('blur', this.emitBlur);
+        this.inputElement = this.$refs.input;
     },
 };
 </script>

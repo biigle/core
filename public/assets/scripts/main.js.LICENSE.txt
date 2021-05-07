@@ -15,8 +15,6 @@
  * Released under the MIT License.
  */
 
-/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
-
 /**
    * splaytree v3.1.0
    * Fast Splay tree for Node and browser
