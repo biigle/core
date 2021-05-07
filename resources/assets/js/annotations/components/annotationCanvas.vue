@@ -452,7 +452,7 @@ export default {
             if (event.shiftKey) {
                 const deltaY = event.deltaY;
                 // didn't work, need to find zoom function to stop zooming.
-                // event.preventDefault();
+                event.stopImmediatePropagation();
                 if (deltaY < 0) {
                     this.handleNext();
                 } else {
