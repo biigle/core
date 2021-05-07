@@ -5,6 +5,8 @@ import {LabelTreesApi} from './import';
 import {LoaderMixin} from './import';
 import {UsersApi} from './import';
 import {VolumesApi} from './import';
+import {Tabs} from './import';
+import {Tab} from './import';
 
 /**
  * View model for the export container
@@ -18,8 +20,8 @@ let fetchEntitiesApi = {
 export default {
     mixins: [LoaderMixin],
     components: {
-        tabs: VueStrap.tabs,
-        tab: VueStrap.tab,
+        tabs: Tabs,
+        tab: Tab,
         entityChooser: EntityChooser,
     },
     data() {
