@@ -439,37 +439,18 @@ export default {
             Events.$emit('images.change', this.imageId, this.image);
         },
         cachePreviousAndNext() {
-            // currently const number of images to cache
-            const imagesToLoad = 9;
-
             let previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
-            // let nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
-            // Array with all promises
-            let idsToCache = [];
-            // load next X ids and push Annotation and Image in array for promise all
-            for (const x of Array(imagesToLoad).keys()) {
-                const currentId = this.imagesIds[this.getNextIndex(this.imageIndex + x)]
-                idsToCache.push(AnnotationsStore.fetchAnnotations(currentId));
-                idsToCache.push(ImagesStore.fetchImage(currentId));
-            }
-            // push previous annotation and image in array for promise
-            idsToCache.push(AnnotationsStore.fetchAnnotations(previousId));
-            idsToCache.push(ImagesStore.fetchImage(previousId));
-
-
-
+            let nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
             // If there is only one image, previousId and nextId equal this.imageId.
             // No caching should be requested as this might deselect any selected
             // annotations on the current image.
             if (previousId !== this.imageId) {
-                Vue.Promise.all(idsToCache
-                    /*Old implementation
-                    [
-                        AnnotationsStore.fetchAnnotations(nextId),
-                        ImagesStore.fetchImage(nextId),
-                        AnnotationsStore.fetchAnnotations(previousId),
-                        ImagesStore.fetchImage(previousId),
-                    ] */)
+                Vue.Promise.all([
+                    AnnotationsStore.fetchAnnotations(nextId),
+                    ImagesStore.fetchImage(nextId),
+                    AnnotationsStore.fetchAnnotations(previousId),
+                    ImagesStore.fetchImage(previousId),
+                ])
                     // Ignore errors in this case. The application will try to reload
                     // the data again if the user switches to the respective image
                     // and display the error message then.
