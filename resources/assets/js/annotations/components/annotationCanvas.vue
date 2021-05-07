@@ -20,6 +20,7 @@ import MeasureInteraction from './annotationCanvas/measureInteraction';
 import Minimap from './minimap';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
+import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
@@ -241,9 +242,16 @@ export default {
                     keyboard: false,
                     shiftDragZoom: false,
                     pinchRotate: false,
-                    pinchZoom: false
+                    pinchZoom: false,
+                    mouseWheelZoom: false,
                 }),
             });
+
+            map.addInteraction(new MouseWheelZoom({
+                condition: function (mapBrowserEvent) {
+                    return !shiftKeyOnlyCondition(mapBrowserEvent);
+                },
+            }));
 
             control = new ZoomToNativeControl({
                 // fontawesome expand icon
@@ -449,10 +457,8 @@ export default {
             }
         },
         handleScroll(event) {
-            if (event.shiftKey) {
+            if (shiftKeyOnlyCondition({originalEvent: event})) {
                 const deltaY = event.deltaY;
-                // didn't work, need to find zoom function to stop zooming.
-                // event.preventDefault();
                 if (deltaY < 0) {
                     this.handleNext();
                 } else {
