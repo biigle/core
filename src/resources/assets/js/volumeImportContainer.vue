@@ -27,7 +27,6 @@ export default {
             userCandidates: [],
             chosenVolumes: [],
             labelTreeCandidates: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
             availableProjects: [],
             targetProject: null,
         };
