@@ -38,7 +38,6 @@ export default {
             editedSession: emptySession(),
             users: [],
             errors: {},
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
         };
     },
     components: {

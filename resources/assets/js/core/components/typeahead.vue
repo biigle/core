@@ -18,16 +18,15 @@
         item-key="name"
         >
         <template slot="item" slot-scope="props">
-            <li
+            <typeahead-item
                 v-for="(item, index) in props.items"
-                :class="{active:props.activeIndex === index}"
+                :key="index"
+                :props="props"
+                :item="item"
+                :item-key="moreInfo"
+                :class="{active: props.activeIndex === index}"
                 >
-                <component
-                    :is="templateComponent"
-                    :props="props"
-                    :item="item"
-                    ></component>
-            </li>
+            </typeahead-item>
         </template>
     </typeahead>
 </div>
@@ -35,6 +34,7 @@
 
 <script>
 import Typeahead from 'uiv/dist/Typeahead';
+import TypeaheadItem from './typeaheadItem';
 
 /**
  * A component that displays a typeahead to find items.
@@ -44,6 +44,7 @@ import Typeahead from 'uiv/dist/Typeahead';
 export default {
     components: {
         typeahead: Typeahead,
+        typeaheadItem: TypeaheadItem,
     },
     props: {
         items: {
@@ -66,8 +67,9 @@ export default {
             type: Boolean,
             default: false,
         },
-        template: {
-            default: null,
+        moreInfo: {
+            type: String,
+            default: '',
         },
         limit: {
             type: Number,
@@ -79,26 +81,6 @@ export default {
             inputElement: null,
             internalValue: undefined,
         };
-    },
-    computed: {
-        templateComponent() {
-            let template = `
-                <a href="#" @click.prevent="props.select(item)">
-            `;
-
-            if (this.template) {
-                template += this.template;
-            } else {
-                template += '<span v-html="props.highlight(item)"></span>';
-            }
-
-            template += '</a>';
-
-            return {
-                props: ['props', 'item'],
-                template: template,
-            };
-        },
     },
     methods: {
         clear() {
