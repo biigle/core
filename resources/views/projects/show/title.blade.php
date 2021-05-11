@@ -6,9 +6,9 @@
                 <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
             </span>
         @endcan
-        <span class="dropdown">
+        <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <ul class="dropdown-menu">
+            <template slot="dropdown">
                 @if ($isMember)
                     <li @unless($isPinned || $canPin) class="disabled" @endunless>
                         @if ($isPinned)
@@ -43,8 +43,8 @@
                         <a title="Delete this project" v-on:click="deleteProject">Delete</a>
                     </li>
                 @endcan
-            </ul>
-        </span>
+            </template>
+        </dropdown>
     </span>
     @can('update', $project)
         <form v-if="editing" v-cloak class="form-inline project-info-form" v-on:submit.prevent="saveChanges">

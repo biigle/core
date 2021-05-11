@@ -21,7 +21,6 @@
     },
     "globals": {
         "biigle": "readonly",
-        "Vue": "readonly",
-        "VueStrap": "readonly"
+        "Vue": "readonly"
     }
 }

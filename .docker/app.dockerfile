@@ -1,5 +1,5 @@
-# FROM php:7.4-fpm-alpine
-FROM php@sha256:ded7b5a6eae0a37e322a248ccd06c615783cfd7bd62a01b3e673a2bc122d8339
+# FROM php:7.4.16-fpm-alpine
+FROM php@sha256:d405a86d94e881d61172930ad757f133412e385f908d5034e9f06c2fc2444765
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -41,7 +41,7 @@ ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
 # Ignore platform reqs because the app image is stripped down to the essentials
 # and doens't meet some of the requirements. We do this for the worker, though.
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+RUN curl https://getcomposer.org/installer -o composer-setup.php \
     && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \

@@ -78,7 +78,7 @@ JavaScript and assets are built using NPM and Laravel Mix. Before you start, you
     ```
     Replace `TOKEN` with the personal access token of step 1.
 
-3. Now run `npm install` to install the dependencies.
+3. Now run `npm install` to install the dependencies (this requires NodeJS >=12.14).
 
 Important commands for development are:
 
