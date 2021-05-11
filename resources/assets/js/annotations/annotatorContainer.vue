@@ -440,7 +440,10 @@ export default {
         },
         cachePreviousAndNext() {
             // currently const number of images to cache
-            const imagesToLoad = 10;
+            let imagesToLoad = 10;
+            if (imagesToLoad > this.allImagesIds.length) {
+                imagesToLoad = this.allImagesIds.length;
+            }
             // Array with all promises
             let idsToCache = [];
 

@@ -141,7 +141,7 @@ export default new Vue({
         },
         createImage(id) {
             let img = document.createElement('img');
-
+            
             let imageWrapper = {
                 id: id,
                 source: img,
