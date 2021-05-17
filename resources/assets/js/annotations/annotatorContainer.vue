@@ -53,6 +53,7 @@ export default {
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
             annotationOpacity: 1,
+            cachedImages: 1,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
@@ -440,10 +441,8 @@ export default {
         },
         cachePreviousAndNext() {
             // currently const number of images to cache
-            let imagesToLoad = 10;
-            if (imagesToLoad > this.allImagesIds.length) {
-                imagesToLoad = this.allImagesIds.length;
-            }
+            let imagesToLoad = this.cachedImages;
+
             // Array with all promises
             let idsToCache = [];
 
@@ -490,6 +489,9 @@ export default {
             switch (key) {
                 case 'annotationOpacity':
                     this.annotationOpacity = value;
+                    break;
+                case 'cachedImages':
+                    this.cachedImages = value;
                     break;
                 case 'mousePosition':
                     this.showMousePosition = value;
@@ -564,6 +566,9 @@ export default {
                     .catch(this.handleLoadingError)
                     .finally(this.finishLoading);
             }
+        },
+        cachedImages() {
+            this.cachePreviousAndNext();
         },
         focussedAnnotation(annotation) {
             if (annotation) {

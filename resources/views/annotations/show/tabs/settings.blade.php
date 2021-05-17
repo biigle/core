@@ -14,6 +14,11 @@
             </div>
 
             <div class="sidebar-tab__section">
+                <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImages"></span>)</h5>
+                <input type="range" min="1" max="10" step="1" v-model="cachedImages">
+            </div>
+
+            <div class="sidebar-tab__section">
                 <power-toggle :active="progressIndicator" title-off="Show progress indicator" title-on="Hide progress indicator" v-on:on="showProgressIndicator" v-on:off="hideProgressIndicator">Progress Indicator</power-toggle>
             </div>
 
