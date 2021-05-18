@@ -33,7 +33,7 @@ export default {
         return {
             restoreKeys: [
                 'annotationOpacity',
-                'cachedImages',
+                'cachedImagesCount',
                 'mousePosition',
                 'zoomLevel',
                 'scaleLine',
@@ -43,7 +43,7 @@ export default {
                 'progressIndicator',
             ],
             annotationOpacity: 1.0,
-            cachedImages: 1,
+            cachedImagesCount: 1,
             mousePosition: false,
             zoomLevel: false,
             scaleLine: false,
@@ -123,10 +123,10 @@ export default {
             this.$emit('change', 'annotationOpacity', opacity);
             this.settings.set('annotationOpacity', opacity);
         },
-        cachedImages(amount) {
+        cachedImagesCount(amount) {
             amount = parseFloat(amount);
-            this.$emit('change', 'cachedImages', amount);
-            this.settings.set('cachedImages', amount);
+            this.$emit('change', 'cachedImagesCount', amount);
+            this.settings.set('cachedImagesCount', amount);
         },
         mousePosition(show) {
             this.$emit('change', 'mousePosition', show);

@@ -14,8 +14,8 @@
             </div>
 
             <div class="sidebar-tab__section">
-                <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImages"></span>)</h5>
-                <input type="range" min="1" max="10" step="1" v-model="cachedImages">
+                <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImagesCount"></span>)</h5>
+                <input type="range" min="1" max="100" step="1" v-model="cachedImagesCount">
             </div>
 
             <div class="sidebar-tab__section">
