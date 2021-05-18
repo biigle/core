@@ -20,6 +20,7 @@ import MeasureInteraction from './annotationCanvas/measureInteraction';
 import Minimap from './minimap';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
+import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
@@ -241,9 +242,18 @@ export default {
                     keyboard: false,
                     shiftDragZoom: false,
                     pinchRotate: false,
-                    pinchZoom: false
+                    pinchZoom: false,
+                    mouseWheelZoom: false,
                 }),
             });
+
+            map.addInteraction(new MouseWheelZoom({
+                condition: function (mapBrowserEvent) {
+                    // If Shift is pressed, the event should be handled by the parent
+                    // component to scroll through the images of a volume.
+                    return !shiftKeyOnlyCondition(mapBrowserEvent);
+                },
+            }));
 
             control = new ZoomToNativeControl({
                 // fontawesome expand icon
@@ -311,6 +321,8 @@ export default {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
+
+
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -444,6 +456,16 @@ export default {
         handlePrevious() {
             if (!this.modifyInProgress) {
                 this.$emit('previous');
+            }
+        },
+        handleScroll(event) {
+            if (shiftKeyOnlyCondition({originalEvent: event})) {
+                const deltaY = event.deltaY;
+                if (deltaY < 0) {
+                    this.handleNext();
+                } else {
+                    this.handlePrevious();
+                }
             }
         },
         handleNext() {
