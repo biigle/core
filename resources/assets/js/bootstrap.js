@@ -1,10 +1,8 @@
 import Vue from 'vue';
 import VueResource from 'vue-resource';
-import VueStrap from './vue-strap/index';
 
 window.Vue = Vue;
 window.Vue.use(VueResource);
-window.VueStrap = VueStrap;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

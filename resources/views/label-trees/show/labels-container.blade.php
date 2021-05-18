@@ -9,15 +9,15 @@
             <div class="col-xs-6">
                 <loader class="label-tree-labels-loader" :active="loading"></loader>
                 <tabs v-cloak>
-                    <tab header="New label">
+                    <tab title="New label">
                         <manual-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel">
                             @include('label-trees.show.labels.manualLabelForm')
                         </manual-label-form>
                     </tab>
                     @if (config('biigle.offline_mode'))
-                        <tab header="WoRMS label import" disabled="true"></tab>
+                        <tab title="WoRMS label import" disabled="true"></tab>
                     @else
-                        <tab header="WoRMS label import">
+                        <tab title="WoRMS label import">
                             <worms-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel" v-on:load-start="startLoading" v-on:load-finish="finishLoading">
                                 @include('label-trees.show.labels.wormsLabelForm')
                             </worms-label-form>

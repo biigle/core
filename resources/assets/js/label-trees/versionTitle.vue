@@ -1,4 +1,5 @@
 <script>
+import Dropdown from 'uiv/dist/Dropdown';
 import LabelTreeVersionApi from '../core/api/labelTreeVersion';
 import LoaderMixin from '../core/mixins/loader';
 import Messages from '../core/messages/store';
@@ -9,6 +10,9 @@ import {handleErrorResponse} from '../core/messages/store';
  */
 export default {
     mixins: [LoaderMixin],
+    components: {
+        dropdown: Dropdown,
+    },
     data() {
         return {
             version: null,
