@@ -10,7 +10,7 @@ export default new Vue({
         initialized: false,
         cache: {},
         cachedIds: [],
-        maxCacheSize: 10,
+        maxCacheSize: 100,
         supportsColorAdjustment: false,
         currentlyDrawnImage: null,
         colorAdjustmentDefaults: {
