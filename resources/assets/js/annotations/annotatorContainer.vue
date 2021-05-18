@@ -568,7 +568,7 @@ export default {
             }
         },
         cachedImagesCount() {
-            debounce(this.cachePreviousAndNext, 500, 'annotations.cached-image-count.update');
+            debounce(this.cachePreviousAndNext, 1000, 'annotations.cached-image-count.update');
         },
         focussedAnnotation(annotation) {
             if (annotation) {
