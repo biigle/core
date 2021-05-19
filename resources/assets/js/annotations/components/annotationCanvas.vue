@@ -460,10 +460,13 @@ export default {
         },
         handleScroll(event) {
             if (shiftKeyOnlyCondition({originalEvent: event})) {
-                const deltaY = event.deltaY;
-                if (deltaY < 0) {
+                event.preventDefault();
+                // Some systems toggle the scroll direction if Shift is pressed, so we
+                // take deltaX if deltaY is 0.
+                const delta = event.deltaY || event.deltaX;
+                if (delta < 0) {
                     this.handleNext();
-                } else {
+                } else if (delta > 0) {
                     this.handlePrevious();
                 }
             }
