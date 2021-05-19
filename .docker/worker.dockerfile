@@ -78,16 +78,9 @@ RUN apk add --no-cache \
     py3-numpy \
     py3-scipy
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
-    py3-pillow
-
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
-    --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-        py3-scikit-learn
-
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
-    --allow-untrusted \
-        py3-matplotlib
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community/ --allow-untrusted \
+    py3-scikit-learn \
+    py3-matplotlib
 
 # Set this library path to the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
@@ -95,9 +88,15 @@ ENV LIBRARY_PATH=/lib:/usr/lib
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
 RUN apk add --no-cache --virtual .build-deps \
+        python3-dev \
         py3-pip \
+        py3-wheel \
+        build-base \
+        libjpeg-turbo-dev \
+        libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
+        Pillow==8.1.* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
