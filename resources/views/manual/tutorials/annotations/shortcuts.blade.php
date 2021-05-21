@@ -24,8 +24,8 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next image</td>
                 </tr>
-                    <td><kbd>Alt</kbd>+<kbd>Scroll</kbd></td>
-                    <td>Previous or next image</td>
+                    <td><kbd>Shift</kbd>+<kbd>Scroll</kbd></td>
+                    <td>Previous or Next image</td>
                 <tr>
                     <td><kbd>+</kbd></td>
                     <td>Zoom the image to the original resolution</td>
@@ -141,10 +141,6 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next annotation</td>
                 </tr>
-                </tr>
-                    <td><kbd>Alt</kbd>+<kbd>Scroll</kbd></td>
-                    <td>Previous or next annotation</td>
-                <tr>
                 <tr>
                     <td><kbd>Enter</kbd></td>
                     <td>Attach the currently selected label<br>to the current annotation</td>
@@ -172,10 +168,6 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next section</td>
                 </tr>
-                </tr>
-                    <td><kbd>Alt</kbd>+<kbd>Scroll</kbd></td>
-                    <td>Previous or next section</td>
-                <tr>
             </tbody>
         </table>
 
@@ -199,10 +191,6 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next sample location</td>
                 </tr>
-                </tr>
-                    <td><kbd>Alt</kbd>+<kbd>Scroll</kbd></td>
-                    <td>Previous or next sample location</td>
-                <tr>
                 <tr>
                     <td><kbd>Enter</kbd></td>
                     <td>Create an annotation with the currently selected<br>label at the current sample location</td>

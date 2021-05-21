@@ -40,7 +40,6 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
-import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
@@ -250,9 +249,9 @@ export default {
 
             map.addInteraction(new MouseWheelZoom({
                 condition: function (mapBrowserEvent) {
-                    // If Alt is pressed, the event should be handled by the parent
+                    // If Shift is pressed, the event should be handled by the parent
                     // component to scroll through the images of a volume.
-                    return !altKeyOnlyCondition(mapBrowserEvent);
+                    return !shiftKeyOnlyCondition(mapBrowserEvent);
                 },
             }));
 
@@ -460,11 +459,14 @@ export default {
             }
         },
         handleScroll(event) {
-            if (altKeyOnlyCondition({originalEvent: event})) {
+            if (shiftKeyOnlyCondition({originalEvent: event})) {
                 event.preventDefault();
-                if (event.deltaY < 0) {
+                // Some systems toggle the scroll direction if Shift is pressed, so we
+                // take deltaX if deltaY is 0.
+                const delta = event.deltaY || event.deltaX;
+                if (delta < 0) {
                     this.handleNext();
-                } else if (event.deltaY > 0) {
+                } else if (delta > 0) {
                     this.handlePrevious();
                 }
             }
