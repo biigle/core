@@ -445,16 +445,17 @@ export default {
             // if there is only one image). Selected annotations would be deselected if
             // the current image would be loaded again.
             let cachedIds = [this.imageId];
+            let cachedImagesCount = Math.min(this.cachedImagesCount, this.imagesIds.length);
 
-            for (const x of Array(this.cachedImagesCount).keys()) {
-                const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)]
+            for (let x = 1; x < cachedImagesCount; x++) {
+                const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
                 if (!cachedIds.includes(nextId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(nextId));
                     toCache.push(ImagesStore.fetchImage(nextId));
                     cachedIds.push(nextId);
                 }
 
-                const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)]
+                const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)];
                 if (!cachedIds.includes(previousId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(previousId));
                     toCache.push(ImagesStore.fetchImage(previousId));
