@@ -440,34 +440,33 @@ export default {
             Events.$emit('images.change', this.imageId, this.image);
         },
         cachePreviousAndNext() {
-            // currently const number of images to cache
-            let imagesToLoad = this.cachedImagesCount;
+            let toCache = [];
+            // Include the current ID so the image is not requested multiple times (e.g.
+            // if there is only one image). Selected annotations would be deselected if
+            // the current image would be loaded again.
+            let cachedIds = [this.imageId];
+            let cachedImagesCount = Math.min(this.cachedImagesCount, this.imagesIds.length);
 
-            // Array with all promises
-            let idsToCache = [];
+            for (let x = 1; x < cachedImagesCount; x++) {
+                const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
+                if (!cachedIds.includes(nextId)) {
+                    toCache.push(AnnotationsStore.fetchAnnotations(nextId));
+                    toCache.push(ImagesStore.fetchImage(nextId));
+                    cachedIds.push(nextId);
+                }
 
-            let previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
-
-            // load next X ids and push Annotation and Image in array for promise all
-            for (const x of Array(imagesToLoad).keys()) {
-                const currentId = this.imagesIds[this.getNextIndex(this.imageIndex + x)]
-                idsToCache.push(AnnotationsStore.fetchAnnotations(currentId));
-                idsToCache.push(ImagesStore.fetchImage(currentId));
+                const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)];
+                if (!cachedIds.includes(previousId)) {
+                    toCache.push(AnnotationsStore.fetchAnnotations(previousId));
+                    toCache.push(ImagesStore.fetchImage(previousId));
+                    cachedIds.push(previousId);
+                }
             }
-            // push previous annotation and image in array for promise
-            idsToCache.push(AnnotationsStore.fetchAnnotations(previousId));
-            idsToCache.push(ImagesStore.fetchImage(previousId));
 
-            // If there is only one image, previousId and nextId equal this.imageId.
-            // No caching should be requested as this might deselect any selected
-            // annotations on the current image.
-            if (previousId !== this.imageId) {
-                Vue.Promise.all(idsToCache)
-                    // Ignore errors in this case. The application will try to reload
-                    // the data again if the user switches to the respective image
-                    // and display the error message then.
-                    .catch(function () {});
-            }
+            // Ignore errors in this case. The application will try to reload
+            // the data again if the user switches to the respective image
+            // and display the error message then.
+            Vue.Promise.all(toCache).catch(function () {});
         },
         setLastCreatedAnnotation(annotation) {
             if (this.lastCreatedAnnotationTimeout) {

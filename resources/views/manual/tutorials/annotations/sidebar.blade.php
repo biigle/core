@@ -114,7 +114,7 @@
         </p>
 
         <p>
-            The cached images slider allows to preload the selected amount of images. The default amount is one.
+            The cached images slider allows to preload the selected amount of images. The default amount is one. This allows you to move between images more quickly.
         </p>
 
         <p>

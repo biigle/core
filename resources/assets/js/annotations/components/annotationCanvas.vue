@@ -458,17 +458,20 @@ export default {
                 this.$emit('previous');
             }
         },
-        handleScroll(event) {
+        conditionalHandleScroll(event) {
             if (shiftKeyOnlyCondition({originalEvent: event})) {
-                event.preventDefault();
-                // Some systems toggle the scroll direction if Shift is pressed, so we
-                // take deltaX if deltaY is 0.
-                const delta = event.deltaY || event.deltaX;
-                if (delta < 0) {
-                    this.handleNext();
-                } else if (delta > 0) {
-                    this.handlePrevious();
-                }
+                this.handleScroll(event);
+            }
+        },
+        handleScroll(event) {
+            event.preventDefault();
+            // Some systems toggle the scroll direction if Shift is pressed, so we
+            // take deltaX if deltaY is 0.
+            const delta = event.deltaY || event.deltaX;
+            if (delta < 0) {
+                this.handleNext();
+            } else if (delta > 0) {
+                this.handlePrevious();
             }
         },
         handleNext() {
