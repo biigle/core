@@ -5,6 +5,7 @@ MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
+ADD .docker/ffdhe2048.txt /etc/nginx/conf.d/ffdhe2048.txt
 
 # Create an alternative configuration for HTTP only. This can be activated by using the
 # nginx-no-ssl.conf instead of the default one. To do this set the command in the Docker
