@@ -2,8 +2,6 @@
 import Events from '../../core/events';
 import fx from '../vendor/glfx';
 
-export class CrossOriginError extends Error {}
-
 /**
 * Store for the images of the annotation tool
 */
@@ -105,7 +103,7 @@ export default new Vue({
             });
         },
         checkSupportsColorAdjustment(image) {
-            if (!this.fxCanvas) {
+            if (!this.fxCanvas || image.crossOrigin) {
                 return false;
             }
 
@@ -150,6 +148,7 @@ export default new Vue({
                 width: 0,
                 height: 0,
                 canvas: document.createElement('canvas'),
+                crossOrigin: false,
             };
 
             // Disable auto-rotation. Otherwise the canvas element might use the
@@ -199,10 +198,13 @@ export default new Vue({
                 .catch(function (response) {
                     // I could not find any reliable way to detect a failure due to
                     // blocking of CORS. But the status seemed to be always 0.
-                    // Cross-origin images without CORS are no longer supported.
-                    // see: https://github.com/biigle/core/issues/351
+                    // If CORS is blocked, we can still display the image but have to
+                    // disable a few features that require reading the image data.
                     if (response.status === 0) {
-                        throw new CrossOriginError();
+                        imageWrapper.crossOrigin = true;
+                        img.src = response.url;
+
+                        return promise;
                     }
 
                     return Vue.Promise.reject(`Failed to load image ${id}!`);

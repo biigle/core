@@ -38,7 +38,8 @@
                     <control-button v-cloak icon="fa-paint-brush" title="Draw a polygon using the brush tool 𝗘" :active="isUsingPolygonBrush" v-on:click="togglePolygonBrush"></control-button>
                     <control-button v-cloak icon="fa-eraser" title="Modify selected polygons using the eraser tool 𝗥" :active="isUsingPolygonEraser" v-on:click="togglePolygonEraser"></control-button>
                     <control-button v-cloak icon="fa-fill-drip" title="Modify selected polygons using the fill tool 𝗧" :active="isUsingPolygonFill" v-on:click="togglePolygonFill"></control-button>
-                    <control-button v-cloak icon="fa-magic" title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
+                    <control-button v-if="crossOrigin" icon="fa-magic" title="The magic wand tool is not available for remote images without cross-origin resource sharing" :disabled="true"></control-button>
+                    <control-button v-else v-cloak icon="fa-magic" title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
                 </control-button>
             </div>
             <div class="btn-group edit-controls">

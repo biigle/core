@@ -12,8 +12,11 @@ let magicWandInteraction;
 
 export default {
     computed: {
+        crossOrigin() {
+            return this.image && this.image.crossOrigin;
+        },
         isMagicWanding() {
-            return this.interactionMode === 'magicWand';
+            return this.interactionMode === 'magicWand' && !this.crossOrigin;
         },
     },
     methods: {
@@ -35,7 +38,7 @@ export default {
         maybeSetMagicWandLayer(image, oldImage) {
             // Swap source layers for the magic wand interaction if image types
             // change.
-            if (image) {
+            if (image && !this.crossOrigin) {
                 if (image.tiled === true) {
                     if (!oldImage || oldImage.tiled !== true) {
                         magicWandInteraction.setLayer(this.tiledImageLayer);

@@ -1,12 +1,11 @@
 <template>
-    <message-curtain :class="classObject">
+    <div class="loader-block" :class="classObject">
         <loader :active="active" :fancy="true"></loader>
-    </message-curtain>
+    </div>
 </template>
 
 <script>
 import Loader from './loader';
-import MessageCurtain from './messageCurtain';
 
 /**
  * A component for a loading spinner element that acts as blocking overlay
@@ -16,7 +15,6 @@ import MessageCurtain from './messageCurtain';
 export default {
     components: {
         loader: Loader,
-        messageCurtain: MessageCurtain,
     },
     props: {
         active: {
@@ -27,7 +25,7 @@ export default {
     computed: {
         classObject() {
             return {
-                'loader-block--inactive': !this.active,
+                'loader-block--active': this.active,
             };
         },
     },

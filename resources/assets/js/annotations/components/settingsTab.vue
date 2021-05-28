@@ -57,6 +57,9 @@ export default {
         plugins() {
             return plugins;
         },
+        crossOrigin() {
+            return this.image && this.image.crossOrigin;
+        },
         settings() {
             return Settings;
         },

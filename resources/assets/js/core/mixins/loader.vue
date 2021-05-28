@@ -1,7 +1,6 @@
 <script>
 import LoaderComponent from '../components/loader';
 import LoaderBlockComponent from '../components/loaderBlock';
-import MessageCurtainComponent from '../components/messageCurtain';
 import Messages from './../messages/store';
 
 /**
@@ -13,7 +12,6 @@ export default {
     components: {
         loader: LoaderComponent,
         loaderBlock: LoaderBlockComponent,
-        messageCurtain: MessageCurtainComponent,
     },
     data() {
         return {
