@@ -106,8 +106,14 @@
             </div>
          @endif
 
+         <div v-if="isRemoteImageVolume" v-cloak class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+            </div>
+        </div>
+
          @unless (config('biigle.offline_mode'))
-             <div class="panel panel-warning">
+             <div v-else class="panel panel-warning">
                 <div class="panel-body text-warning">
                     If you do not have the resources to host files as remote volumes, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the files on the BIIGLE server.
                 </div>
