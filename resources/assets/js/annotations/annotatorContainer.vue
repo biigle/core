@@ -19,6 +19,7 @@ import Sidebar from '../core/components/sidebar';
 import SidebarTab from '../core/components/sidebarTab';
 import UserFilter from './models/UserAnnotationFilter';
 import VolumeImageAreaApi from './api/volumes';
+import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
@@ -74,6 +75,7 @@ export default {
             openTab: null,
             userUpdatedVolareResolution: false,
             userId: null,
+            crossOriginError: false,
         };
     },
     computed: {
@@ -132,6 +134,9 @@ export default {
             }
 
             return imagesIds;
+        },
+        hasCrossOriginError() {
+            return !this.loading && this.crossOriginError;
         },
     },
     methods: {
@@ -524,7 +529,11 @@ export default {
             Settings.delete('openTab');
         },
         handleLoadingError(message) {
-            Messages.danger(message);
+            if (message instanceof CrossOriginError) {
+                this.crossOriginError = true;
+            } else {
+                Messages.danger(message);
+            }
         },
         createSampledAnnotation() {
             this.$refs.canvas.createSampledAnnotation();
@@ -553,6 +562,7 @@ export default {
         imageId(id) {
             if (id) {
                 this.startLoading();
+                this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)

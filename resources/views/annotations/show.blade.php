@@ -51,6 +51,11 @@
 <div id="annotator-container" class="sidebar-container" v-cloak>
     <div class="sidebar-container__content">
         <loader-block :active="loading"></loader-block>
+        <message-curtain v-if="hasCrossOriginError" v-cloak>
+            <span class="lead text-danger">
+                Please configure <a href="/manual/tutorials/volumes/remote-volumes#cors">cross origin resource sharing</a> on your remote image location.
+            </span>
+        </message-curtain>
         <annotation-canvas
             :can-add="isEditor"
             :can-modify="isEditor"
