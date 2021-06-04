@@ -19,6 +19,7 @@ import Sidebar from '../core/components/sidebar';
 import SidebarTab from '../core/components/sidebarTab';
 import UserFilter from './models/UserAnnotationFilter';
 import VolumeImageAreaApi from './api/volumes';
+import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
@@ -53,6 +54,7 @@ export default {
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
             annotationOpacity: 1,
+            cachedImagesCount: 1,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
@@ -73,6 +75,7 @@ export default {
             openTab: null,
             userUpdatedVolareResolution: false,
             userId: null,
+            crossOriginError: false,
         };
     },
     computed: {
@@ -131,6 +134,9 @@ export default {
             }
 
             return imagesIds;
+        },
+        hasCrossOriginError() {
+            return !this.loading && this.crossOriginError;
         },
     },
     methods: {
@@ -439,23 +445,33 @@ export default {
             Events.$emit('images.change', this.imageId, this.image);
         },
         cachePreviousAndNext() {
-            let previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
-            let nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
-            // If there is only one image, previousId and nextId equal this.imageId.
-            // No caching should be requested as this might deselect any selected
-            // annotations on the current image.
-            if (previousId !== this.imageId) {
-                Vue.Promise.all([
-                        AnnotationsStore.fetchAnnotations(nextId),
-                        ImagesStore.fetchImage(nextId),
-                        AnnotationsStore.fetchAnnotations(previousId),
-                        ImagesStore.fetchImage(previousId),
-                    ])
-                    // Ignore errors in this case. The application will try to reload
-                    // the data again if the user switches to the respective image
-                    // and display the error message then.
-                    .catch(function () {});
+            let toCache = [];
+            // Include the current ID so the image is not requested multiple times (e.g.
+            // if there is only one image). Selected annotations would be deselected if
+            // the current image would be loaded again.
+            let cachedIds = [this.imageId];
+            let cachedImagesCount = Math.min(this.cachedImagesCount, this.imagesIds.length);
+
+            for (let x = 1; x <= cachedImagesCount; x++) {
+                const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
+                if (!cachedIds.includes(nextId)) {
+                    toCache.push(AnnotationsStore.fetchAnnotations(nextId));
+                    toCache.push(ImagesStore.fetchImage(nextId));
+                    cachedIds.push(nextId);
+                }
+
+                const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)];
+                if (!cachedIds.includes(previousId)) {
+                    toCache.push(AnnotationsStore.fetchAnnotations(previousId));
+                    toCache.push(ImagesStore.fetchImage(previousId));
+                    cachedIds.push(previousId);
+                }
             }
+
+            // Ignore errors in this case. The application will try to reload
+            // the data again if the user switches to the respective image
+            // and display the error message then.
+            Vue.Promise.all(toCache).catch(function () {});
         },
         setLastCreatedAnnotation(annotation) {
             if (this.lastCreatedAnnotationTimeout) {
@@ -477,6 +493,9 @@ export default {
             switch (key) {
                 case 'annotationOpacity':
                     this.annotationOpacity = value;
+                    break;
+                case 'cachedImagesCount':
+                    this.cachedImagesCount = value;
                     break;
                 case 'mousePosition':
                     this.showMousePosition = value;
@@ -510,7 +529,11 @@ export default {
             Settings.delete('openTab');
         },
         handleLoadingError(message) {
-            Messages.danger(message);
+            if (message instanceof CrossOriginError) {
+                this.crossOriginError = true;
+            } else {
+                Messages.danger(message);
+            }
         },
         createSampledAnnotation() {
             this.$refs.canvas.createSampledAnnotation();
@@ -534,11 +557,15 @@ export default {
                 Messages.warning('This image is currently being processed. Please retry later.');
             }
         },
+        dismissCrossOriginError() {
+            this.crossOriginError = false;
+        },
     },
     watch: {
         imageId(id) {
             if (id) {
                 this.startLoading();
+                this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
@@ -551,6 +578,9 @@ export default {
                     .catch(this.handleLoadingError)
                     .finally(this.finishLoading);
             }
+        },
+        cachedImagesCount() {
+            debounce(this.cachePreviousAndNext, 1000, 'annotations.cached-image-count.update');
         },
         focussedAnnotation(annotation) {
             if (annotation) {
@@ -583,6 +613,9 @@ export default {
         annotations(annotations) {
             this.annotationFilters[0].annotations = annotations;
             this.annotationFilters[1].annotations = annotations;
+        },
+        image(image) {
+            this.crossOriginError = image.crossOrigin;
         },
     },
     created() {

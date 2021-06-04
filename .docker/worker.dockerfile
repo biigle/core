@@ -1,3 +1,36 @@
+FROM alpine@sha256:9a839e63dad54c3a6d1834e29692c8492d93f90c59c978c1ed79109ea4fb9a54 AS opencv
+MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
+ARG OPENCV_VERSION=3.4.5
+RUN apk add --no-cache --virtual .build-deps python3-dev py3-pip ffmpeg-dev \
+        gcc g++ build-base curl cmake clang-dev linux-headers \
+    && pip3 install --no-cache-dir numpy==1.18.4 \
+    && cd /tmp \
+    && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && curl -L https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && mkdir /tmp/opencv-${OPENCV_VERSION}/build \
+    && cd /tmp/opencv-${OPENCV_VERSION}/build \
+    && cmake \
+        -D CMAKE_BUILD_TYPE=RELEASE \
+        -D BUILD_TESTS=OFF \
+        -D BUILD_PERF_TESTS=OFF \
+        -D BUILD_EXAMPLES=OFF \
+        -D BUILD_DOCS=OFF \
+        -D INSTALL_PYTHON_EXAMPLES=OFF \
+        -D INSTALL_C_EXAMPLES=OFF \
+        -D WITH_WIN32UI=OFF \
+        -D WITH_QT=OFF \
+        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+        .. \
+    && make -j $(nproc) \
+    && make install \
+    && pip3 uninstall -y numpy \
+    && apk del --purge .build-deps \
+    && cd /usr/local \
+    && tar -czf /opencv.tar.gz . \
+    && rm -r /tmp/*
+
 FROM ghcr.io/biigle/app as intermediate
 
 # FROM php:7.4.16-cli-alpine
@@ -78,28 +111,37 @@ RUN apk add --no-cache \
     py3-numpy \
     py3-scipy
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
-    py3-pillow
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community/ --allow-untrusted \
+    py3-scikit-learn \
+    py3-matplotlib
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ \
-    --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-        py3-scikit-learn
-
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
-    --allow-untrusted \
-        py3-matplotlib
-
-# Set this library path to the Python modules are linked correctly.
+# Set this library path so the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
 ENV LIBRARY_PATH=/lib:/usr/lib
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
 RUN apk add --no-cache --virtual .build-deps \
+        python3-dev \
         py3-pip \
+        py3-wheel \
+        build-base \
+        libjpeg-turbo-dev \
+        libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
+        Pillow==8.1.* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
+
+# The workaround with the tar is needed because we can't directly COPY and merge the
+# contents of /usr/local.
+# See: https://github.com/moby/moby/issues/15858
+COPY --from=opencv opencv.tar.gz /usr/local/
+RUN cd /usr/local \
+    && tar -xzf opencv.tar.gz \
+    && ln -s /usr/local/lib/python3.8/site-packages/cv2 \
+        /usr/lib/python3.8/site-packages/cv2 \
+    && rm opencv.tar.gz
 
 # Just copy from intermediate biigle/app so the installation of dependencies with
 # Composer doesn't have to run twice.

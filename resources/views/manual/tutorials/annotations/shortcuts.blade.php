@@ -24,6 +24,8 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next image</td>
                 </tr>
+                    <td><kbd>Shift</kbd>+<kbd>Scroll</kbd></td>
+                    <td>Previous or Next image</td>
                 <tr>
                     <td><kbd>+</kbd></td>
                     <td>Zoom the image to the original resolution</td>

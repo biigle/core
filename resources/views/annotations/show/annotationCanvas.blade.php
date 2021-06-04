@@ -1,4 +1,4 @@
-<div class="annotation-canvas">
+<div class="annotation-canvas" v-on:wheel="conditionalHandleScroll">
     <minimap v-if="showMinimap" :extent="extent"></minimap>
     <div class="annotation-canvas__left-indicators">
         <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template>
@@ -20,7 +20,7 @@
     <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
     <measure-tooltip watch="changeMeasureFeature" :show="hasMeasureFeature" :position="measureFeaturePosition" positioning="center-left" :image="image" :areas="imagesArea"></measure-tooltip>
     <div class="annotation-canvas__toolbar">
-        <div class="btn-group">
+        <div class="btn-group" v-on:wheel.stop="handleScroll">
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious" :disabled="modifyInProgress"></control-button>
             <control-button icon="fa-step-forward" :title="nextButtonTitle + ' 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄/𝗦𝗽𝗮𝗰𝗲'" v-on:click="handleNext" :disabled="modifyInProgress"></control-button>
         </div>

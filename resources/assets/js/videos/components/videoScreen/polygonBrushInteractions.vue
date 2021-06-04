@@ -4,6 +4,7 @@ import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonB
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../../annotations/stores/styles';
+import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
@@ -65,6 +66,7 @@ export default {
                     source: this.pendingAnnotationSource,
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
+                    resizeCondition: altKeyOnlyCondition,
                 });
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
@@ -85,6 +87,7 @@ export default {
                     allowRemove: false,
                     addCondition: neverCondition,
                     subtractCondition: noModifierKeysCondition,
+                    resizeCondition: altKeyOnlyCondition,
                 });
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonEraserInteraction.on('modifyend', this.handleModifyEnd);
@@ -106,6 +109,7 @@ export default {
                     allowRemove: false,
                     addCondition: noModifierKeysCondition,
                     subtractCondition: neverCondition,
+                    resizeCondition: altKeyOnlyCondition,
                 });
                 this.polygonFillInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonFillInteraction.on('modifyend', this.handleModifyEnd);

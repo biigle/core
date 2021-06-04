@@ -2,6 +2,8 @@
 import Events from '../../core/events';
 import fx from '../vendor/glfx';
 
+export class CrossOriginError extends Error {}
+
 /**
 * Store for the images of the annotation tool
 */
@@ -10,7 +12,7 @@ export default new Vue({
         initialized: false,
         cache: {},
         cachedIds: [],
-        maxCacheSize: 10,
+        maxCacheSize: 200,
         supportsColorAdjustment: false,
         currentlyDrawnImage: null,
         colorAdjustmentDefaults: {
@@ -198,11 +200,12 @@ export default new Vue({
                 .catch(function (response) {
                     // I could not find any reliable way to detect a failure due to
                     // blocking of CORS. But the status seemed to be always 0.
-                    // If CORS is blocked, we can still display the image but have to
-                    // disable a few features that require reading the image data.
+                    // Remote image without CORS support will be dropped in a future
+                    // release. See: https://github.com/biigle/core/issues/351
                     if (response.status === 0) {
                         imageWrapper.crossOrigin = true;
                         img.src = response.url;
+                        // throw new CrossOriginError();
 
                         return promise;
                     }

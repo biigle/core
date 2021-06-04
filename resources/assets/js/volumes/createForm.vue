@@ -54,6 +54,9 @@ export default {
         isVideoMediaType() {
             return this.mediaType === 'video';
         },
+        isRemoteImageVolume() {
+            return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
+        },
     },
     methods: {
         toggleBrowse() {
