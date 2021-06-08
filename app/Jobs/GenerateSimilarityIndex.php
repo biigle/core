@@ -4,6 +4,7 @@ namespace Biigle\Jobs;
 
 
 use Biigle\Jobs\Job;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 
 class GenerateSimilarityIndex extends Job implements ShouldQueue

@@ -13,7 +13,6 @@ def createHashValue(img):
 # TODO: check what input the function could have
 with Image.open(sys.argv[1]) as img:
     createdHash = createHashValue(img)
+    print(createdHash)
 
 
-# TODO: Write real return or statement for php
-return createdHash

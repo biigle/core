@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Jobs;
 
-
 use Biigle\Jobs\GenerateHashValue;
+use Biigle\Tests\ImageTest;
 use Exception;
 use File;
 use Storage;
@@ -11,26 +11,24 @@ use TestCase;
 
 class GenerateHashValueTest extends TestCase
 {
-    // function like this
     public function setUp(): void
     {
         parent::setUp();
         Storage::fake('test');
-        // Storage::disk('test')->put('files/my-video.mp4', 'abc');
+        Storage::fake(config('thumbnails.storage_disk'));
     }
 
     public function testHandle()
     {
-        // Test if SimilarityIndex is assigened per thumbnail
-        $job = new GenerateHashValueStub();
-        $job->handle();
+        $image = ImageTest::create([
+            'filename' => 'exif-test.jpg'
+        ]);
+
+        with(new GenerateHashValue($image))->handle();
+
+        $image = $image->fresh();
+
+        $this->assertIsString($image->hash);
     }
 }
 
-class GenerateHashValueStub extends GenerateHashValue
-{
-
-    protected function python($path)
-    {
-    }
-}
