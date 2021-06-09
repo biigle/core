@@ -35,7 +35,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     public $image;
 
     /**
-     * The hash value accoridng to the image
+     * The hash value according to the image
      *
      * @var string
      */

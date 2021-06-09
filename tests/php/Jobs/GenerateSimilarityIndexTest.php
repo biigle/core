@@ -4,6 +4,8 @@ namespace Biigle\Tests\Jobs;
 
 
 use Biigle\Jobs\GenerateSimilarityIndex;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VolumeTest;
 use Exception;
 use File;
 use Storage;
@@ -16,15 +18,29 @@ class GenerateSimilarityIndexTest extends TestCase
     {
         parent::setUp();
         Storage::fake('test');
-        // Storage::disk('test')->put('files/my-video.mp4', 'abc');
     }
 
     public function testHandle()
     {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'test.jpg',
+            'volume_id' => $volume->id,
+        ]);
         // Test if hash is generated per thumbnail
-        $job = new GenerateSimilarityIndexStub();
+        $job = new GenerateSimilarityIndexStub($image);
         $job->handle();
     }
+    public function testSimilarityIndexInitialization()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'test.jpg',
+            'volume_id' => $volume->id,
+        ]);
+
+    }
+
 }
 
 class GenerateSimilarityIndexStub extends GenerateSimilarityIndex

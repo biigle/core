@@ -6,6 +6,7 @@ use Biigle\Jobs\GenerateHashValue;
 use Biigle\Tests\ImageTest;
 use Exception;
 use File;
+use Log;
 use Storage;
 use TestCase;
 
@@ -21,7 +22,7 @@ class GenerateHashValueTest extends TestCase
     public function testHandle()
     {
         $image = ImageTest::create([
-            'filename' => 'exif-test.jpg'
+            'filename' => 'test.jpg'
         ]);
 
         with(new GenerateHashValue($image))->handle();
@@ -29,6 +30,14 @@ class GenerateHashValueTest extends TestCase
         $image = $image->fresh();
 
         $this->assertIsString($image->hash);
+    }
+    public function testHashInitialization()
+    {
+        $image = ImageTest::create([
+            'filename' => 'test.jpg'
+        ]);
+
+        $this->assertNull($image->hash);
     }
 }
 
