@@ -106,7 +106,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     protected function needsHashValue(Image $image)
     {
         if (!array_key_exists($image->id, $this->needsHashCache)) {
-            $prefix = fragment_uuid_path($image->uuid);
+            $prefix = fragment_uuid_path($image->hash);
             $format = config('thumbnails.format');
             $this->needsHashCache[$image->id] =
                 !Storage::disk(config('thumbnails.storage_disk'))
