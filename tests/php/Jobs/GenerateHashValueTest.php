@@ -25,11 +25,11 @@ class GenerateHashValueTest extends TestCase
             'filename' => 'test.jpg'
         ]);
 
-        with(new GenerateHashValue($image))->handle();
+        with(new GenerateHashValueStub($image))->handle();
 
         $image = $image->fresh();
 
-        $this->assertIsString($image->hash);
+        $this->assertNotNull($image->hash);
     }
     public function testHashInitialization()
     {
@@ -38,6 +38,13 @@ class GenerateHashValueTest extends TestCase
         ]);
 
         $this->assertNull($image->hash);
+    }
+}
+
+class GenerateHashValueStub extends GenerateHashValue
+{
+    protected function python($path)
+    {
     }
 }
 
