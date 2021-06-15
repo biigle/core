@@ -22,6 +22,14 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
     public $tries = 2;
 
     /**
+     * Ignore this job if the image does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
+
+    /**
      * The image to process
      *
      * @var Volume

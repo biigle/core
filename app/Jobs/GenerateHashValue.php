@@ -28,6 +28,14 @@ class GenerateHashValue extends Job implements ShouldQueue
     public $tries = 2;
 
     /**
+     * Ignore this job if the image does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
+
+    /**
      * The image to process
      *
      * @var Image
@@ -82,7 +90,6 @@ class GenerateHashValue extends Job implements ShouldQueue
                         $output = $this->python("{$path}");
                         $image->hash = $output;
                         $image->save();
-
                     }
 
                 });
@@ -106,7 +113,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     protected function needsHashValue(Image $image)
     {
         if (!array_key_exists($image->id, $this->needsHashCache)) {
-            $prefix = fragment_uuid_path($image->hash);
+            $prefix = fragment_uuid_path($image->uuid);
             $format = config('thumbnails.format');
             $this->needsHashCache[$image->id] =
                 !Storage::disk(config('thumbnails.storage_disk'))
@@ -127,7 +134,6 @@ class GenerateHashValue extends Job implements ShouldQueue
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
 
-        // TODO: Ask martin if this is the correct get function
         return Storage::disk(config('thumbnails.storage_disk'))
             ->get("{$prefix}.{$format}");
     }
