@@ -75,61 +75,62 @@ class GenerateHashValue extends Job implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws Exception
      */
     public function handle()
     {
-        try {
-            if ($this->needsHashValue($this->image)) {
-                FileCache::getOnce($this->image, function ($image, $path) {
-                    if (!File::exists($path)) {
-                        throw new Exception("File '{$path}' does not exist.");
-                    }
-                    if ($this->needsHashValue($image)) {
-                        $this->getThumbnail($image, $path);
-                        // here path or the image which i get with get Thumbnail?
-                        $output = $this->python("{$path}");
-                        $image->hash = $output;
-                        $image->save();
-                    }
+        $hashValue = $this->getHashValue($this->image);
+        $id = $hashValue->id;
+        $hash = $hashValue->hash;
 
-                });
-            }
-        } catch (Exception $e) {
-            if (App::runningUnitTests()) {
-                throw $e;
-            } else {
-                Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
-            }
-        }
+        dd($hash);
+        $this->image->hash = $hash;
+        $this->image.save();
+
     }
 
     /**
-     * Chack if an image needs a hash.
+     * Execute the HashValueGenerator and get the resulting hash value to the image.
      *
      * @param Image $image
-     *
-     * @return bool
+     * @param $path
+     * @return string
+     * @throws Exception
      */
-    protected function needsHashValue(Image $image)
+    protected function getHashValue(Image $image)
     {
-        if (!array_key_exists($image->id, $this->needsHashCache)) {
-            $prefix = fragment_uuid_path($image->uuid);
-            $format = config('thumbnails.format');
-            $this->needsHashCache[$image->id] =
-                !Storage::disk(config('thumbnails.storage_disk'))
-                    ->exists("{$prefix}.{$format}");
-        }
+        return FileCache::get($image->image, function ($image, $path) use ($image) {
+            $script = config('biigle.hash_value_generator');
 
-        return $this->needsHashCache[$image->id];
+            try {
+                $inputPath = $this->createInputJson($image, $path);
+                $outputPath = $this->getOutputJsonPath($image);
+                $output = $this->python("{$script} {$inputPath} {$outputPath}");
+                $hashValue = json_decode(File::get($outputPath), true);
+            } catch (Exception $e) {
+                $input = File::get($inputPath);
+                throw new Exception("Input: {$input}\n" . $e->getMessage());
+            } finally {
+                if (isset($inputPath)) {
+                    $this->maybeDeleteFile($inputPath);
+                }
+
+                if (isset($outputPath)) {
+                    $this->maybeDeleteFile($outputPath);
+                }
+            }
+            return $hashValue;
+        });
+
     }
+
     /**
      * Gets a thumbnail for a single image.
      *
      * @param Image $image
-     * @param string $path Path to the cached image file.
      * @return string
      */
-    protected function getThumbnail(Image $image, $path)
+    protected function getThumbnail(Image $image)
     {
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
@@ -141,16 +142,18 @@ class GenerateHashValue extends Job implements ShouldQueue
     /**
      * Execute a Python script.
      *
-     * @param string $path of the image
-     *
+     * @param $command
      * @return string the hash value for the image
+     * @throws Exception
      */
-    protected function python($path)
+    protected function python($command)
     {
         $lines = 0;
         $code = 0;
+        $python = config('biigle.python');
 
-        exec("python3 {$path}", $lines, $code);
+
+        exec("{$python} {$command}", $lines, $code);
 
         if ($code !== 0) {
             throw new Exception("Error while executing Python script':\n".implode("\n", $lines));
@@ -158,5 +161,63 @@ class GenerateHashValue extends Job implements ShouldQueue
 
         return end($lines);
 
+    }
+
+    /**
+     * Get the path to to input file for the object tracking script.
+     *
+     * @param Image $image
+     *
+     * @return string
+     */
+    protected function getInputJsonPath(Image $image)
+    {
+        return config('hash.tmp_dir')."/generate_hash_value_input_{$image->id}.json";
+    }
+
+    /**
+    * Create the JSON file that is the input for the HashValueGenerator script.
+    *
+    * @param Image $image
+    * @param string $imagePath Path to the video file.
+    *
+    * @return string Path to the JSON file.
+    */
+    protected function createInputJson(Image $image, $imagePath)
+    {
+        $path = $this->getInputJsonPath($image);
+        $content = json_encode([
+            'image_path' => $imagePath,
+            'image_id' => $image->id,
+        ]);
+
+        File::put($path, $content);
+
+        return $path;
+    }
+
+    /**
+     * Get the path to to output file for the object tracking script.
+     *
+     * @param Image $image
+     *
+     * @return string
+     */
+    protected function getOutputJsonPath(Image $image)
+    {
+        return config('hash.tmp_dir')."/generate_hash_value_output_{$image->id}.json";
+    }
+
+
+    /**
+     * Delete a file if it exists.
+     *
+     * @param string $path
+     */
+    protected function maybeDeleteFile($path)
+    {
+        if (File::exists($path)) {
+            File::delete($path);
+        }
     }
 }

@@ -18,7 +18,6 @@ class GenerateHashValueTest extends TestCase
         Storage::fake('test');
         Storage::fake(config('thumbnails.storage_disk'));
     }
-
     public function testHandle()
     {
         $image = ImageTest::create([

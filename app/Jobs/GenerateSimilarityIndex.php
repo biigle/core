@@ -86,8 +86,10 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
     {
         $lines = 0;
         $code = 0;
+        $python = config('biigle.python');
 
-        exec("python3 {$inputPath} {$outputPath}", $lines, $code);
+
+        exec("{$python} {$inputPath} {$outputPath}", $lines, $code);
 
         if ($code !== 0) {
             throw new Exception("Error while executing Python script':\n".implode("\n", $lines));
