@@ -91,6 +91,7 @@ RUN apk add --no-cache --virtual .build-deps \
         python3-dev \
         py3-pip \
         py3-wheel \
+        py3-numpy-dev \
         build-base \
         libjpeg-turbo-dev \
         libpng-dev \
