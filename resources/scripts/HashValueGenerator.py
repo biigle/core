@@ -2,7 +2,8 @@ from PIL import Image
 import imagehash
 import numpy as np
 import sys
-# TODO: Extend requierments with imagehash and Pillow
+import io
+
 HASHSIZE = 64
 
 def createHashValue(img):
@@ -10,8 +11,7 @@ def createHashValue(img):
     return createdHash
 
 
-# TODO: check what input the function could have
-with Image.open(sys.argv[1]) as img:
+with Image.open(io.BytesIO(sys.argv[1]))as img:
     createdHash = createHashValue(img)
     print(createdHash)
 

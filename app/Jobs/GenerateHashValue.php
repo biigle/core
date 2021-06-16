@@ -80,12 +80,11 @@ class GenerateHashValue extends Job implements ShouldQueue
     public function handle()
     {
         $hashValue = $this->getHashValue($this->image);
-        $id = $hashValue->id;
         $hash = $hashValue->hash;
 
         dd($hash);
         $this->image->hash = $hash;
-        $this->image.save();
+        $this->image->save();
 
     }
 
@@ -93,34 +92,34 @@ class GenerateHashValue extends Job implements ShouldQueue
      * Execute the HashValueGenerator and get the resulting hash value to the image.
      *
      * @param Image $image
-     * @param $path
      * @return string
      * @throws Exception
      */
     protected function getHashValue(Image $image)
     {
-        return FileCache::get($image->image, function ($image, $path) use ($image) {
-            $script = config('biigle.hash_value_generator');
+        $imageByteString = getThumbnail($image);
 
-            try {
-                $inputPath = $this->createInputJson($image, $path);
-                $outputPath = $this->getOutputJsonPath($image);
-                $output = $this->python("{$script} {$inputPath} {$outputPath}");
-                $hashValue = json_decode(File::get($outputPath), true);
-            } catch (Exception $e) {
-                $input = File::get($inputPath);
-                throw new Exception("Input: {$input}\n" . $e->getMessage());
-            } finally {
-                if (isset($inputPath)) {
-                    $this->maybeDeleteFile($inputPath);
-                }
+        $script = config('biigle.hash_value_generator');
 
-                if (isset($outputPath)) {
-                    $this->maybeDeleteFile($outputPath);
-                }
+        try {
+            $inputPath = $this->createInputJson($image, $imageByteString);
+            $outputPath = $this->getOutputJsonPath($image);
+            $output = $this->python("{$script} {$inputPath} {$outputPath}");
+            $hashValue = json_decode(File::get($outputPath), true);
+        } catch (Exception $e) {
+            $input = File::get($inputPath);
+            throw new Exception("Input: {$input}\n" . $e->getMessage());
+        } finally {
+            if (isset($inputPath)) {
+                $this->maybeDeleteFile($inputPath);
             }
-            return $hashValue;
-        });
+
+            if (isset($outputPath)) {
+                $this->maybeDeleteFile($outputPath);
+            }
+        }
+        return $hashValue;
+
 
     }
 
@@ -128,7 +127,7 @@ class GenerateHashValue extends Job implements ShouldQueue
      * Gets a thumbnail for a single image.
      *
      * @param Image $image
-     * @return string
+     * @return string byte string of the image
      */
     protected function getThumbnail(Image $image)
     {
@@ -183,11 +182,11 @@ class GenerateHashValue extends Job implements ShouldQueue
     *
     * @return string Path to the JSON file.
     */
-    protected function createInputJson(Image $image, $imagePath)
+    protected function createInputJson(Image $image, $imageAsByteString)
     {
         $path = $this->getInputJsonPath($image);
         $content = json_encode([
-            'image_path' => $imagePath,
+            'image_as_byte_string' => $imageAsByteString,
             'image_id' => $image->id,
         ]);
 
