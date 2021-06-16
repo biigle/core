@@ -3,6 +3,8 @@ import imagehash
 import numpy as np
 import sys
 import io
+import json
+
 
 HASHSIZE = 64
 
@@ -11,8 +13,20 @@ def createHashValue(img):
     return createdHash
 
 
-with Image.open(io.BytesIO(sys.argv[1]))as img:
-    createdHash = createHashValue(img)
-    print(createdHash)
+with open(sys.argv[1])) as inputJson:
+    image_data = json.load(inputJson)
 
+id = image_data['image_id']
+imageBytes = image_data['image_as_byte_string']
+
+with Image.open(io.BytesIO(imageBytes))as img:
+    createdHash = createHashValue(img)
+
+returnData = {
+    'id': id,
+    'hash': createdHash
+}
+
+with open(sys.argv[2], 'w') as f:
+    json.dump(returnData, f)
 

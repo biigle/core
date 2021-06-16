@@ -42,8 +42,9 @@ class GenerateHashValueTest extends TestCase
 
 class GenerateHashValueStub extends GenerateHashValue
 {
-    protected function python($path)
+    protected function python($command)
     {
+        return "{'hash': 'jmhsdgfmasgh'}";
     }
 }
 

@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Exception;
 use App;
 use Log;
+use Storage;
 use FileCache;
 use File;
 
@@ -89,6 +90,21 @@ class GenerateHashValue extends Job implements ShouldQueue
     }
 
     /**
+     * Gets a thumbnail for a single image.
+     *
+     * @param Image $image
+     * @return string byte string of the image
+     */
+    protected function getThumbnail(Image $image)
+    {
+        $prefix = fragment_uuid_path($image->uuid);
+        $format = config('thumbnails.format');
+
+        return Storage::disk(config('thumbnails.storage_disk'))
+            ->get("{$prefix}.{$format}");
+    }
+
+    /**
      * Execute the HashValueGenerator and get the resulting hash value to the image.
      *
      * @param Image $image
@@ -97,7 +113,8 @@ class GenerateHashValue extends Job implements ShouldQueue
      */
     protected function getHashValue(Image $image)
     {
-        $imageByteString = getThumbnail($image);
+        $imageByteString = $this->getThumbnail($image);
+        dd($imageByteString);
 
         $script = config('biigle.hash_value_generator');
 
@@ -123,20 +140,7 @@ class GenerateHashValue extends Job implements ShouldQueue
 
     }
 
-    /**
-     * Gets a thumbnail for a single image.
-     *
-     * @param Image $image
-     * @return string byte string of the image
-     */
-    protected function getThumbnail(Image $image)
-    {
-        $prefix = fragment_uuid_path($image->uuid);
-        $format = config('thumbnails.format');
 
-        return Storage::disk(config('thumbnails.storage_disk'))
-            ->get("{$prefix}.{$format}");
-    }
 
     /**
      * Execute a Python script.
