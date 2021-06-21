@@ -71,13 +71,11 @@ distanceMatrix = createDistanceMatrix(hashValues)
 similarityIndexList = getSimilarityList(distanceMatrix, hashValues)
 
 
-outputList = []
+outputDict = {}
 for i in similarityIndexList:
-    x = {
-        indexDict[i]: similarityIndexList.index(i)
-    }
-    outputList.append(x)
+    outputDict[indexDict[i]] = similarityIndexList.index(i)
+
 
 
 with open(sys.argv[2], 'w') as outputPath:
-    json.dump(outputList, outputPath)
+    json.dump(outputDict, outputPath)
