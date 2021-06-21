@@ -110,6 +110,7 @@ class TrackObject extends Job implements ShouldQueue
                 $outputPath = $this->getOutputJsonPath($annotation);
                 $output = $this->python("{$script} {$inputPath} {$outputPath}");
                 $keyframes = json_decode(File::get($outputPath), true);
+                dd($output);
             } catch (Exception $e) {
                 $input = File::get($inputPath);
                 throw new Exception("Input: {$input}\n".$e->getMessage());

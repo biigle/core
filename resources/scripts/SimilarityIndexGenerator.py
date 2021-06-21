@@ -52,6 +52,7 @@ with open(sys.argv[1]) as inputPath:
     #plan that this array hold all hashs per image. Is List.
     hashValueImages = json.load(inputPath)
 
+#TODO: rewirte for list of (id,hash)
 distanceMatrix = createDistanceMatrix(hashValueImages)
 # List that hold the Similarity index for each image, same order of images as input imageHashList
 similarityIndexList = plot_dendrogram(distanceMatrix)

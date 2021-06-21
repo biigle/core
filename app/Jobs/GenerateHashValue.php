@@ -81,12 +81,11 @@ class GenerateHashValue extends Job implements ShouldQueue
     public function handle()
     {
         $hashValue = $this->getHashValue($this->image);
-        $hash = $hashValue->hash;
-
-        dd($hash);
-        $this->image->hash = $hash;
-        $this->image->save();
-
+        if ($hashValue !== null) {
+            $hash = $hashValue->hash;
+            $this->image->hash = $hash;
+            $this->image->save();
+        }
     }
 
     /**
@@ -97,11 +96,17 @@ class GenerateHashValue extends Job implements ShouldQueue
      */
     protected function getThumbnail(Image $image)
     {
-        $prefix = fragment_uuid_path($image->uuid);
-        $format = config('thumbnails.format');
+        try {
+            $prefix = fragment_uuid_path($image->uuid);
+            $format = config('thumbnails.format');
 
-        return Storage::disk(config('thumbnails.storage_disk'))
-            ->get("{$prefix}.{$format}");
+            return Storage::disk(config('thumbnails.storage_disk'))
+                ->get("{$prefix}.{$format}");
+        } catch (Exception $e) {
+            // File not found
+            return false;
+        }
+
     }
 
     /**
@@ -114,30 +119,33 @@ class GenerateHashValue extends Job implements ShouldQueue
     protected function getHashValue(Image $image)
     {
         $imageByteString = $this->getThumbnail($image);
-        dd($imageByteString);
+        if ($imageByteString !== false) {
+            $script = config('biigle.hash_value_generator');
 
-        $script = config('biigle.hash_value_generator');
+            try {
+                $outputPath = $this->getOutputJsonPath($image);
+                $inputPath = $this->createInputJson($image, $imageByteString);
+                $output = $this->python("{$script} {$inputPath} {$outputPath}");
+                $hashValue = decodeOutputJson($outputPath);
+                dd($hashValue);
 
-        try {
-            $inputPath = $this->createInputJson($image, $imageByteString);
-            $outputPath = $this->getOutputJsonPath($image);
-            $output = $this->python("{$script} {$inputPath} {$outputPath}");
-            $hashValue = json_decode(File::get($outputPath), true);
-        } catch (Exception $e) {
-            $input = File::get($inputPath);
-            throw new Exception("Input: {$input}\n" . $e->getMessage());
-        } finally {
-            if (isset($inputPath)) {
-                $this->maybeDeleteFile($inputPath);
+            } catch (Exception $e) {
+                $input = File::get($inputPath);
+                throw new Exception("Input: {$input}\n" . $e->getMessage());
+            } finally {
+                if (isset($inputPath)) {
+                    $this->maybeDeleteFile($inputPath);
+                }
+
+                if (isset($outputPath)) {
+                    $this->maybeDeleteFile($outputPath);
+                }
             }
-
-            if (isset($outputPath)) {
-                $this->maybeDeleteFile($outputPath);
-            }
+            return $hashValue;
+        } else {
+            // Return null if no hash can be computed
+            return null;
         }
-        return $hashValue;
-
-
     }
 
 
@@ -195,7 +203,6 @@ class GenerateHashValue extends Job implements ShouldQueue
         ]);
 
         File::put($path, $content);
-
         return $path;
     }
 
@@ -209,6 +216,17 @@ class GenerateHashValue extends Job implements ShouldQueue
     protected function getOutputJsonPath(Image $image)
     {
         return config('hash.tmp_dir')."/generate_hash_value_output_{$image->id}.json";
+    }
+
+    /**
+     * @param path Opens the ouput path after the python script and decodes it
+     *
+     * @return mixed
+     */
+    protected function decodeOutputJson($path)
+    {
+        return json_decode(File::get($path), true);
+
     }
 
 

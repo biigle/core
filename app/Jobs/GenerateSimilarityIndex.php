@@ -5,6 +5,7 @@ namespace Biigle\Jobs;
 
 use Biigle\Jobs\Job;
 use Biigle\Volume;
+use Storage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -30,7 +31,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
 
 
     /**
-     * The image to process
+     * The volume to process
      *
      * @var Volume
      */
@@ -72,6 +73,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      */
     public function handle()
     {
+        $query = $this->volume->files();
 
     }
 

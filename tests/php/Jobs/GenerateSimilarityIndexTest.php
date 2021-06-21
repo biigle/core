@@ -23,21 +23,26 @@ class GenerateSimilarityIndexTest extends TestCase
     public function testHandle()
     {
         $volume = VolumeTest::create();
-        $image = ImageTest::create([
-            'filename' => 'test.jpg',
-            'volume_id' => $volume->id,
-        ]);
+        $i1 = ImageTest::create(['filename' => 'test.jpg', 'volume_id' => $volume->id,]);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        $i4 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+        $i5 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'd.jpg']);
         // Test if hash is generated per thumbnail
-        $job = new GenerateSimilarityIndexStub($image);
-        $job->handle();
+        with(GenerateSimilarityIndexStub($volume))->handle();
+
     }
     public function testSimilarityIndexInitialization()
     {
         $volume = VolumeTest::create();
-        $image = ImageTest::create([
-            'filename' => 'test.jpg',
-            'volume_id' => $volume->id,
-        ]);
+        $i1 = ImageTest::create(['filename' => 'test.jpg', 'volume_id' => $volume->id,]);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        $i4 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+        $i5 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'd.jpg']);
+
+        $query = $volume->files();
+        dd($query);
 
     }
 
