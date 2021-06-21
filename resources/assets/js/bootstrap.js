@@ -5,12 +5,15 @@ window.Vue = Vue;
 window.Vue.use(VueResource);
 
 const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+
 if (csrfTokenElement) {
+    const readMethods = ['HEAD', 'GET', 'OPTIONS'];
+
     Vue.http.interceptors.push(function(request) {
         // Only add the CSRF token for non-read requests. This is important for
         // remote volume locations and CORS, as it would require a special CORS
         // configuration to allow this header.
-        if (!['HEAD', 'GET', 'OPTIONS'].includes(request.method) && !request.crossOrigin) {
+        if (!readMethods.includes(request.method) && !request.crossOrigin) {
             request.headers.set('X-CSRF-TOKEN', csrfTokenElement.getAttribute('content'));
         }
     });
