@@ -3,6 +3,8 @@ import imagehash
 import numpy as np
 import sys
 import io
+import base64
+# TODO: Import base64
 import json
 
 
@@ -13,18 +15,19 @@ def createHashValue(img):
     return createdHash
 
 
-with open(sys.argv[1])) as inputJson:
+with open(sys.argv[1]) as inputJson:
     image_data = json.load(inputJson)
 
 id = image_data['image_id']
 imageBytes = image_data['image_as_byte_string']
 
-with Image.open(io.BytesIO(imageBytes))as img:
+with Image.open(io.BytesIO(base64.b64decode(imageBytes))) as img:
     createdHash = createHashValue(img)
+
 
 returnData = {
     'id': id,
-    'hash': createdHash
+    'hash': str(createdHash)
 }
 
 with open(sys.argv[2], 'w') as f:

@@ -2,6 +2,9 @@ from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram
 import numpy as np
 import json
+import sys
+import imagehash
+
 
 
 #TODO: Extend Requierments
@@ -43,21 +46,38 @@ def getSimilarityList(distanceMatrix, hashValueList):
     model = AgglomerativeClustering(affinity='precomputed', distance_threshold=0, n_clusters=None, linkage='single').fit(distanceMatrix)
     # calculate dendrogram
 
-    R = plot_dendrogram(model, truncate_mode='lastp', p=number_images, no_plot=True)
+    R = plot_dendrogram(model, truncate_mode='lastp', p=len(hashValueList), no_plot=True)
 
-    similarityIndexList = R['leaves']
-    return [hashValueList[x] for x in R['leaves']]
+
+    return R['leaves']
 
 with open(sys.argv[1]) as inputPath:
+    #input is Array with id as key and hash as value
     #plan that this array hold all hashs per image. Is List.
     hashValueImages = json.load(inputPath)
 
-#TODO: rewirte for list of (id,hash)
-distanceMatrix = createDistanceMatrix(hashValueImages)
-# List that hold the Similarity index for each image, same order of images as input imageHashList
-similarityIndexList = plot_dendrogram(distanceMatrix)
 
+indexDict = {}
+hashValues = []
+counter = 0
+for key, value in hashValueImages.items():
+    hashValues.append(imagehash.hex_to_hash(value))
+    indexDict[counter] = key
+    counter += 1
+
+
+distanceMatrix = createDistanceMatrix(hashValues)
+# List that hold the Similarity index for each image, same order of images as input imageHashList
+similarityIndexList = getSimilarityList(distanceMatrix, hashValues)
+
+
+outputList = []
+for i in similarityIndexList:
+    x = {
+        indexDict[i]: similarityIndexList.index(i)
+    }
+    outputList.append(x)
 
 
 with open(sys.argv[2], 'w') as outputPath:
-    json.dump(similarityIndexList, outputPath)
+    json.dump(outputList, outputPath)
