@@ -82,8 +82,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     {
         $hashValue = $this->getHashValue($this->image);
         if ($hashValue !== null) {
-            $hash = $hashValue->hash;
-            $this->image->hash = $hash;
+            $this->image->hash = $hashValue["hash"];
             $this->image->save();
         }
     }
@@ -126,9 +125,7 @@ class GenerateHashValue extends Job implements ShouldQueue
                 $outputPath = $this->getOutputJsonPath($image);
                 $inputPath = $this->createInputJson($image, $imageByteString);
                 $output = $this->python("{$script} {$inputPath} {$outputPath}");
-                $hashValue = decodeOutputJson($outputPath);
-                dd($hashValue);
-
+                $hashValue = $this->decodeOutputJson($outputPath);
             } catch (Exception $e) {
                 $input = File::get($inputPath);
                 throw new Exception("Input: {$input}\n" . $e->getMessage());

@@ -44,11 +44,10 @@ class GenerateHashValueTest extends TestCase
 
 class GenerateHashValueStub extends GenerateHashValue
 {
-    public $fakePythonOutput = "{'hash': 'jmhsdgfmasgh'}";
-
     protected function python($command)
     {
-        File::put($this->getOutputJsonPath($this->image), $this->fakePythonOutput);
+        $fakePythonOutput = "{'hash': 'jmhsdgfmasgh'}";
+        return $fakePythonOutput;
     }
 
 
@@ -58,14 +57,14 @@ class GenerateHashValueStub extends GenerateHashValue
     }
 
 
-    /*
+
     protected function decodeOutputJson($path) {
         return [
             "id" => 1,
             "hash" => 'hopfullyAHashValue'
         ];
     }
-    */
+
 
 
      protected function createInputJson(Image $image, $imageAsByteString)
