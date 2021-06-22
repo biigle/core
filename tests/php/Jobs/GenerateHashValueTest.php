@@ -38,7 +38,7 @@ class GenerateHashValueTest extends TestCase
             'filename' => 'test.jpg'
         ]);
 
-        $this->assertNull($image->hash);
+        assertNull($image->hash);
     }
 }
 
@@ -46,8 +46,7 @@ class GenerateHashValueStub extends GenerateHashValue
 {
     protected function python($command)
     {
-        $fakePythonOutput = "{'hash': 'jmhsdgfmasgh'}";
-        return $fakePythonOutput;
+        return "{'hash': 'jmhsdgfmasgh'}";
     }
 
 

@@ -128,6 +128,7 @@ class GenerateHashValue extends Job implements ShouldQueue
                 $hashValue = $this->decodeOutputJson($outputPath);
             } catch (Exception $e) {
                 $input = File::get($inputPath);
+                $hashValue = null;
                 throw new Exception("Input: {$input}\n" . $e->getMessage());
             } finally {
                 if (isset($inputPath)) {
@@ -172,7 +173,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     }
 
     /**
-     * Get the path to to input file for the object tracking script.
+     * Get the path to to input file for the HashValueGenerator script.
      *
      * @param Image $image
      *
@@ -195,7 +196,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     {
         $path = $this->getInputJsonPath($image);
         $content = json_encode([
-            'image_as_byte_string' => $imageAsByteString,
+            'image_as_byte_string' => base64_encode($imageAsByteString),
             'image_id' => $image->id,
         ]);
 
@@ -204,7 +205,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     }
 
     /**
-     * Get the path to to output file for the object tracking script.
+     * Get the path to to output file for the HashValueGenerator script.
      *
      * @param Image $image
      *
