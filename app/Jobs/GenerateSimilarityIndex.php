@@ -13,6 +13,7 @@ use Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use function foo\func;
 
 
 class GenerateSimilarityIndex extends Job implements ShouldQueue
@@ -78,8 +79,11 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      */
     public function handle()
     {
-       $imageHashArray = $this->createImageHashArray();
-        if ($imageHashArray !== false) {
+        $collection = collect($this->volume->images);
+        // check if all images has hash, empty is true if all has hash
+
+        if ($collection->whereNull('hash')->isEmpty()) {
+            $imageHashArray = $collection->pluck('hash', 'id');
             $similarityIndexArray = $this->createSimilarityIndexArray($imageHashArray);
             if (!is_null($similarityIndexArray)) {
                 foreach ($this->volume->images as $image) {
@@ -93,28 +97,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
 
 
 
-    }
 
-    /**
-     * Creates an array with all the ids and hash values for each image
-     * If one image has no hash value the function will return false for no more doing this job.
-     *
-     * @return array|false
-     */
-    public function createImageHashArray()
-    {
-        $imageHashArray = array();
-
-        foreach ($this->volume->images as $image) {
-            $id = $image->id;
-            $hash = $image->hash;
-            if (is_null($hash))
-            {
-               return false;
-            }
-            $imageHashArray[$id] = $hash;
-        }
-        return $imageHashArray;
 
     }
 
@@ -122,7 +105,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      * Execute the SimilarityIndexGenerator script for the Volume
      * @throws Exception
      */
-    public function createSimilarityIndexArray(array $imageHashArray)
+    public function createSimilarityIndexArray($imageHashArray)
     {
         try {
             $script = config('biigle.similarity_index_generator');
@@ -202,10 +185,10 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      * @param array $imagesHashArray
      * @return string Path to the JSON file.
      */
-    protected function createInputJson(Volume $volume, Array $imagesHashArray)
+    protected function createInputJson(Volume $volume, $imagesHashArray)
     {
         $path = $this->getInputJsonPath($volume);
-        $content = json_encode([$imagesHashArray]);
+        $content = json_encode($imagesHashArray);
 
         File::put($path, $content);
         return $path;
