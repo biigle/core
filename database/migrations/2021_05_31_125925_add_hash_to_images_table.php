@@ -14,7 +14,7 @@ class AddHashToImagesTable extends Migration
     public function up()
     {
         Schema::table('images', function (Blueprint $table) {
-            $table->string('hash')->nullable();
+            $table->longText('hash')->nullable();
         });
     }
 

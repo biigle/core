@@ -129,8 +129,8 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
             $outputPath = $this->getOutputJsonPath($this->volume);
             $inputPath = $this->createInputJson($this->volume, $imageHashArray);
             $output = $this->python("{$script} {$inputPath} {$outputPath}");
-            $similarityIndexArray = $this->decodeOutputJson($outputPath);
-        } catch (Exception $e) {
+            $similarityIndexArray = json_decode(File::get($outputPath), true);
+      } catch (Exception $e) {
             $input = File::get($inputPath);
             $similarityIndexArray = null;
             throw new Exception("Input: {$input}\n" . $e->getMessage());
@@ -180,7 +180,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      */
     protected function getInputJsonPath(Volume $volume)
     {
-        return config('hash.tmp_dir')."/generate_sim_index_input_{$volume->id}.json";
+        return config('biigle.tmp_dir')."/generate_sim_index_input_{$volume->id}.json";
     }
 
     /**
@@ -192,7 +192,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      */
     protected function getOutputJsonPath(Volume $volume)
     {
-        return config('hash.tmp_dir')."/generate_sim_index_output_{$volume->id}.json";
+        return config('biigle.tmp_dir')."/generate_sim_index_output_{$volume->id}.json";
     }
 
     /**
@@ -209,17 +209,6 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
 
         File::put($path, $content);
         return $path;
-    }
-
-    /**
-     * @param path Opens the ouput path after the python script and decodes it
-     *
-     * @return mixed
-     */
-    protected function decodeOutputJson($path)
-    {
-        return json_decode(File::get($path), true);
-
     }
 
     /**

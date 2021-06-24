@@ -15,21 +15,10 @@ def createHashValue(img):
     return createdHash
 
 
-with open(sys.argv[1]) as inputJson:
-    image_data = json.load(inputJson)
 
-id = image_data['image_id']
-imageBytes = image_data['image_as_byte_string']
-
-with Image.open(io.BytesIO(base64.b64decode(imageBytes))) as img:
+with Image.open(sys.argv[1]) as img:
     createdHash = createHashValue(img)
 
 
-returnData = {
-    'id': id,
-    'hash': str(createdHash)
-}
 
-with open(sys.argv[2], 'w') as f:
-    json.dump(returnData, f)
-
+print(str(createdHash))

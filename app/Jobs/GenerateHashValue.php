@@ -82,7 +82,7 @@ class GenerateHashValue extends Job implements ShouldQueue
     {
         $hashValue = $this->getHashValue($this->image);
         if ($hashValue !== null) {
-            $this->image->hash = $hashValue["hash"];
+            $this->image->hash = $hashValue;
             $this->image->save();
         }
     }
@@ -122,10 +122,8 @@ class GenerateHashValue extends Job implements ShouldQueue
             $script = config('biigle.hash_value_generator');
 
             try {
-                $outputPath = $this->getOutputJsonPath($image);
                 $inputPath = $this->createInputJson($image, $imageByteString);
-                $output = $this->python("{$script} {$inputPath} {$outputPath}");
-                $hashValue = $this->decodeOutputJson($outputPath);
+                $hashValue = $this->python("{$script} {$inputPath}")[0];
             } catch (Exception $e) {
                 $input = File::get($inputPath);
                 $hashValue = null;
@@ -133,10 +131,6 @@ class GenerateHashValue extends Job implements ShouldQueue
             } finally {
                 if (isset($inputPath)) {
                     $this->maybeDeleteFile($inputPath);
-                }
-
-                if (isset($outputPath)) {
-                    $this->maybeDeleteFile($outputPath);
                 }
             }
             return $hashValue;
@@ -181,7 +175,7 @@ class GenerateHashValue extends Job implements ShouldQueue
      */
     protected function getInputJsonPath(Image $image)
     {
-        return config('hash.tmp_dir')."/generate_hash_value_input_{$image->id}.json";
+        return config('biigle.tmp_dir')."/generate_hash_value_input_{$image->id}";
     }
 
     /**
@@ -195,36 +189,9 @@ class GenerateHashValue extends Job implements ShouldQueue
     protected function createInputJson(Image $image, $imageAsByteString)
     {
         $path = $this->getInputJsonPath($image);
-        $content = json_encode([
-            'image_as_byte_string' => base64_encode($imageAsByteString),
-            'image_id' => $image->id,
-        ]);
 
-        File::put($path, $content);
+        File::put($path, $imageAsByteString);
         return $path;
-    }
-
-    /**
-     * Get the path to to output file for the HashValueGenerator script.
-     *
-     * @param Image $image
-     *
-     * @return string
-     */
-    protected function getOutputJsonPath(Image $image)
-    {
-        return config('hash.tmp_dir')."/generate_hash_value_output_{$image->id}.json";
-    }
-
-    /**
-     * @param path Opens the ouput path after the python script and decodes it
-     *
-     * @return mixed
-     */
-    protected function decodeOutputJson($path)
-    {
-        return json_decode(File::get($path), true);
-
     }
 
 
