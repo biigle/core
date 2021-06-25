@@ -13,7 +13,6 @@ use Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use function foo\func;
 
 
 class GenerateSimilarityIndex extends Job implements ShouldQueue
@@ -79,7 +78,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $collection = collect($this->volume->images);
+        $collection = $this->volume->images;
         // check if all images has hash, empty is true if all has hash
 
         if ($collection->whereNull('hash')->isEmpty()) {
@@ -188,7 +187,7 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
     protected function createInputJson(Volume $volume, $imagesHashArray)
     {
         $path = $this->getInputJsonPath($volume);
-        $content = json_encode($imagesHashArray);
+        $content = $imagesHashArray->toJson();
 
         File::put($path, $content);
         return $path;

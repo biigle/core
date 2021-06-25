@@ -85,7 +85,7 @@ class GenerateHashValue extends Job implements ShouldQueue
             $this->image->hash = $hashValue;
             $this->image->save();
         }
-        $allImagesInVolumeHaveHash = collect($this->image->volume->images->whereNull('hash')->isEmpty());
+        $allImagesInVolumeHaveHash = !$this->image->volume->images()->whereNull('hash')->exists();
         if ($allImagesInVolumeHaveHash) {
             GenerateSimilarityIndex::dispatch($this->image->volume);
         }
@@ -128,7 +128,7 @@ class GenerateHashValue extends Job implements ShouldQueue
 
             try {
                 $inputPath = $this->createInputJson($image, $imageByteString);
-                $hashValue = $this->python("{$script} {$inputPath}")[0];
+                $hashValue = $this->python("{$script} {$inputPath}");
             } catch (Exception $e) {
                 $input = File::get($inputPath);
                 $hashValue = null;
