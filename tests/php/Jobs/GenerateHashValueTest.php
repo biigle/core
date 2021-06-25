@@ -5,6 +5,7 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Image;
 use Biigle\Jobs\GenerateHashValue;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\VolumeTest;
 use Exception;
 use File;
 use Log;
@@ -21,9 +22,15 @@ class GenerateHashValueTest extends TestCase
     }
     public function testHandle()
     {
-
+        $volume = VolumeTest::create();
         $image = ImageTest::create([
-            'filename' => 'test.jpg'
+            'filename' => 'test.jpg',
+            'volume_id' => $volume->id
+        ]);
+        $image1 = ImageTest::create([
+            'filename' => 'test1.jpg',
+            'volume_id' => $volume->id,
+            'hash' => 'ujghlih'
         ]);
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');

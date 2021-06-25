@@ -85,6 +85,11 @@ class GenerateHashValue extends Job implements ShouldQueue
             $this->image->hash = $hashValue;
             $this->image->save();
         }
+        $allImagesInVolumeHaveHash = collect($this->image->volume->images->whereNull('hash')->isEmpty());
+        if ($allImagesInVolumeHaveHash) {
+            GenerateSimilarityIndex::dispatch($this->image->volume);
+        }
+
     }
 
     /**
