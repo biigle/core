@@ -38,7 +38,6 @@ This will set up the project in the `dev-modules` branch of this repository. The
 docker pull ghcr.io/biigle/app:latest
 docker pull ghcr.io/biigle/web:latest
 docker pull ghcr.io/biigle/worker:latest
-docker pull ghcr.io/biigle/opencv:latest
 ```
 
 Now perform these steps:

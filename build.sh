@@ -8,7 +8,6 @@ if [ -z "$VERSION" ]; then
     read -p "No build version specified, using latest git tag ${VERSION}. Press enter to continue."
 fi
 
-docker build -t ghcr.io/biigle/opencv -f .docker/opencv.dockerfile .docker
 docker-compose build --build-arg BIIGLE_VERSION=$VERSION
 
 read -p "Publish the images to GitHub? [y/N]" -r
@@ -39,7 +38,6 @@ fi
 # Update the "latest" images if the current HEAD is on master.
 if [ "$(git rev-parse --abbrev-ref HEAD)" == "master" ]; then
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        docker push ghcr.io/biigle/opencv:latest
         docker push ghcr.io/biigle/app:latest
         docker push ghcr.io/biigle/worker:latest
         docker push ghcr.io/biigle/web:latest

@@ -1,10 +1,40 @@
-FROM ghcr.io/biigle/opencv as opencv
 FROM ghcr.io/biigle/app as intermediate
 
 # FROM php:7.4.16-cli-alpine
 FROM php@sha256:85069c18ba0023aba8334b94fc3e4c9721676aa32bea223b6aba76a7446b939b
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
+
+ARG OPENCV_VERSION=3.4.5
+RUN apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
+        gcc g++ build-base curl cmake clang-dev linux-headers \
+    && cd /tmp \
+    && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && curl -L https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && mkdir /tmp/opencv-${OPENCV_VERSION}/build \
+    && cd /tmp/opencv-${OPENCV_VERSION}/build \
+    && cmake \
+        -D BUILD_DOCS=OFF \
+        -D BUILD_EXAMPLES=OFF \
+        -D BUILD_JAVA=OFF \
+        -D BUILD_opencv_python2=OFF \
+        -D BUILD_PERF_TESTS=OFF \
+        -D BUILD_TESTS=OFF \
+        -D CMAKE_BUILD_TYPE=RELEASE \
+        -D CMAKE_INSTALL_PREFIX=/usr \
+        -D INSTALL_C_EXAMPLES=OFF \
+        -D INSTALL_PYTHON_EXAMPLES=OFF \
+        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+        -D WITH_GTK=OFF \
+        -D WITH_QT=OFF \
+        -D WITH_WIN32UI=OFF \
+        .. \
+    && make -j $(nproc) \
+    && make install \
+    && apk del --purge .build-deps \
+    && rm -r /tmp/*
 
 RUN apk add --no-cache \
         openssl \
@@ -100,16 +130,6 @@ RUN apk add --no-cache --virtual .build-deps \
         Pillow==8.2.* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
-
-# The workaround with the tar is needed because we can't directly COPY and merge the
-# contents of /usr/local.
-# See: https://github.com/moby/moby/issues/15858
-COPY --from=opencv opencv.tar.gz /usr/local/
-RUN cd /usr/local \
-    && tar -xzf opencv.tar.gz \
-    && ln -s /usr/local/lib/python3.8/site-packages/cv2 \
-        /usr/lib/python3.8/site-packages/cv2 \
-    && rm opencv.tar.gz
 
 # Just copy from intermediate biigle/app so the installation of dependencies with
 # Composer doesn't have to run twice.
