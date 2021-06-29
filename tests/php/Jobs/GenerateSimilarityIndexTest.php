@@ -30,12 +30,13 @@ class GenerateSimilarityIndexTest extends TestCase
         $i4 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg', 'hash' => 'kjsbfabefhlbeqwhkcbd']);
         $i5 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'd.jpg', 'hash' => 'jhsgckhqwbliejhfqkw3']);
         // Test if hash is generated per thumbnail
-        with(new GenerateSimilarityIndexStub($volume))->handle();
 
+        with(new GenerateSimilarityIndexStub($volume))->handle();
         foreach ($volume->images as $image) {
             $this->assertIsInt($image->similarityIndex);
-
         }
+
+
 
     }
     public function testSimilarityIndexInitialization()
@@ -65,6 +66,16 @@ class GenerateSimilarityIndexTest extends TestCase
         with(new GenerateSimilarityIndexStub($volume))->handle();
         foreach ($volume->images as $image) {
             $this->assertNull($image->similarityIndex);
+        }
+    }
+
+    public function testOneImage()
+    {
+        $volume = VolumeTest::create();
+        $i1 = ImageTest::create(['filename' => 'test.jpg', 'volume_id' => $volume->id, 'hash' => 'dqhdkjhqlwdlhlbsbjkk']);
+        with(new GenerateSimilarityIndexStub($volume))->handle();
+        foreach ($volume->images as $image) {
+            $this->assertEquals(0, $image->similarityIndex);
         }
     }
 

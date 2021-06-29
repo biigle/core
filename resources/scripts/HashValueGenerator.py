@@ -3,7 +3,6 @@ import imagehash
 import numpy as np
 import sys
 import io
-import base64
 # TODO: Import base64
 import json
 

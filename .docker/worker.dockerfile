@@ -132,6 +132,7 @@ RUN apk add --no-cache --virtual .build-deps \
         PyExcelerate==0.6.7 \
         Pillow==8.2.* \
         imagehash \
+        threadpoolctl \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
