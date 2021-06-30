@@ -79,32 +79,29 @@ class GenerateSimilarityIndex extends Job implements ShouldQueue
     public function handle()
     {
         $collection = $this->volume->images;
-        if ($collection->count() !== 1) {
-            if ($collection->whereNull('hash')->isEmpty()) {
-                $imageHashArray = $collection->pluck('hash', 'id');
-                $similarityIndexArray = $this->createSimilarityIndexArray($imageHashArray);
-                if (!is_null($similarityIndexArray)) {
-                    foreach ($this->volume->images as $image) {
-                        $id = $image->id;
-                        $similarityIndex = $similarityIndexArray[$id];
-                        $image->similarityIndex = $similarityIndex;
-                        $image->save();
-                    }
-                }
-            }
-        } else {
+        if ($collection->whereNull('hash')->isNotEmpty()) {
+            // maybe create a warning in the logs
+            return;
+        }
+
+        if ($collection->count() <= 1) {
             foreach ($this->volume->images as $image) {
                 $image->similarityIndex = 0;
                 $image->save();
             }
+            return;
         }
 
-
-
-
-
-
-
+        $imageHashArray = $collection->pluck('hash', 'id');
+        $similarityIndexArray = $this->createSimilarityIndexArray($imageHashArray);
+        if (!is_null($similarityIndexArray)) {
+            foreach ($this->volume->images as $image) {
+                $id = $image->id;
+                $similarityIndex = $similarityIndexArray[$id];
+                $image->similarityIndex = $similarityIndex;
+                $image->save();
+            }
+        }
     }
 
     /**
