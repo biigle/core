@@ -25,7 +25,7 @@
             <a href="{{ route('settings') }}" title="{{ trans('biigle.titles.settings') }}">{{ trans('biigle.titles.settings') }}</a>
         </li>
         <li>
-            <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="Sign out">Sign out</a>
+            <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="Log out">Log out</a>
 
             <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
                 {{ csrf_field() }}

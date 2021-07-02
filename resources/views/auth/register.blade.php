@@ -112,6 +112,7 @@
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>
+                <a href="{{ url('login') }}" class="pull-right" title="Log in">Log in</a>
             </p>
         </div>
     </div>
