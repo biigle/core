@@ -32,6 +32,20 @@ class VolumeControllerTest extends ApiTestCase
             ->assertJsonMissing(['name' => $project->name]);
     }
 
+    public function testIndexGlobalAdmin()
+    {
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+
+        $this->beGlobalAdmin();
+        $this->get('/api/v1/volumes/')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            ->assertJsonFragment(['name' => $project->name]);
+    }
+
     public function testShow()
     {
         $project = ProjectTest::create();

@@ -48,9 +48,11 @@ class VolumeController extends Controller
 
         return Volume::accessibleBy($user)
             ->with(['projects' => function ($query) use ($user) {
-                $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
-                    ->where('project_user.user_id', $user->id)
-                    ->select('projects.id', 'projects.name', 'projects.description');
+                $query->when(!$user->can('sudo'), function ($query) {
+                    return $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                        ->where('project_user.user_id', $user->id);
+                })
+                ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
