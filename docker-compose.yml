@@ -28,6 +28,9 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+    tmpfs:
+      - /tmp
+      - /var/www/storage/framework/testing/disks:uid=${USER_ID},gid=${GROUP_ID}
     environment:
       - "DB_PORT=5432"
       - "REDIS_HOST=cache"

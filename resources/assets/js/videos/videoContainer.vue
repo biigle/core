@@ -619,7 +619,7 @@ export default {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
                     Messages.danger('Unable to access the video file.');
                 } else {
-                    Messages.danger('The video codec is not supported by your browser.');
+                    Messages.danger('The video file could not be accessed or the codec is not supported by your browser.');
                 }
             } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                 Messages.danger('Error while loading video file.');
