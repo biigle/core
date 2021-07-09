@@ -17,7 +17,7 @@
 
 @section('admin-content')
 <div id="export-container">
-    <tabs v-on:active="handleSwitchedTab">
+    <tabs v-on:change="handleSwitchedTab">
         @if (in_array('volumes', $allowedExports))
             <tab title="Volumes" v-cloak>
                 {{-- Implement: Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
