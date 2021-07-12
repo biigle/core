@@ -21,6 +21,8 @@
  * Get all file names of the volume:
  * resource.queryFilenames({id: 1}).then(...);
  *
+ * Get all the similarity indices of the volume:
+ * resource.querySimilarityIndices({id: volumeId}).then(...)
  * Get all users that have access to a volume:
  * resource.queryUsers({id: 1}).then(...);
  *
@@ -56,6 +58,10 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
     queryFilenames: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/filenames',
+    },
+    querySimilarityIndices: {
+        method: 'GET',
+        url: 'api/v1/volumes/{$id}/similarity-indices',
     },
     queryFileLabels: {
         method: 'GET',

@@ -99,6 +99,34 @@ let randomSorter = {
     },
 };
 
+let similaritySorter = {
+    id: 'similarity',
+    types: ['image'],
+    component: {
+        mixins: [SortComponent],
+        data() {
+            return {
+                fileIds: [],
+                title: 'Sort images by Similarity',
+                text: 'Similarity',
+                id: 'similarity',
+            };
+        },
+        methods: {
+            getSequence() {
+                // let ids = ;
+
+                // return new Vue.Promise.resolve(ids);
+            },
+
+        },
+        created() {
+            this.fileIds = biigle.$require('volumes.fileIds');
+        },
+    },
+
+};
+
 /**
  * Store for the volume image sorters
  */
@@ -107,4 +135,5 @@ export default [
     filenameSorter,
     idSorter,
     randomSorter,
+    similaritySorter,
 ];

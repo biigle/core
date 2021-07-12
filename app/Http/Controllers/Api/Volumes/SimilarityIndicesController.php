@@ -29,11 +29,12 @@ class SimilarityIndicesController extends Controller
      */
     public function index($id)
     {
+        // should not be find or fail
         $volume = Volume::findOrFail($id);
         if ($volume->isImageVolume()) {
             $this->authorize('access', $volume);
 
-            return $volume->files()->pluck('hash', 'id');
+            return $volume->files()->pluck('similarityIndex', 'id');
         }
         // check right return statement
         return;
