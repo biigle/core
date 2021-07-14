@@ -1,4 +1,5 @@
 import SortComponent from '../components/sortComponent';
+import VolumesApi from '../api/volumes';
 
 let filenameSorter = {
     id: 'filename',
@@ -84,7 +85,6 @@ let randomSorter = {
             },
             getSequence() {
                 let ids = this.shuffle(this.fileIds.slice());
-
                 return new Vue.Promise.resolve(ids);
             },
             handleClick() {
@@ -106,22 +106,38 @@ let similaritySorter = {
         mixins: [SortComponent],
         data() {
             return {
-                fileIds: [],
+                indices: [],
                 title: 'Sort images by Similarity',
                 text: 'Similarity',
                 id: 'similarity',
+                cache: [],
             };
         },
         methods: {
             getSequence() {
-                // let ids = ;
+                return new Vue.Promise.resolve(this.indices);
 
-                // return new Vue.Promise.resolve(ids);
+            },
+            getSimilarityIndices() {
+                this.loadingSequence = true;
+                return VolumesApi.querySimilarityIndices({id: this.volumeId})
+                    .then(this.parseResponse)
+                    .then((sequence) => {
+                        this.cache = sequence;
+                        return sequence;
+                    })
+                    .finally(() => this.loadingSequence = false);
+            },
+            parseResponse(response) {
+                return response.data;
+            },
+            compare(a, b) {
+                return a - b;
             },
 
         },
         created() {
-            this.fileIds = biigle.$require('volumes.fileIds');
+            this.indices = this.getSimilarityIndices();
         },
     },
 

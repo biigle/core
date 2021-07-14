@@ -63,7 +63,7 @@ class SimilarityIndicesControllerTest extends ApiTestCase
         // what should the api return if media type ius video
         $this->beGuest();
         $this->get("/api/v1/volumes/{$id}/similarity-indices/")
-            ->assertStatus(200);
+            ->assertStatus(404);
 
     }
 }
