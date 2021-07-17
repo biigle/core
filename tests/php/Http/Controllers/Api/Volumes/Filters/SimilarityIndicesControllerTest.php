@@ -47,6 +47,54 @@ class SimilarityIndicesControllerTest extends ApiTestCase
 
     }
 
+    public function testMissingOneSimilarityIndex()
+    {
+        $volumeId = $this->volume()->id;
+
+        $image1 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'filename' => 'test-image1.jpg',
+        ]);
+        $image2 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'similarityIndex' => 1,
+            'filename' => 'test-image2.jpg',
+        ]);
+        $image3 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'similarityIndex' => 0,
+            'filename' => 'test-image3.jpg',
+        ]);
+
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$volumeId}/similarity-indices/");
+
+        $this->beUser();
+        $this->get("/api/v1/volumes/{$volumeId}/similarity-indices/")->assertStatus(404);
+    }
+
+    public function testMissingAllSimilarityIndices()
+    {
+        $volumeId = $this->volume()->id;
+
+        $image1 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'filename' => 'test-image1.jpg',
+        ]);
+        $image2 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'filename' => 'test-image2.jpg',
+        ]);
+        $image3 = ImageTest::create([
+            'volume_id' => $volumeId,
+            'filename' => 'test-image3.jpg',
+        ]);
+
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$volumeId}/similarity-indices/");
+
+        $this->beUser();
+        $this->get("/api/v1/volumes/{$volumeId}/similarity-indices/")->assertStatus(404);
+    }
+
     public function testVideoMediaType()
     {
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;

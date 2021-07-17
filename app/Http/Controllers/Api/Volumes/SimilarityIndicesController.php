@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Biigle\MediaType;
+use function Webmozart\Assert\Tests\StaticAnalysis\notNull;
 
 class SimilarityIndicesController extends Controller
 {
