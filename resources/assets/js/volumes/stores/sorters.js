@@ -106,16 +106,17 @@ let similaritySorter = {
         mixins: [SortComponent],
         data() {
             return {
-                indices: [],
+                fileIds: [],
                 title: 'Sort images by Similarity',
                 text: 'Similarity',
                 id: 'similarity',
-                cache: [],
             };
         },
         methods: {
             getSequence() {
-                return new Vue.Promise.resolve(this.indices);
+                let sequence = this.getSimilarityIndices();
+                this.fileIds = this.sortSequence(sequence);
+                return new Vue.Promise.resolve(this.fileIds);
 
             },
             getSimilarityIndices() {
@@ -123,7 +124,6 @@ let similaritySorter = {
                 return VolumesApi.querySimilarityIndices({id: this.volumeId})
                     .then(this.parseResponse)
                     .then((sequence) => {
-                        this.cache = sequence;
                         return sequence;
                     })
                     .finally(() => this.loadingSequence = false);
@@ -131,13 +131,20 @@ let similaritySorter = {
             parseResponse(response) {
                 return response.data;
             },
-            compare(a, b) {
-                return a - b;
+            sortSequence(simIndices) {
+                let sortable = [];
+                for (let index in simIndices) {
+                    sortable.push([index, simIndices[index]]);
+                }
+
+                sortable.sort(function(a, b) {
+                    return a[1] - b[1];
+                });
+                return sortable.map(function (id) {
+                    return id[0];
+                })
             },
 
-        },
-        created() {
-            this.indices = this.getSimilarityIndices();
         },
     },
 
