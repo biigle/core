@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Biigle\MediaType;
-use function Webmozart\Assert\Tests\StaticAnalysis\notNull;
 
 class SimilarityIndicesController extends Controller
 {
@@ -35,7 +34,13 @@ class SimilarityIndicesController extends Controller
         $volume = Volume::where('media_type_id', MediaType::imageId())->findOrFail($id);
         $this->authorize('access', $volume);
 
+        // if ($volume->images()->whereNull('similarityIndex')->exists()) {
+        //abort(404);
+        //}
+
         return $volume->files()->pluck('similarityIndex', 'id');
+
+
 
 
     }

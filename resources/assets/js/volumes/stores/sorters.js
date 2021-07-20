@@ -116,6 +116,7 @@ let similaritySorter = {
             getSequence() {
                 let sequence = this.getSimilarityIndices();
                 this.fileIds = this.sortSequence(sequence);
+
                 return new Vue.Promise.resolve(this.fileIds);
 
             },
@@ -145,6 +146,9 @@ let similaritySorter = {
                 })
             },
 
+        },
+        created() {
+            this.volumeId = biigle.$require('volumes.volumeId');
         },
     },
 
