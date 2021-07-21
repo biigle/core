@@ -122,12 +122,15 @@ RUN apk add --no-cache --virtual .build-deps \
         python3-dev \
         py3-pip \
         py3-wheel \
+        py3-numpy-dev \
         build-base \
         libjpeg-turbo-dev \
         libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
         Pillow==8.2.* \
+        imagehash \
+        threadpoolctl \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 

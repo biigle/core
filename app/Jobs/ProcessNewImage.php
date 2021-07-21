@@ -123,6 +123,7 @@ class ProcessNewImage extends Job implements ShouldQueue
 
                     if ($this->needsThumbnail($image)) {
                         $this->makeThumbnail($image, $path);
+                        GenerateHashValue::dispatch($this->image);
                     }
                 });
             }
