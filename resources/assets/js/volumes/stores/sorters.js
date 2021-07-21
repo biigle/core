@@ -114,10 +114,14 @@ let similaritySorter = {
         },
         methods: {
             getSequence() {
-                let sequence = this.getSimilarityIndices();
-                this.fileIds = this.sortSequence(sequence);
-
-                return new Vue.Promise.resolve(this.fileIds);
+                if (this.fileIds.length === 0) {
+                    return this.getSimilarityIndices().then((sequence) => {
+                        this.fileIds = this.sortSequence(sequence);
+                        return this.fileIds;
+                    });
+                } else {
+                    return  Vue.Promise.resolve(this.fileIds);
+                }
 
             },
             getSimilarityIndices() {

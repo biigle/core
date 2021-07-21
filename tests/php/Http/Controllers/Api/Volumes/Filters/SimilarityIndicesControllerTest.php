@@ -68,7 +68,7 @@ class SimilarityIndicesControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$volumeId}/similarity-indices/");
 
-        $this->beUser();
+        $this->beGuest();
         $this->get("/api/v1/volumes/{$volumeId}/similarity-indices/")->assertStatus(404);
     }
 
@@ -91,7 +91,7 @@ class SimilarityIndicesControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$volumeId}/similarity-indices/");
 
-        $this->beUser();
+        $this->beGuest();
         $this->get("/api/v1/volumes/{$volumeId}/similarity-indices/")->assertStatus(404);
     }
 

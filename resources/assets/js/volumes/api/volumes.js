@@ -61,7 +61,7 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
     },
     querySimilarityIndices: {
         method: 'GET',
-        url: 'api/v1/volumes/{$id}/similarity-indices',
+        url: 'api/v1/volumes{/id}/similarity-indices',
     },
     queryFileLabels: {
         method: 'GET',

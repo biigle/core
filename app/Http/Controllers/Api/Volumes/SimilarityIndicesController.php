@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Biigle\MediaType;
+use Illuminate\Http\Response;
 
 class SimilarityIndicesController extends Controller
 {
@@ -34,9 +35,9 @@ class SimilarityIndicesController extends Controller
         $volume = Volume::where('media_type_id', MediaType::imageId())->findOrFail($id);
         $this->authorize('access', $volume);
 
-        // if ($volume->images()->whereNull('similarityIndex')->exists()) {
-        //abort(404);
-        //}
+        if ($volume->images()->whereNull('similarityIndex')->exists()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
 
         return $volume->files()->pluck('similarityIndex', 'id');
 
