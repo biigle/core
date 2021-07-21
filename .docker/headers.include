@@ -1,0 +1,4 @@
+# Security headers recommended by Mozilla Observatory.
+add_header X-Content-Type-Options "nosniff";
+add_header X-Frame-Options "DENY";
+add_header Referrer-Policy "strict-origin-when-cross-origin";
