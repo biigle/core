@@ -46,4 +46,24 @@ return [
         'cache_key' => env('BIIGLE_FEDERATED_SEARCH_CACHE_KEY', 'federated_search_index'),
     ],
 
+    /*
+    | Path to the Python executable.
+    */
+    'python' => '/usr/bin/python3',
+
+    /*
+   | Directory where temporary files should be stored.
+   */
+    'tmp_dir' => env('HASH_TMP_DIR', sys_get_temp_dir()),
+
+    /*
+    | Path to the HashValueGenerator.
+    */
+    'hash_value_generator' => __DIR__.'/../resources/scripts/HashValueGenerator.py',
+
+    /*
+    | Path to the SimilarityIndexGenerator.
+    */
+    'similarity_index_generator' => __DIR__.'/../resources/scripts/SimilarityIndexGenerator.py',
+
 ];

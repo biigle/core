@@ -305,6 +305,10 @@ $router->group([
         'uses' => 'FilenamesController@index',
     ]);
 
+    $router->get('{id}/similarity-indices', [
+        'uses' => 'SimilarityIndicesController@index',
+    ]);
+
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
     ]);
