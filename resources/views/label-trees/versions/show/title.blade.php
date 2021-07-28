@@ -11,7 +11,7 @@
                 @can('destroy', $version)
                     <li role="separator" class="divider"></li>
                     <li :class="disabledClass">
-                        <a title="Delete this label tree version" v-on:click="deleteVersion">Delete</a>
+                        <a title="Delete this label tree version" v-on:click.prevent="deleteVersion" href="#">Delete</a>
                     </li>
                 @endcan
             </template>

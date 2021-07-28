@@ -12,35 +12,33 @@
                 @if ($isMember)
                     <li @unless($isPinned || $canPin) class="disabled" @endunless>
                         @if ($isPinned)
-                            <a onclick="event.preventDefault();document.getElementById('pin-form').submit();" title="Unpin this project from the dashboard">Unpin</a>
+                            <a onclick="event.preventDefault();document.getElementById('pin-form').submit();" title="Unpin this project from the dashboard" href="#">Unpin</a>
                             <form id="pin-form" action="{{url("api/v1/projects/{$project->id}/pin")}}" method="POST" style="display: none;">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_redirect" value="{{ route('project', $project->id) }}">
                                 <input type="hidden" name="_method" value="DELETE">
                             </form>
                         @elseif ($canPin)
-                            <a onclick="event.preventDefault();document.getElementById('pin-form').submit();" title="Pin this project to the dashboard">Pin</a>
+                            <a onclick="event.preventDefault();document.getElementById('pin-form').submit();" title="Pin this project to the dashboard" href="#">Pin</a>
                             <form id="pin-form" action="{{url("api/v1/projects/{$project->id}/pin")}}" method="POST" style="display: none;">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_redirect" value="{{ route('project', $project->id) }}">
                             </form>
-                        @else
-                            <a title="You cannot pin more than three projects to the dashboard">Pin</a>
                         @endif
                     </li>
                 @endif
                 @if ($isMember)
                     <li :class="disabledClass">
-                        <a title="Revoke membership of this project" v-on:click="leaveProject">Leave</a>
+                        <a title="Revoke membership of this project" v-on:click.prevent="leaveProject" href="#">Leave</a>
                     </li>
                 @endif
                 @can('update', $project)
                     <li role="separator" class="divider"></li>
                     <li :class="disabledClass">
-                        <a title="Edit project title and description" v-on:click="startEditing">Edit</a>
+                        <a title="Edit project title and description" v-on:click.prevent="startEditing" href="#">Edit</a>
                     </li>
                     <li :class="disabledClass">
-                        <a title="Delete this project" v-on:click="deleteProject">Delete</a>
+                        <a title="Delete this project" v-on:click.prevent="deleteProject" href="#">Delete</a>
                     </li>
                 @endcan
             </template>
