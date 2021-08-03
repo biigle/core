@@ -86,6 +86,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
             if (App::runningUnitTests()) {
                 throw $e;
+            } elseif ($this->attempts() < $this->tries) {
+                // Retry after 10 minutes.
+                $this->release(600);
             } else {
                 Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
             }
