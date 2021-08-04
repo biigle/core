@@ -556,6 +556,7 @@ export default {
         render() {
             if (this.map) {
                 this.map.render();
+                this.$emit('render');
             }
         },
         handleRegularImage(image) {
