@@ -5,9 +5,15 @@
     overflow: none;
 }
 
-.annotations-tab__filter {
+.annotations-tab__header {
     padding: 1em;
     width: 100%;
+}
+
+.annotations-tab__filter {
+    &:not(:last-child) {
+        margin-bottom: 1em;
+    }
 
     select.form-control {
         width: 80px;

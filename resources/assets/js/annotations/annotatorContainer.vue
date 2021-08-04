@@ -138,6 +138,9 @@ export default {
         hasCrossOriginError() {
             return !this.loading && this.crossOriginError;
         },
+        annotationsHiddenByFilter() {
+            return this.annotations.length !== this.filteredAnnotations.length;
+        },
     },
     methods: {
         getImageAndAnnotationsPromises(id) {

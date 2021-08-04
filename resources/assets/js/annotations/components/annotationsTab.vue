@@ -38,6 +38,10 @@ export default {
                 return [];
             },
         },
+        annotationsHiddenByFilter: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         labelItems() {
