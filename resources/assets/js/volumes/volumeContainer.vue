@@ -121,6 +121,9 @@ export default {
         filterEmpty() {
             return this.filterActive && this.filterMode !== 'flag' && this.filterSequence.length === 0;
         },
+        noContent() {
+            return !this.loading && this.files.length === 0;
+        },
     },
     methods: {
         handleSidebarToggle() {
