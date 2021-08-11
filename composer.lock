@@ -74,28 +74,28 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v3.1.4",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "7d7a6a01980f85609051fcd780af4a8fb3ff4bfc"
+                "reference": "d2fedde41ce85d309be5456aa28494774400ed90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/7d7a6a01980f85609051fcd780af4a8fb3ff4bfc",
-                "reference": "7d7a6a01980f85609051fcd780af4a8fb3ff4bfc",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d2fedde41ce85d309be5456aa28494774400ed90",
+                "reference": "d2fedde41ce85d309be5456aa28494774400ed90",
                 "shasum": ""
             },
             "require": {
-                "illuminate/console": "^6.0",
-                "illuminate/filesystem": "^6.0",
-                "illuminate/support": "^6.0",
+                "illuminate/console": "^6.0|^7.0|^8.0",
+                "illuminate/filesystem": "^6.0|^7.0|^8.0",
+                "illuminate/support": "^6.0|^7.0|^8.0",
                 "league/flysystem": "^1.0"
             },
             "require-dev": {
-                "laravel/laravel": "^6.0",
+                "laravel/laravel": "^6.0|^7.0|^8.0",
                 "mockery/mockery": "^1.2",
-                "phpunit/phpunit": "^8.0"
+                "phpunit/phpunit": "^9.0"
             },
             "type": "library",
             "extra": {
@@ -126,9 +126,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/master"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v3.2.1"
             },
-            "time": "2020-06-30T05:54:23+00:00"
+            "time": "2021-08-11T06:08:34+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
