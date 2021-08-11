@@ -14,6 +14,7 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Str;
 use Log;
 use Storage;
@@ -22,7 +23,7 @@ use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
-    use SerializesModels;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
