@@ -62,8 +62,15 @@
     <div class="sidebar-container__content">
         <loader-block v-cloak :active="loading"></loader-block>
         <div class="volume-content__messages">
-            <div v-cloak v-if="filterEmpty" class="alert alert-info">
-                There are no {{$type}}s matching your filter rules.
+            <div v-cloak v-if="filterEmpty" class="panel panel-info">
+                <div class="panel-body text-info">
+                    There are no {{$type}}s matching your filter rules.
+                </div>
+            </div>
+            <div v-cloak v-if="noContent" class="panel panel-info">
+                <div class="panel-body text-info">
+                    This volume is empty.
+                </div>
             </div>
         </div>
         <image-grid

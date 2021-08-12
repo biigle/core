@@ -6,6 +6,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
+import {getRoundToPrecision} from '../../utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.
@@ -57,13 +58,14 @@ export default {
             let toCreate = [];
             let annotation;
             let hasRenderedFeatures = false;
+            const rtp = getRoundToPrecision(time);
 
             for (let i = 0, length = annotations.length; i < length; i++) {
                 // We can skip ahead and break early because of the sorting in the
                 // annotationsPreparedToRender array.
                 // Check for start!=time in case this is a single frame annotation
-                // (start==end). It wwould never be shown otherwise.
-                if (annotations[i].end < time && annotations[i].start !== time) {
+                // (start==end). It would never be shown otherwise.
+                if (rtp(annotations[i].end) < time && rtp(annotations[i].start) !== time) {
                     continue;
                 }
 
@@ -71,7 +73,7 @@ export default {
                     continue;
                 }
 
-                if (annotations[i].start > time) {
+                if (rtp(annotations[i].start) > time) {
                     break;
                 }
 

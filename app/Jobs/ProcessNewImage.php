@@ -129,6 +129,9 @@ class ProcessNewImage extends Job implements ShouldQueue
         } catch (Exception $e) {
             if (App::runningUnitTests()) {
                 throw $e;
+            } elseif ($this->attempts() < $this->tries) {
+                // Retry after 10 minutes.
+                $this->release(600);
             } else {
                 Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
             }

@@ -50,6 +50,10 @@ class LogsController extends Controller
 
             $paginator->setCollection($messages);
 
+            if ($request->has('level')) {
+                $paginator->appends('level', $logLevel);
+            }
+
             return view('admin.logs.index-redis', compact('paginator', 'logLevel'));
         } else {
             $logs = [];
