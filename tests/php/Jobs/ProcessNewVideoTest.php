@@ -81,7 +81,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         FileCache::shouldReceive('getOnce')
-            ->andThrow(new Exception("MIME type 'video/x-m4v' not allowed."));
+            ->andThrow(new Exception("Error while caching file 'test.mp4': MIME type 'video/x-m4v' not allowed."));
 
         try {
             $job->handle();
