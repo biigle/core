@@ -83,6 +83,7 @@ return [
             'password'  => env('OS_PASSWORD', ''),
             'projectId' => env('OS_PROJECT_ID', ''),
             'container' => env('OS_CONTAINER_NAME', ''),
+            'tempUrlKey' => env('OS_TEMP_URL_KEY', ''),
         ],
 
         'largo' => [

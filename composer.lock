@@ -2752,22 +2752,22 @@
         },
         {
             "name": "mzur/laravel-openstack-swift",
-            "version": "v1.11.0",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mzur/laravel-openstack-swift.git",
-                "reference": "ce948c8e4f26570329d78db78b87c0686b252564"
+                "reference": "f36c81683e8ba8c6a9eadd80f91c24f48da54284"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/ce948c8e4f26570329d78db78b87c0686b252564",
-                "reference": "ce948c8e4f26570329d78db78b87c0686b252564",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/f36c81683e8ba8c6a9eadd80f91c24f48da54284",
+                "reference": "f36c81683e8ba8c6a9eadd80f91c24f48da54284",
                 "shasum": ""
             },
             "require": {
                 "biigle/laravel-cached-openstack": "^1.0",
-                "illuminate/filesystem": "^5.1|^6.0|^7.0",
-                "illuminate/support": "^5.1|^6.0|^7.0",
+                "illuminate/filesystem": "^5.1|^6.0|^7.0|^8.0",
+                "illuminate/support": "^5.1|^6.0|^7.0|^8.0",
                 "nimbusoft/flysystem-openstack-swift": "^0.3"
             },
             "type": "library",
@@ -2796,9 +2796,9 @@
             "description": "OpenStack Swift storage driver for Laravel/Lumen.",
             "support": {
                 "issues": "https://github.com/mzur/laravel-openstack-swift/issues",
-                "source": "https://github.com/mzur/laravel-openstack-swift/tree/master"
+                "source": "https://github.com/mzur/laravel-openstack-swift/tree/v1.13.0"
             },
-            "time": "2020-03-09T09:45:05+00:00"
+            "time": "2021-08-27T09:37:34+00:00"
         },
         {
             "name": "nesbot/carbon",
