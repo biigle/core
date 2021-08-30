@@ -155,6 +155,9 @@ export default {
 
             return '';
         },
+        annotationsHiddenByFilter() {
+            return this.annotations.length !== this.filteredAnnotations.length;
+        },
     },
     methods: {
         prepareAnnotation(annotation) {

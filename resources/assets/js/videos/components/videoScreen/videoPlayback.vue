@@ -26,8 +26,7 @@ export default {
         };
     },
     methods: {
-        initVideoLayer(args) {
-            let map = args[0];
+        updateVideoLayer() {
             this.videoCanvas.width = this.video.videoWidth;
             this.videoCanvas.height = this.video.videoHeight;
             this.extent = [0, 0, this.videoCanvas.width, this.videoCanvas.height];
@@ -36,6 +35,10 @@ export default {
                 units: 'pixels',
                 extent: this.extent,
             });
+
+            if (this.videoLayer) {
+                this.map.removeLayer(this.videoLayer);
+            }
 
             this.videoLayer = new ImageLayer({
                 name: 'image', // required by the minimap component
@@ -47,9 +50,9 @@ export default {
                 }),
             });
 
-            map.addLayer(this.videoLayer);
+            this.map.addLayer(this.videoLayer);
 
-            map.setView(new View({
+            this.map.setView(new View({
                 // Center is required but will be updated immediately with fit().
                 center: [0, 0],
                 projection: projection,
@@ -58,7 +61,7 @@ export default {
                 extent: this.extent,
             }));
 
-            map.getView().fit(this.extent);
+            this.map.getView().fit(this.extent);
         },
         renderVideo(force) {
             // Drop animation frame if the time has not changed.
@@ -107,6 +110,10 @@ export default {
         emitMapReady() {
             this.$emit('map-ready', this.map);
         },
+        attachUpdateVideoLayerListener() {
+            // Update the layer (dimensions) if a new video is loaded.
+            this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
+        },
     },
     watch: {
         playing(playing) {
@@ -132,8 +139,9 @@ export default {
             this.video.addEventListener('loadedmetadata', resolve);
         });
         Vue.Promise.all([mapPromise, metadataPromise])
-            .then(this.initVideoLayer)
-            .then(this.emitMapReady);
+            .then(this.updateVideoLayer)
+            .then(this.emitMapReady)
+            .then(this.attachUpdateVideoLayerListener);
 
         Keyboard.on(' ', this.togglePlaying);
 
