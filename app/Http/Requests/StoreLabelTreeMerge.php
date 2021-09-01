@@ -69,6 +69,10 @@ class StoreLabelTreeMerge extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             $this->validateCreate($validator);
             $this->validateRemove($validator);

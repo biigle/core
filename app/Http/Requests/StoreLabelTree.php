@@ -55,6 +55,10 @@ class StoreLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if ($this->filled('project_id')) {
                 $this->project = Project::find($this->input('project_id'));

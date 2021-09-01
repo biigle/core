@@ -49,6 +49,10 @@ class StoreProjectLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             $tree = LabelTree::find($this->input('id'));
             if ($tree) {

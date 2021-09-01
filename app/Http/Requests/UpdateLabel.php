@@ -48,6 +48,10 @@ class UpdateLabel extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if ($this->filled('parent_id')) {
                 $sameTree = Label::where('id', $this->input('parent_id'))
