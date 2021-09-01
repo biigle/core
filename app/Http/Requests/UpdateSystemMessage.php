@@ -36,7 +36,7 @@ class UpdateSystemMessage extends FormRequest
         return [
             'title' => 'filled',
             'body' => 'filled',
-            'type_id' => 'filled|id|exists:system_message_types,id',
+            'type_id' => 'filled|integer|exists:system_message_types,id',
             'publish' => 'filled|boolean',
         ];
     }

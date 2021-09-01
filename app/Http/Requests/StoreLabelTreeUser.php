@@ -53,8 +53,8 @@ class StoreLabelTreeUser extends FormRequest
         }
 
         return [
-            'id' => 'required|id|exists:users,id',
-            'role_id' => "required|id|in:{$roles}",
+            'id' => 'required|integer|exists:users,id',
+            'role_id' => "required|integer|in:{$roles}",
         ];
     }
 

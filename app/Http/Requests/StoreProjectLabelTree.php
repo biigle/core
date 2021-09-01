@@ -37,7 +37,7 @@ class StoreProjectLabelTree extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|id|exists:label_trees,id',
+            'id' => 'required|integer|exists:label_trees,id',
         ];
     }
 

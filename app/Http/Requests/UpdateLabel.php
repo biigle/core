@@ -36,7 +36,7 @@ class UpdateLabel extends FormRequest
         return [
             'name' => 'filled',
             'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-            'parent_id' => 'filled|id|exists:labels,id',
+            'parent_id' => 'filled|integer|exists:labels,id',
         ];
     }
 

@@ -43,7 +43,7 @@ class StoreVideoAnnotationLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|id|exists:labels,id',
+            'label_id' => 'required|integer|exists:labels,id',
         ];
     }
 
