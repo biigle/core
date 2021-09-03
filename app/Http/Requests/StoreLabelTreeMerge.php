@@ -69,6 +69,10 @@ class StoreLabelTreeMerge extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             $this->validateCreate($validator);
             $this->validateRemove($validator);
@@ -91,15 +95,13 @@ class StoreLabelTreeMerge extends FormRequest
             $v = Validator::make($label, [
                 'name' => 'required|max:512',
                 'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-                'parent_id' => 'id',
+                'parent_id' => 'integer',
                 'children' => 'array',
             ]);
 
             if ($v->fails()) {
                 $validator->errors()->merge($v->errors());
-            }
-
-            if (array_key_exists('parent_id', $label)) {
+            } elseif (array_key_exists('parent_id', $label)) {
                 $parentIds[] = $label['parent_id'];
             }
         }

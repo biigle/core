@@ -42,7 +42,7 @@ class LinkVideoAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'annotation_id' => 'required|id|exists:video_annotations,id',
+            'annotation_id' => 'required|integer|exists:video_annotations,id',
         ];
     }
 

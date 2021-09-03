@@ -47,7 +47,7 @@ class UpdateUser extends FormRequest
             'password' => 'nullable|min:8',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
-            'role_id' => "filled|in:{$roles}",
+            'role_id' => "filled|integer|in:{$roles}",
             'auth_password' => 'required_with:role_id,password,email',
             'affiliation' => 'nullable|max:255',
             'super_user_mode' => 'filled|bool',
