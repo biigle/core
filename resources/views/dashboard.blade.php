@@ -15,6 +15,10 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right">
+                <a href="{{url('manual')}}" class="btn btn-default" title="View the user manual">
+                    <i class="fa fa-book"></i> View Manual
+                </a>
+
                 @can('create', \Biigle\Project::class)
                     <a href="{{route('projects-create')}}" class="btn btn-default" title="Create a new project">
                         <i class="fa fa-folder"></i> Create Project
