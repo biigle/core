@@ -617,6 +617,7 @@ export default {
         this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = true;
+        this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
