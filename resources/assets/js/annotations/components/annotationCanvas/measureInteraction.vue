@@ -68,6 +68,7 @@ export default {
         clearMeasureFeature() {
             this.setMeasureFeature(undefined);
             measureLayer.getSource().clear();
+            this.cantConvertMeasureFeature = true;
         }
     },
     watch: {
@@ -80,7 +81,6 @@ export default {
                 this.clearMeasureFeature();
                 this.map.removeLayer(measureLayer);
                 this.map.removeInteraction(measureInteraction);
-                this.cantConvertMeasureFeature = true;
             }
         },
         image() {
