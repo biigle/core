@@ -193,8 +193,19 @@ export default {
             }
         },
         save() {
-            if (this.loading || (this.toDeleteCount > 0 && !confirm(`This might delete ${this.toDeleteCount} annotation(s). Continue?`))) {
-                return;
+            if (this.loading) {
+                return
+            }
+
+            if (this.toDeleteCount > 0) {
+                let response;
+                while (response !== null && parseInt(response, 10) !== this.toDeleteCount) {
+                    response = prompt(`This might delete ${this.toDeleteCount} annotation(s). Please enter the number to continue.`);
+                }
+
+                if (response === null) {
+                    return;
+                }
             }
 
             this.startLoading();
