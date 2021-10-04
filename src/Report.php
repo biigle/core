@@ -29,6 +29,7 @@ class Report extends Model
         'source_id' => 'int',
         'options' => 'array',
         'ready_at' => 'datetime',
+        'notify_when_ready' => 'boolean',
     ];
 
     /**

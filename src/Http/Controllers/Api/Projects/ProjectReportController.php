@@ -31,17 +31,22 @@ class ProjectReportController extends Controller
      *
      * @param StoreProjectReport $request
      * @param int $id Project ID
+     * 
+     * @return mixed
      */
     public function store(StoreProjectReport $request, $id)
     {
         $report = new Report;
         $report->source()->associate($request->project);
         $report->type_id = $request->input('type_id');
+        $report->notify_when_ready = $request->getUser() == null;
         $report->user()->associate($request->user());
         $report->options = $request->getOptions($request);
         $report->save();
 
         $queue = config('reports.generate_report_queue');
         GenerateReportJob::dispatch($report)->onQueue($queue);
+
+        return $report;
     }
 }
