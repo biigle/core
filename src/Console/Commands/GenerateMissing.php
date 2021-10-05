@@ -95,13 +95,13 @@ class GenerateMissing extends Command
         $progress = $this->output->createProgressBar($total);
         $this->info("Checking {$total} image annotations...");
 
-        $handleAnnotation = function ($annotation) use ($progress, $pushToQueue, $storage) {
+        $handleAnnotation = function ($annotation) use ($progress, $pushToQueue, $storage, $queue) {
             $prefix = fragment_uuid_path($annotation->uuid);
             if (!$storage->exists("{$prefix}/{$annotation->id}.{$this->format}")) {
                 $this->count++;
                 if ($pushToQueue) {
                     GenerateImageAnnotationPatch::dispatch($annotation)
-                        ->onQueue($this->queue);
+                        ->onQueue($queue);
                 }
             }
             $progress->advance();
@@ -140,13 +140,13 @@ class GenerateMissing extends Command
         $progress = $this->output->createProgressBar($total);
         $this->info("Checking {$total} video annotations...");
 
-        $handleAnnotation = function ($annotation) use ($progress, $pushToQueue, $storage) {
+        $handleAnnotation = function ($annotation) use ($progress, $pushToQueue, $storage, $queue) {
             $prefix = fragment_uuid_path($annotation->uuid);
             if (!$storage->exists("{$prefix}/v-{$annotation->id}.{$this->format}")) {
                 $this->count++;
                 if ($pushToQueue) {
                     GenerateVideoAnnotationPatch::dispatch($annotation)
-                        ->onQueue($this->queue);
+                        ->onQueue($queue);
                 }
             }
             $progress->advance();
