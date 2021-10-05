@@ -6,6 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\VideoAnnotation;
+use Carbon\Carbon;
 use File;
 use Illuminate\Console\Command;
 use Storage;
@@ -17,7 +18,7 @@ class GenerateMissing extends Command
      *
      * @var string
      */
-    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations} {--queue=}';
+    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations} {--queue=} {--newer-than=}';
 
     /**
      * The console command description.
@@ -65,6 +66,8 @@ class GenerateMissing extends Command
             $this->handleImageAnnotations($storage, $pushToQueue, $queue);
         }
 
+        $this->count = 0;
+
         if (!$this->option('no-video-annotations')) {
             $this->handleVideoAnnotations($storage, $pushToQueue, $queue);
         }
@@ -82,6 +85,9 @@ class GenerateMissing extends Command
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('images.volume_id', $this->option('volume'));
+            })
+            ->when($this->option('newer-than'), function ($query) {
+                $query->where('image_annotations.created_at', '>', new Carbon($this->option('newer-than')));
             })
             ->select('image_annotations.id', 'images.uuid as uuid');
 
@@ -124,6 +130,9 @@ class GenerateMissing extends Command
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('videos.volume_id', $this->option('volume'));
+            })
+            ->when($this->option('newer-than'), function ($query) {
+                $query->where('video_annotations.created_at', '>', new Carbon($this->option('newer-than')));
             })
             ->select('video_annotations.id', 'videos.uuid as uuid');
 
