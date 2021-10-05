@@ -25,6 +25,7 @@ class StoreReport extends FormRequest
             'only_labels' => 'nullable|array',
             'only_labels.*' => 'exists:labels,id',
             'aggregate_child_labels' => "nullable|boolean",
+            'disable_notifications' => "nullable|boolean",
         ];
     }
 
@@ -76,6 +77,10 @@ class StoreReport extends FormRequest
             $options['aggregateChildLabels'] = boolval($this->input('aggregate_child_labels', false));
         }
 
+        if ($this->isAllowedForDisableNotifications()) {
+            $options['disableNotifications'] = boolval($this->input('disable_notifications', false));
+        }
+
         return $options;
     }
 
@@ -125,4 +130,16 @@ class StoreReport extends FormRequest
             ReportType::imageAnnotationsAbundanceId(),
         ]);
     }
+
+    /**
+     * Check if disable_notifications may be configured for the requested report type.
+     * 
+     * @return boolean
+     */
+    protected function isAllowedForDisableNotifications()
+    {
+        return true;
+    }
+
+
 }

@@ -12,12 +12,26 @@ use TestCase;
 
 class GenerateReportJobTest extends TestCase
 {
-    public function testHandle()
+    public function testHandleWithNotifications()
     {
         $report = Mockery::mock(Report::class);
         $report->shouldReceive('generate')->once();
         $user = Mockery::mock(User::class);
         $user->shouldReceive('notify')->once()->with(Mockery::type(ReportReady::class));
+        $report->shouldReceive('getAttribute')->with('user')->andReturn($user);
+        $report->shouldReceive('setAttribute')
+            ->once()
+            ->with('ready_at', Mockery::type(Carbon::class));
+        $report->shouldReceive('save')->once();
+        with(new GenerateReportJob($report))->handle();
+    }
+
+    public function testHandleWithoutNotifications()
+    {
+        $report = Mockery::mock(Report::class);
+        $report->shouldReceive('generate')->once();
+        $user = Mockery::mock(User::class);
+        $user->shouldNotReceive('notify');
         $report->shouldReceive('getAttribute')->with('user')->andReturn($user);
         $report->shouldReceive('setAttribute')
             ->once()
