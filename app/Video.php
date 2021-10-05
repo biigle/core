@@ -17,6 +17,9 @@ class Video extends VolumeFile
         'video/mp4',
         'video/quicktime',
         'video/webm',
+        // The 3GP container format can also store h.264 videos. Other codecs will be
+        // rejected.
+        'video/3gpp',
     ];
 
     /**
