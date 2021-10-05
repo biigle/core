@@ -18,5 +18,6 @@ $factory->define(Biigle\Modules\Reports\Report::class, function ($faker) {
             return factory(Biigle\Volume::class)->create()->id;
         },
         'source_type' => Biigle\Volume::class,
+        'notify_when_ready' => boolean,
     ];
 });

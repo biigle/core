@@ -29,7 +29,7 @@ class Report extends Model
         'source_id' => 'int',
         'options' => 'array',
         'ready_at' => 'datetime',
-        'notify_when_ready' => 'bool',
+        'notify_when_ready' => 'boolean',
     ];
 
     /**
@@ -164,5 +164,4 @@ class Report extends Model
     {
         Storage::disk(config('reports.storage_disk'))->delete($this->id);
     }
-
 }
