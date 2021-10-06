@@ -73,11 +73,14 @@ class ProcessNewVideo extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->video, [$this, 'handleFile']);
         } catch (Exception $e) {
+            $retry = true;
             if (!$this->video->error) {
                 if (Str::startsWith($e->getMessage(), 'The file is too large')) {
                     $this->video->error = Video::ERROR_TOO_LARGE;
+                    $retry = false;
                 } elseif (preg_match("/MIME type '.+' not allowed\.$/", $e->getMessage()) === 1) {
                     $this->video->error = Video::ERROR_MIME_TYPE;
+                    $retry = false;
                 } else {
                     $this->video->error = Video::ERROR_NOT_FOUND;
                 }
@@ -87,7 +90,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
             if (App::runningUnitTests()) {
                 throw $e;
-            } elseif ($this->attempts() < $this->tries) {
+            } elseif ($retry && $this->attempts() < $this->tries) {
                 // Retry after 10 minutes.
                 $this->release(600);
             } else {

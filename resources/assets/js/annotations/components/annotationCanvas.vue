@@ -549,9 +549,13 @@ export default {
                 this.requireSelectedLabel();
             }
         },
-        requireSelectedLabel() {
+        requireSelectedLabel(reset) {
+            reset = reset === undefined ? true : reset;
+
             this.$emit('requires-selected-label');
-            this.resetInteractionMode();
+            if (reset) {
+                this.resetInteractionMode();
+            }
         },
         render() {
             if (this.map) {
