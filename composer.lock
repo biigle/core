@@ -113,7 +113,7 @@
                 "issues": "https://github.com/biigle/ananas/issues",
                 "source": "https://github.com/biigle/ananas"
             },
-            "time": "2021-09-01T12:18:54+00:00"
+            "time": "2021-09-06T08:08:06+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -159,7 +159,7 @@
                 "issues": "https://github.com/biigle/color-sort/issues",
                 "source": "https://github.com/biigle/color-sort"
             },
-            "time": "2021-06-22T06:46:14+00:00"
+            "time": "2021-09-08T09:32:49+00:00"
         },
         {
             "name": "biigle/demo",
@@ -245,7 +245,7 @@
                 "issues": "https://github.com/biigle/geo/issues",
                 "source": "https://github.com/biigle/geo"
             },
-            "time": "2021-06-21T10:33:07+00:00"
+            "time": "2021-09-06T08:07:56+00:00"
         },
         {
             "name": "biigle/laravel-cached-openstack",
@@ -450,7 +450,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2021-06-21T10:33:07+00:00"
+            "time": "2021-10-05T09:26:02+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -496,7 +496,7 @@
                 "issues": "https://github.com/biigle/laserpoints/issues",
                 "source": "https://github.com/biigle/laserpoints"
             },
-            "time": "2021-09-01T12:19:19+00:00"
+            "time": "2021-09-08T09:33:29+00:00"
         },
         {
             "name": "biigle/maia",
@@ -543,7 +543,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2021-09-01T12:19:25+00:00"
+            "time": "2021-09-09T08:19:43+00:00"
         },
         {
             "name": "biigle/module",
@@ -586,7 +586,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2021-06-21T10:33:08+00:00"
+            "time": "2021-09-06T08:08:54+00:00"
         },
         {
             "name": "biigle/reports",
@@ -633,7 +633,7 @@
                 "issues": "https://github.com/biigle/reports/issues",
                 "source": "https://github.com/biigle/reports"
             },
-            "time": "2021-06-21T10:33:08+00:00"
+            "time": "2021-09-06T08:07:25+00:00"
         },
         {
             "name": "biigle/sync",
@@ -679,7 +679,7 @@
                 "issues": "https://github.com/biigle/sync/issues",
                 "source": "https://github.com/biigle/sync"
             },
-            "time": "2021-09-01T12:19:31+00:00"
+            "time": "2021-09-06T08:08:20+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1809,12 +1809,16 @@
                     "homepage": "https://github.com/Tobion"
                 }
             ],
-            "description": "GeoJSON implementation for PHP",
-            "homepage": "https://github.com/jmikola/geojson",
+            "description": "PSR-7 message implementation that also provides common utility methods",
             "keywords": [
-                "geo",
-                "geojson",
-                "geospatial"
+                "http",
+                "message",
+                "psr-7",
+                "request",
+                "response",
+                "stream",
+                "uri",
+                "url"
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
@@ -1835,6 +1839,124 @@
                 }
             ],
             "time": "2021-10-05T13:56:00+00:00"
+        },
+        {
+            "name": "jcupitt/vips",
+            "version": "v1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/libvips/php-vips.git",
+                "reference": "d3cf61bd087bd9c00cfc5ae32f6ded7165963058"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/libvips/php-vips/zipball/d3cf61bd087bd9c00cfc5ae32f6ded7165963058",
+                "reference": "d3cf61bd087bd9c00cfc5ae32f6ded7165963058",
+                "shasum": ""
+            },
+            "require": {
+                "ext-vips": ">=0.1.2",
+                "php": ">=7.1",
+                "psr/log": "^1.1.3"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpdocumentor/phpdocumentor": "3.0.0-rc",
+                "phpunit/phpunit": "^9.3",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jcupitt\\Vips\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Cupitt",
+                    "email": "jcupitt@gmail.com",
+                    "homepage": "https://github.com/jcupitt",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A high-level interface to the libvips image processing library.",
+            "homepage": "https://github.com/libvips/php-vips",
+            "keywords": [
+                "image",
+                "libvips",
+                "processing"
+            ],
+            "support": {
+                "issues": "https://github.com/libvips/php-vips/issues",
+                "source": "https://github.com/libvips/php-vips/tree/v1.0.8"
+            },
+            "time": "2020-08-29T13:10:03+00:00"
+        },
+        {
+            "name": "jmikola/geojson",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmikola/geojson.git",
+                "reference": "6ec3016cc0215667b7775f6ead7bd0337ad66eee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmikola/geojson/zipball/6ec3016cc0215667b7775f6ead7bd0337ad66eee",
+                "reference": "6ec3016cc0215667b7775f6ead7bd0337ad66eee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "GeoJson\\": "src/"
+                },
+                "classmap": [
+                    "stubs/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
+                }
+            ],
+            "description": "GeoJSON implementation for PHP",
+            "homepage": "https://github.com/jmikola/geojson",
+            "keywords": [
+                "geo",
+                "geojson",
+                "geospatial"
+            ],
+            "support": {
+                "issues": "https://github.com/jmikola/geojson/issues",
+                "source": "https://github.com/jmikola/geojson/tree/master"
+            },
+            "time": "2015-09-27T15:35:21+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
