@@ -39,13 +39,11 @@ WORKDIR /var/www
 
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install Composer based on the trusted commit:
+# https://github.com/composer/getcomposer.org/commit/ce25411cc528444e8c3c60775bde77e01921a1ef
 # Ignore platform reqs because the app image is stripped down to the essentials
-# and doens't meet some of the requirements. We do this for the worker, though.
-RUN curl https://getcomposer.org/installer -o composer-setup.php \
-    && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    && php composer-setup.php \
-    && rm composer-setup.php \
+# and doens't meet some of the requirements.
+RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/ce25411cc528444e8c3c60775bde77e01921a1ef/web/installer | php -- \
     && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
     && rm -r ~/.composer
 

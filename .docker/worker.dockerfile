@@ -5,7 +5,7 @@ FROM php@sha256:85069c18ba0023aba8334b94fc3e4c9721676aa32bea223b6aba76a7446b939b
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
-ARG OPENCV_VERSION=3.4.5
+ARG OPENCV_VERSION=4.5.4
 RUN apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
         gcc g++ build-base curl cmake clang-dev linux-headers \
     && cd /tmp \
@@ -19,16 +19,20 @@ RUN apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-de
         -D BUILD_DOCS=OFF \
         -D BUILD_EXAMPLES=OFF \
         -D BUILD_JAVA=OFF \
+        -D BUILD_opencv_apps=OFF \
         -D BUILD_opencv_python2=OFF \
         -D BUILD_PERF_TESTS=OFF \
         -D BUILD_TESTS=OFF \
         -D CMAKE_BUILD_TYPE=RELEASE \
         -D CMAKE_INSTALL_PREFIX=/usr \
+        -D HIGHGUI_ENABLE_PLUGINS=OFF \
         -D INSTALL_C_EXAMPLES=OFF \
         -D INSTALL_PYTHON_EXAMPLES=OFF \
         -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+        -D VIDEOIO_PLUGIN_LIST=ffmpeg \
         -D WITH_GTK=OFF \
         -D WITH_QT=OFF \
+        -D WITH_V4L=OFF \
         -D WITH_WIN32UI=OFF \
         .. \
     && make -j $(nproc) \
