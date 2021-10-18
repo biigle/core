@@ -77,7 +77,7 @@ class StoreReport extends FormRequest
             $options['aggregateChildLabels'] = boolval($this->input('aggregate_child_labels', false));
         }
 
-        if ($this->isAllowedForDisableNotifications()) {
+        if ($this->has('disable_notifications')) {
             $options['disableNotifications'] = boolval($this->input('disable_notifications', false));
         }
 
@@ -130,16 +130,5 @@ class StoreReport extends FormRequest
             ReportType::imageAnnotationsAbundanceId(),
         ]);
     }
-
-    /**
-     * Check if disable_notifications may be configured for the requested report type.
-     * 
-     * @return boolean
-     */
-    protected function isAllowedForDisableNotifications()
-    {
-        return true;
-    }
-
 
 }

@@ -39,6 +39,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
         $this->assertEquals(false, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
 
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
@@ -54,6 +55,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
     }
 
     public function testStoreImageVolumeTypes()

@@ -41,6 +41,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
         $this->assertEquals(false, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
 
         $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
@@ -56,6 +57,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
     }
 
     public function testStoreVideoVolume()
