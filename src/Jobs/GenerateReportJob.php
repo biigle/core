@@ -40,6 +40,11 @@ class GenerateReportJob extends Job implements ShouldQueue
         $this->report->generate();
         $this->report->ready_at = new Carbon;
         $this->report->save();
-        $this->report->user->notify(new ReportReady($this->report));
+
+        $disableNotifications = $this->report->options['disableNotifications'] ?? false;
+
+        if (!$disableNotifications) {
+            $this->report->user->notify(new ReportReady($this->report));
+        }
     }
 }

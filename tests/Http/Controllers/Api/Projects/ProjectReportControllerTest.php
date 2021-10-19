@@ -32,7 +32,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
 
         $job = end($this->dispatchedJobs);
         $this->assertEquals('high', $job->queue);
@@ -41,13 +41,14 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
         $this->assertEquals(false, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
 
         $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
                 'export_area' => true,
                 'newest_label' => true,
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
 
         $job = end($this->dispatchedJobs);
         $this->assertEquals('high', $job->queue);
@@ -56,6 +57,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
         $this->assertEquals(true, $report->options['newestLabel']);
+        $response->assertJson(['id' => $report->id]);
     }
 
     public function testStoreVideoVolume()
@@ -70,7 +72,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
 
         $job = end($this->dispatchedJobs);
         $report = $job->report;
@@ -143,7 +145,7 @@ class ProjectReportControllerTest extends ApiTestCase
                 'type_id' => $typeId,
                 'only_labels' => [$label->id],
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
     }
 
     public function testStoreImageLabelImageLocationWithoutLatLng()
@@ -166,7 +168,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::imageLabelsImageLocationId(),
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
     }
 
     public function testStoreImageAnnotationImageLocationWithoutLatLng()
@@ -189,7 +191,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::imageAnnotationsImageLocationId(),
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
     }
 
     public function testStoreImageAnnotationAnnotationLocationWithoutLatLngYawDistance()
@@ -227,7 +229,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->postJson("api/v1/projects/{$projectId}/reports", [
                 'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
     }
 
     public function testStoreSeparateLabelTreesUsersConflict()
@@ -251,7 +253,7 @@ class ProjectReportControllerTest extends ApiTestCase
                 'type_id' => $typeId,
                 'separate_label_trees' => true,
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
 
         $job = end($this->dispatchedJobs);
         $this->assertTrue($job->report->options['separateLabelTrees']);
@@ -260,7 +262,7 @@ class ProjectReportControllerTest extends ApiTestCase
                 'type_id' => $typeId,
                 'separate_users' => true,
             ])
-            ->assertStatus(200);
+            ->assertStatus(201);
 
         $job = end($this->dispatchedJobs);
         $this->assertTrue($job->report->options['separateUsers']);
