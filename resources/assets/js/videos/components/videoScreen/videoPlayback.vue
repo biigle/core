@@ -50,7 +50,9 @@ export default {
                 }),
             });
 
-            this.map.addLayer(this.videoLayer);
+            // The video layer should always be the first layer, otherwise it will be
+            // rendered e.g. above the annotations.
+            this.map.getLayers().insertAt(0, this.videoLayer);
 
             this.map.setView(new View({
                 // Center is required but will be updated immediately with fit().
