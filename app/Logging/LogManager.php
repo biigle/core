@@ -4,6 +4,7 @@ namespace Biigle\Logging;
 
 use Carbon\Carbon;
 use File;
+use Illuminate\Log\ParsesLogConfiguration;
 use Illuminate\Support\Facades\Redis;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RedisHandler;
@@ -11,19 +12,21 @@ use Monolog\Logger;
 
 class LogManager
 {
+    use ParsesLogConfiguration;
+
     /**
      * Available log levels.
      *
      * @var array
      */
     const LEVELS = [
-        'debug' => 100,
-        'info' => 200,
-        'notice' => 250,
-        'warning' => 300,
-        'error' => 400,
-        'critical' => 500,
-        'emergency' => 600,
+        'debug',
+        'info',
+        'notice',
+        'warning',
+        'error',
+        'critical',
+        'emergency',
     ];
 
     /**
@@ -102,9 +105,11 @@ class LogManager
      */
     public function getRedisLogMessages($level = 'debug')
     {
-        $level = self::LEVELS[$level];
+        $level = $this->level(compact('level'));
+        $connection = $this->channel['connection'] ?? null;
+        $client = Redis::connection($connection)->client();
 
-        return collect(Redis::lrange('log', 0, -1))
+        return collect($client->lrange('log', 0, -1))
             ->map(function ($message) {
                 return json_decode($message, true);
             })
@@ -154,5 +159,15 @@ class LogManager
         }
 
         return 0;
+    }
+
+    /**
+     * Get fallback log channel name.
+     *
+     * @return string
+     */
+    protected function getFallbackChannelName()
+    {
+        return config('app.env');
     }
 }

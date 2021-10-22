@@ -5,9 +5,10 @@ FROM php@sha256:85069c18ba0023aba8334b94fc3e4c9721676aa32bea223b6aba76a7446b939b
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
-ARG OPENCV_VERSION=3.4.5
-RUN apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
-        gcc g++ build-base curl cmake clang-dev linux-headers \
+ARG OPENCV_VERSION=4.5.4
+RUN apk add --no-cache lapack eigen openblas python3 ffmpeg py3-numpy \
+    && apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
+        gcc g++ build-base curl cmake clang-dev linux-headers lapack-dev eigen-dev openblas-dev \
     && cd /tmp \
     && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
     && tar -xzf ${OPENCV_VERSION}.tar.gz \
@@ -19,16 +20,22 @@ RUN apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-de
         -D BUILD_DOCS=OFF \
         -D BUILD_EXAMPLES=OFF \
         -D BUILD_JAVA=OFF \
+        -D BUILD_opencv_apps=OFF \
+        -D BUILD_opencv_highgui=OFF \
         -D BUILD_opencv_python2=OFF \
+        -D BUILD_opencv_wechat_qrcode=OFF \
         -D BUILD_PERF_TESTS=OFF \
         -D BUILD_TESTS=OFF \
         -D CMAKE_BUILD_TYPE=RELEASE \
         -D CMAKE_INSTALL_PREFIX=/usr \
+        -D HIGHGUI_ENABLE_PLUGINS=OFF \
         -D INSTALL_C_EXAMPLES=OFF \
         -D INSTALL_PYTHON_EXAMPLES=OFF \
         -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+        -D VIDEOIO_PLUGIN_LIST=ffmpeg \
         -D WITH_GTK=OFF \
         -D WITH_QT=OFF \
+        -D WITH_V4L=OFF \
         -D WITH_WIN32UI=OFF \
         .. \
     && make -j $(nproc) \
@@ -103,11 +110,8 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache \
-    ffmpeg \
-    python3 \
-    py3-numpy \
-    py3-scipy
+# Other Python dependencies are added with the OpenCV build above.
+RUN apk add --no-cache py3-scipy
 
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community/ --allow-untrusted \
     py3-scikit-learn \
