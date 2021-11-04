@@ -45,4 +45,19 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertContains('a.mp4', $images);
         $this->assertContains('b.mp4', $images);
     }
+
+    public function testHandleAsync()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+            'attrs' => [
+                'creating_async' => true,
+            ],
+        ]);
+        $filenames = ['a.jpg', 'b.jpg'];
+
+        Queue::fake();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
+        $this->assertFalse($volume->fresh()->creating_async);
+    }
 }

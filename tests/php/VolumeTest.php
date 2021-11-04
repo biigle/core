@@ -563,4 +563,17 @@ class VolumeTest extends ModelTestCase
         $this->model->flushThumbnailCache();
         $this->assertStringContainsString($v->uuid, $this->model->thumbnailsUrl[0]);
     }
+
+    public function testCreatingAsyncAttr()
+    {
+        $this->assertFalse($this->model->creating_async);
+
+        $this->model->creating_async = true;
+        $this->model->save();
+        $this->assertTrue($this->model->fresh()->creating_async);
+
+        $this->model->creating_async = false;
+        $this->model->save();
+        $this->assertFalse($this->model->fresh()->creating_async);
+    }
 }

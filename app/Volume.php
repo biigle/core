@@ -458,6 +458,28 @@ class Volume extends Model
     }
 
     /**
+     * Set the creating_async attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setCreatingAsyncAttribute($value)
+    {
+        $value = $value === false ? null : $value;
+
+        return $this->setJsonAttr('creating_async', $value);
+    }
+
+    /**
+     * Get the creating_async attribute of this volume.
+     *
+     * @return string
+     */
+    public function getCreatingAsyncAttribute()
+    {
+        return $this->getJsonAttr('creating_async', false);
+    }
+
+    /**
      * Check if the there are tiled images in this volume.
      *
      * @return bool

@@ -67,11 +67,19 @@
                     There are no {{$type}}s matching your filter rules.
                 </div>
             </div>
-            <div v-cloak v-if="noContent" class="panel panel-info">
-                <div class="panel-body text-info">
-                    This volume is empty.
+            @if ($volume->creating_async)
+                <div v-cloak v-if="noContent" class="panel panel-warning">
+                    <div class="panel-body text-warning">
+                        This volume still being processed. Please come back later.
+                    </div>
                 </div>
-            </div>
+            @else
+                <div v-cloak v-if="noContent" class="panel panel-info">
+                    <div class="panel-body text-info">
+                        This volume is empty.
+                    </div>
+                </div>
+            @endif
         </div>
         <image-grid
             empty-url="{{ asset(config('thumbnails.empty_url')) }}"
