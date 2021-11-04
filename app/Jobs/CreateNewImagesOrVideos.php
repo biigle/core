@@ -76,6 +76,13 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             ProcessNewVolumeFiles::dispatch($this->volume);
         }
 
+        $this->volume->flushThumbnailCache();
+
+        if ($this->volume->creating_async) {
+            $this->volume->creating_async = false;
+            $this->volume->save();
+        }
+
         if ($this->volume->isImageVolume()) {
             event('images.created', [$this->volume->id, $newIds]);
         }

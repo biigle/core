@@ -1,6 +1,6 @@
 # Contributing
 
-There are several ways for you to contribute to the development of BIIGLE. You can submit a bug report, discuss a new feature or participate in the development of features on our [roadmap](https://github.com/orgs/biigle/projects/1).
+There are several ways for you to contribute to the development of BIIGLE. You can submit a bug report, discuss a new feature or participate in the development of features on our [roadmap](https://github.com/orgs/biigle/projects/4).
 
 ## Submit a bug report
 

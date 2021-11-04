@@ -12,6 +12,13 @@ use Illuminate\Contracts\Validation\Rule;
 class VolumeFiles implements Rule
 {
     /**
+     * Maximum lengths of a volume filename.
+     *
+     * @var int
+     */
+    const FILENAME_MAX_LENGTH = 255;
+
+    /**
      * The validation message to display.
      *
      * @var string
@@ -76,6 +83,17 @@ class VolumeFiles implements Rule
 
         if ($count !== count(array_unique($value))) {
             $this->message = 'A volume must not have the same file twice.';
+
+            return false;
+        }
+
+        $lengths = array_map('strlen', $value);
+        $tooLong = array_filter($lengths, function ($l) {
+            return $l > self::FILENAME_MAX_LENGTH;
+        });
+
+        if (!empty($tooLong)) {
+            $this->message = 'A filename must not be longer than '.self::FILENAME_MAX_LENGTH.' characters.';
 
             return false;
         }
