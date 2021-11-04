@@ -54,6 +54,20 @@ class RegistrationConfirmation extends Notification implements ShouldQueue
             ->subject('New user registration')
             ->markdown('notifications.emails.registration-confirmation', [
                 'newUser' => $this->user,
+                'duplicateUsers' => $this->getDuplicateUsers(),
             ]);
+    }
+
+    /**
+     * Determine possible duplicate users.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getDuplicateUsers()
+    {
+        return User::where('firstname', 'ilike', "%{$this->user->firstname}%")
+            ->where('lastname', 'ilike', "%{$this->user->lastname}%")
+            ->where('id', '!=', $this->user->id)
+            ->get();
     }
 }
