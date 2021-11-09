@@ -22,7 +22,7 @@ I have read and agree to the [terms of use]({{route('terms')}}).
 Some existing users are similar to the new user:
 
 @foreach($duplicateUsers->take(3) as $user)
-- [{{$user->firstname}} {{$user->lastname}}]({{route('admin-users-edit', $user->id)}}) ({{$user->affiliation}})
+- [{{$user->firstname}} {{$user->lastname}}]({{route('admin-users-show', $user->id)}}) ({{$user->affiliation}})
 @endforeach
 
 @if($duplicateUsers->count() > 3)
