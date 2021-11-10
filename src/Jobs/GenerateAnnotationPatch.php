@@ -72,7 +72,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $this->release($this->attempts() * 600);
             } else {
                 $class = get_class($this->annotation);
-                Log::warning("Could not generate annotation patch for {$class} {$this->annotation->id}: {$e->getMessage()}");
+                Log::warning("Could not generate annotation patch for {$class} {$this->annotation->id}: {$e->getMessage()}", ['exception' => $e]);
             }
         }
     }
