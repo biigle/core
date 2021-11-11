@@ -392,6 +392,44 @@ class ProjectVolumeControllerTest extends ApiTestCase
         });
     }
 
+    public function testStoreMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "filename,area\n1.jpg,2.5",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return array_key_exists('1.jpg', $job->metadata) && array_key_exists('area', $job->metadata['1.jpg']) && $job->metadata['1.jpg']['area'] === 2.5;
+        });
+
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreMetadataCsv()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreInvalidMetadataText()
+    {
+        // take all examples from image metadata controller test
+        $this->markTestIncomplete();
+    }
+
+    public function testStoreVideoIgnoreMetadataText()
+    {
+        $this->markTestIncomplete();
+    }
+
     public function testAttach()
     {
         $tid = $this->volume->id;

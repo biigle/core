@@ -13,6 +13,13 @@ use Queue;
 class ProjectVolumeController extends Controller
 {
     /**
+     * Limit for the number of files above which volume files are created asynchronously.
+     *
+     * @var int
+     */
+    const CREATE_SYNC_LIMIT = 10000;
+
+    /**
      * Shows a list of all volumes belonging to the specified project..
      *
      * @api {get} projects/:id/volumes Get all volumes
@@ -111,7 +118,7 @@ class ProjectVolumeController extends Controller
         // If too many files should be created, do this asynchronously in the
         // background. Else the script will run in the 30 s execution timeout.
         $job = new CreateNewImagesOrVideos($volume, $files);
-        if (count($files) > 10000) {
+        if (count($files) > self::CREATE_SYNC_LIMIT) {
             Queue::pushOn('high', $job);
             $volume->creating_async = true;
             $volume->save();

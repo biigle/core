@@ -4,20 +4,32 @@ namespace Biigle\Http\Requests;
 
 use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
+use Biigle\Traits\ParsesImageMetadata;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreVolume extends FormRequest
 {
+    use ParsesImageMetadata;
+
     /**
      * The project to attach the new volume to.
      *
      * @var Project
      */
     public $project;
+
+    /**
+     * Parsed image metadata (if present).
+     *
+     * @var array
+     */
+    public $metadata;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -46,6 +58,10 @@ class StoreVolume extends FormRequest
                 'required',
                 'array',
                 new VolumeFiles($this->input('url'), $this->input('media_type_id')),
+            ],
+            'metadata_text' => [
+                // TODO only use this rule if this is an image volume
+                new ImageMetadata($this->input('files')),
             ],
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
@@ -77,5 +93,16 @@ class StoreVolume extends FormRequest
         if (is_string($files)) {
             $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
+    }
+
+    /**
+     * Handle a passed validation attempt.
+     *
+     * @return void
+     */
+    protected function passedValidation()
+    {
+        // TODO only do this if this is an image volume
+        $this->metadata = $this->parseMetadata($this->input('metadata_text', ''));
     }
 }
