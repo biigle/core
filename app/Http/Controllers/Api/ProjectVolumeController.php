@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Volume;
 use DB;
@@ -71,6 +72,16 @@ class ProjectVolumeController extends Controller
      * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional attributes) {String} metadata_text CSV-like string with image metadata (not available for video volumes). See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`.
+     * @apiParam (Optional attributes) {String} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
+     *
+     * @apiParam (metadata columns) {String} filename The filename of the image the metadata belongs to. This column is required.
+     * @apiParam (metadata columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`
+     * @apiParam (metadata columns) {Number} lng Longitude where the image was taken in decimal form. If this column is present, `lat` must be present, too. Example: `52.3211`
+     * @apiParam (metadata columns) {Number} lat Latitude where the image was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
+     * @apiParam (metadata columns) {Number} gps_altitude GPS Altitude where the image was taken in meters. Negative for below sea level. Example: `-1500.5`
+     * @apiParam (metadata columns) {Number} distance_to_ground Distance to the sea floor in meters. Example: `30.25`
+     * @apiParam (metadata columns) {Number} area Area shown by the image in m². Example `2.6`.
      *
      * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
@@ -115,9 +126,14 @@ class ProjectVolumeController extends Controller
 
         $files = $request->input('files');
 
+        $metadata = [];
+        if ($volume->media_type_id === MediaType::imageId()) {
+            $metadata = $request->input('metadata');
+        }
+
         // If too many files should be created, do this asynchronously in the
         // background. Else the script will run in the 30 s execution timeout.
-        $job = new CreateNewImagesOrVideos($volume, $files);
+        $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
         if (count($files) > self::CREATE_SYNC_LIMIT) {
             Queue::pushOn('high', $job);
             $volume->creating_async = true;

@@ -31,17 +31,26 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
     public $filenames;
 
     /**
+     * Metadata of the files to add during creation.
+     *
+     * @var array
+     */
+    public $metadata;
+
+    /**
      * Create a new job instance.
      *
      * @param Volume $volume The volume to create the files for.
      * @param array $filenames The filenames of the files to create.
+     * @param array $metadata File metadata (one row per file plus column headers).
      *
      * @return void
      */
-    public function __construct(Volume $volume, array $filenames)
+    public function __construct(Volume $volume, array $filenames, array $metadata = [])
     {
         $this->volume = $volume;
         $this->filenames = $filenames;
+        $this->metadata = $metadata;
     }
 
     /**

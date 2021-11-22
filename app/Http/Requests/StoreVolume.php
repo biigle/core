@@ -25,13 +25,6 @@ class StoreVolume extends FormRequest
     public $project;
 
     /**
-     * Parsed image metadata (if present).
-     *
-     * @var array
-     */
-    public $metadata;
-
-    /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -59,8 +52,8 @@ class StoreVolume extends FormRequest
                 'array',
                 new VolumeFiles($this->input('url'), $this->input('media_type_id')),
             ],
-            'metadata_text' => [
-                // TODO only use this rule if this is an image volume
+            'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
+            'metadata' => [
                 new ImageMetadata($this->input('files')),
             ],
             // Do not validate the maximum filename length with a 'files.*' rule because
@@ -93,16 +86,13 @@ class StoreVolume extends FormRequest
         if (is_string($files)) {
             $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
-    }
 
-    /**
-     * Handle a passed validation attempt.
-     *
-     * @return void
-     */
-    protected function passedValidation()
-    {
-        // TODO only do this if this is an image volume
-        $this->metadata = $this->parseMetadata($this->input('metadata_text', ''));
+        if ($this->input('media_type_id') === MediaType::imageId()) {
+            if ($this->has('metadata_text')) {
+                $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
+            } elseif ($this->hasFile('metadata_csv')) {
+                $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
+            }
+        }
     }
 }

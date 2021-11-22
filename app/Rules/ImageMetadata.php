@@ -7,11 +7,42 @@ use Illuminate\Contracts\Validation\Rule;
 class ImageMetadata implements Rule
 {
     /**
+     * Allowed columns for the metadata information to change image attributes.
+     *
+     * @var array
+     */
+    const ALLOWED_ATTRIBUTES = [
+        'filename',
+        'taken_at',
+        'lng',
+        'lat',
+    ];
+
+    /**
+     * Allowed columns for the metadata information to change image metadata.
+     *
+     * @var array
+     */
+    const ALLOWED_METADATA = [
+        'gps_altitude',
+        'distance_to_ground',
+        'area',
+        'yaw',
+    ];
+
+    /**
      * Array of volume file names.
      *
      * @var array
      */
     protected $files;
+
+    /**
+     * The validation error message.
+     *
+     * @var string
+     */
+    protected $message;
 
     /**
      * Create a new instance.
@@ -21,19 +52,147 @@ class ImageMetadata implements Rule
     public function __construct($files)
     {
         $this->files = $files;
+        $this->message = "The :attribute is invalid.";
     }
 
     /**
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
-     * @param  mixed  $value
+     * @param  array  $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
-        // TODO
-        return false;
+        if (!is_array($value)) {
+            return false;
+        }
+
+        // This checks if any information is given at all.
+        if (empty($value)) {
+            $this->message = 'The metadata information is empty.';
+
+            return false;
+        }
+
+        $columns = array_shift($value);
+
+        // This checks if any information is given beside the column description.
+        if (empty($value)) {
+            $this->message = 'The metadata information is empty.';
+
+            return false;
+        }
+
+        if (!in_array('filename', $columns)) {
+            $this->message = 'The filename column is required.';
+
+            return false;
+        }
+
+        $colCount = count($columns);
+
+        if ($colCount === 1) {
+            $this->message = 'No metadata columns given.';
+
+            return false;
+        }
+
+        if ($colCount !== count(array_unique($columns))) {
+            $this->message = 'Each column may occur only once.';
+
+            return false;
+        }
+
+        $allowedColumns = array_merge(self::ALLOWED_ATTRIBUTES, self::ALLOWED_METADATA);
+        $diff = array_diff($columns, $allowedColumns);
+
+        if (count($diff) > 0) {
+            $this->message = 'The columns array may contain only values of: '.implode(', ', $allowedColumns).'.';
+
+            return false;
+        }
+
+        $lng = in_array('lng', $columns);
+        $lat = in_array('lat', $columns);
+        if ($lng && !$lat || !$lng && $lat) {
+            $this->message = "If the 'lng' column is present, the 'lat' column must be present, too (and vice versa).";
+
+            return false;
+        }
+
+        $numericFields = [
+            'gps_altitude' => 'GPS altitude',
+            'distance_to_ground' => 'distance to ground',
+            'area' => 'area',
+            'yaw' => 'yaw',
+        ];
+
+        foreach ($value as $index => $row) {
+            if (count($row) !== $colCount) {
+                // +1 since index starts at 0.
+                // +1 since column description row was removed above.
+                $line = $index + 2;
+                $this->message = "Invalid column count in line {$line}.";
+
+                return false;
+            }
+
+            $combined = array_combine($columns, $row);
+            $filename = $combined['filename'];
+
+            if (!in_array($filename, $this->files)) {
+                $this->message = "There is no file with filename {$filename}.";
+
+                return false;
+            }
+
+            if (array_key_exists('lng', $combined)) {
+                $lng = $combined['lng'];
+                if (!is_numeric($lng) || abs($lng) > 180) {
+                    $this->message = "'{$lng}' is no valid longitude for file {$filename}.";
+
+                    return false;
+                }
+            }
+
+            if (array_key_exists('lat', $combined)) {
+                $lat = $combined['lat'];
+                if (!is_numeric($lat) || abs($lat) > 90) {
+                    $this->message = "'{$lat}' is no valid latitude for file {$filename}.";
+
+                    return false;
+                }
+            }
+
+            // Catch both a malformed date (false) and the zero date (negative integer).
+            if (array_key_exists('taken_at', $combined)) {
+                $date = $combined['taken_at'];
+                if (!(strtotime($date) > 0)) {
+                    $this->message = "'{$date}' is no valid date for file {$filename}.";
+
+                    return false;
+                }
+            }
+
+            foreach ($numericFields as $key => $text) {
+                if (array_key_exists($key, $combined) && !is_numeric($combined[$key])) {
+                    $this->message = "'{$combined[$key]}' is no valid {$text} for file {$filename}.";
+
+                    return false;
+                }
+            }
+
+            if (array_key_exists('yaw', $combined)) {
+                if ($combined['yaw'] < 0 || $combined['yaw'] > 360) {
+                    $this->message = "'{$combined['yaw']}' is no valid yaw for file {$filename}.";
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -43,7 +202,6 @@ class ImageMetadata implements Rule
      */
     public function message()
     {
-        // TODO
-        return "The :attribute must be less than {$this->compare}.";
+        return $this->message;
     }
 }

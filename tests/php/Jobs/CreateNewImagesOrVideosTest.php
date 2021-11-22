@@ -60,4 +60,9 @@ class CreateNewImagesOrVideosTest extends TestCase
         with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $this->assertFalse($volume->fresh()->creating_async);
     }
+
+    public function handleImageMetadata()
+    {
+        $this->markTestIncomplete();
+    }
 }

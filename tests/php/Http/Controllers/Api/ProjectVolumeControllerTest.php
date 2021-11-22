@@ -18,6 +18,7 @@ use Cache;
 use Event;
 use Exception;
 use FileCache;
+use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;
 
@@ -408,26 +409,88 @@ class ProjectVolumeControllerTest extends ApiTestCase
         ])->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
-            return array_key_exists('1.jpg', $job->metadata) && array_key_exists('area', $job->metadata['1.jpg']) && $job->metadata['1.jpg']['area'] === 2.5;
+            return $job->metadata[1][0] === '1.jpg' && $job->metadata[1][1] === '2.5';
         });
-
-        $this->markTestIncomplete();
     }
 
     public function testStoreMetadataCsv()
     {
-        $this->markTestIncomplete();
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/abc.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return $job->metadata[1][0] === 'abc.jpg' && $job->metadata[1][6] === '2.6';
+        });
     }
 
-    public function testStoreInvalidMetadataText()
+    public function testStoreMetadataInvalid()
     {
-        // take all examples from image metadata controller test
-        $this->markTestIncomplete();
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "filename,area\nabc.jpg,2.5",
+        ])->assertStatus(422);
     }
 
     public function testStoreVideoIgnoreMetadataText()
     {
-        $this->markTestIncomplete();
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/1.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => '1.mp4',
+            'metadata_text' => "filename,area\n1.mp4,2.5",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
+        });
+    }
+
+    public function testStoreVideoIgnoreMetadataCsv()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/1.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => '1.mp4',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
+        });
     }
 
     public function testAttach()
