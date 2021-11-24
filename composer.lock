@@ -74,16 +74,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v3.2.2",
+            "version": "v3.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "e4ac134ba9c9b925957319e2f875879cfced7c6e"
+                "reference": "0051682f3d2cd53f94f432baa42afff6285c11d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/e4ac134ba9c9b925957319e2f875879cfced7c6e",
-                "reference": "e4ac134ba9c9b925957319e2f875879cfced7c6e",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/0051682f3d2cd53f94f432baa42afff6285c11d7",
+                "reference": "0051682f3d2cd53f94f432baa42afff6285c11d7",
                 "shasum": ""
             },
             "require": {
@@ -126,9 +126,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v3.2.2"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v3.2.3"
             },
-            "time": "2021-08-17T07:50:05+00:00"
+            "time": "2021-11-24T15:38:02+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
