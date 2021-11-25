@@ -117,7 +117,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             return [
                 'filename' => $filename,
                 'volume_id' => $this->volume->id,
-                'uuid' => Uuid::uuid4(),
+                'uuid' => (string) Uuid::uuid4(),
             ];
         }, $filenames);
     }

@@ -115,4 +115,24 @@ class ImageMetadataTest extends TestCase
         ];
         $this->assertFalse($validator->passes(null, $metadata));
     }
+
+    public function testMetadataOnlyValidateFilled()
+    {
+        $validator = new ImageMetadata(['abc.jpg']);
+        $metadata = [
+            ['filename', 'taken_at'],
+            ['abc.jpg', ''],
+        ];
+        $this->assertTrue($validator->passes(null, $metadata));
+    }
+
+    public function testMetadataLatFilledLonNotFilled()
+    {
+        $validator = new ImageMetadata(['abc.jpg']);
+        $metadata = [
+            ['filename', 'lat', 'lon'],
+            ['abc.jpg', '28.123', ''],
+        ];
+        $this->assertFalse($validator->passes(null, $metadata));
+    }
 }

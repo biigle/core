@@ -139,6 +139,7 @@ class ImageMetadata implements Rule
             }
 
             $combined = array_combine($columns, $row);
+            $combined = array_filter($combined);
             $filename = $combined['filename'];
 
             if (!in_array($filename, $this->files)) {
@@ -154,12 +155,25 @@ class ImageMetadata implements Rule
 
                     return false;
                 }
+
+
+                if (!array_key_exists('lat', $combined)) {
+                    $this->message = "Missing latitude for file {$filename}.";
+
+                    return false;
+                }
             }
 
             if (array_key_exists('lat', $combined)) {
                 $lat = $combined['lat'];
                 if (!is_numeric($lat) || abs($lat) > 90) {
                     $this->message = "'{$lat}' is no valid latitude for file {$filename}.";
+
+                    return false;
+                }
+
+                if (!array_key_exists('lng', $combined)) {
+                    $this->message = "Missing longitude for file {$filename}.";
 
                     return false;
                 }
