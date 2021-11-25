@@ -17,7 +17,7 @@
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
       <h2>New volume for {{ $project->name }}</h2>
-      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
+      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" enctype='multipart/form-data' v-on:submit="startLoading">
          <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label for="name">Volume name</label>
             <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
@@ -121,9 +121,25 @@
          @endunless
 
          <div v-if="isImageMediaType" class="row">
-             <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
+            <div class="form-group col-xs-6{{ $errors->has('metadata') ? ' has-error' : '' }}{{ $errors->has('metadata_csv') ? ' has-error' : '' }}">
+                <label for="metadata_csv">Metadata</label>
+                <input class="form-control" id="metadata_csv" type="file" name="metadata_csv" v-on:change="setMetadata">
+                 <span class="help-block">
+                    CSV file with <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">image metadata</a>. May be overridden by EXIF information.
+                </span>
+                @if($errors->has('metadata_csv'))
+                    <span class="help-block">{{ $errors->first('metadata_csv') }}</span>
+                @endif
+                @if($errors->has('metadata'))
+                    <span class="help-block">{{ $errors->first('metadata') }}</span>
+                @endif
+            </div>
+             <div class="form-group col-xs-6{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+                <span class="help-block">
+                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                </span>
                 @if($errors->has('doi'))
                     <span class="help-block">{{ $errors->first('doi') }}</span>
                 @endif
@@ -134,9 +150,18 @@
              <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+                <span class="help-block">
+                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                </span>
                 @if($errors->has('doi'))
                     <span class="help-block">{{ $errors->first('doi') }}</span>
                 @endif
+            </div>
+        </div>
+
+        <div v-cloak v-if="filenamesReadFromMetadata" class="panel panel-info">
+            <div class="panel-body text-info">
+                The filenames have been extracted from the provided metadata file.
             </div>
         </div>
 
