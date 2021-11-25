@@ -101,28 +101,18 @@ class VolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', "/api/v1/volumes/{$id}");
 
         $this->beAdmin();
-        $this->assertNull($volume->fresh()->video_link);
-        $this->assertNull($volume->fresh()->gis_link);
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'video_link' => 'http://example.com',
-            'gis_link' => 'http://my.example.com',
             'doi' => '10.3389/fmars.2017.00083',
         ]);
         $response->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertEquals('http://example.com', $this->volume()->video_link);
-        $this->assertEquals('http://my.example.com', $this->volume()->gis_link);
         $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->doi);
 
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'video_link' => '',
-            'gis_link' => '',
             'doi' => '',
         ]);
         $response->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertNull($this->volume()->video_link);
-        $this->assertNull($this->volume()->gis_link);
         $this->assertNull($this->volume()->doi);
     }
 

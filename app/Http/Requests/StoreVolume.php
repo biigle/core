@@ -47,6 +47,7 @@ class StoreVolume extends FormRequest
                 'array',
                 new VolumeFiles($this->input('url'), $this->input('media_type_id')),
             ],
+            'doi' => 'max:512',
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
             // number of files.
