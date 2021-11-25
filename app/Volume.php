@@ -63,7 +63,7 @@ class Volume extends Model
      *
      * @var array
      */
-    protected $appends = ['video_link', 'gis_link', 'doi'];
+    protected $appends = ['doi'];
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -391,46 +391,6 @@ class Volume extends Model
     public function setUrlAttribute($value)
     {
         return $this->attributes['url'] = $value ? rtrim($value, '/') : $value;
-    }
-
-    /**
-     * Set the video_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setVideoLinkAttribute($value)
-    {
-        return $this->setJsonAttr('video_link', $value);
-    }
-
-    /**
-     * Get the video_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getVideoLinkAttribute()
-    {
-        return $this->getJsonAttr('video_link');
-    }
-
-    /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
     }
 
     /**

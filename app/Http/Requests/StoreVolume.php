@@ -52,6 +52,7 @@ class StoreVolume extends FormRequest
                 'array',
                 new VolumeFiles($this->input('url'), $this->input('media_type_id')),
             ],
+            'doi' => 'max:512',
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
             'metadata' => [
                 new ImageMetadata($this->input('files')),

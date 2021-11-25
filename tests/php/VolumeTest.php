@@ -437,21 +437,6 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($p->hasGeoInfo());
     }
 
-    public function testLinkAttrs()
-    {
-        foreach (['video_link', 'gis_link'] as $attr) {
-            $this->assertNull($this->model->$attr);
-
-            $this->model->$attr = 'http://example.com';
-            $this->model->save();
-            $this->assertEquals('http://example.com', $this->model->fresh()->$attr);
-
-            $this->model->$attr = null;
-            $this->model->save();
-            $this->assertNull($this->model->fresh()->$attr);
-        }
-    }
-
     public function testHasTiledImages()
     {
         ImageTest::create(['tiled' => false, 'volume_id' => $this->model->id]);

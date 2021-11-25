@@ -69,8 +69,6 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {String} media_type The media type of the new volume (`image` or `video`). If this attribute is missing, `image` is assumed for backwards compatibility.
      * @apiParam (Required attributes) {String} files List of file names of the images/videos that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
-     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
-     * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
      * @apiParam (Optional attributes) {String} metadata_text CSV-like string with image metadata (not available for video volumes). See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`.
      * @apiParam (Optional attributes) {String} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
@@ -90,8 +88,6 @@ class ProjectVolumeController extends Controller
      * url: 'local://volumes/test-volume'
      * media_type_id: 1
      * files: '1.jpg,2.jpg,3.jpg'
-     * video_link: 'http://example.com'
-     * gis_link: 'http://gis.example.com'
      * doi: '10.3389/fmars.2017.00083'
      *
      * @apiSuccessExample {json} Success response:
@@ -103,8 +99,6 @@ class ProjectVolumeController extends Controller
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
      *    "url": "local://volumes/test-volume",
-     *    "video_link": "http://example.com",
-     *    "gis_link": "http://gis.example.com",
      *    "doi": "10.3389/fmars.2017.00083"
      * }
      *
@@ -117,8 +111,6 @@ class ProjectVolumeController extends Controller
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
         $volume->media_type_id = $request->input('media_type_id');
-        $volume->video_link = $request->input('video_link');
-        $volume->gis_link = $request->input('gis_link');
         $volume->doi = $request->input('doi');
         $volume->creator()->associate($request->user());
         $volume->save();
