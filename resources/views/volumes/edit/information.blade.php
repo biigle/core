@@ -46,7 +46,7 @@
                 @endif
             </div>
             <div class="row">
-                <div class="form-group col-sm-12{{ $errors->has('doi') ? ' has-error' : '' }}">
+                <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
                     <label for="doi">DOI</label>
                     <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi', $volume->doi) }}" placeholder="10.1000/xyz123">
                     @if($errors->has('doi'))

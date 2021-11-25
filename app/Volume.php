@@ -394,26 +394,6 @@ class Volume extends Model
     }
 
     /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
-    }
-
-    /**
      * Set the doi attribute of this volume.
      *
      * @param string $value
