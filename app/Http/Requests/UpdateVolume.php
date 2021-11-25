@@ -37,6 +37,7 @@ class UpdateVolume extends FormRequest
         return [
             'name' => 'filled|max:512',
             'url' => ['filled', new VolumeUrl],
+            'doi' => 'max:512',
         ];
     }
 }
