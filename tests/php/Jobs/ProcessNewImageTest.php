@@ -182,6 +182,32 @@ class ProcessNewImageTest extends TestCase
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tilingInProgress);
     }
+
+    public function testHandleMergeMetadata()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'exif-test.jpg',
+            'volume_id' => $volume->id,
+            'attrs' => [
+                'metadata' => ['distance_to_ground' => 5],
+            ],
+        ]);
+        $this->assertFalse($volume->hasGeoInfo());
+
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSAltitudeRef' => "\x00",
+            'GPSAltitude' => 500,
+        ];
+        $job->handle();
+        $image = $image->fresh();
+        $expect = [
+            'distance_to_ground' => 5,
+            'gps_altitude' => 500,
+        ];
+        $this->assertEquals($expect, $image->metadata);
+    }
 }
 
 class ImageMock extends \Jcupitt\Vips\Image

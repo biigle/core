@@ -287,9 +287,9 @@ class ProcessNewImage extends Job implements ShouldQueue
                 // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
                 // level. We use a negative gps_altitude for below sea level.
                 $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
-                $image->metadata = [
+                $image->metadata = array_merge($image->metadata, [
                     'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
-                ];
+                ]);
             }
         }
 
