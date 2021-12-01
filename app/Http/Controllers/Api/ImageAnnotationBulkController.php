@@ -14,7 +14,7 @@ class ImageAnnotationBulkController extends Controller
 {
     /**
      * @api {post} annotations Create new annotations
-     * @apiDeprecated use now (#ImageAnnotations:StoreImageAnnotations).
+     * @apiDeprecated use now (#ImageAnnotations:BulkStoreImageAnnotations).
      * @apiGroup Annotations
      * @apiName StoreAnnotations
      * @apiPermission projectEditor
