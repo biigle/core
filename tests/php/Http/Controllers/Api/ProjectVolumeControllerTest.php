@@ -485,6 +485,33 @@ class ProjectVolumeControllerTest extends ApiTestCase
         });
     }
 
+    public function testStoreProviderBlacklist()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https://dropbox.com',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https://onedrive.com',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https://drive.google.com',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+    }
+
     public function testAttach()
     {
         $tid = $this->volume->id;

@@ -14,6 +14,17 @@ use Storage;
 class VolumeUrl implements Rule
 {
     /**
+     * Regexes to match blacklisted storage providers.
+     *
+     * @var array
+     */
+    const PROVIDER_BLACKLIST_REGEX = [
+        'https?:\/\/onedrive.*',
+        'https?:\/\/drive.google.*',
+        'https?:\/\/(www\.)?dropbox.*',
+    ];
+
+    /**
      * The validation message to display.
      *
      * @var string
@@ -64,6 +75,12 @@ class VolumeUrl implements Rule
     protected function passesRemoteUrl($value)
     {
         $client = App::make(Client::class);
+
+        if ($this->isBlacklistedProvider($value)) {
+            $this->message = 'Personal storage providers such as Dropbox, OneDrive or Google Drive are not supported as remote locations.';
+
+            return false;
+        }
 
         try {
             $response = $client->head($value);
@@ -116,6 +133,24 @@ class VolumeUrl implements Rule
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine if the new remote volume URL is from a blacklisted provider.
+     *
+     * @param string $value
+     *
+     * @return boolean
+     */
+    protected function isBlacklistedProvider($value)
+    {
+        foreach (self::PROVIDER_BLACKLIST_REGEX as $regex) {
+            if (preg_match("/{$regex}/i", $value) === 1) {
+                return false;
+            }
         }
 
         return true;
