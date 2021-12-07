@@ -32,6 +32,25 @@ class UsersControllerTest extends TestCase
         $this->get('admin/users')->assertStatus(200);
     }
 
+    public function testGetSearch()
+    {
+        $admin = UserTest::create([
+            'firstname' => 'jane',
+            'lastname' => 'user',
+            'email' => 'jane@user.com',
+        ]);
+        $admin->role()->associate(Role::admin());
+        $user = UserTest::create([
+            'firstname' => 'joe',
+            'lastname' => 'user',
+            'email' => 'joe@user.com',
+        ]);
+        $this->be($admin);
+        $this->call('GET', 'admin/users', ['q' => 'joe'])
+            ->assertSee('joe@user.com')
+            ->assertDontSee('jane@user.com');
+    }
+
     public function testNewWhenNotLoggedIn()
     {
         $this->get('admin/users/new')->assertRedirect('login');
