@@ -149,10 +149,10 @@ class VolumeUrl implements Rule
     {
         foreach (self::PROVIDER_BLACKLIST_REGEX as $regex) {
             if (preg_match("/{$regex}/i", $value) === 1) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }
