@@ -287,6 +287,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testStoreFilesExistException()
     {
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
         $id = $this->project()->id;
         $this->beAdmin();
         FileCache::shouldReceive('exists')
