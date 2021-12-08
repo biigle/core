@@ -50,7 +50,6 @@ class StoreVolume extends FormRequest
             'files' => [
                 'required',
                 'array',
-                new VolumeFiles($this->input('url'), $this->input('media_type_id')),
             ],
             'doi' => 'max:512',
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
@@ -61,6 +60,27 @@ class StoreVolume extends FormRequest
             // this leads to a request timeout when the rule is expanded for a huge
             // number of files.
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        if ($validator->fails()) {
+            return;
+        }
+
+        // Only validate sample volume files after all other fields have been validated.
+        $validator->after(function ($validator) {
+            $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
+            if (!$rule->passes('files', $this->input('files'))) {
+                $validator->errors()->add('files', $rule->message());
+            }
+        });
     }
 
     /**

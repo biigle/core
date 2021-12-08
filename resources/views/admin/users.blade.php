@@ -9,6 +9,12 @@
     </div>
 @endif
 <a href="{{route('admin-users-new')}}" class="btn btn-default" title="Create a new user">New user</a>
+<form class="form-inline inline-block-form" action="{{route('admin-users')}}" method="get">
+    <input class="form-control" type="text" name="q" placeholder="Search users" value="{{$query}}">
+</form>
+@if ($query)
+    <a href="{{route('admin-users')}}" class="btn btn-info" title="Clear filtering"><i class="fas fa-times"></i></a>
+@endif
 <table class="table table-hover">
     <thead>
         <tr>
@@ -20,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($users as $u)
+        @forelse($users as $u)
             <tr>
                 <td>
                     <a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a>
@@ -44,7 +50,17 @@
                     @endif
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr>
+                <td colspan="5" class="text-muted">
+                    @if ($query)
+                        No users found for query "{{$query}}".
+                    @else
+                        No users found.
+                    @endif
+                </td>
+            </tr>
+        @endforelse
     </tbody>
 </table>
 <nav class="text-center">
