@@ -287,6 +287,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testStoreFilesExistException()
     {
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
         $id = $this->project()->id;
         $this->beAdmin();
         FileCache::shouldReceive('exists')
@@ -483,6 +485,19 @@ class ProjectVolumeControllerTest extends ApiTestCase
         Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
             return empty($job->metadata);
         });
+    }
+
+    public function testStoreProviderBlacklist()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https://dropbox.com',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
     }
 
     public function testAttach()

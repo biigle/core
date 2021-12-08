@@ -131,6 +131,14 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals('test://volumes', $this->volume()->fresh()->url);
     }
 
+    public function testUpdateUrlProviderBlacklist()
+    {
+        $this->beAdmin();
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+            'url' => 'https://dropbox.com',
+        ])->assertStatus(422);
+    }
+
     public function testUpdateGlobalAdmin()
     {
         $this->beGlobalAdmin();
