@@ -172,11 +172,11 @@ trait ParsesImageMetadata
      * `parseMetadata` if converted to a string.
      *
      * @param array $header iFDO image-set-header
-     * @param array $items iFDO image-set-items
+     * @param array $items iFDO image-set-items. Passed by reference so potentially huge arrays are not copied.
      *
      * @return array
      */
-    protected function parseIfdoItems($header, $items)
+    protected function parseIfdoItems($header, &$items)
     {
         $fields = [];
         $rows = [];
@@ -205,6 +205,8 @@ trait ParsesImageMetadata
 
             if (array_key_exists('image-depth', $item)) {
                 $item['image-altitude'] = -1 * $item['image-depth'];
+                // Save some memory for potentially huge arrays.
+                unset($item['image-depth']);
             }
 
             foreach ($leftToCheck as $ifdoField => $csvField) {
