@@ -3,13 +3,21 @@ FROM php@sha256:d405a86d94e881d61172930ad757f133412e385f908d5034e9f06c2fc2444765
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
+ADD ".docker/app-php.ini" "$PHP_INI_DIR/conf.d/app.ini"
+
 RUN apk add --no-cache \
         openssl \
+        postgresql \
+        libxml2 \
+        libzip \
+    && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         libxml2-dev \
         libzip-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install \
+    && docker-php-ext-install -j$(nproc) \
         pdo \
         pdo_pgsql \
         pgsql \
@@ -17,7 +25,14 @@ RUN apk add --no-cache \
         zip \
         fileinfo \
         exif \
-        soap
+        soap \
+    && apk del --purge .build-deps
+
+RUN apk add --no-cache yaml \
+    && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
+    && pecl install yaml \
+    && docker-php-ext-enable yaml \
+    && apk del --purge .build-deps
 
 ARG PHPREDIS_VERSION=5.0.0
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
@@ -25,11 +40,9 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && rm /tmp/redis.tar.gz \
     && mkdir -p /usr/src/php/ext \
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
-    && docker-php-ext-install redis
+    && docker-php-ext-install -j$(nproc) redis
 
 RUN apk add --no-cache ffmpeg
-
-ADD .docker/app-php.ini /usr/local/etc/php/conf.d/php.ini
 
 COPY composer.lock composer.json /var/www/
 

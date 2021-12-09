@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "359da2c81b95c18115676a74b90e1320",
+    "content-hash": "a7f233c4794aaf38a7a16db6dcf771c7",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -3146,6 +3146,7 @@
                     "type": "tidelift"
                 }
             ],
+            "abandoned": "symfony/mailer",
             "time": "2021-10-18T15:26:12+00:00"
         },
         {
@@ -9557,7 +9558,8 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-vips": "*"
+        "ext-vips": "*",
+        "ext-yaml": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
