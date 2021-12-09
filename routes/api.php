@@ -277,6 +277,16 @@ $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
 ], function ($router) {
+    $router->group(['prefix' => 'browser'], function ($router) {
+        $router->get('directories/{disk}', 'BrowserController@indexDirectories');
+        $router->get('images/{disk}', 'BrowserController@indexImages');
+        $router->get('videos/{disk}', 'BrowserController@indexVideos');
+    });
+
+    $router->post('parse-ifdo', [
+        'uses' => 'ParseIfdoController@store',
+    ]);
+
     $router->get('{id}/files/filter/labels', [
         'uses' => 'Filters\AnyFileLabelController@index',
     ]);
@@ -305,10 +315,6 @@ $router->group([
         'uses' => 'FilenamesController@index',
     ]);
 
-    $router->get('{id}/users', [
-        'uses' => 'UserController@index',
-    ]);
-
     $router->get('{id}/files/labels', [
         'uses' => 'FileLabelsController@index',
     ]);
@@ -317,11 +323,9 @@ $router->group([
         'uses' => 'ImageMetadataController@store',
     ]);
 
-    $router->group(['prefix' => 'browser'], function ($router) {
-        $router->get('directories/{disk}', 'BrowserController@indexDirectories');
-        $router->get('images/{disk}', 'BrowserController@indexImages');
-        $router->get('videos/{disk}', 'BrowserController@indexVideos');
-    });
+    $router->get('{id}/users', [
+        'uses' => 'UserController@index',
+    ]);
 });
 
 $router->group([
