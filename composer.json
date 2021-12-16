@@ -23,7 +23,7 @@
         "ext-soap": "*",
         "ext-vips": "*",
         "biigle/laravel-file-cache": "^3.1",
-        "doctrine/dbal": "^3.2",
+        "doctrine/dbal": "^2.6",
         "duncan3dc/bom-string": "^1.1",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
