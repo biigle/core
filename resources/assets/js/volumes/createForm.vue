@@ -14,6 +14,7 @@ export default {
             url: null,
             mediaType: '',
             filenames: null,
+            filenamesReadFromMetadata: false,
             browsing: false,
             storageDisk: null,
             breadCrumbs: [],
@@ -53,6 +54,9 @@ export default {
         },
         isVideoMediaType() {
             return this.mediaType === 'video';
+        },
+        isRemoteImageVolume() {
+            return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
         },
     },
     methods: {
@@ -120,6 +124,34 @@ export default {
         },
         selectVideoMediaType() {
             this.mediaType = 'video';
+        },
+        setMetadata(event) {
+            if (!this.filenames) {
+                let file = event.target.files[0];
+                this.getFilenamesFromMetadata(file).then((filenames) => {
+                    this.filenames = filenames;
+                    this.filenamesReadFromMetadata = true;
+                });
+            }
+        },
+        getFilenamesFromMetadata(file) {
+            let reader = new FileReader();
+            let promise = new Promise(function (resolve, reject) {
+                reader.onload = resolve;
+                reader.onerror = reject;
+            });
+            reader.readAsText(file);
+
+            return promise.then(function () {
+                let rows = reader.result.split("\n");
+                let columns = rows.shift();
+                let filenameColumn = columns.split(',').indexOf('filename')
+
+                return rows.map(function (row) {
+                        return row.split(',')[filenameColumn];
+                    })
+                    .join(', ');
+            });
         },
     },
     watch: {

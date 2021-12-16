@@ -83,26 +83,26 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
     {
         $projects = [];
         Project::eachById(function ($project) use (&$projects) {
-                $projects[] = [
-                    'id' => $project->id,
-                    'name' => $project->name,
-                    'description' => $project->description,
-                    'created_at' => strval($project->created_at),
-                    'updated_at' => strval($project->updated_at),
-                    'thumbnail_url' => $project->thumbnailUrl,
-                    'url' => route('project', $project->id, false),
-                    'members' => $project->users()->pluck('id')->toArray(),
-                    // Versions and global label trees should not be indexed.
-                    'label_trees' => $project->labelTrees()
-                        ->withoutVersions()
-                        ->has('members')
-                        ->pluck('id')
-                        ->toArray(),
-                    'volumes' => $project->volumes()
-                        ->pluck('id')
-                        ->toArray(),
-                ];
-            });
+            $projects[] = [
+                'id' => $project->id,
+                'name' => $project->name,
+                'description' => $project->description,
+                'created_at' => strval($project->created_at),
+                'updated_at' => strval($project->updated_at),
+                'thumbnail_url' => $project->thumbnailUrl,
+                'url' => route('project', $project->id, false),
+                'members' => $project->users()->pluck('id')->toArray(),
+                // Versions and global label trees should not be indexed.
+                'label_trees' => $project->labelTrees()
+                    ->withoutVersions()
+                    ->has('members')
+                    ->pluck('id')
+                    ->toArray(),
+                'volumes' => $project->volumes()
+                    ->pluck('id')
+                    ->toArray(),
+            ];
+        });
 
         return $projects;
     }
@@ -116,16 +116,16 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
     {
         $volumes = [];
         Volume::eachById(function ($volume) use (&$volumes) {
-                $volumes[] = [
-                    'id' => $volume->id,
-                    'name' => $volume->name,
-                    'created_at' => strval($volume->created_at),
-                    'updated_at' => strval($volume->updated_at),
-                    'url' => route('volume', $volume->id, false),
-                    'thumbnail_url' => $volume->thumbnailUrl,
-                    'thumbnail_urls' => $volume->thumbnailUrls,
-                ];
-            });
+            $volumes[] = [
+                'id' => $volume->id,
+                'name' => $volume->name,
+                'created_at' => strval($volume->created_at),
+                'updated_at' => strval($volume->updated_at),
+                'url' => route('volume', $volume->id, false),
+                'thumbnail_url' => $volume->thumbnailUrl,
+                'thumbnail_urls' => $volume->thumbnailUrls,
+            ];
+        });
 
         return $volumes;
     }

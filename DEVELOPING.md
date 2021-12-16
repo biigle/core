@@ -40,20 +40,51 @@ docker pull ghcr.io/biigle/web:latest
 docker pull ghcr.io/biigle/worker:latest
 ```
 
-Build the Docker images and start the application with `docker-compose up`. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+Now perform these steps:
+
+1. Build the Docker images with `docker-compose build`. This may take a while.
+
+2. Start the first containers: `docker-compose up -d app database`
+
+3. Apply the database migrations: `docker-compose exec app php artisan migrate`
+
+4. Start the whole application with `docker-compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker-compose stop` or destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
-Before you can start using or developing BIIGLE, you need to perform these initialization steps:
+Before you can start using or developing BIIGLE, you need to create the first user with:
 
-1. Apply the database migrations: `docker-compose exec app php artisan migrate`
-
-2. Create the first user: `docker-compose exec app php artisan user:new`
+```
+docker-compose exec app php artisan user:new
+```
 
 Follow these steps to create a new project and volume with test images:
 
 1. Create a new directory containing a few images in the `storage/images` directory. Example: `storage/images/test`.
-2. Create a new project and volume in BIIGLE with the volume URL `local://test` and the list of image filenames. The `local://` storage disk resolves to the `storage/images` directory, the `test` suffix is the name of the directory containing the images.
+
+2. Open BIIGLE at <http://localhost:8000> in the browser.
+
+3. Create a new project and volume in BIIGLE with the volume URL `local://test` and the list of image filenames. The `local://` storage disk resolves to the `storage/images` directory, the `test` suffix is the name of the directory containing the images.
+
+## Building JavaScript and assets
+
+JavaScript and assets are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub:
+
+1. Create a new [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with the `read:packages` scope.
+
+2. Create a new file `~/.npmrc` and insert the following content:
+    ```
+    //npm.pkg.github.com/:_authToken=TOKEN
+    ```
+    Replace `TOKEN` with the personal access token of step 1.
+
+3. Now run `npm install` to install the dependencies (this requires NodeJS >=12.14).
+
+Important commands for development are:
+
+- `npm run watch`: Starts a continuous process to watch for file changes. Rebuilds the assets whenever a file is changed. This can be used during development.
+
+- `npm run prod`: Builds and minifies the assets. This command should be run before each new commit that changes assets.
 
 ## Runing the tests
 

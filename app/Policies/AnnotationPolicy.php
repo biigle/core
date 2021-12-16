@@ -2,14 +2,14 @@
 
 namespace Biigle\Policies;
 
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Biigle\Label;
 use Biigle\Policies\CachedPolicy;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
-use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -26,7 +26,9 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->can('sudo')) {
+        $only = ['access'];
+
+        if ($user->can('sudo') && in_array($ability, $only)) {
             return true;
         }
     }

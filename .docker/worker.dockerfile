@@ -1,10 +1,46 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# FROM php:7.4-alpine
 FROM php:8.0-alpine
-# FROM php@sha256:f7a0acfde4042d1f27464a2848b965d553cd48d7f2bdad570958be507b1431ef
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
+
+ARG OPENCV_VERSION=4.5.4
+RUN apk add --no-cache lapack eigen openblas python3 ffmpeg py3-numpy \
+    && apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
+        gcc g++ build-base curl cmake clang-dev linux-headers lapack-dev eigen-dev openblas-dev \
+    && cd /tmp \
+    && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && curl -L https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
+    && tar -xzf ${OPENCV_VERSION}.tar.gz \
+    && mkdir /tmp/opencv-${OPENCV_VERSION}/build \
+    && cd /tmp/opencv-${OPENCV_VERSION}/build \
+    && cmake \
+        -D BUILD_DOCS=OFF \
+        -D BUILD_EXAMPLES=OFF \
+        -D BUILD_JAVA=OFF \
+        -D BUILD_opencv_apps=OFF \
+        -D BUILD_opencv_highgui=OFF \
+        -D BUILD_opencv_python2=OFF \
+        -D BUILD_opencv_wechat_qrcode=OFF \
+        -D BUILD_PERF_TESTS=OFF \
+        -D BUILD_TESTS=OFF \
+        -D CMAKE_BUILD_TYPE=RELEASE \
+        -D CMAKE_INSTALL_PREFIX=/usr \
+        -D HIGHGUI_ENABLE_PLUGINS=OFF \
+        -D INSTALL_C_EXAMPLES=OFF \
+        -D INSTALL_PYTHON_EXAMPLES=OFF \
+        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
+        -D VIDEOIO_PLUGIN_LIST=ffmpeg \
+        -D WITH_GTK=OFF \
+        -D WITH_QT=OFF \
+        -D WITH_V4L=OFF \
+        -D WITH_WIN32UI=OFF \
+        .. \
+    && make -j $(nproc) \
+    && make install \
+    && apk del --purge .build-deps \
+    && rm -r /tmp/*
 
 RUN apk add --no-cache \
         openssl \
@@ -71,28 +107,28 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache \
-    ffmpeg \
-    python3 \
-    py3-numpy \
-    py3-pillow \
-    py3-scipy
+# Other Python dependencies are added with the OpenCV build above.
+RUN apk add --no-cache py3-scipy
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
-    py3-scikit-learn
-
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ --allow-untrusted \
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community/ --allow-untrusted \
+    py3-scikit-learn \
     py3-matplotlib
 
-# Set this library path to the Python modules are linked correctly.
+# Set this library path so the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
 ENV LIBRARY_PATH=/lib:/usr/lib
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
 RUN apk add --no-cache --virtual .build-deps \
+        python3-dev \
         py3-pip \
+        py3-wheel \
+        build-base \
+        libjpeg-turbo-dev \
+        libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
+        Pillow==8.3.* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 

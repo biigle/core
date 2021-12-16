@@ -124,7 +124,7 @@ let imageLabelUserFilter = {
         data() {
             return {
                 placeholder: 'User name',
-                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+                typeaheadMoreInfo: 'affiliation',
             };
         },
         created() {
@@ -156,7 +156,7 @@ let videoLabelUserFilter = {
         data() {
             return {
                 placeholder: 'User name',
-                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+                typeaheadMoreInfo: 'affiliation',
             };
         },
         created() {
@@ -270,7 +270,7 @@ let annotationUserFilter = {
         data() {
             return {
                 placeholder: 'User name',
-                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
+                typeaheadMoreInfo: 'affiliation',
             };
         },
         created() {

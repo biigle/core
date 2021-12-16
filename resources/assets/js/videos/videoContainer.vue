@@ -86,6 +86,7 @@ export default {
             error: null,
             user: null,
             attachingLabel: false,
+            swappingLabel: false,
         };
     },
     computed: {
@@ -154,6 +155,9 @@ export default {
 
             return '';
         },
+        annotationsHiddenByFilter() {
+            return this.annotations.length !== this.filteredAnnotations.length;
+        },
     },
     methods: {
         prepareAnnotation(annotation) {
@@ -188,7 +192,12 @@ export default {
                 this.attachAnnotationLabel(annotation);
 
                 return Vue.Promise.resolve();
+            } else if (this.swappingLabel) {
+                this.swapAnnotationLabel(annotation);
+
+                return Vue.Promise.resolve();
             }
+
             if (shift) {
                 return this.selectAnnotations([annotation], [], time);
             } else {
@@ -394,7 +403,23 @@ export default {
             }
         },
         attachAnnotationLabel(annotation) {
-            annotation.attachAnnotationLabel(this.selectedLabel)
+            let promise = annotation.attachAnnotationLabel(this.selectedLabel);
+            promise.catch(handleErrorResponse);
+
+            return promise;
+        },
+        swapAnnotationLabel(annotation) {
+            let lastLabel = annotation.labels
+                .filter(l => l.user_id === this.user.id)
+                .sort((a, b) => a.id - b.id)
+                .pop();
+
+            this.attachAnnotationLabel(annotation)
+                .then(() => {
+                    if (lastLabel) {
+                        this.detachAnnotationLabel(annotation, lastLabel);
+                    }
+                })
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
@@ -553,7 +578,12 @@ export default {
             return ids;
         },
         handleAttachingLabelActive(attaching) {
+            this.swappingLabel = false;
             this.attachingLabel = attaching;
+        },
+        handleSwappingLabelActive(swapping) {
+            this.attachingLabel = false;
+            this.swappingLabel = swapping;
         },
     },
     watch: {
@@ -587,9 +617,14 @@ export default {
         this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = true;
+        this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
-            if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED && !e.target.error.message.startsWith('404')) {
-                Messages.danger('The video codec is not supported by your browser.');
+            if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+                if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
+                    Messages.danger('Unable to access the video file.');
+                } else {
+                    Messages.danger('The video file could not be accessed or the codec is not supported by your browser.');
+                }
             } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                 Messages.danger('Error while loading video file.');
             }
@@ -606,6 +641,11 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
+
+        // See: https://github.com/biigle/core/issues/391
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+            Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
+        }
     },
 };
 </script>

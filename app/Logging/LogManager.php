@@ -4,6 +4,7 @@ namespace Biigle\Logging;
 
 use Carbon\Carbon;
 use File;
+use Illuminate\Log\ParsesLogConfiguration;
 use Illuminate\Support\Facades\Redis;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RedisHandler;
@@ -11,6 +12,23 @@ use Monolog\Logger;
 
 class LogManager
 {
+    use ParsesLogConfiguration;
+
+    /**
+     * Available log levels.
+     *
+     * @var array
+     */
+    const LEVELS = [
+        'debug',
+        'info',
+        'notice',
+        'warning',
+        'error',
+        'critical',
+        'emergency',
+    ];
+
     /**
      * The default logging channel.
      *
@@ -81,21 +99,34 @@ class LogManager
     /**
      * Get the log messages.
      *
-     * @return array
+     * @param string $level Minimum log level.
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getRedisLogMessages()
+    public function getRedisLogMessages($level = 'debug')
     {
-        return Redis::lrange('log', 0, -1);
+        $level = $this->level(compact('level'));
+        $connection = $this->channel['connection'] ?? null;
+        $client = Redis::connection($connection)->client();
+
+        return collect($client->lrange('log', 0, -1))
+            ->map(function ($message) {
+                return json_decode($message, true);
+            })
+            ->filter(function ($message) use ($level) {
+                return $message['level'] >= $level;
+            });
     }
 
     /**
      * Get the number of log messages of the last day(s).
      *
+     * @param string $level Minimum log level.
      * @param integer $subDays Number of days to go back.
      *
      * @return int
      */
-    public function getRecentCount($subDays = 1)
+    public function getRecentCount($level = 'debug', $subDays = 1)
     {
         $days = [];
         for ($i = 0; $i <= $subDays; $i++) {
@@ -113,16 +144,30 @@ class LogManager
                 }, $carry);
             }, 0);
         } elseif ($this->isRedis()) {
-            $messages = $this->getRedisLogMessages();
+            return $this->getRedisLogMessages($level)
+                ->reduce(function ($carry, $message) use ($days) {
+                    return array_reduce($days, function ($carry, $day) use ($message) {
+                        // There are two possible formats in which the time can be
+                        // stored.
+                        if (is_array($message['datetime'])) {
+                            return $carry + substr_count($message['datetime']['date'], $day);
+                        }
 
-            return array_reduce($messages, function ($carry, $message) use ($days) {
-                return array_reduce($days, function ($carry, $day) use ($message) {
-                    // There are two possible formates in which the time can be stored.
-                    return $carry + substr_count($message, "\"datetime\":\"{$day}T") + substr_count($message, "\"datetime\":{\"date\":\"{$day}");
-                }, $carry);
-            }, 0);
+                        return $carry + substr_count($message['datetime'], "{$day}T");
+                    }, $carry);
+                }, 0);
         }
 
         return 0;
+    }
+
+    /**
+     * Get fallback log channel name.
+     *
+     * @return string
+     */
+    protected function getFallbackChannelName()
+    {
+        return config('app.env');
     }
 }

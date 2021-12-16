@@ -13,20 +13,6 @@ class AnnotationLabelPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks.
-     *
-     * @param User $user
-     * @param string $ability
-     * @return bool|null
-     */
-    public function before($user, $ability)
-    {
-        if ($user->can('sudo')) {
-            return true;
-        }
-    }
-
-    /**
      * Determine if the user can edit the given annotation label.
      *
      * If the user created the annotation label, they must be editor or admin of one
@@ -44,7 +30,6 @@ class AnnotationLabelPolicy extends CachedPolicy
 
         return $this->remember("{$fileTable}-annotation-label-can-update-{$user->id}-{$annotationLabel->id}", function () use ($user, $annotationLabel, $fileTable, $model) {
             $projectIdsQuery = function ($query) use ($annotationLabel, $fileTable, $model) {
-
                 $annotationsTable = $model->getTable();
                 $foreignKeyName = $model->file()->getQualifiedForeignKeyName();
 

@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Controller;
 use Biigle\Logging\LogManager;
 use Carbon\Carbon;
 use File;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -16,7 +17,7 @@ class LogsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!config('biigle.admin_logs')) {
             abort(Response::HTTP_NOT_FOUND);
@@ -27,26 +28,33 @@ class LogsController extends Controller
         if ($manager->isFile()) {
             $logs = $manager->getLogFilenames();
         } elseif ($manager->isRedis()) {
+            $logLevel = $request->input('level', 'error');
+
             $perPage = 10;
-            $messages = $manager->getRedisLogMessages();
-            $total = count($messages);
+            $messages = $manager->getRedisLogMessages($logLevel);
+            $total = $messages->count();
             $paginator = new LengthAwarePaginator([], $total, $perPage);
             $paginator->setPath(LengthAwarePaginator::resolveCurrentPath());
 
-            $messages = collect($messages)
+            $messages = $messages
                 ->reverse()
                 ->skip(($paginator->currentPage() - 1) * $perPage)
                 ->take($perPage)
                 ->map(function ($message) {
-                    $message = json_decode($message, true);
-                    $message['date'] = $message['datetime']['date'];
+                    if (is_array($message['datetime'])) {
+                        $message['date'] = $message['datetime']['date'];
+                    }
 
                     return $message;
                 });
 
             $paginator->setCollection($messages);
 
-            return view('admin.logs.index-redis', compact('paginator'));
+            if ($request->has('level')) {
+                $paginator->appends('level', $logLevel);
+            }
+
+            return view('admin.logs.index-redis', compact('paginator', 'logLevel'));
         } else {
             $logs = [];
         }

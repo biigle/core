@@ -11,13 +11,14 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
 use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
@@ -128,6 +129,9 @@ class ProcessNewImage extends Job implements ShouldQueue
         } catch (Exception $e) {
             if (App::runningUnitTests()) {
                 throw $e;
+            } elseif ($this->attempts() < $this->tries) {
+                // Retry after 10 minutes.
+                $this->release(600);
             } else {
                 Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
             }
@@ -283,9 +287,9 @@ class ProcessNewImage extends Job implements ShouldQueue
                 // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
                 // level. We use a negative gps_altitude for below sea level.
                 $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
-                $image->metadata = [
+                $image->metadata = array_merge($image->metadata, [
                     'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
-                ];
+                ]);
             }
         }
 

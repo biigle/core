@@ -4,7 +4,7 @@
     </p>
     <div v-cloak class="panel panel-default">
         <div v-if="isPrivate" class="panel-body">
-            <typeahead class="typeahead--block" :items="authorizableProjects" placeholder="Add authorized project" title="Authorize one of your projects to use this tree" v-on:select="addAuthorizedProject" :clear-on-select="true" :template="typeaheadTemplate"></typeahead>
+            <typeahead class="typeahead--block" :items="authorizableProjects" placeholder="Add authorized project" title="Authorize one of your projects to use this tree" v-on:select="addAuthorizedProject" :clear-on-select="true" more-info="description"></typeahead>
         </div>
         <ul class="list-group list-group-restricted">
             <li v-if="isPrivate" v-for="project in authorizedProjects" class="list-group-item authorized-project-item">

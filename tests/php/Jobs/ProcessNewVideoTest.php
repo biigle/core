@@ -81,7 +81,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         FileCache::shouldReceive('getOnce')
-            ->andThrow(new Exception("MIME type 'video/x-m4v' not allowed."));
+            ->andThrow(new Exception("Error while caching file 'test.mp4': MIME type 'video/x-m4v' not allowed."));
 
         try {
             $job->handle();
@@ -97,6 +97,15 @@ class ProcessNewVideoTest extends TestCase
         $job = new ProcessNewVideoStub($video);
         $job->handle();
         $this->assertEquals(104500, $video->fresh()->size);
+    }
+
+    public function testHandleDimensions()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->handle();
+        $this->assertEquals(120, $video->fresh()->width);
+        $this->assertEquals(144, $video->fresh()->height);
     }
 
     public function testHandleMalformed()

@@ -66,7 +66,9 @@ return [
 
         'redis' => [
             'driver' => 'custom',
-            'level' => 'debug',
+            'level' => env('LOG_REDIS_LEVEL', 'debug'),
+            'connection' => 'log',
+            'capSize' => env('LOG_REDIS_CAP_SIZE', 1000),
             'via' => CreateRedisLogger::class,
         ],
 

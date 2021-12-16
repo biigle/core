@@ -114,6 +114,9 @@ export default {
                 this.refreshImageLayer({element: layer});
             });
         },
+        render() {
+            this.minimap.render();
+        },
     },
     watch: {
         // Refresh the view if the extent (i.e. image size) changed.
@@ -146,6 +149,8 @@ export default {
         this.minimap.on('pointerdrag', this.dragViewport);
         this.minimap.on('click', this.dragViewport);
         this.initImageLayer(map.getLayers());
+
+        this.$parent.$on('render', this.render);
     },
     mounted() {
         this.updateElementSize();
@@ -161,6 +166,7 @@ export default {
         map.un('change:size', this.updateMapSize);
         map.un('change:view', this.updateMapView);
         map.getLayers().un('add', this.refreshImageLayer);
+        this.$parent.$off('render', this.render);
     },
 };
 </script>

@@ -18,7 +18,6 @@ export default {
             ownProjects: [],
             authorizedProjects: [],
             authorizedOwnProjects: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
             privateId: null,
         };
     },
@@ -51,7 +50,7 @@ export default {
             }, handleErrorResponse);
         },
         addAuthorizedProject(project) {
-            if (project) {
+            if (project && !this.loading) {
                 this.startLoading();
                 LabelTreesApi.addAuthorizedProject({id: this.labelTree.id}, {id: project.id})
                     .then(() => this.authorizedProjectAdded(project), handleErrorResponse)

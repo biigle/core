@@ -2,29 +2,15 @@
 
 namespace Biigle\Policies;
 
-use Biigle\VolumeFileLabel;
 use Biigle\Role;
 use Biigle\User;
+use Biigle\VolumeFileLabel;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class VolumeFileLabelPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Intercept all checks.
-     *
-     * @param User $user
-     * @param string $ability
-     * @return bool|null
-     */
-    public function before($user, $ability)
-    {
-        if ($user->can('sudo')) {
-            return true;
-        }
-    }
 
     /**
      * Determine if the user can delete the given image label.

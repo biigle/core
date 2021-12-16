@@ -41,9 +41,9 @@ class StoreLabelTree extends FormRequest
     {
         return [
             'name' => 'required|max:256',
-            'visibility_id' => 'required|id|exists:visibilities,id',
-            'project_id' => 'id|exists:projects,id',
-            'upstream_label_tree_id' => 'id|exists:label_trees,id',
+            'visibility_id' => 'required|integer|exists:visibilities,id',
+            'project_id' => 'integer|exists:projects,id',
+            'upstream_label_tree_id' => 'integer|exists:label_trees,id',
         ];
     }
 
@@ -55,6 +55,10 @@ class StoreLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if ($this->filled('project_id')) {
                 $this->project = Project::find($this->input('project_id'));

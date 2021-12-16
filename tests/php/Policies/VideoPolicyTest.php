@@ -49,7 +49,7 @@ class VideoPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('add-annotation', $this->video));
         $this->assertTrue($this->expert->can('add-annotation', $this->video));
         $this->assertTrue($this->admin->can('add-annotation', $this->video));
-        $this->assertTrue($this->globalAdmin->can('add-annotation', $this->video));
+        $this->assertFalse($this->globalAdmin->can('add-annotation', $this->video));
     }
 
     public function testDestroy()
@@ -96,8 +96,8 @@ class VideoPolicyTest extends TestCase
         $this->assertFalse($this->admin->can('attach-label', [$this->video, $disallowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->video, $otherDisallowedLabel]));
 
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->video, $allowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->video, $disallowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->video, $otherDisallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->video, $allowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->video, $disallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->video, $otherDisallowedLabel]));
     }
 }

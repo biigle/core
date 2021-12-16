@@ -10,7 +10,7 @@ fi
 
 docker-compose build --build-arg BIIGLE_VERSION=$VERSION
 
-read -p "Publish the images to GitHub? [y/N]" -n 1 -r
+read -p "Publish the images to GitHub? [y/N]" -r
 # Check if the current HEAD belongs to a version.
 git describe --tags --exact-match &> /dev/null
 if [ $? -eq 0 ]; then

@@ -35,27 +35,27 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Exception $e)
     {
-        parent::report($exception);
+        parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
         // Convert the exception here because we want to throw a 403 and not a 500.
         // Also set a helpful error message for the user.
-        if ($exception instanceof TokenMismatchException) {
-            $exception = new TokenMismatchException('Your user session expired. Please refresh the page.');
+        if ($e instanceof TokenMismatchException) {
+            $e = new TokenMismatchException('Your user session expired. Please refresh the page.');
         }
 
-        return parent::render($request, $exception);
+        return parent::render($request, $e);
     }
 
     /**

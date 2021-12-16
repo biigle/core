@@ -43,7 +43,7 @@ class StoreVideoAnnotationLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|id|exists:labels,id',
+            'label_id' => 'required|integer|exists:labels,id',
         ];
     }
 
@@ -55,6 +55,10 @@ class StoreVideoAnnotationLabel extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             $alreadyExists = $this->annotation->labels()
                 ->where('label_id', $this->label->id)

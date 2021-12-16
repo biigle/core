@@ -17,7 +17,7 @@
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
       <h2>New volume for {{ $project->name }}</h2>
-      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
+      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" enctype='multipart/form-data' v-on:submit="startLoading">
          <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label for="name">Volume name</label>
             <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
@@ -106,8 +106,14 @@
             </div>
          @endif
 
+         <div v-if="isRemoteImageVolume" v-cloak class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+            </div>
+        </div>
+
          @unless (config('biigle.offline_mode'))
-             <div class="panel panel-warning">
+             <div v-else class="panel panel-warning">
                 <div class="panel-body text-warning">
                     If you do not have the resources to host files as remote volumes, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the files on the BIIGLE server.
                 </div>
@@ -115,43 +121,47 @@
          @endunless
 
          <div v-if="isImageMediaType" class="row">
-             <div class="form-group col-sm-4{{ $errors->has('doi') ? ' has-error' : '' }}">
+            <div class="form-group col-xs-6{{ $errors->has('metadata') ? ' has-error' : '' }}{{ $errors->has('metadata_csv') ? ' has-error' : '' }}">
+                <label for="metadata_csv">Metadata</label>
+                <input class="form-control" id="metadata_csv" type="file" name="metadata_csv" v-on:change="setMetadata">
+                 <span class="help-block">
+                    CSV file with <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">image metadata</a>. May be overridden by EXIF information.
+                </span>
+                @if($errors->has('metadata_csv'))
+                    <span class="help-block">{{ $errors->first('metadata_csv') }}</span>
+                @endif
+                @if($errors->has('metadata'))
+                    <span class="help-block">{{ $errors->first('metadata') }}</span>
+                @endif
+            </div>
+             <div class="form-group col-xs-6{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+                <span class="help-block">
+                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                </span>
                 @if($errors->has('doi'))
                     <span class="help-block">{{ $errors->first('doi') }}</span>
-                @endif
-            </div>
-            <div class="form-group col-sm-4{{ $errors->has('video_link') ? ' has-error' : '' }}">
-                <label for="video_link">Video link</label>
-                <input type="text" class="form-control" name="video_link" id="video_link" value="{{ old('video_link') }}" placeholder="http://video.example.com">
-                @if($errors->has('video_link'))
-                    <span class="help-block">{{ $errors->first('video_link') }}</span>
-                @endif
-            </div>
-            <div class="form-group col-sm-4{{ $errors->has('gis_link') ? ' has-error' : '' }}">
-                <label for="gis_link">GIS link</label>
-                <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link') }}" placeholder="http://gis.example.com">
-                @if($errors->has('gis_link'))
-                    <span class="help-block">{{ $errors->first('gis_link') }}</span>
                 @endif
             </div>
         </div>
 
-        <div v-else class="row">
-             <div class="form-group col-sm-6{{ $errors->has('doi') ? ' has-error' : '' }}">
+        <div v-cloak v-else class="row">
+             <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
                 <label for="doi">DOI</label>
                 <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+                <span class="help-block">
+                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                </span>
                 @if($errors->has('doi'))
                     <span class="help-block">{{ $errors->first('doi') }}</span>
                 @endif
             </div>
-            <div class="form-group col-sm-6{{ $errors->has('gis_link') ? ' has-error' : '' }}">
-                <label for="gis_link">GIS link</label>
-                <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link') }}" placeholder="http://gis.example.com">
-                @if($errors->has('gis_link'))
-                    <span class="help-block">{{ $errors->first('gis_link') }}</span>
-                @endif
+        </div>
+
+        <div v-cloak v-if="filenamesReadFromMetadata" class="panel panel-info">
+            <div class="panel-body text-info">
+                The filenames have been extracted from the provided metadata file.
             </div>
         </div>
 
@@ -179,10 +189,12 @@
             @endif
          </div>
 
-         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-         <input type="hidden" name="_redirect" value="{{ url('projects/'.$project->id) }}">
-         <a href="{{ URL::previous() }}" class="btn btn-link" :disabled="loading">Cancel</a>
-         <input type="submit" class="btn btn-success pull-right" value="Create" :disabled="loading">
+         <div class="form-group">
+             <input type="hidden" name="_token" value="{{ csrf_token() }}">
+             <input type="hidden" name="_redirect" value="{{ url('projects/'.$project->id) }}">
+             <a href="{{ URL::previous() }}" class="btn btn-link" :disabled="loading">Cancel</a>
+             <input type="submit" class="btn btn-success pull-right" value="Create" :disabled="loading">
+         </div>
       </form>
    </div>
 </div>

@@ -9,6 +9,7 @@ import Settings from '../../core/models/Settings';
 let defaults = {
     // Settings tab.
     annotationOpacity: 1.0,
+    cachedImagesCount: 1,
     mousePosition: false,
     zoomLevel: false,
     scaleLine: false,

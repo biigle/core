@@ -89,7 +89,7 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('update', $this->annotation));
         $this->assertTrue($this->expert->can('update', $this->annotation));
         $this->assertTrue($this->admin->can('update', $this->annotation));
-        $this->assertTrue($this->globalAdmin->can('update', $this->annotation));
+        $this->assertFalse($this->globalAdmin->can('update', $this->annotation));
     }
 
     public function testAttachLabel()
@@ -126,9 +126,9 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->assertFalse($this->admin->can('attach-label', [$this->annotation, $disallowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $allowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $disallowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->annotation, $allowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
     }
 
     public function testDestroy()
@@ -191,9 +191,9 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->assertTrue($this->admin->can('destroy', $a3));
         $this->assertTrue($this->admin->can('destroy', $a4));
 
-        $this->assertTrue($this->globalAdmin->can('destroy', $a1));
-        $this->assertTrue($this->globalAdmin->can('destroy', $a2));
-        $this->assertTrue($this->globalAdmin->can('destroy', $a3));
-        $this->assertTrue($this->globalAdmin->can('destroy', $a4));
+        $this->assertFalse($this->globalAdmin->can('destroy', $a1));
+        $this->assertFalse($this->globalAdmin->can('destroy', $a2));
+        $this->assertFalse($this->globalAdmin->can('destroy', $a3));
+        $this->assertFalse($this->globalAdmin->can('destroy', $a4));
     }
 }

@@ -10,6 +10,7 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Log;
 
 /**
  * Attempts to track an obect in a video. The object is initially defined by a video
@@ -58,39 +59,32 @@ class TrackObject extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $keyframes = $this->getTrackingKeyframes($this->annotation);
-        $frames = $this->annotation->frames;
-        $points = $this->annotation->points;
+        try {
+            $keyframes = $this->getTrackingKeyframes($this->annotation);
+            $frames = $this->annotation->frames;
+            $points = $this->annotation->points;
 
-        if (empty($keyframes)) {
+            if (empty($keyframes)) {
+                $this->annotation->delete();
+
+                return;
+            }
+
+            foreach ($keyframes as $keyframe) {
+                $frames[] = $keyframe[0];
+                $points[] = $this->getPointsFromKeyframe($this->annotation, $keyframe);
+            }
+
+            $this->annotation->frames = $frames;
+            $this->annotation->points = $points;
+            // If the annotation has been deleted in the meantime, ignore the result.
+            if ($this->annotation->exists()) {
+                $this->annotation->save();
+            }
+        } catch (Exception $e) {
+            Log::warning("Could not track object for video {$this->annotation->video->id}: {$e->getMessage()}");
             $this->annotation->delete();
-
-            return;
         }
-
-        foreach ($keyframes as $keyframe) {
-            $frames[] = $keyframe[0];
-            $points[] = $this->getPointsFromKeyframe($this->annotation, $keyframe);
-        }
-
-        $this->annotation->frames = $frames;
-        $this->annotation->points = $points;
-        // If the annotation has been deleted in the meantime, ignore the result.
-        if ($this->annotation->exists()) {
-            $this->annotation->save();
-        }
-    }
-
-    /**
-     * The job failed to process.
-     *
-     * @param  Exception  $exception
-     * @return void
-     */
-    public function failed(Exception $exception)
-    {
-        $this->annotation->delete();
-        throw $exception;
     }
 
     /**
@@ -165,7 +159,7 @@ class TrackObject extends Job implements ShouldQueue
     /**
      * Delete a file if it exists.
      *
-     * @param string path
+     * @param string $path
      */
     protected function maybeDeleteFile($path)
     {

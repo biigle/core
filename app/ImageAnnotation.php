@@ -10,11 +10,11 @@ use DB;
  */
 class ImageAnnotation extends Annotation
 {
-     /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that should be casted to native types.
+    *
+    * @var array
+    */
     protected $casts = [
         'image_id' => 'int',
         'shape_id' => 'int',

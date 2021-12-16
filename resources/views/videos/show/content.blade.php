@@ -29,6 +29,7 @@
       v-on:link-annotations="linkAnnotations"
       v-on:pending-annotation="updatePendingAnnotation"
       v-on:attach-label="attachAnnotationLabel"
+      v-on:swap-label="swapAnnotationLabel"
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
       v-on:delete="deleteAnnotationsOrKeyframes"
@@ -37,6 +38,7 @@
       v-on:previous="showPreviousVideo"
       v-on:next="showNextVideo"
       v-on:attaching-active="handleAttachingLabelActive"
+      v-on:swapping-active="handleSwappingLabelActive"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

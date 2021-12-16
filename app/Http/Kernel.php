@@ -14,6 +14,9 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        // If this is ever enabled, also enable TrustHosts (which does not exist yet).
+        // see: https://github.com/laravel/laravel/pull/5477
+        // \Biigle\Http\Middleware\TrustHosts::class,
         // \Biigle\Http\Middleware\TrustProxies::class,
         \Biigle\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,

@@ -437,21 +437,6 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($p->hasGeoInfo());
     }
 
-    public function testLinkAttrs()
-    {
-        foreach (['video_link', 'gis_link'] as $attr) {
-            $this->assertNull($this->model->$attr);
-
-            $this->model->$attr = 'http://example.com';
-            $this->model->save();
-            $this->assertEquals('http://example.com', $this->model->fresh()->$attr);
-
-            $this->model->$attr = null;
-            $this->model->save();
-            $this->assertNull($this->model->fresh()->$attr);
-        }
-    }
-
     public function testHasTiledImages()
     {
         ImageTest::create(['tiled' => false, 'volume_id' => $this->model->id]);
@@ -562,5 +547,18 @@ class VolumeTest extends ModelTestCase
 
         $this->model->flushThumbnailCache();
         $this->assertStringContainsString($v->uuid, $this->model->thumbnailsUrl[0]);
+    }
+
+    public function testCreatingAsyncAttr()
+    {
+        $this->assertFalse($this->model->creating_async);
+
+        $this->model->creating_async = true;
+        $this->model->save();
+        $this->assertTrue($this->model->fresh()->creating_async);
+
+        $this->model->creating_async = false;
+        $this->model->save();
+        $this->assertFalse($this->model->fresh()->creating_async);
     }
 }

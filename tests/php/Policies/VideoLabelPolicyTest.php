@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Role;
-use Biigle\Tests\VideoLabelTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoLabelTest;
+use Biigle\Tests\VideoTest;
 use TestCase;
 
 class VideoLabelPolicyTest extends TestCase
@@ -71,8 +71,8 @@ class VideoLabelPolicyTest extends TestCase
         $this->assertTrue($this->admin->can('destroy', $il2));
         $this->assertTrue($this->admin->can('destroy', $il3));
 
-        $this->assertTrue($this->globalAdmin->can('destroy', $il1));
-        $this->assertTrue($this->globalAdmin->can('destroy', $il2));
-        $this->assertTrue($this->globalAdmin->can('destroy', $il3));
+        $this->assertFalse($this->globalAdmin->can('destroy', $il1));
+        $this->assertFalse($this->globalAdmin->can('destroy', $il2));
+        $this->assertFalse($this->globalAdmin->can('destroy', $il3));
     }
 }

@@ -116,4 +116,18 @@ class VolumeUrlTest extends TestCase
         $this->assertFalse($validator->passes(null, 'http://localhost'));
         $this->assertStringContainsString("disk 'http' does not exist", $validator->message());
     }
+
+    public function testRemoteProviderBlacklist()
+    {
+        $validator = new VolumeUrl;
+        $this->assertFalse($validator->passes(null, 'http://dropbox.com'));
+        $this->assertStringContainsString('are not supported as remote locations', $validator->message());
+        $this->assertFalse($validator->passes(null, 'https://dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'http://www.dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'https://www.dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'http://onedrive.com'));
+        $this->assertFalse($validator->passes(null, 'https://onedrive.com'));
+        $this->assertFalse($validator->passes(null, 'http://drive.google.com'));
+        $this->assertFalse($validator->passes(null, 'https://drive.google.com'));
+    }
 }

@@ -14,17 +14,27 @@ use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
+use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
     /**
      * Shows the admin users page.
      *
+     * @@param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function get()
+    public function get(Request $request)
     {
         $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id', 'affiliation')
+            ->when($request->has('q'), function ($query) use ($request) {
+                $q = $request->get('q');
+                $query->where(function ($query) use ($q) {
+                    $query->where('firstname', 'ilike', "%$q%")
+                        ->orWhere('lastname', 'ilike', "%$q%")
+                        ->orWhere('email', 'ilike', "%$q%");
+                });
+            })
             // Orders by login_at in descending order (most recent first) but puts
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
@@ -41,6 +51,7 @@ class UsersController extends Controller
             'users' => $users,
             'roleClass' => $this->roleClassMap(),
             'roleNames' => $roleNames,
+            'query' => $request->get('q'),
         ]);
     }
 

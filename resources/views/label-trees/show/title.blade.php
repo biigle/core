@@ -7,9 +7,9 @@
             </span>
         @endcan
         @include('label-trees.show.version-button')
-        <span class="dropdown">
+        <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <ul class="dropdown-menu">
+            <template slot="dropdown">
                 <li>
                     <a href="{{route('label-trees-merge-index', $tree->id)}}" title="Merge another label tree into this one">Merge</a>
                 </li>
@@ -19,20 +19,20 @@
                 @mixin('labelTreesShowDropdown')
                 @if ($tree->members()->where('id', $user->id)->exists())
                     <li :class="disabledClass">
-                        <a title="Revoke your membership of this label tree" v-on:click="leaveTree">Leave</a>
+                        <a title="Revoke your membership of this label tree" v-on:click.prevent="leaveTree" href="#">Leave</a>
                     </li>
                 @endif
                 @can('update', $tree)
                     <li role="separator" class="divider"></li>
                     <li :class="disabledClass">
-                        <a title="Edit this label tree" v-on:click="startEditing">Edit</a>
+                        <a title="Edit this label tree" v-on:click.prevent="startEditing" href="#">Edit</a>
                     </li>
                     <li :class="disabledClass">
-                        <a title="Delete this label tree" v-on:click="deleteTree">Delete</a>
+                        <a title="Delete this label tree" v-on:click.prevent="deleteTree" href="#">Delete</a>
                     </li>
                 @endcan
-            </ul>
-        </span>
+            </template>
+        </dropdown>
     </span>
     @can('update', $tree)
         <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">

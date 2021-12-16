@@ -67,7 +67,7 @@ class VolumeController extends Controller
         if ($volume->isImageVolume()) {
             $thumbUriTemplate = thumbnail_url(':uuid');
         } else {
-            $thumbUriTemplate = thumbnail_url(':uuid',config('videos.thumbnail_storage_disk'));
+            $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
         }
 
         $type = $volume->mediaType->name;

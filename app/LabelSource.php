@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use App;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
@@ -31,6 +32,6 @@ class LabelSource extends Model
     {
         $name = Str::studly($this->name);
 
-        return app()->make("Biigle\Services\LabelSourceAdapters\\{$name}Adapter");
+        return App::make("Biigle\Services\LabelSourceAdapters\\{$name}Adapter");
     }
 }

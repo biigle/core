@@ -63,7 +63,7 @@ class Volume extends Model
      *
      * @var array
      */
-    protected $appends = ['video_link', 'gis_link', 'doi'];
+    protected $appends = ['doi'];
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -394,46 +394,6 @@ class Volume extends Model
     }
 
     /**
-     * Set the video_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setVideoLinkAttribute($value)
-    {
-        return $this->setJsonAttr('video_link', $value);
-    }
-
-    /**
-     * Get the video_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getVideoLinkAttribute()
-    {
-        return $this->getJsonAttr('video_link');
-    }
-
-    /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
-    }
-
-    /**
      * Set the doi attribute of this volume.
      *
      * @param string $value
@@ -455,6 +415,28 @@ class Volume extends Model
     public function getDoiAttribute()
     {
         return $this->getJsonAttr('doi');
+    }
+
+    /**
+     * Set the creating_async attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setCreatingAsyncAttribute($value)
+    {
+        $value = $value === false ? null : $value;
+
+        return $this->setJsonAttr('creating_async', $value);
+    }
+
+    /**
+     * Get the creating_async attribute of this volume.
+     *
+     * @return string
+     */
+    public function getCreatingAsyncAttribute()
+    {
+        return $this->getJsonAttr('creating_async', false);
     }
 
     /**

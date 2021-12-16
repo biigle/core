@@ -67,9 +67,9 @@ class VideoAnnotationLabelPolicyTest extends TestCase
         $this->assertTrue($this->admin->can('update', $al2));
         $this->assertTrue($this->admin->can('update', $al3));
 
-        $this->assertTrue($this->globalAdmin->can('update', $al1));
-        $this->assertTrue($this->globalAdmin->can('update', $al2));
-        $this->assertTrue($this->globalAdmin->can('update', $al3));
+        $this->assertFalse($this->globalAdmin->can('update', $al1));
+        $this->assertFalse($this->globalAdmin->can('update', $al2));
+        $this->assertFalse($this->globalAdmin->can('update', $al3));
     }
 
     public function testDestroy()
@@ -109,8 +109,8 @@ class VideoAnnotationLabelPolicyTest extends TestCase
         $this->assertTrue($this->admin->can('destroy', $al2));
         $this->assertTrue($this->admin->can('destroy', $al3));
 
-        $this->assertTrue($this->globalAdmin->can('destroy', $al1));
-        $this->assertTrue($this->globalAdmin->can('destroy', $al2));
-        $this->assertTrue($this->globalAdmin->can('destroy', $al3));
+        $this->assertFalse($this->globalAdmin->can('destroy', $al1));
+        $this->assertFalse($this->globalAdmin->can('destroy', $al2));
+        $this->assertFalse($this->globalAdmin->can('destroy', $al3));
     }
 }

@@ -1,4 +1,5 @@
 <script>
+import Dropdown from 'uiv/dist/Dropdown';
 import EditorMixin from '../core/mixins/editor';
 import LoaderMixin from '../core/mixins/loader';
 import Messages from '../core/messages/store';
@@ -13,6 +14,9 @@ export default{
         LoaderMixin,
         EditorMixin,
     ],
+    components: {
+        dropdown: Dropdown,
+    },
     data() {
         return {
             project: null,
