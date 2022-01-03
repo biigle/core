@@ -32,7 +32,7 @@ class Export
     {
         $path = tempnam(config('sync.tmp_storage'), 'biigle_export');
         $zip = new ZipArchive;
-        $zip->open($path, ZipArchive::CREATE);
+        $zip->open($path, ZipArchive::OVERWRITE);
         $exports = $this->getAdditionalExports();
         array_unshift($exports, $this);
 
