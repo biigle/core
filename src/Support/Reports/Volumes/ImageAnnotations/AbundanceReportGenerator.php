@@ -100,7 +100,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      *
      * @return CsvFile
      */
-    protected function createCsv($rows, $title = '', $labels)
+    protected function createCsv($rows, $title, $labels)
     {
         $rows = $rows->groupBy('filename');
 
