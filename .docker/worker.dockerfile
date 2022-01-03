@@ -1,7 +1,7 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# FROM php:7.4.16-cli-alpine
-FROM php@sha256:85069c18ba0023aba8334b94fc3e4c9721676aa32bea223b6aba76a7446b939b
+# FROM php:8.0-alpine
+FROM php@sha256:fad745cd45a8ee4cb488df95fbbc89ebdbd02cfff0debc69cebdaffdb8e7e551
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -53,14 +53,12 @@ RUN apk add --no-cache \
         pdo \
         pdo_pgsql \
         pgsql \
-        json \
         zip \
-        fileinfo \
         exif \
         soap \
         pcntl
 
-ARG PHPREDIS_VERSION=5.0.0
+ARG PHPREDIS_VERSION=5.3.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
