@@ -20,7 +20,10 @@ jobs:
       run: composer validate
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
+
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Get Composer Cache Directory
       id: composer-cache
@@ -36,9 +39,6 @@ jobs:
 
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
-
-    - name: Generate key
-      run: php artisan key:generate
 
     - name: Fetch base images
       run: |
@@ -65,7 +65,10 @@ jobs:
       run: composer validate
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
+
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Get Composer Cache Directory
       id: composer-cache
@@ -87,9 +90,6 @@ jobs:
 
     - name: Update BIIGLE modules from source
       run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
-
-    - name: Generate key
-      run: php artisan key:generate
 
     - name: Fetch base images
       run: |
