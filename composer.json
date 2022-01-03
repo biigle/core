@@ -36,7 +36,7 @@
         "doctrine/dbal": "^2.6",
         "duncan3dc/bom-string": "^1.1",
         "fideloper/proxy": "^4.0",
-        "guzzlehttp/guzzle": "~7.0",
+        "guzzlehttp/guzzle": "^6.0 | ^7.0",
         "jcupitt/vips": "^1.0",
         "jmikola/geojson": "^1.0",
         "laravel/framework": "^6.0",
