@@ -18,7 +18,7 @@
         "ext-vips": "*",
         "jcupitt/vips": "^1.0",
         "biigle/laravel-file-cache": "^2.0 | ^3.0",
-        "php-ffmpeg/php-ffmpeg": "^0.14"
+        "php-ffmpeg/php-ffmpeg": "^0.14 | ^0.19"
     },
     "autoload": {
         "psr-4": {
