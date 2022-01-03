@@ -31,7 +31,11 @@ jobs:
       working-directory: ../core
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
+      working-directory: ../core
+
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
       working-directory: ../core
 
     - name: Install Dependencies
@@ -45,10 +49,6 @@ jobs:
         sed -i "/Insert Biigle module service providers/i Biigle\\\\Modules\\\\${MODULE_NAME}\\\\${MODULE_NAME}ServiceProvider::class," config/app.php
         mkdir -p tests/php/Modules
         ln -sf ../../../vendor/${GITHUB_REPOSITORY}/tests tests/php/Modules/${MODULE_NAME}
-      working-directory: ../core
-
-    - name: Generate key
-      run: php artisan key:generate
       working-directory: ../core
 
     - name: Fetch base images
