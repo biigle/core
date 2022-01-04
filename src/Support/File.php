@@ -67,7 +67,9 @@ class File
     public function close()
     {
         try {
-            fclose($this->handle);
+            if (is_resource($this->handle)) {
+                fclose($this->handle);
+            }
         } catch (\Exception $e) {
             //
         }
