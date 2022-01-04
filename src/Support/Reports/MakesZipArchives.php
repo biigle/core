@@ -22,7 +22,7 @@ trait MakesZipArchives
     protected function makeZip($files, $path)
     {
         $zip = App::make(ZipArchive::class);
-        $open = $zip->open($path, ZipArchive::CREATE);
+        $open = $zip->open($path, ZipArchive::OVERWRITE);
 
         if ($open !== true) {
             throw new Exception("Could not open ZIP file '{$path}'.");
