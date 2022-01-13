@@ -51,7 +51,7 @@ class StoreVolume extends FormRequest
                 'required',
                 'array',
             ],
-            'doi' => 'max:512',
+            'handle' => 'max:256',
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
             'metadata' => [
                 new ImageMetadata($this->input('files')),
@@ -79,6 +79,11 @@ class StoreVolume extends FormRequest
             $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
             if (!$rule->passes('files', $this->input('files'))) {
                 $validator->errors()->add('files', $rule->message());
+            }
+
+            $handle = $this->input('handle');
+            if (!empty($handle) && substr_count($handle, '/') !== 1) {
+                $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
             }
         });
     }
@@ -114,6 +119,11 @@ class StoreVolume extends FormRequest
             } elseif ($this->hasFile('metadata_csv')) {
                 $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
             }
+        }
+
+        // Backwards compatibility.
+        if ($this->has('doi') && !$this->has('handle')) {
+            $this->merge(['handle' => $this->input('doi')]);
         }
     }
 }

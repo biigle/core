@@ -46,11 +46,11 @@
                 @endif
             </div>
             <div class="row">
-                <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
-                    <label for="doi">DOI</label>
-                    <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi', $volume->doi) }}" placeholder="10.1000/xyz123">
-                    @if($errors->has('doi'))
-                        <span class="help-block">{{ $errors->first('doi') }}</span>
+                <div class="form-group col-xs-12{{ $errors->has('handle') ? ' has-error' : '' }}">
+                    <label for="handle">Handle or DOI</label>
+                    <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle', $volume->handle) }}" placeholder="10.1000/xyz123">
+                    @if($errors->has('handle'))
+                        <span class="help-block">{{ $errors->first('handle') }}</span>
                     @endif
                 </div>
             </div>

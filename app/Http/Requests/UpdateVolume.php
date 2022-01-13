@@ -37,7 +37,41 @@ class UpdateVolume extends FormRequest
         return [
             'name' => 'filled|max:512',
             'url' => ['filled', new VolumeUrl],
-            'doi' => 'max:512',
+            'handle' => 'max:256',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        if ($validator->fails()) {
+            return;
+        }
+
+        // Only validate sample volume files after all other fields have been validated.
+        $validator->after(function ($validator) {
+            $handle = $this->input('handle');
+            if (!empty($handle) && substr_count($handle, '/') !== 1) {
+                $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
+            }
+        });
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        // Backwards compatibility.
+        if ($this->has('doi') && !$this->has('handle')) {
+            $this->merge(['handle' => $this->input('doi')]);
+        }
     }
 }

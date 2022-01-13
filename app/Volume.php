@@ -59,13 +59,6 @@ class Volume extends Model
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['doi'];
-
-    /**
      * Parses a comma separated list of filenames to an array.
      *
      * @param string $string
@@ -391,30 +384,6 @@ class Volume extends Model
     public function setUrlAttribute($value)
     {
         return $this->attributes['url'] = $value ? rtrim($value, '/') : $value;
-    }
-
-    /**
-     * Set the doi attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setDoiAttribute($value)
-    {
-        if (is_string($value)) {
-            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
-        }
-
-        return $this->setJsonAttr('doi', $value);
-    }
-
-    /**
-     * Get the doi attribute of this volume.
-     *
-     * @return string
-     */
-    public function getDoiAttribute()
-    {
-        return $this->getJsonAttr('doi');
     }
 
     /**

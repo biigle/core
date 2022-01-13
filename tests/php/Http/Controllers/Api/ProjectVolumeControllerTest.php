@@ -168,32 +168,51 @@ class ProjectVolumeControllerTest extends ApiTestCase
         });
     }
 
-    public function testStoreJsonAttrs()
+    public function testStoreHandle()
     {
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
+        ])->assertStatus(422);
+
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'handle' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(201);
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
+
+        // Backwards compatibility.
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'media_type' => 'image',
             'files' => '1.jpg',
             'doi' => '10.3389/fmars.2017.00083',
-        ]);
+        ])->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertEquals('10.3389/fmars.2017.00083', $volume->doi);
+        $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
 
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'media_type' => 'image',
             'files' => '1.jpg',
-            'doi' => '',
-        ]);
+            'handle' => '',
+        ])->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertNull($volume->doi);
+        $this->assertNull($volume->handle);
     }
 
     public function testStoreFilesArray()

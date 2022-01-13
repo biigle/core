@@ -134,27 +134,27 @@
                     <span class="help-block">{{ $errors->first('metadata') }}</span>
                 @endif
             </div>
-             <div class="form-group col-xs-6{{ $errors->has('doi') ? ' has-error' : '' }}">
-                <label for="doi">DOI</label>
-                <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+             <div class="form-group col-xs-6{{ $errors->has('handle') ? ' has-error' : '' }}">
+                <label for="handle">Handle or DOI</label>
+                <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
                 <span class="help-block">
-                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                    A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
                 </span>
-                @if($errors->has('doi'))
-                    <span class="help-block">{{ $errors->first('doi') }}</span>
+                @if($errors->has('handle'))
+                    <span class="help-block">{{ $errors->first('handle') }}</span>
                 @endif
             </div>
         </div>
 
         <div v-cloak v-else class="row">
-             <div class="form-group col-xs-12{{ $errors->has('doi') ? ' has-error' : '' }}">
-                <label for="doi">DOI</label>
-                <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi') }}" placeholder="10.3389/fmars.2017.00083">
+             <div class="form-group col-xs-12{{ $errors->has('handle') ? ' has-error' : '' }}">
+                <label for="handle">Handle or DOI</label>
+                <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
                 <span class="help-block">
-                    A <a href="https://www.doi.org/">Digital Object Identifier</a> to be associated with the volume.
+                    A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
                 </span>
-                @if($errors->has('doi'))
-                    <span class="help-block">{{ $errors->first('doi') }}</span>
+                @if($errors->has('handle'))
+                    <span class="help-block">{{ $errors->first('handle') }}</span>
                 @endif
             </div>
         </div>
