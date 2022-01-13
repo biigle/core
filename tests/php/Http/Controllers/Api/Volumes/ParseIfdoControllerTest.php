@@ -26,6 +26,7 @@ class ParseIfdoControllerTest extends ApiTestCase
             'name' => 'SO268 SO268-2_100-1_OFOS SO_CAM-1_Photo_OFOS',
             'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],

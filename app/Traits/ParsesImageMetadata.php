@@ -128,6 +128,10 @@ trait ParsesImageMetadata
             throw new Exception("The 'image-set-handle' key must be a valid handle.");
         }
 
+        if (!array_key_exists('image-set-uuid', $header)) {
+            throw new Exception("The 'image-set-uuid' key must be present.");
+        }
+
         $url = '';
         if (array_key_exists('image-set-data-handle', $header)) {
             if (!$this->isValidHandle($header['image-set-data-handle'])) {
@@ -149,6 +153,7 @@ trait ParsesImageMetadata
         return [
             'name' => $header['image-set-name'],
             'handle' => $header['image-set-handle'],
+            'uuid' => $header['image-set-uuid'],
             'url' => $url,
             'media_type' => 'image',
             'files' => $files,

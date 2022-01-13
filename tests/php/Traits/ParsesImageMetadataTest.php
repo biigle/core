@@ -106,6 +106,7 @@ class ParsesImageMetadataTest extends TestCase
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
 image-set-items:
     myimage.jpg:
 IFDO;
@@ -114,6 +115,7 @@ IFDO;
             'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename'],
                 ['myimage.jpg'],
@@ -129,6 +131,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-set-data-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data
     image-set-acquisition: photo
     image-latitude: 11.8581802
@@ -146,6 +149,7 @@ IFDO;
             'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
                 ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
@@ -161,6 +165,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-set-acquisition: video
 image-set-items:
     myimage.jpg:
@@ -176,6 +181,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-set-acquisition: slide
 image-set-items:
     myimage.jpg:
@@ -185,6 +191,7 @@ IFDO;
             'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename'],
                 ['myimage.jpg'],
@@ -200,6 +207,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
 image-set-items:
     myimage.jpg:
         image-latitude: 11.8581802
@@ -215,6 +223,7 @@ IFDO;
             'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
                 ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
@@ -230,6 +239,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-latitude: 11.8581802
     image-longitude: -117.0214864
     image-meters-above-ground: 2
@@ -248,6 +258,7 @@ IFDO;
             'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
                 ['myimage.jpg', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
@@ -266,6 +277,7 @@ IFDO;
             'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
                 ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_042927.JPG', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
@@ -294,12 +306,14 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
 IFDO;
         $expect = [
             'name' => 'myvolume',
             'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
             'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
             'files' => [],
         ];
         $this->assertEquals($expect, $stub->parseIfdo($input));
@@ -311,6 +325,7 @@ IFDO;
         $input = <<<IFDO
 image-set-header:
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
 IFDO;
 
         $this->expectException(Exception::class);
@@ -323,6 +338,20 @@ IFDO;
         $input = <<<IFDO
 image-set-header:
     image-set-name: myvolume
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoNoUuid()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
 IFDO;
 
         $this->expectException(Exception::class);
@@ -336,6 +365,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: abc
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
 IFDO;
 
         $this->expectException(Exception::class);
@@ -349,6 +379,7 @@ IFDO;
 image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-set-data-handle: abc
 IFDO;
 
