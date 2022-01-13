@@ -9,6 +9,7 @@ use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Traits\ParsesImageMetadata;
 use Biigle\Volume;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
