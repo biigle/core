@@ -1,2 +1,7 @@
 numpy
 opencv-contrib-python-headless==4.5.4
+scipy
+scikit-learn
+matplotlib
+PyExcelerate==0.6.7
+Pillow==9.0.*
