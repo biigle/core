@@ -1,6 +1,8 @@
 <script>
 import BrowserApi from './api/browser';
+import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
+import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
@@ -8,11 +10,16 @@ import {handleErrorResponse} from '../core/messages/store';
  */
 export default {
     mixins: [LoaderMixin],
+    components: {
+        dropdown: Dropdown,
+    },
     data() {
         return {
             disks: [],
+            name: '',
             url: null,
             mediaType: '',
+            handle: '',
             filenames: null,
             filenamesReadFromMetadata: false,
             browsing: false,
@@ -22,6 +29,8 @@ export default {
             loadingBrowser: false,
             directoryCache: {},
             fileCache: {},
+            metadataText: '',
+            loadingImport: false,
         };
     },
     computed: {
@@ -57,6 +66,9 @@ export default {
         },
         isRemoteImageVolume() {
             return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
+        },
+        hasMetadata() {
+            return this.isImageMediaType && this.metadataText.length > 0;
         },
     },
     methods: {
@@ -125,16 +137,20 @@ export default {
         selectVideoMediaType() {
             this.mediaType = 'video';
         },
-        setMetadata(event) {
-            if (!this.filenames) {
-                let file = event.target.files[0];
-                this.getFilenamesFromMetadata(file).then((filenames) => {
-                    this.filenames = filenames;
+        setCsvMetadata(event) {
+            this.hasMetadataCsv = true;
+            let file = event.target.files[0];
+            this.readCsvMetadataText(file).then((text) => {
+                this.metadataText = text;
+                if (!this.filenames) {
+                    this.filenames = this.parseMetadataTextFilenames(text);
                     this.filenamesReadFromMetadata = true;
-                });
-            }
+                }
+                // Reset input field so the file is not uploaded, too.
+                event.target.value = '';
+            })
         },
-        getFilenamesFromMetadata(file) {
+        readCsvMetadataText(file) {
             let reader = new FileReader();
             let promise = new Promise(function (resolve, reject) {
                 reader.onload = resolve;
@@ -143,15 +159,54 @@ export default {
             reader.readAsText(file);
 
             return promise.then(function () {
-                let rows = reader.result.split("\n");
-                let columns = rows.shift();
-                let filenameColumn = columns.split(',').indexOf('filename')
-
-                return rows.map(function (row) {
-                        return row.split(',')[filenameColumn];
-                    })
-                    .join(', ');
+                return reader.result;
             });
+        },
+        parseMetadataTextFilenames(text) {
+            let metadata = text.split("\n").map(row => row.split(','));
+
+            return this.parseMetadataFilenames(metadata);
+        },
+        importCsv() {
+            this.$refs.metadataCsvField.click();
+        },
+        importIfdo() {
+            this.$refs.metadataIfdoField.click();
+        },
+        parseIfdoMetadata(event) {
+            let data = new FormData();
+            data.append('file', event.target.files[0]);
+            this.loadingImport = true;
+            ParseIfdoFileApi.save(data)
+                .then(this.setIfdoMetadata, handleErrorResponse)
+                .finally(() => this.loadingImport = false);
+        },
+        setIfdoMetadata(response) {
+            let ifdo = response.body;
+            if (!this.name) {
+                this.name = ifdo.name;
+            }
+            if (!this.url) {
+                this.url = ifdo.url;
+            }
+            if (!this.handle) {
+                this.handle = ifdo.handle;
+            }
+            if (!this.filenames) {
+                this.filenames = this.parseMetadataFilenames(ifdo.files);
+                this.filenamesReadFromMetadata = true;
+            }
+
+            this.metadataText = ifdo.files.map(row => row.join(',')).join("\n");
+        },
+        parseMetadataFilenames(metadata) {
+            let columns = metadata[0];
+            let filenameColumn = columns.indexOf('filename')
+
+            return metadata.slice(1).map(row => row[filenameColumn]).join(', ');
+        },
+        clearMetadataText() {
+            this.metadataText = '';
         },
     },
     watch: {
@@ -172,6 +227,9 @@ export default {
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
+        this.name = biigle.$require('volumes.name');
+        this.handle = biigle.$require('volumes.handle');
+        this.metadataText = biigle.$require('volumes.metadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
 

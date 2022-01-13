@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07118dd0e2423e59a25b136ab2c78b7e",
+    "content-hash": "e76d7f47c87c06a76c41bb59c8831c36",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -3352,6 +3352,9 @@
             },
             "require": {
                 "php": "^7.1 || ^8.0"
+            },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
@@ -10250,8 +10253,9 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-vips": "*"
+        "ext-vips": "*",
+        "ext-yaml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.0.0"
 }

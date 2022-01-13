@@ -9,6 +9,8 @@ use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
+use Storage;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -57,13 +59,6 @@ class Volume extends Model
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['doi'];
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -394,30 +389,6 @@ class Volume extends Model
     }
 
     /**
-     * Set the doi attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setDoiAttribute($value)
-    {
-        if (is_string($value)) {
-            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
-        }
-
-        return $this->setJsonAttr('doi', $value);
-    }
-
-    /**
-     * Get the doi attribute of this volume.
-     *
-     * @return string
-     */
-    public function getDoiAttribute()
-    {
-        return $this->getJsonAttr('doi');
-    }
-
-    /**
      * Set the creating_async attribute of this volume.
      *
      * @param string $value
@@ -470,5 +441,35 @@ class Volume extends Model
     public function isVideoVolume()
     {
         return $this->media_type_id === MediaType::videoId();
+    }
+
+    /**
+     * Save an iFDO metadata file and link it with this volume.
+     *
+     * @param UploadedFile $file iFDO YAML file.
+     *
+     */
+    public function saveIfdo(UploadedFile $file)
+    {
+        $disk = config('volumes.ifdo_storage_disk');
+        $file->storeAs('', $this->id, $disk);
+    }
+
+    /**
+     * Check if an iFDO metadata file is available for this volume.
+     *
+     * @return boolean
+     */
+    public function hasIfdo()
+    {
+        return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->id);
+    }
+
+    /**
+     * Delete the iFDO metadata file linked with this volume.
+     */
+    public function deleteIfdo()
+    {
+        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->id);
     }
 }

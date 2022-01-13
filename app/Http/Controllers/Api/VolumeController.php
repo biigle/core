@@ -116,7 +116,7 @@ class VolumeController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
      * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
-     * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
+     * @apiParam (Attributes that can be updated) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      *
      * @param UpdateVolume $request
      * @return \Illuminate\Http\Response
@@ -126,7 +126,7 @@ class VolumeController extends Controller
         $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
         $volume->url = $request->input('url', $volume->url);
-        $volume->doi = $request->input('doi', $volume->doi);
+        $volume->handle = $request->input('handle', $volume->handle);
 
         $isDirty = $volume->isDirty();
         $shouldReread = !$isDirty && $request->user()->can('sudo');

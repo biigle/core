@@ -9,6 +9,7 @@ use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Traits\ParsesImageMetadata;
 use Biigle\Volume;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -51,8 +52,9 @@ class StoreVolume extends FormRequest
                 'required',
                 'array',
             ],
-            'doi' => 'max:512',
-            'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
+            'handle' => 'max:256',
+            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
+            'ifdo_file' => 'file',
             'metadata' => [
                 new ImageMetadata($this->input('files')),
             ],
@@ -79,6 +81,20 @@ class StoreVolume extends FormRequest
             $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
             if (!$rule->passes('files', $this->input('files'))) {
                 $validator->errors()->add('files', $rule->message());
+            }
+
+            $handle = $this->input('handle');
+            if (!empty($handle) && substr_count($handle, '/') !== 1) {
+                $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
+            }
+
+            if ($this->hasFile('ifdo_file')) {
+                try {
+                    // This throws an error if the iFDO is invalid.
+                    $this->parseIfdoFile($this->file('ifdo_file'));
+                } catch (Exception $e) {
+                    $validator->errors()->add('ifdo_file', $e->getMessage());
+                }
             }
         });
     }
@@ -114,6 +130,11 @@ class StoreVolume extends FormRequest
             } elseif ($this->hasFile('metadata_csv')) {
                 $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
             }
+        }
+
+        // Backwards compatibility.
+        if ($this->has('doi') && !$this->has('handle')) {
+            $this->merge(['handle' => $this->input('doi')]);
         }
     }
 }

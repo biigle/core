@@ -48,6 +48,8 @@ class VolumeObserver
             event(new VideosDeleted($uuids));
         }
 
+        $volume->deleteIfdo();
+
         return true;
     }
 }
