@@ -5,6 +5,7 @@
 @push('scripts')
    <script type="text/javascript">
       biigle.$declare('volumes.url', '{!! old('url') !!}');
+      biigle.$declare('volumes.metadataText', `{!! old('metadata_text') !!}`);
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.filenames', '{{ $filenames }}');
       @if ($hasBrowser)
@@ -17,17 +18,10 @@
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
       <h2>New volume for {{ $project->name }}</h2>
-      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" enctype='multipart/form-data' v-on:submit="startLoading">
-         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-            <label for="name">Volume name</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
-            @if($errors->has('name'))
-               <span class="help-block">{{ $errors->first('name') }}</span>
-            @endif
-         </div>
+      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
 
-         <div class="row">
-             <div class="form-group col-sm-12{{ $errors->has('media_type') ? ' has-error' : '' }}">
+        <div class="row">
+            <div class="form-group col-sm-12{{ $errors->has('media_type') ? ' has-error' : '' }}">
                 <label for="media_type">Volume media type</label>
                 <div class="btn-group btn-group-justified">
                     <div class="btn-group">
@@ -41,11 +35,67 @@
                 @if($errors->has('media_type'))
                    <span class="help-block">{{ $errors->first('media_type') }}</span>
                 @endif
-             </div>
-         </div>
+            </div>
+        </div>
+
+        <div v-if="isImageMediaType" class="row">
+            <div class="form-group col-sm-9{{ $errors->has('name') ? ' has-error' : '' }}">
+                <label for="name">Volume name</label>
+                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
+                @if($errors->has('name'))
+                   <span class="help-block">{{ $errors->first('name') }}</span>
+                @endif
+            </div>
+            <div class="form-group col-sm-3">
+                <label class="invisible">Import from file</label>
+                <dropdown tag="span">
+                    <button class="btn {{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' btn-danger' : 'btn-default' }} btn-block dropdown-toggle" type="button" v-bind:class="importButtonClass" title="Import volume information and metadata from a file">Import <span class="caret"></span></button>
+                    <template slot="dropdown">
+                        <li class="disabled">
+                             <a title="Import volume information from an iFDO YAML file" href="#" disabled>iFDO YAML file</a>
+                        </li>
+                        <li>
+                             <a title="Import image metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV file</a>
+                        </li>
+                    </template>
+                </dropdown>
+
+                <input type="hidden" name="metadata_text" v-model="metadataText">
+                <input class="form-control hidden" ref="metadataCsvField" type="file" v-on:change="setCsvMetadata">
+            </div>
+        </div>
+        <div v-else v-cloak class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+            <label for="name">Volume name</label>
+            <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
+            @if($errors->has('name'))
+               <span class="help-block">{{ $errors->first('name') }}</span>
+            @endif
+        </div>
+
+        <div v-if="isImageMediaType" class="form-group{{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' has-error' : '' }}">
+            @if ($errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']))
+                @if ($errors->has('ifdo_file'))
+                    <span class="help-block">{{ $errors->first('ifdo_file') }}</span>
+                @endif
+                @if ($errors->has('metadata_csv'))
+                    <span class="help-block">{{ $errors->first('metadata_csv') }}</span>
+                @endif
+                @if ($errors->has('metadata'))
+                    <span class="help-block">{{ $errors->first('metadata') }}</span>
+                @endif
+            @else
+                <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">metadata CSV</a> file. Metadata may be overridden by image EXIF information.</span>
+            @endif
+        </div>
+
+        <div v-cloak v-if="hasMetadata" class="panel panel-info">
+            <div class="panel-body text-info">
+                Metadata will be imported from the provided file.
+            </div>
+        </div>
 
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
-            <label for="url">Volume url</label>
+            <label for="url">Volume URL</label>
             @if ($hasBrowser)
                <div class="input-group">
                   <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url" value="{{old('url')}}">
@@ -120,43 +170,15 @@
             </div>
          @endunless
 
-         <div v-if="isImageMediaType" class="row">
-            <div class="form-group col-xs-6{{ $errors->has('metadata') ? ' has-error' : '' }}{{ $errors->has('metadata_csv') ? ' has-error' : '' }}">
-                <label for="metadata_csv">Metadata</label>
-                <input class="form-control" id="metadata_csv" type="file" name="metadata_csv" v-on:change="setMetadata">
-                 <span class="help-block">
-                    CSV file with <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">image metadata</a>. May be overridden by EXIF information.
-                </span>
-                @if($errors->has('metadata_csv'))
-                    <span class="help-block">{{ $errors->first('metadata_csv') }}</span>
-                @endif
-                @if($errors->has('metadata'))
-                    <span class="help-block">{{ $errors->first('metadata') }}</span>
-                @endif
-            </div>
-             <div class="form-group col-xs-6{{ $errors->has('handle') ? ' has-error' : '' }}">
-                <label for="handle">Handle or DOI</label>
-                <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
-                <span class="help-block">
-                    A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
-                </span>
-                @if($errors->has('handle'))
-                    <span class="help-block">{{ $errors->first('handle') }}</span>
-                @endif
-            </div>
-        </div>
-
-        <div v-cloak v-else class="row">
-             <div class="form-group col-xs-12{{ $errors->has('handle') ? ' has-error' : '' }}">
-                <label for="handle">Handle or DOI</label>
-                <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
-                <span class="help-block">
-                    A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
-                </span>
-                @if($errors->has('handle'))
-                    <span class="help-block">{{ $errors->first('handle') }}</span>
-                @endif
-            </div>
+         <div class="form-group{{ $errors->has('handle') ? ' has-error' : '' }}">
+            <label for="handle">Handle or DOI</label>
+            <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
+            <span class="help-block">
+                A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
+            </span>
+            @if($errors->has('handle'))
+                <span class="help-block">{{ $errors->first('handle') }}</span>
+            @endif
         </div>
 
         <div v-cloak v-if="filenamesReadFromMetadata" class="panel panel-info">

@@ -1,5 +1,6 @@
 <script>
 import BrowserApi from './api/browser';
+import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
 import {handleErrorResponse} from '../core/messages/store';
 
@@ -8,6 +9,9 @@ import {handleErrorResponse} from '../core/messages/store';
  */
 export default {
     mixins: [LoaderMixin],
+    components: {
+        dropdown: Dropdown,
+    },
     data() {
         return {
             disks: [],
@@ -22,6 +26,7 @@ export default {
             loadingBrowser: false,
             directoryCache: {},
             fileCache: {},
+            metadataText: '',
         };
     },
     computed: {
@@ -57,6 +62,14 @@ export default {
         },
         isRemoteImageVolume() {
             return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
+        },
+        hasMetadata() {
+            return this.isImageMediaType && this.metadataText.length > 0;
+        },
+        importButtonClass() {
+            if (this.hasMetadata) {
+                return 'btn-info';
+            }
         },
     },
     methods: {
@@ -125,16 +138,20 @@ export default {
         selectVideoMediaType() {
             this.mediaType = 'video';
         },
-        setMetadata(event) {
-            if (!this.filenames) {
-                let file = event.target.files[0];
-                this.getFilenamesFromMetadata(file).then((filenames) => {
-                    this.filenames = filenames;
+        setCsvMetadata(event) {
+            this.hasMetadataCsv = true;
+            let file = event.target.files[0];
+            this.readCsvMetadataText(file).then((text) => {
+                this.metadataText = text;
+                if (!this.filenames) {
+                    this.filenames = this.parseMetadataTextFilenames(text);
                     this.filenamesReadFromMetadata = true;
-                });
-            }
+                }
+                // Reset input field so the file is not uploaded, too.
+                event.target.value = '';
+            })
         },
-        getFilenamesFromMetadata(file) {
+        readCsvMetadataText(file) {
             let reader = new FileReader();
             let promise = new Promise(function (resolve, reject) {
                 reader.onload = resolve;
@@ -143,15 +160,21 @@ export default {
             reader.readAsText(file);
 
             return promise.then(function () {
-                let rows = reader.result.split("\n");
-                let columns = rows.shift();
-                let filenameColumn = columns.split(',').indexOf('filename')
-
-                return rows.map(function (row) {
-                        return row.split(',')[filenameColumn];
-                    })
-                    .join(', ');
+                return reader.result;
             });
+        },
+        parseMetadataTextFilenames(text) {
+            let rows = text.split("\n");
+            let columns = rows.shift();
+            let filenameColumn = columns.split(',').indexOf('filename')
+
+            return rows.map(function (row) {
+                return row.split(',')[filenameColumn];
+            })
+            .join(', ');
+        },
+        importCsv() {
+            this.$refs.metadataCsvField.click();
         },
     },
     watch: {
@@ -172,6 +195,7 @@ export default {
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
+        this.metadataText = biigle.$require('volumes.metadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
 

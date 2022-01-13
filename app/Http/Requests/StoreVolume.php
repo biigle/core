@@ -53,7 +53,7 @@ class StoreVolume extends FormRequest
                 'array',
             ],
             'handle' => 'max:256',
-            'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
+            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
             'ifdo_file' => 'file',
             'metadata' => [
                 new ImageMetadata($this->input('files')),
