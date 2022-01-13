@@ -38,7 +38,7 @@ class StoreVolumeMetadata extends FormRequest
         $files = $this->volume->images()->pluck('filename')->toArray();
 
         return [
-            'file' => 'required|file|mimetypes:text/plain,text/csv',
+            'file' => 'required|file|mimetypes:text/plain,text/csv,application/csv',
             'metadata' => [
                 new ImageMetadata($files),
             ],

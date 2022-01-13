@@ -13,4 +13,9 @@ return [
     'browser_disks' => [
         'local',
     ],
+
+    /*
+    | Storage disk for iFDO metadata files linked with volumes.
+    */
+    'ifdo_storage_disk' => env('VOLUME_IFDO_STORAGE_DISK', 'ifdos'),
 ];

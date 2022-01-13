@@ -22,6 +22,7 @@
         "ext-pgsql": "*",
         "ext-soap": "*",
         "ext-vips": "*",
+        "ext-yaml": "*",
         "biigle/ananas": "dev-master",
         "biigle/color-sort": "dev-master",
         "biigle/demo": "dev-master",

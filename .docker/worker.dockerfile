@@ -43,20 +43,34 @@ RUN apk add --no-cache lapack eigen openblas python3 ffmpeg py3-numpy \
     && apk del --purge .build-deps \
     && rm -r /tmp/*
 
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
+
 RUN apk add --no-cache \
         openssl \
+        postgresql \
+        libxml2 \
+        libzip \
+    && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         libxml2-dev \
         libzip-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install \
+    && docker-php-ext-install -j$(nproc) \
         pdo \
         pdo_pgsql \
         pgsql \
         zip \
         exif \
         soap \
-        pcntl
+        pcntl \
+    && apk del --purge .build-deps
+
+RUN apk add --no-cache yaml \
+    && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
+    && pecl install yaml \
+    && docker-php-ext-enable yaml \
+    && apk del --purge .build-deps
 
 ARG PHPREDIS_VERSION=5.3.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
@@ -64,7 +78,7 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && rm /tmp/redis.tar.gz \
     && mkdir -p /usr/src/php/ext \
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
-    && docker-php-ext-install redis
+    && docker-php-ext-install -j$(nproc) redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # Install vips from source because the apk package does not work with the vips PHP
@@ -129,7 +143,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
-        Pillow==8.3.* \
+        Pillow==9.0.* \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 

@@ -94,26 +94,35 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
     }
 
-    public function testUpdateJsonAttrs()
+    public function testUpdateHandle()
     {
         $volume = $this->volume();
         $id = $volume->id;
         $this->doTestApiRoute('PUT', "/api/v1/volumes/{$id}");
 
         $this->beAdmin();
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'doi' => '10.3389/fmars.2017.00083',
-        ]);
-        $response->assertStatus(200);
-        $this->volume()->refresh();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->doi);
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
+        ])->assertStatus(422);
 
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'doi' => '',
-        ]);
-        $response->assertStatus(200);
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertNull($this->volume()->doi);
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+
+        // Backwards compatibility.
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'doi' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(200);
+        $this->volume()->refresh();
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '',
+        ])->assertStatus(200);
+        $this->volume()->refresh();
+        $this->assertNull($this->volume()->handle);
     }
 
     public function testUpdateUrl()

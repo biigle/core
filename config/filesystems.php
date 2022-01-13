@@ -124,6 +124,10 @@ return [
             'root' => storage_path('framework/cache/laserpoints'),
         ],
 
+        'ifdos' => [
+            'driver' => 'local',
+            'root' => storage_path('ifdos'),
+        ],
     ],
 
 ];

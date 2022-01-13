@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d13cc50588260905822046dff90d5388",
+    "content-hash": "35505655b14acedbfe434d990fa9485f",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -463,7 +463,7 @@
                 "issues": "https://github.com/biigle/color-sort/issues",
                 "source": "https://github.com/biigle/color-sort"
             },
-            "time": "2022-01-03T11:14:17+00:00"
+            "time": "2022-01-13T07:36:55+00:00"
         },
         {
             "name": "biigle/demo",
@@ -746,7 +746,7 @@
                 "issues": "https://github.com/biigle/laserpoints/issues",
                 "source": "https://github.com/biigle/laserpoints"
             },
-            "time": "2022-01-03T11:25:55+00:00"
+            "time": "2022-01-13T07:38:15+00:00"
         },
         {
             "name": "biigle/maia",
@@ -793,7 +793,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2022-01-03T11:24:15+00:00"
+            "time": "2022-01-13T07:38:41+00:00"
         },
         {
             "name": "biigle/module",
@@ -883,7 +883,7 @@
                 "issues": "https://github.com/biigle/reports/issues",
                 "source": "https://github.com/biigle/reports"
             },
-            "time": "2022-01-03T11:25:25+00:00"
+            "time": "2022-01-04T11:54:59+00:00"
         },
         {
             "name": "biigle/sync",
@@ -929,7 +929,7 @@
                 "issues": "https://github.com/biigle/sync/issues",
                 "source": "https://github.com/biigle/sync"
             },
-            "time": "2022-01-03T11:26:26+00:00"
+            "time": "2022-01-03T14:38:43+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -3978,6 +3978,9 @@
             },
             "require": {
                 "php": "^7.1 || ^8.0"
+            },
+            "replace": {
+                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
@@ -11121,8 +11124,9 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-vips": "*"
+        "ext-vips": "*",
+        "ext-yaml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.0.0"
 }

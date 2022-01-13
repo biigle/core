@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Traits;
 
 use Biigle\Traits\ParsesImageMetadata;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use TestCase;
 
@@ -96,6 +97,312 @@ class ParsesImageMetadataTest extends TestCase
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
         $this->assertEquals($expect, $stub->parseMetadataFile($file));
+    }
+
+    public function testParseIfdo()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+image-set-items:
+    myimage.jpg:
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename'],
+                ['myimage.jpg'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoHeader()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-set-data-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data
+    image-set-acquisition: photo
+    image-latitude: 11.8581802
+    image-longitude: -117.0214864
+    image-meters-above-ground: 2
+    image-area-square-meter: 5.0
+    image-datetime: '2019-04-06 04:29:27.000000'
+    image-depth: 2248.0
+    image-camera-yaw-degrees: 20
+image-set-items:
+    myimage.jpg:
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoVideoNotSupported()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-set-acquisition: video
+image-set-items:
+    myimage.jpg:
+IFDO;
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoSlideIsImage()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-set-acquisition: slide
+image-set-items:
+    myimage.jpg:
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename'],
+                ['myimage.jpg'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoItems()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+image-set-items:
+    myimage.jpg:
+        image-latitude: 11.8581802
+        image-longitude: -117.0214864
+        image-meters-above-ground: 2
+        image-area-square-meter: 5.0
+        image-datetime: '2019-04-06 04:29:27.000000'
+        image-depth: 2248.0
+        image-camera-yaw-degrees: 20
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoItemsOverrideHeader()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-latitude: 11.8581802
+    image-longitude: -117.0214864
+    image-meters-above-ground: 2
+    image-area-square-meter: 5.0
+    image-datetime: '2019-04-06 04:29:27.000000'
+    image-depth: 2248.0
+    image-camera-yaw-degrees: 20
+image-set-items:
+    myimage.jpg:
+        image-meters-above-ground: 3
+        image-area-square-meter: 5.1
+        image-datetime: '2019-04-06 05:29:27.000000'
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['myimage.jpg', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoFile()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $path = __DIR__."/../../files/ifdo.yaml";
+        $file = new UploadedFile($path, 'ifdo.yaml', 'application/yaml', null, null, true);
+        $expect = [
+            'name' => 'SO268 SO268-2_100-1_OFOS SO_CAM-1_Photo_OFOS',
+            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_042927.JPG', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_052726.JPG', '5.1', '2.1', '-4129.6', '11.8582192', '-117.0214286', '2019-04-06 05:27:26.000000', '21'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdoFile($file));
+    }
+
+    public function testParseIfdoNoHeader()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-items:
+    myimage.jpg:
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoNoItems()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoNoName()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoNoHandle()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoNoUuid()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoInvalidHandle()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: abc
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoInvalidDataHandle()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-set-data-handle: abc
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoInvalidYaml()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:!!
+IFDO;
+
+        $this->expectException(Exception::class);
+        $stub->parseIfdo($input);
+    }
+
+    public function testParseIfdoNoYamlArray()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $this->expectException(Exception::class);
+        $stub->parseIfdo('abc123');
     }
 }
 

@@ -69,9 +69,10 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {String} media_type The media type of the new volume (`image` or `video`). If this attribute is missing, `image` is assumed for backwards compatibility.
      * @apiParam (Required attributes) {String} files List of file names of the images/videos that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
-     * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      * @apiParam (Optional attributes) {String} metadata_text CSV-like string with image metadata (not available for video volumes). See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`.
-     * @apiParam (Optional attributes) {String} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
+     * @apiParam (Optional attributes) {File} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
+     * @apiParam (Optional attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
      *
      * @apiParam (metadata columns) {String} filename The filename of the image the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`
@@ -88,7 +89,7 @@ class ProjectVolumeController extends Controller
      * url: 'local://volumes/test-volume'
      * media_type_id: 1
      * files: '1.jpg,2.jpg,3.jpg'
-     * doi: '10.3389/fmars.2017.00083'
+     * handle: '10.3389/fmars.2017.00083'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -99,7 +100,7 @@ class ProjectVolumeController extends Controller
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
      *    "url": "local://volumes/test-volume",
-     *    "doi": "10.3389/fmars.2017.00083"
+     *    "handle": "10.3389/fmars.2017.00083"
      * }
      *
      * @param StoreVolume $request
@@ -111,7 +112,7 @@ class ProjectVolumeController extends Controller
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
         $volume->media_type_id = $request->input('media_type_id');
-        $volume->doi = $request->input('doi');
+        $volume->handle = $request->input('handle');
         $volume->creator()->associate($request->user());
         $volume->save();
         $request->project->volumes()->attach($volume);
@@ -132,6 +133,10 @@ class ProjectVolumeController extends Controller
             $volume->save();
         } else {
             Queue::connection('sync')->push($job);
+        }
+
+        if ($request->hasFile('ifdo_file')) {
+            $volume->saveIfdo($request->file('ifdo_file'));
         }
 
         // media type shouldn't be returned
