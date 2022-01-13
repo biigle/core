@@ -11,7 +11,7 @@
             BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new image volume is created, BIIGLE attempts to automatically read the metadata from the EXIF information of JPEG files. This doesn't work if the images have another format than JPEG or simply don't have the metadata stored in their EXIF information.
         </p>
         <p>
-            In this case you can upload an image metadata file. The file should be a CSV file with <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. The following columns are supported (multiple synonyms exist for some colums, including the standard proposed in <a href="#ref1">[1]</a>):
+            In this case you can upload an image metadata file. BIIGLE supports the <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview">iFDO standard</a> for import of the metadata fields described below. Additionally, there is a custom CSV format for metadata import. The CSV file should use <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. The following columns are supported (multiple synonyms exist for some colums, including the standard proposed in <a href="#ref1">[1]</a>):
         </p>
         <table class="table">
             <thead>
@@ -32,7 +32,7 @@
                         </p>
                         <div class="panel panel-info">
                             <div class="panel-body text-info">
-                                This column must always be present.
+                                This column is mandatory.
                             </div>
                         </div>
                     </td>
