@@ -70,6 +70,11 @@ return [
             'url' => env('APP_URL').'/storage/video-thumbs',
             'visibility' => 'public',
         ],
+
+        'ifdos' => [
+            'driver' => 'local',
+            'root' => storage_path('ifdos'),
+        ],
     ],
 
 ];

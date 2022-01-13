@@ -14,7 +14,9 @@ use Event;
 use Exception;
 use File;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use ModelTestCase;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolumeTest extends ModelTestCase
@@ -553,4 +555,42 @@ class VolumeTest extends ModelTestCase
         $this->model->save();
         $this->assertFalse($this->model->fresh()->creating_async);
     }
+
+    public function testSaveIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $csv = __DIR__."/../files/ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, null, true);
+
+        $this->assertFalse($this->model->hasIfdo());
+        $this->model->saveIfdo($file);
+
+        $disk->assertExists($this->model->id);
+        $this->assertTrue($this->model->hasIfdo());
+    }
+
+    public function testHasIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $this->assertFalse($this->model->hasIfdo());
+        $disk->put($this->model->id, 'abc');
+        $this->assertTrue($this->model->hasIfdo());
+    }
+
+    public function testDeleteIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id, 'abc');
+        $this->model->deleteIfdo();
+        $disk->assertMissing($this->model->id);
+    }
+
+    public function testDeleteIfdoOnDelete()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id, 'abc');
+        $this->model->delete();
+        $disk->assertMissing($this->model->id);
+    }
+
 }

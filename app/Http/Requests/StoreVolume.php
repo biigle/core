@@ -53,6 +53,7 @@ class StoreVolume extends FormRequest
             ],
             'handle' => 'max:256',
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv',
+            'ifdo_file' => 'file',
             'metadata' => [
                 new ImageMetadata($this->input('files')),
             ],
@@ -84,6 +85,15 @@ class StoreVolume extends FormRequest
             $handle = $this->input('handle');
             if (!empty($handle) && substr_count($handle, '/') !== 1) {
                 $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
+            }
+
+            if ($this->hasFile('ifdo_file')) {
+                try {
+                    // This throws an error if the iFDO is invalid.
+                    $this->parseIfdoFile($this->file('ifdo_file'));
+                } catch (Exception $e) {
+                    $validator->errors()->add('ifdo_file', $e->getMessage());
+                }
             }
         });
     }
