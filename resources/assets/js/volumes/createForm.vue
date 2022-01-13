@@ -2,6 +2,7 @@
 import BrowserApi from './api/browser';
 import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
+import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
@@ -15,8 +16,10 @@ export default {
     data() {
         return {
             disks: [],
+            name: '',
             url: null,
             mediaType: '',
+            handle: '',
             filenames: null,
             filenamesReadFromMetadata: false,
             browsing: false,
@@ -27,6 +30,7 @@ export default {
             directoryCache: {},
             fileCache: {},
             metadataText: '',
+            loadingImport: false,
         };
     },
     computed: {
@@ -65,11 +69,6 @@ export default {
         },
         hasMetadata() {
             return this.isImageMediaType && this.metadataText.length > 0;
-        },
-        importButtonClass() {
-            if (this.hasMetadata) {
-                return 'btn-info';
-            }
         },
     },
     methods: {
@@ -164,17 +163,50 @@ export default {
             });
         },
         parseMetadataTextFilenames(text) {
-            let rows = text.split("\n");
-            let columns = rows.shift();
-            let filenameColumn = columns.split(',').indexOf('filename')
+            let metadata = text.split("\n").map(row => row.split(','));
 
-            return rows.map(function (row) {
-                return row.split(',')[filenameColumn];
-            })
-            .join(', ');
+            return this.parseMetadataFilenames(metadata);
         },
         importCsv() {
             this.$refs.metadataCsvField.click();
+        },
+        importIfdo() {
+            this.$refs.metadataIfdoField.click();
+        },
+        parseIfdoMetadata(event) {
+            let data = new FormData();
+            data.append('file', event.target.files[0]);
+            this.loadingImport = true;
+            ParseIfdoFileApi.save(data)
+                .then(this.setIfdoMetadata, handleErrorResponse)
+                .finally(() => this.loadingImport = false);
+        },
+        setIfdoMetadata(response) {
+            let ifdo = response.body;
+            if (!this.name) {
+                this.name = ifdo.name;
+            }
+            if (!this.url) {
+                this.url = ifdo.url;
+            }
+            if (!this.handle) {
+                this.handle = ifdo.handle;
+            }
+            if (!this.filenames) {
+                this.filenames = this.parseMetadataFilenames(ifdo.files);
+                this.filenamesReadFromMetadata = true;
+            }
+
+            this.metadataText = ifdo.files.map(row => row.join(',')).join("\n");
+        },
+        parseMetadataFilenames(metadata) {
+            let columns = metadata[0];
+            let filenameColumn = columns.indexOf('filename')
+
+            return metadata.slice(1).map(row => row[filenameColumn]).join(', ');
+        },
+        clearMetadataText() {
+            this.metadataText = '';
         },
     },
     watch: {
@@ -195,6 +227,8 @@ export default {
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
+        this.name = biigle.$require('volumes.name');
+        this.handle = biigle.$require('volumes.handle');
         this.metadataText = biigle.$require('volumes.metadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');

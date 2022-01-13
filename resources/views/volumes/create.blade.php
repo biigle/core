@@ -4,8 +4,10 @@
 
 @push('scripts')
    <script type="text/javascript">
+      biigle.$declare('volumes.name', '{!! old('name') !!}');
       biigle.$declare('volumes.url', '{!! old('url') !!}');
       biigle.$declare('volumes.metadataText', `{!! old('metadata_text') !!}`);
+      biigle.$declare('volumes.handle', `{!! old('handle') !!}`);
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.filenames', '{{ $filenames }}');
       @if ($hasBrowser)
@@ -39,29 +41,30 @@
         </div>
 
         <div v-if="isImageMediaType" class="row">
-            <div class="form-group col-sm-9{{ $errors->has('name') ? ' has-error' : '' }}">
+            <div class="form-group col-sm-8{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Volume name</label>
-                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
+                <input type="text" class="form-control" name="name" id="name" v-model="name" placeholder="My new volume" ref="nameInput" required autofocus>
                 @if($errors->has('name'))
                    <span class="help-block">{{ $errors->first('name') }}</span>
                 @endif
             </div>
-            <div class="form-group col-sm-3">
+            <div class="form-group col-sm-4">
                 <label class="invisible">Import from file</label>
-                <dropdown tag="span">
-                    <button class="btn {{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' btn-danger' : 'btn-default' }} btn-block dropdown-toggle" type="button" v-bind:class="importButtonClass" title="Import volume information and metadata from a file">Import <span class="caret"></span></button>
+                <button v-if="hasMetadata" v-cloak type="button" class="btn btn-default btn-block" title="Clear metadata loaded from the selected file" v-on:click="clearMetadataText">Clear metadata</button>
+                <dropdown v-else tag="span">
+                    <button class="btn {{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' btn-danger' : 'btn-default' }} btn-block dropdown-toggle" type="button" title="Import volume information and metadata from a file"><loader v-bind:active="loadingImport"></loader> Import <span class="caret"></span></button>
                     <template slot="dropdown">
-                        <li class="disabled">
-                             <a title="Import volume information from an iFDO YAML file" href="#" disabled>iFDO YAML file</a>
+                        <li>
+                             <a title="Import volume information and metadata from an iFDO YAML file" href="#" v-on:click.prevent="importIfdo">iFDO YAML</a>
                         </li>
                         <li>
-                             <a title="Import image metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV file</a>
+                             <a title="Import image metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV</a>
                         </li>
                     </template>
                 </dropdown>
 
-                <input type="hidden" name="metadata_text" v-model="metadataText">
-                <input class="form-control hidden" ref="metadataCsvField" type="file" v-on:change="setCsvMetadata">
+                <input class="hidden" ref="metadataCsvField" type="file" accept=".csv,text/csv,application/csv" v-on:change="setCsvMetadata">
+                <input class="hidden" ref="metadataIfdoField" type="file" accept=".yml,.yaml" v-on:change="parseIfdoMetadata">
             </div>
         </div>
         <div v-else v-cloak class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -73,6 +76,10 @@
         </div>
 
         <div v-if="isImageMediaType" class="form-group{{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' has-error' : '' }}">
+
+            <label v-show="hasMetadata" v-cloak for="metadata_text">Metadata (imported from file)</label>
+            <textarea v-show="hasMetadata" v-cloak class="form-control" rows="3" name="metadata_text" id="metadata_text" v-model="metadataText" wrap="off" readonly></textarea>
+
             @if ($errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']))
                 @if ($errors->has('ifdo_file'))
                     <span class="help-block">{{ $errors->first('ifdo_file') }}</span>
@@ -86,12 +93,6 @@
             @else
                 <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">metadata CSV</a> file. Metadata may be overridden by image EXIF information.</span>
             @endif
-        </div>
-
-        <div v-cloak v-if="hasMetadata" class="panel panel-info">
-            <div class="panel-body text-info">
-                Metadata will be imported from the provided file.
-            </div>
         </div>
 
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
@@ -172,7 +173,7 @@
 
          <div class="form-group{{ $errors->has('handle') ? ' has-error' : '' }}">
             <label for="handle">Handle or DOI</label>
-            <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle') }}" placeholder="10.3389/fmars.2017.00083">
+            <input type="text" class="form-control" name="handle" id="handle" v-model="handle" placeholder="10.3389/fmars.2017.00083">
             <span class="help-block">
                 A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
             </span>
@@ -190,7 +191,7 @@
          <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
             <label for="files">Volume files</label>
             <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
-                <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames">{{$filenames}}</textarea>
+                <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3">{{$filenames}}</textarea>
                 <p class="help-block">
                    The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
                 </p>
@@ -201,7 +202,7 @@
                 </div>
             </div>
             <div v-else @unless ($mediaType === 'video') v-cloak @endif>
-                <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames">{{$filenames}}</textarea>
+                <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3">{{$filenames}}</textarea>
                 <p class="help-block">
                    The filenames of the volume videos in the directory of the volume URL formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
                 </p>
