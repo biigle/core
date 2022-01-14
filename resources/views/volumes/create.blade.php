@@ -6,7 +6,7 @@
    <script type="text/javascript">
       biigle.$declare('volumes.name', '{!! old('name') !!}');
       biigle.$declare('volumes.url', '{!! old('url') !!}');
-      biigle.$declare('volumes.metadataText', `{!! old('metadata_text') !!}`);
+      biigle.$declare('volumes.hadMetadataText', @if (old('metadata_text')) true @else false @endif);
       biigle.$declare('volumes.handle', `{!! old('handle') !!}`);
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.filenames', '{{ $filenames }}');
@@ -20,7 +20,7 @@
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
       <h2>New volume for {{ $project->name }}</h2>
-      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
+      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" enctype="multipart/form-data" v-on:submit="startLoading">
 
         <div class="row">
             <div class="form-group col-sm-12{{ $errors->has('media_type') ? ' has-error' : '' }}">
@@ -50,9 +50,9 @@
             </div>
             <div class="form-group col-sm-4">
                 <label class="invisible">Import from file</label>
-                <button v-if="hasMetadata" v-cloak type="button" class="btn btn-default btn-block" title="Clear metadata loaded from the selected file" v-on:click="clearMetadataText">Clear metadata</button>
+                <button v-if="hasMetadata" v-cloak type="button" class="btn btn-default btn-block" title="Clear metadata loaded from the selected file" v-on:click="clearMetadata">Clear metadata</button>
                 <dropdown v-else tag="span">
-                    <button class="btn {{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' btn-danger' : 'btn-default' }} btn-block dropdown-toggle" type="button" title="Import volume information and metadata from a file"><loader v-bind:active="loadingImport"></loader> Import <span class="caret"></span></button>
+                    <button class="btn {{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' btn-danger' : 'btn-default' }} btn-block dropdown-toggle" type="button" title="Import volume information and metadata from a file" v-bind:disabled="loadingImport"><loader v-bind:active="loadingImport"></loader> Import <span class="caret"></span></button>
                     <template slot="dropdown">
                         <li>
                              <a title="Import volume information and metadata from an iFDO YAML file" href="#" v-on:click.prevent="importIfdo">iFDO YAML</a>
@@ -64,7 +64,7 @@
                 </dropdown>
 
                 <input class="hidden" ref="metadataCsvField" type="file" accept=".csv,text/csv,application/csv" v-on:change="setCsvMetadata">
-                <input class="hidden" ref="metadataIfdoField" type="file" accept=".yml,.yaml" v-on:change="parseIfdoMetadata">
+                <input class="hidden" ref="metadataIfdoField" type="file" accept=".yml,.yaml" name="ifdo_file" v-on:change="parseIfdoMetadata">
             </div>
         </div>
         <div v-else v-cloak class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -76,6 +76,8 @@
         </div>
 
         <div v-if="isImageMediaType" class="form-group{{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' has-error' : '' }}">
+
+            <p v-if="showImportAgainMessage" v-cloak class="text-danger">Please import the metadata file again.</p>
 
             <label v-show="hasMetadata" v-cloak for="metadata_text">Metadata (imported from file)</label>
             <textarea v-show="hasMetadata" v-cloak class="form-control" rows="3" name="metadata_text" id="metadata_text" v-model="metadataText" wrap="off" readonly></textarea>

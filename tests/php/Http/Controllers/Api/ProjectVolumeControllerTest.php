@@ -406,6 +406,26 @@ class ProjectVolumeControllerTest extends ApiTestCase
         });
     }
 
+    public function testStoreEmptyMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
+        });
+    }
+
     public function testStoreMetadataText()
     {
         $id = $this->project()->id;

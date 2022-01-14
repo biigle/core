@@ -125,7 +125,7 @@ class StoreVolume extends FormRequest
         }
 
         if ($this->input('media_type_id') === MediaType::imageId()) {
-            if ($this->has('metadata_text')) {
+            if ($this->input('metadata_text')) {
                 $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
             } elseif ($this->hasFile('metadata_csv')) {
                 $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
