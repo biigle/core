@@ -4,6 +4,7 @@ namespace Biigle\Http\Requests;
 
 use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\Rules\Handle;
 use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
@@ -52,7 +53,7 @@ class StoreVolume extends FormRequest
                 'required',
                 'array',
             ],
-            'handle' => 'max:256',
+            'handle' => ['nullable', 'max:256', new Handle],
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
             'ifdo_file' => 'file',
             'metadata' => [
@@ -81,11 +82,6 @@ class StoreVolume extends FormRequest
             $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
             if (!$rule->passes('files', $this->input('files'))) {
                 $validator->errors()->add('files', $rule->message());
-            }
-
-            $handle = $this->input('handle');
-            if (!empty($handle) && substr_count($handle, '/') !== 1) {
-                $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
             }
 
             if ($this->hasFile('ifdo_file')) {

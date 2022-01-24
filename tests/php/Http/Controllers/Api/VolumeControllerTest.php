@@ -111,12 +111,15 @@ class VolumeControllerTest extends ApiTestCase
         $this->volume()->refresh();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
 
+        // Some DOIs can contain multiple slashes.
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '10.3389/fmars.2017/00083',
+        ])->assertStatus(200);
+
         // Backwards compatibility.
         $this->json('PUT', "/api/v1/volumes/{$id}", [
             'doi' => '10.3389/fmars.2017.00083',
         ])->assertStatus(200);
-        $this->volume()->refresh();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
 
         $this->json('PUT', "/api/v1/volumes/{$id}", [
             'handle' => '',
