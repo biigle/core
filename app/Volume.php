@@ -9,7 +9,9 @@ use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use League\Flysystem\FileNotFoundException;
 use Storage;
 
 /**
@@ -471,5 +473,20 @@ class Volume extends Model
     public function deleteIfdo()
     {
         Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->id);
+    }
+
+    /**
+     * Download the iFDO that is attached to this volume.
+     *
+     * @return Response
+     */
+    public function downloadIfdo()
+    {
+        try {
+            return Storage::disk(config('volumes.ifdo_storage_disk'))
+                ->download($this->id, "biigle-volume-{$this->id}-ifdo.yaml");
+        } catch (FileNotFoundException $e) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
     }
 }

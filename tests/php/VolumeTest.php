@@ -17,7 +17,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
 use Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VolumeTest extends ModelTestCase
 {
@@ -593,4 +595,17 @@ class VolumeTest extends ModelTestCase
         $disk->assertMissing($this->model->id);
     }
 
+    public function testDownloadIfdoNotFound()
+    {
+        $this->expectException(NotFoundHttpException::class);
+        $this->model->downloadIfdo();
+    }
+
+    public function testDownloadIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id, 'abc');
+        $response = $this->model->downloadIfdo();
+        $this->assertInstanceOf(StreamedResponse::class, $response);
+    }
 }

@@ -323,6 +323,10 @@ $router->group([
         'uses' => 'ImageMetadataController@store',
     ]);
 
+    $router->get('{id}/ifdo', [
+        'uses' => 'IfdoController@show',
+    ]);
+
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
     ]);

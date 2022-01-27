@@ -1,4 +1,5 @@
 <script>
+import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
 import MetadataApi from './api/volumeImageMetadata';
 import ParseIfdoFileApi from './api/parseIfdoFile';
@@ -14,6 +15,7 @@ export default {
     components: {
         tabs: Tabs,
         tab: Tab,
+        dropdown: Dropdown,
     },
     data() {
         return {
@@ -21,6 +23,7 @@ export default {
             error: false,
             success: false,
             message: undefined,
+            hasIfdo: false,
         };
     },
     computed: {
@@ -33,7 +36,7 @@ export default {
         },
         handleError(response) {
             this.success = false;
-            let knownError = response.body.errors.metadata || response.body.errors.ifdo_file;
+            let knownError = response.body.errors.metadata || response.body.errors.ifdo_file || response.body.errors.file;
             if (knownError) {
                 if (Array.isArray(knownError)) {
                     this.error = knownError[0];
@@ -51,17 +54,22 @@ export default {
             this.startLoading();
             let data = new FormData();
             data.append('metadata_csv', event.target.files[0]);
-            this.upload(data).finally(this.finishLoading);
+            this.upload(data)
+                .then(this.handleSuccess, this.handleError)
+                .finally(this.finishLoading);
         },
         submitIfdo() {
             this.$refs.ifdoInput.click();
         },
-        prepareIfdo(event) {
+        handleIfdo(event) {
             this.startLoading();
             let data = new FormData();
             data.append('file', event.target.files[0]);
             ParseIfdoFileApi.save(data)
-                .then(this.uploadIfdo, handleErrorResponse)
+                .then(this.uploadIfdo)
+                .then(() => this.hasIfdo = true)
+                .then(this.handleSuccess)
+                .catch(this.handleError)
                 .finally(this.finishLoading);
         },
         uploadIfdo(response) {
@@ -73,12 +81,12 @@ export default {
             return this.upload(data);
         },
         upload(data) {
-            return MetadataApi.save({id: this.volumeId}, data)
-                .then(this.handleSuccess, this.handleError);
+            return MetadataApi.save({id: this.volumeId}, data);
         },
     },
     created() {
         this.volumeId = biigle.$require('volumes.id');
+        this.hasIfdo = biigle.$require('volumes.hasIfdo');
     },
 };
 </script>
