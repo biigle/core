@@ -489,4 +489,18 @@ class Volume extends Model
             abort(Response::HTTP_NOT_FOUND);
         }
     }
+
+    /**
+     * Get the content of the iFDO file associated with this volume.
+     *
+     * @return array
+     */
+    public function getIfdo()
+    {
+        try {
+            return yaml_parse(Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->id));
+        } catch (Exception $e) {
+            return null;
+        }
+    }
 }
