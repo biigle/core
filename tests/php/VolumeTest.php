@@ -608,4 +608,13 @@ class VolumeTest extends ModelTestCase
         $response = $this->model->downloadIfdo();
         $this->assertInstanceOf(StreamedResponse::class, $response);
     }
+
+    public function testGetIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $this->assertNull($this->model->getIfdo());
+        $disk->put($this->model->id, 'abc: def');
+        $ifdo = $this->model->getIfdo();
+        $this->assertEquals(['abc' => 'def'], $ifdo);
+    }
 }
