@@ -4,21 +4,37 @@
         <span class="pull-right"><span class="loader" v-bind:class="{'loader--active':loading}"></span></span>
     </div>
     <div class="panel-body">
-        <p>
-            Here you can upload a CSV file with image metadata such as the date and time when an image was taken or the geo coordinates.
-        </p>
-        <form class="form" v-on:submit.prevent="submit">
-            <div class="form-group">
-                <input type="file" name="file" v-on:change="setCsv">
-                <p class="help-block">
-                    See the <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">manual</a> on how the CSV file should look like.
+        <tabs>
+            <tab title="iFDO file">
+                <p>
+                    Upload an iFDO file to attach it to the volume and update the image metadata.
                 </p>
-            </div>
-            <div class="alert alert-danger" v-if="error" v-text="error" v-cloak></div>
-            <div class="alert alert-success" v-if="success" v-cloak>
-                The image metadata was successfully updated.
-            </div>
-            <input class="btn btn-success" type="submit" name="submit" value="Upload" disabled :disabled="!csv || loading" v-if="!success">
-        </form>
+                <form class="form" v-on:submit.prevent="submitIfdo">
+                    <div class="form-group">
+                        <input class="hidden" ref="ifdoInput" type="file" name="file" v-on:change="prepareIfdo" accept=".yml,.yaml">
+                        <button class="btn btn-success" type="submit" :disabled="loading">Upload iFDO</button>
+                    </div>
+                </form>
+            </tab>
+            <tab title="CSV file" v-cloak>
+                <p>
+                    Upload a CSV file to update the metadata of the images of this volume.
+                </p>
+                <form class="form" v-on:submit.prevent="submitCsv">
+                    <div class="form-group">
+                        <input class="hidden" ref="csvInput" type="file" name="file" v-on:change="uploadCsv" accept=".csv,text/csv,application/csv">
+                        <button class="btn btn-success" type="submit" :disabled="loading">Upload CSV</button>
+                    </div>
+                </form>
+            </tab>
+        </tabs>
+        <div class="alert alert-danger" v-if="error" v-text="error" v-cloak></div>
+        <div class="alert alert-success" v-if="success" v-cloak>
+            The image metadata was successfully updated.
+        </div>
+        <p class="text-muted">
+            Learn more about image metadata and the CSV file format in the <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">manual</a>.
+        </p>
+
     </div>
 </div>
