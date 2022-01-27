@@ -136,6 +136,11 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                 }
 
                 return $query;
+            }])
+            ->with(['labels' => function ($query) {
+                if ($this->isRestrictedToLabels()) {
+                    return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
+                }
             }]);
     }
 
@@ -147,12 +152,19 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
     protected function getUsers()
     {
         return User::whereIn('id', function ($query) {
-            $query->select('user_id')
-                ->from('image_annotation_labels')
-                ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-                ->join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->where('images.volume_id', $this->source->id);
-        })->get();
+                $query->select('user_id')
+                    ->from('image_annotation_labels')
+                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                    ->join('images', 'image_annotations.image_id', '=', 'images.id')
+                    ->where('images.volume_id', $this->source->id);
+            })
+            ->orWhereIn('id', function ($query) {
+                $query->select('user_id')
+                    ->from('image_labels')
+                    ->join('images', 'image_labels.image_id', '=', 'images.id')
+                    ->where('images.volume_id', $this->source->id);
+            })
+            ->get();
     }
 
     /**
@@ -163,12 +175,19 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
     protected function getLabels()
     {
         return Label::whereIn('id', function ($query) {
-            $query->select('label_id')
-                ->from('image_annotation_labels')
-                ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-                ->join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->where('images.volume_id', $this->source->id);
-        })->get();
+                $query->select('label_id')
+                    ->from('image_annotation_labels')
+                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+                    ->join('images', 'image_annotations.image_id', '=', 'images.id')
+                    ->where('images.volume_id', $this->source->id);
+            })
+            ->orWhereIn('id', function ($query) {
+                $query->select('label_id')
+                    ->from('image_labels')
+                    ->join('images', 'image_labels.image_id', '=', 'images.id')
+                    ->where('images.volume_id', $this->source->id);
+            })
+            ->get();
     }
 
     /**
@@ -195,6 +214,7 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                     'label' => $label->id,
                     'annotator' => $user->uuid,
                     'confidence' => $aLabel->confidence,
+                    'created-at' => (string) $aLabel->created_at,
                 ];
             });
 
@@ -204,8 +224,33 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         });
 
+        $labels = $image->labels->map(function ($iLabel) {
+            $user = $this->users->get($iLabel->user_id);
+            if (!in_array($user, $this->imageAnnotationCreators)) {
+                $this->imageAnnotationCreators[] = $user;
+            }
+
+            $label = $this->labels->get($iLabel->label_id);
+            if (!in_array($label, $this->imageAnnotationLabels)) {
+                $this->imageAnnotationLabels[] = $label;
+            }
+
+            return [
+                'coordinates' => [],
+                'labels' => [
+                    [
+                        'label' => $label->id,
+                        'annotator' => $user->uuid,
+                        'created-at' => (string) $iLabel->created_at,
+                    ],
+                ],
+            ];
+        });
+
         $this->imageSetItems[$image->filename] = [
-            'image-annotations' => $annotations->toArray(),
+            // Use toBase() because the merge method of Eloquent collections works
+            // differently.
+            'image-annotations' => $annotations->toBase()->merge($labels)->toArray(),
         ];
     }
 

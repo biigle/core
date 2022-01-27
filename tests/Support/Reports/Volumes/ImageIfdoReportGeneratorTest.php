@@ -2,20 +2,14 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
-use App;
-use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageTest;
+use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
-use Mockery;
 use Storage;
 use TestCase;
-use ZipArchive;
 
 class ImageIfdoReportGeneratorTest extends TestCase
 {
@@ -51,7 +45,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
         ]);
 
         $al->annotation->image->volume_id = $volume->id;
-        $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
 
         $generator = new ImageIfdoReportGeneratorStub;
@@ -87,6 +80,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                                     'label' => $al->label->id,
                                     'annotator' => $user->uuid,
                                     'confidence' => $al->confidence,
+                                    'created-at' => (string) $al->created_at,
                                 ],
                             ],
                         ],
@@ -100,7 +94,72 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
     public function testGenerateReportImageLabels()
     {
-        $this->markTestIncomplete();
+        $ifdo = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            ],
+        ];
+
+        $volume = VolumeTest::create(['name' => 'My Cool Volume']);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($volume->id, yaml_emit($ifdo));
+
+        $label = LabelTest::create();
+        $user = UserTest::create();
+
+        $il = ImageLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+        ]);
+
+        $il->image->volume_id = $volume->id;
+        $il->image->save();
+
+        $generator = new ImageIfdoReportGeneratorStub;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+
+        $expect = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+                'image-annotation-creators' => [
+                    [
+                        'id' => $user->uuid,
+                        'name' => "{$user->firstname} {$user->lastname}",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => $il->label->id,
+                        'name' => $il->label->name,
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $il->image->filename => [
+                    'image-annotations' => [
+                        [
+                            'coordinates' => [],
+                            'labels' => [
+                                [
+                                    'label' => $il->label->id,
+                                    'annotator' => $user->uuid,
+                                    'created-at' => (string) $il->created_at,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expect, $generator->yaml);
     }
 
     public function testGenerateReportMergeSetItems()
