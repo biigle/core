@@ -29,20 +29,22 @@
 @endpush
 
 @section('navbar')
-<div class="navbar-text navbar-annotations-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
-    <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
-    <span id="annotations-navbar">
-        <breadcrumb
-            :file-ids="ids"
-            :filenames="filenames"
-            :show-indicator="showIndicator"
-            :current-file-id="currentId"
-            type="image"
-            >
-            <strong>{{$image->filename}}</strong>
-        </breadcrumb>
-    </span>
+<div class="navbar-text">
+    <div class="annotations-breadcrumb">
+        @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+        <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
+        <span id="annotations-navbar">
+            <breadcrumb
+                :file-ids="ids"
+                :filenames="filenames"
+                :show-indicator="showIndicator"
+                :current-file-id="currentId"
+                type="image"
+                >
+                <strong>{{$image->filename}}</strong>
+            </breadcrumb>
+        </span>
+    </div>
     @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection

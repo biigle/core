@@ -193,6 +193,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
 
+        // Some DOIs can contain multiple slashes.
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'handle' => '10.3389/fmars.2017/00083',
+        ])->assertStatus(201);
+
         // Backwards compatibility.
         $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -201,8 +210,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'files' => '1.jpg',
             'doi' => '10.3389/fmars.2017.00083',
         ])->assertStatus(201);
-        $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
 
         $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -403,6 +410,26 @@ class ProjectVolumeControllerTest extends ApiTestCase
             return $job->volume->id === $id &&
                 in_array('1.mp4', $job->filenames) &&
                 in_array('2.mp4', $job->filenames);
+        });
+    }
+
+    public function testStoreEmptyMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
         });
     }
 

@@ -50,7 +50,7 @@
                     <td><code>true</code>, <code>false</code></td>
                 </tr>
                 <tr>
-                    <td><code>annotationTooltip</code></td>
+                    <td><code>labelTooltip</code></td>
                     <td>Show or hide the annotation tooltip when you hover over an annotation.</td>
                     <td><code>true</code>, <code>false</code></td>
                 </tr>

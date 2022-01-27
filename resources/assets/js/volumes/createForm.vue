@@ -31,6 +31,7 @@ export default {
             fileCache: {},
             metadataText: '',
             loadingImport: false,
+            hadMetadataText: false,
         };
     },
     computed: {
@@ -69,6 +70,9 @@ export default {
         },
         hasMetadata() {
             return this.isImageMediaType && this.metadataText.length > 0;
+        },
+        showImportAgainMessage() {
+            return this.hadMetadataText && !this.hasMetadata;
         },
     },
     methods: {
@@ -205,8 +209,9 @@ export default {
 
             return metadata.slice(1).map(row => row[filenameColumn]).join(', ');
         },
-        clearMetadataText() {
+        clearMetadata() {
             this.metadataText = '';
+            this.$refs.metadataIfdoField.value = '';
         },
     },
     watch: {
@@ -223,13 +228,19 @@ export default {
                     handleErrorResponse(response);
                 });
         },
+        hasMetadata(hasMetadata) {
+            if (hasMetadata) {
+                // Don't show message again once a metadata file had been selected.
+                this.hadMetadataText = false;
+            }
+        },
     },
     created() {
         this.disks = biigle.$require('volumes.disks');
         this.url = biigle.$require('volumes.url');
         this.name = biigle.$require('volumes.name');
         this.handle = biigle.$require('volumes.handle');
-        this.metadataText = biigle.$require('volumes.metadataText');
+        this.hadMetadataText = biigle.$require('volumes.hadMetadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
 

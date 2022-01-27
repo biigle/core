@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
 use Illuminate\Http\UploadedFile;
+use Storage;
 
 class ImageMetadataControllerTest extends ApiTestCase
 {
@@ -17,7 +18,7 @@ class ImageMetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, null, true);
         $this->beEditor();
         // no permissions
-        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['metadata_csv' => $csv])
             ->assertStatus(403);
 
         $this->beAdmin();
@@ -25,7 +26,7 @@ class ImageMetadataControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/{$id}/images/metadata")->assertStatus(422);
 
         // image does not exist
-        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['metadata_csv' => $csv])
             ->assertStatus(422);
 
         $png = ImageTest::create([
@@ -43,7 +44,7 @@ class ImageMetadataControllerTest extends ApiTestCase
 
         $this->assertFalse($this->volume()->hasGeoInfo());
 
-        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['metadata_csv' => $csv])
             ->assertStatus(200);
 
         $this->assertTrue($this->volume()->hasGeoInfo());
@@ -65,5 +66,70 @@ class ImageMetadataControllerTest extends ApiTestCase
         $this->assertNull($png->lng);
         $this->assertNull($png->lat);
         $this->assertEmpty($png->metadata);
+    }
+
+    public function testStoreMetadataText()
+    {
+        $id = $this->volume()->id;
+
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+            'attrs' => ['metadata' => [
+                'water_depth' => 4000,
+                'distance_to_ground' => 20,
+            ]],
+        ]);
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", [
+            'metadata_text' => "filename,area,distance_to_ground\nabc.jpg,2.5,10",
+        ])->assertSuccessful();
+
+        $image->refresh();
+        $this->assertEquals(4000, $image->metadata['water_depth']);
+        $this->assertEquals(10, $image->metadata['distance_to_ground']);
+        $this->assertEquals(2.5, $image->metadata['area']);
+    }
+
+    public function testStoreDeprecatedFileAttribute()
+    {
+        $id = $this->volume()->id;
+
+        $image = ImageTest::create([
+            'filename' => 'abc.jpg',
+            'volume_id' => $id,
+            'attrs' => ['metadata' => [
+                'water_depth' => 4000,
+                'distance_to_ground' => 20,
+            ]],
+        ]);
+
+        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, null, true);
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
+            ->assertSuccessful();
+
+        $image->refresh();
+        $this->assertEquals(4000, $image->metadata['water_depth']);
+        $this->assertEquals(10, $image->metadata['distance_to_ground']);
+        $this->assertEquals(2.6, $image->metadata['area']);
+    }
+
+    public function testStoreIfdoFile()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+        $file = new UploadedFile(__DIR__."/../../../../../files/ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, null, true);
+
+        Storage::fake('ifdos');
+
+        $this->assertFalse($this->volume()->hasIfdo());
+
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['ifdo_file' => $file])
+            ->assertSuccessful();
+
+        $this->assertTrue($this->volume()->hasIfdo());
     }
 }

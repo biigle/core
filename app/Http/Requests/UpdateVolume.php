@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Rules\Handle;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
@@ -37,29 +38,8 @@ class UpdateVolume extends FormRequest
         return [
             'name' => 'filled|max:512',
             'url' => ['filled', new VolumeUrl],
-            'handle' => 'max:256',
+            'handle' => ['nullable', 'max:256', new Handle],
         ];
-    }
-
-    /**
-     * Configure the validator instance.
-     *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        if ($validator->fails()) {
-            return;
-        }
-
-        // Only validate sample volume files after all other fields have been validated.
-        $validator->after(function ($validator) {
-            $handle = $this->input('handle');
-            if (!empty($handle) && substr_count($handle, '/') !== 1) {
-                $validator->errors()->add('handle', 'Please provide a valid handle or DOI.');
-            }
-        });
     }
 
     /**
