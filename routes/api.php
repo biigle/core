@@ -327,6 +327,10 @@ $router->group([
         'uses' => 'IfdoController@show',
     ]);
 
+    $router->delete('{id}/ifdo', [
+        'uses' => 'IfdoController@destroy',
+    ]);
+
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
     ]);

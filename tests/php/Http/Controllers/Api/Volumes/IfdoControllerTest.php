@@ -33,4 +33,24 @@ class IfdoControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertEquals("attachment; filename=biigle-volume-{$id}-ifdo.yaml", $response->headers->get('content-disposition'));
     }
+
+    public function testDestroy()
+    {
+        $id = $this->volume()->id;
+
+        $this->doTestApiRoute('DELETE', "/api/v1/volumes/{$id}/ifdo");
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($id, 'abc');
+
+        $this->beExpert();
+        $this->deleteJson("/api/v1/volumes/{$id}/ifdo")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/volumes/{$id}/ifdo")
+            ->assertSuccessful();
+
+        $this->assertFalse($this->volume()->hasIfdo());
+    }
 }

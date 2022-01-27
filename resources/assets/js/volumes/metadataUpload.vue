@@ -3,9 +3,10 @@ import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
 import MetadataApi from './api/volumeImageMetadata';
 import ParseIfdoFileApi from './api/parseIfdoFile';
+import VolumeIfdoApi from './api/volumeIfdo';
 import Tab from 'uiv/dist/Tab';
 import Tabs from 'uiv/dist/Tabs';
-import {handleErrorResponse} from '../core/messages/store';
+import MessageStore from '../core/messages/store';
 
 /**
  * The metadata upload of the volume edit page.
@@ -44,7 +45,7 @@ export default {
                     this.error = knownError;
                 }
             } else {
-                handleErrorResponse(response);
+                MessageStore.handleErrorResponse(response);
             }
         },
         submitCsv() {
@@ -82,6 +83,16 @@ export default {
         },
         upload(data) {
             return MetadataApi.save({id: this.volumeId}, data);
+        },
+        deleteIfdo() {
+            this.startLoading();
+            VolumeIfdoApi.delete({id: this.volumeId})
+                .then(this.handleIfdoDeleted, MessageStore.handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        handleIfdoDeleted() {
+            this.hasIfdo = false;
+            MessageStore.success('The iFDO file was deleted.');
         },
     },
     created() {

@@ -4,13 +4,13 @@
         <span class="pull-right">
             <span class="loader" v-bind:class="{'loader--active':loading}"></span>
             <dropdown tag="span" v-if="hasIfdo" v-cloak>
-                <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Manage the iFDO file attached to this volume">iFDO <span class="caret"></span></button>
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Manage the iFDO file attached to this volume" :disabled="loading">iFDO <span class="caret"></span></button>
                 <template slot="dropdown">
                     <li>
                         <a href="{{url("api/v1/volumes/{$volume->id}/ifdo")}}" title="Download the iFDO file">Download</a>
                     </li>
-                    <li class="disabled">
-                        <a href="#" title="Delete the iFDO file">Delete</a>
+                    <li>
+                        <a href="#" title="Delete the iFDO file" v-on:click.prevent="deleteIfdo">Delete</a>
                     </li>
                 </template>
             </dropdown>

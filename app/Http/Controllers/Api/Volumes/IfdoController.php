@@ -12,8 +12,8 @@ class IfdoController extends Controller
      *
      * @api {get} volumes/:id/ifdo Get an iFDO file
      * @apiGroup Volumes
-     * @apiName GetVolumeIfdo
-     * @apiPermission user
+     * @apiName ShowVolumeIfdo
+     * @apiPermission projectMember
      ~
      * @param int $id
      *
@@ -25,5 +25,24 @@ class IfdoController extends Controller
         $this->authorize('access', $volume);
 
         return $volume->downloadIfdo();
+    }
+
+    /**
+     * Delete an iFDO file attached to a volume
+     *
+     * @api {delete} volumes/:id/ifdo Delete an iFDO file
+     * @apiGroup Volumes
+     * @apiName DestroyVolumeIfdo
+     * @apiPermission projectAdmin
+     ~
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('update', $volume);
+        $volume->deleteIfdo();
     }
 }
