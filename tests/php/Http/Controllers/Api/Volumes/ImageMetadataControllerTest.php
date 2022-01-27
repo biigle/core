@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
 use Illuminate\Http\UploadedFile;
+use Storage;
 
 class ImageMetadataControllerTest extends ApiTestCase
 {
@@ -114,5 +115,21 @@ class ImageMetadataControllerTest extends ApiTestCase
         $this->assertEquals(4000, $image->metadata['water_depth']);
         $this->assertEquals(10, $image->metadata['distance_to_ground']);
         $this->assertEquals(2.6, $image->metadata['area']);
+    }
+
+    public function testStoreIfdoFile()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+        $file = new UploadedFile(__DIR__."/../../../../../files/ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, null, true);
+
+        Storage::fake('ifdos');
+
+        $this->assertFalse($this->volume()->hasIfdo());
+
+        $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['ifdo_file' => $file])
+            ->assertSuccessful();
+
+        $this->assertTrue($this->volume()->hasIfdo());
     }
 }

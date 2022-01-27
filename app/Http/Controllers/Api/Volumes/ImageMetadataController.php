@@ -21,8 +21,10 @@ class ImageMetadataController extends Controller
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required attributes) {File} metadata_csv CSV file with metadata for the volume images. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. Alternatively, `metadata_text` can be used directly with the content of a CSV file.
-     * @apiParam (Required attributes) {String} metadata_text Alternative to `metadata_csv` with the plain content of a metadata CSV file.
+     * @apiParam (Attributes) {File} metadata_csv CSV file with metadata for the volume images. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. Alternatively, `metadata_text` can be used directly with the content of a CSV file.
+     * @apiParam (Attributes) {String} metadata_text Alternative to `metadata_csv` with the plain content of a metadata CSV file.
+     * @apiParam (Attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
+     *
      *
      * @apiParam (metadata columns) {String} filename The filename of the image the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`
@@ -42,33 +44,49 @@ class ImageMetadataController extends Controller
      */
     public function store(StoreVolumeMetadata $request)
     {
-        DB::transaction(function () use ($request) {
-            $metadata = $request->input('metadata');
-            $images = $request->volume->images()
-                ->select('id', 'filename', 'attrs')
-                ->get()
-                ->keyBy('filename');
+        if ($request->hasFile('ifdo_file')) {
+            $request->volume->saveIfdo($request->file('ifdo_file'));
+        }
 
-            $columns = array_shift($metadata);
+        if ($request->input('metadata')) {
+            DB::transaction(function () use ($request) {
+                $this->updateMetadata($request);
+            });
 
-            foreach ($metadata as $row) {
-                $row = collect(array_combine($columns, $row));
-                $image = $images->get($row['filename']);
-                // Remove empty cells.
-                $row = $row->filter();
-                $fill = $row->only(ImageMetadata::ALLOWED_ATTRIBUTES);
-                if ($fill->has('taken_at')) {
-                    $fill['taken_at'] = Carbon::parse($fill['taken_at'])->toDateTimeString();
-                }
-                $image->fillable(ImageMetadata::ALLOWED_ATTRIBUTES);
-                $image->fill($fill->toArray());
+            $request->volume->flushGeoInfoCache();
+        }
+    }
 
-                $metadata = $row->only(ImageMetadata::ALLOWED_METADATA);
-                $image->metadata = array_merge($image->metadata, $metadata->toArray());
-                $image->save();
+    /**
+     * Update volume metadata for each image.
+     *
+     * @param StoreVolumeMetadata $request
+     */
+    protected function updateMetadata(StoreVolumeMetadata $request)
+    {
+        $metadata = $request->input('metadata');
+        $images = $request->volume->images()
+            ->select('id', 'filename', 'attrs')
+            ->get()
+            ->keyBy('filename');
+
+        $columns = array_shift($metadata);
+
+        foreach ($metadata as $row) {
+            $row = collect(array_combine($columns, $row));
+            $image = $images->get($row['filename']);
+            // Remove empty cells.
+            $row = $row->filter();
+            $fill = $row->only(ImageMetadata::ALLOWED_ATTRIBUTES);
+            if ($fill->has('taken_at')) {
+                $fill['taken_at'] = Carbon::parse($fill['taken_at'])->toDateTimeString();
             }
-        });
+            $image->fillable(ImageMetadata::ALLOWED_ATTRIBUTES);
+            $image->fill($fill->toArray());
 
-        $request->volume->flushGeoInfoCache();
+            $metadata = $row->only(ImageMetadata::ALLOWED_METADATA);
+            $image->metadata = array_merge($image->metadata, $metadata->toArray());
+            $image->save();
+        }
     }
 }

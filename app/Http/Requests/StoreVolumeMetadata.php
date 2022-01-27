@@ -38,8 +38,9 @@ class StoreVolumeMetadata extends FormRequest
         $files = $this->volume->images()->pluck('filename')->toArray();
 
         return [
-            'metadata_csv' => 'required_without:metadata_text|file|mimetypes:text/plain,text/csv,application/csv',
-            'metadata_text' => 'required_without:metadata_csv',
+            'metadata_csv' => 'required_without_all:metadata_text,ifdo_file|file|mimetypes:text/plain,text/csv,application/csv',
+            'metadata_text' => 'required_without_all:metadata_csv,ifdo_file',
+            'ifdo_file' => 'required_without_all:metadata_csv,metadata_text|file',
             'metadata' => [
                 new ImageMetadata($files),
             ],
@@ -77,12 +78,25 @@ class StoreVolumeMetadata extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if (!$this->volume->isImageVolume()) {
                 if ($this->hasFile('metadata_csv')) {
                     $validator->errors()->add('metadata_csv', 'Metadata can only be uploaded for image volumes.');
                 } else {
                     $validator->errors()->add('metadata_text', 'Metadata can only be uploaded for image volumes.');
+                }
+            }
+
+            if ($this->hasFile('ifdo_file')) {
+                try {
+                    // This throws an error if the iFDO is invalid.
+                    $this->parseIfdoFile($this->file('ifdo_file'));
+                } catch (Exception $e) {
+                    $validator->errors()->add('ifdo_file', $e->getMessage());
                 }
             }
         });
