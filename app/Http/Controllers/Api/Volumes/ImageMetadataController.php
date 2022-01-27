@@ -21,7 +21,8 @@ class ImageMetadataController extends Controller
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required attributes) {File} file CSV file with metadata for the volume images. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`.
+     * @apiParam (Required attributes) {File} metadata_csv CSV file with metadata for the volume images. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. Alternatively, `metadata_text` can be used directly with the content of a CSV file.
+     * @apiParam (Required attributes) {String} metadata_text Alternative to `metadata_csv` with the plain content of a metadata CSV file.
      *
      * @apiParam (metadata columns) {String} filename The filename of the image the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`

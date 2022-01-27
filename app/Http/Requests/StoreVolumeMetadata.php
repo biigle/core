@@ -38,7 +38,8 @@ class StoreVolumeMetadata extends FormRequest
         $files = $this->volume->images()->pluck('filename')->toArray();
 
         return [
-            'file' => 'required|file|mimetypes:text/plain,text/csv,application/csv',
+            'metadata_csv' => 'required_without:metadata_text|file|mimetypes:text/plain,text/csv,application/csv',
+            'metadata_text' => 'required_without:metadata_csv',
             'metadata' => [
                 new ImageMetadata($files),
             ],
@@ -54,8 +55,17 @@ class StoreVolumeMetadata extends FormRequest
     {
         $this->volume = Volume::findOrFail($this->route('id'));
 
-        if ($this->volume->isImageVolume() && $this->hasFile('file')) {
-            $this->merge(['metadata' => $this->parseMetadataFile($this->file('file'))]);
+        // Backwards compatibility.
+        if ($this->hasFile('file') && !$this->hasFile('metadata_csv')) {
+            $this->convertedFiles['metadata_csv'] = $this->file('file');
+        }
+
+        if ($this->volume->isImageVolume()) {
+            if ($this->hasFile('metadata_csv')) {
+                $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
+            } elseif ($this->input('metadata_text')) {
+                $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
+            }
         }
     }
 
@@ -69,7 +79,11 @@ class StoreVolumeMetadata extends FormRequest
     {
         $validator->after(function ($validator) {
             if (!$this->volume->isImageVolume()) {
-                $validator->errors()->add('file', 'Metadata can only be uploaded for image volumes.');
+                if ($this->hasFile('metadata_csv')) {
+                    $validator->errors()->add('metadata_csv', 'Metadata can only be uploaded for image volumes.');
+                } else {
+                    $validator->errors()->add('metadata_text', 'Metadata can only be uploaded for image volumes.');
+                }
             }
         });
     }
