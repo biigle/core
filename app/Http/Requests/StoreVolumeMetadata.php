@@ -5,6 +5,7 @@ namespace Biigle\Http\Requests;
 use Biigle\Rules\ImageMetadata;
 use Biigle\Traits\ParsesImageMetadata;
 use Biigle\Volume;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVolumeMetadata extends FormRequest
