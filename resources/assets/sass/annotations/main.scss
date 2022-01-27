@@ -12,21 +12,13 @@
     }
 }
 
-.navbar-annotations-breadcrumbs {
+.annotations-breadcrumb {
     white-space: nowrap;
     max-width: 850px;
     text-overflow: ellipsis;
     overflow: hidden;
-
-    // make dropdown visible despite overflow:hidden
-    .dropdown {
-        position: static;
-
-        .dropdown-menu {
-            left: auto;
-            top: auto;
-        }
-    }
+    display: inline-block;
+    vertical-align: bottom;
 }
 
 .sidebar-tab__section {
