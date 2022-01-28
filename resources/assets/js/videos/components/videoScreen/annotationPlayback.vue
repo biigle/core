@@ -59,6 +59,10 @@ export default {
             let annotation;
             let hasRenderedFeatures = false;
             const rtp = getRoundToPrecision(time);
+            // Sometimes the video currentTime does not match the annotation time even if
+            // a seek was performed to the exact annotation time. Hence, we  round the
+            // time here to the maximum of 4 decimals, too.
+            time = rtp(time);
 
             for (let i = 0, length = annotations.length; i < length; i++) {
                 // We can skip ahead and break early because of the sorting in the
