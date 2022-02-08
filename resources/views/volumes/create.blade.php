@@ -174,7 +174,7 @@
          @endunless
 
          <div class="form-group{{ $errors->has('handle') ? ' has-error' : '' }}">
-            <label for="handle">Handle or DOI</label>
+            <label for="handle">Handle or DOI <span class="text-muted">(optional)</span></label>
             <input type="text" class="form-control" name="handle" id="handle" v-model="handle" placeholder="10.3389/fmars.2017.00083">
             <span class="help-block">
                 A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
