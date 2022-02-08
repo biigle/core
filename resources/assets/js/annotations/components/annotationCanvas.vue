@@ -293,7 +293,10 @@ export default {
                 condition: clickCondition,
                 style: Styles.highlight,
                 layers: [this.annotationLayer],
-                // enable selecting multiple overlapping features at once
+                // Enable selection of multiple overlapping annotations. Otherwise you
+                // could always only select the annotation that was drawn last (i.e. on
+                // the top). Use Shift+Click to deselect overlapping annotations that
+                // shouldn't be selected or use the annotation filter.
                 multi: true
             });
 
