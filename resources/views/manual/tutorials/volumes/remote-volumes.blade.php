@@ -76,7 +76,7 @@ Access-Control-Allow-Headers "x-requested-with"
             <pre>{{\Ramsey\Uuid\Uuid::uuid4()}}</pre>
         @endif
         <p>
-            In addition to a URL that is hard to guess, you should make sure to use secure HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs.
+            In addition to a URL that is hard to guess, you should make sure to use secure HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs. Furthermore, you must disable directory listing in your web server.
         </p>
     </div>
 @endsection
