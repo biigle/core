@@ -21,8 +21,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new ImageIfdoReportGenerator;
-        $this->assertEquals('iFDO report', $generator->getName());
-        $this->assertEquals('ifdo_report', $generator->getFilename());
+        $this->assertEquals('image iFDO report', $generator->getName());
+        $this->assertEquals('image_ifdo_report', $generator->getFilename());
         $this->assertStringEndsWith('.yaml', $generator->getFullFilename());
     }
 
@@ -537,19 +537,30 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $label2 = LabelTest::create();
         $user = UserTest::create();
 
+        $image1 = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => 'img1.jpg',
+        ]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image1->id]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
+            'annotation_id' => $a1->id,
         ]);
 
+        $image2 = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => 'img2.jpg',
+        ]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image1->id]);
         $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
-            'annotation_id' => $al->annotation_id,
+            'annotation_id' => $a2->id,
         ]);
 
-        $al->annotation->image->volume_id = $volume->id;
-        $al->annotation->image->save();
+        $al2->annotation->image->volume_id = $volume->id;
+        $al2->annotation->image->save();
 
         $generator = new ImageIfdoReportGeneratorStub([
             'onlyLabels' => [$label->id],
@@ -577,10 +588,10 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->image->filename => [
+                $image1->filename => [
                     'image-annotations' => [
                         [
-                            'coordinates' => $al->annotation->points,
+                            'coordinates' => $a1->points,
                             'labels' => [
                                 [
                                     'label' => $al->label_id,
@@ -592,6 +603,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                         ],
                     ],
                 ],
+                $image2->filename => [],
             ],
         ];
 

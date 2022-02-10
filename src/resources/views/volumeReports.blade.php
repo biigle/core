@@ -40,6 +40,11 @@
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                             </div>
+                            @if ($volume->hasIfdo())
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default" title="Request an image iFDO report" v-on:click="selectType('ImageIfdo')" :class="{active: wantsType('ImageIfdo')}">Image iFDO report</button>
+                                </div>
+                            @endif
                         @else
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
@@ -51,15 +56,17 @@
                     </div>
                 </div>
                 <div class="form-group" :class="{'has-error': errors.id}">
-                    <label for="report-variant">Report variant</label>
-                    <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="availableVariants.length === 1">
-                        <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
-                    </select>
+                    <div v-if="availableVariants.length > 0">
+                        <label for="report-variant">Report variant</label>
+                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="availableVariants.length === 1">
+                            <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
+                        </select>
+                        <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
+                    </div>
                     @include('reports::partials.reportTypeInfo')
-                    <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                 </div>
                 @if ($annotationSessions->count() > 0)
-                    <div v-if="wantsType('{{$reportPrefix}}Annotations')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
+                    <div v-cloak v-if="hasOption('annotation_session_id')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
                         <label for="annotation-session">Restrict to annotation session</label>
                         <select id="annotation-session" class="form-control" v-model="options.annotation_session_id">
                             @foreach ($annotationSessions as $session)
@@ -72,50 +79,48 @@
                         </div>
                     </div>
                 @endif
-                <div v-if="wantsType('{{$reportPrefix}}Annotations')" v-cloak>
-                    @if ($volume->isImageVolume())
-                        <div class="form-group" :class="{'has-error': errors.export_area}">
-                            <div class="checkbox">
-                                @if ($volume->exportArea)
-                                    <label>
-                                        <input type="checkbox" v-model="options.export_area"> Restrict to export area
-                                    </label>
-                                @else
-                                    <label class="text-muted">
-                                        <input type="checkbox" v-model="options.export_area" disabled> Restrict to export area
-                                    </label>
-                                @endif
-                            </div>
-                            <div v-if="errors.export_area" v-cloak class="help-block" v-text="getError('export_area')"></div>
-                            <div v-else class="help-block">
-                                Annotations that are outside of the export area will be discarded for this report.
-                            </div>
-                        </div>
-                    @endif
-                    <div class="form-group" :class="{'has-error': errors.newest_label}">
+                @if ($volume->isImageVolume())
+                    <div v-cloak v-if="hasOption('export_area')" class="form-group" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
-                            <label>
-                                <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
-                            </label>
+                            @if ($volume->exportArea)
+                                <label>
+                                    <input type="checkbox" v-model="options.export_area"> Restrict to export area
+                                </label>
+                            @else
+                                <label class="text-muted">
+                                    <input type="checkbox" v-model="options.export_area" disabled> Restrict to export area
+                                </label>
+                            @endif
                         </div>
-                        <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
+                        <div v-if="errors.export_area" v-cloak class="help-block" v-text="getError('export_area')"></div>
                         <div v-else class="help-block">
-                            Only the newest label of each annotation will be included in the report.
+                            Annotations that are outside of the export area will be discarded for this report.
                         </div>
                     </div>
-                    <div v-if="wantsVariant('Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels
-                            </label>
-                        </div>
-                        <div v-if="errors.aggregate_child_labels" v-cloak class="help-block" v-text="getError('aggregate_child_labels')"></div>
-                        <div v-else class="help-block">
-                            Aggregate the abundance of child labels to their parent label.
-                        </div>
+                @endif
+                <div v-cloak v-if="hasOption('newest_label')" class="form-group" :class="{'has-error': errors.newest_label}">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
+                        </label>
+                    </div>
+                    <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
+                    <div v-else class="help-block">
+                        Only the newest label of each annotation will be included in the report.
                     </div>
                 </div>
-                <div class="form-group" :class="{'has-error': errors.separate_label_trees}">
+                <div v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels
+                        </label>
+                    </div>
+                    <div v-if="errors.aggregate_child_labels" v-cloak class="help-block" v-text="getError('aggregate_child_labels')"></div>
+                    <div v-else class="help-block">
+                        Aggregate the abundance of child labels to their parent label.
+                    </div>
+                </div>
+                <div v-cloak v-if="hasOption('separate_label_trees')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="checkbox">

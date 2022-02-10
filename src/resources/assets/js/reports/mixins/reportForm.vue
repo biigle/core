@@ -55,7 +55,9 @@ export default {
                 if (!variants.hasOwnProperty(fragments[0])) {
                     variants[fragments[0]] = [];
                 }
-                variants[fragments[0]].push(fragments[1]);
+                if (fragments[1]) {
+                    variants[fragments[0]].push(fragments[1]);
+                }
             });
 
             return variants;
@@ -69,7 +71,11 @@ export default {
             return types;
         },
         selectedReportTypeId() {
-            return this.availableReportTypes[this.selectedType + '\\' + this.selectedVariant];
+            if (this.selectedVariant) {
+                return this.availableReportTypes[this.selectedType + '\\' + this.selectedVariant];
+            }
+
+            return this.availableReportTypes[this.selectedType];
         },
         availableVariants() {
             return this.variants[this.selectedType];
@@ -115,7 +121,7 @@ export default {
         selectType(type) {
             this.selectedType = type;
             if (this.availableVariants.indexOf(this.selectedVariant) === -1) {
-                this.selectedVariant = this.availableVariants[0];
+                this.selectedVariant = this.availableVariants[0] || '';
             }
         },
         wantsType(type) {
@@ -127,6 +133,9 @@ export default {
             }
 
             return this.selectedVariant === variant;
+        },
+        hasOption(key) {
+            return this.allowedOptions[this.selectedType].includes(key);
         },
         hasError(key) {
             return this.errors.hasOwnProperty(key);

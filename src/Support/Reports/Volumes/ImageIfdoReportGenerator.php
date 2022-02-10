@@ -17,14 +17,14 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'iFDO report';
+    protected $name = 'image iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'ifdo_report';
+    protected $filename = 'image_ifdo_report';
 
     /**
      * File extension of the report file.
@@ -259,6 +259,12 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                 'coordinates' => $annotation->points,
                 'labels' => $labels->toArray(),
             ];
+        });
+
+        // Remove annotations that should not be included because of an "onlyLabels"
+        // filter.
+        $annotations = $annotations->filter(function ($annotation) {
+            return !empty($annotation['labels']);
         });
 
         $labels = $image->labels->map(function ($iLabel) {
