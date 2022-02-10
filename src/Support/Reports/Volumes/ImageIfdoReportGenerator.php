@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\LabelSource;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AnnotationReportGenerator;
 use Biigle\User;
 use DB;
@@ -68,12 +69,20 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
     protected $imageSetItems = [];
 
     /**
+     * Label source model for the WoRMS database.
+     *
+     * @var LabelSource
+     */
+    protected $wormsLabelSource;
+
+    /**
      * Generate the report.
      *
      * @param string $path Path to the report file that should be generated
      */
     public function generateReport($path)
     {
+        $this->wormsLabelSource = LabelSource::where('name', 'worms')->first();
         $this->users = $this->getUsers()->keyBy('id');
         $this->labels = $this->getLabels()->keyBy('id');
 
@@ -102,6 +111,14 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
         }
 
         $labels = array_map(function ($label) {
+            if ($this->shouldConvertWormsId($label)) {
+                return [
+                    'id' => $this->getWormsUrn($label),
+                    'name' => $label->name,
+                    'description' => 'Imported from WoRMS',
+                ];
+            }
+
             return [
                 'id' => $label->id,
                 'name' => $label->name,
@@ -225,8 +242,14 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                     $this->imageAnnotationLabels[] = $label;
                 }
 
+                if ($this->shouldConvertWormsId($label)) {
+                    $labelId = $this->getWormsUrn($label);
+                } else {
+                    $labelId = $label->id;
+                }
+
                 return [
-                    'label' => $label->id,
+                    'label' => $labelId,
                     'annotator' => $user->uuid,
                     'confidence' => $aLabel->confidence,
                     'created-at' => (string) $aLabel->created_at,
@@ -250,11 +273,17 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                 $this->imageAnnotationLabels[] = $label;
             }
 
+            if ($this->shouldConvertWormsId($label)) {
+                $labelId = $this->getWormsUrn($label);
+            } else {
+                $labelId = $label->id;
+            }
+
             return [
                 'coordinates' => [],
                 'labels' => [
                     [
-                        'label' => $label->id,
+                        'label' => $labelId,
                         'annotator' => $user->uuid,
                         'created-at' => (string) $iLabel->created_at,
                     ],
@@ -282,5 +311,29 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
     protected function writeYaml(array $content, string $path)
     {
         yaml_emit_file($path, $content);
+    }
+
+    /**
+     * Determine if the label ID should be converted to a WoRMS URN.
+     *
+     * @param Label $label
+     *
+     * @return bool
+     */
+    protected function shouldConvertWormsId(Label $label)
+    {
+        return $this->wormsLabelSource && $label->label_source_id === $this->wormsLabelSource->id;
+    }
+
+    /**
+     * Get the WoRMS URN for a label (if it has one).
+     *
+     * @param Label $label
+     *
+     * @return string
+     */
+    protected function getWormsUrn($label)
+    {
+        return "urn:lsid:marinespecies.org:taxname:{$label->source_id}";
     }
 }

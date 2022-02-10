@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
+use Biigle\LabelSource;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
@@ -608,7 +609,68 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
     public function testGenerateReportLabelAphiaIdInfo()
     {
-        $this->markTestIncomplete();
+        $worms = LabelSource::where('name', 'worms')->first();
+
+        [$volume, $ifdo] = $this->setUpIfdo();
+
+        $label = LabelTest::create([
+            'label_source_id' => $worms->id,
+            'source_id' => 123999,
+        ]);
+        $user = UserTest::create();
+
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+        ]);
+
+        $al->annotation->image->volume_id = $volume->id;
+        $al->annotation->image->save();
+
+        $generator = new ImageIfdoReportGeneratorStub;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+
+        $expect = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+                'image-annotation-creators' => [
+                    [
+                        'id' => $user->uuid,
+                        'name' => "{$user->firstname} {$user->lastname}",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => 'urn:lsid:marinespecies.org:taxname:123999',
+                        'name' => $al->label->name,
+                        'description' => 'Imported from WoRMS',
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $al->annotation->image->filename => [
+                    'image-annotations' => [
+                        [
+                            'coordinates' => $al->annotation->points,
+                            'labels' => [
+                                [
+                                    'label' => 'urn:lsid:marinespecies.org:taxname:123999',
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al->confidence,
+                                    'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expect, $generator->yaml);
     }
 }
 
