@@ -6,6 +6,7 @@ use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AnnotationReportGenerator;
+use Biigle\Shape;
 use Biigle\User;
 use DB;
 use Exception;
@@ -109,6 +110,7 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             if (array_key_exists('image-set-items', $ifdo)) {
                 foreach ($ifdo['image-set-items'] as &$item) {
                     unset($item['image-annotations']);
+                    unset($item['image-annotation-geometry-types']);
                 }
             }
         }
@@ -239,7 +241,31 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
      */
     public function processImage(Image $image)
     {
-        $annotations = $image->annotations->map(function ($annotation) {
+        $geometryTypes = [];
+
+        // Remove annotations that should not be included because of an "onlyLabels"
+        // filter.
+        $annotations = $image->annotations->filter(function ($a) {
+            return $a->labels->isNotEmpty();
+        });
+
+        $geometryTypes = $annotations->map(function ($a) {
+                if ($a->shape_id === Shape::pointId()) {
+                    return 'single-pixel';
+                } elseif ($a->shape_id === Shape::circleId()) {
+                    // Circles don't store the coordinates but could be converted to
+                    // bounding boxes.
+                    return 'bounding-box';
+                } else {
+                    // We treat ellipses as rectangles and rectangles as polygons.
+                    // Also, line strings can only be represented as polygons in iFDO.
+                    return 'polygon';
+                }
+            })
+            ->unique()
+            ->toArray();
+
+        $annotations = $annotations->map(function ($annotation) {
             $labels = $annotation->labels->map(function ($aLabel) {
                 $user = $this->users->get($aLabel->user_id);
                 if (!in_array($user, $this->imageAnnotationCreators)) {
@@ -271,12 +297,6 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         });
 
-        // Remove annotations that should not be included because of an "onlyLabels"
-        // filter.
-        $annotations = $annotations->filter(function ($annotation) {
-            return !empty($annotation['labels']);
-        });
-
         $labels = $image->labels->map(function ($iLabel) {
             $user = $this->users->get($iLabel->user_id);
             if (!in_array($user, $this->imageAnnotationCreators)) {
@@ -306,6 +326,10 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         });
 
+        if ($labels->isNotEmpty()) {
+            $geometryTypes[] = 'whole-image';
+        }
+
         $this->imageSetItems[$image->filename] = [];
 
         // Use toBase() because the merge method of Eloquent collections works
@@ -314,6 +338,7 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
 
         if (!empty($imageAnnotations)) {
             $this->imageSetItems[$image->filename]['image-annotations'] = $imageAnnotations;
+            $this->imageSetItems[$image->filename]['image-annotation-geometry-types'] = $geometryTypes;
         }
     }
 
