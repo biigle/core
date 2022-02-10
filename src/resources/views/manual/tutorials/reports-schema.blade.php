@@ -44,6 +44,7 @@
                 <ul>
                     <li><a href="#video-label-csv-report">CSV</a></li>
                 </ul>
+                <strong><a href="#image-ifdo-reports">Image iFDO reports</a></strong>
             </div>
         </div>
 
@@ -365,5 +366,11 @@ Animalia
             <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
+
+        <h3><a name="image-ifdo-reports"></a>Image iFDO reports</h3>
+
+        <p>
+            iFDO reports can be requested if an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview">iFDO file</a> has been uploaded for a volume. The iFDO report will be generated as the original file with additional information on the annotations and image labels that were created in BIIGLE. Optionally, annotations and image labels of the original file can be excluded from the report.
+        </p>
     </div>
 @endsection
