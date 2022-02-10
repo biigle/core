@@ -38,6 +38,12 @@ export default {
                     'annotation_session_id',
                     'only_labels',
                 ],
+                'ImageIfdo': [
+                    'export_area',
+                    'newest_label',
+                    'only_labels',
+                    'strip_ifdo',
+                ],
             },
             options: {
                 annotation_session_id: null,

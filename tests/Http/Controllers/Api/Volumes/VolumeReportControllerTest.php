@@ -8,6 +8,7 @@ use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Storage;
 
 class VolumeReportControllerTest extends ApiTestCase
 {
@@ -74,6 +75,7 @@ class VolumeReportControllerTest extends ApiTestCase
             // imageAnnotationImageLocation is tested below
             // imageAnnotationAnnotationLocation is tested below
             // imageLabelImageLocation is tested below
+            // imageIfdo is tested below
         ];
 
         $this->beGuest();
@@ -307,5 +309,27 @@ class VolumeReportControllerTest extends ApiTestCase
 
         $job = end($this->dispatchedJobs);
         $this->assertTrue($job->report->options['separateUsers']);
+    }
+
+    public function testStoreImageIfdo()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageIfdoId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(422);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($volumeId, 'abc');
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(201);
     }
 }

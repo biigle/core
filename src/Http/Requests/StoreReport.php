@@ -26,6 +26,7 @@ class StoreReport extends FormRequest
             'only_labels.*' => 'exists:labels,id',
             'aggregate_child_labels' => "nullable|boolean",
             'disable_notifications' => "nullable|boolean",
+            'strip_ifdo' => "nullable|boolean",
         ];
     }
 
@@ -81,6 +82,10 @@ class StoreReport extends FormRequest
             $options['disableNotifications'] = boolval($this->input('disable_notifications', false));
         }
 
+        if ($this->isAllowedForStripIfdo()) {
+            $options['stripIfdo'] = boolval($this->input('strip_ifdo', false));
+        }
+
         return $options;
     }
 
@@ -131,4 +136,15 @@ class StoreReport extends FormRequest
         ]);
     }
 
+    /**
+     * Check if strip_ifdo may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForStripIfdo()
+    {
+        return $this->isType([
+            ReportType::imageIfdoId(),
+        ]);
+    }
 }

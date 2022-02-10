@@ -16,6 +16,7 @@
     ],
     "require": {
         "ext-zip": "*",
+        "ext-yaml": "*",
         "jmikola/geojson":"^1.0"
     },
     "autoload": {
