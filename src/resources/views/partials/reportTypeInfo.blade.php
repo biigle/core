@@ -38,5 +38,5 @@
     The CSV video label report lists the video labels at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#video-label-csv-report">report schema</a>.
 </div>
 <div class="help-block" v-if="wantsCombination('ImageIfdo', '')">
-    The iFDO report returns the iFDO file that was attached to this volume with added information about annotations and image labels. See the <a target="_blank" href="https://www.marine-imaging.com/fair/ifdos/iFDO-overview">iFDO specification for more information</a>.
+    The iFDO report returns the iFDO file that was attached to a volume with added information about annotations and image labels. See the <a target="_blank" href="https://www.marine-imaging.com/fair/ifdos/iFDO-overview">iFDO specification for more information</a>.
 </div>

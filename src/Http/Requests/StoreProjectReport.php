@@ -54,6 +54,7 @@ class StoreProjectReport extends StoreReport
             $this->validateReportType($validator);
             $this->validateGeoInfo($validator);
             $this->validateImageMetadata($validator);
+            $this->validateIfdos($validator);
         });
     }
 
@@ -145,6 +146,24 @@ class StoreProjectReport extends StoreReport
             if (!$hasImagesWithDimensions) {
                 $validator->errors()->add('id', 'No volume has images with dimension information. Try again later if the images are new and still being processed.');
             }
+        }
+    }
+
+    /**
+     * Check if some volumes have iFDO files (if an iFDO report is requested).
+     *
+     * @param \Illuminate\Validator\Validator $validator
+     */
+    protected function validateIfdos($validator)
+    {
+        if ($this->isType(ReportType::imageIfdoId())) {
+            foreach ($this->project->volumes as $volume) {
+                if ($volume->hasIfdo()) {
+                    return;
+                }
+            }
+
+            $validator->errors()->add('id', 'The project has no volumes with attached iFDO files.');
         }
     }
 }

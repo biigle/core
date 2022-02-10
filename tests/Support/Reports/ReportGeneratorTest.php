@@ -41,7 +41,6 @@ class ReportGeneratorTest extends TestCase
 
     public function testGetAllProjectExist()
     {
-        $this->markTestIncomplete('Implement project image iFDO report');
         foreach (ReportType::get() as $type) {
             $this->assertNotNull(ReportGenerator::get(Project::class, $type));
         }

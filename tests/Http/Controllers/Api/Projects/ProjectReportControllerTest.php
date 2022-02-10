@@ -8,6 +8,7 @@ use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Storage;
 
 class ProjectReportControllerTest extends ApiTestCase
 {
@@ -266,5 +267,29 @@ class ProjectReportControllerTest extends ApiTestCase
 
         $job = end($this->dispatchedJobs);
         $this->assertTrue($job->report->options['separateUsers']);
+    }
+
+    public function testStoreImageIfdo()
+    {
+        $projectId = $this->project()->id;
+        // Create volume.
+        $this->volume();
+        $typeId = ReportType::imageIfdoId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(422);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->volume()->id, 'abc');
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(201);
     }
 }

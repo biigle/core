@@ -53,6 +53,15 @@ class ProjectReportsController extends Controller
 
         $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
+        $hasIfdos = false;
+
+        foreach ($project->volumes as $volume) {
+            if ($volume->hasIfdo()) {
+                $hasIfdos = true;
+                break;
+            }
+        }
+
         return view('reports::projectReports', [
             'project' => $project,
             'isMember' => $isMember,
@@ -64,6 +73,7 @@ class ProjectReportsController extends Controller
             'hasImageVolume' => $hasImageVolume,
             'hasVideoVolume' => $hasVideoVolume,
             'labelTrees' => $labelTrees,
+            'hasIfdos' => $hasIfdos,
         ]);
     }
 }

@@ -36,6 +36,11 @@ export default {
                     'separate_users',
                     'only_labels',
                 ],
+                'ImageIfdo': [
+                    'export_area',
+                    'newest_label',
+                    'only_labels',
+                ],
             },
         };
     },

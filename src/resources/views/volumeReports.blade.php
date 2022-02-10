@@ -40,11 +40,13 @@
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                             </div>
-                            @if ($volume->hasIfdo())
-                                <div class="btn-group">
+                            <div class="btn-group">
+                                @if ($volume->hasIfdo())
                                     <button type="button" class="btn btn-default" title="Request an image iFDO report" v-on:click="selectType('ImageIfdo')" :class="{active: wantsType('ImageIfdo')}">Image iFDO report</button>
-                                </div>
-                            @endif
+                                @else
+                                    <button type="button" class="btn btn-default" title="iFDO reports are only available for volumes with attached iFDO files" disabled>Image iFDO report</button>
+                                @endif
+                            </div>
                         @else
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
@@ -56,14 +58,14 @@
                     </div>
                 </div>
                 <div class="form-group" :class="{'has-error': errors.id}">
-                    <div v-if="availableVariants.length > 0">
+                    <div v-if="hasAvailableVariants">
                         <label for="report-variant">Report variant</label>
-                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="availableVariants.length === 1">
+                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="onlyOneAvailableVariant">
                             <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
                         </select>
-                        <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                     </div>
                     @include('reports::partials.reportTypeInfo')
+                    <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                 </div>
                 @if ($annotationSessions->count() > 0)
                     <div v-cloak v-if="hasOption('annotation_session_id')" v-cloak class="form-group" :class="{'has-error': errors.annotation_session_id}">
@@ -109,7 +111,7 @@
                         Only the newest label of each annotation will be included in the report.
                     </div>
                 </div>
-                <div v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels

@@ -80,6 +80,9 @@ export default {
         availableVariants() {
             return this.variants[this.selectedType];
         },
+        hasAvailableVariants() {
+            return this.availableVariants.length > 0;
+        },
         onlyOneAvailableVariant() {
             return this.availableVariants.length === 1;
         },

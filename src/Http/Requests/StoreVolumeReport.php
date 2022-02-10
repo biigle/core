@@ -102,6 +102,10 @@ class StoreVolumeReport extends StoreReport
                     $validator->errors()->add('id', 'The volume images have no dimension information. Try again later if the images are new and still being processed.');
                 }
             }
+
+            if ($this->isType(ReportType::imageIfdoId()) && !$this->volume->hasIfdo()) {
+                $validator->errors()->add('id', 'The volume has no attached iFDO file.');
+            }
         });
     }
 
