@@ -7,6 +7,7 @@ use Biigle\Label;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageAnnotations\AnnotationReportGenerator;
 use Biigle\User;
 use DB;
+use Exception;
 
 class ImageIfdoReportGenerator extends AnnotationReportGenerator
 {
@@ -81,7 +82,7 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
         $ifdo = $this->source->getIfdo();
 
         if (is_null($ifdo)) {
-            // throw
+            throw new Exception("No iFDO file found for the volume.");
         }
 
         $creators = array_map(function ($user) {
@@ -93,7 +94,12 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         }, $this->imageAnnotationCreators);
 
-        $ifdo['image-set-header']['image-annotation-creators'] = $creators;
+        if (!empty($creators)) {
+            $ifdo['image-set-header']['image-annotation-creators'] = array_merge(
+                $ifdo['image-set-header']['image-annotation-creators'] ?? [],
+                $creators
+            );
+        }
 
         $labels = array_map(function ($label) {
             return [
@@ -102,12 +108,18 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         }, $this->imageAnnotationLabels);
 
-        $ifdo['image-set-header']['image-annotation-labels'] = $labels;
+        if (!empty($labels)) {
+            $ifdo['image-set-header']['image-annotation-labels'] = array_merge(
+                $ifdo['image-set-header']['image-annotation-labels'] ?? [],
+                $labels
+            );
+        }
 
-        if (array_key_exists('image-set-items', $ifdo)) {
-            $ifdo['image-set-items'] = array_merge($ifdo['image-set-items'], $this->imageSetItems);
-        } else {
-            $ifdo['image-set-items'] = $this->imageSetItems;
+        if (!empty($this->imageSetItems)) {
+            $ifdo['image-set-items'] = array_merge_recursive(
+                $ifdo['image-set-items'] ?? [],
+                $this->imageSetItems
+            );
         }
 
         $this->writeYaml($ifdo, $path);
@@ -120,13 +132,13 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        return $this->source->images()
-            ->with(['annotations' => function ($query) {
+        $relations = [
+            'annotations' => function ($query) {
                 if ($this->isRestrictedToExportArea()) {
                     return $this->restrictToExportAreaQuery($query);
                 }
-            }])
-            ->with(['annotations.labels' => function ($query) {
+            },
+            'annotations.labels' => function ($query) {
                 if ($this->isRestrictedToNewestLabel()) {
                     $query = $this->restrictToNewestLabelQuery($query);
                 }
@@ -136,12 +148,15 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                 }
 
                 return $query;
-            }])
-            ->with(['labels' => function ($query) {
+            },
+            'labels' => function ($query) {
                 if ($this->isRestrictedToLabels()) {
                     return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
                 }
-            }]);
+            },
+        ];
+
+        return $this->source->images()->with($relations);
     }
 
     /**
@@ -247,11 +262,15 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         });
 
-        $this->imageSetItems[$image->filename] = [
-            // Use toBase() because the merge method of Eloquent collections works
-            // differently.
-            'image-annotations' => $annotations->toBase()->merge($labels)->toArray(),
-        ];
+        $this->imageSetItems[$image->filename] = [];
+
+        // Use toBase() because the merge method of Eloquent collections works
+        // differently.
+        $imageAnnotations = $annotations->toBase()->merge($labels)->toArray();
+
+        if (!empty($imageAnnotations)) {
+            $this->imageSetItems[$image->filename]['image-annotations'] = $imageAnnotations;
+        }
     }
 
     /**
