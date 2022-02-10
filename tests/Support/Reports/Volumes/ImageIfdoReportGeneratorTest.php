@@ -647,7 +647,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => 'urn:lsid:marinespecies.org:taxname:123999',
                         'name' => $al->label->name,
-                        'description' => 'Imported from WoRMS',
                     ],
                 ],
             ],

@@ -115,7 +115,6 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
                 return [
                     'id' => $this->getWormsUrn($label),
                     'name' => $label->name,
-                    'description' => 'Imported from WoRMS',
                 ];
             }
 
