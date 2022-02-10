@@ -117,6 +117,7 @@ class ProjectReportControllerTest extends ApiTestCase
             ReportType::imageLabelsBasicId(),
             ReportType::imageLabelsCsvId(),
             ReportType::imageLabelsImageLocationId(),
+            ReportType::imageIfdoId(),
         ];
 
         $this->beGuest();

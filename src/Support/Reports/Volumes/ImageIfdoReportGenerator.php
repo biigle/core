@@ -103,6 +103,16 @@ class ImageIfdoReportGenerator extends AnnotationReportGenerator
             ];
         }, $this->imageAnnotationCreators);
 
+        if ($this->options->get('stripIfdo', false)) {
+            unset($ifdo['image-set-header']['image-annotation-creators']);
+            unset($ifdo['image-set-header']['image-annotation-labels']);
+            if (array_key_exists('image-set-items', $ifdo)) {
+                foreach ($ifdo['image-set-items'] as &$item) {
+                    unset($item['image-annotations']);
+                }
+            }
+        }
+
         if (!empty($creators)) {
             $ifdo['image-set-header']['image-annotation-creators'] = array_merge(
                 $ifdo['image-set-header']['image-annotation-creators'] ?? [],

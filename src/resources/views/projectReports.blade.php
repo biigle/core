@@ -137,6 +137,17 @@
                         Split the report to separate files/sheets for label trees or users.
                     </div>
                 </div>
+                <div v-cloak v-if="hasOption('strip_ifdo')" class="form-group" :class="{'has-error': errors.strip_ifdo}">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.strip_ifdo"> Strip original annotations
+                        </label>
+                    </div>
+                    <div v-if="errors.strip_ifdo" v-cloak class="help-block" v-text="getError('strip_ifdo')"></div>
+                    <div v-else class="help-block">
+                        Only include BIIGLE annotations in the iFDO files.
+                    </div>
+                </div>
                 @include('reports::partials.restrictLabels')
             </div>
         </div>

@@ -40,6 +40,7 @@ export default {
                     'export_area',
                     'newest_label',
                     'only_labels',
+                    'strip_ifdo',
                 ],
             },
         };

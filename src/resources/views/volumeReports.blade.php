@@ -145,6 +145,17 @@
                         Split the report to separate files/sheets for label trees or users.
                     </div>
                 </div>
+                <div v-cloak v-if="hasOption('strip_ifdo')" class="form-group" :class="{'has-error': errors.strip_ifdo}">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.strip_ifdo"> Strip original annotations
+                        </label>
+                    </div>
+                    <div v-if="errors.strip_ifdo" v-cloak class="help-block" v-text="getError('strip_ifdo')"></div>
+                    <div v-else class="help-block">
+                        Only include BIIGLE annotations in the iFDO file.
+                    </div>
+                </div>
                 @include('reports::partials.restrictLabels')
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.

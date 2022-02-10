@@ -75,6 +75,7 @@ class VolumeReportControllerTest extends ApiTestCase
             // imageAnnotationImageLocation is tested below
             // imageAnnotationAnnotationLocation is tested below
             // imageLabelImageLocation is tested below
+            // imageIfdo is tested below
         ];
 
         $this->beGuest();
