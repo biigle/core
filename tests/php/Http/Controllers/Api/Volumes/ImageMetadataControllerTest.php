@@ -15,7 +15,7 @@ class ImageMetadataControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/images/metadata");
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, null, true);
+        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
         $this->beEditor();
         // no permissions
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['metadata_csv' => $csv])
@@ -105,7 +105,7 @@ class ImageMetadataControllerTest extends ApiTestCase
             ]],
         ]);
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, null, true);
+        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/images/metadata", ['file' => $csv])
@@ -121,7 +121,7 @@ class ImageMetadataControllerTest extends ApiTestCase
     {
         $id = $this->volume()->id;
         $this->beAdmin();
-        $file = new UploadedFile(__DIR__."/../../../../../files/ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, null, true);
+        $file = new UploadedFile(__DIR__."/../../../../../files/ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
 
         Storage::fake('ifdos');
 

@@ -40,7 +40,7 @@ class ProjectsAttachableVolumesControllerTest extends ApiTestCase
             'name' => $validVolume->name,
             'media_type_id' => $validVolume->media_type_id,
             'media_type' => $validVolume->mediaType,
-            'updated_at' => $validVolume->getAttributes()['updated_at'],
+            'updated_at' => $validVolume->updated_at->toJson(),
             'thumbnailUrl' => null,
             'thumbnailsUrl' => [],
         ]]);
