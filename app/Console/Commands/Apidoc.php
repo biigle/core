@@ -24,7 +24,7 @@ class Apidoc extends Command
     /**
      * Handle the command.
      *
-     * @return void
+     * @return int
      */
     public function handle(Modules $modules)
     {

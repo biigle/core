@@ -562,7 +562,7 @@ class VolumeTest extends ModelTestCase
     {
         $disk = Storage::fake('ifdos');
         $csv = __DIR__."/../files/ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, null, true);
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
 
         $this->assertFalse($this->model->hasIfdo());
         $this->model->saveIfdo($file);

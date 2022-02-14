@@ -14,10 +14,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        // If this is ever enabled, also enable TrustHosts (which does not exist yet).
+        // If this is ever enabled, also enable TrustHosts.
         // see: https://github.com/laravel/laravel/pull/5477
         // \Biigle\Http\Middleware\TrustHosts::class,
         // \Biigle\Http\Middleware\TrustProxies::class,
+        \Fruitcake\Cors\HandleCors::class,
         \Biigle\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Biigle\Http\Middleware\TrimStrings::class,
@@ -63,22 +64,5 @@ class Kernel extends HttpKernel
         'guest' => \Biigle\Http\Middleware\RedirectIfAuthenticated::class,
         'session' => \Biigle\Http\Middleware\SessionOnly::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-    ];
-
-    /**
-     * The priority-sorted list of middleware.
-     *
-     * This forces non-global middleware to always be in the given order.
-     *
-     * @var array
-     */
-    protected $middlewarePriority = [
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \Biigle\Http\Middleware\Authenticate::class,
-        \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        \Illuminate\Session\Middleware\AuthenticateSession::class,
-        \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 }

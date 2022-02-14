@@ -18,8 +18,8 @@ class ApiTokenControllerTest extends ApiTestCase
             'id' => $token->id,
             'owner_id' => $token->owner_id,
             'purpose' => $token->purpose,
-            'created_at' => (string) $token->created_at,
-            'updated_at' => (string) $token->updated_at,
+            'created_at' => $token->created_at->toJson(),
+            'updated_at' => $token->updated_at->toJson(),
         ];
 
         $this->be($token->owner);

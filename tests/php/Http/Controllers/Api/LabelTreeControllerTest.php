@@ -25,8 +25,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
             'version' => null,
         ]]);
     }
@@ -44,8 +44,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
             'version' => null,
         ]]);
     }
@@ -63,8 +63,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
             'version' => $version->toArray(),
         ]]);
     }
@@ -95,8 +95,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
             'version' => null,
             'versions' => [],
         ])
