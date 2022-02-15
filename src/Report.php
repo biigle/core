@@ -2,8 +2,10 @@
 
 namespace Biigle\Modules\Reports;
 
+use Biigle\Modules\Reports\Database\Factories\ReportFactory;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use File;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use ReflectionClass;
 use SplFileInfo;
@@ -11,6 +13,8 @@ use Storage;
 
 class Report extends Model
 {
+    use HasFactory;
+
     /**
      * The report generator for this report.
      *
@@ -162,5 +166,15 @@ class Report extends Model
     public function deleteFile()
     {
         Storage::disk(config('reports.storage_disk'))->delete($this->id);
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return ReportFactory::new();
     }
 }

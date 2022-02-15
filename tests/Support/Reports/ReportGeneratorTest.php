@@ -20,7 +20,7 @@ class ReportGeneratorTest extends TestCase
     public function testGetNotExists()
     {
         $this->expectException(Exception::class);
-        ReportGenerator::get(Volume::class, factory(ReportType::class)->make());
+        ReportGenerator::get(Volume::class, ReportType::factory()->make());
     }
 
     public function testGet()

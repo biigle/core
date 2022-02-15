@@ -5,7 +5,6 @@ namespace Biigle\Modules\Reports;
 use Biigle\Http\Requests\UpdateUserSettings;
 use Biigle\Modules\Reports\Http\Controllers\Mixins\Views\SearchControllerMixin;
 use Biigle\Services\Modules;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Routing\Router;
 
@@ -93,10 +92,6 @@ class ReportsServiceProvider extends ServiceProvider
         $this->commands([
             'command.reports.publish',
         ]);
-
-        if (config('app.env') === 'testing') {
-            $this->registerEloquentFactoriesFrom(__DIR__.'/database/factories');
-        }
     }
 
     /**
@@ -109,16 +104,5 @@ class ReportsServiceProvider extends ServiceProvider
         return [
             'command.reports.publish',
         ];
-    }
-
-    /**
-     * Register factories.
-     *
-     * @param  string  $path
-     * @return void
-     */
-    protected function registerEloquentFactoriesFrom($path)
-    {
-        $this->app->make(EloquentFactory::class)->load($path);
     }
 }
