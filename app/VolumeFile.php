@@ -4,11 +4,12 @@ namespace Biigle;
 
 use Biigle\FileCache\Contracts\File as FileContract;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class VolumeFile extends Model implements FileContract
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * Don't maintain timestamps for this model.

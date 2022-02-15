@@ -1,14 +1,32 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Image::class, function (Faker $faker) {
-    return [
-        'filename' => 'test-image.jpg',
-        'uuid' => $faker->unique()->uuid(),
-        'volume_id' => function () {
-            return factory(Biigle\Volume::class)->create()->id;
-        },
-        'tiled' => false,
-    ];
-});
+use Biigle\MediaType;
+use Biigle\Volume;
+
+class ImageFactory extends VolumeFileFactory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return array_merge(parent::definition(), [
+            'filename' => 'test-image.jpg',
+            'tiled' => false,
+        ]);
+    }
+
+    /**
+     * Get the volume factory.
+     *
+     * @return Factory
+     */
+    protected function getVolumeFactory()
+    {
+        return Volume::factory()->for(MediaType::image());
+    }
+}

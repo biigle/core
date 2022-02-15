@@ -50,7 +50,7 @@ class DestroyUser extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->has('password') && !Hash::check($this->input('password'), $this->user()->password)) {
-                $validator->errors()->add('password', trans('validation.custom.password'));
+                $validator->errors()->add('password', trans('auth.password'));
             }
 
             try {

@@ -1,25 +1,31 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use Biigle\FederatedSearchInstance;
-use Biigle\FederatedSearchModel;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Volume;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(FederatedSearchModel::class, function (Faker $faker) {
-    return [
-        'type' => $faker->randomElement([
-            LabelTree::class,
-            Project::class,
-            Volume::class,
-        ]),
-        'name' => $faker->company(),
-        'url' => $faker->url(),
-        'federated_search_instance_id' => function ($faker) {
-            return factory(Biigle\FederatedSearchInstance::class)->create()->id;
-        },
-    ];
-});
+class FederatedSearchModelFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'type' => $this->faker->randomElement([
+                LabelTree::class,
+                Project::class,
+                Volume::class,
+            ]),
+            'name' => $this->faker->company(),
+            'url' => $this->faker->url(),
+            'federated_search_instance_id' => FederatedSearchInstance::factory(),
+        ];
+    }
+}

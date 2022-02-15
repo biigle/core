@@ -7,6 +7,7 @@ use Cache;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
@@ -20,7 +21,7 @@ use Storage;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * Regular expression that matches the supported image file extensions.

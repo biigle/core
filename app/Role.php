@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Role extends Model
 {
-    use HasConstantInstances;
+    use HasConstantInstances, HasFactory;
 
     /**
      * The constant instances of this model.

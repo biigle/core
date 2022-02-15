@@ -64,7 +64,7 @@ class UpdateUser extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->filled('auth_password') && !Hash::check($this->input('auth_password'), $this->user()->password)) {
-                $validator->errors()->add('auth_password', trans('validation.custom.password'));
+                $validator->errors()->add('auth_password', trans('auth.password'));
             }
         });
     }

@@ -1,9 +1,20 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Shape::class, function (Faker $faker) {
-    return [
-        'name' => $faker->username(),
-    ];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class ShapeFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->username(),
+        ];
+    }
+}

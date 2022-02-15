@@ -1,9 +1,20 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Visibility::class, function (Faker $faker) {
-    return [
-        'name' => $faker->username(),
-    ];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class VisibilityFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->username(),
+        ];
+    }
+}

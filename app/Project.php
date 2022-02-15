@@ -5,10 +5,13 @@ namespace Biigle;
 use Biigle\Jobs\DeleteVolume;
 use Cache;
 use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes hidden from the model's JSON form.
      *
