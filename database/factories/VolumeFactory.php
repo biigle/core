@@ -1,16 +1,27 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Volume::class, function (Faker $faker) {
-    return [
-        'name' => $faker->company(),
-        'media_type_id' => function () {
-            return Biigle\MediaType::imageId();
-        },
-        'creator_id' => function () {
-            return factory(Biigle\User::class)->create()->id;
-        },
-        'url' => 'test://files',
-    ];
-});
+use Biigle\MediaType;
+use Biigle\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class VolumeFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->company(),
+            'media_type_id' => function () {
+                return MediaType::imageId();
+            },
+            'creator_id' => User::factory(),
+            'url' => 'test://files',
+        ];
+    }
+}

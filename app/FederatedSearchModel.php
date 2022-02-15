@@ -3,11 +3,12 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FederatedSearchModel extends Model
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * The attributes that should be casted to native types.

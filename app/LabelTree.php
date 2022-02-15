@@ -4,6 +4,7 @@ namespace Biigle;
 
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
 
@@ -17,6 +18,8 @@ use Ramsey\Uuid\Uuid;
  */
 class LabelTree extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes hidden from the model's JSON form.
      *

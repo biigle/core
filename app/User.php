@@ -3,12 +3,13 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasJsonAttributes;
+    use Notifiable, HasJsonAttributes, HasFactory;
 
     /**
      * The attributes hidden from the model's JSON form.

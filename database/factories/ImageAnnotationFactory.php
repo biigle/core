@@ -1,15 +1,24 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\ImageAnnotation::class, function (Faker $faker) {
-    return [
-        'image_id' => function () {
-            return factory(Biigle\Image::class)->create()->id;
-        },
-        'shape_id' => function () {
-            return factory(Biigle\Shape::class)->create()->id;
-        },
-        'points' => [0, 0],
-    ];
-});
+use Biigle\Image;
+use Biigle\Shape;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class ImageAnnotationFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'image_id' => Image::factory(),
+            'shape_id' => Shape::factory(),
+            'points' => [0, 0],
+        ];
+    }
+}

@@ -1,12 +1,26 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\LabelTree::class, function (Faker $faker) {
-    return [
-        'name' => $faker->username(),
-        'description' => $faker->sentence(),
-        'visibility_id' => Biigle\Visibility::publicId(),
-        'uuid' => $faker->unique()->uuid(),
-    ];
-});
+use Biigle\Visibility;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class LabelTreeFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->username(),
+            'description' => $this->faker->sentence(),
+            'visibility_id' => function () {
+                return Visibility::publicId();
+            },
+            'uuid' => $this->faker->unique()->uuid(),
+        ];
+    }
+}

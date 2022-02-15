@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Label extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes hidden from the model's JSON form.
      *

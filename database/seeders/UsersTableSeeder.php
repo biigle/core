@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Biigle\User;
 use Illuminate\Database\Seeder;
 

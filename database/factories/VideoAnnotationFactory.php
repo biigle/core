@@ -1,16 +1,25 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\VideoAnnotation::class, function (Faker $faker) {
-    return [
-        'frames' => [],
-        'points' => [],
-        'video_id' => function () {
-            return factory(Biigle\Video::class)->create()->id;
-        },
-        'shape_id' => function () {
-            return factory(Biigle\Shape::class)->create()->id;
-        },
-    ];
-});
+use Biigle\Shape;
+use Biigle\Video;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class VideoAnnotationFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'frames' => [],
+            'points' => [],
+            'video_id' => Video::factory(),
+            'shape_id' => Shape::factory(),
+        ];
+    }
+}

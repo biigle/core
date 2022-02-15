@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use App;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
@@ -11,6 +12,8 @@ use Str;
  */
 class LabelSource extends Model
 {
+    use HasFactory;
+
     /**
      * Don't maintain timestamps for this model.
      *

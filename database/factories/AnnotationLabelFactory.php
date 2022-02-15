@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
-use Biigle\Volume;
+use Biigle\ImageAnnotation;
+use Biigle\Label;
+use Biigle\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class LabelSourceFactory extends Factory
+class AnnotationLabelFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -15,8 +17,8 @@ class LabelSourceFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->username(),
-            'description' => $this->faker->sentence(),
+            'label_id' => Label::factory(),
+            'user_id' => User::factory(),
         ];
     }
 }
