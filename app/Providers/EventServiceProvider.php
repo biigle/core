@@ -36,4 +36,14 @@ class EventServiceProvider extends ServiceProvider
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
         \Biigle\Video::observe(new \Biigle\Observers\VideoObserver);
     }
+
+    /**
+     * Determine if events and listeners should be automatically discovered.
+     *
+     * @return bool
+     */
+    public function shouldDiscoverEvents()
+    {
+        return false;
+    }
 }

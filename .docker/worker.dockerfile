@@ -1,7 +1,7 @@
 FROM ghcr.io/biigle/app as intermediate
 
 # FROM php:8.0-alpine
-FROM php@sha256:fad745cd45a8ee4cb488df95fbbc89ebdbd02cfff0debc69cebdaffdb8e7e551
+FROM php@sha256:93c461b987e242223fb31184af91e1a870729aa172198b916be4049ea873ebe5
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -72,7 +72,7 @@ RUN apk add --no-cache yaml \
     && docker-php-ext-enable yaml \
     && apk del --purge .build-deps
 
-ARG PHPREDIS_VERSION=5.3.2
+ARG PHPREDIS_VERSION=5.3.7
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
@@ -81,39 +81,13 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && docker-php-ext-install -j$(nproc) redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-# Install vips from source because the apk package does not work with the vips PHP
-# extension. Install libvips and the vips PHP extension in one go so the *-dev
-# dependencies are reused.
-ARG LIBVIPS_VERSION=8.8.4
-ARG PHP_VIPS_EXT_VERSION=1.0.11
+ARG PHP_VIPS_EXT_VERSION=1.0.12
 RUN apk add --no-cache --virtual .build-deps \
         autoconf \
-        automake \
         build-base \
-        glib-dev \
-        tiff-dev \
-        libjpeg-turbo-dev \
-        libgsf-dev \
-        libpng-dev \
-        expat-dev \
+        vips-dev \
     && apk add --no-cache \
-        glib \
-        tiff \
-        libjpeg-turbo \
-        libgsf \
-        libpng \
-        expat \
-    && cd /tmp \
-    && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
-    && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
-    && cd vips-${LIBVIPS_VERSION} \
-    && ./configure \
-        --without-python \
-        --enable-debug=no \
-        --disable-dependency-tracking \
-        --disable-static \
-    && make -j $(nproc) \
-    && make -s install-strip \
+        vips \
     && cd /tmp \
     && curl -L https://github.com/libvips/php-vips-ext/raw/master/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
@@ -123,11 +97,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && rm -rf /var/cache/apk/*
 
 # Other Python dependencies are added with the OpenCV build above.
-RUN apk add --no-cache py3-scipy
-
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/v3.13/community/ --allow-untrusted \
-    py3-scikit-learn \
-    py3-matplotlib
+RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib
 
 # Set this library path so the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397

@@ -5,7 +5,6 @@ namespace Biigle;
 use Exception;
 use FileCache;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
