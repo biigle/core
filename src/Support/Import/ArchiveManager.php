@@ -150,11 +150,11 @@ class ArchiveManager
      */
     public function prune()
     {
-        $files = $this->disk->listContents();
+        $files = $this->disk->listContents('/');
         $limit = Carbon::now()->subWeek()->getTimestamp();
-        foreach ($files as $metadata) {
-            if ($metadata['timestamp'] < $limit) {
-                $this->disk->delete($metadata['path']);
+        foreach ($files as $file) {
+            if ($file->lastModified() < $limit) {
+                $this->disk->delete($file->path());
             }
         }
     }
