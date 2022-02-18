@@ -8,7 +8,7 @@
         <label>Minimum level:</label>
         <select class="form-control" onchange="this.form.submit()" name="level">
             @foreach (Biigle\Logging\LogManager::LEVELS as $l)
-                <option value="{{$l}}" @if ($l === $logLevel) selected @endif>{{$l}}</option>
+                <option value="{{$l}}" @selected($l === $logLevel)>{{$l}}</option>
             @endforeach
         </select>
     </div>
