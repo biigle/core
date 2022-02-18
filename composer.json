@@ -44,7 +44,7 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.0",
         "msurguy/honeypot": "^1.0",
-        "mzur/laravel-openstack-swift": "^1.0",
+        "mzur/laravel-openstack-swift": "^2.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "ramsey/uuid": "^4.0",
         "ramsey/uuid-doctrine": "^1.8"

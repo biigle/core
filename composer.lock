@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a837afbee2c7a288c66295c007ab190b",
+    "content-hash": "bc0e7752d72472b23eebef35b5eb0b42",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -236,6 +236,50 @@
                 "source": "https://github.com/biigle/geo"
             },
             "time": "2022-01-24T08:08:45+00:00"
+        },
+        {
+            "name": "biigle/laravel-cached-openstack",
+            "version": "v1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-cached-openstack.git",
+                "reference": "6dec106ae85ecdc09c4941f837567c7ba4fbeccc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-cached-openstack/zipball/6dec106ae85ecdc09c4941f837567c7ba4fbeccc",
+                "reference": "6dec106ae85ecdc09c4941f837567c7ba4fbeccc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^5.1 | ^6.0 | ^7.0 | ^8.0 | ^9.0",
+                "php-opencloud/openstack": "^3.0 | ^3.2"
+            },
+            "require-dev": {
+                "vimeo/psalm": "^4.12"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\CachedOpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A wrapper for the OpenStack SDK that caches and renews the authentication token",
+            "support": {
+                "issues": "https://github.com/biigle/laravel-cached-openstack/issues",
+                "source": "https://github.com/biigle/laravel-cached-openstack/tree/v1.5.0"
+            },
+            "time": "2022-02-18T08:04:03+00:00"
         },
         {
             "name": "biigle/laravel-file-cache",
@@ -1923,6 +1967,73 @@
             "time": "2021-10-06T17:43:30+00:00"
         },
         {
+            "name": "guzzlehttp/uri-template",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/uri-template.git",
+                "reference": "db46525d6d8fee71033b73cc07160f3e5271a8ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/db46525d6d8fee71033b73cc07160f3e5271a8ce",
+                "reference": "db46525d6d8fee71033b73cc07160f3e5271a8ce",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0",
+                "symfony/polyfill-php80": "^1.17"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5.15 || ^8.5 || ^9.3",
+                "uri-template/tests": "1.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\UriTemplate\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "George Mponos",
+                    "email": "gmponos@gmail.com",
+                    "homepage": "https://github.com/gmponos",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A polyfill class for uri_template of PHP",
+            "homepage": "https://github.com/guzzlehttp/uri-template",
+            "keywords": [
+                "guzzlehttp",
+                "uri-template"
+            ],
+            "support": {
+                "issues": "https://github.com/guzzle/uri-template/issues",
+                "source": "https://github.com/guzzle/uri-template/tree/master"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/gmponos",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-07-21T13:45:09+00:00"
+        },
+        {
             "name": "jcupitt/vips",
             "version": "v1.0.9",
             "source": {
@@ -2039,6 +2150,76 @@
                 "source": "https://github.com/jmikola/geojson/tree/1.0.3"
             },
             "time": "2022-01-21T04:20:33+00:00"
+        },
+        {
+            "name": "justinrainbow/json-schema",
+            "version": "5.2.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justinrainbow/json-schema.git",
+                "reference": "2ab6744b7296ded80f8cc4f9509abbff393399aa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/2ab6744b7296ded80f8cc4f9509abbff393399aa",
+                "reference": "2ab6744b7296ded80f8cc4f9509abbff393399aa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2.2.20||~2.15.1",
+                "json-schema/json-schema-test-suite": "1.2.0",
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "bin": [
+                "bin/validate-json"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JsonSchema\\": "src/JsonSchema/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Prieto Reis",
+                    "email": "bruno.p.reis@gmail.com"
+                },
+                {
+                    "name": "Justin Rainbow",
+                    "email": "justin.rainbow@gmail.com"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Robert Schönthal",
+                    "email": "seroscho@googlemail.com"
+                }
+            ],
+            "description": "A library to validate a json schema.",
+            "homepage": "https://github.com/justinrainbow/json-schema",
+            "keywords": [
+                "json",
+                "schema"
+            ],
+            "support": {
+                "issues": "https://github.com/justinrainbow/json-schema/issues",
+                "source": "https://github.com/justinrainbow/json-schema/tree/5.2.11"
+            },
+            "time": "2021-07-22T09:24:00+00:00"
         },
         {
             "name": "laravel/framework",
@@ -2900,6 +3081,59 @@
             "time": "2022-02-14T17:19:26+00:00"
         },
         {
+            "name": "mzur/laravel-openstack-swift",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mzur/laravel-openstack-swift.git",
+                "reference": "ce85ee1c260d5240e9031c68b25e8095854e792a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/ce85ee1c260d5240e9031c68b25e8095854e792a",
+                "reference": "ce85ee1c260d5240e9031c68b25e8095854e792a",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/laravel-cached-openstack": "^1.5",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0",
+                "nimbusoft/flysystem-openstack-swift": "^1.0"
+            },
+            "require-dev": {
+                "vimeo/psalm": "^4.12"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mzur\\Filesystem\\SwiftServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mzur\\Filesystem\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@zurowietz.de"
+                }
+            ],
+            "description": "OpenStack Swift storage driver for Laravel/Lumen.",
+            "support": {
+                "issues": "https://github.com/mzur/laravel-openstack-swift/issues",
+                "source": "https://github.com/mzur/laravel-openstack-swift/tree/v2.0.0"
+            },
+            "time": "2022-02-18T09:04:42+00:00"
+        },
+        {
             "name": "nesbot/carbon",
             "version": "2.56.0",
             "source": {
@@ -3199,6 +3433,65 @@
             "time": "2021-11-30T19:35:32+00:00"
         },
         {
+            "name": "nimbusoft/flysystem-openstack-swift",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chrisnharvey/flysystem-openstack-swift.git",
+                "reference": "34c42550988e6d132d1fb35967a4ddbc36b1b4d5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chrisnharvey/flysystem-openstack-swift/zipball/34c42550988e6d132d1fb35967a4ddbc36b1b4d5",
+                "reference": "34c42550988e6d132d1fb35967a4ddbc36b1b4d5",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/psr7": "^2.0",
+                "league/flysystem": "^2.0 | ^3.0",
+                "php": "^7.4 | ^8.0",
+                "php-opencloud/openstack": "^3.2"
+            },
+            "require-dev": {
+                "mockery/mockery": ">= 1.3.1",
+                "phpunit/phpunit": "^9.5",
+                "vimeo/psalm": "^4.20"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nimbusoft\\Flysystem\\OpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Harvey",
+                    "email": "chris@chrisnharvey.com"
+                }
+            ],
+            "description": "Flysystem adapter for OpenStack Swift",
+            "keywords": [
+                "Flysystem",
+                "Openstack",
+                "chrisnharvey",
+                "files",
+                "filesystem",
+                "filesystems",
+                "opencloud",
+                "storage",
+                "swift"
+            ],
+            "support": {
+                "issues": "https://github.com/chrisnharvey/flysystem-openstack-swift/issues",
+                "source": "https://github.com/chrisnharvey/flysystem-openstack-swift/tree/1.1.0"
+            },
+            "time": "2022-02-17T13:56:25+00:00"
+        },
+        {
             "name": "php-ffmpeg/php-ffmpeg",
             "version": "v1.0.0",
             "source": {
@@ -3285,6 +3578,74 @@
                 "source": "https://github.com/PHP-FFMpeg/PHP-FFMpeg/tree/v1.0.0"
             },
             "time": "2022-02-09T13:36:26+00:00"
+        },
+        {
+            "name": "php-opencloud/openstack",
+            "version": "v3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-opencloud/openstack.git",
+                "reference": "42e2d09b9368becb6fde6dac17854132fcf77a5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-opencloud/openstack/zipball/42e2d09b9368becb6fde6dac17854132fcf77a5c",
+                "reference": "42e2d09b9368becb6fde6dac17854132fcf77a5c",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0",
+                "guzzlehttp/uri-template": "0.2",
+                "justinrainbow/json-schema": "^5.2",
+                "php": "^7.2.5|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.18",
+                "php-coveralls/php-coveralls": "^2.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^8.0",
+                "psr/log": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jamie Hannaford",
+                    "email": "jamie.hannaford@rackspace.com",
+                    "homepage": "https://github.com/jamiehannaford"
+                },
+                {
+                    "name": "Ha Phan",
+                    "email": "thanhha.work@gmail.com",
+                    "homepage": "https://github.com/haphan"
+                }
+            ],
+            "description": "PHP SDK for OpenStack APIs. Supports BlockStorage, Compute, Identity, Images, Networking and Metric Gnocchi",
+            "homepage": "https://github.com/php-opencloud/openstack",
+            "keywords": [
+                "Openstack",
+                "api",
+                "php",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/php-opencloud/openstack/issues",
+                "source": "https://github.com/php-opencloud/openstack/tree/v3.2.1"
+            },
+            "time": "2021-07-21T13:43:25+00:00"
         },
         {
             "name": "phpoption/phpoption",
