@@ -93,7 +93,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -121,7 +121,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -152,7 +152,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
     }
 
@@ -177,7 +177,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -203,7 +203,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -229,7 +229,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -258,7 +258,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->with(0, 0, 100, 100)
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
     }
@@ -284,7 +284,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn($video);
 
-        $video->shouldReceive('writeToBuffer')->once();
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
     }
 

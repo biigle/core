@@ -83,7 +83,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -107,7 +107,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -130,7 +130,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -151,7 +151,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->with(0, 0, 148, 148)
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -172,7 +172,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->with(852, 602, 148, 148)
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -196,7 +196,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->with(0, 0, 100, 100)
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
@@ -217,7 +217,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($image);
 
-        $image->shouldReceive('writeToBuffer')->once();
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
     }
 
