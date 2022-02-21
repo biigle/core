@@ -2,12 +2,14 @@
 
 namespace Biigle\Modules\Reports;
 
+use Biigle\Modules\Reports\Database\Factories\ReportTypeFactory;
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReportType extends Model
 {
-    use HasConstantInstances;
+    use HasConstantInstances, HasFactory;
 
     /**
      * The constant instances of this model.
@@ -37,4 +39,14 @@ class ReportType extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return ReportTypeFactory::new();
+    }
 }

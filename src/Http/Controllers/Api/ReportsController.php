@@ -4,7 +4,7 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Reports\Report;
-use League\Flysystem\FileNotFoundException;
+use Illuminate\Http\Response;
 use Storage;
 
 class ReportsController extends Controller
@@ -34,12 +34,13 @@ class ReportsController extends Controller
         $this->authorize('access', $report);
         $report->touch();
 
-        try {
-            return Storage::disk(config('reports.storage_disk'))
-                ->download($report->id, $report->filename);
-        } catch (FileNotFoundException $e) {
-            abort(404);
+        $disk = Storage::disk(config('reports.storage_disk'));
+
+        if (!$disk->exists($report->id)) {
+            abort(Response::HTTP_NOT_FOUND);
         }
+
+        return $disk->download($report->id, $report->filename);
     }
 
     /**
