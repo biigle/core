@@ -458,7 +458,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/image-metadata.csv";
-        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/abc.jpg', 'abc');
 
@@ -516,7 +516,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/image-metadata.csv";
-        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
         Storage::disk('test')->makeDirectory('videos');
         Storage::disk('test')->put('videos/1.mp4', 'abc');
 
@@ -538,7 +538,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, null, true);
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/abc.jpg', 'abc');
 

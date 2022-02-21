@@ -3,7 +3,6 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\User;
-use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -36,7 +35,7 @@ class DestroyUser extends FormRequest
     public function rules()
     {
         return [
-            'password' => 'required|min:8',
+            'password' => 'required|min:8|current_password',
         ];
     }
 
@@ -49,10 +48,6 @@ class DestroyUser extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->has('password') && !Hash::check($this->input('password'), $this->user()->password)) {
-                $validator->errors()->add('password', trans('validation.custom.password'));
-            }
-
             try {
                 $this->destroyUser->checkCanBeDeleted();
             } catch (HttpException $e) {

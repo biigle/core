@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Carbon\Carbon;
 use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AnnotationSession extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that should be casted to native types.
      *

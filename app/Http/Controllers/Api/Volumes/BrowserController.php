@@ -62,7 +62,11 @@ class BrowserController extends Controller
             return $this->removePrefix($path, $directories);
         }
 
-        return Storage::disk($disk)->directories();
+        $directories = Storage::disk($disk)->directories();
+
+        natsort($directories);
+
+        return array_values($directories);
     }
 
     /**
@@ -140,7 +144,9 @@ class BrowserController extends Controller
         // endpoint is an array, not an object.
         $files = array_values(preg_grep($regex, Storage::disk($disk)->files($path)));
 
-        return $this->removePrefix($path, $files);
+        natsort($files);
+
+        return $this->removePrefix($path, array_values($files));
     }
 
     /**

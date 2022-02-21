@@ -79,7 +79,7 @@ class ParsesImageMetadataTest extends TestCase
     {
         $stub = new ParsesImageMetadataStub;
         $csv = __DIR__."/../../files/image-metadata.csv";
-        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
         $expect = [
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
@@ -91,7 +91,7 @@ class ParsesImageMetadataTest extends TestCase
     {
         $stub = new ParsesImageMetadataStub;
         $csv = __DIR__."/../../files/image-metadata-with-bom.csv";
-        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, null, true);
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
         $expect = [
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
@@ -271,7 +271,7 @@ IFDO;
     {
         $stub = new ParsesImageMetadataStub;
         $path = __DIR__."/../../files/ifdo.yaml";
-        $file = new UploadedFile($path, 'ifdo.yaml', 'application/yaml', null, null, true);
+        $file = new UploadedFile($path, 'ifdo.yaml', 'application/yaml', null, true);
         $expect = [
             'name' => 'SO268 SO268-2_100-1_OFOS SO_CAM-1_Photo_OFOS',
             'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',

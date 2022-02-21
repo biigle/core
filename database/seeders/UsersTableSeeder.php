@@ -1,9 +1,11 @@
 <?php
 
+namespace Database\Seeders;
+
 use Biigle\User;
 use Illuminate\Database\Seeder;
 
-class UserTableSeeder extends Seeder
+class UsersTableSeeder extends Seeder
 {
     public function run()
     {

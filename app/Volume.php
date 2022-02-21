@@ -6,12 +6,11 @@ use Biigle\Traits\HasJsonAttributes;
 use Cache;
 use Carbon\Carbon;
 use DB;
-use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use League\Flysystem\FileNotFoundException;
 use Storage;
 
 /**
@@ -20,7 +19,7 @@ use Storage;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * Regular expression that matches the supported image file extensions.
@@ -482,12 +481,13 @@ class Volume extends Model
      */
     public function downloadIfdo()
     {
-        try {
-            return Storage::disk(config('volumes.ifdo_storage_disk'))
-                ->download($this->id, "biigle-volume-{$this->id}-ifdo.yaml");
-        } catch (FileNotFoundException $e) {
+        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
+
+        if (!$disk->exists($this->id)) {
             abort(Response::HTTP_NOT_FOUND);
         }
+
+        return $disk->download($this->id, "biigle-volume-{$this->id}-ifdo.yaml");
     }
 
     /**
@@ -497,10 +497,8 @@ class Volume extends Model
      */
     public function getIfdo()
     {
-        try {
-            return yaml_parse(Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->id));
-        } catch (Exception $e) {
-            return null;
-        }
+        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->id);
+
+        return yaml_parse($content);
     }
 }

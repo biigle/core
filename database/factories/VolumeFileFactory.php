@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Biigle\LabelTree;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class LabelFactory extends Factory
+abstract class VolumeFileFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -15,11 +14,15 @@ class LabelFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->username(),
-            'color' => '0099ff',
-            'parent_id' => null,
-            'label_tree_id' => LabelTree::factory(),
             'uuid' => $this->faker->unique()->uuid(),
+            'volume_id' => $this->getVolumeFactory(),
         ];
     }
+
+    /**
+     * Get the volume factory.
+     *
+     * @return Factory
+     */
+    abstract protected function getVolumeFactory();
 }

@@ -1,5 +1,5 @@
 #FROM php:8.0-fpm-alpine
-FROM php@sha256:9fcb0f5a47540f39f8a0755908498bd9950d818bdceea05669ed9a2060be3790
+FROM php@sha256:d58eb43ebe3beaa8f7806b6c5322c36e4f21d5509cf69fd08b15140fba0054e8
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -32,7 +32,7 @@ RUN apk add --no-cache yaml \
     && docker-php-ext-enable yaml \
     && apk del --purge .build-deps
 
-ARG PHPREDIS_VERSION=5.3.2
+ARG PHPREDIS_VERSION=5.3.7
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \

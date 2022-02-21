@@ -14,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * The policy mappings for the application.
      *
-     * @var array
+     * @var array<class-string, class-string>
      */
     protected $policies = [
         \Biigle\Image::class => \Biigle\Policies\VolumeFilePolicy::class,

@@ -4,12 +4,12 @@ abstract class ModelTestCase extends TestCase
 {
     public static function make($attrs = [])
     {
-        return factory(static::$modelClass)->make($attrs);
+        return static::$modelClass::factory()->make($attrs);
     }
 
     public static function create($attrs = [])
     {
-        return factory(static::$modelClass)->create($attrs);
+        return static::$modelClass::factory()->create($attrs);
     }
 
     protected $model;
