@@ -26,8 +26,8 @@ class PublicLabelTreeExportTest extends TestCase
             'description' => $tree->description,
             'uuid' => $tree->uuid,
             'version' => null,
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
         ];
 
         $this->assertEquals($expect, $export->getContent());
@@ -51,8 +51,8 @@ class PublicLabelTreeExportTest extends TestCase
                 'name' => $version->name,
                 'doi' => $version->doi,
             ],
-            'created_at' => (string) $tree->created_at,
-            'updated_at' => (string) $tree->updated_at,
+            'created_at' => $tree->created_at->toJson(),
+            'updated_at' => $tree->updated_at->toJson(),
         ];
 
         $this->assertEquals($expect, $export->getContent());

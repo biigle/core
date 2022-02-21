@@ -53,7 +53,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('User imports are not allowed', $e->getMessage());
-            $this->assertEmpty(Storage::disk('test')->listContents());
+            $this->assertEmpty(Storage::disk('test')->listContents('/')->toArray());
         }
     }
 
@@ -83,7 +83,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('Label tree imports are not allowed', $e->getMessage());
-            $this->assertEmpty(Storage::disk('test')->listContents());
+            $this->assertEmpty(Storage::disk('test')->listContents('/')->toArray());
         }
     }
 
@@ -113,7 +113,7 @@ class ArchiveManagerTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertStringContainsString('Volume imports are not allowed', $e->getMessage());
-            $this->assertEmpty(Storage::disk('test')->listContents());
+            $this->assertEmpty(Storage::disk('test')->listContents('/')->toArray());
         }
     }
 
@@ -175,7 +175,7 @@ class ArchiveManagerTest extends TestCase
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
-        $path = Storage::disk('test')->getAdapter()->applyPathPrefix($token);
+        $path = storage_path("framework/testing/disks/test/{$token}");
 
         $manager->prune();
         $this->assertTrue($manager->has($token));
