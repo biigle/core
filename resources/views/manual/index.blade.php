@@ -254,7 +254,7 @@
                 You may access most of the functionality of this application using the RESTful API. Most of the API requires user authentication via session cookie (being logged in to the website) but it is also available for external requests using a personal API token. You can manage your API tokens in the <a href="{{ route('settings-tokens') }}">user settings</a>.
             </p>
             <p>
-                API access is rate-limited to 180 requests per minute (60 for unauthenticated users). You may access the rate limit and the current number of remaining requests through the <code>X-RateLimit-Limit</code> and <code>X-RateLimit-Remaining</code> HTTP headers.
+                API access is rate-limited to 10,800 requests per hour (3,600 for unauthenticated users). You may access the rate limit and the current number of remaining requests through the <code>X-RateLimit-Limit</code> and <code>X-RateLimit-Remaining</code> HTTP headers.
             </p>
             <p>
                 The API works with form (<code>x-www-form-urlencoded</code>) as well as JSON requests. For form requests, you can use <a href="https://laravel.com/docs/9.x/routing#form-method-spoofing">method spoofing</a> to use different HTTP methods. For the complete documentation, check out the link below.
