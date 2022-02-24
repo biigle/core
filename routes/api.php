@@ -319,8 +319,13 @@ $router->group([
         'uses' => 'FileLabelsController@index',
     ]);
 
+    // Deprecated: use {id}/metadata instead
     $router->post('{id}/images/metadata', [
-        'uses' => 'ImageMetadataController@store',
+        'uses' => 'MetadataController@store',
+    ]);
+
+    $router->post('{id}/metadata', [
+        'uses' => 'MetadataController@store',
     ]);
 
     $router->get('{id}/ifdo', [

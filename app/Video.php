@@ -206,11 +206,11 @@ class Video extends VolumeFile
      *
      * @param array $value
      */
-    public function setTakenAtAttribute($value)
+    public function setTakenAtAttribute(array $value)
     {
         $value = array_map([Carbon::class, 'parse'], $value);
 
-        $this->attributes['taken_at'] = $value;
+        $this->attributes['taken_at'] = json_encode($value);
     }
 
     /**
