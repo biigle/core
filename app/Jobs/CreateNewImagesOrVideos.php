@@ -192,10 +192,13 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             ->map(function ($row) {
                 if (array_key_exists('taken_at', $row)) {
                     $row['taken_at'] = Carbon::parse($row['taken_at']);
+                } else {
+                    $row['taken_at'] = null;
                 }
 
                 return $row;
             })
+            ->sortBy('taken_at')
             ->groupBy('filename')
             ->map(function ($entries) use ($columns) {
                 return $this->processVideoColumns($entries, $columns);

@@ -108,10 +108,11 @@ class CreateNewImagesOrVideosTest extends TestCase
             'media_type_id' => MediaType::videoId(),
         ]);
         $filenames = ['a.mp4'];
+        // Metadata should be sorted by taken_at later.
         $metadata = [
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
-            ['a.mp4', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
             ['a.mp4', '2016-12-19 12:28:00', '52.230', '28.133', '-1505', '5', '1.6', '181'],
+            ['a.mp4', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
@@ -145,6 +146,24 @@ class CreateNewImagesOrVideosTest extends TestCase
         $video = $volume->videos()->first();
         $expect = ['gps_altitude' => [-1500, null]];
         $this->assertSame($expect, $video->metadata);
+    }
+
+    public function testHandleVideoMetadataBasic()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $filenames = ['a.mp4'];
+        $metadata = [
+            ['filename', 'gps_altitude'],
+            ['a.mp4', '-1500'],
+        ];
+
+        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        $video = $volume->videos()->first();
+        $expect = ['gps_altitude' => [-1500]];
+        $this->assertSame($expect, $video->metadata);
+        $this->assertNull($video->taken_at);
     }
 
     public function testHandleMetadataDateParsing()
