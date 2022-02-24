@@ -3,14 +3,14 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Rules\ImageMetadata;
-use Biigle\Traits\ParsesImageMetadata;
+use Biigle\Traits\ParsesMetadata;
 use Biigle\Volume;
 use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVolumeMetadata extends FormRequest
 {
-    use ParsesImageMetadata;
+    use ParsesMetadata;
 
     /**
      * The volume to store the new metadata to.

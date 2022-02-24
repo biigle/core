@@ -6,7 +6,7 @@ use duncan3dc\Bom\Util;
 use Exception;
 use Illuminate\Http\UploadedFile;
 
-trait ParsesImageMetadata
+trait ParsesMetadata
 {
     /**
      * Column name synonyms.
@@ -44,7 +44,7 @@ trait ParsesImageMetadata
     ];
 
     /**
-     * Parse an image metadata CSV string to an array.
+     * Parse a metadata CSV string to an array.
      *
      * @param string $content
      *
@@ -78,7 +78,7 @@ trait ParsesImageMetadata
     }
 
     /**
-     * Parse image metadata from a CSV file to an array.
+     * Parse metadata from a CSV file to an array.
      *
      * @param UploadedFile $file
      *

@@ -13,9 +13,9 @@ class ImageMetadata implements Rule
      */
     const ALLOWED_ATTRIBUTES = [
         'filename',
-        'taken_at',
-        'lng',
         'lat',
+        'lng',
+        'taken_at',
     ];
 
     /**
@@ -24,10 +24,24 @@ class ImageMetadata implements Rule
      * @var array
      */
     const ALLOWED_METADATA = [
-        'gps_altitude',
-        'distance_to_ground',
         'area',
+        'distance_to_ground',
+        'gps_altitude',
         'yaw',
+    ];
+
+    /**
+     * All numeric metadata fields (keys) with description (values).
+     *
+     * @var array
+     */
+    const NUMERIC_FIELDS = [
+        'area' => 'area',
+        'distance_to_ground' => 'distance to ground',
+        'gps_altitude' => 'GPS altitude',
+        'lat' => 'latitude',
+        'lng' => 'longitude',
+        'yaw' => 'yaw',
     ];
 
     /**
@@ -121,13 +135,6 @@ class ImageMetadata implements Rule
             return false;
         }
 
-        $numericFields = [
-            'gps_altitude' => 'GPS altitude',
-            'distance_to_ground' => 'distance to ground',
-            'area' => 'area',
-            'yaw' => 'yaw',
-        ];
-
         foreach ($value as $index => $row) {
             if (count($row) !== $colCount) {
                 // +1 since index starts at 0.
@@ -189,7 +196,7 @@ class ImageMetadata implements Rule
                 }
             }
 
-            foreach ($numericFields as $key => $text) {
+            foreach (self::NUMERIC_FIELDS as $key => $text) {
                 if (array_key_exists($key, $combined) && !is_numeric($combined[$key])) {
                     $this->message = "'{$combined[$key]}' is no valid {$text} for file {$filename}.";
 
