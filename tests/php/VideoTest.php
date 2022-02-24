@@ -6,6 +6,7 @@ use Biigle\Events\VideosDeleted;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Video;
+use Carbon\Carbon;
 use Event;
 use ModelTestCase;
 
@@ -134,5 +135,44 @@ class VideoTest extends ModelTestCase
         Event::assertDispatched(VideosDeleted::class, function ($event) {
             return $event->uuids[0] === $this->model->uuid;
         });
+    }
+
+    public function testTakenAt()
+    {
+        $this->assertNull($this->model->taken_at);
+        $now = Carbon::now();
+        $then = $now->addMinute();
+        $this->model->taken_at = [$now, $then];
+        $this->model->save();
+        $takenAt = $this->model->fresh()->taken_at;
+        $this->assertEquals($now->timestamp, $takenAt[0]->timestamp);
+        $this->assertEquals($then->timestamp, $takenAt[1]->timestamp);
+    }
+
+    public function testSetGetLngAttribute()
+    {
+        $expect = [52.220, 52.230];
+        $this->assertNull($this->model->lng);
+        $this->model->lng = $expect;
+        $this->model->save();
+        $this->assertEquals($expect, $this->model->fresh()->lng);
+    }
+
+    public function testSetGetLatAttribute()
+    {
+        $expect = [28.123, 28.133];
+        $this->assertNull($this->model->lat);
+        $this->model->lat = $expect;
+        $this->model->save();
+        $this->assertEquals($expect, $this->model->fresh()->lat);
+    }
+
+    public function testSetGetMetadataAttribute()
+    {
+        $expect = ['area' => [2.6, 1.6]];
+        $this->assertEquals([], $this->model->metadata);
+        $this->model->metadata = $expect;
+        $this->model->save();
+        $this->assertEquals($expect, $this->model->fresh()->metadata);
     }
 }
