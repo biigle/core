@@ -146,9 +146,9 @@ class MetadataControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
             ->assertSuccessful();
 
-        $image->refresh();
-        $this->assertSame([-1500, -1505], $image->metadata['distance_to_ground']);
-        $this->assertSame([180, 181], $image->metadata['yaw']);
+        $video->refresh();
+        $this->assertSame([10, 5], $video->metadata['distance_to_ground']);
+        $this->assertSame([180, 181], $video->metadata['yaw']);
     }
 
     public function testStoreVideoMetadataText()
@@ -170,6 +170,40 @@ class MetadataControllerTest extends ApiTestCase
         $text = <<<TEXT
 filename,taken_at,area,distance_to_ground
 abc.mp4,2022-02-24 16:07:00,2.5,10
+abc.mp4,2022-02-24 16:08:00,3.5,150
+TEXT;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'metadata_text' => $text,
+        ])->assertSuccessful();
+
+        $video->refresh();
+        $this->assertCount(2, $video->taken_at);
+        $this->assertSame([4000, 4100], $video->metadata['water_depth']);
+        $this->assertSame([10, 150], $video->metadata['distance_to_ground']);
+        $this->assertSame([2.5, 3.5], $video->metadata['area']);
+    }
+
+    public function testStoreVideoMetadataMerge()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+
+        $video = VideoTest::create([
+            'filename' => 'abc.mp4',
+            'volume_id' => $id,
+            'taken_at' => ['2022-02-24 16:07:00', '2022-02-24 16:08:00'],
+            'attrs' => ['metadata' => [
+                'water_depth' => [4000, 4100],
+                'distance_to_ground' => [20, 120],
+            ]],
+        ]);
+
+        $text = <<<TEXT
+filename,taken_at,area,distance_to_ground
+abc.mp4,2022-02-24 16:07:00,2.5,
 abc.mp4,2022-02-24 16:09:00,3.5,150
 TEXT;
 
@@ -179,11 +213,51 @@ TEXT;
         ])->assertSuccessful();
 
         $video->refresh();
-        // New timestamps should be merged into the existing metadata.
         $this->assertCount(3, $video->taken_at);
         $this->assertSame([4000, 4100, null], $video->metadata['water_depth']);
-        $this->assertSame([10, 120, 150], $video->metadata['distance_to_ground']);
+        $this->assertSame([20, 120, 150], $video->metadata['distance_to_ground']);
         $this->assertSame([2.5, null, 3.5], $video->metadata['area']);
+    }
+
+    public function testStoreVideoMetadataFillOneVideoButNotTheOther()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+
+        $video1 = VideoTest::create([
+            'filename' => 'abc.mp4',
+            'volume_id' => $id,
+            'taken_at' => ['2022-02-24 16:07:00', '2022-02-24 16:08:00'],
+            'attrs' => ['metadata' => [
+                'distance_to_ground' => [20, 120],
+            ]],
+        ]);
+
+        $video2 = VideoTest::create([
+            'filename' => 'def.mp4',
+            'volume_id' => $id,
+            'taken_at' => ['2022-02-24 16:07:00', '2022-02-24 16:08:00'],
+            'attrs' => ['metadata' => []],
+        ]);
+
+        $text = <<<TEXT
+filename,taken_at,area,distance_to_ground
+abc.mp4,2022-02-24 16:07:00,2.5,10
+abc.mp4,2022-02-24 16:09:00,3.5,150
+def.mp4,2022-02-24 16:07:00,2.5,
+def.mp4,2022-02-24 16:09:00,3.5,
+TEXT;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'metadata_text' => $text,
+        ])->assertSuccessful();
+
+        $video1->refresh();
+        $video2->refresh();
+        $this->assertSame([10, 120, 150], $video1->metadata['distance_to_ground']);
+        $this->assertArrayNotHasKey('distance_to_ground', $video2->metadata);
     }
 
     public function testStoreVideoMetadataCannotUpdateTimestampedWithBasic()

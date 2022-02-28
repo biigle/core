@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Rules\ImageMetadata;
+use Biigle\Rules\VideoMetadata;
 use Biigle\Traits\ParsesMetadata;
 use Biigle\Volume;
 use Exception;
@@ -36,15 +37,11 @@ class StoreVolumeMetadata extends FormRequest
      */
     public function rules()
     {
-        $files = $this->volume->images()->pluck('filename')->toArray();
-
         return [
             'metadata_csv' => 'required_without_all:metadata_text,ifdo_file|file|mimetypes:text/plain,text/csv,application/csv',
             'metadata_text' => 'required_without_all:metadata_csv,ifdo_file',
             'ifdo_file' => 'required_without_all:metadata_csv,metadata_text|file',
-            'metadata' => [
-                new ImageMetadata($files),
-            ],
+            'metadata' => 'filled',
         ];
     }
 
@@ -62,12 +59,10 @@ class StoreVolumeMetadata extends FormRequest
             $this->convertedFiles['metadata_csv'] = $this->file('file');
         }
 
-        if ($this->volume->isImageVolume()) {
-            if ($this->hasFile('metadata_csv')) {
-                $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
-            } elseif ($this->input('metadata_text')) {
-                $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
-            }
+        if ($this->hasFile('metadata_csv')) {
+            $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
+        } elseif ($this->input('metadata_text')) {
+            $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
         }
     }
 
@@ -84,11 +79,17 @@ class StoreVolumeMetadata extends FormRequest
         }
 
         $validator->after(function ($validator) {
-            if (!$this->volume->isImageVolume()) {
-                if ($this->hasFile('metadata_csv')) {
-                    $validator->errors()->add('metadata_csv', 'Metadata can only be uploaded for image volumes.');
+            if ($this->has('metadata')) {
+                $files = $this->volume->files()->pluck('filename')->toArray();
+
+                if ($this->volume->isImageVolume()) {
+                    $rule = new ImageMetadata($files);
                 } else {
-                    $validator->errors()->add('metadata_text', 'Metadata can only be uploaded for image volumes.');
+                    $rule = new VideoMetadata($files);
+                }
+
+                if (!$rule->passes('metadata', $this->input('metadata'))) {
+                    $validator->errors()->add('metadata', $rule->message());
                 }
             }
 

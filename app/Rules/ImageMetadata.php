@@ -12,7 +12,6 @@ class ImageMetadata implements Rule
      * @var array
      */
     const ALLOWED_ATTRIBUTES = [
-        'filename',
         'lat',
         'lng',
         'taken_at',
@@ -118,7 +117,7 @@ class ImageMetadata implements Rule
             return false;
         }
 
-        $allowedColumns = array_merge(self::ALLOWED_ATTRIBUTES, self::ALLOWED_METADATA);
+        $allowedColumns = array_merge(['filename'], self::ALLOWED_ATTRIBUTES, self::ALLOWED_METADATA);
         $diff = array_diff($columns, $allowedColumns);
 
         if (count($diff) > 0) {

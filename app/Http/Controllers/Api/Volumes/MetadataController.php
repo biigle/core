@@ -5,8 +5,12 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreVolumeMetadata;
 use Biigle\Rules\ImageMetadata;
+use Biigle\Rules\VideoMetadata;
+use Biigle\Video;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class MetadataController extends Controller
 {
@@ -57,7 +61,11 @@ class MetadataController extends Controller
 
         if ($request->input('metadata')) {
             DB::transaction(function () use ($request) {
-                $this->updateMetadata($request);
+                if ($request->volume->isImageVolume()) {
+                    $this->updateImageMetadata($request);
+                } else {
+                    $this->updateVideoMetadata($request);
+                }
             });
 
             $request->volume->flushGeoInfoCache();
@@ -69,7 +77,7 @@ class MetadataController extends Controller
      *
      * @param StoreVolumeMetadata $request
      */
-    protected function updateMetadata(StoreVolumeMetadata $request)
+    protected function updateImageMetadata(StoreVolumeMetadata $request)
     {
         $metadata = $request->input('metadata');
         $images = $request->volume->images()
@@ -86,7 +94,7 @@ class MetadataController extends Controller
             $row = $row->filter();
             $fill = $row->only(ImageMetadata::ALLOWED_ATTRIBUTES);
             if ($fill->has('taken_at')) {
-                $fill['taken_at'] = Carbon::parse($fill['taken_at'])->toDateTimeString();
+                $fill['taken_at'] = Carbon::parse($fill['taken_at']);
             }
             $image->fillable(ImageMetadata::ALLOWED_ATTRIBUTES);
             $image->fill($fill->toArray());
@@ -95,5 +103,138 @@ class MetadataController extends Controller
             $image->metadata = array_merge($image->metadata, $metadata->toArray());
             $image->save();
         }
+    }
+
+    /**
+     * Update volume metadata for each video.
+     *
+     * @param StoreVolumeMetadata $request
+     */
+    protected function updateVideoMetadata(StoreVolumeMetadata $request)
+    {
+        $metadata = $request->input('metadata');
+        $videos = $request->volume->videos()
+            ->get()
+            ->keyBy('filename');
+
+        $columns = collect(array_shift($metadata));
+        $rowsByFile = collect($metadata)
+            ->map(function ($row) use ($columns) {
+                return $columns->combine($row);
+            })
+            ->map(function ($row) {
+                if ($row->has('taken_at')) {
+                    $row['taken_at'] = Carbon::parse($row['taken_at']);
+                }
+
+                return $row;
+            })
+            ->groupBy('filename');
+
+        foreach ($rowsByFile as $filename => $rows) {
+            $video = $videos->get($filename);
+            $merged = $this->mergeVideoMetadata($video, $rows);
+            $video->fillable(VideoMetadata::ALLOWED_ATTRIBUTES);
+            $video->fill($merged->only(VideoMetadata::ALLOWED_ATTRIBUTES)->toArray());
+            // Fields for allowed metadata are filtered in mergeVideoMetadata(). We use
+            // except() with allowed attributes here so any metadata fields that were
+            // previously stored for the video but are not contained in ALLOWED_METADATA
+            // are not deleted.
+            $video->metadata = $merged->except(VideoMetadata::ALLOWED_ATTRIBUTES)->toArray();
+            $video->save();
+        }
+    }
+
+    /**
+     * Merge existing video metadata with new metaddata based on timestamps.
+     *
+     * Timestamps of existing metadata are extended, even if no new values are provided
+     * for the fields. New values are extended with existing timestamps, even if these
+     * timestamps are not provided in the new metadata.
+     *
+     * @param Video $video
+     * @param Collection $rows
+     *
+     * @return Collection
+     */
+    protected function mergeVideoMetadata(Video $video, Collection $rows)
+    {
+        $metadata = collect();
+        // Everything will be indexed by the timestamps below.
+        $origTakenAt = collect($video->taken_at)->map(function ($time) {
+            return $time->getTimestamp();
+        });
+        $newTakenAt = $rows->pluck('taken_at')->filter()->map(function ($time) {
+            return $time->getTimestamp();
+        });
+
+        if ($origTakenAt->isEmpty()) {
+            if ($rows->count() > 1 || $newTakenAt->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'metadata' => ["Metadata of video '{$video->filename}' has no 'taken_at' timestamps and cannot be updated with new metadata that has timestamps."],
+                ]);
+            }
+
+            return $rows->first();
+        } elseif ($newTakenAt->isEmpty()) {
+            throw ValidationException::withMessages([
+                    'metadata' => ["Metadata of video '{$video->filename}' has 'taken_at' timestamps and cannot be updated with new metadata that has no timestamps."],
+                ]);
+        }
+
+        // These are used to fill missing values with null.
+        $origTakenAtNull = $origTakenAt->combine($origTakenAt->map(fn ($x) => null));
+        $newTakenAtNull = $newTakenAt->combine($newTakenAt->map(fn ($x) => null));
+
+        $originalAttributes = collect(VideoMetadata::ALLOWED_ATTRIBUTES)
+            ->mapWithKeys(function ($key) use ($video) {
+                return [$key => $video->$key];
+            });
+
+        $originalMetadata = collect(VideoMetadata::ALLOWED_METADATA)
+            ->mapWithKeys(function ($key) use ($video) {
+                return [$key => null];
+            })
+            ->merge($video->metadata);
+
+        $originalData = $originalMetadata->merge($originalAttributes);
+
+        foreach ($originalData as $key => $originalValues) {
+            $originalValues = collect($originalValues);
+            if ($originalValues->isNotEmpty()) {
+                $originalValues = $origTakenAt->combine($originalValues);
+            }
+
+            // Pluck returns an array filled with null if the key doesn't exist.
+            $newValues = $newTakenAt->combine($rows->pluck($key))->filter();
+
+            // This merges old an new values, leaving null where no values are given
+            // (for an existing or new timestamp). The union order is essential.
+            $newValues = $newValues
+                ->union($originalValues)
+                ->union($origTakenAtNull)
+                ->union($newTakenAtNull);
+
+            // Do not insert completely empty new values.
+            if ($newValues->filter()->isEmpty()) {
+                continue;
+            }
+
+            // Sort everything by ascending timestamps.
+            $metadata[$key] = $newValues->sortKeys()->values();
+        }
+
+        // Convert numeric fields to numbers.
+        foreach (VideoMetadata::NUMERIC_FIELDS as $key => $value) {
+            if ($metadata->has($key)) {
+                $metadata[$key]->transform(function ($x) {
+                    // This check is required since floatval would return 0 for
+                    // an empty value. This could skew metadata.
+                    return empty($x) ? null : floatval($x);
+                });
+            }
+        }
+
+        return $metadata;
     }
 }
