@@ -86,7 +86,7 @@
                     <span class="help-block">{{ $errors->first('metadata') }}</span>
                 @endif
             @else
-                <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">metadata CSV</a> file. Image metadata may be overridden by EXIF information.</span>
+                <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}" target="_blank">metadata CSV</a> file. Image metadata may be overridden by EXIF information.</span>
             @endif
         </div>
 

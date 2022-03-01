@@ -88,11 +88,11 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Image metadata</a>
+                <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}">File metadata</a>
             </h4>
 
             <p>
-                Upload image metadata to add information that can't be extracted from the images.
+                Upload metadata to add information that can't be extracted from the files.
             </p>
 
             <h4>
