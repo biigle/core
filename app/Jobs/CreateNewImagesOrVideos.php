@@ -5,6 +5,7 @@ namespace Biigle\Jobs;
 use Biigle\Image;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Rules\ImageMetadata;
+use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -16,7 +17,7 @@ use Ramsey\Uuid\Uuid;
 
 class CreateNewImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, ChecksMetadataStrings;
 
     /**
      * The volume to create the files for.
@@ -220,7 +221,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
         $return = collect([]);
         foreach ($columns as $column) {
             $values = $entries->pluck($column);
-            if ($values->filter()->isEmpty()) {
+            if ($values->filter([$this, 'isFilledString'])->isEmpty()) {
                 // Ignore completely empty columns.
                 continue;
             }
@@ -231,7 +232,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
                 $return[$column] = $return[$column]->map(function ($x) {
                     // This check is required since floatval would return 0 for
                     // an empty value. This could skew metadata.
-                    return empty($x) ? null : floatval($x);
+                    return $this->isFilledString($x) ? floatval($x) : null;
                 });
             }
 

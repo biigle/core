@@ -313,6 +313,57 @@ TEXT;
         ])->assertStatus(422);
     }
 
+    public function testStoreVideoMetadataZerosSingle()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+
+        $video = VideoTest::create([
+            'filename' => 'abc.mp4',
+            'volume_id' => $id,
+        ]);
+
+        $text = <<<TEXT
+filename,taken_at,area
+abc.mp4,2022-02-24 16:07:00,0
+TEXT;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'metadata_text' => $text,
+        ])->assertSuccessful();
+
+        $video->refresh();
+        $this->assertSame([0], $video->metadata['area']);
+    }
+
+    public function testStoreVideoMetadataZeros()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+
+        $video = VideoTest::create([
+            'filename' => 'abc.mp4',
+            'volume_id' => $id,
+        ]);
+
+        $text = <<<TEXT
+filename,taken_at,area
+abc.mp4,2022-02-24 16:07:00,0
+abc.mp4,2022-02-24 16:08:00,1
+TEXT;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'metadata_text' => $text,
+        ])->assertSuccessful();
+
+        $video->refresh();
+        $this->assertSame([0, 1], $video->metadata['area']);
+    }
+
     public function testStoreImageIfdoFile()
     {
         $id = $this->volume()->id;

@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreVolumeMetadata;
 use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VideoMetadata;
+use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
 use Carbon\Carbon;
 use DB;
@@ -14,6 +15,8 @@ use Illuminate\Validation\ValidationException;
 
 class MetadataController extends Controller
 {
+    use ChecksMetadataStrings;
+
     /**
      * @api {post} volumes/:id/images/metadata Add image metadata
      * @apiDeprecated use now (#Volumes:StoreVolumeMetadata).
@@ -168,7 +171,7 @@ class MetadataController extends Controller
             return $time->getTimestamp();
         });
 
-        if ($origTakenAt->isEmpty()) {
+        if ($origTakenAt->isEmpty() && $this->hasMetadata($video)) {
             if ($rows->count() > 1 || $newTakenAt->isNotEmpty()) {
                 throw ValidationException::withMessages([
                     'metadata' => ["Metadata of video '{$video->filename}' has no 'taken_at' timestamps and cannot be updated with new metadata that has timestamps."],
@@ -206,7 +209,9 @@ class MetadataController extends Controller
             }
 
             // Pluck returns an array filled with null if the key doesn't exist.
-            $newValues = $newTakenAt->combine($rows->pluck($key))->filter();
+            $newValues = $newTakenAt
+                ->combine($rows->pluck($key))
+                ->filter([$this, 'isFilledString']);
 
             // This merges old an new values, leaving null where no values are given
             // (for an existing or new timestamp). The union order is essential.
@@ -216,7 +221,7 @@ class MetadataController extends Controller
                 ->union($newTakenAtNull);
 
             // Do not insert completely empty new values.
-            if ($newValues->filter()->isEmpty()) {
+            if ($newValues->filter([$this, 'isFilledString'])->isEmpty()) {
                 continue;
             }
 
@@ -230,11 +235,29 @@ class MetadataController extends Controller
                 $metadata[$key]->transform(function ($x) {
                     // This check is required since floatval would return 0 for
                     // an empty value. This could skew metadata.
-                    return empty($x) ? null : floatval($x);
+                    return $this->isFilledString($x) ? floatval($x) : null;
                 });
             }
         }
 
         return $metadata;
+    }
+
+    /**
+     * Determine if a video has any metadata.
+     *
+     * @param Video $video
+     *
+     * @return boolean
+     */
+    protected function hasMetadata(Video $video)
+    {
+        foreach (VideoMetadata::ALLOWED_ATTRIBUTES as $key) {
+            if (!is_null($video->$key)) {
+                return true;
+            }
+        }
+
+        return !empty($video->metadata);
     }
 }

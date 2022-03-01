@@ -148,6 +148,41 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertSame($expect, $video->metadata);
     }
 
+    public function testHandleVideoMetadataZeroSingle()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $filenames = ['a.mp4'];
+        $metadata = [
+            ['filename', 'taken_at','distance_to_ground'],
+            ['a.mp4', '2016-12-19 12:27:00', '0'],
+        ];
+
+        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        $video = $volume->videos()->first();
+        $expect = ['distance_to_ground' => [0]];
+        $this->assertSame($expect, $video->metadata);
+    }
+
+    public function testHandleVideoMetadataZero()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $filenames = ['a.mp4'];
+        $metadata = [
+            ['filename', 'taken_at','distance_to_ground'],
+            ['a.mp4', '2016-12-19 12:27:00', '0'],
+            ['a.mp4', '2016-12-19 12:28:00', '1'],
+        ];
+
+        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        $video = $volume->videos()->first();
+        $expect = ['distance_to_ground' => [0, 1]];
+        $this->assertSame($expect, $video->metadata);
+    }
+
     public function testHandleVideoMetadataBasic()
     {
         $volume = VolumeTest::create([
