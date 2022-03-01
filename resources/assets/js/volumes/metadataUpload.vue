@@ -1,7 +1,7 @@
 <script>
 import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
-import MetadataApi from './api/volumeImageMetadata';
+import MetadataApi from './api/volumeMetadata';
 import ParseIfdoFileApi from './api/parseIfdoFile';
 import VolumeIfdoApi from './api/volumeIfdo';
 import Tab from 'uiv/dist/Tab';
