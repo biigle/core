@@ -1,5 +1,5 @@
 #FROM php:8.0-fpm-alpine
-FROM php@sha256:d58eb43ebe3beaa8f7806b6c5322c36e4f21d5509cf69fd08b15140fba0054e8
+FROM sha256:15bd1484162a3f961b551bf05378a8655a78dd48e733b1e8f6d139730bcd44dc
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
