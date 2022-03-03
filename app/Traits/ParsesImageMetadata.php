@@ -141,7 +141,7 @@ trait ParsesImageMetadata
             $url = 'https://hdl.handle.net/'.$header['image-set-data-handle'];
         }
 
-        if (array_key_exists('image-set-acquisition', $header) && $header['image-set-acquisition'] === 'video') {
+        if (array_key_exists('image-acquisition', $header) && $header['image-acquisition'] === 'video') {
             throw new Exception('Video metadata import is currently not supported.');
         }
 
@@ -201,48 +201,63 @@ trait ParsesImageMetadata
             }
         }
 
+        // Normalize image-set-items entries. An entry can be either a list (e.g. for a
+        // video) or an object (e.g. for an image). But an image could be a list with a
+        // single entry, too.
+        foreach ($items as &$item) {
+            if (!is_array($item)) {
+                $item = [null];
+            } elseif (!array_key_exists(0, $item)) {
+                $item = [$item];
+            }
+        }
+
         // Convert item depth to altitude.
         // Also add all metadata fields present in items (stop early).
-        foreach ($items as &$item) {
-            if (!$item) {
-                continue;
-            }
+        foreach ($items as &$subItems) {
+            foreach ($subItems as &$subItem) {
+                if (empty($subItem)) {
+                    continue;
+                }
 
-            if (array_key_exists('image-depth', $item)) {
-                $item['image-altitude'] = -1 * $item['image-depth'];
-                // Save some memory for potentially huge arrays.
-                unset($item['image-depth']);
-            }
+                if (array_key_exists('image-depth', $subItem)) {
+                    $subItem['image-altitude'] = -1 * $subItem['image-depth'];
+                    // Save some memory for potentially huge arrays.
+                    unset($subItem['image-depth']);
+                }
 
-            foreach ($leftToCheck as $ifdoField => $csvField) {
-                if (array_key_exists($ifdoField, $item)) {
-                    $fields[] = $csvField;
-                    unset($leftToCheck[$ifdoField]);
-                    if (empty($leftToCheck)) {
-                        break;
+                foreach ($leftToCheck as $ifdoField => $csvField) {
+                    if (array_key_exists($ifdoField, $subItem)) {
+                        $fields[] = $csvField;
+                        unset($leftToCheck[$ifdoField]);
+                        if (empty($leftToCheck)) {
+                            break;
+                        }
                     }
                 }
             }
+            unset($subItem); // Important to destroy by-reference variable after the loop!
         }
-        // Important to destroy by-reference variable after the loop!
-        unset($item);
+        unset($subItems); // Important to destroy by-reference variable after the loop!
 
         sort($fields);
 
-        foreach ($items as $filename => $item) {
-            $row = [$filename];
-            foreach ($fields as $field) {
-                $ifdoField = $reverseFieldMap[$field];
-                if (is_array($item) && array_key_exists($ifdoField, $item)) {
-                    $row[] = $item[$ifdoField];
-                } elseif (array_key_exists($ifdoField, $header)) {
-                    $row[] = $header[$ifdoField];
-                } else {
-                    $row[] = '';
+        foreach ($items as $filename => $subItems) {
+            foreach ($subItems as $subItem) {
+                $row = [$filename];
+                foreach ($fields as $field) {
+                    $ifdoField = $reverseFieldMap[$field];
+                    if (is_array($subItem) && array_key_exists($ifdoField, $subItem)) {
+                        $row[] = $subItem[$ifdoField];
+                    } elseif (array_key_exists($ifdoField, $header)) {
+                        $row[] = $header[$ifdoField];
+                    } else {
+                        $row[] = '';
+                    }
                 }
-            }
 
-            $rows[] = $row;
+                $rows[] = $row;
+            }
         }
 
         // Add this only not because it should not be included in sort earlier and it is
