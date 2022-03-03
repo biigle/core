@@ -28,6 +28,10 @@ class VideoCodecError extends VideoError {}
 class VideoMalformedError extends VideoError {}
 class VideoTooLargeError extends VideoError {}
 
+// Used to round and parse the video current time from the URL, as it is stored as an int
+// there (without decimal dot).
+const URL_CURRENT_TIME_DIVISOR = 1e4
+
 export default {
     mixins: [LoaderMixin],
     components: {
@@ -217,6 +221,7 @@ export default {
                 annotation.selected = time;
             });
 
+
             if (time !== undefined && hadSelected === false) {
                 return this.seek(time);
             }
@@ -351,7 +356,7 @@ export default {
             this.urlParams.r = Math.round(resolution * 100);
         },
         updateVideoUrlParams() {
-            this.urlParams.t = Math.round(this.video.currentTime * 100);
+            this.urlParams.t = Math.round(this.video.currentTime * URL_CURRENT_TIME_DIVISOR);
         },
         restoreUrlParams() {
             if (UrlParams.get('r') !== undefined) {
@@ -366,7 +371,7 @@ export default {
             }
 
             if (UrlParams.get('t') !== undefined) {
-                this.initialCurrentTime = parseInt(UrlParams.get('t'), 10) / 100;
+                this.initialCurrentTime = parseInt(UrlParams.get('t'), 10) / URL_CURRENT_TIME_DIVISOR;
             }
 
             if (UrlParams.get('annotation') !== undefined) {

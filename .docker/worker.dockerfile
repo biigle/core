@@ -1,14 +1,32 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# FROM php:8.0-alpine
-FROM php@sha256:93c461b987e242223fb31184af91e1a870729aa172198b916be4049ea873ebe5
+#FROM php:8.0-alpine
+FROM php@sha256:8fac1d07277998aa02cf32d2675ec4d30edc237b6328f16a33081dd4f2403bb3
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 ARG OPENCV_VERSION=4.5.4
-RUN apk add --no-cache lapack eigen openblas python3 ffmpeg py3-numpy \
-    && apk add --no-cache --virtual .build-deps python3-dev py3-numpy-dev ffmpeg-dev \
-        gcc g++ build-base curl cmake clang-dev linux-headers lapack-dev eigen-dev openblas-dev \
+RUN apk add --no-cache \
+        eigen \
+        ffmpeg \
+        lapack \
+        openblas \
+        py3-numpy \
+        python3 \
+    && apk add --no-cache --virtual .build-deps \
+        build-base \
+        clang-dev \
+        cmake \
+        curl \
+        eigen-dev \
+        ffmpeg-dev \
+        g++ \
+        gcc \
+        lapack-dev \
+        linux-headers \
+        openblas-dev \
+        py3-numpy-dev \
+        python3-dev \
     && cd /tmp \
     && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
     && tar -xzf ${OPENCV_VERSION}.tar.gz \
@@ -47,23 +65,23 @@ RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
 
 RUN apk add --no-cache \
-        openssl \
-        postgresql \
         libxml2 \
         libzip \
+        openssl \
+        postgresql \
     && apk add --no-cache --virtual .build-deps \
-        postgresql-dev \
         libxml2-dev \
         libzip-dev \
+        postgresql-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install -j$(nproc) \
+        exif \
+        pcntl \
         pdo \
         pdo_pgsql \
         pgsql \
-        zip \
-        exif \
         soap \
-        pcntl \
+        zip \
     && apk del --purge .build-deps
 
 RUN apk add --no-cache yaml \
@@ -81,13 +99,38 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && docker-php-ext-install -j$(nproc) redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-ARG PHP_VIPS_EXT_VERSION=1.0.12
+# Install vips from source because the apk package does not have dzsave support. Install
+# libvips and the vips PHP extension in one go so the *-dev dependencies are reused.
+ARG LIBVIPS_VERSION=8.12.2
+ARG PHP_VIPS_EXT_VERSION=1.0.13
 RUN apk add --no-cache --virtual .build-deps \
         autoconf \
+        automake \
         build-base \
-        vips-dev \
+        expat-dev \
+        glib-dev \
+        libgsf-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        tiff-dev \
     && apk add --no-cache \
-        vips \
+        expat \
+        glib \
+        libgsf \
+        libjpeg-turbo \
+        libpng \
+        tiff \
+    && cd /tmp \
+    && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
+    && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
+    && cd vips-${LIBVIPS_VERSION} \
+    && ./configure \
+        --without-python \
+        --enable-debug=no \
+        --disable-dependency-tracking \
+        --disable-static \
+    && make -j $(nproc) \
+    && make -s install-strip \
     && cd /tmp \
     && curl -L https://github.com/libvips/php-vips-ext/raw/master/vips-${PHP_VIPS_EXT_VERSION}.tgz -o  vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && echo '' | pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \

@@ -166,7 +166,7 @@ image-set-header:
     image-set-name: myvolume
     image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
     image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
-    image-set-acquisition: video
+    image-acquisition: video
 image-set-items:
     myimage.jpg:
 IFDO;
@@ -217,6 +217,38 @@ image-set-items:
         image-datetime: '2019-04-06 04:29:27.000000'
         image-depth: 2248.0
         image-camera-yaw-degrees: 20
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'image',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoImageArrayItems()
+    {
+        $stub = new ParsesImageMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+image-set-items:
+    myimage.jpg:
+        - image-latitude: 11.8581802
+          image-longitude: -117.0214864
+          image-meters-above-ground: 2
+          image-area-square-meter: 5.0
+          image-datetime: '2019-04-06 04:29:27.000000'
+          image-depth: 2248.0
+          image-camera-yaw-degrees: 20
 IFDO;
         $expect = [
             'name' => 'myvolume',

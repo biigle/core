@@ -48,7 +48,7 @@ class LabelTreeVersionsControllerTest extends TestCase
         $this->get("label-trees/{$privateVersion->label_tree_id}/versions/{$publicVersion->id}")
             ->assertStatus(404);
 
-        $this->get("label-trees/{$publicVersion->label_tree_id}/versions/999")
+        $this->get("label-trees/{$publicVersion->label_tree_id}/versions/-1")
             ->assertStatus(404);
     }
 
@@ -66,6 +66,6 @@ class LabelTreeVersionsControllerTest extends TestCase
         $this->be($admin);
         $this->get("label-trees/{$tree->id}/versions/create")->assertStatus(200);
 
-        $this->get("label-trees/999/versions/create")->assertStatus(404);
+        $this->get("label-trees/-1/versions/create")->assertStatus(404);
     }
 }
