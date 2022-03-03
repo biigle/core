@@ -96,7 +96,11 @@ class StoreVolumeMetadata extends FormRequest
             if ($this->hasFile('ifdo_file')) {
                 try {
                     // This throws an error if the iFDO is invalid.
-                    $this->parseIfdoFile($this->file('ifdo_file'));
+                    $data = $this->parseIfdoFile($this->file('ifdo_file'));
+
+                    if ($data['media_type'] !== $this->volume->mediaType->name) {
+                        $validator->errors()->add('ifdo_file', 'The iFDO image-acquisition type does not match the media type of the volume.');
+                    }
                 } catch (Exception $e) {
                     $validator->errors()->add('ifdo_file', $e->getMessage());
                 }

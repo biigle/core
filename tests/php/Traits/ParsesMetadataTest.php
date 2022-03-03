@@ -158,7 +158,7 @@ IFDO;
         $this->assertEquals($expect, $stub->parseIfdo($input));
     }
 
-    public function testParseIfdoVideoNotSupported()
+    public function testParseIfdoVideoType()
     {
         $stub = new ParsesMetadataStub;
         $input = <<<IFDO
@@ -168,13 +168,23 @@ image-set-header:
     image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
     image-acquisition: video
 image-set-items:
-    myimage.jpg:
+    myvideo.mp4:
 IFDO;
-        $this->expectException(Exception::class);
-        $stub->parseIfdo($input);
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'video',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename'],
+                ['myvideo.mp4'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
     }
 
-    public function testParseIfdoSlideIsImage()
+    public function testParseIfdoSlideIsImageType()
     {
         $stub = new ParsesMetadataStub;
         $input = <<<IFDO
@@ -234,7 +244,7 @@ IFDO;
 
     public function testParseIfdoImageArrayItems()
     {
-        $stub = new ParsesImageMetadataStub;
+        $stub = new ParsesMetadataStub;
         $input = <<<IFDO
 image-set-header:
     image-set-name: myvolume
@@ -294,6 +304,45 @@ IFDO;
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
                 ['myimage.jpg', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
+            ],
+        ];
+        $this->assertEquals($expect, $stub->parseIfdo($input));
+    }
+
+    public function testParseIfdoSubItemsOverrideDefaultsAndHeader()
+    {
+        $stub = new ParsesMetadataStub;
+        $input = <<<IFDO
+image-set-header:
+    image-set-name: myvolume
+    image-set-handle: 20.500.12085/d7546c4b-307f-4d42-8554-33236c577450
+    image-set-uuid: d7546c4b-307f-4d42-8554-33236c577450
+    image-latitude: 11.8581802
+    image-longitude: -117.0214864
+    image-meters-above-ground: 2
+    image-area-square-meter: 5.0
+    image-datetime: '2019-04-06 04:29:27.000000'
+    image-depth: 2248.0
+    image-camera-yaw-degrees: 20
+    image-acquisition: video
+image-set-items:
+    myvideo.mp4:
+        - image-meters-above-ground: 3
+          image-area-square-meter: 5.1
+          image-datetime: '2019-04-06 05:29:27.000000'
+        - image-meters-above-ground: 4
+          image-datetime: '2019-04-06 05:30:27.000000'
+IFDO;
+        $expect = [
+            'name' => 'myvolume',
+            'url' => '',
+            'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
+            'media_type' => 'video',
+            'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'files' => [
+                ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
+                ['myvideo.mp4', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
+                ['myvideo.mp4', '5.1', '4', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:30:27.000000', '20'],
             ],
         ];
         $this->assertEquals($expect, $stub->parseIfdo($input));

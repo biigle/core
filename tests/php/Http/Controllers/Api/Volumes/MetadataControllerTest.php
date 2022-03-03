@@ -382,18 +382,41 @@ TEXT;
 
     public function testStoreVideoIfdoFile()
     {
-        $this->markTestIncomplete();
-        // $id = $this->volume()->id;
-        // $this->beAdmin();
-        // $file = new UploadedFile(__DIR__."/../../../../../files/image-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+        $this->beAdmin();
+        $file = new UploadedFile(__DIR__."/../../../../../files/video-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
 
-        // Storage::fake('ifdos');
+        Storage::fake('ifdos');
 
-        // $this->assertFalse($this->volume()->hasIfdo());
+        $this->assertFalse($this->volume()->hasIfdo());
 
-        // $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
-        //     ->assertSuccessful();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
+            ->assertSuccessful();
 
-        // $this->assertTrue($this->volume()->hasIfdo());
+        $this->assertTrue($this->volume()->hasIfdo());
+    }
+
+    public function testStoreVideoIfdoFileForImageVolume()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+        $file = new UploadedFile(__DIR__."/../../../../../files/video-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
+            ->assertStatus(422);
+    }
+
+    public function testStoreImageIfdoFileForVideoVolume()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+        $this->beAdmin();
+        $file = new UploadedFile(__DIR__."/../../../../../files/image-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
+            ->assertStatus(422);
     }
 }

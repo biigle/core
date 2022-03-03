@@ -141,8 +141,10 @@ trait ParsesMetadata
             $url = 'https://hdl.handle.net/'.$header['image-set-data-handle'];
         }
 
+        $mediaType = 'image';
+
         if (array_key_exists('image-acquisition', $header) && $header['image-acquisition'] === 'video') {
-            throw new Exception('Video metadata import is currently not supported.');
+            $mediaType = 'video';
         }
 
         $files = [];
@@ -155,7 +157,7 @@ trait ParsesMetadata
             'handle' => $header['image-set-handle'],
             'uuid' => $header['image-set-uuid'],
             'url' => $url,
-            'media_type' => 'image',
+            'media_type' => $mediaType,
             'files' => $files,
         ];
     }
@@ -243,13 +245,23 @@ trait ParsesMetadata
         sort($fields);
 
         foreach ($items as $filename => $subItems) {
-            foreach ($subItems as $subItem) {
+            $defaults = [];
+            foreach ($subItems as $index => $subItem) {
+                if ($index === 0 && is_array($subItem)) {
+                    $defaults = $subItem;
+                }
+
                 $row = [$filename];
                 foreach ($fields as $field) {
                     $ifdoField = $reverseFieldMap[$field];
                     if (is_array($subItem) && array_key_exists($ifdoField, $subItem)) {
+                        // Take field value of subItem if it is given.
                         $row[] = $subItem[$ifdoField];
+                    } elseif (array_key_exists($ifdoField, $defaults)) {
+                        // Otherwise fall back to the defaults of the first subItem.
+                        $row[] = $defaults[$ifdoField];
                     } elseif (array_key_exists($ifdoField, $header)) {
+                        // Otherwise fall back to the defaults of the header.
                         $row[] = $header[$ifdoField];
                     } else {
                         $row[] = '';

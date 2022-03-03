@@ -594,7 +594,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testStoreVideoIfdoFile()
     {
-        $this->markTestIncomplete();
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/video-ifdo.yaml";
@@ -607,13 +606,49 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->postJson("/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://videos',
-            'media_type' => 'image',
+            'media_type' => 'video',
             'files' => 'abc.mp4',
             'ifdo_file' => $file,
         ])->assertSuccessful();
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertTrue($volume->hasIfdo());
+    }
+
+    public function testStoreVideoVolumeWithImageIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/abc.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => 'abc.mp4',
+            'ifdo_file' => $file,
+        ])->assertStatus(422);
+    }
+
+    public function testStoreImageVolumeWithVideoIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/video-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/abc.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'ifdo_file' => $file,
+        ])->assertStatus(422);
     }
 
     public function testStoreProviderBlacklist()
