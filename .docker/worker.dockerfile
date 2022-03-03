@@ -1,7 +1,7 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# FROM php:8.0-alpine
-FROM php@sha256:93c461b987e242223fb31184af91e1a870729aa172198b916be4049ea873ebe5
+#FROM php:8.0-alpine
+FROM php@sha256:8fac1d07277998aa02cf32d2675ec4d30edc237b6328f16a33081dd4f2403bb3
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
