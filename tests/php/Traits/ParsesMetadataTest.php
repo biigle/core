@@ -234,7 +234,7 @@ IFDO;
 
     public function testParseIfdoImageArrayItems()
     {
-        $stub = new ParsesMetadataStub;
+        $stub = new ParsesImageMetadataStub;
         $input = <<<IFDO
 image-set-header:
     image-set-name: myvolume
