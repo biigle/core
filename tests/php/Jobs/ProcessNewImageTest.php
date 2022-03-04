@@ -99,19 +99,6 @@ class ProcessNewImageTest extends TestCase
         }
     }
 
-    public function testHandleMakeThumbnailSkipExisting()
-    {
-        Storage::fake('test-thumbs');
-        config(['thumbnails.storage_disk' => 'test-thumbs']);
-        VipsImage::shouldReceive('thumbnail')->never();
-        $image = ImageTest::create();
-        $prefix = fragment_uuid_path($image->uuid);
-        $format = config('thumbnails.format');
-        Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
-
-        with(new ProcessNewImage($image))->handle();
-    }
-
     public function testHandleTileSmallImage()
     {
         config(['image.tiles.threshold' => 300]);
