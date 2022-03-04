@@ -63,20 +63,6 @@ class ProcessNewImage extends Job implements ShouldQueue
     protected $threshold;
 
     /**
-     * Caches if an image needs a new thumbnail.
-     *
-     * @var array
-     */
-    protected $needsThumbnailCache;
-
-    /**
-     * Caches if an image needs a check for metadata.
-     *
-     * @var array
-     */
-    protected $needsMetadataCache;
-
-    /**
      * Create a new job instance.
      *
      * @param Image $image The image to generate process.
@@ -86,8 +72,6 @@ class ProcessNewImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->needsThumbnailCache = [];
-        $this->needsMetadataCache = [];
     }
 
     /**
@@ -102,30 +86,24 @@ class ProcessNewImage extends Job implements ShouldQueue
         $this->threshold = config('image.tiles.threshold');
 
         try {
-            if ($this->needsProcessing($this->image)) {
-                FileCache::getOnce($this->image, function ($image, $path) {
-                    if (!File::exists($path)) {
-                        throw new Exception("File '{$path}' does not exist.");
-                    }
+            FileCache::getOnce($this->image, function ($image, $path) {
+                if (!File::exists($path)) {
+                    throw new Exception("File '{$path}' does not exist.");
+                }
 
-                    if ($this->needsMetadata($image)) {
-                        $this->collectMetadata($image, $path);
-                        $image->volume->flushGeoInfoCache();
-                    }
+                $this->collectMetadata($image, $path);
+                $image->volume->flushGeoInfoCache();
 
-                    // Do this after collection of metadata so the image has width and
-                    // height attributes. But do it before generating the thumbnail so
-                    // the tile image job can run while the thumbnail is being generated
-                    // (which can take a while for huge images).
-                    if ($this->shouldBeTiled($image)) {
-                        $this->submitTileJob($image);
-                    }
+                $this->makeThumbnail($image, $path);
 
-                    if ($this->needsThumbnail($image)) {
-                        $this->makeThumbnail($image, $path);
-                    }
-                });
-            }
+                // Do this after collection of metadata so the image has width and
+                // height attributes. But do it before generating the thumbnail so
+                // the tile image job can run while the thumbnail is being generated
+                // (which can take a while for huge images).
+                if ($this->shouldBeTiled($image)) {
+                    $this->submitTileJob($image);
+                }
+            });
         } catch (Exception $e) {
             if (App::runningUnitTests()) {
                 throw $e;
@@ -136,40 +114,6 @@ class ProcessNewImage extends Job implements ShouldQueue
                 Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
             }
         }
-    }
-
-    /**
-     * Determine if an image needs to be processed.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsProcessing(Image $image)
-    {
-        return $this->needsThumbnail($image) ||
-            $this->needsMetadata($image) ||
-            $this->shouldBeTiled($image);
-    }
-
-    /**
-     * Chack if an image needs a thumbnail.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsThumbnail(Image $image)
-    {
-        if (!array_key_exists($image->id, $this->needsThumbnailCache)) {
-            $prefix = fragment_uuid_path($image->uuid);
-            $format = config('thumbnails.format');
-            $this->needsThumbnailCache[$image->id] =
-                !Storage::disk(config('thumbnails.storage_disk'))
-                    ->exists("{$prefix}.{$format}");
-        }
-
-        return $this->needsThumbnailCache[$image->id];
     }
 
     /**
@@ -194,29 +138,6 @@ class ProcessNewImage extends Job implements ShouldQueue
 
         Storage::disk(config('thumbnails.storage_disk'))
                 ->put("{$prefix}.{$format}", $buffer);
-    }
-
-    /**
-     * Chack if an image has missing metadata.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsMetadata(Image $image)
-    {
-        if (!array_key_exists($image->id, $this->needsMetadataCache)) {
-            $this->needsMetadataCache[$image->id] = !$image->taken_at ||
-                !$image->lng ||
-                !$image->lat ||
-                !$image->width ||
-                !$image->height ||
-                !$image->size ||
-                !$image->mimetype ||
-                !array_key_exists('gps_altitude', $image->metadata);
-        }
-
-        return $this->needsMetadataCache[$image->id];
     }
 
     /**
