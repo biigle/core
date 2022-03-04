@@ -148,22 +148,16 @@ class ProcessNewImage extends Job implements ShouldQueue
      */
     protected function collectMetadata(Image $image, $path)
     {
-        if (is_null($image->size)) {
-            $image->size = File::size($path);
-        }
+        $image->size = File::size($path);
 
-        if (is_null($image->mimetype)) {
-            $image->mimetype = File::mimeType($path);
-        }
+        $image->mimetype = File::mimeType($path);
 
-        if (is_null($image->width) || is_null($image->height)) {
-            try {
-                $i = VipsImage::newFromFile($path);
-                $image->width = $i->width;
-                $image->height = $i->height;
-            } catch (Exception $e) {
-                // dimensions stay null
-            }
+        try {
+            $i = VipsImage::newFromFile($path);
+            $image->width = $i->width;
+            $image->height = $i->height;
+        } catch (Exception $e) {
+            // dimensions stay null
         }
 
         $exif = $this->getExif($path);
