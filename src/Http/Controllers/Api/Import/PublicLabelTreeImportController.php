@@ -19,7 +19,7 @@ class PublicLabelTreeImportController extends Controller
      * @api {post} label-trees/import Perform a public label tree import
      * @apiGroup Sync
      * @apiName StorePublicLabelTreeImport
-     * @apiPermission user
+     * @apiPermission editor
      *
      * @apiParam (Required parameters) {File} archive The public label tree export archive file.
      *
