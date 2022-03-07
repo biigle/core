@@ -2,6 +2,7 @@
 
 namespace Biigle\Providers;
 
+use Biigle\Role;
 use Biigle\Services\Auth\ApiGuard;
 use Biigle\Services\Auth\FederatedSearchGuard;
 use Illuminate\Auth\TokenGuard;
@@ -39,6 +40,11 @@ class AuthServiceProvider extends ServiceProvider
         // Ability of a global admin.
         Gate::define('sudo', function ($user) {
             return $user->isInSuperUserMode;
+        });
+
+        // Ability to access the volume file browser.
+        Gate::define('access-browser', function ($user) {
+            return $user->role_id === Role::editorId() || $user->role_id == Role::adminId();
         });
 
         Auth::extend('api', function ($app, $name, array $config) {

@@ -30,12 +30,17 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/directories/test')->assertStatus(404);
         config(['volumes.browser' => true]);
 
+
         $this->get('/api/v1/volumes/browser/directories/local')->assertStatus(404);
         $this->get('/api/v1/volumes/browser/directories/missing')->assertStatus(404);
 
         $this->get('/api/v1/volumes/browser/directories/test')
             ->assertStatus(200)
             ->assertExactJson(['test_1', 'test_2']);
+
+        $this->beGlobalGuest();
+        $this->get('/api/v1/volumes/browser/directories/test')
+            ->assertStatus(403);
     }
 
     public function testIndexDirectories()
@@ -59,6 +64,10 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/directories/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test_11']);
+
+        $this->beGlobalGuest();
+        $this->get('/api/v1/volumes/browser/directories/test?path=test_1')
+            ->assertStatus(403);
     }
 
     public function testIndexImages()
@@ -85,6 +94,10 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/images/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test1.jpg', 'test2.jpg']);
+
+        $this->beGlobalGuest();
+        $this->get('/api/v1/volumes/browser/images/test?path=test_1')
+            ->assertStatus(403);
     }
 
     public function testIndexVideos()
@@ -111,5 +124,9 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test1.mp4', 'test2.mp4']);
+
+        $this->beGlobalGuest();
+        $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
+            ->assertStatus(403);
     }
 }

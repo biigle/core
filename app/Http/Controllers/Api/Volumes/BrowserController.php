@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Storage;
 
 class BrowserController extends Controller
@@ -32,7 +33,7 @@ class BrowserController extends Controller
      * @api {get} volumes/browser/directories/:disk List directories
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexDirectories
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -51,6 +52,8 @@ class BrowserController extends Controller
      */
     public function indexDirectories(Request $request, $disk)
     {
+        Gate::authorize('access-browser');
+
         if (!$this->diskAccessible($disk)) {
             abort(Response::HTTP_NOT_FOUND);
         }
@@ -75,7 +78,7 @@ class BrowserController extends Controller
      * @api {get} volumes/browser/images/:disk List images
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexImages
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -94,6 +97,8 @@ class BrowserController extends Controller
      */
     public function indexImages(Request $request, $disk)
     {
+        Gate::authorize('access-browser');
+
         return $this->indexFiles($request, $disk, Volume::IMAGE_FILE_REGEX);
     }
 
@@ -103,7 +108,7 @@ class BrowserController extends Controller
      * @api {get} volumes/browser/videos/:disk List videos
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexVideos
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -122,6 +127,8 @@ class BrowserController extends Controller
      */
     public function indexVideos(Request $request, $disk)
     {
+        Gate::authorize('access-browser');
+
         return $this->indexFiles($request, $disk, Volume::VIDEO_FILE_REGEX);
     }
 

@@ -6,6 +6,11 @@
  */
 
 /**
+ * @apiDefine editor Authenticated editor
+ * The user needs to be authenticated with the editor role.
+ */
+
+/**
  * @apiDefine admin Authenticated admin
  * The user needs to be global admin.
  */

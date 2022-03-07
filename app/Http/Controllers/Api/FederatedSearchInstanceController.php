@@ -15,7 +15,7 @@ class FederatedSearchInstanceController extends Controller
      * @api {post} federated-search-instances Connect a remote instance
      * @apiGroup FederatedSearch
      * @apiName StoreInstance
-     * @apiPermission globalAdmin
+     * @apiPermission admin
      *
      * @apiParam (Required parameters) {String} name Name of the connected instance.
      * @apiParam (Required parameters) {String} url Base URL to the instance (e.g. `https://example.com`).
@@ -52,7 +52,7 @@ class FederatedSearchInstanceController extends Controller
      * @api {put} federated-search-instances/:id Update a remote instance
      * @apiGroup FederatedSearch
      * @apiName UpdateInstance
-     * @apiPermission globalAdmin
+     * @apiPermission admin
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the connected
      * instance.
@@ -115,7 +115,7 @@ class FederatedSearchInstanceController extends Controller
      * @api {delete} federated-search-instances/:id Disonnect a remote instance
      * @apiGroup FederatedSearch
      * @apiName DestroyInstance
-     * @apiPermission globalAdmin
+     * @apiPermission admin
      *
      * @apiParam {Number} id ID of the instance to disconnect
      *
