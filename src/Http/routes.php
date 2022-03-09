@@ -23,7 +23,7 @@ $router->group([
 $router->group([
     'namespace' => 'Api',
     'prefix' => 'api/v1',
-    'middleware' => 'auth:web,api',
+    'middleware' => ['api', 'auth:web,api'],
 ], function ($router) {
     $router->post('volumes/{id}/largo', [
         'uses' => 'Volumes\LargoController@save',
