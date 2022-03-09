@@ -11,6 +11,17 @@ class UserPolicy
     use HandlesAuthorization;
 
     /**
+     * Determine if the given user can see other users.
+     *
+     * @param  User  $user
+     * @return bool
+     */
+    public function index(User $user)
+    {
+        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
+    }
+
+    /**
      * Determine if the given user can create users.
      *
      * @param  User  $user

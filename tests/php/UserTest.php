@@ -163,22 +163,26 @@ class UserTest extends ModelTestCase
 
     public function testCastSettings()
     {
-        $user = self::create(['settings' => ['abc' => 'def']]);
+        $user = self::create(['attrs' => ['settings' => ['abc' => 'def']]]);
         $this->assertEquals(['abc' => 'def'], $user->fresh()->settings);
     }
 
     public function testSetSettings()
     {
         $this->model->setSettings(['a' => true]);
+        $this->model->save();
         $this->assertEquals(['a' => true], $this->model->fresh()->settings);
 
         $this->model->setSettings(['b' => 20]);
+        $this->model->save();
         $this->assertEquals(['a' => true, 'b' => 20], $this->model->fresh()->settings);
 
         $this->model->setSettings(['a' => null, 'b' => 10]);
+        $this->model->save();
         $this->assertEquals(['b' => 10], $this->model->fresh()->settings);
 
         $this->model->setSettings(['a' => null, 'b' => null]);
+        $this->model->save();
         $this->assertNull($this->model->fresh()->settings);
     }
 

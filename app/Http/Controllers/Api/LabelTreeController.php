@@ -110,7 +110,7 @@ class LabelTreeController extends Controller
      * @api {post} label-trees Create a new label tree
      * @apiGroup Label Trees
      * @apiName StoreLabelTrees
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The user creating a new label tree will automatically become label tree admin.
      *
      * @apiParam (Required attributes) {String} name Name of the new label tree.

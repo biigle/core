@@ -31,9 +31,15 @@ class UserControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/users');
 
-        // everybody can do this
-        $user = UserTest::create();
+        // only editors or admins can do this
+        $user = UserTest::create(['role_id' => Role::guestId()]);
         $this->be($user);
+        $this->get('/api/v1/users')
+            ->assertStatus(403);
+
+        $user->role_id = Role::editorId();
+        $user->save();
+
         $this->get('/api/v1/users')
             ->assertStatus(200)
             ->assertExactJson([[
@@ -47,27 +53,26 @@ class UserControllerTest extends ApiTestCase
         // Global admins also see the email address of the users.
         $user->role_id = Role::adminId();
         $user->save();
-        $this->get('/api/v1/users')->assertJsonFragment(['email' => $user->email]);
+        $this->get('/api/v1/users')
+            ->assertJsonFragment(['email' => $user->email]);
     }
 
     public function testShow()
     {
         $this->doTestApiRoute('GET', '/api/v1/users/'.$this->guest()->id);
 
-        $this->beGuest();
-        $response = $this->get('/api/v1/users/'.$this->guest()->id);
-        $response->assertStatus(200);
+        $this->beGlobalGuest();
+        $this->get('/api/v1/users/'.$this->editor()->id)->assertStatus(403);
 
-        $this->beGlobalAdmin();
-        $user = $this->guest();
-        $this->get('/api/v1/users/'.$user->id)
+        $this->beGuest();
+        $this->get('/api/v1/users/'.$this->editor()->id)
             ->assertStatus(200)
             ->assertExactJson([
-                'id' => $user->id,
-                'firstname' => $user->firstname,
-                'lastname' => $user->lastname,
-                'role_id' => $user->role_id,
-                'affiliation' => $user->affiliation,
+                'id' => $this->editor()->id,
+                'firstname' => $this->editor()->firstname,
+                'lastname' => $this->editor()->lastname,
+                'role_id' => $this->editor()->role_id,
+                'affiliation' => $this->editor()->affiliation,
             ]);
     }
 
@@ -657,7 +662,10 @@ class UserControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 
-        $this->beGuest();
+        $this->beGlobalGuest();
+        $this->get('/api/v1/users/find/a')->assertStatus(403);
+
+        $this->beEditor();
         $this->get('/api/v1/users/find/a')
             ->assertStatus(200)
             ->assertJsonFragment(['firstname' => 'abc'])
