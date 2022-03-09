@@ -3,7 +3,7 @@
 $router->group([
     'namespace' => 'Api',
     'prefix' => 'api/v1',
-    'middleware' => ['auth:web,api', 'can:sudo'],
+    'middleware' => ['api', 'auth:web,api', 'can:sudo'],
 ], function ($router) {
     $router->get('export/users', 'Export\UserExportController@show');
     $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
@@ -17,7 +17,7 @@ $router->group([
 $router->group([
     'namespace' => 'Api',
     'prefix' => 'api/v1',
-    'middleware' => ['auth:web,api'],
+    'middleware' => ['api', 'auth:web,api'],
 ], function ($router) {
     $router->get('public-export/label-trees/{id}', [
         'as' => 'get-public-label-tree-export',
