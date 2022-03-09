@@ -30,7 +30,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'role_id' => 'int',
-        'settings' => 'array',
+        'attrs' => 'array',
     ];
 
     /**
@@ -137,10 +137,12 @@ class User extends Authenticatable
     public function setSettings(array $settings)
     {
         foreach ($settings as $key => $value) {
-            $this->setJsonAttr($key, $value, 'settings');
+            $this->setJsonAttr("settings.{$key}", $value);
         }
 
-        $this->save();
+        if (empty($this->settings)) {
+            $this->setJsonAttr('settings', null);
+        }
     }
 
     /**
@@ -153,7 +155,17 @@ class User extends Authenticatable
      */
     public function getSettings($key, $default = null)
     {
-        return $this->getJsonAttr($key, $default, 'settings');
+        return $this->getJsonAttr("settings.{$key}", $default);
+    }
+
+    /**
+     * Get the settings array.
+     *
+     * @return array|null
+     */
+    public function getSettingsAttribute()
+    {
+        return $this->getJsonAttr('settings');
     }
 
     /**
