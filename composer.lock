@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc0e7752d72472b23eebef35b5eb0b42",
+    "content-hash": "7ad24b3d0620e39277dc15950b5cdd61",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -617,6 +617,49 @@
                 "source": "https://github.com/biigle/sync"
             },
             "time": "2022-02-15T15:23:35+00:00"
+        },
+        {
+            "name": "biigle/user-storage",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/user-storage.git",
+                "reference": "d3b02fd77c864f1f3fda1ce6e1ff7592f293a245"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/user-storage/zipball/d3b02fd77c864f1f3fda1ce6e1ff7592f293a245",
+                "reference": "d3b02fd77c864f1f3fda1ce6e1ff7592f293a245",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\UserStorage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to allow file upload and storage for users",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/user-storage/issues",
+                "source": "https://github.com/biigle/user-storage"
+            },
+            "time": "2022-03-08T13:49:50+00:00"
         },
         {
             "name": "brick/math",
@@ -10141,7 +10184,8 @@
         "biigle/maia": 20,
         "biigle/module": 20,
         "biigle/reports": 20,
-        "biigle/sync": 20
+        "biigle/sync": 20,
+        "biigle/user-storage": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -10155,5 +10199,5 @@
         "ext-yaml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.0.0"
 }

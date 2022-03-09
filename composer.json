@@ -34,6 +34,7 @@
         "biigle/module": "dev-master",
         "biigle/reports": "dev-master",
         "biigle/sync": "dev-master",
+        "biigle/user-storage": "dev-master",
         "doctrine/dbal": "^3.0",
         "duncan3dc/bom-string": "^1.1",
         "fruitcake/laravel-cors": "^2.0",
