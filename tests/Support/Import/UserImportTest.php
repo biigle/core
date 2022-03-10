@@ -22,6 +22,7 @@ class UserImportTest extends TestCase
 
         $this->user = UserTest::create();
         $this->user->setSettings(['ab' => 'cd']);
+        $this->user->save();
         $this->user2 = UserTest::create();
         $export = new UserExport([$this->user->id, $this->user2->id]);
         $path = $export->getArchive();

@@ -157,8 +157,8 @@ class VolumeImportTest extends TestCase
         ]);
         $tree = $annotationLabel->label->tree;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($tree->id, $volume['label_trees'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoAnnotationLabelTree()
@@ -168,8 +168,8 @@ class VolumeImportTest extends TestCase
         ]);
         $tree = $annotationLabel->label->tree;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($tree->id, $volumes[1]['label_trees'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($tree->id, $volume['label_trees'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageAnnotationLabelLabel()
@@ -179,8 +179,8 @@ class VolumeImportTest extends TestCase
         ]);
         $label = $annotationLabel->label;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($label->id, $volumes[0]['labels'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($label->id, $volume['labels'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoAnnotationLabelLabel()
@@ -190,8 +190,8 @@ class VolumeImportTest extends TestCase
         ]);
         $label = $annotationLabel->label;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($label->id, $volumes[1]['labels'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($label->id, $volume['labels'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageAnnotationLabelUser()
@@ -201,8 +201,8 @@ class VolumeImportTest extends TestCase
         ]);
         $user = $annotationLabel->user;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($user->id, $volumes[0]['users'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($user->id, $volume['users'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoAnnotationLabelUser()
@@ -212,8 +212,8 @@ class VolumeImportTest extends TestCase
         ]);
         $user = $annotationLabel->user;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($user->id, $volumes[1]['users'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($user->id, $volume['users'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageLabelTree()
@@ -221,8 +221,8 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($tree->id, $volume['label_trees'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoLabelTree()
@@ -230,8 +230,8 @@ class VolumeImportTest extends TestCase
         $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
         $tree = $videoLabel->label->tree;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($tree->id, $volumes[1]['label_trees'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($tree->id, $volume['label_trees'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageLabelLabel()
@@ -239,8 +239,8 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $label = $imageLabel->label;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($label->id, $volumes[0]['labels'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($label->id, $volume['labels'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoLabelLabel()
@@ -248,8 +248,8 @@ class VolumeImportTest extends TestCase
         $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
         $label = $videoLabel->label;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($label->id, $volumes[1]['labels'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($label->id, $volume['labels'][0]);
     }
 
     public function testGetVolumeImportCandidatesImageLabelUser()
@@ -257,8 +257,8 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $user = $imageLabel->user;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($user->id, $volumes[0]['users'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'image');
+        $this->assertEquals($user->id, $volume['users'][0]);
     }
 
     public function testGetVolumeImportCandidatesVideoLabelUser()
@@ -266,8 +266,8 @@ class VolumeImportTest extends TestCase
         $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
         $user = $videoLabel->user;
         $import = $this->getDefaultImport();
-        $volumes = $import->getVolumeImportCandidates();
-        $this->assertEquals($user->id, $volumes[1]['users'][0]);
+        $volume = $import->getVolumeImportCandidates()->firstWhere('media_type_name', 'video');
+        $this->assertEquals($user->id, $volume['users'][0]);
     }
 
     public function testGetUserImportCandidatesLabelTree()
