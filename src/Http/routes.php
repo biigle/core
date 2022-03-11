@@ -58,9 +58,4 @@ $router->group([
         'uses' => 'ReportsController@index',
         'as' => 'reports',
     ]);
-
-    $router->get('videos/{id}/reports', [
-        'uses' => 'VideoReportsController@show',
-        'as' => 'video-reports',
-    ]);
 });
