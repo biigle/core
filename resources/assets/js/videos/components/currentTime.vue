@@ -3,16 +3,17 @@
         class="current-time"
         :class="classObject"
         >
-            <loader v-if="seeking" :active="true"></loader>
-            <span v-else>
-                <span
+            <loader v-show="seeking" :active="seeking"></loader>
+            <span v-show="!seeking">
+                <canvas ref="canvas" class="current-time-canvas"></canvas>
+                <!-- <span
                     v-text="currentTimeText"
                     ></span>
                 <span
                     class="hover-time"
                     v-show="showHoverTime"
                     v-text="hoverTimeText"
-                    ></span>
+                    ></span> -->
             </span>
     </div>
 </template>
@@ -54,6 +55,20 @@ export default {
         showHoverTime() {
             return this.hoverTime !== 0;
         },
+    },
+    watch: {
+        currentTimeText(text) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillText(text, 0, this.$el.offsetHeight);
+        },
+    },
+    mounted() {
+        this.canvas = this.$refs.canvas;
+        this.canvas.width = this.$el.offsetWidth;
+        this.canvas.height = this.$el.offsetHeight;
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.font = '12px sans-serif';
+        this.ctx.fillStyle = "#ff0000";
     },
 };
 </script>
