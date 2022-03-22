@@ -184,7 +184,7 @@ export default {
             // The y axis should be switched from "top to bottom" to "bottom to top"
             // or vice versa. Our database expects ttb, OpenLayers expects btt.
 
-            let height = this.videoCanvas.height;
+            let height = this.video.videoHeight;
             for (let i = 1; i < points.length; i += 2) {
                 points[i] = height - points[i];
             }
