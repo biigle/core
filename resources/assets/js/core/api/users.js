@@ -24,6 +24,9 @@
  * Delete a user:
  * resource.delete({id: 1}).then(...);
  *
+ * Update own user settings:
+ * resource.updateSettings({settings_key: settingsValue}).then(...);
+ *
  * Query users by name:
  * resource.find({query: 'jo'}).then(...);
  *
@@ -33,5 +36,9 @@ export default Vue.resource('api/v1/users{/id}', {}, {
     find: {
         method: 'GET',
         url: 'api/v1/users/find{/query}',
-    }
+    },
+    updateSettings: {
+        method: 'PUT',
+        url: 'api/v1/users/my/settings',
+    },
 });
