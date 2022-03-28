@@ -18,6 +18,7 @@ import TypeaheadComponent from './core/components/typeahead';
 import Messages from './core/messages/store';
 import EditorMixin from './core/mixins/editor';
 import LoaderMixin from './core/mixins/loader';
+import NotificationSettingsMixin from './core/mixins/notificationSettings';
 import SettingsModel from './core/models/Settings';
 
 import {debounce, urlParams, throttle} from './core/utils';
@@ -55,6 +56,7 @@ biigle.$declare('messages.store', Messages); // Legacy support.
 window.$biiglePostMessage = Messages.post; // Legacy support.
 biigle.$declare('core.mixins.editor', EditorMixin);
 biigle.$declare('core.mixins.loader', LoaderMixin);
+biigle.$declare('core.mixins.notificationSettings', NotificationSettingsMixin);
 biigle.$declare('core.models.Settings', SettingsModel);
 
 biigle.$declare('utils.debounce', debounce);

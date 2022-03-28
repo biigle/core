@@ -38,17 +38,7 @@ export default {
         };
     },
     computed: {
-        minimap() {
-            return new Map({
-                // remove controls
-                controls: [],
-                // disable interactions
-                interactions: []
-            });
-        },
-        viewport() {
-            return new Feature();
-        },
+        //
     },
     methods: {
         updateViewport() {
@@ -125,6 +115,14 @@ export default {
         },
     },
     created() {
+        this.minimap = new Map({
+            // remove controls
+            controls: [],
+            // disable interactions
+            interactions: []
+        });
+        this.viewport = new Feature();
+
         let viewportSource = new VectorSource();
         viewportSource.addFeature(this.viewport);
 
