@@ -33,7 +33,7 @@ export default {
         settings: function (settings) {
             this.startLoading();
             let payload = {};
-            payload[this.settingsKey] = this.settings;
+            payload[this.settingsKey] = settings;
             UsersApi.updateSettings(payload)
                 .then(this.handleSuccess, this.handleError)
                 .finally(this.finishLoading);
