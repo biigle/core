@@ -23,32 +23,10 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$mount('report-notification-settings', {
-        mixins: [biigle.$require('core.mixins.loader')],
+        mixins: [biigle.$require('core.mixins.notificationSettings')],
         data: {
-            settings: '{!! $user->getSettings('report_notifications', config('reports.notifications.default_settings')) !!}',
-            saved: false,
-            error: false,
-        },
-        methods: {
-            handleSuccess: function () {
-                this.saved = true;
-                this.error = false;
-            },
-            handleError: function (response) {
-                this.saved = false;
-                this.error = true;
-                biigle.$require('messages').handleErrorResponse(response);
-            },
-        },
-        watch: {
-            settings: function (settings) {
-                this.startLoading();
-                this.$http.put('api/v1/users/my/settings', {
-                        report_notifications: this.settings,
-                    })
-                    .then(this.handleSuccess, this.handleError)
-                    .finally(this.finishLoading);
-            },
+            settings: '{!! $user->getSettings('report_notifications', config('user_storage.notifications.default_settings')) !!}',
+            settingsKey: 'report_notifications',
         },
     });
 </script>
