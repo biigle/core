@@ -52,7 +52,7 @@ class VolumeImport extends Import
      * Perform the import.
      *
      * @param Project $project Project to attach the imported volumes to
-     * @param User $creator Creator of the new projects.
+     * @param User $creator Creator of the new volumes.
      * @param array|null $only IDs of the volume import candidates to limit the import to.
      * @param array $newUrls New URLs of imported volumes.
      * @param array $nameConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve name conflicts.

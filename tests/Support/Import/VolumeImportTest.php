@@ -40,10 +40,19 @@ class VolumeImportTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->imageVolume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
+        $this->imageVolume = VolumeTest::create([
+            'url' => 'test://files',
+            'attrs' => ['ab' => 'cd'],
+        ]);
         $this->image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
-        $this->videoVolume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->videoVolume = VolumeTest::create([
+            'url' => 'test://files',
+            'media_type_id' => MediaType::videoId(),
+        ]);
         $this->video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
+        config(['volumes.admin_storage_disks' => ['test']]);
+        $this->user = User::factory()->make(['role_id' => Role::adminId()]);
+        $this->be($this->user);
     }
 
     public function tearDown(): void
@@ -492,7 +501,9 @@ class VolumeImportTest extends TestCase
         ]);
         $videoLabel = VideoLabelTest::create(['video_id' => $this->video->id]);
 
-        $volume2 = VolumeTest::create();
+        $volume2 = VolumeTest::create([
+            'url' => 'test://files'
+        ]);
         $import = $this->getImport([
             $this->imageVolume->id,
             $this->videoVolume->id,
@@ -560,7 +571,9 @@ class VolumeImportTest extends TestCase
     public function testPerformOnly()
     {
         $project = ProjectTest::create();
-        $volume2 = VolumeTest::create();
+        $volume2 = VolumeTest::create([
+            'url' => 'test://files'
+        ]);
         $import = $this->getImport([$this->imageVolume->id, $volume2->id]);
         $map = $import->perform($project, $project->creator, [$this->imageVolume->id]);
         $this->assertCount(1, $map['volumes']);
@@ -689,6 +702,21 @@ class VolumeImportTest extends TestCase
             $this->assertFalse(true);
         } catch (UnprocessableEntityHttpException $e) {
             $this->assertStringContainsString('Unresolved parent conflict', $e->getMessage());
+        }
+    }
+
+    public function testPerformUnauthorizedDisk()
+    {
+        $project = ProjectTest::create();
+        $volume2 = VolumeTest::create([
+            'url' => 'toast://files'
+        ]);
+        $import = $this->getImport([$this->imageVolume->id, $volume2->id]);
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertStringContainsString('Not authorized to access this storage disk', $e->getMessage());
         }
     }
 
