@@ -32,6 +32,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->volume = VolumeTest::create();
         $this->project()->volumes()->attach($this->volume);
         Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
     }
 
     public function testIndex()
@@ -556,7 +557,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertTrue($volume->hasIfdo());
     }
 
-    public function testStoreProviderBlacklist()
+    public function testStoreProviderDenylist()
     {
         $id = $this->project()->id;
         $this->beAdmin();
@@ -565,6 +566,53 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'https://dropbox.com',
                 'media_type' => 'image',
                 'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreAuthorizeDisk()
+    {
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        config(['volumes.editor_storage_disks' => ['editor-test']]);
+
+        $adminDisk = Storage::fake('admin-test');
+        $adminDisk->put('images/1.jpg', 'abc');
+
+        $editorDisk = Storage::fake('editor-test');
+        $editorDisk->put('images/2.jpg', 'abc');
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'admin-test://images',
+                'media_type' => 'image',
+                'files' => ['1.jpg'],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'editor-test://images',
+                'media_type' => 'image',
+                'files' => ['2.jpg'],
+            ])
+            ->assertSuccessful();
+
+        $this->beGlobalAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'admin-test://images',
+                'media_type' => 'image',
+                'files' => ['1.jpg'],
+            ])
+            ->assertSuccessful();
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'editor-test://images',
+                'media_type' => 'image',
+                'files' => ['2.jpg'],
             ])
             ->assertStatus(422);
     }
