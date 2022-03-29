@@ -43,11 +43,6 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isInSuperUserMode;
         });
 
-        // Ability to access the volume file browser.
-        Gate::define('access-browser', function (User $user) {
-            return $user->role_id === Role::editorId() || $user->role_id == Role::adminId();
-        });
-
         // Ability to create or update a volume with a certain storage disk.
         Gate::define('use-disk', function (User $user, $disk) {
             if ($user->role_id === Role::adminId()) {
