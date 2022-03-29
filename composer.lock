@@ -624,17 +624,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-storage.git",
-                "reference": "d3b02fd77c864f1f3fda1ce6e1ff7592f293a245"
+                "reference": "672a3a13bcc0d8eb8f46c6ab3ba237a071e5c7eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-storage/zipball/d3b02fd77c864f1f3fda1ce6e1ff7592f293a245",
-                "reference": "d3b02fd77c864f1f3fda1ce6e1ff7592f293a245",
+                "url": "https://api.github.com/repos/biigle/user-storage/zipball/672a3a13bcc0d8eb8f46c6ab3ba237a071e5c7eb",
+                "reference": "672a3a13bcc0d8eb8f46c6ab3ba237a071e5c7eb",
                 "shasum": ""
             },
             "default-branch": true,
             "type": "library",
             "autoload": {
+                "files": [
+                    "src/Support/helpers.php"
+                ],
                 "psr-4": {
                     "Biigle\\Modules\\UserStorage\\": "src"
                 }
@@ -659,7 +662,7 @@
                 "issues": "https://github.com/biigle/user-storage/issues",
                 "source": "https://github.com/biigle/user-storage"
             },
-            "time": "2022-03-08T13:49:50+00:00"
+            "time": "2022-03-29T08:48:25+00:00"
         },
         {
             "name": "brick/math",
