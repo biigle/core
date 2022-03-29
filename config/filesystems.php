@@ -115,6 +115,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('ifdos'),
         ],
+
+        'user-storage' => [
+            'driver' => 'local',
+            'root' => storage_path('user-storage'),
+        ],
     ],
 
     /*
