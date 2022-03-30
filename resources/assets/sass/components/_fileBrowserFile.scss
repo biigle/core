@@ -1,0 +1,29 @@
+.file-browser-file {
+    padding: $padding-small-vertical $padding-small-horizontal;
+    padding-left: $padding-small-horizontal + 17px;
+    border-radius: $border-radius-small;
+    word-wrap: break-word;
+    height: 32px;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+    }
+
+    button {
+        display: none;
+    }
+
+    &:hover button {
+        display: block;
+    }
+
+    &.selected {
+        color: white;
+        font-weight: bold;
+    }
+
+    a {
+        color: $text-color;
+    }
+}

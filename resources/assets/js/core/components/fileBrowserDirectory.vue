@@ -50,6 +50,7 @@
                     :download-url="downloadUrl"
                     :expanded="expanded"
                     :empty-text="emptyText"
+                    :expand-on-select="expandOnSelect"
                     @select="emitSelect"
                     @unselect="emitUnselect"
                     @remove-directory="emitRemoveDirectory"
@@ -57,42 +58,22 @@
                     @load="emitLoad"
                     ></file-browser-directory>
             </li>
-            <li
-                v-for="file in directory.files"
-                class="file-browser-file clearfix"
+            <file-browser-file
+                v-for="(file, index) in directory.files"
+                :key="index"
+                :file="file"
+                :download-url="downloadUrl"
+                :dirname="fullPath"
+                :removable="removable"
+                @remove="handleRemoveFile"
                 >
-                <a
-                    v-if="downloadUrl"
-                    :href="fullDownloadUrl(file.name)"
-                    title="View file"
-                    >
-                    <i class="fa fa-file"></i> {{file.name}}
-                </a>
-                <span v-else>
-                    <i class="fa fa-file"></i> {{file.name}}
-                </span>
-
-                <button
-                    v-if="removable"
-                    class="btn btn-default btn-xs pull-right"
-                    title="Remove the file"
-                    @click.stop="handleRemoveFile(file)"
-                    >
-                    <i class="fa fa-trash"></i>
-                </button>
-            </li>
-            <li
-                v-if="!hasItems"
-                class="file-browser-file text-muted"
-                title="This directory is empty"
-                >
-                    ({{emptyText}})
-            </li>
+            </file-browser-file>
         </ul>
     </div>
 </template>
 
 <script>
+import FileComponent from './fileBrowserFile';
 import LoaderComponent from './loader';
 
 export default {
@@ -134,9 +115,14 @@ export default {
             type: String,
             default: 'empty',
         },
+        expandOnSelect: {
+            type: Boolean,
+            default: false,
+        },
     },
     components: {
         loader: LoaderComponent,
+        fileBrowserFile: FileComponent,
     },
     data() {
         return {
@@ -146,7 +132,7 @@ export default {
     computed: {
         classObject() {
             return {
-                selected: this.directory.selected,
+                selected: this.selected,
                 root: this.root,
                 selectable: this.selectable,
             };
@@ -170,23 +156,26 @@ export default {
         collapsed() {
             return this.collapsedInternal || !this.loaded;
         },
+        selected() {
+            return this.directory.selected;
+        },
     },
     methods: {
-        emitSelect(directory) {
-            this.$emit('select', directory);
+        emitSelect(directory, path) {
+            this.$emit('select', directory, path);
         },
-        emitUnselect(directory) {
-            this.$emit('unselect', directory);
+        emitUnselect(directory, path) {
+            this.$emit('unselect', directory, path);
         },
         handleClick() {
             if (!this.selectable) {
                 return;
             }
 
-            if (this.directory.selected) {
-                this.emitUnselect(this.directory);
+            if (this.selected) {
+                this.emitUnselect(this.directory, this.fullPath);
             } else {
-                this.emitSelect(this.directory);
+                this.emitSelect(this.directory, this.fullPath);
             }
         },
         emitRemoveDirectory(directory, path) {
@@ -201,9 +190,7 @@ export default {
             this.$emit('remove-file', file, path);
         },
         handleRemoveFile(file) {
-            if (this.removable) {
-                this.emitRemoveFile(file, this.fullPath);
-            }
+            this.emitRemoveFile(file, this.fullPath);
         },
         handleCollapse() {
             this.collapsedInternal = true;
@@ -218,16 +205,15 @@ export default {
 
             this.collapsedInternal = false;
         },
-        fullDownloadUrl(filename) {
-            // Remove leading slash.
-            let path = this.fullPath.slice(1) + '/' + filename;
-
-            return this.downloadUrl + '?path=' + encodeURIComponent(path);
-        },
     },
     watch: {
         hasItems(hasItems) {
             if (!hasItems) {
+                this.collapsedInternal = false;
+            }
+        },
+        selected(selected) {
+            if (selected && this.expandOnSelect) {
                 this.collapsedInternal = false;
             }
         },

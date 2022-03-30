@@ -106,11 +106,15 @@ export default {
                     files: [],
                     loaded: false,
                     loading: false,
+                    selected: false,
                 };
             });
 
             let files = fileResponse.body.map(function (name) {
-                return {name: name};
+                return {
+                    name: name,
+                    selected: false,
+                };
             });
 
             return [directories, files];
@@ -248,23 +252,64 @@ export default {
             // Remove leading slash.
             path = path.slice(1);
 
-            this.fetchDirectoryContent(this.storageDisk, path)
+            return this.fetchDirectoryContent(this.storageDisk, path)
                     .then(function (args) {
                         let [dirs, files] = args;
                         directory.directories = dirs;
                         directory.files = files;
                         directory.loaded = true;
+
+                        return directory;
                     }, handleErrorResponse)
                     .finally(() => directory.loading = false);
         },
+        unselectAllDirectories(directory) {
+            directory.selected = false;
+            directory.files.forEach(file => file.selected = false);
+            Object.keys(directory.directories).forEach((key) => {
+                this.unselectAllDirectories(directory.directories[key]);
+            });
+        },
+        selectDirectory(directory, path) {
+            let promise;
+            if (!directory.loaded) {
+                promise = this.handleLoadDirectory(directory, path);
+            } else {
+                promise = Vue.Promise.resolve(directory);
+            }
+
+            promise.then((directory) => {
+                this.unselectAllDirectories(this.selectedDiskRoot);
+                if (directory.files.length > 0) {
+                    directory.selected = true;
+                    directory.files.forEach(file => file.selected = true);
+                    this.setUrlAndFilenames(path, directory.files);
+                }
+            });
+        },
+        setUrlAndFilenames(path, files) {
+            // Add only one slash, as path already has a leading slash.
+            this.url = `${this.storageDisk}:/${path}`;
+            this.filenames = files.map(file => file.name).join(', ');
+        },
+        unselectDirectory(directory, path) {
+            this.unselectAllDirectories(directory);
+            this.url = '';
+            this.filenames = '';
+        },
     },
     watch: {
-        storageDisk(disk) {
+        storageDisk(disk, oldDisk) {
             if (disk) {
                 this.initializingBrowser = true;
                 this.showStorageDiskRoot(disk)
                     .then(root => this.selectedDiskRoot = root)
                     .finally(() => this.initializingBrowser = false);
+            }
+        },
+        selectedDiskRoot(newRoot, oldRoot) {
+            if (oldRoot) {
+                this.unselectAllDirectories(oldRoot);
             }
         },
         hasMetadata(hasMetadata) {

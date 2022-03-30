@@ -199,10 +199,15 @@
                 v-bind:root-directory="selectedDiskRoot"
                 v-bind:expanded="false"
                 v-bind:empty-text="emptyText"
+                v-bind:selectable="true"
+                v-bind:expand-on-select="true"
+                v-on:select="selectDirectory"
+                v-on:unselect="unselectDirectory"
                 v-on:load="handleLoadDirectory"
                 ></file-browser>
 
-            <textarea class="hidden" name="files" required v-model="filenames"></textarea>
+            <input type="hidden" name="url" required v-model="url">
+            <input type="hidden" name="files" required v-model="filenames">
         </div>
 
          <fieldset>

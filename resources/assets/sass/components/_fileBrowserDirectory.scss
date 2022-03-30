@@ -50,29 +50,3 @@
     padding-left: 0;
     margin-bottom: $padding-small-vertical;
 }
-
-
-.file-browser-file {
-    padding: $padding-small-vertical $padding-small-horizontal;
-    padding-left: $padding-small-horizontal + 17px;
-    border-radius: $border-radius-small;
-    word-wrap: break-word;
-    height: 32px;
-
-    &:hover {
-        color: white;
-        background-color: $gray-lighter;
-    }
-
-    button {
-        display: none;
-    }
-
-    &:hover button {
-        display: block;
-    }
-
-    a {
-        color: $text-color;
-    }
-}

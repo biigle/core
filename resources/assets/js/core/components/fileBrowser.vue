@@ -9,6 +9,7 @@
                 :download-url="downloadUrl"
                 :expanded="expanded"
                 :emptyText="emptyText"
+                :expand-on-select="expandOnSelect"
                 @select="emitSelect"
                 @unselect="emitUnselect"
                 @remove-directory="emitRemoveDirectory"
@@ -51,6 +52,10 @@ export default {
             type: String,
             default: 'empty',
         },
+        expandOnSelect: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -63,11 +68,11 @@ export default {
         },
     },
     methods: {
-        emitSelect(directory) {
-            this.$emit('select', directory);
+        emitSelect(directory, path) {
+            this.$emit('select', directory, path);
         },
-        emitUnselect(directory) {
-            this.$emit('unselect', directory);
+        emitUnselect(directory, path) {
+            this.$emit('unselect', directory, path);
         },
         emitRemoveDirectory(directory, path) {
             this.$emit('remove-directory', directory, path);
