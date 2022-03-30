@@ -1,0 +1,78 @@
+.file-browser-directory {
+    position: relative;
+
+    &.selected > .file-browser-directory-name {
+        color: white;
+        font-weight: bold;
+    }
+
+
+    &:not(.root) {
+        .file-browser-directory-list {
+            padding-left: 15px;
+        }
+    }
+
+    &.selectable {
+        .file-browser-directory-name {
+            cursor: pointer;
+        }
+    }
+}
+
+.file-browser-directory-name {
+    padding: $padding-small-vertical;
+    border-radius: $border-radius-small;
+    word-wrap: break-word;
+    height: 32px;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+    }
+
+    button {
+        display: none;
+    }
+
+    &:hover button {
+        display: block;
+    }
+
+    .collapse-caret {
+        cursor: pointer;
+    }
+}
+
+
+.file-browser-directory-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: $padding-small-vertical;
+}
+
+
+.file-browser-file {
+    padding: $padding-small-vertical $padding-small-horizontal;
+    padding-left: $padding-small-horizontal + 17px;
+    border-radius: $border-radius-small;
+    word-wrap: break-word;
+    height: 32px;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+    }
+
+    button {
+        display: none;
+    }
+
+    &:hover button {
+        display: block;
+    }
+
+    a {
+        color: $text-color;
+    }
+}

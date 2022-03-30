@@ -3,18 +3,6 @@
 return [
 
     /*
-    | Show a file browser to make creating volumes easier.
-    */
-    'browser' => false,
-
-    /*
-    | All storage disks that the file browser is allowed to access.
-    */
-    'browser_disks' => [
-        'local',
-    ],
-
-    /*
     | Storage disks that are available to admins when a new volume is created.
     | Disks that should also be available to users with the editor role can be
     | configured in editor_storage_disks below.

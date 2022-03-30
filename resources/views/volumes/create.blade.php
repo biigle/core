@@ -10,9 +10,7 @@
       biigle.$declare('volumes.handle', `{!! old('handle') !!}`);
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.filenames', '{{ $filenames }}');
-      @if ($hasBrowser)
-         biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
-      @endif
+      biigle.$declare('volumes.disks', {!! $disks !!});
    </script>
 @endpush
 
@@ -112,81 +110,79 @@
             </legend>
              <div class="form-group">
                 <div class="btn-group btn-group-justified">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="{active: isRemoteFileSource}"><i class="fa fa-link"></i> Remote location</button>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" title="Storage disk" disabled><i class="fa fa-database"></i> Storage disk</button>
-                    </div>
+                    @if($disks->isEmpty())
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default active" title="Remote location" disabled><i class="fa fa-link"></i> Remote location</button>
+                        </div>
+                    @else
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="{active: isRemoteFileSource}" ><i class="fa fa-link"></i> Remote location</button>
+                        </div>
+                        @if ($disks->count() > 1)
+                            <div class="btn-group">
+                                <dropdown tag="span">
+                                    <button class="btn btn-default dropdown-toggle" v-bind:class="{active: isDiskFileSource}" type="button" title="Select a storage disk">
+                                        <i class="fa fa-database"></i> Storage disk <span class="caret"></span> <loader v-if="initializingBrowser" v-cloak v-bind:active="true"></loader>
+                                    </button>
+                                    <template slot="dropdown">
+                                        @foreach ($disks as $disk)
+                                            <li>
+                                                 <a title="Choose files from the '{{$disk}}' storage disk" href="#" v-on:click.prevent="selectStorageDisk('{{$disk}}')">{{$disk}}</a>
+                                            </li>
+                                        @endforeach
+                                    </template>
+                                </dropdown>
+                            </div>
+                        @elseif ($disks->count() === 1)
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" title="Choose files from the '{{$disks[0]}}' storage disk" v-on:click="selectStorageDisk('{{$disks[0]}}')" v-bind:class="{active: isDiskFileSource}">
+                                    <i class="fa fa-database"></i> Storage disk <loader v-if="initializingBrowser" v-cloak v-bind:active="true"></loader>
+                                </button>
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </div>
         </fieldset>
-        <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
-            @if ($hasBrowser)
-               <div class="input-group">
-                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url" value="{{old('url')}}">
-                  <span class="input-group-btn">
-                     <button type="button" class="btn btn-default" v-bind:class="buttonClass" v-on:click="toggleBrowse" title="Open the volume directory browser">browse</button>
-                  </span>
-               </div>
-            @else
-                <label for="url">Remote location URL</label>
-               @if (config('biigle.offline_mode'))
-                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url" value="{{old('url')}}">
-               @else
-                  <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url" value="{{old('url')}}">
-               @endif
-            @endif
-            <p class="help-block">
-               @if (config('biigle.offline_mode'))
-                  The volume directory on the BIIGLE server (e.g. <code>local://files/volume</code>).
-               @else
-                  The volume directory at a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote location</a>.
-               @endif
-            </p>
-            @if($errors->has('url'))
-               <span class="help-block">{{ $errors->first('url') }}</span>
-            @endif
-         </div>
 
-         @if ($hasBrowser)
-            <div class="row" v-if="browsing" v-cloak>
-               <div v-if="storageDisk" class="col-xs-12">
-                  <div class="form-group file-browser">
-                     <span class="file-browser__crumbs">
-                        <button v-on:click="goBack" type="button" class="btn btn-default btn-xs" title="Go back one directory" v-bind:disabled="!canGoBack"><i class="fa fa-chevron-left"></i></button>
-                        <a href="#" v-on:click="goTo(-1)">@{{storageDisk}}</a> :// <span v-for="(crumb, i) in breadCrumbs"><a href="#" v-on:click="goTo(i)" v-text="crumb"></a> / </span>
-                        <loader v-bind:active="loadingBrowser"></loader>
-                     </span>
-                     <div class="list-group file-browser__dirs">
-                        <a href="#" v-for="directory in currentDirectories" v-on:click="openDirectory(directory)" class="list-group-item" title="Open this directory">
-                           <button type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory(directory)" v-bind:title="'Select '+directory+' for the new volume'"><i class="fa fa-check"></i></button>
-                           @{{directory}}
-                        </a>
-                        <a v-if="!hasDirectories" href="#" class="list-group-item disabled">
-                            <button v-if="hasCurrentDirectory" type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory()" v-bind:title="'Select '+currentDirectory+' for the new volume'"><i class="fa fa-check"></i></button>
-                            No directories
-                        </a>
-                     </div>
-                  </div>
-               </div>
-               <div v-else class="col-xs-12">
-                  <div class="form-group">
-                     <label>Storage disk</label>
-                     <select v-model="storageDisk" class="form-control">
-                        @foreach ($disks as $disk)
-                           <option value="{{$disk}}">{{$disk}}</option>
-                        @endforeach
-                     </select>
-                  </div>
-               </div>
-            </div>
-         @endif
+        <div v-if="isRemoteFileSource">
+            <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
+                <label for="url">Remote location URL <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}" target="_blank" title="Learn more about remote volumes"><i class="fa fa-question-circle"></i></a></label>
+                <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url" value="{{old('url')}}">
+                @if ($errors->has('url'))
+                   <span class="help-block">{{ $errors->first('url') }}</span>
+                @endif
+             </div>
 
-         <div v-if="isRemoteImageVolume" v-cloak class="panel panel-warning">
-            <div class="panel-body text-warning">
-                Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+             <div v-if="isImageMediaType" class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+                </div>
             </div>
+
+             <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
+                <label for="files">Volume files</label>
+                <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
+                    <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
+                    <p class="help-block">
+                       The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
+                    </p>
+                    <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
+                        <div class="panel-body text-warning">
+                            Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+                        </div>
+                    </div>
+                </div>
+                <div v-else @unless ($mediaType === 'video') v-cloak @endif>
+                    <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3"></textarea>
+                    <p class="help-block">
+                       The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
+                    </p>
+                </div>
+                @if($errors->has('files'))
+                   <span class="help-block">{{ $errors->first('files') }}</span>
+                @endif
+             </div>
         </div>
 
         <div v-cloak v-if="filenamesReadFromMetadata" class="panel panel-info">
@@ -195,29 +191,19 @@
             </div>
         </div>
 
-         <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
-            <label for="files">Volume files</label>
-            <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
-                <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3">{{$filenames}}</textarea>
-                <p class="help-block">
-                   The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
-                </p>
-                <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
-                    <div class="panel-body text-warning">
-                        Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
-                    </div>
-                </div>
-            </div>
-            <div v-else @unless ($mediaType === 'video') v-cloak @endif>
-                <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3">{{$filenames}}</textarea>
-                <p class="help-block">
-                   The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
-                </p>
-            </div>
-            @if($errors->has('files'))
-               <span class="help-block">{{ $errors->first('files') }}</span>
-            @endif
-         </div>
+        <div v-if="showFileBrowser" v-cloak>
+            <p class="help-block">
+                Select adirectory below. All files in the directory will be used for the new volume.
+            </p>
+            <file-browser
+                v-bind:root-directory="selectedDiskRoot"
+                v-bind:expanded="false"
+                v-bind:empty-text="emptyText"
+                v-on:load="handleLoadDirectory"
+                ></file-browser>
+
+            <textarea class="hidden" name="files" required v-model="filenames"></textarea>
+        </div>
 
          <fieldset>
              <legend>

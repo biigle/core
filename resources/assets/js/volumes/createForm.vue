@@ -1,6 +1,7 @@
 <script>
 import BrowserApi from './api/browser';
 import Dropdown from 'uiv/dist/Dropdown';
+import FileBrowser from '../core/components/fileBrowser';
 import LoaderMixin from '../core/mixins/loader';
 import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
 import {handleErrorResponse} from '../core/messages/store';
@@ -12,6 +13,7 @@ const MEDIA_TYPE = {
 
 const FILE_SOURCE = {
     REMOTE: 'remote',
+    DISK: 'disk',
 };
 
 /**
@@ -21,27 +23,27 @@ export default {
     mixins: [LoaderMixin],
     components: {
         dropdown: Dropdown,
+        fileBrowser: FileBrowser,
     },
     data() {
         return {
+            imageDiskCache: {},
+            videoDiskCache: {},
             disks: [],
-            name: '',
-            url: null,
-            mediaType: '',
-            handle: '',
             filenames: null,
             filenamesReadFromMetadata: false,
-            browsing: false,
-            storageDisk: null,
-            breadCrumbs: [],
-            currentDirectories: [],
-            loadingBrowser: false,
-            directoryCache: {},
-            fileCache: {},
-            metadataText: '',
-            loadingImport: false,
-            hadMetadataText: false,
             fileSource: FILE_SOURCE.REMOTE,
+            hadMetadataText: false,
+            handle: '',
+            initializingBrowser: false,
+            loadingBrowser: false,
+            loadingImport: false,
+            mediaType: '',
+            metadataText: '',
+            name: '',
+            selectedDiskRoot: null,
+            storageDisk: null,
+            url: '',
         };
     },
     computed: {
@@ -50,24 +52,6 @@ export default {
         },
         hasDirectories() {
             return this.currentDirectories.length > 0;
-        },
-        buttonClass() {
-            return {
-                'btn-info': this.browsing,
-            };
-        },
-        canGoBack() {
-            return this.breadCrumbs.length > 0 || this.disks.length > 1;
-        },
-        hasCurrentDirectory() {
-            return this.breadCrumbs.length > 0;
-        },
-        currentDirectory() {
-            if (this.hasCurrentDirectory) {
-                return this.breadCrumbs[this.breadCrumbs.length - 1];
-            }
-
-            return null;
         },
         isImageMediaType() {
             return this.mediaType === MEDIA_TYPE.IMAGE;
@@ -87,72 +71,72 @@ export default {
         isRemoteFileSource() {
             return this.fileSource === FILE_SOURCE.REMOTE;
         },
+        isDiskFileSource() {
+            return this.fileSource === FILE_SOURCE.DISK;
+        },
+        showFileBrowser() {
+            return this.isDiskFileSource && this.selectedDiskRoot !== null;
+        },
+        emptyText() {
+            if (this.isVideoMediaType) {
+                return 'no videos';
+            }
+
+            return 'no images';
+        },
     },
     methods: {
-        toggleBrowse() {
-            this.browsing = !this.browsing;
-        },
         fetchDirectories(disk, path) {
-            let key = disk + '://' + path;
-            if (!this.directoryCache.hasOwnProperty(key)) {
-                this.loadingBrowser = true;
-
-                let promise = BrowserApi.get({disk: disk, path: path});
-                promise.finally(() => this.loadingBrowser = false);
-                this.directoryCache[key] = promise;
-            }
-
-            return this.directoryCache[key];
-        },
-        showDirectories(response) {
-            this.currentDirectories = response.body;
-        },
-        openDirectory(directory) {
-            this.breadCrumbs.push(directory);
-        },
-        goBack() {
-            if (this.breadCrumbs.length > 0) {
-                this.breadCrumbs.pop();
-            } else if (this.disks.length > 1) {
-                this.storageDisk = null;
-            }
-        },
-        goTo(i) {
-            if (i >= -1 && i < this.breadCrumbs.length) {
-                this.breadCrumbs = this.breadCrumbs.slice(0, i + 1);
-            }
+            return BrowserApi.get({disk: disk, path: path});
         },
         fetchFiles(disk, path) {
-            let key = disk + '://' + path;
-            if (!this.fileCache.hasOwnProperty(key)) {
-                this.loadingBrowser = true;
-
-                // TODO get videos if the volume media type is video
-                let promise = BrowserApi.getImages({disk: disk, path: path});
-                promise.finally(() => this.loadingBrowser = false);
-                this.fileCache[key] = promise;
+            if (this.isVideoMediaType) {
+                return BrowserApi.getVideos({disk: disk, path: path});
             }
 
-            return this.fileCache[key];
+            return BrowserApi.getImages({disk: disk, path: path});
+        },
+        parseBrowserResponses(responses) {
+            let [dirResponse, fileResponse] = responses;
+            let directories = {};
+            dirResponse.body.forEach(function (path) {
+                directories[path] = {
+                    name: path,
+                    directories: {},
+                    files: [],
+                    loaded: false,
+                    loading: false,
+                };
+            });
+
+            let files = fileResponse.body.map(function (name) {
+                return {name: name};
+            });
+
+            return [directories, files];
+        },
+        fetchDirectoryContent(disk, path) {
+            return Vue.Promise.all([
+                    this.fetchDirectories(disk, path),
+                    this.fetchFiles(disk, path),
+                ])
+                .then(this.parseBrowserResponses);
         },
         setFiles(response) {
             this.filenames = response.body.join(', ');
         },
-        selectDirectory(directory) {
-            let crumbs = this.breadCrumbs.slice();
-            if (directory) {
-                crumbs.push(directory);
-            }
-            this.fetchFiles(this.storageDisk, crumbs.join('/'))
-                .then(this.setFiles)
-                .then(() => this.url = this.storageDisk + '://' + crumbs.join('/'))
-                .catch(handleErrorResponse);
+        resetFileSource() {
+            this.fileSource = FILE_SOURCE.REMOTE;
+            this.storageDisk = null;
+            this.selectedDiskRoot = null;
         },
         selectImageMediaType() {
             this.mediaType = MEDIA_TYPE.IMAGE;
+            this.resetFileSource();
         },
         selectVideoMediaType() {
             this.mediaType = MEDIA_TYPE.VIDEO;
+            this.resetFileSource();
         },
         setCsvMetadata(event) {
             this.hasMetadataCsv = true;
@@ -227,22 +211,61 @@ export default {
             this.$refs.metadataIfdoField.value = '';
         },
         selectRemoteFileSource() {
-            this.fileSource = FILE_SOURCE.REMOTE;
+            this.resetFileSource();
+            this.url = '';
+            this.filenames = '';
+        },
+        selectStorageDisk(disk) {
+            if (this.disks.includes(disk)) {
+                this.storageDisk = disk;
+                this.url = '';
+                this.filenames = '';
+                this.fileSource = FILE_SOURCE.DISK;
+            }
+        },
+        showStorageDiskRoot(disk) {
+            let cache = this.isVideoMediaType ? this.videoDiskCache : this.imageDiskCache;
+
+            if (!cache.hasOwnProperty(disk)) {
+                cache[disk] = this.fetchDirectoryContent(disk, '')
+                    .then(this.setStorageDiskRoot, handleErrorResponse);
+            }
+
+            return cache[disk];
+        },
+        setStorageDiskRoot(args) {
+            let [dirs, files] = args;
+
+            return {
+                name: '',
+                directories: dirs,
+                files: files,
+                loaded: true,
+            };
+        },
+        handleLoadDirectory(directory, path) {
+            directory.loading = true;
+            // Remove leading slash.
+            path = path.slice(1);
+
+            this.fetchDirectoryContent(this.storageDisk, path)
+                    .then(function (args) {
+                        let [dirs, files] = args;
+                        directory.directories = dirs;
+                        directory.files = files;
+                        directory.loaded = true;
+                    }, handleErrorResponse)
+                    .finally(() => directory.loading = false);
         },
     },
     watch: {
         storageDisk(disk) {
             if (disk) {
-                this.fetchDirectories(disk, '').then(this.showDirectories, handleErrorResponse);
+                this.initializingBrowser = true;
+                this.showStorageDiskRoot(disk)
+                    .then(root => this.selectedDiskRoot = root)
+                    .finally(() => this.initializingBrowser = false);
             }
-        },
-        breadCrumbs(crumbs) {
-            this.fetchDirectories(this.storageDisk, crumbs.join('/'))
-                .then(this.showDirectories)
-                .catch(function (response) {
-                    crumbs.pop();
-                    handleErrorResponse(response);
-                });
         },
         hasMetadata(hasMetadata) {
             if (hasMetadata) {
@@ -259,10 +282,6 @@ export default {
         this.hadMetadataText = biigle.$require('volumes.hadMetadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
-
-        if (this.disks.length === 1) {
-            this.storageDisk = this.disks[0];
-        }
     },
     mounted() {
         // Vue disables the autofocus attribute somehow, so set focus manually here.
