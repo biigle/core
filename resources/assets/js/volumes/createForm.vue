@@ -5,6 +5,15 @@ import LoaderMixin from '../core/mixins/loader';
 import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
 import {handleErrorResponse} from '../core/messages/store';
 
+const MEDIA_TYPE = {
+    IMAGE: 'image',
+    VIDEO: 'video',
+};
+
+const FILE_SOURCE = {
+    REMOTE: 'remote',
+};
+
 /**
  * View model for the create volume form.
  */
@@ -32,6 +41,7 @@ export default {
             metadataText: '',
             loadingImport: false,
             hadMetadataText: false,
+            fileSource: FILE_SOURCE.REMOTE,
         };
     },
     computed: {
@@ -60,10 +70,10 @@ export default {
             return null;
         },
         isImageMediaType() {
-            return this.mediaType === 'image';
+            return this.mediaType === MEDIA_TYPE.IMAGE;
         },
         isVideoMediaType() {
-            return this.mediaType === 'video';
+            return this.mediaType === MEDIA_TYPE.VIDEO;
         },
         isRemoteImageVolume() {
             return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
@@ -73,6 +83,9 @@ export default {
         },
         showImportAgainMessage() {
             return this.hadMetadataText && !this.hasMetadata;
+        },
+        isRemoteFileSource() {
+            return this.fileSource === FILE_SOURCE.REMOTE;
         },
     },
     methods: {
@@ -136,10 +149,10 @@ export default {
                 .catch(handleErrorResponse);
         },
         selectImageMediaType() {
-            this.mediaType = 'image';
+            this.mediaType = MEDIA_TYPE.IMAGE;
         },
         selectVideoMediaType() {
-            this.mediaType = 'video';
+            this.mediaType = MEDIA_TYPE.VIDEO;
         },
         setCsvMetadata(event) {
             this.hasMetadataCsv = true;
@@ -212,6 +225,9 @@ export default {
         clearMetadata() {
             this.metadataText = '';
             this.$refs.metadataIfdoField.value = '';
+        },
+        selectRemoteFileSource() {
+            this.fileSource = FILE_SOURCE.REMOTE;
         },
     },
     watch: {
