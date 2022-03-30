@@ -292,14 +292,14 @@ export default {
             this.url = `${this.storageDisk}:/${path}`;
             this.filenames = files.map(file => file.name).join(', ');
         },
-        unselectDirectory(directory, path) {
+        unselectDirectory(directory) {
             this.unselectAllDirectories(directory);
             this.url = '';
             this.filenames = '';
         },
     },
     watch: {
-        storageDisk(disk, oldDisk) {
+        storageDisk(disk) {
             if (disk) {
                 this.initializingBrowser = true;
                 this.showStorageDiskRoot(disk)
