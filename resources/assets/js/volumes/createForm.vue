@@ -150,7 +150,7 @@ export default {
             let file = event.target.files[0];
             this.readCsvMetadataText(file).then((text) => {
                 this.metadataText = text;
-                if (!this.filenames) {
+                if (!this.filenames && this.isRemoteFileSource) {
                     this.filenames = this.parseMetadataTextFilenames(text);
                     this.filenamesReadFromMetadata = true;
                 }
@@ -194,13 +194,13 @@ export default {
             if (!this.name) {
                 this.name = ifdo.name;
             }
-            if (!this.url) {
+            if (!this.url && this.isRemoteFileSource) {
                 this.url = ifdo.url;
             }
             if (!this.handle) {
                 this.handle = ifdo.handle;
             }
-            if (!this.filenames) {
+            if (!this.filenames && this.isRemoteFileSource) {
                 this.filenames = this.parseMetadataFilenames(ifdo.files);
                 this.filenamesReadFromMetadata = true;
             }

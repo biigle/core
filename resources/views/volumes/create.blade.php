@@ -166,6 +166,9 @@
 
                  <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
                     <label for="files">Volume files</label>
+                    <p v-cloak v-if="filenamesReadFromMetadata" class="text-info">
+                        The filenames have been extracted from the provided metadata file.
+                    </p>
                     <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
                         <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
@@ -190,11 +193,6 @@
             </div>
         @endunless
 
-        <div v-cloak v-if="filenamesReadFromMetadata" class="panel panel-info">
-            <div class="panel-body text-info">
-                The filenames have been extracted from the provided metadata file.
-            </div>
-        </div>
 
         <div v-if="showFileBrowser" v-cloak>
             <p class="help-block">
