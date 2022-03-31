@@ -42,7 +42,7 @@ class VolumeController extends Controller
 
         return view('volumes.create', [
             'project' => $project,
-            'disks' => collect($disks),
+            'disks' => collect($disks)->values(),
             'hasDisks' => !empty($disks),
             'mediaType' => $mediaType,
             'filenames' => $filenames,
