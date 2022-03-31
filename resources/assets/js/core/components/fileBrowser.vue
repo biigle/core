@@ -6,12 +6,15 @@
                 :root="true"
                 :removable="editable"
                 :selectable="selectable"
+                :files-selectable="filesSelectable"
                 :download-url="downloadUrl"
                 :expanded="expanded"
                 :emptyText="emptyText"
                 :expand-on-select="expandOnSelect"
                 @select="emitSelect"
+                @select-file="emitSelectFile"
                 @unselect="emitUnselect"
+                @unselect-file="emitUnselectFile"
                 @remove-directory="emitRemoveDirectory"
                 @remove-file="emitRemoveFile"
                 @load="emitLoad"
@@ -37,6 +40,10 @@ export default {
             default: false,
         },
         selectable: {
+            type: Boolean,
+            default: false,
+        },
+        filesSelectable: {
             type: Boolean,
             default: false,
         },
@@ -73,6 +80,12 @@ export default {
         },
         emitUnselect(directory, path) {
             this.$emit('unselect', directory, path);
+        },
+        emitSelectFile(file, directory, path, event) {
+            this.$emit('select-file', file, directory, path, event);
+        },
+        emitUnselectFile(file, directory, path, event) {
+            this.$emit('unselect-file', file, directory, path, event);
         },
         emitRemoveDirectory(directory, path) {
             this.$emit('remove-directory', directory, path);

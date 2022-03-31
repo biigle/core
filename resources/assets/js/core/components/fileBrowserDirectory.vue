@@ -47,12 +47,15 @@
                     :directory="dir"
                     :removable="removable"
                     :selectable="selectable"
+                    :files-selectable="filesSelectable"
                     :download-url="downloadUrl"
                     :expanded="expanded"
                     :empty-text="emptyText"
                     :expand-on-select="expandOnSelect"
                     @select="emitSelect"
+                    @select-file="emitSelectFile"
                     @unselect="emitUnselect"
+                    @unselect-file="emitUnselectFile"
                     @remove-directory="emitRemoveDirectory"
                     @remove-file="emitRemoveFile"
                     @load="emitLoad"
@@ -66,7 +69,10 @@
                 :download-url="downloadUrl"
                 :dirname="fullPath"
                 :removable="removable"
+                :selectable="filesSelectable"
                 @remove="handleRemoveFile"
+                @select="handleSelectFile"
+                @unselect="handleUnselectFile"
                 >
             </file-browser-file>
             <li
@@ -108,6 +114,10 @@ export default {
             default: false,
         },
         selectable: {
+            type: Boolean,
+            default: false,
+        },
+        filesSelectable: {
             type: Boolean,
             default: false,
         },
@@ -212,6 +222,18 @@ export default {
             }
 
             this.collapsedInternal = false;
+        },
+        emitSelectFile(file, directory, path, event) {
+            this.$emit('select-file', file, directory, path, event);
+        },
+        handleSelectFile(file, event) {
+            this.emitSelectFile(file, this.directory, this.fullPath, event)
+        },
+        emitUnselectFile(file, directory, path, event) {
+            this.$emit('unselect-file', file, directory, path, event);
+        },
+        handleUnselectFile(file, event) {
+            this.emitUnselectFile(file, this.directory, this.fullPath, event)
         },
     },
     watch: {

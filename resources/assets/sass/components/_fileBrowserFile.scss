@@ -23,6 +23,10 @@
         font-weight: bold;
     }
 
+    &.selectable:hover {
+        cursor: pointer;
+    }
+
     a {
         color: $text-color;
     }

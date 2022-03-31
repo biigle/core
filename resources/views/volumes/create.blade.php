@@ -75,7 +75,7 @@
                 2. Choose a name
             </legend>
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
+                <input type="text" class="form-control" name="name" id="name" v-model="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
                 @if($errors->has('name'))
                    <span class="help-block">{{ $errors->first('name') }}</span>
                 @endif
@@ -169,6 +169,9 @@
                     <p v-cloak v-if="filenamesReadFromMetadata" class="text-info">
                         The filenames have been extracted from the provided metadata file.
                     </p>
+                    <p v-cloak v-if="fileCount > 1" class="text-info">
+                        <span v-text="fileCount"></span> files.
+                    </p>
                     <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
                         <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
@@ -198,14 +201,21 @@
                 Select adirectory below. All files in the directory will be used for the new volume.
             </p>
 
+            <p v-cloak v-if="fileCount > 1" class="text-info">
+                <span v-text="fileCount"></span> files.
+            </p>
+
             <file-browser
                 v-bind:root-directory="selectedDiskRoot"
                 v-bind:expanded="false"
                 v-bind:empty-text="emptyText"
                 v-bind:selectable="true"
+                v-bind:files-selectable="true"
                 v-bind:expand-on-select="true"
                 v-on:select="selectDirectory"
+                v-on:select-file="selectFile"
                 v-on:unselect="unselectDirectory"
+                v-on:unselect-file="unselectFile"
                 v-on:load="handleLoadDirectory"
                 ></file-browser>
 

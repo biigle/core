@@ -27,14 +27,13 @@ export default {
     },
     data() {
         return {
-            imageDiskCache: {},
-            videoDiskCache: {},
             disks: [],
             filenames: '',
             filenamesReadFromMetadata: false,
             fileSource: FILE_SOURCE.REMOTE,
             hadMetadataText: false,
             handle: '',
+            imageDiskCache: {},
             initializingBrowser: false,
             loadingBrowser: false,
             loadingImport: false,
@@ -44,6 +43,7 @@ export default {
             selectedDiskRoot: null,
             storageDisk: null,
             url: '',
+            videoDiskCache: {},
         };
     },
     computed: {
@@ -86,6 +86,9 @@ export default {
         },
         cannotSubmit() {
             return this.name === '' || this.url === '' || this.filenames === '' || this.loading;
+        },
+        fileCount() {
+            return this.filenames.split(',').filter(f => f).length;
         },
     },
     methods: {
@@ -133,9 +136,7 @@ export default {
             this.filenames = response.body.join(', ');
         },
         resetFileSource() {
-            this.fileSource = FILE_SOURCE.REMOTE;
-            this.storageDisk = null;
-            this.selectedDiskRoot = null;
+            this.selectRemoteFileSource();
         },
         selectImageMediaType() {
             this.mediaType = MEDIA_TYPE.IMAGE;
@@ -219,7 +220,9 @@ export default {
         },
         selectRemoteFileSource() {
             if (!this.isRemoteFileSource) {
-                this.resetFileSource();
+                this.fileSource = FILE_SOURCE.REMOTE;
+                this.storageDisk = null;
+                this.selectedDiskRoot = null;
                 this.url = '';
                 this.filenames = '';
             }
@@ -335,6 +338,36 @@ export default {
                 .then(() => this.recurseLoadDirectories(path))
                 .then((dir) => this.selectDirectory(dir, path))
                 .finally(() => this.initializingBrowser = false);
+        },
+        selectFile(file, directory, path, event) {
+            let selectedFiles = directory.files.filter(f => f.selected);
+            if (event.ctrlKey && selectedFiles.length > 0) {
+                selectedFiles.push(file)
+                if (selectedFiles.length === directory.files.length) {
+                    this.selectDirectory(directory, path);
+                } else {
+                    file.selected = true;
+                    this.setUrlAndFilenames(path, selectedFiles);
+                }
+            } else {
+                this.unselectAllDirectories(this.selectedDiskRoot);
+                file.selected = true;
+                this.setUrlAndFilenames(path, [file]);
+            }
+        },
+        unselectFile(file, directory, path, event) {
+            if (event.ctrlKey) {
+                file.selected = false;
+                let selectedFiles = directory.files.filter(f => f.selected);
+                if (selectedFiles.length > 0) {
+                    directory.selected = false;
+                    this.setUrlAndFilenames(path, selectedFiles);
+                } else {
+                    this.unselectDirectory(directory);
+                }
+            } else {
+                this.selectFile(file, directory, path, event);
+            }
         },
     },
     watch: {

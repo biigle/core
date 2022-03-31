@@ -2,6 +2,7 @@
 <li
     class="file-browser-file clearfix"
     :class="classObject"
+    @click="handleClick($event)"
     >
     <a
         v-if="downloadUrl"
@@ -44,6 +45,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        selectable: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         fullDownloadUrl() {
@@ -55,12 +60,24 @@ export default {
         classObject() {
             return {
                 selected: this.file.selected,
+                selectable: this.selectable,
             };
         },
     },
     methods: {
         emitRemove() {
             this.$emit('remove', this.file);
+        },
+        handleClick(event) {
+            if (!this.selectable) {
+                return;
+            }
+
+            if (this.file.selected) {
+                this.$emit('unselect', this.file, event);
+            } else {
+                this.$emit('select', this.file, event);
+            }
         },
     },
 };
