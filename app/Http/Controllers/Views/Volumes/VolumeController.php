@@ -38,6 +38,7 @@ class VolumeController extends Controller
 
         $mediaType = old('media_type', 'image');
         $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
+        $offlineMode = config('biigle.offline_mode');
 
         return view('volumes.create', [
             'project' => $project,
@@ -45,6 +46,7 @@ class VolumeController extends Controller
             'hasDisks' => !empty($disks),
             'mediaType' => $mediaType,
             'filenames' => $filenames,
+            'offlineMode' => $offlineMode,
         ]);
     }
 

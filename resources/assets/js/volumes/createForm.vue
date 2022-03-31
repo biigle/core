@@ -30,7 +30,7 @@ export default {
             imageDiskCache: {},
             videoDiskCache: {},
             disks: [],
-            filenames: null,
+            filenames: '',
             filenamesReadFromMetadata: false,
             fileSource: FILE_SOURCE.REMOTE,
             hadMetadataText: false,
@@ -38,7 +38,7 @@ export default {
             initializingBrowser: false,
             loadingBrowser: false,
             loadingImport: false,
-            mediaType: '',
+            mediaType: MEDIA_TYPE.IMAGE,
             metadataText: '',
             name: '',
             selectedDiskRoot: null,
@@ -83,6 +83,9 @@ export default {
             }
 
             return 'no images';
+        },
+        cannotSubmit() {
+            return this.name === '' || this.url === '' || this.filenames === '' || this.loading;
         },
     },
     methods: {
@@ -215,12 +218,14 @@ export default {
             this.$refs.metadataIfdoField.value = '';
         },
         selectRemoteFileSource() {
-            this.resetFileSource();
-            this.url = '';
-            this.filenames = '';
+            if (!this.isRemoteFileSource) {
+                this.resetFileSource();
+                this.url = '';
+                this.filenames = '';
+            }
         },
         selectStorageDisk(disk) {
-            if (this.disks.includes(disk)) {
+            if (this.storageDisk !== disk && this.disks.includes(disk)) {
                 this.storageDisk = disk;
                 this.url = '';
                 this.filenames = '';
