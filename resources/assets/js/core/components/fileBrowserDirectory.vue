@@ -68,6 +68,13 @@
                 @remove="handleRemoveFile"
                 >
             </file-browser-file>
+            <li
+                v-if="!hasItems"
+                class="file-browser-file text-muted"
+                title="This directory is empty"
+                >
+                    ({{emptyText}})
+            </li>
         </ul>
     </div>
 </template>
