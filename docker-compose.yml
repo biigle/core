@@ -5,6 +5,8 @@ services:
   app:
     image: ghcr.io/biigle/app
     user: ${USER_ID}:${GROUP_ID}
+    depends_on:
+      - database
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
