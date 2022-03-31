@@ -16,6 +16,8 @@ const FILE_SOURCE = {
     DISK: 'disk',
 };
 
+const numberFormatter = new Intl.NumberFormat();
+
 /**
  * View model for the create volume form.
  */
@@ -89,6 +91,9 @@ export default {
         },
         fileCount() {
             return this.filenames.split(',').filter(f => f).length;
+        },
+        fileCountText() {
+            return numberFormatter.format(this.fileCount);
         },
     },
     methods: {

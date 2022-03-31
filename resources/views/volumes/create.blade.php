@@ -105,8 +105,11 @@
         </div>
 
         <fieldset>
-            <legend>
+            <legend class="clearfix">
                 3. Choose a file source
+                <span class="text-muted pull-right">
+                    <span v-text="fileCountText">0</span> files
+                </span>
             </legend>
              <div class="form-group">
                 <div class="btn-group btn-group-justified">
@@ -169,9 +172,6 @@
                     <p v-cloak v-if="filenamesReadFromMetadata" class="text-info">
                         The filenames have been extracted from the provided metadata file.
                     </p>
-                    <p v-cloak v-if="fileCount > 1" class="text-info">
-                        <span v-text="fileCount"></span> files.
-                    </p>
                     <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
                         <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
@@ -199,10 +199,6 @@
         <div v-if="showFileBrowser" v-cloak>
             <p class="help-block">
                 Select adirectory below. All files in the directory will be used for the new volume.
-            </p>
-
-            <p v-cloak v-if="fileCount > 1" class="text-info">
-                <span v-text="fileCount"></span> files.
             </p>
 
             <file-browser
