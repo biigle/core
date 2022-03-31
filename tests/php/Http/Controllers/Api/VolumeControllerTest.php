@@ -130,20 +130,36 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdateUrl()
     {
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('volumes');
-        Storage::disk('test')->put('volumes/file.txt', 'abc');
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        config(['volumes.editor_storage_disks' => ['editor-test']]);
+
+        $disk = Storage::fake('admin-test');
+        $disk->put('volumes/file.txt', 'abc');
+
+        $disk = Storage::fake('editor-test');
+        $disk->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
         $this->expectsJobs(ProcessNewVolumeFiles::class);
-        $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-            'url' => 'test://volumes',
-        ]);
-        $response->assertStatus(200);
-        $this->assertEquals('test://volumes', $this->volume()->fresh()->url);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'admin-test://volumes',
+            ])->assertStatus(422);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'editor-test://volumes',
+            ])->assertStatus(200);
+        $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
+
+        $this->beGlobalAdmin();
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'editor-test://volumes',
+            ])->assertStatus(422);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'admin-test://volumes',
+            ])->assertStatus(200);
+        $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
     }
 
-    public function testUpdateUrlProviderBlacklist()
+    public function testUpdateUrlProviderDenylist()
     {
         $this->beAdmin();
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
