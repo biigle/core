@@ -56,6 +56,7 @@
                     @remove-directory="emitRemoveDirectory"
                     @remove-file="emitRemoveFile"
                     @load="emitLoad"
+                    @uncollapse="handleUncollapse"
                     ></file-browser-directory>
             </li>
             <file-browser-file
@@ -222,6 +223,11 @@ export default {
         selected(selected) {
             if (selected && this.expandOnSelect) {
                 this.collapsedInternal = false;
+            }
+        },
+        collapsed(collapsed) {
+            if (!collapsed) {
+                this.$emit('uncollapse');
             }
         },
     },

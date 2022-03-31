@@ -302,6 +302,40 @@ export default {
             this.url = '';
             this.filenames = '';
         },
+        recurseLoadDirectories(path) {
+            let breadcrumbs = path.split('/');
+            let currentDir = breadcrumbs.pop();
+            let promise;
+
+            if (breadcrumbs.length > 1) {
+                promise = this.recurseLoadDirectories(breadcrumbs.join('/'));
+            } else {
+                promise = Vue.Promise.resolve(this.selectedDiskRoot);
+            }
+
+            return promise.then((directory) => {
+                if (!directory.directories.hasOwnProperty(currentDir)) {
+                    throw `Directory '${currentDir}' not found`;
+                }
+
+                return this.handleLoadDirectory(
+                    directory.directories[currentDir], path
+                );
+            });
+        },
+        initializeSelectedStorageDiskAfterError(disk, path) {
+            this.storageDisk = disk;
+            this.fileSource = FILE_SOURCE.DISK;
+            // A leading slash is expected in the subsequent functions.
+            path = '/' + path;
+
+            this.initializingBrowser = true;
+            this.showStorageDiskRoot(disk)
+                .then(root => this.selectedDiskRoot = root)
+                .then(() => this.recurseLoadDirectories(path))
+                .then((dir) => this.selectDirectory(dir, path))
+                .finally(() => this.initializingBrowser = false);
+        },
     },
     watch: {
         storageDisk(disk) {
@@ -332,6 +366,11 @@ export default {
         this.hadMetadataText = biigle.$require('volumes.hadMetadataText');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
+
+        let [disk, path] = this.url.split('://');
+        if (this.disks.includes(disk)) {
+            this.initializeSelectedStorageDiskAfterError(disk, path);
+        }
     },
     mounted() {
         // Vue disables the autofocus attribute somehow, so set focus manually here.

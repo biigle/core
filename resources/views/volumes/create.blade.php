@@ -193,11 +193,11 @@
             </div>
         @endunless
 
-
         <div v-if="showFileBrowser" v-cloak>
             <p class="help-block">
                 Select adirectory below. All files in the directory will be used for the new volume.
             </p>
+
             <file-browser
                 v-bind:root-directory="selectedDiskRoot"
                 v-bind:expanded="false"
@@ -211,6 +211,17 @@
 
             <input type="hidden" name="url" required v-model="url">
             <input type="hidden" name="files" required v-model="filenames">
+
+            @if ($errors->has('url'))
+                <div class="form-group has-error">
+                    <span class="help-block">{{ $errors->first('url') }}</span>
+                 </div>
+            @endif
+            @if ($errors->has('files'))
+                <div class="form-group has-error">
+                    <span class="help-block">{{ $errors->first('files') }}</span>
+                 </div>
+            @endif
         </div>
 
          <fieldset>
