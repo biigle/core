@@ -14,10 +14,7 @@ class BrowserControllerTest extends ApiTestCase
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('test_1');
         Storage::fake('local');
-        config([
-            'volumes.browser' => false,
-            'volumes.browser_disks' => ['test', 'missing'],
-        ]);
+        config(['volumes.editor_storage_disks' => ['test']]);
     }
 
     public function testIndexDirectoriesRoot()
@@ -26,21 +23,16 @@ class BrowserControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', '/api/v1/volumes/browser/directories/test');
 
-        $this->beUser();
+        $this->beGlobalGuest();
         $this->get('/api/v1/volumes/browser/directories/test')->assertStatus(404);
-        config(['volumes.browser' => true]);
 
-
+        $this->beUser();
         $this->get('/api/v1/volumes/browser/directories/local')->assertStatus(404);
         $this->get('/api/v1/volumes/browser/directories/missing')->assertStatus(404);
 
         $this->get('/api/v1/volumes/browser/directories/test')
             ->assertStatus(200)
             ->assertExactJson(['test_1', 'test_2']);
-
-        $this->beGlobalGuest();
-        $this->get('/api/v1/volumes/browser/directories/test')
-            ->assertStatus(403);
     }
 
     public function testIndexDirectories()
@@ -51,11 +43,11 @@ class BrowserControllerTest extends ApiTestCase
             'path' => 'test_1',
         ]);
 
-        $this->beUser();
+        $this->beGlobalGuest();
         $this->get('/api/v1/volumes/browser/directories/test?path=test_1')
             ->assertStatus(404);
-        config(['volumes.browser' => true]);
 
+        $this->beUser();
         $this->get('/api/v1/volumes/browser/directories/local?path=test_1')
             ->assertStatus(404);
         $this->get('/api/v1/volumes/browser/directories/missing?path=test_1')
@@ -65,9 +57,9 @@ class BrowserControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertExactJson(['test_11']);
 
-        $this->beGlobalGuest();
-        $this->get('/api/v1/volumes/browser/directories/test?path=test_1')
-            ->assertStatus(403);
+        $this->get('/api/v1/volumes/browser/directories/test?path=test_2')
+            ->assertStatus(200)
+            ->assertExactJson([]);
     }
 
     public function testIndexImages()
@@ -81,11 +73,11 @@ class BrowserControllerTest extends ApiTestCase
             'path' => 'test_1',
         ]);
 
-        $this->beUser();
+        $this->beGlobalGuest();
         $this->get('/api/v1/volumes/browser/images/test?path=test_1')
             ->assertStatus(404);
-        config(['volumes.browser' => true]);
 
+        $this->beUser();
         $this->get('/api/v1/volumes/browser/images/local?path=test_1')
             ->assertStatus(404);
         $this->get('/api/v1/volumes/browser/images/missing?path=test_1')
@@ -94,10 +86,6 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/images/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test1.jpg', 'test2.jpg']);
-
-        $this->beGlobalGuest();
-        $this->get('/api/v1/volumes/browser/images/test?path=test_1')
-            ->assertStatus(403);
     }
 
     public function testIndexVideos()
@@ -111,11 +99,11 @@ class BrowserControllerTest extends ApiTestCase
             'path' => 'test_1',
         ]);
 
-        $this->beUser();
+        $this->beGlobalGuest();
         $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
             ->assertStatus(404);
-        config(['volumes.browser' => true]);
 
+        $this->beUser();
         $this->get('/api/v1/volumes/browser/videos/local?path=test_1')
             ->assertStatus(404);
         $this->get('/api/v1/volumes/browser/videos/missing?path=test_1')
@@ -124,9 +112,5 @@ class BrowserControllerTest extends ApiTestCase
         $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
             ->assertStatus(200)
             ->assertExactJson(['test1.mp4', 'test2.mp4']);
-
-        $this->beGlobalGuest();
-        $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
-            ->assertStatus(403);
     }
 }
