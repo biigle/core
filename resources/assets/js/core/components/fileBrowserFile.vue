@@ -7,17 +7,17 @@
     <a
         v-if="downloadUrl"
         :href="fullDownloadUrl"
-        title="View file"
+        :title="viewTitle"
         >
         <i class="fa fa-file"></i> {{file.name}}
     </a>
-    <span v-else>
+    <span v-else :title="file.name">
         <i class="fa fa-file"></i> {{file.name}}
     </span>
 
     <button
         v-if="removable"
-        class="btn btn-default btn-xs pull-right"
+        class="btn btn-default btn-xs remove-button"
         title="Remove the file"
         @click.stop="emitRemove"
         >
@@ -62,6 +62,9 @@ export default {
                 selected: this.file.selected,
                 selectable: this.selectable,
             };
+        },
+        viewTitle() {
+            return `View file ${this.file.name}`;
         },
     },
     methods: {
