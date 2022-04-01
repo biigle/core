@@ -29,7 +29,7 @@
 
             <button
                 v-if="removable"
-                class="btn btn-default btn-xs pull-right"
+                class="btn btn-default btn-xs remove-button"
                 title="Remove the directory"
                 @click.stop="handleRemoveDirectory"
                 >
