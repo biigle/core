@@ -125,11 +125,18 @@
                             <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="{active: isRemoteFileSource}" ><i class="fa fa-link"></i> Remote location</button>
                         </div>
                     @endunless
+                    @if ($userDisk)
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" title="Choose files from your uploads" v-on:click="selectStorageDisk('{{$userDisk}}')" v-bind:class="{active: isUserDiskFileSource}">
+                                <i class="fa fa-upload"></i> Uploaded files
+                            </button>
+                        </div>
+                    @endif
                     @if ($disks->count() > 1)
                         <div class="btn-group">
                             <dropdown tag="span">
                                 <button class="btn btn-default dropdown-toggle" v-bind:class="{active: isDiskFileSource}" type="button" title="Select a storage disk">
-                                    <i class="fa fa-database"></i> Storage disk <span class="caret"></span> <loader v-if="initializingBrowser" v-cloak v-bind:active="true"></loader>
+                                    <i class="fa fa-database"></i> Storage disk <span class="caret"></span>
                                 </button>
                                 <template slot="dropdown">
                                     @foreach ($disks as $disk)
@@ -143,7 +150,7 @@
                     @elseif ($disks->count() === 1)
                         <div class="btn-group">
                             <button type="button" class="btn btn-default" title="Choose files from the '{{$disks[0]}}' storage disk" v-on:click="selectStorageDisk('{{$disks[0]}}')" v-bind:class="{active: isDiskFileSource}">
-                                <i class="fa fa-database"></i> Storage disk <loader v-if="initializingBrowser" v-cloak v-bind:active="true"></loader>
+                                <i class="fa fa-database"></i> Storage disk
                             </button>
                         </div>
                     @endif
@@ -197,11 +204,24 @@
         @endunless
 
         <div v-if="showFileBrowser" v-cloak>
-            <p class="help-block">
-                Select adirectory below. All files in the directory will be used for the new volume.
+
+            <p v-if="initializingBrowser">
+                <loader v-bind:active="true"></loader> loading available files...
+            </p>
+            <p v-else class="help-block">
+                <span v-if="storageDiskEmpty" class="text-warning">
+                    No files found.
+                    @if (Route::has('create-storage-requests'))
+                        <a href="{{route('create-storage-requests')}}">Upload new files.</a>
+                    @endif
+                </span>
+                <span v-else>
+                    Select a directory or files below. All selected files will be used for the new volume.
+                </span>
             </p>
 
             <file-browser
+                v-if="selectedDiskRoot"
                 v-bind:root-directory="selectedDiskRoot"
                 v-bind:expanded="false"
                 v-bind:empty-text="emptyText"
@@ -214,6 +234,7 @@
                 v-on:unselect-file="unselectFile"
                 v-on:load="handleLoadDirectory"
                 ></file-browser>
+
 
             <input type="hidden" name="url" required v-model="url">
             <input type="hidden" name="files" required v-model="filenames">

@@ -30,7 +30,7 @@
 export default {
     props: {
         file: {
-            type: Object,
+            type: [Object, File],
             required: true,
         },
         downloadUrl: {
