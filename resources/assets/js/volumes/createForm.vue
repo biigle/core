@@ -14,6 +14,7 @@ const MEDIA_TYPE = {
 const FILE_SOURCE = {
     REMOTE: 'remote',
     DISK: 'disk',
+    USER_DISK: 'user-disk',
 };
 
 const numberFormatter = new Intl.NumberFormat();
@@ -76,8 +77,20 @@ export default {
         isDiskFileSource() {
             return this.fileSource === FILE_SOURCE.DISK;
         },
+        isUserDiskFileSource() {
+            return this.fileSource === FILE_SOURCE.USER_DISK;
+        },
         showFileBrowser() {
-            return this.isDiskFileSource && this.selectedDiskRoot !== null;
+            return this.isDiskFileSource || this.isUserDiskFileSource;
+        },
+        storageDiskEmpty() {
+            if (this.initializingBrowser) {
+                return false;
+            }
+
+            let root = this.selectedDiskRoot;
+
+            return !root || (root.files.length === 0 && Object.keys(root.directories).length === 0);
         },
         emptyText() {
             if (this.isVideoMediaType) {
@@ -233,11 +246,19 @@ export default {
             }
         },
         selectStorageDisk(disk) {
-            if (this.storageDisk !== disk && this.disks.includes(disk)) {
+            if (this.storageDisk !== disk) {
+                if (this.disks.includes(disk)) {
+                    this.fileSource = FILE_SOURCE.DISK;
+                } else if (disk.startsWith('user-')) {
+                    this.fileSource = FILE_SOURCE.USER_DISK;
+                } else {
+                    return;
+                }
+
+                this.selectedDiskRoot = null;
                 this.storageDisk = disk;
                 this.url = '';
                 this.filenames = '';
-                this.fileSource = FILE_SOURCE.DISK;
             }
         },
         showStorageDiskRoot(disk) {
@@ -356,7 +377,11 @@ export default {
                 }
             } else {
                 this.unselectAllDirectories(this.selectedDiskRoot);
-                file.selected = true;
+                if (directory.files.length === 1) {
+                    this.selectDirectory(directory, path);
+                } else {
+                    file.selected = true;
+                }
                 this.setUrlAndFilenames(path, [file]);
             }
         },
