@@ -42,6 +42,11 @@ export default {
                     'only_labels',
                     'strip_ifdo',
                 ],
+                'VideoIfdo': [
+                    'newest_label',
+                    'only_labels',
+                    'strip_ifdo',
+                ],
             },
         };
     },

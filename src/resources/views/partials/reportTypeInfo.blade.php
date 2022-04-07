@@ -40,3 +40,6 @@
 <div class="help-block" v-if="wantsCombination('ImageIfdo', '')">
     The iFDO report returns the iFDO file that was attached to a volume with added information about annotations and image labels. See the <a target="_blank" href="https://www.marine-imaging.com/fair/ifdos/iFDO-overview">iFDO specification for more information</a>.
 </div>
+<div class="help-block" v-if="wantsCombination('VideoIfdo', '')">
+    The iFDO report returns the iFDO file that was attached to a volume with added information about annotations and video labels. See the <a target="_blank" href="https://www.marine-imaging.com/fair/ifdos/iFDO-overview">iFDO specification for more information</a>.
+</div>
