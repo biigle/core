@@ -21,7 +21,7 @@ class ParseIfdoControllerTest extends ApiTestCase
         $this->postJson("/api/v1/volumes/parse-ifdo", ['file' => $file])
             ->assertStatus(422);
 
-        $file = new UploadedFile(__DIR__."/../../../../../files/ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $file = new UploadedFile(__DIR__."/../../../../../files/image-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
         $expect = [
             'name' => 'SO268 SO268-2_100-1_OFOS SO_CAM-1_Photo_OFOS',
             'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
