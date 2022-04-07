@@ -89,6 +89,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $types = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            ReportType::videoIfdoId(),
         ];
 
         $this->beGuest();
@@ -276,6 +277,30 @@ class ProjectReportControllerTest extends ApiTestCase
         // Create volume.
         $this->volume();
         $typeId = ReportType::imageIfdoId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(422);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->volume()->id, 'abc');
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(201);
+    }
+
+    public function testStoreVideoIfdo()
+    {
+        $projectId = $this->project()->id;
+        // Create volume.
+        $this->volume(['media_type_id' => MediaType::videoId()]);
+        $typeId = ReportType::videoIfdoId();
 
         $this->beGuest();
 

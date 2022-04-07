@@ -53,6 +53,7 @@ class StoreVolumeReport extends StoreReport
             $types = [
                 ReportType::videoAnnotationsCsvId(),
                 ReportType::videoLabelsCsvId(),
+                ReportType::videoIfdoId(),
             ];
         }
 
@@ -103,7 +104,12 @@ class StoreVolumeReport extends StoreReport
                 }
             }
 
-            if ($this->isType(ReportType::imageIfdoId()) && !$this->volume->hasIfdo()) {
+            $ifdoTypes = [
+                ReportType::imageIfdoId(),
+                ReportType::videoIfdoId(),
+            ];
+
+            if ($this->isType($ifdoTypes) && !$this->volume->hasIfdo()) {
                 $validator->errors()->add('id', 'The volume has no attached iFDO file.');
             }
         });

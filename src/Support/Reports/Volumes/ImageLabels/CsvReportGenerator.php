@@ -74,17 +74,6 @@ class CsvReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function restrictToLabelsQuery($query)
-    {
-        return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
-    }
-
-    /**
      * Assemble a new DB query for the volume of this report.
      *
      * @return \Illuminate\Database\Query\Builder
@@ -108,7 +97,9 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'labels.name as label_name',
             ])
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->when($this->isRestrictedToLabels(), function ($query) {
+                return $this->restrictToLabelsQuery($query, 'image_labels');
+            })
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {

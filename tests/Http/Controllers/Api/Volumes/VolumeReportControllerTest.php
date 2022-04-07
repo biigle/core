@@ -143,6 +143,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $types = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            // videoIfdo is tested below
         ];
 
         $this->beGuest();
@@ -315,6 +316,28 @@ class VolumeReportControllerTest extends ApiTestCase
     {
         $volumeId = $this->volume()->id;
         $typeId = ReportType::imageIfdoId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(422);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($volumeId, 'abc');
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(201);
+    }
+
+    public function testStoreVideoIfdo()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::videoIfdoId();
 
         $this->beGuest();
 

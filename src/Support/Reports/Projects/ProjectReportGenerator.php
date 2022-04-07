@@ -60,4 +60,14 @@ abstract class ProjectReportGenerator extends ReportGenerator
     {
         return new $this->reportClass($this->options);
     }
+
+    /**
+     * Determines if this report should take only the newest label for each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
+    }
 }

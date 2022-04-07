@@ -54,6 +54,13 @@
                             <div class="btn-group">
                                 <button type="button" class="btn btn-default" title="Request a video label report" v-on:click="selectType('VideoLabels')" :class="{active: wantsType('VideoLabels')}">Video label report</button>
                             </div>
+                            <div class="btn-group">
+                                @if ($hasIfdos)
+                                    <button type="button" class="btn btn-default" title="Request a video iFDO report" v-on:click="selectType('VideoIfdo')" :class="{active: wantsType('VideoIfdo')}">Video iFDO report</button>
+                                @else
+                                    <button type="button" class="btn btn-default" title="iFDO reports are only available for projects having volumes with attached iFDO files" disabled>Video iFDO report</button>
+                                @endif
+                            </div>
                         </div>
                     @endif
                 </div>

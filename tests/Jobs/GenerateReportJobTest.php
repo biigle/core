@@ -34,7 +34,7 @@ class GenerateReportJobTest extends TestCase
             ->with('options')
             ->andReturn($opts);
         $report->shouldReceive('save')->once();
-        
+
         $report->options = $opts;
         with(new GenerateReportJob($report))->handle();
     }
@@ -60,7 +60,7 @@ class GenerateReportJobTest extends TestCase
             ->with('options')
             ->andReturn($opts);
         $report->shouldReceive('save')->once();
-        
+
         $report->options = $opts;
         with(new GenerateReportJob($report))->handle();
     }
@@ -86,7 +86,7 @@ class GenerateReportJobTest extends TestCase
             ->with('options')
             ->andReturn($opts);
         $report->shouldReceive('save')->once();
-        
+
         $report->options = $opts;
         with(new GenerateReportJob($report))->handle();
     }
