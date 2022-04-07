@@ -162,7 +162,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
                     'label' => $labelId,
                     'annotator' => $user->uuid,
                     'confidence' => $aLabel->confidence,
-                    'created-at' => (string) $aLabel->created_at,
+                    'created-at' => $aLabel->created_at->toJson(),
                 ];
             });
 
@@ -195,7 +195,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
                     [
                         'label' => $labelId,
                         'annotator' => $user->uuid,
-                        'created-at' => (string) $iLabel->created_at,
+                        'created-at' => $iLabel->created_at->toJson(),
                     ],
                 ],
             ];

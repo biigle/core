@@ -163,8 +163,9 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 return [
                     'label' => $labelId,
                     'annotator' => $user->uuid,
-                    'confidence' => $aLabel->confidence,
-                    'created-at' => (string) $aLabel->created_at,
+                    // Video annotation labels have no confidence.
+                    'confidence' => 1.0,
+                    'created-at' => $aLabel->created_at->toJson(),
                 ];
             });
 
@@ -198,7 +199,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                     [
                         'label' => $labelId,
                         'annotator' => $user->uuid,
-                        'created-at' => (string) $iLabel->created_at,
+                        'created-at' => $iLabel->created_at->toJson(),
                     ],
                 ],
             ];
