@@ -669,18 +669,30 @@ class ImageIfdoReportGeneratorTest extends TestCase
             'annotation_id' => $a1->id,
         ]);
 
+        $il1 = ImageLabelTest::create([
+            'image_id' => $image1->id,
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+        ]);
+
         $image2 = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => 'img2.jpg',
         ]);
         $a2 = ImageAnnotationTest::create([
-            'image_id' => $image1->id,
+            'image_id' => $image2->id,
             'shape_id' => Shape::pointId(),
         ]);
         $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
             'annotation_id' => $a2->id,
+        ]);
+
+        $il2 = ImageLabelTest::create([
+            'image_id' => $image2->id,
+            'label_id' => $label2->id,
+            'user_id' => $user->id,
         ]);
 
         $al2->annotation->image->volume_id = $volume->id;
@@ -714,16 +726,29 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image1->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotation-geometry-types' => [
+                        'single-pixel',
+                        'whole-image',
+                    ],
                     'image-annotations' => [
                         [
                             'coordinates' => $a1->points,
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => $label->id,
                                     'annotator' => $user->uuid,
                                     'confidence' => $al->confidence,
                                     'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                        [
+                            'coordinates' => [],
+                            'labels' => [
+                                [
+                                    'label' => $label->id,
+                                    'annotator' => $user->uuid,
+                                    'created-at' => (string) $il1->created_at,
                                 ],
                             ],
                         ],

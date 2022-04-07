@@ -564,7 +564,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'points' => [[150, 150]],
+                            'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
                                 [
@@ -605,18 +605,30 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'annotation_id' => $a1->id,
         ]);
 
+        $vl1 = VideoLabelTest::create([
+            'video_id' => $video1->id,
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+        ]);
+
         $video2 = VideoTest::create([
             'volume_id' => $volume->id,
             'filename' => 'img2.jpg',
         ]);
         $a2 = VideoAnnotationTest::create([
-            'video_id' => $video1->id,
+            'video_id' => $video2->id,
             'shape_id' => Shape::pointId(),
         ]);
         $al2 = VideoAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
             'annotation_id' => $a2->id,
+        ]);
+
+        $vl2 = VideoLabelTest::create([
+            'video_id' => $video2->id,
+            'label_id' => $label2->id,
+            'user_id' => $user->id,
         ]);
 
         $al2->annotation->video->volume_id = $volume->id;
@@ -650,17 +662,30 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $video1->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotation-geometry-types' => [
+                        'single-pixel',
+                        'whole-image',
+                    ],
                     'image-annotations' => [
                         [
                             'coordinates' => $a1->points,
                             'frames' => $a1->frames,
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => $label->id,
                                     'annotator' => $user->uuid,
                                     'confidence' => $al->confidence,
                                     'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                        [
+                            'coordinates' => [],
+                            'labels' => [
+                                [
+                                    'label' => $label->id,
+                                    'annotator' => $user->uuid,
+                                    'created-at' => (string) $vl1->created_at,
                                 ],
                             ],
                         ],

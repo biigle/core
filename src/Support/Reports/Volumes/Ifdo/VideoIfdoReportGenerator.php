@@ -7,9 +7,12 @@ use Biigle\Label;
 use Biigle\Shape;
 use Biigle\User;
 use Biigle\Video;
+use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 
 class VideoIfdoReportGenerator extends IfdoReportGenerator
 {
+    use RestrictsToNewestLabels;
+
     /**
      * Name of the report for use in text.
      *
@@ -36,20 +39,20 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 return $query;
             },
             'annotations.labels' => function ($query) {
-                // if ($this->isRestrictedToNewestLabel()) {
-                //     $query = $this->restrictToNewestLabelQuery($query, 'video_annotation_labels');;
-                // }
+                if ($this->isRestrictedToNewestLabel()) {
+                    $query = $this->restrictToNewestLabelQuery($query, 'video_annotation_labels');
+                }
 
-                // if ($this->isRestrictedToLabels()) {
-                //     $query = $this->restrictToLabelsQuery($query, 'video_annotation_labels');
-                // }
+                if ($this->isRestrictedToLabels()) {
+                    $query = $this->restrictToLabelsQuery($query, 'video_annotation_labels');
+                }
 
                 return $query;
             },
             'labels' => function ($query) {
-                // if ($this->isRestrictedToLabels()) {
-                //     return $query->whereIn('video_labels.label_id', $this->getOnlyLabels());
-                // }
+                if ($this->isRestrictedToLabels()) {
+                    return $query->whereIn('video_labels.label_id', $this->getOnlyLabels());
+                }
 
                 return $query;
             },
