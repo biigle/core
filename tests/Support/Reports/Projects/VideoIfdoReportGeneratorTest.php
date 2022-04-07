@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Ifdo;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
 use Biigle\MediaType;
-use Biigle\Modules\Reports\Support\Reports\Projects\Ifdo\VideoIfdoReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Exception;

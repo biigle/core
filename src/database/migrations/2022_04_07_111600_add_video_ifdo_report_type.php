@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up()
     {
-
-        DB::table('report_types')
-            ->where('name', 'ImageIfdo')
-            ->update(['name' => 'Ifdo\ImageIfdo']);
-
         DB::table('report_types')->insert([
-            ['name' => 'Ifdo\VideoIfdo'],
+            ['name' => 'VideoIfdo'],
         ]);
     }
 
@@ -29,11 +24,7 @@ return new class extends Migration
     public function down()
     {
         DB::table('report_types')
-            ->where('name', 'Ifdo\VideoIfdo')
+            ->where('name', 'VideoIfdo')
             ->delete();
-
-        DB::table('report_types')
-            ->where('name', 'Ifdo\ImageIfdo')
-            ->update(['name' => 'ImageIfdo']);
     }
 };

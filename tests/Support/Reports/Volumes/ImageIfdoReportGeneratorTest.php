@@ -1,15 +1,15 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Ifdo;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\LabelSource;
 use Biigle\Shape;
-use Biigle\Modules\Reports\Support\Reports\Volumes\Ifdo\VideoIfdoReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator;
 use Biigle\Modules\Reports\Volume;
-use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoLabelTest;
-use Biigle\Tests\VideoTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
@@ -17,13 +17,13 @@ use Exception;
 use Storage;
 use TestCase;
 
-class VideoIfdoReportGeneratorTest extends TestCase
+class ImageIfdoReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $generator = new VideoIfdoReportGenerator;
-        $this->assertEquals('video iFDO report', $generator->getName());
-        $this->assertEquals('video_ifdo_report', $generator->getFilename());
+        $generator = new ImageIfdoReportGenerator;
+        $this->assertEquals('image iFDO report', $generator->getName());
+        $this->assertEquals('image_ifdo_report', $generator->getFilename());
         $this->assertStringEndsWith('.yaml', $generator->getFullFilename());
     }
 
@@ -34,7 +34,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
             ],
         ], $merge);
 
@@ -53,20 +53,19 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create(['volume_id' => $volume->id]);
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150], [200, 200]],
-            'frames' => [100.0, 200.0],
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -75,7 +74,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -91,12 +90,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'coordinates' => [[150, 150], [200, 200]],
-                            'frames' => [100.0, 200.0],
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => $al->label_id,
@@ -107,7 +105,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -122,26 +120,25 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label2 = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create(['volume_id' => $volume->id]);
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $al2 = VideoAnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -150,7 +147,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -170,12 +167,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => $al->label_id,
@@ -192,7 +188,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -203,9 +199,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
     {
         [$volume, $ifdo] = $this->setUpIfdo();
 
-        $video = VideoTest::create(['volume_id' => $volume->id]);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -214,32 +210,32 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
             ],
             'image-set-items' => [
-                $video->filename => [],
+                $image->filename => [],
             ],
         ];
 
         $this->assertEquals($expect, $generator->yaml);
     }
 
-    public function testGenerateReportVideoLabels()
+    public function testGenerateReportImageLabels()
     {
         [$volume, $ifdo] = $this->setUpIfdo();
 
         $label = LabelTest::create();
         $user = UserTest::create();
 
-        $vl = VideoLabelTest::create([
+        $il = ImageLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
         ]);
 
-        $vl->video->volume_id = $volume->id;
-        $vl->video->save();
+        $il->image->volume_id = $volume->id;
+        $il->image->save();
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -248,7 +244,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -258,27 +254,27 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $vl->label_id,
-                        'name' => $vl->label->name,
+                        'id' => $il->label_id,
+                        'name' => $il->label->name,
                     ],
                 ],
             ],
             'image-set-items' => [
-                $vl->video->filename => [[
+                $il->image->filename => [
                     'image-annotation-geometry-types' => ['whole-image'],
                     'image-annotations' => [
                         [
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $vl->label_id,
+                                    'label' => $il->label_id,
                                     'annotator' => $user->uuid,
-                                    'created-at' => (string) $vl->created_at,
+                                    'created-at' => (string) $il->created_at,
                                 ],
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -290,7 +286,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create();
+        $image = ImageTest::create();
 
         $merge = [
             'image-set-header' => [
@@ -309,7 +305,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [[
+                $image->filename => [
                     'image-area-square-meter' => 5.5,
                     'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
@@ -325,28 +321,27 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
         [$volume, $ifdo] = $this->setUpIfdo($merge);
 
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $video->volume_id = $volume->id;
-        $video->save();
+        $image->volume_id = $volume->id;
+        $image->save();
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -355,7 +350,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => '123abc',
@@ -380,7 +375,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [
                     'image-area-square-meter' => 5.5,
                     'image-annotation-geometry-types' => ['bounding-box', 'single-pixel'],
                     'image-annotations' => [
@@ -396,8 +391,87 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
-                            'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'coordinates' => $al->annotation->points,
+                            'labels' => [
+                                [
+                                    'label' => $al->label_id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al->confidence,
+                                    'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expect, $generator->yaml);
+    }
+
+    public function testGenerateReportMergeImageSetItemsArray()
+    {
+        $label = LabelTest::create();
+        $user = UserTest::create();
+
+        $image = ImageTest::create();
+
+        $merge = [
+            'image-set-items' => [
+                // The double array here is the difference to testGenerateReportMergeImageSetItems!
+                $image->filename => [[
+                    'image-area-square-meter' => 5.5,
+                ]],
+            ],
+        ];
+
+        [$volume, $ifdo] = $this->setUpIfdo($merge);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a->id,
+        ]);
+
+        $image->volume_id = $volume->id;
+        $image->save();
+
+        $generator = new ImageIfdoReportGeneratorStub;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+
+        $expect = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+                'image-acquisition' => 'image',
+                'image-annotation-creators' => [
+                    [
+                        'id' => $user->uuid,
+                        'name' => "{$user->firstname} {$user->lastname}",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => $al->label_id,
+                        'name' => $al->label->name,
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $al->annotation->image->filename => [[
+                    'image-area-square-meter' => 5.5,
+                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => $al->label_id,
@@ -415,44 +489,43 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $this->assertEquals($expect, $generator->yaml);
     }
 
-    public function testGenerateReportMergeImageSetItemsMultiple()
+    public function testGenerateReportRestrictToExportArea()
     {
+        [$volume, $ifdo] = $this->setUpIfdo();
+
+        $volume = Volume::convert($volume);
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
         $label = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create();
-
-        $merge = [
-            'image-set-items' => [
-                $video->filename => [
-                    [
-                        'image-area-square-meter' => 5.5,
-                    ],
-                    [
-                        'image-area-square-meter' => 6.0,
-                    ],
-                ],
-            ],
-        ];
-
-        [$volume, $ifdo] = $this->setUpIfdo($merge);
-
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $a1 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::pointId(),
+            'points' => [150, 150],
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
-            'annotation_id' => $a->id,
+            'annotation_id' => $a1->id,
         ]);
 
-        $video->volume_id = $volume->id;
-        $video->save();
+        $a2 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'shape_id' => Shape::pointId(),
+            'points' => [50, 50],
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a2->id,
+        ]);
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub([
+            'exportArea' => true,
+        ]);
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -461,7 +534,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -471,33 +544,26 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
-                        'name' => $al->label->name,
+                        'id' => $al1->label_id,
+                        'name' => $al1->label->name,
                     ],
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
-                    [
-                        'image-area-square-meter' => 5.5,
-                        'image-annotation-geometry-types' => ['single-pixel'],
-                        'image-annotations' => [
-                            [
-                                'coordinates' => [[150, 150]],
-                                'frames' => [100.0],
-                                'labels' => [
-                                    [
-                                        'label' => $al->label_id,
-                                        'annotator' => $user->uuid,
-                                        'confidence' => $al->confidence,
-                                        'created-at' => (string) $al->created_at,
-                                    ],
+                $image->filename => [
+                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => $a1->points,
+                            'labels' => [
+                                [
+                                    'label' => $al1->label_id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al1->confidence,
+                                    'created-at' => (string) $al1->created_at,
                                 ],
                             ],
                         ],
-                    ],
-                    [
-                        'image-area-square-meter' => 6.0,
                     ],
                 ],
             ],
@@ -514,26 +580,25 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label2 = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create(['volume_id' => $volume->id]);
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $al2 = VideoAnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $generator = new VideoIfdoReportGeneratorStub([
+        $generator = new ImageIfdoReportGeneratorStub([
             'newestLabel' => true,
         ]);
         $generator->setSource($volume);
@@ -544,7 +609,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -560,12 +625,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => $al2->label_id,
@@ -576,7 +640,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -591,50 +655,50 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label2 = LabelTest::create();
         $user = UserTest::create();
 
-        $video1 = VideoTest::create([
+        $image1 = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => 'img1.jpg',
         ]);
-        $a1 = VideoAnnotationTest::create([
-            'video_id' => $video1->id,
+        $a1 = ImageAnnotationTest::create([
+            'image_id' => $image1->id,
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a1->id,
         ]);
 
-        $vl1 = VideoLabelTest::create([
-            'video_id' => $video1->id,
+        $il1 = ImageLabelTest::create([
+            'image_id' => $image1->id,
             'label_id' => $label->id,
             'user_id' => $user->id,
         ]);
 
-        $video2 = VideoTest::create([
+        $image2 = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => 'img2.jpg',
         ]);
-        $a2 = VideoAnnotationTest::create([
-            'video_id' => $video2->id,
+        $a2 = ImageAnnotationTest::create([
+            'image_id' => $image2->id,
             'shape_id' => Shape::pointId(),
         ]);
-        $al2 = VideoAnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
             'user_id' => $user->id,
             'annotation_id' => $a2->id,
         ]);
 
-        $vl2 = VideoLabelTest::create([
-            'video_id' => $video2->id,
+        $il2 = ImageLabelTest::create([
+            'image_id' => $image2->id,
             'label_id' => $label2->id,
             'user_id' => $user->id,
         ]);
 
-        $al2->annotation->video->volume_id = $volume->id;
-        $al2->annotation->video->save();
+        $al2->annotation->image->volume_id = $volume->id;
+        $al2->annotation->image->save();
 
-        $generator = new VideoIfdoReportGeneratorStub([
+        $generator = new ImageIfdoReportGeneratorStub([
             'onlyLabels' => [$label->id],
         ]);
         $generator->setSource($volume);
@@ -645,7 +709,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -661,7 +725,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video1->filename => [[
+                $image1->filename => [
                     'image-annotation-geometry-types' => [
                         'single-pixel',
                         'whole-image',
@@ -669,7 +733,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     'image-annotations' => [
                         [
                             'coordinates' => $a1->points,
-                            'frames' => $a1->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -685,13 +748,13 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'created-at' => (string) $vl1->created_at,
+                                    'created-at' => (string) $il1->created_at,
                                 ],
                             ],
                         ],
                     ],
-                ]],
-                $video2->filename => [],
+                ],
+                $image2->filename => [],
             ],
         ];
 
@@ -701,7 +764,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testGenerateReportNoIfdo()
     {
         $volume = VolumeTest::create();
-        $generator = new VideoIfdoReportGeneratorStub();
+        $generator = new ImageIfdoReportGeneratorStub();
         $generator->setSource($volume);
         $this->expectException(Exception::class);
         $generator->generateReport('my/path');
@@ -719,20 +782,19 @@ class VideoIfdoReportGeneratorTest extends TestCase
         ]);
         $user = UserTest::create();
 
-        $video = VideoTest::create(['volume_id' => $volume->id]);
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -741,7 +803,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -757,12 +819,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => 'urn:lsid:marinespecies.org:taxname:123999',
@@ -773,7 +834,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -785,7 +846,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $label = LabelTest::create();
         $user = UserTest::create();
 
-        $video = VideoTest::create();
+        $image = ImageTest::create();
 
         $merge = [
             'image-set-header' => [
@@ -804,7 +865,115 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [[
+                $image->filename => [
+                    'image-annotation-geometry-types' => ['bounding-box'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => [10, 20],
+                            'labels' => [
+                                [
+                                    'label' => 123321,
+                                    'annotator' => '123abc',
+                                    'confidence' => 1.0,
+                                    'created-at' => '2022-02-10 09:47:00',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        [$volume, $ifdo] = $this->setUpIfdo($merge);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a->id,
+        ]);
+
+        $image->volume_id = $volume->id;
+        $image->save();
+
+        $generator = new ImageIfdoReportGeneratorStub([
+            'stripIfdo' => true,
+        ]);
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+
+        $expect = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+                'image-acquisition' => 'image',
+                'image-annotation-creators' => [
+                    [
+                        'id' => $user->uuid,
+                        'name' => "{$user->firstname} {$user->lastname}",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => $al->label_id,
+                        'name' => $al->label->name,
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $al->annotation->image->filename => [
+                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => $al->annotation->points,
+                            'labels' => [
+                                [
+                                    'label' => $al->label_id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al->confidence,
+                                    'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expect, $generator->yaml);
+    }
+
+    public function testStripIfdoArray()
+    {
+        $label = LabelTest::create();
+        $user = UserTest::create();
+
+        $image = ImageTest::create();
+
+        $merge = [
+            'image-set-header' => [
+                'image-annotation-creators' => [
+                    [
+                        'id' => '123abc',
+                        'name' => "Test User",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => 123321,
+                        'name' => 'Test Label',
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $image->filename => [[
                     'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
@@ -825,22 +994,21 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         [$volume, $ifdo] = $this->setUpIfdo($merge);
 
-        $a = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'points' => [[150, 150]],
-            'frames' => [100.0],
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
             'shape_id' => Shape::pointId(),
         ]);
-        $al = VideoAnnotationLabelTest::create([
+        $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a->id,
         ]);
 
-        $video->volume_id = $volume->id;
-        $video->save();
+        $image->volume_id = $volume->id;
+        $image->save();
 
-        $generator = new VideoIfdoReportGeneratorStub([
+        $generator = new ImageIfdoReportGeneratorStub([
             'stripIfdo' => true,
         ]);
         $generator->setSource($volume);
@@ -851,7 +1019,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -867,12 +1035,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [[
+                $al->annotation->image->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
-                            'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
                                     'label' => $al->label_id,
@@ -896,71 +1063,61 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $label = LabelTest::create();
         $user = UserTest::create();
-        $video = VideoTest::create([
+        $image = ImageTest::create([
             'volume_id' => $volume->id,
         ]);
 
-        $a1 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
+        $a1 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::pointId(),
         ]);
-        $al1 = VideoAnnotationLabelTest::create([
+        $al1 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a1->id,
         ]);
 
-        $a2 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
+        $a2 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::rectangleId(),
         ]);
-        $al2 = VideoAnnotationLabelTest::create([
+        $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a2->id,
         ]);
 
-        $a3 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
+        $a3 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::circleId(),
         ]);
-        $al3 = VideoAnnotationLabelTest::create([
+        $al3 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a3->id,
         ]);
 
-        $a4 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
+        $a4 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::ellipseId(),
         ]);
-        $al4 = VideoAnnotationLabelTest::create([
+        $al4 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a4->id,
         ]);
 
-        $a5 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
+        $a5 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
             'shape_id' => Shape::polygonId(),
         ]);
-        $al5 = VideoAnnotationLabelTest::create([
+        $al5 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
             'user_id' => $user->id,
             'annotation_id' => $a5->id,
         ]);
 
-        $a6 = VideoAnnotationTest::create([
-            'video_id' => $video->id,
-            'shape_id' => Shape::wholeFrameId(),
-        ]);
-        $al6 = VideoAnnotationLabelTest::create([
-            'label_id' => $label->id,
-            'user_id' => $user->id,
-            'annotation_id' => $a6->id,
-        ]);
-
-        $generator = new VideoIfdoReportGeneratorStub;
+        $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
 
@@ -969,7 +1126,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 'image-set-handle' => '20.500.12085/test-example',
                 'image-set-name' => 'My Cool Volume',
                 'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
-                'image-acquisition' => 'video',
+                'image-acquisition' => 'image',
                 'image-annotation-creators' => [
                     [
                         'id' => $user->uuid,
@@ -985,12 +1142,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel', 'polygon', 'bounding-box', 'whole-image'],
+                $image->filename => [
+                    'image-annotation-geometry-types' => ['single-pixel', 'polygon', 'bounding-box'],
                     'image-annotations' => [
                         [
                             'coordinates' => $a1->points,
-                            'frames' => $a1->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -1002,7 +1158,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'coordinates' => $a2->points,
-                            'frames' => $a2->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -1014,7 +1169,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'coordinates' => $a3->points,
-                            'frames' => $a3->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -1026,7 +1180,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'coordinates' => $a4->points,
-                            'frames' => $a4->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -1038,7 +1191,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'coordinates' => $a5->points,
-                            'frames' => $a5->frames,
                             'labels' => [
                                 [
                                     'label' => $label->id,
@@ -1048,20 +1200,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 ],
                             ],
                         ],
-                        [
-                            'coordinates' => $a6->points,
-                            'frames' => $a6->frames,
-                            'labels' => [
-                                [
-                                    'label' => $label->id,
-                                    'annotator' => $user->uuid,
-                                    'confidence' => $al6->confidence,
-                                    'created-at' => (string) $al6->created_at,
-                                ],
-                            ],
-                        ],
                     ],
-                ]],
+                ],
             ],
         ];
 
@@ -1069,7 +1209,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     }
 }
 
-class VideoIfdoReportGeneratorStub extends VideoIfdoReportGenerator
+class ImageIfdoReportGeneratorStub extends ImageIfdoReportGenerator
 {
     public $yaml;
 

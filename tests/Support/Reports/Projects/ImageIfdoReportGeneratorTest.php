@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Ifdo;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\Reports\Support\Reports\Projects\Ifdo\ImageIfdoReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ImageIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Exception;

@@ -1,11 +1,10 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Ifdo;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
-use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 use Biigle\Video;
 use DB;
 use Exception;

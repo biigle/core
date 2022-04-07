@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Volumes\Ifdo;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
