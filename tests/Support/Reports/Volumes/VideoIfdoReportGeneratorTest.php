@@ -91,7 +91,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -107,7 +107,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -170,7 +170,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -192,7 +192,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -264,7 +264,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $vl->video->filename => [
+                $vl->video->filename => [[
                     'image-annotation-geometry-types' => ['whole-image'],
                     'image-annotations' => [
                         [
@@ -278,7 +278,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -309,7 +309,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [
+                $video->filename => [[
                     'image-area-square-meter' => 5.5,
                     'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
@@ -325,7 +325,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -380,7 +380,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-area-square-meter' => 5.5,
                     'image-annotation-geometry-types' => ['bounding-box', 'single-pixel'],
                     'image-annotations' => [
@@ -408,14 +408,14 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
         $this->assertEquals($expect, $generator->yaml);
     }
 
-    public function testGenerateReportMergeImageSetItemsArray()
+    public function testGenerateReportMergeImageSetItemsMultiple()
     {
         $label = LabelTest::create();
         $user = UserTest::create();
@@ -480,7 +480,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 $al->annotation->video->filename => [
                     [
                         'image-area-square-meter' => 5.5,
-                        'image-annotation-geometry-types' => ['bounding-box', 'single-pixel'],
+                        'image-annotation-geometry-types' => ['single-pixel'],
                         'image-annotations' => [
                             [
                                 'coordinates' => [[150, 150]],
@@ -560,7 +560,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -576,7 +576,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -649,7 +649,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video1->filename => [
+                $video1->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -665,7 +665,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
                 $video2->filename => [],
             ],
         ];
@@ -732,7 +732,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -748,7 +748,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -779,7 +779,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [
+                $video->filename => [[
                     'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
@@ -794,7 +794,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -842,7 +842,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $al->annotation->video->filename => [
+                $al->annotation->video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
@@ -858,7 +858,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 
@@ -960,7 +960,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
             ],
             'image-set-items' => [
-                $video->filename => [
+                $video->filename => [[
                     'image-annotation-geometry-types' => ['single-pixel', 'polygon', 'bounding-box', 'whole-image'],
                     'image-annotations' => [
                         [
@@ -1036,7 +1036,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]],
             ],
         ];
 

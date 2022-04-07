@@ -924,6 +924,114 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $this->assertEquals($expect, $generator->yaml);
     }
 
+    public function testStripIfdoArray()
+    {
+        $label = LabelTest::create();
+        $user = UserTest::create();
+
+        $image = ImageTest::create();
+
+        $merge = [
+            'image-set-header' => [
+                'image-annotation-creators' => [
+                    [
+                        'id' => '123abc',
+                        'name' => "Test User",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => 123321,
+                        'name' => 'Test Label',
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $image->filename => [[
+                    'image-annotation-geometry-types' => ['bounding-box'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => [10, 20],
+                            'labels' => [
+                                [
+                                    'label' => 123321,
+                                    'annotator' => '123abc',
+                                    'confidence' => 1.0,
+                                    'created-at' => '2022-02-10 09:47:00',
+                                ],
+                            ],
+                        ],
+                    ],
+                ]],
+            ],
+        ];
+
+        [$volume, $ifdo] = $this->setUpIfdo($merge);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [150, 150],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $al = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a->id,
+        ]);
+
+        $image->volume_id = $volume->id;
+        $image->save();
+
+        $generator = new ImageIfdoReportGeneratorStub([
+            'stripIfdo' => true,
+        ]);
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
+
+        $expect = [
+            'image-set-header' => [
+                'image-set-handle' => '20.500.12085/test-example',
+                'image-set-name' => 'My Cool Volume',
+                'image-set-uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+                'image-acquisition' => 'image',
+                'image-annotation-creators' => [
+                    [
+                        'id' => $user->uuid,
+                        'name' => "{$user->firstname} {$user->lastname}",
+                        'type' => 'expert',
+                    ],
+                ],
+                'image-annotation-labels' => [
+                    [
+                        'id' => $al->label_id,
+                        'name' => $al->label->name,
+                    ],
+                ],
+            ],
+            'image-set-items' => [
+                $al->annotation->image->filename => [[
+                    'image-annotation-geometry-types' => ['single-pixel'],
+                    'image-annotations' => [
+                        [
+                            'coordinates' => $al->annotation->points,
+                            'labels' => [
+                                [
+                                    'label' => $al->label_id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al->confidence,
+                                    'created-at' => (string) $al->created_at,
+                                ],
+                            ],
+                        ],
+                    ],
+                ]],
+            ],
+        ];
+
+        $this->assertEquals($expect, $generator->yaml);
+    }
+
     public function testGeometryTypes()
     {
         [$volume, $ifdo] = $this->setUpIfdo();
