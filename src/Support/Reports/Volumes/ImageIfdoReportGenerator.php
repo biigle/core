@@ -37,6 +37,9 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     {
         $relations = [
             'annotations' => function ($query) {
+                // This makes the beavior more consistent in tests, too.
+                $query = $query->orderBy('image_annotations.id');
+
                 if ($this->isRestrictedToExportArea()) {
                     return $this->restrictToExportAreaQuery($query);
                 }

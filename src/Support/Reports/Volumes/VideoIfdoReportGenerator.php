@@ -36,7 +36,8 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
     {
         $relations = [
             'annotations' => function ($query) {
-                return $query;
+                // This makes the beavior more consistent in tests, too.
+                return $query->orderBy('video_annotations.id');
             },
             'annotations.labels' => function ($query) {
                 if ($this->isRestrictedToNewestLabel()) {
