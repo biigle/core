@@ -108,36 +108,40 @@ class ProjectVolumeController extends Controller
      */
     public function store(StoreVolume $request)
     {
-        $volume = new Volume;
-        $volume->name = $request->input('name');
-        $volume->url = $request->input('url');
-        $volume->media_type_id = $request->input('media_type_id');
-        $volume->handle = $request->input('handle');
-        $volume->creator()->associate($request->user());
-        $volume->save();
-        $request->project->volumes()->attach($volume);
-
-        $files = $request->input('files');
-
-        $metadata = $request->input('metadata', []);
-
-        // If too many files should be created, do this asynchronously in the
-        // background. Else the script will run in the 30 s execution timeout.
-        $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
-        if (count($files) > self::CREATE_SYNC_LIMIT) {
-            Queue::pushOn('high', $job);
-            $volume->creating_async = true;
+        $volume = DB::transaction(function () use ($request) {
+            $volume = new Volume;
+            $volume->name = $request->input('name');
+            $volume->url = $request->input('url');
+            $volume->media_type_id = $request->input('media_type_id');
+            $volume->handle = $request->input('handle');
+            $volume->creator()->associate($request->user());
             $volume->save();
-        } else {
-            Queue::connection('sync')->push($job);
-        }
+            $request->project->volumes()->attach($volume);
 
-        if ($request->hasFile('ifdo_file')) {
-            $volume->saveIfdo($request->file('ifdo_file'));
-        }
+            $files = $request->input('files');
 
-        // media type shouldn't be returned
-        unset($volume->media_type);
+            $metadata = $request->input('metadata', []);
+
+            // If too many files should be created, do this asynchronously in the
+            // background. Else the script will run in the 30 s execution timeout.
+            $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
+            if (count($files) > self::CREATE_SYNC_LIMIT) {
+                Queue::pushOn('high', $job);
+                $volume->creating_async = true;
+                $volume->save();
+            } else {
+                Queue::connection('sync')->push($job);
+            }
+
+            if ($request->hasFile('ifdo_file')) {
+                $volume->saveIfdo($request->file('ifdo_file'));
+            }
+
+            // media type shouldn't be returned
+            unset($volume->media_type);
+
+            return $volume;
+        });
 
         if ($this->isAutomatedRequest()) {
             return $volume;
