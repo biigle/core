@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Ifdo;
 
 use Biigle\LabelSource;
 use Biigle\Shape;
-use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Ifdo\ImageIfdoReportGenerator;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;

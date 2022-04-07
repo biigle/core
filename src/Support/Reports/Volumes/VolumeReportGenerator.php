@@ -140,4 +140,16 @@ class VolumeReportGenerator extends ReportGenerator
     {
         return $this->options->get('newestLabel', false);
     }
+
+    /**
+     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param string $table Name of the annotation/image label DB table
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function restrictToLabelsQuery($query, $table)
+    {
+        return $query->whereIn("{$table}.label_id", $this->getOnlyLabels());
+    }
 }

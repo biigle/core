@@ -7,13 +7,14 @@ use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 use Biigle\User;
 use DB;
 use Illuminate\Support\Str;
 
 class CsvReportGenerator extends VolumeReportGenerator
 {
-    use MakesZipArchives;
+    use MakesZipArchives, RestrictsToNewestLabels;
 
     /**
      * Name of the report for use in text.
@@ -130,17 +131,6 @@ class CsvReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function restrictToLabelsQuery($query)
-    {
-        return $query->whereIn('video_annotation_labels.label_id', $this->getOnlyLabels());
-    }
-
-    /**
      * Assembles the part of the DB query that is the same for all annotation reports.
      *
      * @param mixed $columns The columns to select
@@ -154,8 +144,12 @@ class CsvReportGenerator extends VolumeReportGenerator
             ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
             ->where('videos.volume_id', $this->source->id)
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->when($this->isRestrictedToNewestLabel(), [$this, 'restrictToNewestLabelQuery'])
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->when($this->isRestrictedToNewestLabel(), function ($query) {
+                return $this->restrictToNewestLabelQuery($query, 'video_annotation_labels');
+            })
+            ->when($this->isRestrictedToLabels(), function ($query) {
+                return $this->restrictToLabelsQuery($query, 'video_annotation_labels');
+            })
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -187,28 +181,6 @@ class CsvReportGenerator extends VolumeReportGenerator
                         ->from('annotation_session_user')
                         ->where('annotation_session_id', $session->id);
                 });
-        });
-    }
-
-    /**
-     * Callback to be used in a `when` query statement that restricts the results to the newest annotation labels of each annotation.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function restrictToNewestLabelQuery($query)
-    {
-        // This is a quite inefficient query. Here is why:
-        // We could use "select distinct on" directly on the query but this would be
-        // overridden by the subsequent select() in self::initQuery(). If we would add
-        // the "select distinct on" **after** the select(), we would get invalid syntax:
-        // "select *, distinct on".
-        return $query->whereIn('video_annotation_labels.id', function ($query) {
-            return $query->selectRaw('distinct on (annotation_id) id')
-                ->from('video_annotation_labels')
-                ->orderBy('annotation_id', 'desc')
-                ->orderBy('id', 'desc')
-                ->orderBy('created_at', 'desc');
         });
     }
 

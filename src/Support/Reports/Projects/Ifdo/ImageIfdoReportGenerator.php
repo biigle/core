@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Reports\Support\Reports\Projects;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\Ifdo;
 
-use Biigle\Modules\Reports\Support\Reports\Projects\ImageAnnotations\AnnotationReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectImageReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator as ReportGenerator;
 use Exception;
 
-class ImageIfdoReportGenerator extends AnnotationReportGenerator
+class ImageIfdoReportGenerator extends ProjectImageReportGenerator
 {
     /**
      * The class of the volume report to use for this project report.

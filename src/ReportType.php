@@ -30,7 +30,8 @@ class ReportType extends Model
         'imageLabelsImageLocation' => 'ImageLabels\ImageLocation',
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',
         'videoLabelsCsv' => 'VideoLabels\Csv',
-        'imageIfdo' => 'ImageIfdo',
+        'imageIfdo' => 'Ifdo\ImageIfdo',
+        'videoIfdo' => 'Ifdo\VideoIfdo',
     ];
 
     /**

@@ -67,14 +67,4 @@ class AnnotationReportGenerator extends ProjectImageReportGenerator
     {
         return $this->options->get('exportArea', false);
     }
-
-    /**
-     * Determines if this report should take only the newest label for each annotation.
-     *
-     * @return bool
-     */
-    protected function isRestrictedToNewestLabel()
-    {
-        return $this->options->get('newestLabel', false);
-    }
 }
