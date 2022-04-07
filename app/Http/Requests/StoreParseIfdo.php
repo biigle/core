@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Traits\ParsesImageMetadata;
+use Biigle\Traits\ParsesMetadata;
 use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreParseIfdo extends FormRequest
 {
-    use ParsesImageMetadata;
+    use ParsesMetadata;
 
     /**
      * The parsed metadata.

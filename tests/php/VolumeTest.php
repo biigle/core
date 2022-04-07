@@ -477,6 +477,9 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->url = 'http://example.com/images/';
         $this->assertEquals('http://example.com/images', $this->model->url);
+
+        $this->model->url = 'disk://';
+        $this->assertEquals('disk://', $this->model->url);
     }
 
     public function testGetThumbnailsAttribute()
@@ -561,7 +564,7 @@ class VolumeTest extends ModelTestCase
     public function testSaveIfdo()
     {
         $disk = Storage::fake('ifdos');
-        $csv = __DIR__."/../files/ifdo.yaml";
+        $csv = __DIR__."/../files/image-ifdo.yaml";
         $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
 
         $this->assertFalse($this->model->hasIfdo());

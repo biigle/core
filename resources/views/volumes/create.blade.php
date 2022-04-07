@@ -40,7 +40,7 @@
             </div>
         </fieldset>
 
-        <fieldset v-if="isImageMediaType">
+        <fieldset>
             <legend>
                 2. Choose a name or import from file
             </legend>
@@ -60,29 +60,18 @@
                                  <a title="Import volume information and metadata from an iFDO YAML file" href="#" v-on:click.prevent="importIfdo">iFDO YAML</a>
                             </li>
                             <li>
-                                 <a title="Import image metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV</a>
+                                 <a v-if="isImageMediaType" title="Import image metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV</a>
+                                 <a v-else v-cloak title="Import video metadata from a CSV file" href="#" v-on:click.prevent="importCsv">Metadata CSV</a>
                             </li>
                         </template>
                     </dropdown>
-
                     <input class="hidden" ref="metadataCsvField" type="file" accept=".csv,text/csv,application/csv" v-on:change="setCsvMetadata">
                     <input class="hidden" ref="metadataIfdoField" type="file" accept=".yml,.yaml" name="ifdo_file" v-on:change="parseIfdoMetadata">
                 </div>
             </div>
         </fieldset>
-        <fieldset v-else v-cloak>
-            <legend>
-                2. Choose a name
-            </legend>
-            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                <input type="text" class="form-control" name="name" id="name" v-model="name" value="{{ old('name') }}" placeholder="My new volume" ref="nameInput" required autofocus>
-                @if($errors->has('name'))
-                   <span class="help-block">{{ $errors->first('name') }}</span>
-                @endif
-            </div>
-        </fieldset>
 
-        <div v-if="isImageMediaType" class="form-group{{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' has-error' : '' }}">
+        <div class="form-group{{ $errors->hasAny(['ifdo_file', 'metadata_csv', 'metadata']) ? ' has-error' : '' }}">
 
             <p v-if="showImportAgainMessage" v-cloak class="text-danger">Please import the metadata file again.</p>
 
@@ -100,7 +89,7 @@
                     <span class="help-block">{{ $errors->first('metadata') }}</span>
                 @endif
             @else
-                <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}" target="_blank">metadata CSV</a> file. Metadata may be overridden by image EXIF information.</span>
+                <span class="help-block">Volume information and metadata can be imported from an <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview/" target="_blank">iFDO YAML</a> file or a <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}" target="_blank">metadata CSV</a> file. Image metadata may be overridden by EXIF information.</span>
             @endif
         </div>
 

@@ -70,17 +70,17 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {String} files List of file names of the images/videos that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
-     * @apiParam (Optional attributes) {String} metadata_text CSV-like string with image metadata (not available for video volumes). See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`.
+     * @apiParam (Optional attributes) {String} metadata_text CSV-like string with file metadata. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp.
      * @apiParam (Optional attributes) {File} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
      * @apiParam (Optional attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
      *
-     * @apiParam (metadata columns) {String} filename The filename of the image the metadata belongs to. This column is required.
-     * @apiParam (metadata columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`
-     * @apiParam (metadata columns) {Number} lng Longitude where the image was taken in decimal form. If this column is present, `lat` must be present, too. Example: `52.3211`
-     * @apiParam (metadata columns) {Number} lat Latitude where the image was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
-     * @apiParam (metadata columns) {Number} gps_altitude GPS Altitude where the image was taken in meters. Negative for below sea level. Example: `-1500.5`
+     * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
+     * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
+     * @apiParam (metadata columns) {Number} lng Longitude where the file was taken in decimal form. If this column is present, `lat` must be present, too. Example: `52.3211`
+     * @apiParam (metadata columns) {Number} lat Latitude where the file was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
+     * @apiParam (metadata columns) {Number} gps_altitude GPS Altitude where the file was taken in meters. Negative for below sea level. Example: `-1500.5`
      * @apiParam (metadata columns) {Number} distance_to_ground Distance to the sea floor in meters. Example: `30.25`
-     * @apiParam (metadata columns) {Number} area Area shown by the image in m². Example `2.6`.
+     * @apiParam (metadata columns) {Number} area Area shown by the file in m². Example `2.6`.
      *
      * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
@@ -119,10 +119,7 @@ class ProjectVolumeController extends Controller
 
         $files = $request->input('files');
 
-        $metadata = [];
-        if ($volume->media_type_id === MediaType::imageId()) {
-            $metadata = $request->input('metadata');
-        }
+        $metadata = $request->input('metadata', []);
 
         // If too many files should be created, do this asynchronously in the
         // background. Else the script will run in the 30 s execution timeout.

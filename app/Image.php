@@ -73,26 +73,6 @@ class Image extends VolumeFile
     }
 
     /**
-     * Set the image metadata attribute.
-     *
-     * @param array $value
-     */
-    public function setMetadataAttribute(array $value)
-    {
-        return $this->setJsonAttr('metadata', $value);
-    }
-
-    /**
-     * Get the image metadata attribute.
-     *
-     * @return array
-     */
-    public function getMetadataAttribute()
-    {
-        return $this->getJsonAttr('metadata', []);
-    }
-
-    /**
      * Get the original image as download response.
      *
      * @return Response
@@ -132,86 +112,6 @@ class Image extends VolumeFile
         } catch (Exception $e) {
             abort(404, $e->getMessage());
         }
-    }
-
-    /**
-     * Set the width attribute.
-     *
-     * @param int $value
-     */
-    public function setWidthAttribute($value)
-    {
-        $this->setJsonAttr('width', $value);
-    }
-
-    /**
-     * Get the width attribute.
-     *
-     * @return int|null
-     */
-    public function getWidthAttribute()
-    {
-        return $this->getJsonAttr('width');
-    }
-
-    /**
-     * Set the height attribute.
-     *
-     * @param int $value
-     */
-    public function setHeightAttribute($value)
-    {
-        $this->setJsonAttr('height', $value);
-    }
-
-    /**
-     * Get the height attribute.
-     *
-     * @return int|null
-     */
-    public function getHeightAttribute()
-    {
-        return $this->getJsonAttr('height');
-    }
-
-    /**
-     * Set the size attribute.
-     *
-     * @param int $value
-     */
-    public function setSizeAttribute($value)
-    {
-        $this->setJsonAttr('size', $value);
-    }
-
-    /**
-     * Get the size attribute.
-     *
-     * @return int|null
-     */
-    public function getSizeAttribute()
-    {
-        return $this->getJsonAttr('size');
-    }
-
-    /**
-     * Set the mimetype attribute.
-     *
-     * @param string $value
-     */
-    public function setMimetypeAttribute($value)
-    {
-        $this->setJsonAttr('mimetype', $value);
-    }
-
-    /**
-     * Get the mimetype attribute.
-     *
-     * @return string|null
-     */
-    public function getMimetypeAttribute()
-    {
-        return $this->getJsonAttr('mimetype');
     }
 
     /**

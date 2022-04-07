@@ -66,7 +66,7 @@ export default {
             return this.isImageMediaType && this.url.search(/^https?:\/\//) !== -1;
         },
         hasMetadata() {
-            return this.isImageMediaType && this.metadataText.length > 0;
+            return this.metadataText.length > 0;
         },
         showImportAgainMessage() {
             return this.hadMetadataText && !this.hasMetadata;
@@ -229,8 +229,10 @@ export default {
         parseMetadataFilenames(metadata) {
             let columns = metadata[0];
             let filenameColumn = columns.indexOf('filename')
+            let filenames = metadata.slice(1).map(row => row[filenameColumn]);
 
-            return metadata.slice(1).map(row => row[filenameColumn]).join(', ');
+            // Remove duplicate filenames (possible for video metadata).
+            return Array.from(new Set(filenames)).join(', ');
         },
         clearMetadata() {
             this.metadataText = '';

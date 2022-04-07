@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\User;
+use Carbon\Carbon;
 use DB;
 
 class Video extends VolumeFile
@@ -89,6 +90,8 @@ class Video extends VolumeFile
      */
     protected $casts = [
         'attrs' => 'array',
+        'lng' => 'array',
+        'lat' => 'array',
         'duration' => 'float',
     ];
 
@@ -179,86 +182,6 @@ class Video extends VolumeFile
     }
 
     /**
-     * Get the mimeType attribute.
-     *
-     * @return string
-     */
-    public function getMimeTypeAttribute()
-    {
-        return $this->getJsonAttr('mimetype');
-    }
-
-    /**
-     * Set the mimeType attribute.
-     *
-     * @param string $value
-     */
-    public function setMimeTypeAttribute($value)
-    {
-        $this->setJsonAttr('mimetype', $value);
-    }
-
-    /**
-     * Get the size attribute.
-     *
-     * @return int
-     */
-    public function getSizeAttribute()
-    {
-        return $this->getJsonAttr('size');
-    }
-
-    /**
-     * Set the size attribute.
-     *
-     * @param int $value
-     */
-    public function setSizeAttribute($value)
-    {
-        $this->setJsonAttr('size', $value);
-    }
-
-    /**
-     * Get the width attribute.
-     *
-     * @return int
-     */
-    public function getWidthAttribute()
-    {
-        return $this->getJsonAttr('width');
-    }
-
-    /**
-     * Set the width attribute.
-     *
-     * @param int $value
-     */
-    public function setWidthAttribute($value)
-    {
-        $this->setJsonAttr('width', $value);
-    }
-
-    /**
-     * Get the height attribute.
-     *
-     * @return int
-     */
-    public function getHeightAttribute()
-    {
-        return $this->getJsonAttr('height');
-    }
-
-    /**
-     * Set the height attribute.
-     *
-     * @param int $value
-     */
-    public function setHeightAttribute($value)
-    {
-        $this->setJsonAttr('height', $value);
-    }
-
-    /**
      * Determine whether the (new) video has been processed.
      *
      * @return boolean
@@ -276,5 +199,33 @@ class Video extends VolumeFile
     public function labels()
     {
         return $this->hasMany(VideoLabel::class)->with('label', 'user');
+    }
+
+    /**
+     * Set the taken_at timestamps.
+     *
+     * @param array $value
+     */
+    public function setTakenAtAttribute(array $value)
+    {
+        $value = array_map([Carbon::class, 'parse'], $value);
+
+        $this->attributes['taken_at'] = json_encode($value);
+    }
+
+    /**
+     * Get the taken_at timestamps.
+     *
+     * @return array
+     */
+    public function getTakenAtAttribute()
+    {
+        $array = json_decode($this->attributes['taken_at'] ?? null);
+
+        if (!is_array($array)) {
+            return null;
+        }
+
+        return array_map([Carbon::class, 'parse'], $array);
     }
 }

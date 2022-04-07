@@ -386,7 +386,12 @@ class Volume extends Model
      */
     public function setUrlAttribute($value)
     {
-        return $this->attributes['url'] = $value ? rtrim($value, '/') : $value;
+        // Do not trim the slashes defining the protocol/storage disk.
+        if (is_string($value) && !str_ends_with($value, '://')) {
+            $value = rtrim($value, '/');
+        }
+
+        return $this->attributes['url'] = $value;
     }
 
     /**
