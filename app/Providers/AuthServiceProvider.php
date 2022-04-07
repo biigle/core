@@ -2,6 +2,8 @@
 
 namespace Biigle\Providers;
 
+use Biigle\Role;
+use Biigle\User;
 use Biigle\Services\Auth\ApiGuard;
 use Biigle\Services\Auth\FederatedSearchGuard;
 use Illuminate\Auth\TokenGuard;
@@ -37,8 +39,19 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Ability of a global admin.
-        Gate::define('sudo', function ($user) {
+        Gate::define('sudo', function (User $user) {
             return $user->isInSuperUserMode;
+        });
+
+        // Ability to create or update a volume with a certain storage disk.
+        Gate::define('use-disk', function (User $user, $disk) {
+            if ($user->role_id === Role::adminId()) {
+                return in_array($disk, config('volumes.admin_storage_disks'));
+            } elseif ($user->role_id === Role::editorId()) {
+                return in_array($disk, config('volumes.editor_storage_disks'));
+            }
+
+            return false;
         });
 
         Auth::extend('api', function ($app, $name, array $config) {

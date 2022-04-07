@@ -23,8 +23,7 @@ class UserSettingsController extends Controller
     public function update(UpdateUserSettings $request)
     {
         $user = $request->user();
-        $settings = $user->settings ?: [];
-        $user->settings = array_merge($settings, $request->validated());
+        $user->setSettings($request->validated());
         $user->save();
 
         if (!$this->isAutomatedRequest()) {

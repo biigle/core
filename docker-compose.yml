@@ -6,7 +6,7 @@ services:
     image: ghcr.io/biigle/app
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
-      - cache
+      - database
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
@@ -15,7 +15,6 @@ services:
       - ./:/var/www
     environment:
       - "DB_PORT=5432"
-      - "REDIS_HOST=cache"
 
   worker:
     image: ghcr.io/biigle/worker
@@ -34,7 +33,6 @@ services:
       - /var/www/storage/framework/testing/disks:uid=${USER_ID},gid=${GROUP_ID}
     environment:
       - "DB_PORT=5432"
-      - "REDIS_HOST=cache"
     init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
@@ -74,9 +72,6 @@ services:
       - "POSTGRES_DB=biigle"
       - "POSTGRES_USER=biigle"
       - "POSTGRES_PASSWORD=secret"
-
-  cache:
-    image: redis:3.0-alpine
 
 volumes:
   dbdata:

@@ -12,6 +12,17 @@ use Illuminate\Http\Response;
 class Image extends VolumeFile
 {
     /**
+     * Allowed image MIME types.
+     *
+     * @var array
+     */
+    const MIMES = [
+        'image/jpeg',
+        'image/png',
+        'image/tiff',
+    ];
+
+    /**
      * The attributes hidden in the model's JSON form.
      *
      * @var array

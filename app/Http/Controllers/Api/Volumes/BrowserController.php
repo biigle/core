@@ -6,33 +6,19 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
+use InvalidArgumentException;
 use Storage;
 
 class BrowserController extends Controller
 {
-    /**
-     * Instantiate a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            if (!config('volumes.browser')) {
-                abort(Response::HTTP_NOT_FOUND);
-            }
-
-            return $next($request);
-        });
-    }
-
     /**
      * List directories in a storage disk.
      *
      * @api {get} volumes/browser/directories/:disk List directories
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexDirectories
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -51,18 +37,24 @@ class BrowserController extends Controller
      */
     public function indexDirectories(Request $request, $disk)
     {
-        if (!$this->diskAccessible($disk)) {
+        if (Gate::denies('use-disk', $disk)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $disk = Storage::disk($disk);
+        } catch (InvalidArgumentException $e) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
         if ($request->has('path')) {
             $path = $request->input('path', '');
-            $directories = Storage::disk($disk)->directories($path);
+            $directories = $disk->directories($path);
 
             return $this->removePrefix($path, $directories);
         }
 
-        $directories = Storage::disk($disk)->directories();
+        $directories = $disk->directories();
 
         natsort($directories);
 
@@ -75,7 +67,7 @@ class BrowserController extends Controller
      * @api {get} volumes/browser/images/:disk List images
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexImages
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -94,6 +86,10 @@ class BrowserController extends Controller
      */
     public function indexImages(Request $request, $disk)
     {
+        if (Gate::denies('use-disk', $disk)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
         return $this->indexFiles($request, $disk, Volume::IMAGE_FILE_REGEX);
     }
 
@@ -103,7 +99,7 @@ class BrowserController extends Controller
      * @api {get} volumes/browser/videos/:disk List videos
      * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexVideos
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
@@ -122,6 +118,10 @@ class BrowserController extends Controller
      */
     public function indexVideos(Request $request, $disk)
     {
+        if (Gate::denies('use-disk', $disk)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
         return $this->indexFiles($request, $disk, Volume::VIDEO_FILE_REGEX);
     }
 
@@ -136,30 +136,19 @@ class BrowserController extends Controller
      */
     protected function indexFiles(Request $request, $disk, $regex)
     {
-        if (!$this->diskAccessible($disk)) {
+        $path = $request->input('path', '');
+        try {
+            $disk = Storage::disk($disk);
+        } catch (InvalidArgumentException $e) {
             abort(Response::HTTP_NOT_FOUND);
         }
-        $path = $request->input('path', '');
         // Use array_values to discard keys. This ensures the JSON returned by this
         // endpoint is an array, not an object.
-        $files = array_values(preg_grep($regex, Storage::disk($disk)->files($path)));
+        $files = array_values(preg_grep($regex, $disk->files($path)));
 
         natsort($files);
 
         return $this->removePrefix($path, array_values($files));
-    }
-
-    /**
-     * Determines if a storage disk is accessible.
-     *
-     * @param string $disk
-     *
-     * @return bool
-     */
-    protected function diskAccessible($disk)
-    {
-        return in_array($disk, config('volumes.browser_disks')) &&
-            in_array($disk, array_keys(config('filesystems.disks')));
     }
 
     /**

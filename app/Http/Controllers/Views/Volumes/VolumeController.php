@@ -5,7 +5,9 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
+use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -24,16 +26,36 @@ class VolumeController extends Controller
     {
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
-        $disks = array_intersect(array_keys(config('filesystems.disks')), config('volumes.browser_disks'));
+
+        $disks = [];
+        $user = $request->user();
+
+        if ($user->can('sudo')) {
+            $disks = config('volumes.admin_storage_disks');
+        } elseif ($user->role_id === Role::editorId()) {
+            $disks = config('volumes.editor_storage_disks');
+        }
+
+        $disks = array_intersect(array_keys(config('filesystems.disks')), $disks);
+
         $mediaType = old('media_type', 'image');
         $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
+        $offlineMode = config('biigle.offline_mode');
+
+        if (class_exists(UserStorageServiceProvider::class)) {
+            $userDisk = "user-{$user->id}";
+        } else {
+            $userDisk = null;
+        }
 
         return view('volumes.create', [
             'project' => $project,
-            'hasBrowser' => config('volumes.browser'),
-            'disks' => $disks,
+            'disks' => collect($disks)->values(),
+            'hasDisks' => !empty($disks),
             'mediaType' => $mediaType,
             'filenames' => $filenames,
+            'offlineMode' => $offlineMode,
+            'userDisk' => $userDisk,
         ]);
     }
 

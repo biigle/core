@@ -1,0 +1,59 @@
+.file-browser-directory {
+    position: relative;
+
+    &.selected > .file-browser-directory-name {
+        color: white;
+        font-weight: bold;
+    }
+
+
+    &:not(.root) {
+        .file-browser-directory-list {
+            padding-left: 15px;
+        }
+    }
+
+    &.selectable {
+        .file-browser-directory-name {
+            cursor: pointer;
+        }
+    }
+}
+
+.file-browser-directory-name {
+    position: relative;
+    padding: $padding-small-vertical;
+    border-radius: $border-radius-small;
+    word-wrap: break-word;
+    height: 32px;
+    max-width: 100%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+    }
+
+    .collapse-caret {
+        cursor: pointer;
+    }
+
+    .remove-button {
+        position: absolute;
+        top: $padding-small-vertical;
+        right: $padding-small-vertical;
+        display: none;
+    }
+
+    &:hover .remove-button {
+        display: block;
+    }
+}
+
+
+.file-browser-directory-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: $padding-small-vertical;
+}

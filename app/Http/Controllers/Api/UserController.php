@@ -33,7 +33,7 @@ class UserController extends Controller
      * @api {get} users/find/:pattern Find a user
      * @apiGroup Users
      * @apiName FindUsers
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription Searches for a user with firstname or lastname like `pattern` and returns the first 10 matches.
      *
      * @apiParam {String} pattern Part of the firstname or lastname of the user to search for.
@@ -61,6 +61,8 @@ class UserController extends Controller
      */
     public function find($pattern)
     {
+        $this->authorize('index', User::class);
+
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
             ->where('firstname', 'ilike', "%{$pattern}%")
             ->orWhere('lastname', 'ilike', "%{$pattern}%")
@@ -74,7 +76,7 @@ class UserController extends Controller
      * @api {get} users Get all users
      * @apiGroup Users
      * @apiName IndexUsers
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription Global admins also see the email addresses of the users.
      *
      * @apiSuccessExample {json} Success response:
@@ -100,6 +102,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('index', User::class);
+
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
             ->when($request->user()->can('sudo'), function ($query) {
                 $query->addSelect('email');
@@ -132,6 +136,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('index', User::class);
+
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
             ->findOrFail($id);
     }

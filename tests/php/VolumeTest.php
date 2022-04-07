@@ -477,6 +477,9 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->url = 'http://example.com/images/';
         $this->assertEquals('http://example.com/images', $this->model->url);
+
+        $this->model->url = 'disk://';
+        $this->assertEquals('disk://', $this->model->url);
     }
 
     public function testGetThumbnailsAttribute()
