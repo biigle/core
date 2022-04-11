@@ -18,7 +18,8 @@ class GenerateMissing extends Command
      *
      * @var string
      */
-    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations} {--queue=} {--newer-than=}';
+    protected $signature = 'largo:generate-missing {--dry-run} {--volume=} {--no-image-annotations} {--no-video-annotations} {--queue=} {--newer-than=}
+        {--older-than=}';
 
     /**
      * The console command description.
@@ -88,6 +89,9 @@ class GenerateMissing extends Command
             })
             ->when($this->option('newer-than'), function ($query) {
                 $query->where('image_annotations.created_at', '>', new Carbon($this->option('newer-than')));
+            })
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('image_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
             ->select('image_annotations.id', 'images.uuid as uuid');
 
