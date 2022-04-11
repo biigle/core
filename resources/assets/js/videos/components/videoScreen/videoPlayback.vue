@@ -114,6 +114,8 @@ export default {
             // currentTime (in most cases). With the workaround we can create annotations
             // at currentTime and be sure that the same frame can be reproduced later for
             // the annotations. See: https://github.com/biigle/core/issues/433
+            //
+            // eslint-disable-next-line no-self-assign
             this.video.currentTime = this.video.currentTime;
         },
         setPlaying() {
