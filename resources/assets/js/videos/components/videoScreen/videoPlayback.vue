@@ -64,6 +64,7 @@ export default {
                 context.save();
                 context.scale(frameState.pixelRatio, frameState.pixelRatio);
                 context.translate(origin[0], origin[1]);
+
                 context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
                 context.restore();
             });
@@ -84,6 +85,11 @@ export default {
             this.map.getView().fit(this.extent);
         },
         renderVideo(force) {
+            // Don't render while seeking, as this would produce a blank canvas.
+            if (this.video.seeking) {
+                return;
+            }
+
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
@@ -103,11 +109,12 @@ export default {
         stopRenderLoop() {
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
-            // Make sure the video frame that belongs to the currentTime is drawn.
-            // Do this in the next animation frame because sometimes the rendered frame
-            // that was drawn immediately (here) did not match the real frame of the
-            // paused video, i.e. calling renderVideo again produced a new frame.
-            window.requestAnimationFrame(() => this.renderVideo(true));
+            // Force render the video frame that belongs to currentTime. This is a
+            // workaround because the displayed frame not the one that belongs to
+            // currentTime (in most cases). With the workaround we can create annotations
+            // at currentTime and be sure that the same frame can be reproduced later for
+            // the annotations. See: https://github.com/biigle/core/issues/433
+            this.video.currentTime = this.video.currentTime;
         },
         setPlaying() {
             this.playing = true;
@@ -139,6 +146,9 @@ export default {
             // Update the layer (dimensions) if a new video is loaded.
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
+        handleSeeked() {
+            this.renderVideo(true);
+        },
     },
     watch: {
         //
@@ -149,7 +159,7 @@ export default {
         this.dummyCanvas.height = 1;
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
-        this.video.addEventListener('seeked', this.renderVideo);
+        this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
         let mapPromise = new Vue.Promise((resolve) => {
