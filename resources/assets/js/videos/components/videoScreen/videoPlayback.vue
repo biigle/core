@@ -64,7 +64,6 @@ export default {
                 context.save();
                 context.scale(frameState.pixelRatio, frameState.pixelRatio);
                 context.translate(origin[0], origin[1]);
-
                 context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
                 context.restore();
             });
