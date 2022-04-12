@@ -183,7 +183,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                                     'label' => $al2->label_id,
                                     'annotator' => $user->uuid,
                                     'confidence' => $al2->confidence,
-                                    'created-at' => $al->created_at->toJson(),
+                                    'created-at' => $al2->created_at->toJson(),
                                 ],
                             ],
                         ],
