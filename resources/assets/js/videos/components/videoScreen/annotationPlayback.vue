@@ -97,8 +97,15 @@ export default {
                     selected.remove(feature);
                 });
             } else {
-                source.clear();
-                selected.clear();
+                // Clearing source and selected, even if they are empty, issues a redraw
+                // of the map, so check if there is anything to clear first.
+                if (source.getFeatures().length > 0) {
+                    source.clear();
+                }
+
+                if (selected.getLength() > 0) {
+                    selected.clear();
+                }
             }
 
 

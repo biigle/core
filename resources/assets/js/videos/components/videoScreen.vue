@@ -3,6 +3,7 @@
         <minimap
             v-if="showMinimap && !hasError"
             :extent="extent"
+            :render-active="!seeking"
             ></minimap>
         <label-tooltip
             watch="hoverFeatures"
@@ -237,7 +238,7 @@ import ControlButton from '../../annotations/components/controlButton';
 import DrawInteractions from './videoScreen/drawInteractions';
 import Indicators from './videoScreen/indicators';
 import Keyboard from '../../core/keyboard';
-import Map from '@biigle/ol/Map';
+import {CancelableMap as Map} from '../../annotations/ol/CancelableMap';
 import Minimap from '../../annotations/components/minimap';
 import ModifyInteractions from './videoScreen/modifyInteractions';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
@@ -343,6 +344,10 @@ export default {
             default: true,
         },
         hasError: {
+            type: Boolean,
+            default: false,
+        },
+        seeking: {
             type: Boolean,
             default: false,
         },
