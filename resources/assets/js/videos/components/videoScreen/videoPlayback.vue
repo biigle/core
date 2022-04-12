@@ -105,19 +105,13 @@ export default {
             render();
             this.map.render();
         },
-        cancelRenderLoop() {
+        stopRenderLoop() {
+            // Explicitly cancel rendering of the map because there could be one
+            // animation frame left that would be executed while the video already began
+            // seeking and thus render an empty video.
             this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
-        },
-        stopRenderLoop() {
-            this.cancelRenderLoop();
-            // Force render the video frame that belongs to currentTime. This is a
-            // workaround because the displayed frame not the one that belongs to
-            // currentTime (in most cases). With the workaround we can create annotations
-            // at currentTime and be sure that the same frame can be reproduced later for
-            // the annotations. See: https://github.com/biigle/core/issues/433
-            this.$emit('seek', this.video.currentTime, true);
         },
         setPlaying() {
             this.playing = true;
@@ -128,6 +122,12 @@ export default {
         setPaused() {
             this.playing = false;
             this.stopRenderLoop();
+            // Force render the video frame that belongs to currentTime. This is a
+            // workaround because the displayed frame not the one that belongs to
+            // currentTime (in most cases). With the workaround we can create annotations
+            // at currentTime and be sure that the same frame can be reproduced later for
+            // the annotations. See: https://github.com/biigle/core/issues/433
+            this.$emit('seek', this.video.currentTime, true);
         },
         togglePlaying() {
             if (this.playing) {
@@ -155,15 +155,10 @@ export default {
     },
     watch: {
         seeking(seeking) {
-            // Explicitly cancel rendering of the map because there could be one
-            // animation frame left that would be executed while the video already began
-            // seeking and thus render an empty video.
-            if (this.playing) {
-                if (seeking) {
-                    this.cancelRenderLoop();
-                } else {
-                    this.startRenderLoop();
-                }
+            if (seeking) {
+                this.stopRenderLoop();
+            } else if (this.playing) {
+                this.startRenderLoop();
             }
         },
     },
