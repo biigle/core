@@ -23,6 +23,7 @@
       :height-offset="screenHeightOffset"
       :show-prev-next="hasSiblingVideos"
       :has-error="hasError"
+      :seeking="seeking"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"

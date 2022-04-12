@@ -85,11 +85,6 @@ export default {
             this.map.getView().fit(this.extent);
         },
         renderVideo(force) {
-            // Don't render while seeking, as this would produce a blank canvas.
-            if (this.video.seeking) {
-                return;
-            }
-
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
@@ -106,9 +101,12 @@ export default {
             this.renderVideo();
             this.animationFrameId = window.requestAnimationFrame(this.startRenderLoop);
         },
-        stopRenderLoop() {
+        cancelRenderLoop() {
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
+        },
+        stopRenderLoop() {
+            this.cancelRenderLoop();
             // Force render the video frame that belongs to currentTime. This is a
             // workaround because the displayed frame not the one that belongs to
             // currentTime (in most cases). With the workaround we can create annotations
@@ -153,7 +151,20 @@ export default {
         },
     },
     watch: {
-        //
+        seeking(seeking) {
+            // Explicitly cancel rendering of the map because there could be one
+            // animation frame left that would be executed while the video already began
+            // seeking and thus render an empty video.
+            if (this.playing) {
+                if (seeking) {
+                    this.map.cancelRender();
+                    this.cancelRenderLoop();
+                } else {
+                    this.startRenderLoop();
+                    this.map.render();
+                }
+            }
+        },
     },
     created() {
         this.dummyCanvas = document.createElement('canvas');

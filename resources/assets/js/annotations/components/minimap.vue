@@ -4,7 +4,7 @@
 
 <script>
 import Feature from '@biigle/ol/Feature';
-import Map from '@biigle/ol/Map';
+import {CancelableMap as Map} from '../ol/CancelableMap';
 import Styles from '../stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -30,6 +30,10 @@ export default {
         intendedHeight: {
             type: Number,
             default: 200,
+        },
+        renderActive: {
+            type: Boolean,
+            default: true,
         },
     },
     data() {
@@ -112,6 +116,13 @@ export default {
         // Refresh the view if the extent (i.e. image size) changed.
         extent() {
             this.updateElementSize();
+        },
+        renderActive(render) {
+            if (render) {
+                this.minimap.render();
+            } else {
+                this.minimap.cancelRender();
+            }
         },
     },
     created() {
