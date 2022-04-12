@@ -40,6 +40,7 @@
       v-on:next="showNextVideo"
       v-on:attaching-active="handleAttachingLabelActive"
       v-on:swapping-active="handleSwappingLabelActive"
+      v-on:seek="seek"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

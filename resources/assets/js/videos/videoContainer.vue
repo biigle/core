@@ -177,19 +177,23 @@ export default {
 
             return annotation;
         },
-        seek(time) {
-            if (!this.seeking && this.video.currentTime !== time) {
-                let promise = new Vue.Promise((resolve, reject) => {
-                    this.video.addEventListener('seeked', resolve);
-                    this.video.addEventListener('error', reject);
-                });
-                this.seeking = true;
-                this.video.currentTime = time;
-
-                return promise;
+        seek(time, force) {
+            if (this.seeking) {
+                return Vue.Promise.resolve();
             }
 
-            return Vue.Promise.resolve();
+            if (this.video.currentTime === time && force !== true) {
+                return Vue.Promise.resolve();
+            }
+
+            let promise = new Vue.Promise((resolve, reject) => {
+                this.video.addEventListener('seeked', resolve);
+                this.video.addEventListener('error', reject);
+            });
+            this.seeking = true;
+            this.video.currentTime = time;
+
+            return promise;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {

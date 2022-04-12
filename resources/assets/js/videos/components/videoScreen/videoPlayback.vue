@@ -98,10 +98,15 @@ export default {
             }
         },
         startRenderLoop() {
-            this.renderVideo();
-            this.animationFrameId = window.requestAnimationFrame(this.startRenderLoop);
+            let render = () => {
+                this.renderVideo();
+                this.animationFrameId = window.requestAnimationFrame(render);
+            };
+            render();
+            this.map.render();
         },
         cancelRenderLoop() {
+            this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         },
@@ -112,9 +117,7 @@ export default {
             // currentTime (in most cases). With the workaround we can create annotations
             // at currentTime and be sure that the same frame can be reproduced later for
             // the annotations. See: https://github.com/biigle/core/issues/433
-            //
-            // eslint-disable-next-line no-self-assign
-            this.video.currentTime = this.video.currentTime;
+            this.$emit('seek', this.video.currentTime, true);
         },
         setPlaying() {
             this.playing = true;
@@ -157,11 +160,9 @@ export default {
             // seeking and thus render an empty video.
             if (this.playing) {
                 if (seeking) {
-                    this.map.cancelRender();
                     this.cancelRenderLoop();
                 } else {
                     this.startRenderLoop();
-                    this.map.render();
                 }
             }
         },
