@@ -4,13 +4,13 @@
 
 This is the main application core of BIIGLE.
 
-## Support
-
-If you have a question or request that is not a [bug report or feature request](CONTRIBUTING.md), please start a new [discussion](https://github.com/biigle/core/discussions) about it.
-
 ## Contributions and bug reports
 
 Contributions to BIIGLE are always welcome. Check out [`CONTRIBUTING.md`](CONTRIBUTING.md) to get started.
+
+## Support
+
+If you have a question or request that is not a [bug report or feature request](CONTRIBUTING.md), please start a new [discussion](https://github.com/biigle/core/discussions) about it.
 
 ## Installation
 
