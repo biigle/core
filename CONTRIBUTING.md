@@ -10,7 +10,7 @@ A good bug reports should contain as much relevant information about the bug as 
 
 ## Discuss a feature
 
-We have a list of features which should be discussed or which are scheduled for development in the [priorities project board](https://github.com/orgs/biigle/projects/1). If you want to propose a new feature, look at the project board first to see if it hasn't already been proposed. If it hasn't proposed yet, open an issue in the relevant repository or in the [core repository](https://github.com/biigle/core/issues/new) if you are unsure which repository to use.
+We have a list of features which should be discussed or which are scheduled for development in the [priorities project board](https://github.com/orgs/biigle/projects/4/views/1). If you want to propose a new feature, look at the project board first to see if it hasn't already been proposed. If it hasn't proposed yet, open an issue in the relevant repository or in the [core repository](https://github.com/biigle/core/issues/new) if you are unsure which repository to use.
 
 A feature proposal should include a detailed description of the new feature. Please be aware that the BIIGLE maintainers have limited resources and will concentrate their effort on the features which were already agreed upon. If you really want a feature implemented, consider to develop it yourself.
 
