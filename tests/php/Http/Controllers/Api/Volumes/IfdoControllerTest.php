@@ -24,7 +24,7 @@ class IfdoControllerTest extends ApiTestCase
             ->assertStatus(404);
 
         $disk = Storage::fake('ifdos');
-        $disk->put($id, 'abc');
+        $disk->put($id.'.yaml', 'abc');
 
         $this->getJson("/api/v1/volumes/-1/ifdo")
             ->assertStatus(404);
@@ -41,7 +41,7 @@ class IfdoControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', "/api/v1/volumes/{$id}/ifdo");
 
         $disk = Storage::fake('ifdos');
-        $disk->put($id, 'abc');
+        $disk->put($id.'.yaml', 'abc');
 
         $this->beExpert();
         $this->deleteJson("/api/v1/volumes/{$id}/ifdo")
