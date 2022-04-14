@@ -579,6 +579,8 @@ class VolumeTest extends ModelTestCase
         $disk = Storage::fake('ifdos');
         $this->assertFalse($this->model->hasIfdo());
         $disk->put($this->model->id, 'abc');
+        $this->assertFalse($this->model->hasIfdo());
+        Cache::flush();
         $this->assertTrue($this->model->hasIfdo());
     }
 
@@ -586,8 +588,10 @@ class VolumeTest extends ModelTestCase
     {
         $disk = Storage::fake('ifdos');
         $disk->put($this->model->id, 'abc');
+        $this->assertTrue($this->model->hasIfdo());
         $this->model->deleteIfdo();
         $disk->assertMissing($this->model->id);
+        $this->assertFalse($this->model->hasIfdo());
     }
 
     public function testDeleteIfdoOnDelete()
