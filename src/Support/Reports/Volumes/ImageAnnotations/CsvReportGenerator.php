@@ -17,21 +17,21 @@ class CsvReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV image annotation report';
+    public $name = 'CSV image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_image_annotation_report';
+    public $filename = 'csv_image_annotation_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.

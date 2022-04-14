@@ -41,7 +41,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $volume = VolumeTest::create(['name' => 'My Cool Volume']);
 
         $disk = Storage::fake('ifdos');
-        $disk->put($volume->id, yaml_emit($ifdo));
+        $disk->put($volume->id.'.yaml', yaml_emit($ifdo));
 
         return [$volume, $ifdo];
     }

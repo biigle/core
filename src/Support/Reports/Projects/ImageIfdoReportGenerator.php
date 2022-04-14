@@ -19,14 +19,14 @@ class ImageIfdoReportGenerator extends ProjectImageReportGenerator
      *
      * @var string
      */
-    protected $name = 'image iFDO report';
+    public $name = 'image iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_ifdo_report';
+    public $filename = 'image_ifdo_report';
 
     /**
      * Get sources for the sub-reports that should be generated for this project.

@@ -21,21 +21,21 @@ class CsvReportGenerator extends VolumeReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV video annotation report';
+    public $name = 'CSV video annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_video_annotation_report';
+    public $filename = 'csv_video_annotation_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Get the report name.

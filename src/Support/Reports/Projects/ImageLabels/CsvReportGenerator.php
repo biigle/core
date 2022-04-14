@@ -19,12 +19,12 @@ class CsvReportGenerator extends ProjectImageReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV image label report';
+    public $name = 'CSV image label report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_image_label_report';
+    public $filename = 'csv_image_label_report';
 }

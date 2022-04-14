@@ -36,11 +36,11 @@ class ReportsController extends Controller
 
         $disk = Storage::disk(config('reports.storage_disk'));
 
-        if (!$disk->exists($report->id)) {
+        if (!$disk->exists($report->getStorageFilename())) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        return $disk->download($report->id, $report->filename);
+        return $disk->download($report->getStorageFilename(), $report->filename);
     }
 
     /**

@@ -18,14 +18,14 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
      *
      * @var string
      */
-    protected $name = 'video iFDO report';
+    public $name = 'video iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'video_ifdo_report';
+    public $filename = 'video_ifdo_report';
 
     /**
      * Assemble a new DB query for the volume of this report.

@@ -8,6 +8,7 @@ use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Cache;
 use Storage;
 
 class ProjectReportControllerTest extends ApiTestCase
@@ -286,7 +287,8 @@ class ProjectReportControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $disk = Storage::fake('ifdos');
-        $disk->put($this->volume()->id, 'abc');
+        $disk->put($this->volume()->id.'.yaml', 'abc');
+        Cache::flush();
 
         $this->expectsJobs(GenerateReportJob::class);
         $this->postJson("api/v1/projects/{$projectId}/reports", [
@@ -310,7 +312,8 @@ class ProjectReportControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $disk = Storage::fake('ifdos');
-        $disk->put($this->volume()->id, 'abc');
+        $disk->put($this->volume()->id.'.yaml', 'abc');
+        Cache::flush();
 
         $this->expectsJobs(GenerateReportJob::class);
         $this->postJson("api/v1/projects/{$projectId}/reports", [

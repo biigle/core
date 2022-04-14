@@ -19,14 +19,14 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'annotation location image annotation report';
+    public $name = 'annotation location image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'annotation_location_image_annotation_report';
+    public $filename = 'annotation_location_image_annotation_report';
 
     /**
      * Get sources for the sub-reports that should be generated for this project.

@@ -23,7 +23,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     {
         $volume1 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $disk = Storage::fake('ifdos');
-        $disk->put($volume1->id, 'abc');
+        $disk->put($volume1->id.'.yaml', 'abc');
 
         $volume2 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
 

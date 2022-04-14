@@ -21,7 +21,7 @@ abstract class ProjectReportGenerator extends ReportGenerator
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.

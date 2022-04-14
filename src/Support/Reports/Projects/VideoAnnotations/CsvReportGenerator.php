@@ -20,14 +20,14 @@ class CsvReportGenerator extends ProjectVideoReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV video annotation report';
+    public $name = 'CSV video annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_video_annotation_report';
+    public $filename = 'csv_video_annotation_report';
 
     /**
      * Get the report name.

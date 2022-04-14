@@ -112,7 +112,7 @@ class Report extends Model
         $path = $this->getReportGenerator()->generate($this->source);
         try {
             Storage::disk(config('reports.storage_disk'))
-                ->putFileAs('', new SplFileInfo($path), $this->id);
+                ->putFileAs('', new SplFileInfo($path), $this->getStorageFilename());
         } finally {
             File::delete($path);
         }
@@ -165,7 +165,19 @@ class Report extends Model
      */
     public function deleteFile()
     {
-        Storage::disk(config('reports.storage_disk'))->delete($this->id);
+        Storage::disk(config('reports.storage_disk'))->delete($this->getStorageFilename());
+    }
+
+    /**
+     * Get the filename of the report in storage (not the filename for download).
+     *
+     * @return string
+     */
+    public function getStorageFilename()
+    {
+        $extension = $this->getReportGenerator()->extension;
+
+        return $this->id.'.'.$extension;
     }
 
     /**

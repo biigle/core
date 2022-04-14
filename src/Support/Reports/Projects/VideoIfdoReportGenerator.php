@@ -19,14 +19,14 @@ class VideoIfdoReportGenerator extends ProjectVideoReportGenerator
      *
      * @var string
      */
-    protected $name = 'video iFDO report';
+    public $name = 'video iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'video_ifdo_report';
+    public $filename = 'video_ifdo_report';
 
     /**
      * Get sources for the sub-reports that should be generated for this project.

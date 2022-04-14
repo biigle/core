@@ -57,7 +57,7 @@ class ReportTest extends ModelTestCase
         $this->model->setReportGenerator($mock);
         $this->model->generate();
 
-        $this->assertTrue($disk->exists($this->model->id));
+        $this->assertTrue($disk->exists($this->model->getStorageFilename()));
         $this->assertFalse($disk->exists('tmp.file'));
     }
 
@@ -120,19 +120,19 @@ class ReportTest extends ModelTestCase
     {
         config(['reports.storage_disk' => 'test']);
         Storage::fake('test');
-        Storage::disk('test')->put($this->model->id, 'content');
+        Storage::disk('test')->put($this->model->getStorageFilename(), 'content');
         $this->model->delete();
-        $this->assertFalse(Storage::disk('test')->exists($this->model->id));
+        $this->assertFalse(Storage::disk('test')->exists($this->model->getStorageFilename()));
     }
 
     public function testObserveUser()
     {
         config(['reports.storage_disk' => 'test']);
         Storage::fake('test');
-        Storage::disk('test')->put($this->model->id, 'content');
+        Storage::disk('test')->put($this->model->getStorageFilename(), 'content');
         $this->model->user->delete();
         $this->assertNull($this->model->fresh());
-        $this->assertFalse(Storage::disk('test')->exists($this->model->id));
+        $this->assertFalse(Storage::disk('test')->exists($this->model->getStorageFilename()));
     }
 
     public function testDontObserveProjects()

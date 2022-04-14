@@ -19,14 +19,14 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
      *
      * @var string
      */
-    protected $name = 'image iFDO report';
+    public $name = 'image iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_ifdo_report';
+    public $filename = 'image_ifdo_report';
 
     /**
      * Assemble a new DB query for the volume of this report.

@@ -16,7 +16,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      *
      * @var string
      */
-    protected $extension = 'yaml';
+    public $extension = 'yaml';
 
     /**
      * Labels that have been used in this volume.

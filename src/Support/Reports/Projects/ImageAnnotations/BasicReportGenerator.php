@@ -18,12 +18,12 @@ class BasicReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'basic image annotation report';
+    public $name = 'basic image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'basic_image_annotation_report';
+    public $filename = 'basic_image_annotation_report';
 }

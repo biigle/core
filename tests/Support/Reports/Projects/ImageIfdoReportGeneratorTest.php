@@ -22,7 +22,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
     {
         $volume1 = VolumeTest::create();
         $disk = Storage::fake('ifdos');
-        $disk->put($volume1->id, 'abc');
+        $disk->put($volume1->id.'.yaml', 'abc');
 
         $volume2 = VolumeTest::create();
 
