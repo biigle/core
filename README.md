@@ -10,7 +10,7 @@ Contributions to BIIGLE are always welcome. Check out [`CONTRIBUTING.md`](CONTRI
 
 ## Support
 
-If you have a question or request that is not a [bug report or feature request](CONTRIBUTING.md), please start a new [discussion](https://github.com/biigle/core/discussions) about it.
+If you have a question or request that is not a [bug report or feature request](CONTRIBUTING.md), please start a new [discussion](https://github.com/orgs/biigle/discussions) about it.
 
 ## Installation
 
