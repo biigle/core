@@ -6,14 +6,19 @@ use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Tests\VideoTest;
 use Mockery;
+use RuntimeException;
 use Storage;
 
 class VideoFileControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        Storage::fake('test');
-        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
+        $disk->put('files/video.mp4', 'testvideo');
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
@@ -33,7 +38,11 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowNotFound()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
@@ -47,8 +56,12 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowPartial()
     {
-        Storage::fake('test');
-        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
+        $disk->put('files/video.mp4', 'testvideo');
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
