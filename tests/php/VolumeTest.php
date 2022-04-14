@@ -570,7 +570,7 @@ class VolumeTest extends ModelTestCase
         $this->assertFalse($this->model->hasIfdo());
         $this->model->saveIfdo($file);
 
-        $disk->assertExists($this->model->id);
+        $disk->assertExists($this->model->id.'.yaml');
         $this->assertTrue($this->model->hasIfdo());
     }
 
@@ -578,7 +578,7 @@ class VolumeTest extends ModelTestCase
     {
         $disk = Storage::fake('ifdos');
         $this->assertFalse($this->model->hasIfdo());
-        $disk->put($this->model->id, 'abc');
+        $disk->put($this->model->id.'.yaml', 'abc');
         $this->assertFalse($this->model->hasIfdo());
         Cache::flush();
         $this->assertTrue($this->model->hasIfdo());
@@ -587,19 +587,19 @@ class VolumeTest extends ModelTestCase
     public function testDeleteIfdo()
     {
         $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id, 'abc');
+        $disk->put($this->model->id.'.yaml', 'abc');
         $this->assertTrue($this->model->hasIfdo());
         $this->model->deleteIfdo();
-        $disk->assertMissing($this->model->id);
+        $disk->assertMissing($this->model->id.'.yaml');
         $this->assertFalse($this->model->hasIfdo());
     }
 
     public function testDeleteIfdoOnDelete()
     {
         $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id, 'abc');
+        $disk->put($this->model->id.'.yaml', 'abc');
         $this->model->delete();
-        $disk->assertMissing($this->model->id);
+        $disk->assertMissing($this->model->id.'.yaml');
     }
 
     public function testDownloadIfdoNotFound()
@@ -611,7 +611,7 @@ class VolumeTest extends ModelTestCase
     public function testDownloadIfdo()
     {
         $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id, 'abc');
+        $disk->put($this->model->id.'.yaml', 'abc');
         $response = $this->model->downloadIfdo();
         $this->assertInstanceOf(StreamedResponse::class, $response);
     }
@@ -620,7 +620,7 @@ class VolumeTest extends ModelTestCase
     {
         $disk = Storage::fake('ifdos');
         $this->assertNull($this->model->getIfdo());
-        $disk->put($this->model->id, 'abc: def');
+        $disk->put($this->model->id.'.yaml', 'abc: def');
         $ifdo = $this->model->getIfdo();
         $this->assertEquals(['abc' => 'def'], $ifdo);
     }

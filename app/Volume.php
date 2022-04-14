@@ -458,7 +458,7 @@ class Volume extends Model
     public function saveIfdo(UploadedFile $file)
     {
         $disk = config('volumes.ifdo_storage_disk');
-        $file->storeAs('', $this->id, $disk);
+        $file->storeAs('', $this->getIfdoFilename(), $disk);
         Cache::forget($this->getIfdoCacheKey());
     }
 
@@ -470,7 +470,7 @@ class Volume extends Model
     public function hasIfdo()
     {
         return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
-            return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->id);
+            return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
         });
     }
 
@@ -479,7 +479,7 @@ class Volume extends Model
      */
     public function deleteIfdo()
     {
-        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->id);
+        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
         Cache::forget($this->getIfdoCacheKey());
     }
 
@@ -492,11 +492,11 @@ class Volume extends Model
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
 
-        if (!$disk->exists($this->id)) {
+        if (!$disk->exists($this->getIfdoFilename())) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        return $disk->download($this->id, "biigle-volume-{$this->id}-ifdo.yaml");
+        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
     }
 
     /**
@@ -506,9 +506,19 @@ class Volume extends Model
      */
     public function getIfdo()
     {
-        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->id);
+        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
 
         return yaml_parse($content);
+    }
+
+    /**
+     * Get the filename of the volume iFDO in storage.
+     *
+     * @return string
+     */
+    protected function getIfdoFilename()
+    {
+        return $this->id.'.yaml';
     }
 
     /**
