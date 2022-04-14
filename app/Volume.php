@@ -39,7 +39,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const VIDEO_FILE_REGEX = '/\.(mpeg|mp4|webm)(\?.+)?$/i';
+    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -321,7 +321,7 @@ class Volume extends Model
     {
         // We can cache this for 1 hour because it's unlikely to change as long as the
         // volume exists.
-        return Cache::remember("volume-thumbnails-{$this->id}", 3600, function () {
+        return Cache::remember($this->getThumbnailsCacheKey(), 3600, function () {
             $number = 10;
             $total = $this->files()->count();
             $query = $this->orderedFiles();
@@ -353,7 +353,7 @@ class Volume extends Model
      */
     public function flushThumbnailCache()
     {
-        Cache::forget("volume-thumbnails-{$this->id}");
+        Cache::forget($this->getThumbnailsCacheKey());
     }
 
     /**
@@ -363,7 +363,7 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("volume-{$this->id}-has-geo-info", 3600, function () {
+        return Cache::remember($this->getGeoInfoCacheKey(), 3600, function () {
             return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
         });
     }
@@ -373,7 +373,7 @@ class Volume extends Model
      */
     public function flushGeoInfoCache()
     {
-        Cache::forget("volume-{$this->id}-has-geo-info");
+        Cache::forget($this->getGeoInfoCacheKey());
         $this->projects->each(function ($p) {
             $p->flushGeoInfoCache();
         });
@@ -458,7 +458,8 @@ class Volume extends Model
     public function saveIfdo(UploadedFile $file)
     {
         $disk = config('volumes.ifdo_storage_disk');
-        $file->storeAs('', $this->id, $disk);
+        $file->storeAs('', $this->getIfdoFilename(), $disk);
+        Cache::forget($this->getIfdoCacheKey());
     }
 
     /**
@@ -468,7 +469,9 @@ class Volume extends Model
      */
     public function hasIfdo()
     {
-        return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->id);
+        return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
+            return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
+        });
     }
 
     /**
@@ -476,7 +479,8 @@ class Volume extends Model
      */
     public function deleteIfdo()
     {
-        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->id);
+        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
+        Cache::forget($this->getIfdoCacheKey());
     }
 
     /**
@@ -488,11 +492,11 @@ class Volume extends Model
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
 
-        if (!$disk->exists($this->id)) {
+        if (!$disk->exists($this->getIfdoFilename())) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        return $disk->download($this->id, "biigle-volume-{$this->id}-ifdo.yaml");
+        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
     }
 
     /**
@@ -502,8 +506,48 @@ class Volume extends Model
      */
     public function getIfdo()
     {
-        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->id);
+        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
 
         return yaml_parse($content);
+    }
+
+    /**
+     * Get the filename of the volume iFDO in storage.
+     *
+     * @return string
+     */
+    protected function getIfdoFilename()
+    {
+        return $this->id.'.yaml';
+    }
+
+    /**
+     * Get the cache key for volume thumbnails.
+     *
+     * @return string
+     */
+    protected function getThumbnailsCacheKey()
+    {
+        return "volume-thumbnails-{$this->id}";
+    }
+
+    /**
+     * Get the cache key for volume geo info.
+     *
+     * @return string
+     */
+    protected function getGeoInfoCacheKey()
+    {
+        return "volume-{$this->id}-has-geo-info";
+    }
+
+    /**
+     * Get the cache key for volume iFDO info.
+     *
+     * @return string
+     */
+    protected function getIfdoCacheKey()
+    {
+        return "volume-{$this->id}-has-ifdo";
     }
 }
