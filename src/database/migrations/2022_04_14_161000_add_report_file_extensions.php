@@ -2,6 +2,7 @@
 
 use Biigle\Modules\Reports\Report;
 use Illuminate\Database\Migrations\Migration;
+use League\Flysystem\FilesystemOperationFailed;
 
 return new class extends Migration
 {
@@ -21,7 +22,11 @@ return new class extends Migration
 
         Report::eachById(function ($report) use ($disk) {
             $generator = $report->getReportGenerator();
-            $disk->move($report->id, $report->id.'.'.$generator->extension);
+            try {
+                $disk->move($report->id, $report->id.'.'.$generator->extension);
+            } catch (FilesystemOperationFailed $e) {
+                // ignore missing report files and continue
+            }
         });
     }
 
@@ -41,7 +46,11 @@ return new class extends Migration
 
         Report::eachById(function ($report) use ($disk) {
             $generator = $report->getReportGenerator();
-            $disk->move($report->id.'.'.$generator->extension, $report->id);
+            try {
+                $disk->move($report->id.'.'.$generator->extension, $report->id);
+            } catch (FilesystemOperationFailed $e) {
+                // ignore missing report files and continue
+            }
         });
     }
 };
