@@ -92,9 +92,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150], [200, 200]],
                             'frames' => [100.0, 200.0],
                             'labels' => [
@@ -171,9 +171,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
@@ -265,9 +265,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $vl->video->filename => [[
-                    'image-annotation-geometry-types' => ['whole-image'],
                     'image-annotations' => [
                         [
+                            'type' => 'whole-image',
                             'coordinates' => [],
                             'labels' => [
                                 [
@@ -311,9 +311,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'image-set-items' => [
                 $video->filename => [[
                     'image-area-square-meter' => 5.5,
-                    'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'rectangle',
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
@@ -382,9 +382,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'image-set-items' => [
                 $al->annotation->video->filename => [[
                     'image-area-square-meter' => 5.5,
-                    'image-annotation-geometry-types' => ['bounding-box', 'single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'rectangle',
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
@@ -396,6 +396,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
@@ -480,9 +481,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 $al->annotation->video->filename => [
                     [
                         'image-area-square-meter' => 5.5,
-                        'image-annotation-geometry-types' => ['single-pixel'],
                         'image-annotations' => [
                             [
+                                'type' => 'single-pixel',
                                 'coordinates' => [[150, 150]],
                                 'frames' => [100.0],
                                 'labels' => [
@@ -561,9 +562,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
@@ -662,12 +663,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $video1->filename => [[
-                    'image-annotation-geometry-types' => [
-                        'single-pixel',
-                        'whole-image',
-                    ],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $a1->points,
                             'frames' => $a1->frames,
                             'labels' => [
@@ -680,6 +678,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'whole-image',
                             'coordinates' => [],
                             'labels' => [
                                 [
@@ -758,9 +757,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
@@ -805,9 +804,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $video->filename => [[
-                    'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [10, 20],
                             'labels' => [
                                 [
@@ -868,9 +867,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [[150, 150]],
                             'frames' => [100.0],
                             'labels' => [
@@ -960,6 +959,16 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'annotation_id' => $a6->id,
         ]);
 
+        $a7 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'shape_id' => Shape::lineId(),
+        ]);
+        $al7 = VideoAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a7->id,
+        ]);
+
         $generator = new VideoIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
@@ -986,9 +995,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $video->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel', 'polygon', 'bounding-box', 'whole-image'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $a1->points,
                             'frames' => $a1->frames,
                             'labels' => [
@@ -1001,6 +1010,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'rectangle',
                             'coordinates' => $a2->points,
                             'frames' => $a2->frames,
                             'labels' => [
@@ -1013,6 +1023,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'circle',
                             'coordinates' => $a3->points,
                             'frames' => $a3->frames,
                             'labels' => [
@@ -1025,6 +1036,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'ellipse',
                             'coordinates' => $a4->points,
                             'frames' => $a4->frames,
                             'labels' => [
@@ -1037,6 +1049,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'polygon',
                             'coordinates' => $a5->points,
                             'frames' => $a5->frames,
                             'labels' => [
@@ -1049,6 +1062,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'whole-image',
                             'coordinates' => $a6->points,
                             'frames' => $a6->frames,
                             'labels' => [
@@ -1057,6 +1071,19 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                     'annotator' => $user->uuid,
                                     'confidence' => 1.0,
                                     'created-at' => $al6->created_at->toJson(),
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'line-string',
+                            'coordinates' => $a7->points,
+                            'frames' => $a7->frames,
+                            'labels' => [
+                                [
+                                    'label' => $label->id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => 1.0,
+                                    'created-at' => $al7->created_at->toJson(),
                                 ],
                             ],
                         ],

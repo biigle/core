@@ -91,9 +91,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -168,9 +168,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -261,9 +261,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $il->image->filename => [
-                    'image-annotation-geometry-types' => ['whole-image'],
                     'image-annotations' => [
                         [
+                            'type' => 'whole-image',
                             'coordinates' => [],
                             'labels' => [
                                 [
@@ -307,9 +307,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             'image-set-items' => [
                 $image->filename => [
                     'image-area-square-meter' => 5.5,
-                    'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'rectangle',
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
@@ -377,9 +377,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             'image-set-items' => [
                 $al->annotation->image->filename => [
                     'image-area-square-meter' => 5.5,
-                    'image-annotation-geometry-types' => ['bounding-box', 'single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'rectangle',
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
@@ -391,6 +391,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -468,9 +469,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             'image-set-items' => [
                 $al->annotation->image->filename => [[
                     'image-area-square-meter' => 5.5,
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -551,9 +552,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $a1->points,
                             'labels' => [
                                 [
@@ -626,9 +627,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -726,12 +727,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image1->filename => [
-                    'image-annotation-geometry-types' => [
-                        'single-pixel',
-                        'whole-image',
-                    ],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $a1->points,
                             'labels' => [
                                 [
@@ -743,6 +741,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'whole-image',
                             'coordinates' => [],
                             'labels' => [
                                 [
@@ -820,9 +819,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -866,9 +865,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image->filename => [
-                    'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [10, 20],
                             'labels' => [
                                 [
@@ -928,9 +927,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -974,9 +973,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image->filename => [[
-                    'image-annotation-geometry-types' => ['bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => [10, 20],
                             'labels' => [
                                 [
@@ -1036,9 +1035,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $al->annotation->image->filename => [[
-                    'image-annotation-geometry-types' => ['single-pixel'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $al->annotation->points,
                             'labels' => [
                                 [
@@ -1117,6 +1116,16 @@ class ImageIfdoReportGeneratorTest extends TestCase
             'annotation_id' => $a5->id,
         ]);
 
+        $a6 = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'shape_id' => Shape::lineId(),
+        ]);
+        $al6 = ImageAnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'user_id' => $user->id,
+            'annotation_id' => $a6->id,
+        ]);
+
         $generator = new ImageIfdoReportGeneratorStub;
         $generator->setSource($volume);
         $generator->generateReport('my/path');
@@ -1143,9 +1152,9 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
             'image-set-items' => [
                 $image->filename => [
-                    'image-annotation-geometry-types' => ['single-pixel', 'polygon', 'bounding-box'],
                     'image-annotations' => [
                         [
+                            'type' => 'single-pixel',
                             'coordinates' => $a1->points,
                             'labels' => [
                                 [
@@ -1157,6 +1166,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'rectangle',
                             'coordinates' => $a2->points,
                             'labels' => [
                                 [
@@ -1168,6 +1178,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'circle',
                             'coordinates' => $a3->points,
                             'labels' => [
                                 [
@@ -1179,6 +1190,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'ellipse',
                             'coordinates' => $a4->points,
                             'labels' => [
                                 [
@@ -1190,6 +1202,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             ],
                         ],
                         [
+                            'type' => 'polygon',
                             'coordinates' => $a5->points,
                             'labels' => [
                                 [
@@ -1197,6 +1210,18 @@ class ImageIfdoReportGeneratorTest extends TestCase
                                     'annotator' => $user->uuid,
                                     'confidence' => $al5->confidence,
                                     'created-at' => $al5->created_at->toJson(),
+                                ],
+                            ],
+                        ],
+                        [
+                            'type' => 'line-string',
+                            'coordinates' => $a6->points,
+                            'labels' => [
+                                [
+                                    'label' => $label->id,
+                                    'annotator' => $user->uuid,
+                                    'confidence' => $al6->confidence,
+                                    'created-at' => $al6->created_at->toJson(),
                                 ],
                             ],
                         ],

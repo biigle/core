@@ -116,32 +116,11 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
      */
     public function processFile(Image|Video $video)
     {
-        $geometryTypes = [];
-
         // Remove annotations that should not be included because of an "onlyLabels"
         // filter.
         $annotations = $video->annotations->filter(function ($a) {
             return $a->labels->isNotEmpty();
         });
-
-        $geometryTypes = $annotations->map(function ($a) {
-                if ($a->shape_id === Shape::pointId()) {
-                    return 'single-pixel';
-                } elseif ($a->shape_id === Shape::circleId()) {
-                    // Circles don't store the coordinates but could be converted to
-                    // bounding boxes.
-                    return 'bounding-box';
-                } elseif ($a->shape_id === Shape::wholeFrameId()) {
-                    return 'whole-image';
-                } else {
-                    // We treat ellipses as rectangles and rectangles as polygons.
-                    // Also, line strings can only be represented as polygons in iFDO.
-                    return 'polygon';
-                }
-            })
-            ->unique()
-            ->values()
-            ->toArray();
 
         $annotations = $annotations->map(function ($annotation) {
             $labels = $annotation->labels->map(function ($aLabel) {
@@ -171,6 +150,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
             });
 
             return [
+                'type' => $this->getGeometryType($annotation),
                 'coordinates' => $annotation->points,
                 'frames' => $annotation->frames,
                 'labels' => $labels->toArray(),
@@ -195,6 +175,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
             }
 
             return [
+                'type' => 'whole-image',
                 'coordinates' => [],
                 'labels' => [
                     [
@@ -205,10 +186,6 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 ],
             ];
         });
-
-        if ($labels->isNotEmpty() && !in_array('whole-image', $geometryTypes)) {
-            $geometryTypes[] = 'whole-image';
-        }
 
         $this->imageSetItems[$video->filename] = [];
 
@@ -221,7 +198,6 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
             // However, we only fill the first array entry with this report.
             $this->imageSetItems[$video->filename][] = [
                 'image-annotations' => $videoAnnotations,
-                'image-annotation-geometry-types' => $geometryTypes,
             ];
         }
     }

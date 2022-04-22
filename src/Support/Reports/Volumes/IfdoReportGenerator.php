@@ -2,9 +2,11 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
+use Biigle\Annotation;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
+use Biigle\Shape;
 use Biigle\Video;
 use DB;
 use Exception;
@@ -261,6 +263,32 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             }
         } else {
             $ifdoItems[$key] = $this->imageSetItems[$key];
+        }
+    }
+
+    /**
+     * Get an iFDO geometry type string for an annotation.
+     *
+     * @param Annotation $annotation
+     *
+     * @return string
+     */
+    protected function getGeometryType(Annotation $annotation)
+    {
+        if ($annotation->shape_id === Shape::pointId()) {
+            return 'single-pixel';
+        } elseif ($annotation->shape_id === Shape::lineId()) {
+            return 'line-string';
+        } elseif ($annotation->shape_id === Shape::circleId()) {
+            return 'circle';
+        } elseif ($annotation->shape_id === Shape::rectangleId()) {
+            return 'rectangle';
+        } elseif ($annotation->shape_id === Shape::ellipseId()) {
+            return 'ellipse';
+        } elseif ($annotation->shape_id === Shape::wholeFrameId()) {
+            return 'whole-image';
+        } else {
+            return 'polygon';
         }
     }
 }
