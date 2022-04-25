@@ -150,7 +150,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
             });
 
             return [
-                'type' => $this->getGeometryType($annotation),
+                'shape' => $this->getGeometryName($annotation),
                 'coordinates' => $annotation->points,
                 'frames' => $annotation->frames,
                 'labels' => $labels->toArray(),
@@ -175,7 +175,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
             }
 
             return [
-                'type' => 'whole-image',
+                'shape' => 'whole-image',
                 'coordinates' => [],
                 'labels' => [
                     [

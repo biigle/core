@@ -152,7 +152,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
             });
 
             return [
-                'type' => $this->getGeometryType($annotation),
+                'shape' => $this->getGeometryName($annotation),
                 'coordinates' => $annotation->points,
                 'labels' => $labels->toArray(),
             ];
@@ -176,7 +176,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
             }
 
             return [
-                'type' => 'whole-image',
+                'shape' => 'whole-image',
                 'coordinates' => [],
                 'labels' => [
                     [

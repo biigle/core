@@ -267,18 +267,18 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Get an iFDO geometry type string for an annotation.
+     * Get an iFDO geometry name string for an annotation.
      *
      * @param Annotation $annotation
      *
      * @return string
      */
-    protected function getGeometryType(Annotation $annotation)
+    protected function getGeometryName(Annotation $annotation)
     {
         if ($annotation->shape_id === Shape::pointId()) {
             return 'single-pixel';
         } elseif ($annotation->shape_id === Shape::lineId()) {
-            return 'line-string';
+            return 'polyline';
         } elseif ($annotation->shape_id === Shape::circleId()) {
             return 'circle';
         } elseif ($annotation->shape_id === Shape::rectangleId()) {
