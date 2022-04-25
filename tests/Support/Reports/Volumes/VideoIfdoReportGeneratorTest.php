@@ -100,7 +100,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $al->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -178,13 +177,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $al->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                                 [
                                     'label' => $al2->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -315,7 +312,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => 123321,
                                     'annotator' => '123abc',
-                                    'confidence' => 1.0,
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
                             ],
@@ -384,7 +380,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => 123321,
                                     'annotator' => '123abc',
-                                    'confidence' => 1.0,
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
                             ],
@@ -397,7 +392,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $al->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -483,7 +477,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                     [
                                         'label' => $al->label_id,
                                         'annotator' => $user->uuid,
-                                        'confidence' => 1.0,
                                         'created-at' => $al->created_at->toJson(),
                                     ],
                                 ],
@@ -563,7 +556,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $al2->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -663,7 +655,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -756,7 +747,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => 'urn:lsid:marinespecies.org:taxname:123999',
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -801,7 +791,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => 123321,
                                     'annotator' => '123abc',
-                                    'confidence' => 1.0,
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
                             ],
@@ -864,7 +853,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $al->label_id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                             ],
@@ -991,7 +979,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al1->created_at->toJson(),
                                 ],
                             ],
@@ -1004,7 +991,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al2->created_at->toJson(),
                                 ],
                             ],
@@ -1017,7 +1003,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al3->created_at->toJson(),
                                 ],
                             ],
@@ -1030,7 +1015,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al4->created_at->toJson(),
                                 ],
                             ],
@@ -1043,7 +1027,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al5->created_at->toJson(),
                                 ],
                             ],
@@ -1056,7 +1039,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al6->created_at->toJson(),
                                 ],
                             ],
@@ -1069,7 +1051,6 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 [
                                     'label' => $label->id,
                                     'annotator' => $user->uuid,
-                                    'confidence' => 1.0,
                                     'created-at' => $al7->created_at->toJson(),
                                 ],
                             ],

@@ -146,7 +146,6 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
                 return [
                     'label' => $labelId,
                     'annotator' => $user->uuid,
-                    'confidence' => $aLabel->confidence,
                     'created-at' => $aLabel->created_at->toJson(),
                 ];
             });
