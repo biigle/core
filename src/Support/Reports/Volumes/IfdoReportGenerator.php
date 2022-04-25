@@ -85,8 +85,6 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             return [
                 'id' => $user->uuid,
                 'name' => "{$user->firstname} {$user->lastname}",
-                // TODO maybe leave this out? No way to determine the type here.
-                'type' => 'expert',
             ];
         }, $this->imageAnnotationCreators);
 

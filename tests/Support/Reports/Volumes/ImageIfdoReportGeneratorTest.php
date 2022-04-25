@@ -79,7 +79,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -152,7 +151,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -249,7 +247,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -294,7 +291,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => '123abc',
                         'name' => "Test User",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -355,12 +351,10 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => '123abc',
                         'name' => "Test User",
-                        'type' => 'expert',
                     ],
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -456,7 +450,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -540,7 +533,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -615,7 +607,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -715,7 +706,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -807,7 +797,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -853,7 +842,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => '123abc',
                         'name' => "Test User",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -915,7 +903,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -961,7 +948,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => '123abc',
                         'name' => "Test User",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -1023,7 +1009,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -1140,7 +1125,6 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
-                        'type' => 'expert',
                     ],
                 ],
                 'image-annotation-labels' => [
