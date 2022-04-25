@@ -8,7 +8,7 @@
         <span class="pull-right">
             <span class="loader" v-bind:class="{'loader--active':loading}"></span>
             <dropdown tag="span" v-if="hasIfdo" v-cloak>
-                <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Manage the iFDO file attached to this volume" :disabled="loading">iFDO <span class="caret"></span></button>
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Manage the iFDO file attached to this volume" :disabled="loading"><img class="ifdo-icon ifdo-icon--btn" src="{{ cachebust_asset('assets/images/ifdo_logo_grey.svg') }}"> iFDO <span class="caret"></span></button>
                 <template slot="dropdown">
                     <li>
                         <a href="{{url("api/v1/volumes/{$volume->id}/ifdo")}}" title="Download the iFDO file">Download</a>
