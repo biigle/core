@@ -1,7 +1,26 @@
 <loader-block :active="loading"></loader-block>
-<div v-if="hasVideoError" class="error-message">
+<div v-cloak v-if="hasVideoError" class="error-message">
     <div class="panel" :class="errorClass">
-        <div class="panel-body" v-text="errorMessage"></div>
+        <div class="panel-body">
+            <span v-if="hasNotProcessedError">
+                The video has not been processed yet. Please try again later.
+            </span>
+            <span v-if="hasNotFoundError">
+                The video file has not been found. Please check the source.
+            </span>
+            <span v-if="hasMimeTypeError">
+                The video MIME type is invalid. Allowed MIME types: {{implode(', ', Biigle\Video::MIMES)}}.
+            </span>
+            <span v-if="hasCodecError">
+                The video codec is invalid. Allowed codecs: {{implode(', ', Biigle\Video::CODECS)}}.
+            </span>
+            <span v-if="hasMalformedError">
+                The video file seems to be malformed.
+            </span>
+            <span v-if="hasTooLargeError">
+                The video file is too large.
+            </span>
+        </div>
     </div>
 </div>
 <video-screen
