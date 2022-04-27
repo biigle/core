@@ -82,7 +82,12 @@ class VolumeFiles implements Rule
         $count = count($value);
 
         if ($count !== count(array_unique($value))) {
-            $this->message = 'A volume must not have the same file twice.';
+            $dupes = array_keys(array_filter(array_count_values($value), function ($v) {
+                return $v > 1;
+            }));
+
+
+            $this->message = 'A volume must not have the same file twice. Duplicate files: '.implode(', ', $dupes);
 
             return false;
         }
