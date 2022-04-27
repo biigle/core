@@ -173,11 +173,6 @@
                         <p class="help-block">
                            The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
                         </p>
-                        <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
-                            <div class="panel-body text-warning">
-                                Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
-                            </div>
-                        </div>
                     </div>
                     <div v-else @unless ($mediaType === 'video') v-cloak @endif>
                         <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3"></textarea>
@@ -238,6 +233,12 @@
                     <span class="help-block">{{ $errors->first('files') }}</span>
                  </div>
             @endif
+        </div>
+
+        <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+            </div>
         </div>
 
          <fieldset>
