@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        // Create a collation to sort (file-)names "naturally".
+        // Create a collation to sort strings "naturally".
         // See: https://stackoverflow.com/a/67975489/1796523
         DB::statement('CREATE COLLATION "natural" (provider = icu, locale = "en@colNumeric=yes");');
 
@@ -21,6 +21,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE "videos" ALTER COLUMN "filename" type VARCHAR(512) COLLATE "natural";');
         DB::statement('ALTER TABLE "projects" ALTER COLUMN "name" type VARCHAR(512) COLLATE "natural";');
         DB::statement('ALTER TABLE "volumes" ALTER COLUMN "name" type VARCHAR(512) COLLATE "natural";');
+        DB::statement('ALTER TABLE "labels" ALTER COLUMN "name" type VARCHAR(512) COLLATE "natural";');
     }
 
     /**
@@ -30,6 +31,7 @@ return new class extends Migration
      */
     public function down()
     {
+        DB::statement('ALTER TABLE "labels" ALTER COLUMN "name" type VARCHAR(512) COLLATE pg_catalog."default";');
         DB::statement('ALTER TABLE "volumes" ALTER COLUMN "name" type VARCHAR(512) COLLATE pg_catalog."default";');
         DB::statement('ALTER TABLE "projects" ALTER COLUMN "name" type VARCHAR(512) COLLATE pg_catalog."default";');
         DB::statement('ALTER TABLE "videos" ALTER COLUMN "filename" type VARCHAR(512) COLLATE pg_catalog."default";');
