@@ -40,9 +40,10 @@
             v-show="!collapsed"
             class="file-browser-directory-list"
             >
-            <li v-for="(dir, path) in directory.directories">
+            <li v-for="(dir, index) in directories">
                 <file-browser-directory
-                    :path="path"
+                    :key="index"
+                    :path="dir.name"
                     :dirname="fullPath"
                     :directory="dir"
                     :removable="removable"
@@ -63,7 +64,7 @@
                     ></file-browser-directory>
             </li>
             <file-browser-file
-                v-for="(file, index) in directory.files"
+                v-for="(file, index) in files"
                 :key="index"
                 :file="file"
                 :download-url="downloadUrl"
@@ -176,6 +177,22 @@ export default {
         },
         selected() {
             return this.directory.selected;
+        },
+        directories() {
+            return Object.values(this.directory.directories).sort(function (a, b) {
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base',
+                });
+            });
+        },
+        files() {
+            return this.directory.files.slice().sort(function (a, b) {
+                return a.name.localeCompare(b.name, undefined, {
+                    numeric: true,
+                    sensitivity: 'base',
+                });
+            });
         },
     },
     methods: {
