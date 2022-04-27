@@ -60,7 +60,7 @@ export default {
                     });
                 case SORTING.DATE_UP:
                     return volumes.sort(function (a, b) {
-                        return a.updated_at < b.updated_at ? -1 : 1;
+                        return a.created_at < b.created_at ? -1 : 1;
                     });
                 default:
                     return volumes;
