@@ -50,7 +50,7 @@
             The @if ($volume->isImageVolume()) image @else video @endif metadata was successfully updated.
         </div>
         <p class="text-muted">
-            Learn more about @if ($volume->isImageVolume()) image @else video @endif metadata and the CSV file format in the <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}">manual</a>.
+            Learn more about @if ($volume->isImageVolume()) image @else video @endif metadata and the file formats in the <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}">manual</a>.
         </p>
     </div>
 </div>
