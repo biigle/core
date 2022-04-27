@@ -32,7 +32,7 @@ This will set up the project in the `dev-modules` branch of this repository. The
 
 ### 2. Build and run the application
 
-**Optional:** To speed up the build process, download the pre-built Docker images form GitHub:
+**Optional:** To speed up the build process, download the pre-built Docker images from GitHub:
 
 ```
 docker pull ghcr.io/biigle/app:latest

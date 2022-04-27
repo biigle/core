@@ -19,6 +19,12 @@
                 <span v-cloak v-show="hasFiltering" v-on:click="clearFiltering" title="Clear filter query" class="form-control-feedback" aria-hidden="true"><i class="fas fa-times fa-sm"></i></span>
             </span>
         </form>
+        <span class="btn-group">
+            <button class="btn btn-default" :class="sortByDateDownClass" title="Sort volumes by newest first" v-on:click="sortByDateDown" :disabled="!hasVolumes"><i class="fa fa-sort-numeric-down"></i></button>
+            <button class="btn btn-default" :class="sortByDateUpClass" title="Sort volumes by oldest first" v-on:click="sortByDateUp" :disabled="!hasVolumes"><i class="fa fa-sort-numeric-up"></i></button>
+            <button class="btn btn-default" :class="sortByNameDownClass" title="Sort volumes by name" v-on:click="sortByNameDown" :disabled="!hasVolumes"><i class="fa fa-sort-alpha-down"></i></button>
+            <button class="btn btn-default" :class="sortByNameUpClass" title="Sort volumes by name (reversed)" v-on:click="sortByNameUp" :disabled="!hasVolumes"><i class="fa fa-sort-alpha-up"></i></button>
+        </span>
         @can('update', $project)
             <span class="pull-right">
                 <loader :active="loading"></loader>

@@ -49,7 +49,7 @@ class ProjectsController extends Controller
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')

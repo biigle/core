@@ -1,7 +1,7 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# FROM nginx:1.16-alpine
-FROM nginx@sha256:5057451e461dda671da5e951019ddbff9d96a751fc7d548053523ca1f848c1ad
+# FROM nginx:1.21-alpine
+FROM nginx@sha256:5a0df7fb7c8c03e4158ae9974bfbd6a15da2bdfdeded4fb694367ec812325d31
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
