@@ -161,6 +161,7 @@ class BrowserController extends Controller
      */
     protected function removePrefix($prefix, $list)
     {
+        $prefix = preg_quote($prefix);
         $regex = "!^{$prefix}/?!";
 
         return array_map(function ($item) use ($regex) {
