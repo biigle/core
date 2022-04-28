@@ -82,7 +82,12 @@ class VolumeFiles implements Rule
         $count = count($value);
 
         if ($count !== count(array_unique($value))) {
-            $this->message = 'A volume must not have the same file twice.';
+            $dupes = array_keys(array_filter(array_count_values($value), function ($v) {
+                return $v > 1;
+            }));
+
+
+            $this->message = 'A volume must not have the same file twice. Duplicate files: '.implode(', ', $dupes);
 
             return false;
         }
@@ -113,8 +118,9 @@ class VolumeFiles implements Rule
         }
 
         try {
-            if (!$this->sampleFilesExist($value)) {
-                $this->message = 'Some files could not be accessed. Please make sure all files exist.';
+            $successOrFile = $this->sampleFilesExist($value);
+            if ($successOrFile !== true) {
+                $this->message = "Some files could not be accessed ({$successOrFile}). Please make sure all files exist.";
 
                 return false;
             }
@@ -142,20 +148,17 @@ class VolumeFiles implements Rule
      *
      * @param array $files
      *
-     * @return bool
+     * @return string|bool
      */
     protected function sampleFilesExist($files)
     {
         $samples = collect($files)
             ->shuffle()
-            ->take($this->sampleCount)
-            ->map(function ($file) {
-                return new GenericFile("{$this->url}/{$file}");
-            });
+            ->take($this->sampleCount);
 
-        foreach ($samples as $file) {
-            if (!FileCache::exists($file)) {
-                return false;
+        foreach ($samples as $filename) {
+            if (!FileCache::exists(new GenericFile("{$this->url}/{$filename}"))) {
+                return $filename;
             }
         }
 

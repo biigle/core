@@ -129,24 +129,23 @@ export default {
         hasVideoError() {
             return this.error instanceof VideoError;
         },
-        errorMessage() {
-            if (this.hasVideoError) {
-                if (this.error instanceof VideoNotProcessedError) {
-                    return 'The video has not been processed yet. Please try again later.'
-                } else if (this.error instanceof VideoNotFoundError) {
-                    return 'The video file has not been found. Please check the source.'
-                } else if (this.error instanceof VideoMimeTypeError) {
-                    return 'The video MIME type is invalid.'
-                } else if (this.error instanceof VideoCodecError) {
-                    return 'The video codec is invalid.'
-                } else if (this.error instanceof VideoMalformedError) {
-                    return 'The video file is malformed.'
-                } else if (this.error instanceof VideoTooLargeError) {
-                    return 'The video file is too large.'
-                }
-            }
-
-            return '';
+        hasNotProcessedError() {
+            return this.error instanceof VideoNotProcessedError;
+        },
+        hasNotFoundError() {
+            return this.error instanceof VideoNotFoundError;
+        },
+        hasMimeTypeError() {
+            return this.error instanceof VideoMimeTypeError;
+        },
+        hasCodecError() {
+            return this.error instanceof VideoCodecError;
+        },
+        hasMalformedError() {
+            return this.error instanceof VideoMalformedError;
+        },
+        hasTooLargeError() {
+            return this.error instanceof VideoTooLargeError;
         },
         errorClass() {
             if (this.hasVideoError) {
