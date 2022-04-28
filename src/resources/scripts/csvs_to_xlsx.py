@@ -3,6 +3,9 @@ import numpy as np
 from pyexcelerate import Workbook, Style, Font
 import csv
 
+# See: https://github.com/biigle/reports/issues/79
+csv.field_size_limit(sys.maxsize)
+
 target_file = sys.argv[2]
 csvs = sys.argv[3:]
 

@@ -8,6 +8,9 @@ import sys
 import numpy as np
 import csv
 
+# See: https://github.com/biigle/reports/issues/79
+csv.field_size_limit(sys.maxsize)
+
 title = sys.argv[1]
 target_file = sys.argv[2]
 data_csvs = sys.argv[3:]
