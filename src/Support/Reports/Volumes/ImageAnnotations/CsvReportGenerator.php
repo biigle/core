@@ -95,6 +95,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 'image_annotations.points',
                 'images.attrs',
                 'image_annotations.id as annotation_id',
+                'image_annotation_labels.created_at',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
@@ -130,6 +131,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'points',
             'attributes',
             'annotation_id',
+            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -150,6 +152,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->points,
                 $row->attrs,
                 $row->annotation_id,
+                $row->created_at,
             ]);
         }
 

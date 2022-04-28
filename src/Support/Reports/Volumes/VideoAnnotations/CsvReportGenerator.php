@@ -205,6 +205,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'video_annotations.points',
                 'video_annotations.frames',
                 'video_annotations.id as annotation_id',
+                'video_annotation_labels.created_at',
             ])
             ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
@@ -238,6 +239,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             'points',
             'frames',
             'annotation_id',
+            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -256,6 +258,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->points,
                 $row->frames,
                 $row->annotation_id,
+                $row->created_at,
             ]);
         }
 

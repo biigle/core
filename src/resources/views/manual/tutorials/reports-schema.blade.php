@@ -184,6 +184,7 @@
                 </p>
             </li>
             <li><strong>Annotation ID</strong></li>
+            <li><strong>Creation date (of the annotation label)</strong></li>
         </ol>
 
         <h4><a name="annotation-extended-report"></a>Extended</h4>
@@ -298,6 +299,7 @@ Animalia
             <li><strong>Label ID</strong></li>
             <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
+            <li><strong>Creation date</strong></li>
         </ol>
 
         <h4><a name="image-label-image-location-report"></a>ImageLocation</h4>
@@ -348,6 +350,7 @@ Animalia
                 </p>
             </li>
             <li><strong>Video annotation ID</strong></li>
+            <li><strong>Creation date (of the video annotation label)</strong></li>
         </ol>
 
         <h3><a name="video-label-reports"></a>Video label reports</h3>
@@ -365,6 +368,7 @@ Animalia
             <li><strong>Label ID</strong></li>
             <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
+            <li><strong>Creation date</strong></li>
         </ol>
 
         <h3><a name="image-ifdo-reports"></a><a name="ifdo-reports"></a>iFDO reports</h3>

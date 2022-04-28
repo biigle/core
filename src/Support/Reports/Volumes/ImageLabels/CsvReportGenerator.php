@@ -95,6 +95,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'users.lastname',
                 'image_labels.label_id',
                 'labels.name as label_name',
+                'image_labels.created_at',
             ])
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToLabels(), function ($query) {
@@ -131,6 +132,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             'label_id',
             'label_name',
             'label_hierarchy',
+            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -146,6 +148,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->label_id,
                 $row->label_name,
                 $this->expandLabelName($row->label_id),
+                $row->created_at,
             ]);
         }
 

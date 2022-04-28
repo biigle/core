@@ -35,6 +35,7 @@ class CsvReportGeneratorTest extends TestCase
         'points',
         'frames',
         'annotation_id',
+        'created_at',
     ];
 
     public function testProperties()
@@ -93,6 +94,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($al->annotation->points),
                 json_encode($al->annotation->frames),
                 $al->annotation->id,
+                $al->created_at,
             ]);
 
         $mock->shouldReceive('close')
@@ -170,6 +172,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
+                $al1->created_at,
             ]);
 
         $mock->shouldReceive('put')
@@ -189,6 +192,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
+                $al2->created_at,
             ]);
 
         $mock->shouldReceive('close')
@@ -276,6 +280,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
+                $al1->created_at,
             ]);
 
         $mock->shouldReceive('put')
@@ -295,6 +300,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
+                $al2->created_at,
             ]);
 
         $mock->shouldReceive('close')
