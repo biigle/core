@@ -1,6 +1,6 @@
 <template>
 <li
-    class="file-browser-file clearfix"
+    class="file-browser-file file-browser-label clearfix"
     :class="classObject"
     @click="handleClick($event)"
     >

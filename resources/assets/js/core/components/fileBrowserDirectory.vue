@@ -5,7 +5,9 @@
         >
         <div
             v-if="!root"
-            class="file-browser-directory-name clearfix"
+            class="file-browser-directory-name file-browser-label clearfix"
+            :title="directory.name"
+            :class="labelClassObject"
             @click="handleClick"
             >
 
@@ -151,8 +153,12 @@ export default {
     computed: {
         classObject() {
             return {
-                selected: this.selected,
                 root: this.root,
+            };
+        },
+        labelClassObject() {
+            return {
+                selected: this.selected,
                 selectable: this.selectable,
             };
         },
