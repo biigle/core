@@ -7,14 +7,14 @@ return [
     | Disks that should also be available to users with the editor role can be
     | configured in editor_storage_disks below.
     */
-    'admin_storage_disks' => array_filter(explode(',', env('VOLUME_ADMIN_STORAGE_DISKS'))),
+    'admin_storage_disks' => array_filter(explode(',', env('VOLUME_ADMIN_STORAGE_DISKS', ''))),
 
     /*
     | Storage disks that are available to editors when a new volume is created.
     |
     | All files will be visible to all these users!
     */
-    'editor_storage_disks' => array_filter(explode(',', env('VOLUME_EDITOR_STORAGE_DISKS'))),
+    'editor_storage_disks' => array_filter(explode(',', env('VOLUME_EDITOR_STORAGE_DISKS', ''))),
 
     /*
     | Storage disk for iFDO metadata files linked with volumes.
