@@ -315,9 +315,9 @@ export default {
             }
 
             promise.then((directory) => {
-                this.unselectAllDirectories(this.selectedDiskRoot);
+                this.unselectDirectory(this.selectedDiskRoot);
+                directory.selected = true;
                 if (directory.files.length > 0) {
-                    directory.selected = true;
                     directory.files.forEach(file => file.selected = true);
                     this.setUrlAndFilenames(path, directory.files);
                 }
