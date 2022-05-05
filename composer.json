@@ -121,7 +121,10 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "preferred-install": "dist",
+        "preferred-install": {
+            "biigle/*": "source",
+            "*": "dist"
+        },
         "sort-packages": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true

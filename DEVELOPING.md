@@ -23,7 +23,7 @@ composer create-project biigle/core:dev-dev-modules \
     --repository='{"type":"vcs","url":"git@github.com:biigle/core.git"}' \
     --keep-vcs \
     --ignore-platform-reqs \
-    --prefer-source biigle
+    biigle
 ```
 
 Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
