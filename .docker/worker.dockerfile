@@ -141,6 +141,9 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
+# Unset proxy configuration again.
+RUN [ -n "$HTTP_PROXY" ] && pear config-set http_proxy ""
+
 # Other Python dependencies are added with the OpenCV build above.
 RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib
 
