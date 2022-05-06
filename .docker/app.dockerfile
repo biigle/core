@@ -33,6 +33,8 @@ RUN apk add --no-cache yaml \
     && pecl install yaml \
     && docker-php-ext-enable yaml \
     && apk del --purge .build-deps
+# Unset proxy configuration again.
+RUN [ -n "$HTTP_PROXY" ] && pear config-set http_proxy ""
 
 ARG PHPREDIS_VERSION=5.3.7
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
