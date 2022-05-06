@@ -886,6 +886,52 @@ class VolumeImportTest extends TestCase
         Queue::assertPushed(PostprocessVolumeImport::class);
     }
 
+    public function testPerformDeletedUser()
+    {
+        $imageAnnotation = ImageAnnotationTest::create(['image_id' => $this->image->id]);
+        $imageAnnotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $imageAnnotation->id,
+            'user_id' => null,
+        ]);
+        $imageLabel = ImageLabelTest::create([
+            'image_id' => $this->image->id,
+            'user_id' => null,
+        ]);
+
+        $videoAnnotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        $videoAnnotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $videoAnnotation->id,
+            'user_id' => null,
+        ]);
+        $videoLabel = VideoLabelTest::create([
+            'video_id' => $this->video->id,
+            'user_id' => null,
+        ]);
+
+        $import = $this->getImport([
+            $this->imageVolume->id,
+            $this->videoVolume->id,
+        ]);
+        $project = ProjectTest::create();
+
+        $map = $import->perform($project, $project->creator);
+
+        $newImageVolume = Volume::find($map['volumes'][$this->imageVolume->id]);
+        $newImages = $newImageVolume->images;
+        $newImageLabels = $newImages[0]->labels;
+        $this->assertNull($newImageLabels[0]->user_id);
+        $newImageAnnotations = $newImages[0]->annotations;
+        $this->assertNull($newImageAnnotations[0]->labels[0]->user_id);
+
+        $newVideoVolume = Volume::find($map['volumes'][$this->videoVolume->id]);
+        $newVideos = $newVideoVolume->videos;
+        $newVideoLabels = $newVideos[0]->labels;
+        $this->assertNull($newVideoLabels[0]->user_id);
+
+        $newVideoAnnotations = $newVideos[0]->annotations;
+        $this->assertNull($newVideoAnnotations[0]->labels[0]->user_id);
+    }
+
     protected function getDefaultImport()
     {
         return $this->getImport([$this->imageVolume->id, $this->videoVolume->id]);

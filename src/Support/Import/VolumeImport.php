@@ -623,7 +623,7 @@ class VolumeImport extends Import
                 $imageLabels[] = [
                     'image_id' => $imageIdMap[$line[0]],
                     'label_id' => $labelIdMap[$line[1]],
-                    'user_id' => $userIdMap[$line[2]],
+                    'user_id' => $userIdMap[$line[2]] ?? null,
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                 ];
@@ -650,7 +650,7 @@ class VolumeImport extends Import
                 $videoLabels[] = [
                     'video_id' => $videoIdMap[$line[0]],
                     'label_id' => $labelIdMap[$line[1]],
-                    'user_id' => $userIdMap[$line[2]],
+                    'user_id' => $userIdMap[$line[2]] ?? null,
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                 ];
@@ -732,7 +732,7 @@ class VolumeImport extends Import
                 $annotationLabels[] = [
                     'annotation_id' => $annotationIdMap[$line[0]],
                     'label_id' => $labelIdMap[$line[1]],
-                    'user_id' => $userIdMap[$line[2]],
+                    'user_id' => $userIdMap[$line[2]] ?? null,
                     'confidence' => (float) $line[3],
                     'created_at' => $line[4],
                     'updated_at' => $line[5],
@@ -824,7 +824,7 @@ class VolumeImport extends Import
                 $annotationLabels[] = [
                     'annotation_id' => $annotationIdMap[$line[0]],
                     'label_id' => $labelIdMap[$line[1]],
-                    'user_id' => $userIdMap[$line[2]],
+                    'user_id' => $userIdMap[$line[2]] ?? null,
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                 ];
