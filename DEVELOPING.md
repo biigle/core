@@ -44,7 +44,7 @@ Now perform these steps:
 
 1. Build the Docker images with `docker-compose build`. This may take a while.
 
-2. Start the first containers: `docker-compose up -d app database`
+2. Start the first containers: `docker-compose up -d app`
 
 3. Apply the database migrations: `docker-compose exec app php artisan migrate`
 
