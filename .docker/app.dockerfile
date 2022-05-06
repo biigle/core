@@ -26,6 +26,8 @@ RUN apk add --no-cache \
         soap \
     && apk del --purge .build-deps
 
+# Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
+RUN [ -n "$HTTP_PROXY" ] && pear config-set http_proxy $HTTP_PROXY
 RUN apk add --no-cache yaml \
     && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
     && pecl install yaml \
