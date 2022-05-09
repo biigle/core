@@ -16,6 +16,8 @@ Now you can proceed with the development setup:
 
 ### 1. Download the project files
 
+To start developing, you need to [fork](https://github.com/biigle/core/fork) this repository unless you are a member of the BIIGLE GitHub organization. Use the URL of your fork in the command below (e.g. `git@github.com:YOUR_GITHUB_NAME/core.git`).
+
 Set up the project in the `biigle` directory:
 
 ```
@@ -44,7 +46,7 @@ Now perform these steps:
 
 1. Build the Docker images with `docker-compose build`. This may take a while.
 
-2. Start the first containers: `docker-compose up -d app database`
+2. Start the first containers: `docker-compose up -d app`
 
 3. Apply the database migrations: `docker-compose exec app php artisan migrate`
 
