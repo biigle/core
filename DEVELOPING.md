@@ -16,6 +16,8 @@ Now you can proceed with the development setup:
 
 ### 1. Download the project files
 
+To start developing, you need to [fork](https://github.com/biigle/core/fork) this repository unless you are a member of the BIIGLE GitHub organization. Use the URL of your fork in the command below (e.g. `git@github.com:YOUR_GITHUB_NAME/core.git`).
+
 Set up the project in the `biigle` directory:
 
 ```
