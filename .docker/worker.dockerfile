@@ -85,7 +85,7 @@ RUN apk add --no-cache \
     && apk del --purge .build-deps
 
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
-RUN [ -n "$HTTP_PROXY" ] && pear config-set http_proxy $HTTP_PROXY
+RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
 RUN apk add --no-cache yaml \
     && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
     && pecl install yaml \
@@ -142,7 +142,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && rm -rf /var/cache/apk/*
 
 # Unset proxy configuration again.
-RUN [ -n "$HTTP_PROXY" ] && pear config-set http_proxy ""
+RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
 # Other Python dependencies are added with the OpenCV build above.
 RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib
