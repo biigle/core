@@ -16,7 +16,7 @@ class ParseIfdoController extends Controller
      * @apiPermission user
      * @apiDescription This endpoint parses an iFDO file (https://marine-imaging.com/fair) and returns the content that can be imported in BIIGLE as a new volume, formatted as JSON.
      *
-     * @apiParam (Required attributes) {File} file iFDO file in YAML format.
+     * @apiParam (Required attributes) {File} file iFDO file in YAML format (maximum size 500 MB).
      *
      * @param StoreParseIfdo $request
      *
