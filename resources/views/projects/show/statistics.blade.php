@@ -8,7 +8,6 @@
 
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
-    {{-- use div ID to mount Vue instance --}}
     {{-- add content here --}}
 </div>
 @endsection
