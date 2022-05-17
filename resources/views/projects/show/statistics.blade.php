@@ -8,6 +8,6 @@
 
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
-    {{-- add content here --}}
+    <statistics-component></statistics-component>
 </div>
 @endsection
