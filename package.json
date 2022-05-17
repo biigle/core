@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
   "devDependencies": {
+    "@vue/composition-api": "^1.6.1",
     "eslint": "^7.3.1",
     "eslint-plugin-vue": "^7.0.0",
     "laravel-mix": "^6.0.42",
@@ -24,10 +25,12 @@
     "@biigle/ol": "^5.3.0",
     "@fortawesome/fontawesome-free": "^5.2.0",
     "bootstrap-sass": "^3.3.7",
+    "echarts": "^5.3.2",
     "magic-wand-tool": "^1.1.4",
     "polymorph-js": "^0.2.4",
     "uiv": "^1.2.4",
     "vue": "^2.0.5",
+    "vue-echarts": "^6.0.3",
     "vue-resource": "^1.0.3"
   }
 }

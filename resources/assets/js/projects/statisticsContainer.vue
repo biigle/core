@@ -1,6 +1,6 @@
 <script>
 import {handleErrorResponse} from '../core/messages/store';
-import statisticsComponent from './components/statisticsComponent.vue';
+import AnnotationTimeline from './components/statisticsTabTimeline.vue';
 
 export default {
     data() {
@@ -11,7 +11,7 @@ export default {
     },
     components: {
         // html-element : wert
-        statisticsComponent:statisticsComponent
+        AnnotationTimeline:AnnotationTimeline
     },
     methods: {
         //

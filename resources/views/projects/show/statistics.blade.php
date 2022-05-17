@@ -8,6 +8,6 @@
 
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
-    <statistics-component></statistics-component>
+    <annotation-timeline></annotation-timeline>
 </div>
 @endsection
