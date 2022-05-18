@@ -4,13 +4,16 @@ To develop BIIGLE on your local machine you can use Docker containers. This way 
 
 ## Development setup
 
-First, install the following tools:
+First, install the following software:
 
+- PHP >= 8.0
 - [Docker](https://docs.docker.com/install/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
 
-Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker-compose` commands with `sudo`.
+Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker compose` commands with `sudo`.
+
+**Note:** Older versions of Docker Compose used the `docker-compose` command. Newer versions use `docker compose`.
 
 Now you can proceed with the development setup:
 
@@ -44,20 +47,20 @@ docker pull ghcr.io/biigle/worker:latest
 
 Now perform these steps:
 
-1. Build the Docker images with `docker-compose build`. This may take a while.
+1. Build the Docker images with `docker compose build`. This may take a while.
 
-2. Start the first containers: `docker-compose up -d app`
+2. Start the first containers: `docker compose up -d app`
 
-3. Apply the database migrations: `docker-compose exec app php artisan migrate`
+3. Apply the database migrations: `docker compose exec app php artisan migrate`
 
-4. Start the whole application with `docker-compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker-compose stop` or destroy them with `docker-compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+4. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
 Before you can start using or developing BIIGLE, you need to create the first user with:
 
 ```
-docker-compose exec app php artisan user:new
+docker compose exec app php artisan user:new
 ```
 
 Follow these steps to create a new project and volume with test images:

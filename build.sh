@@ -8,7 +8,7 @@ if [ -z "$VERSION" ]; then
     read -p "No build version specified, using latest git tag ${VERSION}. Press enter to continue."
 fi
 
-docker-compose build --build-arg BIIGLE_VERSION=$VERSION
+docker compose build --build-arg BIIGLE_VERSION=$VERSION
 
 read -p "Publish the images to GitHub? [y/N]" -r
 # Check if the current HEAD belongs to a version.
