@@ -35,7 +35,8 @@ class StoreParseIfdo extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required|file',
+            // Allow a maximum of 500 MB.
+            'file' => 'required|file|max:500000',
         ];
     }
 
