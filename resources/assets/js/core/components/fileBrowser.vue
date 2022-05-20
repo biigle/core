@@ -7,7 +7,6 @@
                 :removable="editable"
                 :selectable="selectable"
                 :files-selectable="filesSelectable"
-                :download-url="downloadUrl"
                 :expanded="expanded"
                 :emptyText="emptyText"
                 :expand-on-select="expandOnSelect"
@@ -46,10 +45,6 @@ export default {
         filesSelectable: {
             type: Boolean,
             default: false,
-        },
-        downloadUrl: {
-            type: String,
-            default: '',
         },
         expanded: {
             type: Boolean,
