@@ -5,8 +5,8 @@
     @click="handleClick($event)"
     >
     <a
-        v-if="downloadUrl"
-        :href="fullDownloadUrl"
+        v-if="file.url"
+        :href="file.url"
         :title="viewTitle"
         >
         <i class="fa fa-file"></i> {{file.name}}
@@ -33,10 +33,6 @@ export default {
             type: [Object, File],
             required: true,
         },
-        downloadUrl: {
-            type: String,
-            default: '',
-        },
         dirname: {
             type: String,
             default: '/',
@@ -51,12 +47,6 @@ export default {
         },
     },
     computed: {
-        fullDownloadUrl() {
-            // Remove leading slash.
-            let path = this.dirname.slice(1) + '/' + this.file.name;
-
-            return this.downloadUrl + '?path=' + encodeURIComponent(path);
-        },
         classObject() {
             return {
                 selected: this.file.selected,
