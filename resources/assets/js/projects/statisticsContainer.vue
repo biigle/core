@@ -1,6 +1,8 @@
 <script>
 import {handleErrorResponse} from '../core/messages/store';
 import AnnotationTimeline from './components/statisticsTabTimeline.vue';
+import BarPlot from './components/statisticsTabBar.vue';
+import SankeyPlot from './components/statisticsTabSankey.vue';
 
 export default {
     data() {
@@ -11,7 +13,9 @@ export default {
     },
     components: {
         // html-element : wert
-        AnnotationTimeline:AnnotationTimeline
+        AnnotationTimeline:AnnotationTimeline,
+        BarPlot:BarPlot,
+        SankeyPlot:SankeyPlot
     },
     methods: {
         //
@@ -22,3 +26,22 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.project-statistics {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    padding-bottom: 1.5rem;
+}
+
+.grid-col-span-3 {
+    grid-column: 1 / span 3;
+}
+
+.chart {
+  height: 400px;
+  outline: solid #424242 1px; 
+  background-color: red;
+}
+</style>

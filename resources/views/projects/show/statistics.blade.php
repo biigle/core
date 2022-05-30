@@ -9,5 +9,7 @@
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
     <annotation-timeline></annotation-timeline>
+    <bar-plot></bar-plot>
+    <sankey-plot></sankey-plot>
 </div>
 @endsection

@@ -1,8 +1,5 @@
 <template>
-    <div>
-        <div> This is a test </div>
-        <v-chart class="chart" :option="option" ></v-chart>
-    </div>
+    <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
 </template>
 
 <script>
@@ -55,84 +52,85 @@ echarts.use([
 
 export default {
     name: "Annotation-Timeline",
-    data() {
-        return {
-            option: {
-            legend: {},
-            tooltip: {
-            trigger: 'axis',
-            showContent: false
-            },
-            dataset: {
-            source: [
-                ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
-                ['Milk Tea', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
-                ['Matcha Latte', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
-                ['Cheese Cocoa', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
-                ['Walnut Brownie', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
-            ]
-            },
-            xAxis: { type: 'category' },
-            yAxis: { gridIndex: 0 },
-            grid: { top: '55%' },
-            series: [
-            {
-                type: 'line',
-                smooth: true,
-                seriesLayoutBy: 'row',
-                emphasis: { focus: 'series' }
-            },
-            {
-                type: 'line',
-                smooth: true,
-                seriesLayoutBy: 'row',
-                emphasis: { focus: 'series' }
-            },
-            {
-                type: 'line',
-                smooth: true,
-                seriesLayoutBy: 'row',
-                emphasis: { focus: 'series' }
-            },
-            {
-                type: 'line',
-                smooth: true,
-                seriesLayoutBy: 'row',
-                emphasis: { focus: 'series' }
-            },
-            {
-                type: 'pie',
-                id: 'pie',
-                radius: '30%',
-                center: ['50%', '25%'],
-                emphasis: {
-                focus: 'self'
-                },
-                label: {
-                formatter: '{b}: {@2012} ({d}%)'
-                },
-                encode: {
-                itemName: 'product',
-                value: '2012',
-                tooltip: '2012'
-                }
-            }
-            ]
-        }
-        }
-    },
     components: {
         VChart
     },
     provide: {
-    [THEME_KEY]: "dark"
-    // [UPDATE_OPTIONS_KEY]: this.option
-  },
+        [THEME_KEY]: "dark"
+        // [UPDATE_OPTIONS_KEY]: this.option
+    },
+    data() {
+        return {
+            option: {
+                legend: {},
+                tooltip: {
+                trigger: 'axis',
+                showContent: false
+                },
+                backgroundColor: '#222222',
+                dataset: {
+                source: [
+                    ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
+                    ['User 1', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
+                    ['User 2', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
+                    ['User 3', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
+                    ['User 4', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
+                ]
+                },
+                xAxis: { type: 'category' },
+                yAxis: { gridIndex: 0 },
+                grid: { top: '55%' },
+                series: [
+                {
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                },
+                {
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                },
+                {
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                },
+                {
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                },
+                {
+                    type: 'pie',
+                    id: 'pie',
+                    radius: '30%',
+                    center: ['50%', '25%'],
+                    emphasis: {
+                    focus: 'self'
+                    },
+                    label: {
+                    formatter: '{b}: {@2012} ({d}%)'
+                    },
+                    encode: {
+                    itemName: 'product',
+                    value: '2012',
+                    tooltip: '2012'
+                    }
+                }
+                ]
+            }
+        }
+    }
 };
 </script>
 
 <style scoped>
-.chart {
-  height: 400px;
-}
+/* .chart {
+    height: 400px;
+} */
 </style>
