@@ -3,6 +3,7 @@ import {handleErrorResponse} from '../core/messages/store';
 import AnnotationTimeline from './components/statisticsTabTimeline.vue';
 import BarPlot from './components/statisticsTabBar.vue';
 import SankeyPlot from './components/statisticsTabSankey.vue';
+import PieChart from './components/statisticsTabPie.vue';
 
 export default {
     data() {
@@ -15,7 +16,8 @@ export default {
         // html-element : wert
         AnnotationTimeline:AnnotationTimeline,
         BarPlot:BarPlot,
-        SankeyPlot:SankeyPlot
+        SankeyPlot:SankeyPlot,
+        PieChart:PieChart
     },
     methods: {
         //
@@ -41,7 +43,6 @@ export default {
 
 .chart {
   height: 400px;
-  outline: solid #424242 1px; 
-  background-color: red;
+  outline: solid #424242 1px;
 }
 </style>

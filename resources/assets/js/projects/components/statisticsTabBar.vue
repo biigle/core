@@ -85,10 +85,3 @@ export default {
     }
 }
 </script>
-
-
-<style scoped>
-/* .chart {
-  height: 400px;
-} */
-</style>

@@ -1,5 +1,5 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option" @updateAxisPointer="handleUpdate"></v-chart>
 </template>
 
 <script>
@@ -28,7 +28,23 @@ echarts.use([
   LabelLayout
 ]);
 
-
+let pieObj = {
+            type: 'pie',
+            id: 'pie',
+            radius: '30%',
+            center: ['50%', '25%'],
+            emphasis: {
+            focus: 'self'
+            },
+            label: {
+            formatter: '{b}: {@2012} ({d}%)'
+            },
+            encode: {
+            itemName: 'product',
+            value: '2012',
+            tooltip: '2012'
+            }
+        };
 // setTimeout(function () {
 // VChart.on('updateAxisPointer', function (event) {
 //             const xAxisInfo = event.axesInfo[0];
@@ -58,6 +74,19 @@ export default {
     provide: {
         [THEME_KEY]: "dark"
         // [UPDATE_OPTIONS_KEY]: this.option
+    },
+    methods: {
+        handleUpdate(event) {
+            console.log("REACHED");
+            console.log(event);
+            const xAxisInfo = event.axesInfo[0];
+            if (xAxisInfo) {
+                const dimension = xAxisInfo.value + 1;
+                pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)'
+                pieObj.encode.value = dimension
+                pieObj.encode.tooltip = dimension
+            }
+        }
     },
     data() {
         return {
@@ -105,32 +134,10 @@ export default {
                     seriesLayoutBy: 'row',
                     emphasis: { focus: 'series' }
                 },
-                {
-                    type: 'pie',
-                    id: 'pie',
-                    radius: '30%',
-                    center: ['50%', '25%'],
-                    emphasis: {
-                    focus: 'self'
-                    },
-                    label: {
-                    formatter: '{b}: {@2012} ({d}%)'
-                    },
-                    encode: {
-                    itemName: 'product',
-                    value: '2012',
-                    tooltip: '2012'
-                    }
-                }
+                pieObj
                 ]
             }
         }
     }
 };
 </script>
-
-<style scoped>
-/* .chart {
-    height: 400px;
-} */
-</style>
