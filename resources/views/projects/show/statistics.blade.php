@@ -10,7 +10,7 @@
 <div id="projects-show-statistics" class="project-statistics">
     <annotation-timeline></annotation-timeline>
     <bar-plot></bar-plot>
-    <sankey-plot></sankey-plot>
     <pie-chart></pie-chart>
+    <sankey-plot></sankey-plot>
 </div>
 @endsection

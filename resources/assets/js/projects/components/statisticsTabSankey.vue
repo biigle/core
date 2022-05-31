@@ -6,9 +6,14 @@
 import * as echarts from 'echarts/core';
 import { SankeyChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
 
-echarts.use([SankeyChart, CanvasRenderer]);
+echarts.use([
+    SankeyChart, 
+    CanvasRenderer,
+    TitleComponent
+    ]);
 
 
 export default {
@@ -23,11 +28,28 @@ export default {
         return {        
             option: {
                 backgroundColor: '#222222',
+                title: {
+                    text: 'User contribution to volumes',
+                    top: '5%',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 15
+                    },
+                },
+                tooltip: {
+                    trigger: "item",
+                    triggerOn: "mousemove"
+                },
                 series: {
                     type: 'sankey',
                     layout: 'none',
+                    top: "15%",
+                    draggable: false,
+                    label: {
+                        position: "right"
+                    },
                     emphasis: {
-                    focus: 'adjacency'
+                        focus: 'adjacency'
                     },
                     data: [
                     {

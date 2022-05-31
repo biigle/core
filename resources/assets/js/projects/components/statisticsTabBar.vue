@@ -11,6 +11,7 @@ import {
 } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
 
 echarts.use([
@@ -18,7 +19,8 @@ echarts.use([
     GridComponent,
     LegendComponent,
     BarChart,
-    CanvasRenderer
+    CanvasRenderer,
+    TitleComponent
 ]);
 
 export default {
@@ -33,6 +35,14 @@ export default {
         return {
         option: {
             backgroundColor: '#222222',
+            title: {
+                text: 'Annotations per volume',
+                top: '5%',
+                left: 'center',
+                textStyle: {
+                    fontSize: 15
+                },
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -40,7 +50,6 @@ export default {
                 type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
                 }
             },
-            legend: {},
             grid: {
                 left: '3%',
                 right: '4%',
@@ -52,11 +61,13 @@ export default {
             },
             yAxis: {
                 type: 'category',
-                data: ['Volume 1', 'Volume 2', 'Volume 3', 'Volume 4', 'Volume 5', 'Volume 6']
+                data: ['Volume 1', 'Volume 2', 'Volume 3', 'Volume 4', 'Volume 5', 'Volume 6'],
+                inverse: true
             },
             series: [
                 {
-                name: 'Pictures',
+                realtimeSort: true,
+                name: 'Annotations',
                 type: 'bar',
                 stack: 'total',
                 label: {
@@ -65,19 +76,7 @@ export default {
                 emphasis: {
                     focus: 'series'
                 },
-                data: [320, 302, 301, 334, 390, 330, 320]
-                },
-                {
-                name: 'Videos',
-                type: 'bar',
-                stack: 'total',
-                label: {
-                    show: true
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [120, 132, 101, 134, 90, 230, 210]
+                data: [320, 302, 301, 334, 390, 330]
                 }
             ]
         }

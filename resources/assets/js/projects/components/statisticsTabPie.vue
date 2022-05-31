@@ -8,6 +8,7 @@ import { TooltipComponent, LegendComponent } from 'echarts/components';
 import { PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
+import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
 
 echarts.use([
@@ -15,7 +16,8 @@ echarts.use([
   LegendComponent,
   PieChart,
   CanvasRenderer,
-  LabelLayout
+  LabelLayout,
+  TitleComponent
 ]);
 
 
@@ -32,25 +34,28 @@ export default {
             option: {
                 backgroundColor: '#222222',
                 title: {
-                    text: 'Total contribution',
-                    subtext: 'across all volumes of the project',
+                    text: 'Annotated vs. not annotated',
+                    subtext: '(across all volumes of the project)',
                     left: 'center',
                     top: '5%',
                     textStyle: {
-                        fontSize: 10,
-                        color: "rgba(245, 17, 17, 1)"
+                        fontSize: 15
                     },
                 },
                 tooltip: {
-                trigger: 'item'
+                    trigger: 'item'
                 },
                 legend: {
-                bottom: '5%',
-                left: 'center'
+                    bottom: '5%',
+                    left: 'center'
                 },
+                color: [
+                    '#7cffb2',
+                    '#ff6e76'
+                ],
                 series: [
                 {
-                    name: 'User',
+                    name: 'Files',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     avoidLabelOverlap: false,
@@ -58,21 +63,12 @@ export default {
                     show: false,
                     position: 'center'
                     },
-                    emphasis: {
-                    label: {
-                        show: true,
-                        fontSize: '10',
-                        fontWeight: 'regular'
-                    }
-                    },
                     labelLine: {
                     show: false
                     },
                     data: [
-                    { value: 1048, name: 'User 1' },
-                    { value: 735, name: 'User 2' },
-                    { value: 580, name: 'User 3' },
-                    { value: 484, name: 'User 4' }
+                    { value: 1048, name: 'Annotated' },
+                    { value: 735, name: 'Not Annotated' },
                     ]
                 }
                 ]

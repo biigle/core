@@ -13,7 +13,8 @@ import {
 import { LineChart, PieChart } from 'echarts/charts';
 import { UniversalTransition, LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY, INIT_OPTIONS_KEY, UPDATE_OPTIONS_KEY } from "vue-echarts";
+import { TitleComponent } from 'echarts/components';
+import VChart, { THEME_KEY } from "vue-echarts";
 
 
 echarts.use([
@@ -25,7 +26,8 @@ echarts.use([
   PieChart,
   CanvasRenderer,
   UniversalTransition,
-  LabelLayout
+  LabelLayout,
+  TitleComponent
 ]);
 
 let pieObj = {
@@ -45,26 +47,6 @@ let pieObj = {
             tooltip: '2012'
             }
         };
-// setTimeout(function () {
-// VChart.on('updateAxisPointer', function (event) {
-//             const xAxisInfo = event.axesInfo[0];
-//             if (xAxisInfo) {
-//             const dimension = xAxisInfo.value + 1;
-//             VChart.setOption({
-//                 series: {
-//                 id: 'pie',
-//                 label: {
-//                     formatter: '{b}: {@[' + dimension + ']} ({d}%)'
-//                 },
-//                 encode: {
-//                     value: dimension,
-//                     tooltip: dimension
-//                 }
-//                 }
-//             })
-//         }
-//     });
-// });
 
 export default {
     name: "Annotation-Timeline",
@@ -73,12 +55,9 @@ export default {
     },
     provide: {
         [THEME_KEY]: "dark"
-        // [UPDATE_OPTIONS_KEY]: this.option
     },
     methods: {
         handleUpdate(event) {
-            console.log("REACHED");
-            console.log(event);
             const xAxisInfo = event.axesInfo[0];
             if (xAxisInfo) {
                 const dimension = xAxisInfo.value + 1;
@@ -91,12 +70,25 @@ export default {
     data() {
         return {
             option: {
-                legend: {},
+                legend: {
+                    left: '2%',
+                    top: '20%',
+                    orient: 'vertical'
+                },
                 tooltip: {
                 trigger: 'axis',
                 showContent: false
                 },
                 backgroundColor: '#222222',
+                title: {
+                    text: 'Total contribution',
+                    subtext: 'across all volumes of the project',
+                    top: '5%',
+                    left: '2%',
+                    textStyle: {
+                        fontSize: 20
+                    },
+                },
                 dataset: {
                 source: [
                     ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
