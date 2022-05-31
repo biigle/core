@@ -2,7 +2,7 @@
 
 @push('scripts')
 <script type="text/javascript">
-    // biigle.$declare('projects.myData', 'some data');
+    biigle.$declare('projects.annotationTimeSeries', {!! $annotationTimeSeries !!});
 </script>
 @endpush
 

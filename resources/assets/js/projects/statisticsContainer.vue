@@ -10,6 +10,7 @@ export default {
         return {
             project: null,
             userId: null,
+            annotationTimeSeries: null,
         };
     },
     components: {
@@ -25,6 +26,8 @@ export default {
     created() {
         this.project = biigle.$require('projects.project');
         this.userId = biigle.$require('projects.userId');
+        this.annotationTimeSeries = biigle.$require('projects.annotationTimeSeries');
+        console.log(this.annotationTimeSeries);
     },
 };
 </script>
