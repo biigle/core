@@ -30,26 +30,12 @@ echarts.use([
   TitleComponent
 ]);
 
-let pieObj = {
-            type: 'pie',
-            id: 'pie',
-            radius: '30%',
-            center: ['50%', '25%'],
-            emphasis: {
-            focus: 'self'
-            },
-            label: {
-            formatter: '{b}: {@2012} ({d}%)'
-            },
-            encode: {
-            itemName: 'product',
-            value: '2012',
-            tooltip: '2012'
-            }
-        };
 
 export default {
     name: "Annotation-Timeline",
+    props: {
+        annotationTimeSeries: {required:true, type:Array}
+    },
     components: {
         VChart
     },
@@ -61,18 +47,92 @@ export default {
             const xAxisInfo = event.axesInfo[0];
             if (xAxisInfo) {
                 const dimension = xAxisInfo.value + 1;
-                pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)'
-                pieObj.encode.value = dimension
-                pieObj.encode.tooltip = dimension
+                // console.log('DIMENSION: ', dimension);
+                this.pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)';
+                this.pieObj.encode.value = dimension;
+                this.pieObj.encode.tooltip = dimension;
             }
         }
     },
-    data() {
-        return {
-            option: {
+    // created() {
+    //     console.log(this.annotationTimeSeries);
+    //     // this.sourcedata = this.transformData(this.annotationTimeSeries);
+    //     console.log('sourcedata: ', JSON.stringify(this.sourcedata));
+    // },
+    computed: {
+        sourcedata() {
+            let dat = this.annotationTimeSeries;
+            let chartdata = [];
+
+            // get all X-Axis data
+            let xAxis = dat.map((entry) => {
+                return entry.year.toString();
+            });
+            // filter duplicated years
+            xAxis = [...new Set(xAxis)];
+             // sort the years (increasing)
+            xAxis.sort();
+
+            // get all unique User ID's
+            let id = dat.map((entry) => {
+                return entry.user_id;
+            });
+            // filter duplicated id-entries
+            let id_unique = [...new Set(id)];
+            let idDict = {};
+            // create object with "year-slots" for each user
+            for(let x of id_unique) {
+                let yearDict = {};
+                for(let y of xAxis) {
+                    yearDict[y] = 0;
+                }
+                idDict[x] = yearDict;
+            }
+            // console.log('xAxis: ', xAxis);
+            // console.log('ID: ', id_unique);
+
+            // assemble the annotations of each user in correct order of year
+            // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
+            for(let year of xAxis) {
+                for(let entry of dat) {
+                    if(entry.year.toString() == year) {
+                        idDict[entry.user_id][year] += entry.count;
+                    } else {
+                        idDict[entry.user_id][year] += 0;
+                    }
+                }
+            }
+
+            // setup of whole chartdata object
+            // include axis-name in front
+            xAxis.unshift('year');
+            chartdata.push(xAxis);
+            // reduce user-timeseries to values only
+            Object.entries(idDict).forEach(entry => {
+                chartdata.push([ 'User ' + entry[0], ...Object.values(entry[1]) ]);
+            });
+
+            console.log('ID-Dict: ', JSON.stringify(idDict));
+            console.log('FINAL: ', JSON.stringify(chartdata));
+            return [...chartdata];
+        },
+        option() {
+            // create a series Array
+            let snippet = {
+                    type: 'line',
+                    smooth: true,
+                    seriesLayoutBy: 'row',
+                    emphasis: { focus: 'series' }
+                };
+            // repeat as often as number of users in the project
+            let seriesObj = Array( (this.sourcedata.length-1) ).fill(snippet);
+            // append the pie-chart specific snippet
+            seriesObj.push(this.pieObj);
+
+            return {
                 legend: {
                     left: '2%',
-                    top: '20%',
+                    top: '24%',
                     orient: 'vertical'
                 },
                 tooltip: {
@@ -82,52 +142,62 @@ export default {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Total contribution',
-                    subtext: 'across all volumes of the project',
+                    subtext: 'annotations per user across all volumes of the project',
                     top: '5%',
                     left: '2%',
+                    textAlign: "left",
                     textStyle: {
                         fontSize: 20
                     },
+                    subtextStyle: {
+                        width: 250,
+                        overflow: "break",
+                        lineHeight: 15,
+                        align: "center",
+                        verticalAlign: "top"
+                    },
                 },
                 dataset: {
-                source: [
-                    ['product', '2012', '2013', '2014', '2015', '2016', '2017'],
-                    ['User 1', 56.5, 82.1, 88.7, 70.1, 53.4, 85.1],
-                    ['User 2', 51.1, 51.4, 55.1, 53.3, 73.8, 68.7],
-                    ['User 3', 40.1, 62.2, 69.5, 36.4, 45.2, 32.5],
-                    ['User 4', 25.2, 37.1, 41.2, 18, 33.9, 49.1]
-                ]
+                    source: this.sourcedata
                 },
                 xAxis: { type: 'category' },
-                yAxis: { gridIndex: 0 },
-                grid: { top: '55%' },
-                series: [
-                {
-                    type: 'line',
-                    smooth: true,
-                    seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
+                yAxis: { 
+                    gridIndex: 0,
+                    name: "annotations",
+                    nameLocation: "middle",
+                    nameTextStyle: { verticalAlign: "middle" },
+                    nameGap: 60 },
+                grid: { 
+                    top: '60%', 
+                    bottom: '10%',
+                    left: '20%',
+                    right: '5%'
                 },
-                {
-                    type: 'line',
-                    smooth: true,
-                    seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
+                series: seriesObj
+            }
+        }
+    },
+    data() {
+        return {
+            pieObj: {
+                type: 'pie',
+                id: 'pie',
+                radius: '30%',
+                center: ['55%', '30%'],
+                emphasis: {
+                focus: 'self'
                 },
-                {
-                    type: 'line',
-                    smooth: true,
-                    seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
+                label: {
+                    // formatter: function (params){
+                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
+                    // }
+                    formatter: '{b}: {@[1]} ({d}%)'
                 },
-                {
-                    type: 'line',
-                    smooth: true,
-                    seriesLayoutBy: 'row',
-                    emphasis: { focus: 'series' }
-                },
-                pieObj
-                ]
+                encode: {
+                itemName: 'year',
+                tooltip:  1,
+                value: 1
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
-    <annotation-timeline></annotation-timeline>
+    <annotation-timeline :annotation-time-series="annotationTimeSeries"></annotation-timeline>
     <bar-plot></bar-plot>
     <pie-chart></pie-chart>
     <sankey-plot></sankey-plot>
