@@ -6,6 +6,7 @@ use Biigle\Traits\HasJsonAttributes;
 use Cache;
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -465,13 +466,22 @@ class Volume extends Model
     /**
      * Check if an iFDO metadata file is available for this volume.
      *
+     * @param bool $ignoreErrors Set to `true` to ignore exceptions and return `false` if iFDO existence could not be determined.
      * @return boolean
      */
-    public function hasIfdo()
+    public function hasIfdo($ignoreErrors = false)
     {
-        return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
-            return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
-        });
+        try {
+            return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
+                return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
+            });
+        } catch (Exception $e) {
+            if (!$ignoreErrors) {
+                throw $e;
+            }
+
+            return false;
+        }
     }
 
     /**
