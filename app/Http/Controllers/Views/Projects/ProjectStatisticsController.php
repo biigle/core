@@ -58,6 +58,8 @@ class ProjectStatisticsController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'statistics',
             'annotationTimeSeries' => $annotationTimeSeries,
+            'volumeAnnotations' => $volumeAnnotations,
+            'volumeNames' => $volumes,
         ]);
     }
 }

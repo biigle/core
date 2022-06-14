@@ -142,7 +142,7 @@ export default {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Total contribution',
-                    subtext: 'annotations per user across all volumes of the project',
+                    subtext: 'annotations per user across all volumes of the project, sorted by year',
                     top: '5%',
                     left: '2%',
                     textAlign: "left",

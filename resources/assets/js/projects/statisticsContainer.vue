@@ -4,6 +4,7 @@ import AnnotationTimeline from './components/statisticsTabTimeline.vue';
 import BarPlot from './components/statisticsTabBar.vue';
 import SankeyPlot from './components/statisticsTabSankey.vue';
 import PieChart from './components/statisticsTabPie.vue';
+import NetMap from './components/statisticsTabNetmap.vue';
 
 export default {
     data() {
@@ -11,6 +12,8 @@ export default {
             project: null,
             userId: null,
             annotationTimeSeries: null,
+            volumeAnnotations: null,
+            volumeNames: null,
         };
     },
     components: {
@@ -18,7 +21,8 @@ export default {
         AnnotationTimeline:AnnotationTimeline,
         BarPlot:BarPlot,
         SankeyPlot:SankeyPlot,
-        PieChart:PieChart
+        PieChart:PieChart,
+        NetMap:NetMap
     },
     methods: {
         //
@@ -27,7 +31,10 @@ export default {
         this.project = biigle.$require('projects.project');
         this.userId = biigle.$require('projects.userId');
         this.annotationTimeSeries = biigle.$require('projects.annotationTimeSeries');
-        // console.log(this.annotationTimeSeries);
+        this.volumeAnnotations = biigle.$require('projects.volumeAnnotations');
+        this.volumeNames = biigle.$require('projects.volumeNames');
+        console.log(JSON.stringify(this.volumeAnnotations));
+        console.log(this.volumeNames);
     },
 };
 </script>
