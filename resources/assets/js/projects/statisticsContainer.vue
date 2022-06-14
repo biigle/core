@@ -14,6 +14,8 @@ export default {
             annotationTimeSeries: null,
             volumeAnnotations: null,
             volumeNames: null,
+            annotatedImages: null,
+            totalImages: null
         };
     },
     components: {
@@ -33,8 +35,12 @@ export default {
         this.annotationTimeSeries = biigle.$require('projects.annotationTimeSeries');
         this.volumeAnnotations = biigle.$require('projects.volumeAnnotations');
         this.volumeNames = biigle.$require('projects.volumeNames');
-        console.log(JSON.stringify(this.volumeAnnotations));
-        console.log(this.volumeNames);
+        this.annotatedImages = biigle.$require('projects.annotatedImages');
+        this.totalImages = biigle.$require('projects.totalImages');
+        // console.log(JSON.stringify(this.annotatedImages));
+        console.log(JSON.stringify(this.totalImages));
+        // console.log(this.volumeNames);
+        // console.log(JSON.stringify(this.volumeAnnotations));
     },
 };
 </script>

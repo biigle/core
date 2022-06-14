@@ -21,12 +21,61 @@ export default {
     components: {
         VChart
     },
+    props: {
+        volumeAnnotations: {required:true, type:Array},
+        names: {required:true, type:Array}
+    },
     provide: {
         [THEME_KEY]: "dark"
     },
-    data() {
-        return {        
-            option: {
+    created() {
+        // console.log('DATA: ', this.data);
+        // console.log('LINKS: ', this.links);
+        // console.log(this.option);
+    },
+    computed: {
+        data() {
+            // returns an array of User-names and volume-names
+            let volNames = this.volumeAnnotations.map(entry => {
+                return  this.names.find(x => x.id ===  entry.volume_id).name;
+            });
+            volNames = [...new Set(volNames)];
+
+            let userNames = this.volumeAnnotations.map(entry => {
+                if(entry.fullname === " ") {
+                    return "Deleted Account"
+                }
+                return entry.fullname;
+            })
+            userNames = [...new Set(userNames)];
+
+            let combined = userNames.concat(...volNames);
+            combined = combined.map(entry => {
+                return {name: entry}
+            })
+            
+            return combined;
+        },
+
+        links() {
+            let result_array = [];
+
+            for(let obj of this.volumeAnnotations) {
+                // create a single link-entry
+                let entry = {
+                    source: obj.fullname === " " ? "Deleted Account" : obj.fullname,
+                    target: this.names.find(x => x.id ===  obj.volume_id).name,
+                    value: obj.count
+                }
+                // append to result array
+                result_array.push(entry);
+            }
+
+            return result_array;
+        },
+
+        option() {
+            return {
                 backgroundColor: '#222222',
                 title: {
                     text: 'User contribution to volumes',
@@ -51,47 +100,14 @@ export default {
                     emphasis: {
                         focus: 'adjacency'
                     },
-                    data: [
-                    {
-                        name: 'User 1'
-                    },
-                    {
-                        name: 'User 2'
-                    },
-                    {
-                        name: 'Volume 1'
-                    },
-                    {
-                        name: 'Volume 2'
-                    },
-                    {
-                        name: 'Volume 3'
-                    }
-                    ],
-                    links: [
-                    {
-                        source: 'User 1',
-                        target: 'Volume 1',
-                        value: 200
-                    },
-                    {
-                        source: 'User 1',
-                        target: 'Volume 2',
-                        value: 80
-                    },
-                    {
-                        source: 'User 2',
-                        target: 'Volume 3',
-                        value: 150
-                    },
-                    {
-                        source: 'User 1',
-                        target: 'Volume 3',
-                        value: 20
-                    }
-                    ]
+                    data: this.data,
+                    links: this.links
                 }
             }
+        }
+    },
+    data() {
+        return {        
         }
     }
 }

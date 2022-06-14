@@ -29,6 +29,10 @@ export default {
     provide: {
         [THEME_KEY]: "dark"
     },
+    props: {
+        annotatedImages: {required:true, type:Number},
+        totalImages: {required:true, type:Number}
+    },
     data() {
         return {        
             option: {
@@ -67,8 +71,8 @@ export default {
                     show: false
                     },
                     data: [
-                    { value: 1048, name: 'Annotated' },
-                    { value: 735, name: 'Not Annotated' },
+                    { value: this.annotatedImages, name: 'Annotated' },
+                    { value: (this.totalImages - this.annotatedImages), name: 'Not Annotated' },
                     ]
                 }
                 ]

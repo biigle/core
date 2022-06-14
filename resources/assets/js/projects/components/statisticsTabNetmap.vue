@@ -35,7 +35,7 @@ export default {
         [THEME_KEY]: "dark"
     },
     created() {
-        console.log(this.option);
+        // console.log(this.option);
     },
     computed: {
         graph() {

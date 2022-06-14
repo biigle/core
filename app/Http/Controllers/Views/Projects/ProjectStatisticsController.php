@@ -8,6 +8,7 @@ use Biigle\Project;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Biigle\Image;
 
 class ProjectStatisticsController extends Controller
 {
@@ -31,23 +32,39 @@ class ProjectStatisticsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
+            return $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $project->id);
+        })->count();
+        
         $baseQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
             ->whereIn('images.volume_id', function ($query) use ($project) {
                 return $query->select('volume_id')
                     ->from('project_volume')
                     ->where('project_id', $project->id);
             });
 
+        $annotatedImages = $baseQuery->clone()
+            // ->select(DB::raw('distinct images.id'))
+            ->count(DB::raw('DISTINCT images.id'));
+
         $annotationTimeSeries = $baseQuery->clone()
-            ->select('image_annotation_labels.user_id', DB::raw('count(image_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from image_annotations.created_at)::integer as year'))
-            ->groupBy('image_annotation_labels.user_id', 'year')
+            ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from image_annotations.created_at)::integer as year'))
+            ->groupBy('image_annotation_labels.user_id', 'fullname', 'year')
             ->get();
 
         $volumeAnnotations = $baseQuery->clone()
-            ->select('images.volume_id', DB::raw('count(image_annotation_labels.id)'))
-            ->groupBy('images.volume_id')
-            ->get();
+        ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), 'images.volume_id')
+        ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
+        ->get();
+        
+        // $volumeAnnotations = $baseQuery->clone()
+        //     ->select('images.volume_id', DB::raw('count(image_annotation_labels.id)'))
+        //     ->groupBy('images.volume_id')
+        //     ->get();
 
         $volumes = $project->volumes()->select('id', 'name')->get();
 
@@ -60,6 +77,8 @@ class ProjectStatisticsController extends Controller
             'annotationTimeSeries' => $annotationTimeSeries,
             'volumeAnnotations' => $volumeAnnotations,
             'volumeNames' => $volumes,
+            'annotatedImages' => $annotatedImages,
+            'totalImages' => $totalImages
         ]);
     }
 }

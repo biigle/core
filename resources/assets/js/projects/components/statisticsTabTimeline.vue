@@ -73,14 +73,14 @@ export default {
              // sort the years (increasing)
             xAxis.sort();
 
-            // get all unique User ID's
+            // get all unique User-names
             let id = dat.map((entry) => {
-                return entry.user_id;
+                return entry.fullname;
             });
-            // filter duplicated id-entries
+            // filter duplicated name-entries
             let id_unique = [...new Set(id)];
             let idDict = {};
-            // create object with "year-slots" for each user
+            // create object with "year-slots" for each user (e.g. {id: {"2020":0, "2021":0, "2022":0]}))
             for(let x of id_unique) {
                 let yearDict = {};
                 for(let y of xAxis) {
@@ -96,9 +96,9 @@ export default {
             for(let year of xAxis) {
                 for(let entry of dat) {
                     if(entry.year.toString() == year) {
-                        idDict[entry.user_id][year] += entry.count;
+                        idDict[entry.fullname][year] += entry.count;
                     } else {
-                        idDict[entry.user_id][year] += 0;
+                        idDict[entry.fullname][year] += 0;
                     }
                 }
             }
@@ -109,11 +109,15 @@ export default {
             chartdata.push(xAxis);
             // reduce user-timeseries to values only
             Object.entries(idDict).forEach(entry => {
-                chartdata.push([ 'User ' + entry[0], ...Object.values(entry[1]) ]);
+                if(entry[0] === " ") {
+                    chartdata.push([ 'Deleted Account', ...Object.values(entry[1]) ]);
+                } else {
+                    chartdata.push([ entry[0], ...Object.values(entry[1]) ]);
+                }
             });
 
-            console.log('ID-Dict: ', JSON.stringify(idDict));
-            console.log('FINAL: ', JSON.stringify(chartdata));
+            // console.log('ID-Dict: ', JSON.stringify(idDict));
+            // console.log('FINAL: ', JSON.stringify(chartdata));
             return [...chartdata];
         },
         option() {
