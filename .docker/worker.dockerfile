@@ -6,7 +6,7 @@ FROM php@sha256:541812828f5e1996ac78d99a3bac3b4ba14534b6ac04a480a9ec65e1c3f589f8
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
-ARG OPENCV_VERSION=4.5.4
+ARG OPENCV_VERSION=4.6.0
 RUN apk add --no-cache \
         eigen \
         ffmpeg \

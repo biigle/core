@@ -1,5 +1,5 @@
 numpy==1.21.*
-opencv-contrib-python-headless==4.5.4
+opencv-contrib-python-headless==4.6.0
 scipy
 scikit-learn
 matplotlib
