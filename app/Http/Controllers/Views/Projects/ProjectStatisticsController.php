@@ -38,9 +38,9 @@ class ProjectStatisticsController extends Controller
                 ->where('project_id', $project->id);
         })->count();
         
+        //dataset, col1 == dataset2.col1
         $baseQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
             ->whereIn('images.volume_id', function ($query) use ($project) {
                 return $query->select('volume_id')
                     ->from('project_volume')
@@ -52,21 +52,64 @@ class ProjectStatisticsController extends Controller
             ->count(DB::raw('DISTINCT images.id'));
 
         $annotationTimeSeries = $baseQuery->clone()
+            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
             ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from image_annotations.created_at)::integer as year'))
             ->groupBy('image_annotation_labels.user_id', 'fullname', 'year')
             ->get();
 
         $volumeAnnotations = $baseQuery->clone()
-        ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), 'images.volume_id')
-        ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
-        ->get();
+            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
+            ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), 'images.volume_id')
+            ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
+            ->get();
         
         // $volumeAnnotations = $baseQuery->clone()
         //     ->select('images.volume_id', DB::raw('count(image_annotation_labels.id)'))
         //     ->groupBy('images.volume_id')
         //     ->get();
 
-        $volumes = $project->volumes()->select('id', 'name')->get();
+        $volumeNames = $project->volumes()->select('id', 'name')->get();
+
+        $annotationLabels = $baseQuery->clone()
+            ->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+            ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
+            ->groupBy('labels.id')
+            ->get();
+        
+        $imageAnnotationLabels = $baseQuery->clone()
+            ->select('images.id', 'image_annotation_labels.label_id')
+            ->distinct()
+            ->get()
+            ->groupBy('id');
+
+        $sourceTargetLabels = [];
+
+        foreach ($imageAnnotationLabels as $value) {
+            foreach ($value as $label1) {
+                foreach ($value as $label2) {
+                    if ($label1->label_id === $label2->label_id) {
+                        continue;
+                    }
+                    // set source : target relation
+                    $id1 = min($label1->label_id, $label2->label_id);
+                    $id2 = max($label1->label_id, $label2->label_id);
+                    if(array_key_exists($id1, $sourceTargetLabels)) {
+                        // append to end of array
+                        $sourceTargetLabels[$id1][] = $id2;
+                    } else {
+                        // first entry
+                        $sourceTargetLabels[$id1] = [$id2];
+                    }
+                }
+            }
+        }
+
+        $sourceTargetLabels = array_map('array_unique', $sourceTargetLabels);
+        $sourceTargetLabels = array_map('array_values', $sourceTargetLabels);
+
+        // dd($sourceTargetLabels);
+        
+        
 
         return view('projects.show.statistics', [
             'project' => $project,
@@ -76,9 +119,11 @@ class ProjectStatisticsController extends Controller
             'activeTab' => 'statistics',
             'annotationTimeSeries' => $annotationTimeSeries,
             'volumeAnnotations' => $volumeAnnotations,
-            'volumeNames' => $volumes,
+            'volumeNames' => $volumeNames,
             'annotatedImages' => $annotatedImages,
-            'totalImages' => $totalImages
+            'totalImages' => $totalImages,
+            'annotationLabels' => $annotationLabels,
+            'sourceTargetLabels' => collect($sourceTargetLabels),
         ]);
     }
 }

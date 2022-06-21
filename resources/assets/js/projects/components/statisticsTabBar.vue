@@ -35,25 +35,38 @@ export default {
     provide: {
         [THEME_KEY]: "dark"
     },
+    created() {
+        console.log(this.axisData);
+    },
     computed: {
         axisData() {
             let idList = this.volumeAnnotations.map(function (entry) {
                     return entry.volume_id;
                     });
 
-            let res = [];
-            for(let entry of idList) {
-                res.push( this.names.find(x => x.id === entry).name );
+            let series = {}
+            // create series-Dict with volume-ids as keys
+            for(let x = 0; x < idList.length; x++) {
+                series[idList[x]] = 0;
             }
 
-            return res;
-        },
-        seriesData() {
-            let res = this.volumeAnnotations.map(function (a) {
-                    return a.count;
-                    });
+            // fill the seriesDict with values
+            this.volumeAnnotations.map(function (a) {
+                series[a.volume_id] += a.count;
+            });
 
-            return res;
+            const sortedSeriesObj = Object.fromEntries(
+                Object.entries(series).sort(([,a],[,b]) => a-b)
+            );
+
+            let volNames = [];
+            // create list of volume-Names from seriesDict keys (aka volume-ids)
+            for(const entry in sortedSeriesObj) {
+                let name = this.names.find(x => x.id === parseInt(entry)).name;
+                volNames.push( name );
+            }
+
+            return [volNames, Object.values(sortedSeriesObj)];
         },
         option() {
             return {
@@ -94,8 +107,8 @@ export default {
                 },
                 yAxis: {
                     type: 'category',
-                    data: this.axisData,
-                    inverse: true,
+                    data: this.axisData[0],
+                    inverse: false,
                     axisLabel: {
                         width: 90,
                         overflow: "truncate",
@@ -107,7 +120,7 @@ export default {
                 },
                 series: [
                     {
-                    realtimeSort: true,
+                    // realtimeSort: true,
                     name: 'Annotations',
                     type: 'bar',
                     stack: 'total',
@@ -117,7 +130,7 @@ export default {
                     emphasis: {
                         focus: 'series'
                     },
-                    data: this.seriesData
+                    data: this.axisData[1]
                     }
                 ]
             }

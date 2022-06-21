@@ -41,7 +41,7 @@ export default {
         graph() {
             let obj = {};
             obj['nodes'] = [
-                    {id: "0",
+                    {id: 0,
                     name: "protein0",
                     value: 100,
                     category: 0,
@@ -49,7 +49,7 @@ export default {
                     y: 300,
                     symbolSize: 20
                     },
-                    {id: "1",
+                    {id: 1,
                     name: "protein1",
                     value: 50,
                     category: 0,
@@ -58,15 +58,15 @@ export default {
                     symbolSize: 20
                     },
                     {
-                    id: "2",
+                    id: 2,
                     name: "starfish",
                     value: 20,
                     category: 1,
-                    x: 50,
+                    x: 100,
                     y: 50
                     },
                     {
-                    id: "3",
+                    id: 3,
                     name: "jellyfish",
                     value: 50,
                     category: 2,
@@ -75,7 +75,7 @@ export default {
                     symbolSize: 20
                     },
                     {
-                    id: "4",
+                    id: 4,
                     name: "seasnail",
                     value: 99,
                     category: 1,
@@ -88,20 +88,20 @@ export default {
 
                 obj['links'] = [
                     {
-                        source: "0",
-                        target: "2"
+                        source: 0,
+                        target: 2
                     },
                     {
-                        source: "1",
-                        target: "2"
+                        source: 1,
+                        target: 2
                     },
                     {
-                        source: "2",
-                        target: "3"
+                        source: 2,
+                        target: 3
                     },
                     {
-                        source: "3",
-                        target: "4"
+                        source: 3,
+                        target: 4
                     }
                 ];
                 obj['categories'] = [{name: "Proteins"}, {name: "Seaground animal"}, {name: "Jellyfish"}];
@@ -138,6 +138,13 @@ export default {
                         circular: {
                             rotateLabel: true
                         },
+                        // layout: 'force',
+                        // force: {
+                        //     // initLayout: 'circular'
+                        //     // gravity: 0
+                        //     repulsion: 60,
+                        //     edgeLength: 100
+                        // },
                         edgeSymbol: ['circle'],
                         edgeSymbolSize: [4, 10],
                         data: this.graph.nodes,

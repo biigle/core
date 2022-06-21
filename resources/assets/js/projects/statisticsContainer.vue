@@ -5,6 +5,7 @@ import BarPlot from './components/statisticsTabBar.vue';
 import SankeyPlot from './components/statisticsTabSankey.vue';
 import PieChart from './components/statisticsTabPie.vue';
 import NetMap from './components/statisticsTabNetmap.vue';
+import PieLabel from './components/statisticsTabPieLabel.vue';
 
 export default {
     data() {
@@ -21,9 +22,10 @@ export default {
     components: {
         // html-element : wert
         AnnotationTimeline:AnnotationTimeline,
-        BarPlot:BarPlot,
-        SankeyPlot:SankeyPlot,
+        // BarPlot:BarPlot,
         PieChart:PieChart,
+        SankeyPlot:SankeyPlot,
+        PieLabel:PieLabel,
         NetMap:NetMap
     },
     methods: {
@@ -38,8 +40,8 @@ export default {
         this.annotatedImages = biigle.$require('projects.annotatedImages');
         this.totalImages = biigle.$require('projects.totalImages');
         // console.log(JSON.stringify(this.annotatedImages));
-        console.log(JSON.stringify(this.totalImages));
-        // console.log(this.volumeNames);
+        // console.log(JSON.stringify(this.totalImages));
+        // console.log(JSON.stringify(this.volumeNames));
         // console.log(JSON.stringify(this.volumeAnnotations));
     },
 };
