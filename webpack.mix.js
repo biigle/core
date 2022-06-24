@@ -1,5 +1,5 @@
 const mix = require('laravel-mix');
-require('laravel-mix-artisan-publish');
+require('@mzur/laravel-mix-artisan-publish');
 
 /*
  |--------------------------------------------------------------------------
