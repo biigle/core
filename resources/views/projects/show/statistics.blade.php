@@ -11,7 +11,6 @@
     biigle.$declare('projects.sourceTargetLabels', {!! $sourceTargetLabels !!});
 
 
-
 </script>
 @endpush
 
@@ -22,6 +21,6 @@
     <pie-chart :total-images="totalImages" :annotated-images="annotatedImages"></pie-chart>
     <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
     <pie-label></pie-label>
-    <net-map></net-map>
+    <net-map :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
 </div>
 @endsection

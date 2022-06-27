@@ -16,7 +16,9 @@ export default {
             volumeAnnotations: null,
             volumeNames: null,
             annotatedImages: null,
-            totalImages: null
+            totalImages: null,
+            annotationLabels: null,
+            sourceTargetLabels: null,
         };
     },
     components: {
@@ -39,6 +41,9 @@ export default {
         this.volumeNames = biigle.$require('projects.volumeNames');
         this.annotatedImages = biigle.$require('projects.annotatedImages');
         this.totalImages = biigle.$require('projects.totalImages');
+        this.annotationLabels =  biigle.$require('projects.annotationLabels');
+        this.sourceTargetLabels =  biigle.$require('projects.sourceTargetLabels');
+
         // console.log(JSON.stringify(this.annotatedImages));
         // console.log(JSON.stringify(this.totalImages));
         // console.log(JSON.stringify(this.volumeNames));
