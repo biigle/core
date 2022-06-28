@@ -56,12 +56,12 @@ export default {
 .project-statistics {
     display: grid;
     gap: 1.5rem;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     padding-bottom: 1.5rem;
 }
 
 .grid-col-span-3 {
-    grid-column: 1 / span 3;
+    grid-column: 1 / span 2;
 }
 
 .chart {

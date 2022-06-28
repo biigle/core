@@ -62,11 +62,6 @@ class ProjectStatisticsController extends Controller
             ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), 'images.volume_id')
             ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
             ->get();
-        
-        // $volumeAnnotations = $baseQuery->clone()
-        //     ->select('images.volume_id', DB::raw('count(image_annotation_labels.id)'))
-        //     ->groupBy('images.volume_id')
-        //     ->get();
 
         $volumeNames = $project->volumes()->select('id', 'name')->get();
 

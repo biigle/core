@@ -1,5 +1,5 @@
 <template>
-     <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
+     <v-chart class="chart" :option="option" ></v-chart>
 </template>
 
 <script>
@@ -39,11 +39,40 @@ export default {
         sourceTargetLabels: {required:true, type:Object}
     },
     created() {
-        // console.log(this.option);
+        // console.log(JSON.stringify(this.graph.links));
     },
     methods: {
         createNodes() {
+            let ret = [];
+            for(let entry of this.annotationLabels) {
+                let formatObj = {
+                    "id": entry.id,
+                    "name": entry.name,
+                    "value": entry.count,
+                    "symbolSize": ( Math.log(entry.count) + 1 * 5 ),
+                    "itemStyle": {"color": "#" + entry.color}
+                    };
+                ret.push(formatObj);
+            }
+
+            return ret;
+        },
+        createLinks() {
+            let arr = [];
             
+            // iterate over all ids
+            for (const [id, values] of Object.entries(this.sourceTargetLabels)) {
+                // iterate over all values of each id
+                for(let val of values) {
+                    let entry = {
+                        "source": parseInt(id),
+                        "target": val
+                        };
+                    arr.push(entry);
+                }
+            }
+          
+          return arr;
         }
     },
     computed: {
@@ -51,8 +80,9 @@ export default {
             let obj = {};
             
             obj['nodes'] = this.createNodes();
+            obj['links'] = this.createLinks();
 
-            return null;
+            return obj;
         },
         // graph() {
         //     let obj = {};
@@ -170,7 +200,7 @@ export default {
                         show: true
                         },
                         lineStyle: {
-                        color: 'source',
+                        // color: 'source',
                         width: 2,
                         curveness: 0
                         }

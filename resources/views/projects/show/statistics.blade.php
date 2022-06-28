@@ -20,7 +20,7 @@
     <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
     <pie-chart :total-images="totalImages" :annotated-images="annotatedImages"></pie-chart>
     <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
-    <pie-label></pie-label>
+    <pie-label :annotation-labels="annotationLabels"></pie-label>
     <net-map :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
 </div>
 @endsection

@@ -33,11 +33,23 @@ export default {
         [THEME_KEY]: "dark"
     },
     props: {
-        
+        annotationLabels: {required:true, type:Array}
     },
-    data() {
-        return {        
-            option: {
+    computed: {
+        dat() {
+            let ret = [];
+            for(let entry of this.annotationLabels) {
+                let formatObj = {
+                    "name": entry.name, 
+                    "value": entry.count, 
+                    "itemStyle": {"color": "#" + entry.color}};
+                ret.push(formatObj);
+            }
+            return ret;
+        },
+
+        option() {
+            return {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Abundance of annotation labels',
@@ -50,14 +62,14 @@ export default {
                 },
                 tooltip: {
                     trigger: 'item',
-                    formatter: '{a} <br/>{b} : <b>{c}</b> ({d}%)'
+                    formatter: '{b} : <b>{c}</b> ({d}%)'
                 },
-                legend: {
-                    type: 'scroll',
-                    orient: 'horizontal',
-                    bottom: '5%',
-                    data: ['label1', 'label2', 'label3', 'label4']
-                },
+                // legend: {
+                //     type: 'scroll',
+                //     orient: 'horizontal',
+                //     bottom: '5%',
+                //     data: ['label1', 'label2', 'label3', 'label4']
+                // },
                 // color: [
                 //     '#7cffb2',
                 //     '#ff6e76'
@@ -66,36 +78,16 @@ export default {
                 {
                     name: 'Annotation Label',
                     type: 'pie',
-                    // radius: ['40%', '70%'],
+                    radius: '50%',
                     avoidLabelOverlap: false,
                     label: {
-                    show: false,
-                    position: 'center'
+                    show: true,
+                    position: 'outside'
                     },
                     labelLine: {
-                    show: false
+                    show: true
                     },
-                    data: [
-                        {
-                            name:'label1',
-                            value: 100
-                        },
-                        {
-                            name:'label2',
-                            value: 500
-                        },
-                        {
-                            name:'label3',
-                            value: 400
-                        },
-                        {
-                            name:'label4',
-                            value: 400
-                        },
-                        {
-                            name:'label5',
-                            value: 1000
-                        }],
+                    data: this.dat,
                     emphasis: {
                         itemStyle: {
                         shadowBlur: 10,
@@ -106,6 +98,10 @@ export default {
                 }
                 ]
             }
+        } //end option
+    },
+    data() {
+        return {        
         }
     }
 }
