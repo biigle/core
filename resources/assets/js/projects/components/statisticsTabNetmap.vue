@@ -1,5 +1,9 @@
 <template>
-     <v-chart class="chart" :option="option" ></v-chart>
+    <div class="chart grid-col-span-3" style="height: 600px;">
+        <v-chart class="chart" :option="option" ></v-chart>
+        <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
+        <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >forced layout</button>
+    </div>
 </template>
 
 <script>
@@ -20,12 +24,6 @@ echarts.use([
     CanvasRenderer
 ]);
 
-
-
-// fill graph struct
-// console.log(JSON.stringify(this.graph));
-// console.log('cat: ', this.graph.categories);
-
 export default {
     name: "NetmapDisplay",
     components: {
@@ -39,17 +37,20 @@ export default {
         sourceTargetLabels: {required:true, type:Object}
     },
     created() {
-        // console.log(JSON.stringify(this.graph.links));
+        // console.log('layoutType:', this.layoutType);
     },
     methods: {
+        changeLayout(event) {
+            this.layoutType = event;
+        },
         createNodes() {
             let ret = [];
             for(let entry of this.annotationLabels) {
                 let formatObj = {
-                    "id": entry.id,
+                    "id": entry.id.toString(),
                     "name": entry.name,
                     "value": entry.count,
-                    "symbolSize": ( Math.log(entry.count) + 1 * 5 ),
+                    "symbolSize": 15, //( Math.log(entry.count) + 1 * 5 ),
                     "itemStyle": {"color": "#" + entry.color}
                     };
                 ret.push(formatObj);
@@ -65,8 +66,8 @@ export default {
                 // iterate over all values of each id
                 for(let val of values) {
                     let entry = {
-                        "source": parseInt(id),
-                        "target": val
+                        "source": id,
+                        "target": val.toString()
                         };
                     arr.push(entry);
                 }
@@ -84,76 +85,6 @@ export default {
 
             return obj;
         },
-        // graph() {
-        //     let obj = {};
-        //     obj['nodes'] = [
-        //             {id: 0,
-        //             name: "protein0",
-        //             value: 100,
-        //             category: 0,
-        //             x: 300,
-        //             y: 300,
-        //             symbolSize: 20
-        //             },
-        //             {id: 1,
-        //             name: "protein1",
-        //             value: 50,
-        //             category: 0,
-        //             x: 0,
-        //             y: 0,
-        //             symbolSize: 20
-        //             },
-        //             {
-        //             id: 2,
-        //             name: "starfish",
-        //             value: 20,
-        //             category: 1,
-        //             x: 100,
-        //             y: 50
-        //             },
-        //             {
-        //             id: 3,
-        //             name: "jellyfish",
-        //             value: 50,
-        //             category: 2,
-        //             x: 0,
-        //             y: 0,
-        //             symbolSize: 20
-        //             },
-        //             {
-        //             id: 4,
-        //             name: "seasnail",
-        //             value: 99,
-        //             category: 1,
-        //             x: 0,
-        //             y: 0,
-        //             symbolSize: 20
-        //             }
-        //         ];
-
-
-        //         obj['links'] = [
-        //             {
-        //                 source: 0,
-        //                 target: 2
-        //             },
-        //             {
-        //                 source: 1,
-        //                 target: 2
-        //             },
-        //             {
-        //                 source: 2,
-        //                 target: 3
-        //             },
-        //             {
-        //                 source: 3,
-        //                 target: 4
-        //             }
-        //         ];
-        //         obj['categories'] = [{name: "Proteins"}, {name: "Seaground animal"}, {name: "Jellyfish"}];
-
-        //     return obj;
-        // },
         option() {
             return {
                 backgroundColor: '#222222',
@@ -162,13 +93,13 @@ export default {
                 textStyle: {
                     fontSize: 15
                 },
-                top: '5%',
+                top: '2%',
                 left: '2%'
                 },
                 tooltip: {},
                 // legend: [
                 // {
-                //     data: this.graph.categories.map(function (a) {
+                //     data: this.graph.nodes.map(function (a) {
                 //     return a.name;
                 //     })
                 // }
@@ -179,17 +110,16 @@ export default {
                     {
                         name: 'NetmapDisplay',
                         type: 'graph',
-                        layout: 'circular',
+                        layout: this.layoutType,
                         circular: {
                             rotateLabel: true
                         },
-                        // layout: 'force',
-                        // force: {
-                        //     // initLayout: 'circular'
-                        //     // gravity: 0
-                        //     repulsion: 60,
-                        //     edgeLength: 100
-                        // },
+                        force: {
+                            initLayout: 'circular',
+                            // gravity: 0,
+                            repulsion: 100,
+                            edgeLength: 200
+                        },
                         edgeSymbol: ['circle'],
                         edgeSymbolSize: [4, 10],
                         data: this.graph.nodes,
@@ -200,8 +130,8 @@ export default {
                         show: true
                         },
                         lineStyle: {
-                        // color: 'source',
-                        width: 2,
+                        // color: (params: Object) => params,
+                        width: 1,
                         curveness: 0
                         }
                     }
@@ -211,6 +141,8 @@ export default {
     },
     data() {
         return {
+            layoutType: 'circular'
+
         }
     }
 };

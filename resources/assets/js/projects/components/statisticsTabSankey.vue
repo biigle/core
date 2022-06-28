@@ -1,5 +1,5 @@
 <template>
-     <v-chart class="chart" :option="option" ></v-chart>
+     <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
 </template>
 
 <script>
