@@ -43,20 +43,28 @@ export default {
         changeLayout(event) {
             this.layoutType = event;
         },
-        createNodes() {
-            let ret = [];
+        createNodesAndCategories() {
+            let nodes = [];
+            let cat = [];
+
             for(let entry of this.annotationLabels) {
-                let formatObj = {
+                let nodeObj = {
                     "id": entry.id.toString(),
                     "name": entry.name,
                     "value": entry.count,
                     "symbolSize": 15, //( Math.log(entry.count) + 1 * 5 ),
-                    "itemStyle": {"color": "#" + entry.color}
+                    "category": entry.name
                     };
-                ret.push(formatObj);
+                let catObj = {
+                    "name": entry.name,
+                    "itemStyle": {"color": "#" + entry.color}
+                };
+
+                nodes.push(nodeObj);
+                cat.push(catObj);
             }
 
-            return ret;
+            return [nodes, cat];
         },
         createLinks() {
             let arr = [];
@@ -68,7 +76,7 @@ export default {
                     let entry = {
                         "source": id,
                         "target": val.toString()
-                        };
+                    }
                     arr.push(entry);
                 }
             }
@@ -80,7 +88,9 @@ export default {
         graph() {
             let obj = {};
             
-            obj['nodes'] = this.createNodes();
+            const [nodes, cat] = this.createNodesAndCategories();
+            obj['nodes'] = nodes;
+            obj['categories'] = cat;
             obj['links'] = this.createLinks();
 
             return obj;
@@ -116,21 +126,23 @@ export default {
                         },
                         force: {
                             initLayout: 'circular',
-                            // gravity: 0,
-                            repulsion: 100,
-                            edgeLength: 200
+                            gravity: 0.2,
+                            repulsion: 500,
+                            edgeLength: 300,
+                            layoutAnimation: true
                         },
+                        draggable: false,
                         edgeSymbol: ['circle'],
                         edgeSymbolSize: [4, 10],
                         data: this.graph.nodes,
                         links: this.graph.links,
-                        // categories: this.graph.categories,
+                        categories: this.graph.categories,
                         roam: true,
                         label: {
                         show: true
                         },
                         lineStyle: {
-                        // color: (params: Object) => params,
+                        color: 'source',
                         width: 1,
                         curveness: 0
                         }

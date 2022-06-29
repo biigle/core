@@ -18,9 +18,9 @@
 <div id="projects-show-statistics" class="project-statistics">
     <annotation-timeline :annotation-time-series="annotationTimeSeries"></annotation-timeline>
     <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
+    <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
     <pie-chart :total-images="totalImages" :annotated-images="annotatedImages"></pie-chart>
     <pie-label :annotation-labels="annotationLabels"></pie-label>
-    <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
     <net-map :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
 </div>
 @endsection
