@@ -21,6 +21,7 @@ class ReportType extends Model
         'imageAnnotationsBasic' => 'ImageAnnotations\Basic',
         'imageAnnotationsCsv' => 'ImageAnnotations\Csv',
         'imageAnnotationsExtended' => 'ImageAnnotations\Extended',
+        'imageAnnotationsCoco' => 'ImageAnnotations\Coco',
         'imageAnnotationsFull' => 'ImageAnnotations\Full',
         'imageAnnotationsAbundance' => 'ImageAnnotations\Abundance',
         'imageAnnotationsImageLocation' => 'ImageAnnotations\ImageLocation',

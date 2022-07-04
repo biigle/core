@@ -14,6 +14,7 @@ return [
         'basic_report' => __DIR__.'/../resources/scripts/basic_report.py',
         'csvs_to_xlsx' => __DIR__.'/../resources/scripts/csvs_to_xlsx.py',
         'full_report' => __DIR__.'/../resources/scripts/full_report.py',
+        'toCoco' => __DIR__.'/../resources/scripts/toCoco.py',
     ],
 
     /**

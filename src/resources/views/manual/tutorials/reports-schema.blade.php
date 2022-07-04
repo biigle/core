@@ -25,6 +25,7 @@
                     <li><a href="#annotation-basic-report">Basic</a></li>
                     <li><a href="#annotation-csv-report">CSV</a></li>
                     <li><a href="#annotation-extended-report">Extended</a></li>
+                    <li><a href="#annotation-coco-report">Coco</a></li>
                     <li><a href="#annotation-full-report">Full</a></li>
                     <li><a href="#annotation-image-location-report">ImageLocation</a></li>
                 </ul>
@@ -211,6 +212,11 @@ Animalia
             </li>
             <li><strong>Label abundance</strong></li>
         </ol>
+
+        <h4><a name="annotation-coco-report"></a>Coco</h4>
+        <p>
+            The coco file format is a common format for machine learning applications. The data is stored in a json file, which is readable by most deep learning frameworks. For more information please have a look at <a href="https://towardsdatascience.com/how-to-work-with-object-detection-datasets-in-coco-format-9bf4fb5848a4" target="_blank">this article</a>. Please note that point annotations are incompatible and will not be included. Furthermore all annotations will be transformed to polygons which might cause slight differences.
+        </p>
 
         <h4><a name="annotation-full-report"></a>Full</h4>
 

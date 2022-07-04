@@ -26,6 +26,7 @@ class ReportsControllerTest extends ApiTestCase
 
         Storage::fake();
         Storage::disk()->put($report->id, 'content');
+        #dd(glob('/var/www/storage/framework/testing/disks/local/1'));
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(200);
     }

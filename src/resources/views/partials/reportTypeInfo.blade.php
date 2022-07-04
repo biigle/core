@@ -4,6 +4,9 @@
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Extended')">
     The extended image annotation report lists the abundances of annotation labels for each image and label (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-extended-report">report schema</a>.
 </div>
+<div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Coco')">
+    The Coco image annotation report lists all annotations as (approximated polygons). Point annotations will not be included. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-coco-report">report schema</a>.
+</div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')">
     The abundance image annotation report lists the abundances of annotation labels for each image (as XLSX). Abundances can be aggregated to parent labels. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-abundance-report">report schema</a>.
 </div>
