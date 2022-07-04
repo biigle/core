@@ -137,4 +137,15 @@ class ImageMetadataTest extends TestCase
         ];
         $this->assertFalse($validator->passes(null, $metadata));
     }
+
+    public function testEmptyFilename()
+    {
+        $validator = new static::$ruleClass(['abc.jpg']);
+        $metadata = [
+            ['filename', 'taken_at'],
+            ['abc.jpg', ''],
+            ['', ''],
+        ];
+        $this->assertFalse($validator->passes(null, $metadata));
+    }
 }

@@ -11,7 +11,7 @@ First, install the following software:
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
 
-Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker compose` commands with `sudo`.
+On Linux: Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker compose` commands with `sudo`.
 
 **Note:** Older versions of Docker Compose used the `docker-compose` command. Newer versions use `docker compose`.
 
@@ -47,13 +47,15 @@ docker pull ghcr.io/biigle/worker:latest
 
 Now perform these steps:
 
-1. Build the Docker images with `docker compose build`. This may take a while.
+1. Switch to the new `biigle` directory: `cd biigle`
 
-2. Start the first containers: `docker compose up -d app`
+2. Build the Docker images with `docker compose build`. This may take a while.
 
-3. Apply the database migrations: `docker compose exec app php artisan migrate`
+3. Start the first containers: `docker compose up -d app`
 
-4. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+4. Apply the database migrations: `docker compose exec app php artisan migrate`
+
+5. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
@@ -69,7 +71,9 @@ Follow these steps to create a new project and volume with test images:
 
 2. Open BIIGLE at <http://localhost:8000> in the browser.
 
-3. Create a new project and volume in BIIGLE with the volume URL `local://test` and the list of image filenames. The `local://` storage disk resolves to the `storage/images` directory, the `test` suffix is the name of the directory containing the images.
+3. Create a new project and volume in BIIGLE. Choose "Storage disk" as volume file source and you should be able to select the directory with images created before.
+
+Now BIIGLE is up and running and you can start developing!
 
 ## Building JavaScript and assets
 

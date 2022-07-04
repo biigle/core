@@ -1,7 +1,9 @@
-numpy==1.21.*
-opencv-contrib-python-headless==4.5.4
-scipy
+# This file is just used to get security alerts from GitHub. Make sure the versions match
+# in .docker/app.dockerfile and .docker/worker.dockerfile.
+numpy==1.22.*
+opencv-contrib-python-headless==4.6.0
+scipy==1.7.2
 scikit-learn
-matplotlib
+matplotlib==3.5.2
 PyExcelerate==0.6.7
 Pillow==9.0.*

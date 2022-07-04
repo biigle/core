@@ -100,7 +100,8 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php artisan vendor:publish --ansi --tag=public"
+            "@php artisan vendor:publish --ansi --tag=public",
+            "@pull-modules"
         ],
         "test": [
             "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
@@ -117,6 +118,9 @@
         ],
         "lint": [
             "@php vendor/bin/psalm"
+        ],
+        "pull-modules": [
+            "PPWD=$PWD; for f in $(find vendor/biigle -mindepth 1 -maxdepth 1 -type d); do cd $f; git pull; cd $PPWD; done"
         ]
     },
     "config": {
