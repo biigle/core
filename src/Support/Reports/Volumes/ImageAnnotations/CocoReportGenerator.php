@@ -13,21 +13,21 @@ class CocoReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'coco image annotation report';
+    public $name = 'coco image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'coco_image_annotation_report';
+    public $filename = 'coco_image_annotation_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'json';
+    public $extension = 'json';
 
     /**
      * Generate the report.

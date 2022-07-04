@@ -19,12 +19,12 @@ class BasicReportGenerator extends ProjectImageReportGenerator
      *
      * @var string
      */
-    protected $name = 'basic image label report';
+    public $name = 'basic image label report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'basic_image_label_report';
+    public $filename = 'basic_image_label_report';
 }

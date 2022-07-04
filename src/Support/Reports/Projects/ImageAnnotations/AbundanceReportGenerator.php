@@ -18,12 +18,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'abundance image annotation report';
+    public $name = 'abundance image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'abundance_image_annotation_report';
+    public $filename = 'abundance_image_annotation_report';
 }

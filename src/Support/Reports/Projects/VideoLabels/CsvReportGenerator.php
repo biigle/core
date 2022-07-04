@@ -19,12 +19,12 @@ class CsvReportGenerator extends ProjectVideoReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV video label report';
+    public $name = 'CSV video label report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_video_label_report';
+    public $filename = 'csv_video_label_report';
 }

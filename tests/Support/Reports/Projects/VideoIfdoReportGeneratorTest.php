@@ -2,35 +2,36 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\Reports\Support\Reports\Projects\ImageIfdoReportGenerator;
+use Biigle\MediaType;
+use Biigle\Modules\Reports\Support\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Exception;
 use Storage;
 use TestCase;
 
-class ImageIfdoReportGeneratorTest extends TestCase
+class VideoIfdoReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $generator = new ImageIfdoReportGenerator;
-        $this->assertEquals('image iFDO report', $generator->getName());
-        $this->assertEquals('image_ifdo_report', $generator->getFilename());
+        $generator = new VideoIfdoReportGenerator;
+        $this->assertEquals('video iFDO report', $generator->getName());
+        $this->assertEquals('video_ifdo_report', $generator->getFilename());
     }
 
     public function testProcessIfdoVolumesOnly()
     {
-        $volume1 = VolumeTest::create();
+        $volume1 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $disk = Storage::fake('ifdos');
         $disk->put($volume1->id.'.yaml', 'abc');
 
-        $volume2 = VolumeTest::create();
+        $volume2 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
 
         $project = ProjectTest::create();
         $project->addVolumeId($volume1->id);
         $project->addVolumeId($volume2->id);
 
-        $generator = new ImageIfdoReportGenerator;
+        $generator = new VideoIfdoReportGenerator;
         $generator->setSource($project);
 
         $sources = $generator->getProjectSources();
@@ -40,11 +41,11 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
     public function testThrowIfNoIfdo()
     {
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $project = ProjectTest::create();
         $project->addVolumeId($volume->id);
 
-        $generator = new ImageIfdoReportGenerator;
+        $generator = new VideoIfdoReportGenerator;
         $generator->setSource($project);
 
         $this->expectException(Exception::class);

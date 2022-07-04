@@ -21,7 +21,7 @@ abstract class ProjectReportGenerator extends ReportGenerator
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.
@@ -59,5 +59,15 @@ abstract class ProjectReportGenerator extends ReportGenerator
     protected function getReportGenerator()
     {
         return new $this->reportClass($this->options);
+    }
+
+    /**
+     * Determines if this report should take only the newest label for each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
     }
 }

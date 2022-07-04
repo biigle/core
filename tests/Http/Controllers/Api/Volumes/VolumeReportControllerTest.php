@@ -8,6 +8,7 @@ use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Cache;
 use Storage;
 
 class VolumeReportControllerTest extends ApiTestCase
@@ -144,6 +145,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $types = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            // videoIfdo is tested below
         ];
 
         $this->beGuest();
@@ -325,7 +327,31 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $disk = Storage::fake('ifdos');
-        $disk->put($volumeId, 'abc');
+        $disk->put($volumeId.'.yaml', 'abc');
+        Cache::flush();
+
+        $this->expectsJobs(GenerateReportJob::class);
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(201);
+    }
+
+    public function testStoreVideoIfdo()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $typeId = ReportType::videoIfdoId();
+
+        $this->beGuest();
+
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
+            ->assertStatus(422);
+
+        $disk = Storage::fake('ifdos');
+        $disk->put($volumeId.'.yaml', 'abc');
+        Cache::flush();
 
         $this->expectsJobs(GenerateReportJob::class);
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [

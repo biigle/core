@@ -22,32 +22,32 @@ class ReportGenerator
     public $options;
 
     /**
-     * Source this report belongs to (e.g. a volume).
-     *
-     * @var mixed
-     */
-    protected $source;
-
-    /**
      * Name of the report for use in text.
      *
      * @var string
      */
-    protected $name;
+    public $name;
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename;
+    public $filename;
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension;
+    public $extension;
+
+    /**
+     * Source this report belongs to (e.g. a volume).
+     *
+     * @var mixed
+     */
+    protected $source;
 
     /**
      * Temporary files that are created when generating a report.

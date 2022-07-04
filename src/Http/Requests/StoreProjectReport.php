@@ -77,11 +77,13 @@ class StoreProjectReport extends StoreReport
             ReportType::imageLabelsBasicId(),
             ReportType::imageLabelsCsvId(),
             ReportType::imageLabelsImageLocationId(),
+            ReportType::imageIfdoId(),
         ];
 
         $videoReports = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            ReportType::videoIfdoId(),
         ];
 
         if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
@@ -157,7 +159,13 @@ class StoreProjectReport extends StoreReport
     protected function validateIfdos($validator)
     {
         if ($this->isType(ReportType::imageIfdoId())) {
-            foreach ($this->project->volumes as $volume) {
+            $volumes = $this->project->imageVolumes;
+        } elseif ($this->isType(ReportType::videoIfdoId())) {
+            $volumes = $this->project->videoVolumes;
+        }
+
+        if (isset($volumes)) {
+            foreach ($volumes as $volume) {
                 if ($volume->hasIfdo()) {
                     return;
                 }

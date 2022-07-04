@@ -22,21 +22,21 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
      *
      * @var string
      */
-    protected $name = 'image location image label report';
+    public $name = 'image location image label report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_location_image_label_report';
+    public $filename = 'image_location_image_label_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.
@@ -49,7 +49,9 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
         $usedImageLabelsQuery = ImageLabel::join('images', 'image_labels.image_id', '=', 'images.id')
             ->join('labels', 'image_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->when($this->isRestrictedToLabels(), function ($query) {
+                return $this->restrictToLabelsQuery($query, 'image_labels');
+            })
             ->orderBy('labels.id')
             ->distinct();
 
@@ -98,17 +100,6 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Callback to be used in a `when` query statement that restricts the results to a specific subset of annotation labels.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function restrictToLabelsQuery($query)
-    {
-        return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
-    }
-
-    /**
      * Assemble a new DB query for the volume of this report.
      *
      * @return \Illuminate\Database\Query\Builder
@@ -122,7 +113,9 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
                 'image_labels.label_id',
             ])
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery']);
+            ->when($this->isRestrictedToLabels(), function ($query) {
+                return $this->restrictToLabelsQuery($query, 'image_labels');
+            });
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->join('labels', 'labels.id', '=', 'image_labels.label_id')

@@ -29,6 +29,7 @@ class CsvReportGeneratorTest extends TestCase
         'label_id',
         'label_name',
         'label_hierarchy',
+        'created_at',
     ];
 
     public function testProperties()
@@ -81,6 +82,7 @@ class CsvReportGeneratorTest extends TestCase
                 $il->label_id,
                 $child->name,
                 "{$root->name} > {$child->name}",
+                $il->created_at,
             ]);
 
         $mock->shouldReceive('close')
@@ -150,6 +152,7 @@ class CsvReportGeneratorTest extends TestCase
                 $label1->id,
                 $label1->name,
                 $label1->name,
+                $il1->created_at,
             ]);
 
         $mock->shouldReceive('put')
@@ -166,6 +169,7 @@ class CsvReportGeneratorTest extends TestCase
                 $label2->id,
                 $label2->name,
                 $label2->name,
+                $il2->created_at,
             ]);
 
         $mock->shouldReceive('close')
@@ -248,6 +252,7 @@ class CsvReportGeneratorTest extends TestCase
                 $il1->label->id,
                 $il1->label->name,
                 $il1->label->name,
+                $il1->created_at,
             ]);
 
         $mock->shouldReceive('put')
@@ -264,6 +269,7 @@ class CsvReportGeneratorTest extends TestCase
                 $il2->label->id,
                 $il2->label->name,
                 $il2->label->name,
+                $il2->created_at,
             ]);
 
         $mock->shouldReceive('close')

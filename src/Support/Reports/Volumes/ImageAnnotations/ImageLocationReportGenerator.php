@@ -21,21 +21,21 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'image location image annotation report';
+    public $name = 'image location image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_location_image_annotation_report';
+    public $filename = 'image_location_image_annotation_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.
@@ -49,7 +49,9 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), [$this, 'restrictToLabelsQuery'])
+            ->when($this->isRestrictedToLabels(), function ($query) {
+                return $this->restrictToLabelsQuery($query, 'image_annotation_labels');
+            })
             ->orderBy('labels.id')
             ->distinct();
 

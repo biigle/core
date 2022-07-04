@@ -17,21 +17,21 @@ class CsvReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'CSV image annotation report';
+    public $name = 'CSV image annotation report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'csv_image_annotation_report';
+    public $filename = 'csv_image_annotation_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'zip';
+    public $extension = 'zip';
 
     /**
      * Generate the report.
@@ -95,6 +95,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 'image_annotations.points',
                 'images.attrs',
                 'image_annotations.id as annotation_id',
+                'image_annotation_labels.created_at',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
@@ -130,6 +131,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'points',
             'attributes',
             'annotation_id',
+            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -150,6 +152,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->points,
                 $row->attrs,
                 $row->annotation_id,
+                $row->created_at,
             ]);
         }
 

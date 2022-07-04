@@ -20,14 +20,14 @@ class ImageLocationReportGenerator extends ProjectImageReportGenerator
      *
      * @var string
      */
-    protected $name = 'image location image label report';
+    public $name = 'image location image label report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_location_image_label_report';
+    public $filename = 'image_location_image_label_report';
 
     /**
      * Get sources for the sub-reports that should be generated for this project.

@@ -18,21 +18,21 @@ class AreaReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    protected $name = 'image annotation area report';
+    public $name = 'image annotation area report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    protected $filename = 'image_annotation_area_report';
+    public $filename = 'image_annotation_area_report';
 
     /**
      * File extension of the report file.
      *
      * @var string
      */
-    protected $extension = 'xlsx';
+    public $extension = 'xlsx';
 
     /**
      * All images that contain annotations which are included in this report.

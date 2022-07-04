@@ -7,26 +7,25 @@ use Biigle\Label;
 use Biigle\Shape;
 use Biigle\User;
 use Biigle\Video;
-use Biigle\Modules\Reports\Traits\RestrictsToExportArea;
 use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 
-class ImageIfdoReportGenerator extends IfdoReportGenerator
+class VideoIfdoReportGenerator extends IfdoReportGenerator
 {
-    use RestrictsToExportArea, RestrictsToNewestLabels;
+    use RestrictsToNewestLabels;
 
     /**
      * Name of the report for use in text.
      *
      * @var string
      */
-    public $name = 'image iFDO report';
+    public $name = 'video iFDO report';
 
     /**
      * Name of the report for use as (part of) a filename.
      *
      * @var string
      */
-    public $filename = 'image_ifdo_report';
+    public $filename = 'video_ifdo_report';
 
     /**
      * Assemble a new DB query for the volume of this report.
@@ -38,31 +37,29 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
         $relations = [
             'annotations' => function ($query) {
                 // This makes the beavior more consistent in tests, too.
-                $query = $query->orderBy('image_annotations.id');
-
-                if ($this->isRestrictedToExportArea()) {
-                    return $this->restrictToExportAreaQuery($query);
-                }
+                return $query->orderBy('video_annotations.id');
             },
             'annotations.labels' => function ($query) {
                 if ($this->isRestrictedToNewestLabel()) {
-                    $query = $this->restrictToNewestLabelQuery($query, 'image_annotation_labels');
+                    $query = $this->restrictToNewestLabelQuery($query, 'video_annotation_labels');
                 }
 
                 if ($this->isRestrictedToLabels()) {
-                    $query = $this->restrictToLabelsQuery($query, 'image_annotation_labels');
+                    $query = $this->restrictToLabelsQuery($query, 'video_annotation_labels');
                 }
 
                 return $query;
             },
             'labels' => function ($query) {
                 if ($this->isRestrictedToLabels()) {
-                    return $query->whereIn('image_labels.label_id', $this->getOnlyLabels());
+                    return $query->whereIn('video_labels.label_id', $this->getOnlyLabels());
                 }
+
+                return $query;
             },
         ];
 
-        return $this->source->images()->with($relations);
+        return $this->source->videos()->with($relations);
     }
 
     /**
@@ -74,16 +71,16 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     {
         return User::whereIn('id', function ($query) {
                 $query->select('user_id')
-                    ->from('image_annotation_labels')
-                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-                    ->join('images', 'image_annotations.image_id', '=', 'images.id')
-                    ->where('images.volume_id', $this->source->id);
+                    ->from('video_annotation_labels')
+                    ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+                    ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                    ->where('videos.volume_id', $this->source->id);
             })
             ->orWhereIn('id', function ($query) {
                 $query->select('user_id')
-                    ->from('image_labels')
-                    ->join('images', 'image_labels.image_id', '=', 'images.id')
-                    ->where('images.volume_id', $this->source->id);
+                    ->from('video_labels')
+                    ->join('videos', 'video_labels.video_id', '=', 'videos.id')
+                    ->where('videos.volume_id', $this->source->id);
             })
             ->get();
     }
@@ -97,31 +94,31 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     {
         return Label::whereIn('id', function ($query) {
                 $query->select('label_id')
-                    ->from('image_annotation_labels')
-                    ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-                    ->join('images', 'image_annotations.image_id', '=', 'images.id')
-                    ->where('images.volume_id', $this->source->id);
+                    ->from('video_annotation_labels')
+                    ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+                    ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                    ->where('videos.volume_id', $this->source->id);
             })
             ->orWhereIn('id', function ($query) {
                 $query->select('label_id')
-                    ->from('image_labels')
-                    ->join('images', 'image_labels.image_id', '=', 'images.id')
-                    ->where('images.volume_id', $this->source->id);
+                    ->from('video_labels')
+                    ->join('videos', 'video_labels.video_id', '=', 'videos.id')
+                    ->where('videos.volume_id', $this->source->id);
             })
             ->get();
     }
 
     /**
-     * Create the image-set-item entry for an image.
+     * Create the image-set-item entry for a video.
      *
-     * @param Image|Video $image
+     * @param Image|Video $video
      *
      */
-    public function processFile(Image|Video $image)
+    public function processFile(Image|Video $video)
     {
         // Remove annotations that should not be included because of an "onlyLabels"
         // filter.
-        $annotations = $image->annotations->filter(function ($a) {
+        $annotations = $video->annotations->filter(function ($a) {
             return $a->labels->isNotEmpty();
         });
 
@@ -153,11 +150,12 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
             return [
                 'shape' => $this->getGeometryName($annotation),
                 'coordinates' => $annotation->points,
+                'frames' => $annotation->frames,
                 'labels' => $labels->toArray(),
             ];
         });
 
-        $labels = $image->labels->map(function ($iLabel) {
+        $labels = $video->labels->map(function ($iLabel) {
             $user = $this->users->get($iLabel->user_id);
             if (!in_array($user, $this->imageAnnotationCreators)) {
                 $this->imageAnnotationCreators[] = $user;
@@ -187,14 +185,18 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
             ];
         });
 
-        $this->imageSetItems[$image->filename] = [];
+        $this->imageSetItems[$video->filename] = [];
 
         // Use toBase() because the merge method of Eloquent collections works
         // differently.
-        $imageAnnotations = $annotations->toBase()->merge($labels)->toArray();
+        $videoAnnotations = $annotations->toBase()->merge($labels)->toArray();
 
-        if (!empty($imageAnnotations)) {
-            $this->imageSetItems[$image->filename]['image-annotations'] = $imageAnnotations;
+        if (!empty($videoAnnotations)) {
+            // In contrast to image items, video items should always be an array.
+            // However, we only fill the first array entry with this report.
+            $this->imageSetItems[$video->filename][] = [
+                'image-annotations' => $videoAnnotations,
+            ];
         }
     }
 }

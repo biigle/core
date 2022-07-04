@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\Modules\Reports\ReportTest;
 use Response;
 use Storage;
@@ -11,8 +12,10 @@ class ReportsControllerTest extends ApiTestCase
 {
     public function testGet()
     {
-        config(['reports.storage_disk' => null]);
-        $report = ReportTest::create();
+        config(['reports.storage_disk' => 'test']);
+        $report = ReportTest::create([
+            'type_id' => ReportType::imageAnnotationsCsvId(),
+        ]);
 
         $this->doTestApiRoute('GET', "api/v1/reports/{$report->id}");
 
@@ -24,9 +27,8 @@ class ReportsControllerTest extends ApiTestCase
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(404);
 
-        Storage::fake();
-        Storage::disk()->put($report->id, 'content');
-        #dd(glob('/var/www/storage/framework/testing/disks/local/1'));
+        $disk = Storage::fake('test');
+        $disk->put($report->getStorageFilename(), 'content');
         $this->json('GET', "api/v1/reports/{$report->id}")
             ->assertStatus(200);
     }

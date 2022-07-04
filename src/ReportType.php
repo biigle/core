@@ -17,21 +17,22 @@ class ReportType extends Model
      * @var array
      */
     const INSTANCES = [
+        'imageAnnotationsAbundance' => 'ImageAnnotations\Abundance',
+        'imageAnnotationsAnnotationLocation' => 'ImageAnnotations\AnnotationLocation',
         'imageAnnotationsArea' => 'ImageAnnotations\Area',
         'imageAnnotationsBasic' => 'ImageAnnotations\Basic',
         'imageAnnotationsCsv' => 'ImageAnnotations\Csv',
         'imageAnnotationsExtended' => 'ImageAnnotations\Extended',
         'imageAnnotationsCoco' => 'ImageAnnotations\Coco',
         'imageAnnotationsFull' => 'ImageAnnotations\Full',
-        'imageAnnotationsAbundance' => 'ImageAnnotations\Abundance',
         'imageAnnotationsImageLocation' => 'ImageAnnotations\ImageLocation',
-        'imageAnnotationsAnnotationLocation' => 'ImageAnnotations\AnnotationLocation',
+        'imageIfdo' => 'ImageIfdo',
         'imageLabelsBasic' => 'ImageLabels\Basic',
         'imageLabelsCsv' => 'ImageLabels\Csv',
         'imageLabelsImageLocation' => 'ImageLabels\ImageLocation',
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',
+        'videoIfdo' => 'VideoIfdo',
         'videoLabelsCsv' => 'VideoLabels\Csv',
-        'imageIfdo' => 'ImageIfdo',
     ];
 
     /**
