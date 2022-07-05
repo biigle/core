@@ -19,6 +19,14 @@
                 >
                 <i class="fas fa-trash"></i>
             </button>
+            <button
+                v-if="showStatistics"
+                class="btn btn-default btn-sm preview-thumbnail__icon2"
+                @click.prevent="statistics"
+                :title="statisticsTitle"
+                >
+                <i class="fas fa-chart-bar"></i>
+            </button>
             <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
                     v-for="(uri, i) in uris"
@@ -46,6 +54,8 @@
  *
  * @type {Object}
  */
+
+
 export default {
     props: {
         id: {
@@ -63,6 +73,10 @@ export default {
         removeTitle: {
             type: String,
             default: 'Remove this volume',
+        },
+        statisticsTitle: {
+            type: String,
+            default: 'Show statistics',
         },
         icon: {
             type: String,
@@ -104,6 +118,9 @@ export default {
         showRemove() {
             return this.removable && this.hovered;
         },
+        showStatistics() {
+            return this.removable && this.hovered;
+        },
     },
     methods: {
         thumbShown(i) {
@@ -115,6 +132,9 @@ export default {
         },
         remove() {
             this.$emit('remove', this.id);
+        },
+        statistics() {
+            this.$emit('statistics', this.id);
         },
         uriLoaded(i) {
             this.loaded.splice(i, 1, true);
@@ -138,6 +158,6 @@ export default {
         }
 
         this.loaded = this.uris.map(() => false);
-    },
+    }
 };
 </script>

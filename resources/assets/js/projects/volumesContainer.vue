@@ -6,6 +6,8 @@ import PreviewThumbnail from './components/previewThumbnail';
 import ProjectsApi from '../core/api/projects';
 import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
+import { Modal } from 'uiv';
+
 
 const SORTING = {
     DATE_DOWN: 'date-down',
@@ -33,11 +35,13 @@ export default {
             showImageVolumes: true,
             showVideoVolumes: true,
             currentSorting: SORTING.DATE_DOWN,
+            showModal: false
         };
     },
     components: {
         previewThumbnail: PreviewThumbnail,
         typeahead: Typeahead,
+        modal: Modal,
     },
     computed: {
         sortedVolumes() {
@@ -156,6 +160,9 @@ export default {
                 }
             }
         },
+        showStatistics(id) {
+            this.showModal = true;
+        },
         hasVolume(id) {
             for (let i = this.volumes.length - 1; i >= 0; i--) {
                 if (this.volumes[i].id === id) {
@@ -246,6 +253,7 @@ export default {
         if (sorting) {
             this.currentSorting = sorting;
         }
+        console.log('MODAL: ', this.showModal);
     },
 };
 </script>
