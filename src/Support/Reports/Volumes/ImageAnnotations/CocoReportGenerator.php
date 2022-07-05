@@ -6,8 +6,12 @@ use Biigle\LabelTree;
 use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\User;
 
+use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use DB;
+
 class CocoReportGenerator extends AnnotationReportGenerator
 {
+    use MakesZipArchives;
     /**
      * Name of the report for use in text.
      *
@@ -27,7 +31,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
      *
      * @var string
      */
-    public $extension = 'json';
+    public $extension = 'zip';
 
     /**
      * Generate the report.
@@ -36,11 +40,38 @@ class CocoReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        
+        //restrictions 
         $rows = $this->query()->get();
-        $csv = $this->createCsv($rows);
-        $this->tmpFiles[] = $csv;
+        $toZip = [];
+
+        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+
+            foreach ($trees as $id => $name) {
+                $csv = $this->createCsv($rows->get($id));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
+            }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $csv = $this->createCsv($rows->get($id));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
+            }
+        } else {
+            $csv = $this->createCsv($rows);
+            $this->tmpFiles[] = $csv;
+            $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
+        }
         $this->executeScript('toCoco', $path);
+        $this->makeZip($toZip, $path);
+        
     }
 
 /**

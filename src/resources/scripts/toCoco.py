@@ -12,10 +12,10 @@ import ast
 # csv = sys.argv[3]
 
 # the path to the CSV file
-path = sys.argv[3]
-# json (output) path
+paths = sys.argv[3:]
+# json (output) path #ignore for now
 save_json_path = sys.argv[2]
-data = pd.read_csv(path)
+
 
 def check_shape(row):
     # only polygons are accepted
@@ -79,35 +79,38 @@ def annotation(row):
     annotation["id"] = int(row.annotation_label_id)
     return annotation
 
-# delete rows with not supported shapes
-for index, row in data.iterrows():
-    if not check_shape(row) :
-        data.drop(index, inplace=True)
 
-images = []
-categories = []
-annotations = []
+for path in paths:
+    data = pd.read_csv(path)
+    # delete rows with not supported shapes
+    for index, row in data.iterrows():
+        if not check_shape(row) :
+            data.drop(index, inplace=True)
 
-data['fileid'] = data['filename'].astype('category').cat.codes
-data['categoryid']= pd.Categorical(data['label_name'],ordered= True).codes
-data['categoryid'] = data['categoryid']+1
-data['annid'] = data.index
-imagedf = data.drop_duplicates(subset=['fileid']).sort_values(by='fileid')
-catdf = data.drop_duplicates(subset=['categoryid']).sort_values(by='categoryid')
+    images = []
+    categories = []
+    annotations = []
 
-for row in data.itertuples():
-    annotations.append(annotation(row))
+    data['fileid'] = data['filename'].astype('category').cat.codes
+    data['categoryid']= pd.Categorical(data['label_name'],ordered= True).codes
+    data['categoryid'] = data['categoryid']+1
+    data['annid'] = data.index
+    imagedf = data.drop_duplicates(subset=['fileid']).sort_values(by='fileid')
+    catdf = data.drop_duplicates(subset=['categoryid']).sort_values(by='categoryid')
+
+    for row in data.itertuples():
+        annotations.append(annotation(row))
 
 
-for row in imagedf.itertuples():
-    images.append(image(row))
+    for row in imagedf.itertuples():
+        images.append(image(row))
 
 
-for row in catdf.itertuples():
-    categories.append(category(row))
+    for row in catdf.itertuples():
+        categories.append(category(row))
 
-data_coco = {}
-data_coco["images"] = images
-data_coco["categories"] = categories
-data_coco["annotations"] = annotations
-pretty_json = json.dump(data_coco, open(save_json_path, "w"), indent=4)
+    data_coco = {}
+    data_coco["images"] = images
+    data_coco["categories"] = categories
+    data_coco["annotations"] = annotations
+    pretty_json = json.dump(data_coco, open(path, "w"), indent=4)
