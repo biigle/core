@@ -70,8 +70,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
         }
         $this->executeScript('toCoco', $path);
-        $this->makeZip($toZip, $path);
-        
+        $this->makeZip($toZip, $path);     
     }
 
 /**
@@ -97,6 +96,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'image_annotations.points',
                 'images.attrs',
                 'image_annotations.id as annotation_id',
+                'image_annotation_labels.created_at',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
@@ -132,6 +132,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             'points',
             'attributes',
             'annotation_id',
+            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -152,6 +153,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->points,
                 $row->attrs,
                 $row->annotation_id,
+                $row->created_at,
             ]);
         }
 
