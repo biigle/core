@@ -1,6 +1,6 @@
 # Developing BIIGLE
 
-To develop BIIGLE on your local machine you can use Docker containers. This way you don't need to install any of the requirements like Python or special PHP extensions and keep your development environment clearly separated from your regular OS.
+To develop BIIGLE on your local machine you can use Docker containers. This way you don't need to install any of the requirements such as Python or special PHP extensions and keep your development environment clearly separated from your regular system.
 
 ## Development setup
 
@@ -10,6 +10,7 @@ First, install the following software:
 - [Docker](https://docs.docker.com/install/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
+- Recommended: The `unzip` tool
 
 On Linux: Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker compose` commands with `sudo`.
 
@@ -19,9 +20,9 @@ Now you can proceed with the development setup:
 
 ### 1. Download the project files
 
-To start developing, you need to [fork](https://github.com/biigle/core/fork) this repository unless you are a member of the BIIGLE GitHub organization. Use the URL of your fork in the command below (e.g. `git@github.com:YOUR_GITHUB_NAME/core.git`).
+**Optional:** If you want to contribute code changes to this repository, you need to [fork](https://github.com/biigle/core/fork) it (unless you are a member of the BIIGLE GitHub organization). Use the URL of your fork in the command below (e.g. `git@github.com:YOUR_GITHUB_NAME/core.git`). You can also create the fork and update the Git remote URL later. If you want to contribute to a module, please see [below](#developing-a-module) after the main application is up an running.
 
-Set up the project in the `biigle` directory:
+Set up the project in the `biigle` directory (this may take a while):
 
 ```
 composer create-project biigle/core:dev-dev-modules \
@@ -49,7 +50,7 @@ Now perform these steps:
 
 1. Switch to the new `biigle` directory: `cd biigle`
 
-2. Build the Docker images with `docker compose build`. This may take a while.
+2. (You can skip this step if you already pulled the images above.) Build the Docker images with `docker compose build`. This takes a while.
 
 3. Start the first containers: `docker compose up -d app`
 
@@ -73,11 +74,11 @@ Follow these steps to create a new project and volume with test images:
 
 3. Create a new project and volume in BIIGLE. Choose "Storage disk" as volume file source and you should be able to select the directory with images created before.
 
-Now BIIGLE is up and running and you can start developing!
+Now BIIGLE is up and running and you can start developing! As a first step, you can get familiar with the [Laravel directory structure](https://laravel.com/docs/9.x/structure).
 
 ## Building JavaScript and assets
 
-JavaScript and assets are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub:
+The JavaScript and asset source files are located in `resources/assets`. The files are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub:
 
 1. Create a new [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with the `read:packages` scope.
 
@@ -97,7 +98,7 @@ Important commands for development are:
 
 ## Runing the tests
 
-You can run the tests with `composer test`. The first time might fail since the testing database container needs to start up. To run only a subset of the tests, use `composer testf <pattern>` with `<pattern>` being a string that matches the test class or function that you want to run.
+The test files are located in `tests/php`. You can run the tests with `composer test`. The first time might fail since the testing database container needs to start up. To run only a subset of the tests, use `composer testf <pattern>` with `<pattern>` being a string that matches the test class or function that you want to run.
 
 ## Runing static analysis and CS fixes
 
@@ -105,9 +106,9 @@ Static analysis for PHP can be run with `composer lint` and for JavaScript with 
 
 ## Developing a module
 
-The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applied in the running development instance.
+The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. The modules are installed as Git repositories. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applied in the running development instance.
 
-1. To develop an existing BIIGLE module, you have to [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) it first. Do this on the GitHub repository page of the module. Example: fork `biigle/annotations` to `<username>/annotations` (replace `<username>` with your GitHub username).
+1. To be able to contribute code changes to an existing BIIGLE module, you have to [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) it first. Do this on the GitHub repository page of the module. Example: fork `biigle/annotations` to `<username>/annotations` (replace `<username>` with your GitHub username).
 
 2. Connect the installed module with your fork. Example: navigate to `vendor/biigle/annotations` and execute:
    ```bash
