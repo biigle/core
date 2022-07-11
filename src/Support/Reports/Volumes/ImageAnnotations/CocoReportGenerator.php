@@ -69,7 +69,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
         }
         $this->executeScript('toCoco', $path);
-        $this->makeZip($toZip, $path);     
+        $this->makeZip($toZip, $path);
     }
 
 /**
