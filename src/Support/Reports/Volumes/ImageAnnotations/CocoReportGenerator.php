@@ -40,7 +40,6 @@ class CocoReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        //restrictions 
         $rows = $this->query()->get();
         $toZip = [];
 
