@@ -25,6 +25,7 @@
     "vue-template-compiler": "^2.6.11"
   },
   "dependencies": {
-    "@biigle/ol": "^5.3.0"
+    "@biigle/ol": "^5.3.0",
+    "laravel-mix-artisan-publish": "git+https://github.com/mzur/laravel-mix-artisan-publish.git"
   }
 }
