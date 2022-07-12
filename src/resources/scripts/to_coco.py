@@ -61,6 +61,7 @@ def annotation(row):
     # convert Circle to Polygon using shapely
     if row.shape_name == "Circle":
         x, y, r = desired_array
+        r = max(r, 1) # catch case for zero or negative raidus
         circlePolygon = Point(x, y).buffer(r)
         desired_array = numpy.array(
             list(zip(*circlePolygon.exterior.coords.xy))).flatten().astype(float).tolist()
