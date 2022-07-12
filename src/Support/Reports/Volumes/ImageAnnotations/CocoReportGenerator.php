@@ -68,7 +68,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             $this->tmpFiles[] = $csv;
             $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
         }
-        $this->executeScript('toCoco', $path);
+        $this->executeScript('to_coco',''); // the temporary csv files are overwritten with the respective json files therefore the argument is not needed
         $this->makeZip($toZip, $path);
     }
 
@@ -84,18 +84,13 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'image_annotation_labels.label_id',
                 'labels.name as label_name',
                 'users.id as user_id',
-                'users.firstname',
-                'users.lastname',
                 'images.id as image_id',
                 'images.filename',
                 'images.lng as longitude',
                 'images.lat as latitude',
-                'shapes.id as shape_id',
                 'shapes.name as shape_name',
                 'image_annotations.points',
                 'images.attrs',
-                'image_annotations.id as annotation_id',
-                'image_annotation_labels.created_at',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
@@ -118,20 +113,13 @@ class CocoReportGenerator extends AnnotationReportGenerator
             'annotation_label_id',
             'label_id',
             'label_name',
-            'label_hierarchy',
-            'user_id',
-            'firstname',
-            'lastname',
             'image_id',
             'filename',
             'image_longitude',
             'image_latitude',
-            'shape_id',
             'shape_name',
             'points',
             'attributes',
-            'annotation_id',
-            'created_at',
         ]);
 
         foreach ($rows as $row) {
@@ -139,20 +127,13 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,
-                $this->expandLabelName($row->label_id),
-                $row->user_id,
-                $row->firstname,
-                $row->lastname,
                 $row->image_id,
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_id,
                 $row->shape_name,
                 $row->points,
                 $row->attrs,
-                $row->annotation_id,
-                $row->created_at,
             ]);
         }
 

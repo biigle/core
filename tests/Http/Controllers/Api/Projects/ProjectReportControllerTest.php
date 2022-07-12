@@ -112,6 +112,7 @@ class ProjectReportControllerTest extends ApiTestCase
             ReportType::imageAnnotationsBasicId(),
             ReportType::imageAnnotationsCsvId(),
             ReportType::imageAnnotationsExtendedId(),
+            ReportType::imageAnnotationsCocoId(),
             ReportType::imageAnnotationsFullId(),
             ReportType::imageAnnotationsAbundanceId(),
             ReportType::imageAnnotationsImageLocationId(),
