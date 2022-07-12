@@ -22,20 +22,13 @@ class CocoReportGeneratorTest extends TestCase
         'annotation_label_id',
         'label_id',
         'label_name',
-        'label_hierarchy',
-        'user_id',
-        'firstname',
-        'lastname',
         'image_id',
         'filename',
         'image_longitude',
         'image_latitude',
-        'shape_id',
         'shape_name',
         'points',
         'attributes',
-        'annotation_id',
-        'created_at',
     ];
 
     public function testProperties()
@@ -81,20 +74,13 @@ class CocoReportGeneratorTest extends TestCase
                 $al->id,
                 $child->id,
                 $child->name,
-                "{$root->name} > {$child->name}",
-                $al->user_id,
-                $al->user->firstname,
-                $al->user->lastname,
                 $al->annotation->image_id,
                 $al->annotation->image->filename,
                 null,
                 null,
-                $al->annotation->shape->id,
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
-                json_encode(['image' => 'attrs']),
-                $al->annotation->id,
-                $al->created_at,
+                json_encode(['image' => 'attrs'])
             ]);
 
         $mock->shouldReceive('close')
@@ -166,20 +152,13 @@ class CocoReportGeneratorTest extends TestCase
                 $al1->id,
                 $label1->id,
                 $label1->name,
-                $label1->name,
-                $al1->user_id,
-                $al1->user->firstname,
-                $al1->user->lastname,
                 $annotation->image_id,
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
-                null,
-                $annotation->id,
-                $al1->created_at,
+                null
             ]);
 
         $mock->shouldReceive('put')
@@ -188,20 +167,13 @@ class CocoReportGeneratorTest extends TestCase
                 $al2->id,
                 $label2->id,
                 $label2->name,
-                $label2->name,
-                $al2->user_id,
-                $al2->user->firstname,
-                $al2->user->lastname,
                 $annotation->image_id,
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
-                null,
-                $annotation->id,
-                $al2->created_at,
+                null
             ]);
 
         $mock->shouldReceive('close')
@@ -283,20 +255,13 @@ class CocoReportGeneratorTest extends TestCase
                 $al1->id,
                 $al1->label->id,
                 $al1->label->name,
-                $al1->label->name,
-                $al1->user_id,
-                $al1->user->firstname,
-                $al1->user->lastname,
                 $annotation->image_id,
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
-                null,
-                $annotation->id,
-                $al1->created_at,
+                null
             ]);
 
         $mock->shouldReceive('put')
@@ -305,20 +270,13 @@ class CocoReportGeneratorTest extends TestCase
                 $al2->id,
                 $al2->label->id,
                 $al2->label->name,
-                $al2->label->name,
-                $al2->user_id,
-                $al2->user->firstname,
-                $al2->user->lastname,
                 $annotation->image_id,
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->id,
                 $annotation->shape->name,
                 json_encode($annotation->points),
-                null,
-                $annotation->id,
-                $al2->created_at,
+                null
             ]);
 
         $mock->shouldReceive('close')
