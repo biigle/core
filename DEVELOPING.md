@@ -52,11 +52,13 @@ Now perform these steps:
 
 2. (You can skip this step if you already pulled the images above.) Build the Docker images with `docker compose build`. This takes a while.
 
-3. Start the first containers: `docker compose up -d app`
+3. Check your user ID with `id -u`. If it isn't `1000`, update `USER_ID` and `GROUP_ID` in the `.env` file.
 
-4. Apply the database migrations: `docker compose exec app php artisan migrate`
+4. Start the first containers: `docker compose up -d app`
 
-5. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
+5. Apply the database migrations: `docker compose exec app php artisan migrate`
+
+6. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
 ### 3. Initialize the application
 
