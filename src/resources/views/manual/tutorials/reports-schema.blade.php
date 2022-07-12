@@ -216,7 +216,7 @@ Animalia
 
         <h4><a name="annotation-coco-report"></a>Coco</h4>
         <p>
-            The coco file format is a common format for machine learning applications. The data is stored in a json file, which is readable by most deep learning frameworks. For more information please have a look at <a href="https://towardsdatascience.com/how-to-work-with-object-detection-datasets-in-coco-format-9bf4fb5848a4" target="_blank">this article</a>. Please note that point annotations are incompatible and will not be included. Furthermore all annotations will be transformed to polygons which might cause slight differences.
+            The Coco file format is a common format for machine learning applications. The data is stored in a JSON file, which is readable by most deep learning frameworks. For more information please have a look at <a href="https://towardsdatascience.com/how-to-work-with-object-detection-datasets-in-coco-format-9bf4fb5848a4" target="_blank">this article</a>. Point annotations are incompatible and will not be included in this report. All remaining annotations will be transformed to polygons which might cause slight changes in their appearance.
         </p>
 
         <h4><a name="annotation-full-report"></a>Full</h4>
