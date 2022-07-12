@@ -30,7 +30,7 @@ class ReportsServiceProvider extends ServiceProvider
     public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'reports');
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
 
         $router->group([
             'namespace' => 'Biigle\Modules\Reports\Http\Controllers',
