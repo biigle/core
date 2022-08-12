@@ -146,7 +146,7 @@ RUN apk add --no-cache --virtual .build-deps \
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
 # Other Python dependencies are added with the OpenCV build above.
-RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib
+RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib py3-shapely
 
 # Set this library path so the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
