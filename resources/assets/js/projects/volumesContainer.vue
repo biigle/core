@@ -3,10 +3,10 @@ import AttachableVolumesApi from './api/attachableVolumes';
 import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
+import statisticsModal from './components/statisticsModal';
 import ProjectsApi from '../core/api/projects';
 import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
-import { Modal } from 'uiv';
 
 
 const SORTING = {
@@ -41,7 +41,7 @@ export default {
     components: {
         previewThumbnail: PreviewThumbnail,
         typeahead: Typeahead,
-        modal: Modal,
+        statisticsModal: statisticsModal,
     },
     computed: {
         sortedVolumes() {
