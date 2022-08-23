@@ -27,7 +27,10 @@ class StatisticsControllerTest extends ApiTestCase
         $expect = [
             'annotationTimeSeries' => [],
             'volumeAnnotations' => [],
-            'volumeName' => $this->volume()->name,
+            'volumeName' => [[
+                'id' => $id,
+                'name' => $this->volume()->name
+            ]],
             'annotatedImages' => 0,
             'totalImages' => 0,
             'annotationLabels' => [],

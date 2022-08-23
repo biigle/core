@@ -1,12 +1,12 @@
 <template>
-    <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg">
+    <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg" ok-text="Ok" ok-type="primary">
         <div v-if="showCharts" class="modal-statistics">
-            <annotation-timeline :annotation-time-series="annotationTimeSeries"></annotation-timeline>
+            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries"></annotation-timeline>
             <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
-            <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeName"></sankey-plot>
-            <pie-chart :total-images="totalImages" :annotated-images="annotatedImages"></pie-chart>
-            <pie-label :annotation-labels="annotationLabels"></pie-label>
-            <net-map :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
+            <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot>
+            <pie-chart :total-images="dat.totalImages" :annotated-images="dat.annotatedImages"></pie-chart>
+            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels"></pie-label>
+            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels"></net-map>
         </div>
     </modal>
 </template>
@@ -33,7 +33,8 @@ export default{
         NetMap:NetMap
     },
     props: {
-        showModal: {required:true, type:Boolean}
+        showModal: {required:true, type:Boolean},
+        statisticsData: {required:true, type:Object}
     },
     data() {
         return {
@@ -42,36 +43,59 @@ export default{
             // initialized (using $nextTick). Otherwise ECharts cannot determine the
             // DOM element width.
             showCharts: false,
-            annotatedImages: 1,
-            annotationLabels:[
-                    {color:"0099ff", count:1, id:1, name:"homenick.mary"},
-                    {color:"0099ff", count:1, id:2, name:"schmeler.heath"}
-            ],
-            annotationTimeSeries: [
-                {count:1, fullname:"Aurore Hintz", user_id:5, year:2022},
-                {count:1, fullname:"Maybelle Balistreri", user_id:6, year:2022}
-            ],
-            sourceTargetLabels:{1:[2]},
-            totalImages:2,
-            volumeAnnotations:[
-                {count:1, fullname:"Aurore Hintz", user_id:5, volume_id:1},
-                {count:1, fullname:"Maybelle Balistreri", user_id:6, volume_id:1}
-            ],
-            volumeName:[
-                {id:1, name:"Hand-Lindgren"}
-            ]
+            showTimeline: true,
+            showSankey: true,
+            showPieLabel: true,
+            showNetMap: true,
+            dat: {}
+            
+            // annotatedImages: 1,
+            // annotationLabels:[
+            //         {color:"0099ff", count:1, id:1, name:"homenick.mary"},
+            //         {color:"0099ff", count:1, id:2, name:"schmeler.heath"}
+            // ],
+            // annotationTimeSeries: [
+            //     {count:1, fullname:"Aurore Hintz", user_id:5, year:2022},
+            //     {count:1, fullname:"Maybelle Balistreri", user_id:6, year:2022}
+            // ],
+            // sourceTargetLabels:{1:[2]},
+            // totalImages:2,
+            // volumeAnnotations:[
+            //     {count:1, fullname:"Aurore Hintz", user_id:5, volume_id:1},
+            //     {count:1, fullname:"Maybelle Balistreri", user_id:6, volume_id:1}
+            // ],
+            // volumeName:[
+            //     {id:1, name:"Hand-Lindgren"}
+            // ]
         };
     },
     created() {
         // console.log("Full Object: ", this.annotatedImages);
-    //     console.log("Volume-Name: ", this.allData.volumeName);
+        // console.log("Volume-sourceTarget: ", JSON.stringify(this.dat.sourceTargetLabels));
     },
     methods: {
+        checkForEmptyVals() {
+            // check for each statistics-vis if corresponding arrays/objects are empty
+            if(this.dat.annotationTimeSeries.length == 0) {
+                this.showTimeline = false;
+            }
+            if(this.dat.volumeAnnotations.length == 0) {
+                this.showSankey = false;
+            }
+            if(this.dat.annotationLabels.length == 0) {
+                this.showPielabel = false;
+            }
+            if(this.dat.sourceTargetLabels.length == 0 && this.dat.annotationLabels.length == 0) {
+                this.showNetMap = false;
+            }
+        }
     },
     watch: {
         // if volume-statistics-button pressed, trigger modal
         showModal: function(){
             if (this.showModal){
+                this.dat = this.statisticsData
+                this.checkForEmptyVals();
                 this.show = true;
             }
         },
@@ -83,6 +107,10 @@ export default{
                 this.$emit('close-modal');
                 // console.log('SHOW: ', this.show);
                 this.showCharts = false;
+                this.showTimeline = true;
+                this.showSankey = true;
+                this.showPieLabel = true;
+                this.showNetMap = true;
             }
         }
     }
@@ -106,5 +134,10 @@ export default{
   height: 400px;
   width: 100%;
   outline: solid #424242 1px;
+}
+
+.modal-footer .btn-default {
+    visibility: hidden;
+    display: none;
 }
 </style>

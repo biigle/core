@@ -35,7 +35,8 @@ export default {
             showImageVolumes: true,
             showVideoVolumes: true,
             currentSorting: SORTING.DATE_DOWN,
-            showModal: false
+            showModal: false,
+            statisticsData: {}
         };
     },
     components: {
@@ -160,7 +161,8 @@ export default {
                 }
             }
         },
-        showStatistics(id) {
+        showStatistics(dat) {
+            this.statisticsData = dat;
             this.showModal = true;
         },
         hasVolume(id) {

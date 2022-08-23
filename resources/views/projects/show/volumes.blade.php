@@ -44,7 +44,7 @@
         </div>
     </div>
     <section class="uiv">
-        <statistics-modal :show-modal="showModal" @close-modal="showModal = false"></statistics-modal>
+        <statistics-modal :show-modal="showModal" :statistics-data="statisticsData" @close-modal="showModal = false"></statistics-modal>
     </section>
     <div v-if="hasNoMatchingVolumes" v-cloak class="well volume-info-well">
         No volume matches this filter query. <a href="#" v-on:click="clearFiltering">Clear filter query.</a>
