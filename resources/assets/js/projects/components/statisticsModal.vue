@@ -1,6 +1,6 @@
 <template>
     <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg">
-        <div class="modal-statistics">
+        <div v-if="showCharts" class="modal-statistics">
             <annotation-timeline :annotation-time-series="annotationTimeSeries"></annotation-timeline>
             <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
             <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeName"></sankey-plot>
@@ -38,6 +38,10 @@ export default{
     data() {
         return {
             show: false,
+            // Use this extra variable to show the ECharts only after the modal was
+            // initialized (using $nextTick). Otherwise ECharts cannot determine the
+            // DOM element width.
+            showCharts: false,
             annotatedImages: 1,
             annotationLabels:[
                     {color:"0099ff", count:1, id:1, name:"homenick.mary"},
@@ -67,15 +71,18 @@ export default{
     watch: {
         // if volume-statistics-button pressed, trigger modal
         showModal: function(){
-            if(this.showModal == true){
+            if (this.showModal){
                 this.show = true;
             }
         },
         // if modal is closed, trigger the close-modal-event, which sets 'showModal' in parent container to false again
         show: function() {
-            if(this.show == false) {
+            if (this.show) {
+                this.$nextTick(() => this.showCharts = true);
+            } else {
                 this.$emit('close-modal');
                 // console.log('SHOW: ', this.show);
+                this.showCharts = false;
             }
         }
     }
