@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\UserTest;
 
 class StatisticsControllerTest extends ApiTestCase
 {
@@ -35,7 +36,7 @@ class StatisticsControllerTest extends ApiTestCase
         $response->assertExactJson($expect);
     }
 
-    public function testInitialStatistics() 
+    public function testInitialStatistics()
     {
         $id = $this->volume()->id;
 
@@ -49,11 +50,16 @@ class StatisticsControllerTest extends ApiTestCase
             'volume_id' => $this->volume()->id,
         ]);
 
+        $user1 = UserTest::create();
+        $user2 = UserTest::create();
+
         $annotation1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
         ]);
 
-        ImageAnnotationLabelTest::create([
+        // create label for annotations
+        $annotationLabel1 = ImageAnnotationLabelTest::create([
+            'user_id' => $user1->id,
             'annotation_id' => $annotation1->id,
         ]);
 
@@ -61,7 +67,8 @@ class StatisticsControllerTest extends ApiTestCase
             'image_id' => $image->id,
         ]);
 
-        ImageAnnotationLabelTest::create([
+        $annotationLabel2 = ImageAnnotationLabelTest::create([
+            'user_id' => $user2->id,
             'annotation_id' => $annotation2->id,
         ]);
 
@@ -70,14 +77,58 @@ class StatisticsControllerTest extends ApiTestCase
             ->assertStatus(200);
         
         $expect = [
-            'annotationTimeSeries' => [],
-            'volumeAnnotations' => [],
-            'volumeName' => $this->volume()->name,
+            'annotationTimeSeries' => [
+                [
+                    'count' => 1,
+                    'fullname' => $user1->firstname . " " . $user1->lastname,
+                    'user_id' => $user1->id,
+                    'year' => 2022
+                ],
+                [
+                    'count' => 1,
+                    'fullname' => $user2->firstname . " " . $user2->lastname,
+                    'user_id' => $user2->id,
+                    'year' => 2022
+                ]
+            ],
+            'volumeAnnotations' => [
+                [
+                    "count" => 1,
+                    "fullname" => $user1->firstname . " " . $user1->lastname,
+                    "user_id" => $user1->id,
+                    "volume_id" => $id
+                ],
+                [
+                    "count" => 1,
+                    "fullname" => $user2->firstname . " " . $user2->lastname,
+                    "user_id" => $user2->id,
+                    "volume_id" => $id
+                ]
+            ],
+            'volumeName' => [[
+                'name' => $this->volume()->name,
+                'id' => $id
+            ]],
             'annotatedImages' => 1,
             'totalImages' => 2,
-            'annotationLabels' => [],
-            'sourceTargetLabels' => []
+            'annotationLabels' => [
+                [
+                    'color' => "0099ff",
+                    'count' => 1,
+                    'id' => 1,
+                    'name' => $annotationLabel1->label->name
+                ],
+                [
+                    'color' => "0099ff",
+                    'count' => 1,
+                    'id' => 2,
+                    'name' => $annotationLabel2->label->name
+                ]
+            ],
+            'sourceTargetLabels' => [
+                "1" => [2]
+            ]
         ];
-        $response->assertExactJson($expect);
+        $response->assertSimilarJson($expect);
     }
 }

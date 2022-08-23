@@ -41,7 +41,7 @@ export default {
     components: {
         previewThumbnail: PreviewThumbnail,
         typeahead: Typeahead,
-        statisticsModal: statisticsModal,
+        statisticsModal: statisticsModal
     },
     computed: {
         sortedVolumes() {
@@ -253,7 +253,6 @@ export default {
         if (sorting) {
             this.currentSorting = sorting;
         }
-        console.log('MODAL: ', this.showModal);
     },
 };
 </script>

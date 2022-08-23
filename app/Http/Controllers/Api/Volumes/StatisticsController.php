@@ -54,7 +54,7 @@ class StatisticsController extends Controller
             ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
             ->get();
 
-        $volumeName = $volume->name;
+        $volumeName = $volume->select('id', 'name')->get();
 
         $annotationLabels = $baseQuery->clone()
             ->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')

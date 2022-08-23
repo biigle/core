@@ -25,7 +25,8 @@
                 @click.prevent="statistics"
                 :title="statisticsTitle"
                 >
-                <i class="fas fa-chart-bar"></i>
+                <loader v-if="loading" :active="true"></loader>
+                <i v-else class="fas fa-chart-bar"></i>
             </button>
             <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
@@ -54,9 +55,14 @@
  *
  * @type {Object}
  */
+import LoaderMixin from '../../core/mixins/loader';
+import volumeStatisticsApi from '../api/volumeStatistics';
+import {handleErrorResponse} from '../../core/messages/store';
+
 
 
 export default {
+    mixins: [LoaderMixin],
     props: {
         id: {
             type: Number,
@@ -89,6 +95,8 @@ export default {
             loaded: [],
             touched: false,
             hovered: false,
+            // TODO: Caching
+            statisticsData: null,
         };
     },
     computed: {
@@ -134,7 +142,11 @@ export default {
             this.$emit('remove', this.id);
         },
         statistics() {
-            this.$emit('statistics', this.id);
+            this.startLoading();
+            // api request to get data for specific volume
+            volumeStatisticsApi.get({id: this.id})
+            .then(response => this.$emit('statistics', response.data), handleErrorResponse)
+            .finally(this.finishLoading);
         },
         uriLoaded(i) {
             this.loaded.splice(i, 1, true);

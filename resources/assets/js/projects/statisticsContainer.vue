@@ -46,7 +46,7 @@ export default {
 
         // console.log(JSON.stringify(this.annotatedImages));
         // console.log(JSON.stringify(this.totalImages));
-        // console.log(JSON.stringify(this.volumeNames));
+        // console.log(JSON.stringify(this.sourceTargetLabels));
         // console.log(JSON.stringify(this.volumeAnnotations));
     },
 };
