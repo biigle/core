@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "796e03256dcefa003559795f0c097bd2",
+    "content-hash": "6b2e32b07204fd5ffa9728ef7de92dd4",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -523,6 +523,49 @@
                 "source": "https://github.com/biigle/module"
             },
             "time": "2022-03-28T07:01:02+00:00"
+        },
+        {
+            "name": "biigle/newsletter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/newsletter.git",
+                "reference": "f6edea407f0d7525f62d89f2b5bb8d0f36dfebc7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/newsletter/zipball/f6edea407f0d7525f62d89f2b5bb8d0f36dfebc7",
+                "reference": "f6edea407f0d7525f62d89f2b5bb8d0f36dfebc7",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Newsletter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to offer an email newsletter.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/newsletter/issues",
+                "source": "https://github.com/biigle/newsletter"
+            },
+            "time": "2022-08-30T09:23:51+00:00"
         },
         {
             "name": "biigle/reports",
@@ -12051,6 +12094,7 @@
         "biigle/laserpoints": 20,
         "biigle/maia": 20,
         "biigle/module": 20,
+        "biigle/newsletter": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
         "biigle/user-storage": 20

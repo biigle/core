@@ -201,6 +201,7 @@ return [
         Biigle\Modules\Demo\DemoServiceProvider::class,
         Biigle\Modules\Maia\MaiaServiceProvider::class,
         Biigle\Modules\UserStorage\UserStorageServiceProvider::class,
+        Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
 
     ],
 
