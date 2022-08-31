@@ -72,7 +72,11 @@ def annotation(row):
         y = (m1y+mi1y+m2y+mi2y)/4
         lm = math.sqrt((m1x-m2x)**2+(m1y-m2y)**2)/2
         lmi = math.sqrt((mi1x-mi2x)**2+(mi1y-mi2y)**2)/2
-        angle = math.atan((m1y-m2y)/(m1x-m2x))
+        angle=0
+        if m1x-m2x==0:
+            angle=math.pi/2
+        else:
+            angle = math.atan((m1y-m2y)/(m1x-m2x))
         # create Circle and...
         circlePolygon = Point(x, y).buffer(1)
         # scale it to an ellipse and...
