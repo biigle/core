@@ -162,6 +162,10 @@ export default {
             }
         },
         showStatistics(dat) {
+            // handle case of empty php-object (which is returned as an array)
+            if(Array.isArray(dat.sourceTargetLabels)) {
+                dat.sourceTargetLabels = {};
+            }
             this.statisticsData = dat;
             this.showModal = true;
         },

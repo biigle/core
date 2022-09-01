@@ -71,21 +71,21 @@ export default{
     },
     created() {
         // console.log("Full Object: ", this.annotatedImages);
-        // console.log("Volume-sourceTarget: ", JSON.stringify(this.dat.sourceTargetLabels));
+        // console.log("Volume-sourceTarget: ", JSON.stringify(this.dat.annotationLabel));
     },
     methods: {
         checkForEmptyVals() {
             // check for each statistics-vis if corresponding arrays/objects are empty
-            if(this.dat.annotationTimeSeries.length == 0) {
+            if(this.dat.annotationTimeSeries.length === 0) {
                 this.showTimeline = false;
             }
-            if(this.dat.volumeAnnotations.length == 0) {
+            if(this.dat.volumeAnnotations.length === 0) {
                 this.showSankey = false;
             }
-            if(this.dat.annotationLabels.length == 0) {
-                this.showPielabel = false;
+            if(this.dat.annotationLabels.length === 0) {
+                this.showPieLabel = false;
             }
-            if(this.dat.sourceTargetLabels.length == 0 && this.dat.annotationLabels.length == 0) {
+            if(Object.keys(this.dat.sourceTargetLabels).length === 0 && this.dat.annotationLabels.length == 0) {
                 this.showNetMap = false;
             }
         }
@@ -97,6 +97,7 @@ export default{
                 this.dat = this.statisticsData
                 this.checkForEmptyVals();
                 this.show = true;
+                // console.log("Volume: ", JSON.stringify(this.dat.annotationLabels));
             }
         },
         // if modal is closed, trigger the close-modal-event, which sets 'showModal' in parent container to false again

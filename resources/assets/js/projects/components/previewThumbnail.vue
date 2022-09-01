@@ -95,8 +95,6 @@ export default {
             loaded: [],
             touched: false,
             hovered: false,
-            // TODO: Caching
-            statisticsVisited: false,
             statisticsData: null,
         };
     },
@@ -143,18 +141,21 @@ export default {
             this.$emit('remove', this.id);
         },
         statistics() {
+            // case of loading thumbnail
+            if(this.loading) {
+                return
+            }
             // If statistics modal has been opened before, use cached data
-            if(this.statisticsVisited) {
+            if(this.statisticsData !== null) {
                 this.$emit('statistics', this.statisticsData)
             } else {
                 this.startLoading();
                 // api request to get data for specific volume
                 volumeStatisticsApi.get({id: this.id})
                 .then(response => {
-                    this.$emit('statistics', response.data), handleErrorResponse
+                    this.$emit('statistics', response.data)
                     this.statisticsData = response.data;
-                    this.statisticsVisited = true;
-                    })
+                    }, handleErrorResponse)
                 .finally(this.finishLoading);
             }
         },
