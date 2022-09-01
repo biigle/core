@@ -31,15 +31,27 @@ export default {
     },
     props: {
         annotatedImages: {required:true, type:Number},
-        totalImages: {required:true, type:Number}
+        totalImages: {required:true, type:Number},
+        container: {required:false, type:String}
     },
-    data() {
-        return {        
-            option: {
+    created() {
+        // console.log("Pie: ", this.container);
+    },
+    computed: {
+        subtitle() {
+            if(this.container === "statistics") {
+                return '(across all volumes of the project)'
+            } else {
+                return null
+            }
+        },
+
+        option() {
+            return {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Annotated vs. not annotated',
-                    subtext: '(across all volumes of the project)',
+                    subtext: this.subtitle,
                     left: 'center',
                     top: '5%',
                     textStyle: {
@@ -77,6 +89,10 @@ export default {
                 }
                 ]
             }
+        }
+    },
+    data() {
+        return {        
         }
     }
 }

@@ -19,6 +19,11 @@ export default {
             totalImages: null,
             annotationLabels: null,
             sourceTargetLabels: null,
+            showTimeline: true,
+            showSankey: true,
+            showPieLabel: true,
+            showNetMap: true,
+            container: "statistics",
         };
     },
     components: {
@@ -31,7 +36,21 @@ export default {
         NetMap:NetMap
     },
     methods: {
-        //
+        checkForEmptyVals() {
+            // check for each statistics-vis if corresponding arrays/objects are empty
+            if(this.annotationTimeSeries.length === 0) {
+                this.showTimeline = false;
+            }
+            if(this.volumeAnnotations.length === 0) {
+                this.showSankey = false;
+            }
+            if(this.annotationLabels.length === 0) {
+                this.showPieLabel = false;
+            }
+            if(Object.keys(this.sourceTargetLabels).length === 0 && this.annotationLabels.length == 0) {
+                this.showNetMap = false;
+            }
+        }
     },
     created() {
         this.project = biigle.$require('projects.project');
@@ -44,6 +63,7 @@ export default {
         this.annotationLabels =  biigle.$require('projects.annotationLabels');
         this.sourceTargetLabels =  biigle.$require('projects.sourceTargetLabels');
 
+        this.checkForEmptyVals();
         // console.log(JSON.stringify(this.annotatedImages));
         // console.log(JSON.stringify(this.totalImages));
         // console.log(JSON.stringify(this.sourceTargetLabels));

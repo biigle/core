@@ -2,8 +2,8 @@
     <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg" ok-text="Ok" ok-type="primary">
         <div v-if="showCharts" class="modal-statistics">
             <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries"></annotation-timeline>
-            <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
-            <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot>
+            <!-- <bar-plot :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></bar-plot> -->
+            <!-- <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot> -->
             <pie-chart :total-images="dat.totalImages" :annotated-images="dat.annotatedImages"></pie-chart>
             <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels"></pie-label>
             <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels"></net-map>
@@ -27,8 +27,8 @@ export default{
         modal: Modal,
         AnnotationTimeline:AnnotationTimeline,
         // BarPlot:BarPlot,
+        // SankeyPlot:SankeyPlot,
         PieChart:PieChart,
-        SankeyPlot:SankeyPlot,
         PieLabel:PieLabel,
         NetMap:NetMap
     },
@@ -48,25 +48,6 @@ export default{
             showPieLabel: true,
             showNetMap: true,
             dat: {}
-            
-            // annotatedImages: 1,
-            // annotationLabels:[
-            //         {color:"0099ff", count:1, id:1, name:"homenick.mary"},
-            //         {color:"0099ff", count:1, id:2, name:"schmeler.heath"}
-            // ],
-            // annotationTimeSeries: [
-            //     {count:1, fullname:"Aurore Hintz", user_id:5, year:2022},
-            //     {count:1, fullname:"Maybelle Balistreri", user_id:6, year:2022}
-            // ],
-            // sourceTargetLabels:{1:[2]},
-            // totalImages:2,
-            // volumeAnnotations:[
-            //     {count:1, fullname:"Aurore Hintz", user_id:5, volume_id:1},
-            //     {count:1, fullname:"Maybelle Balistreri", user_id:6, volume_id:1}
-            // ],
-            // volumeName:[
-            //     {id:1, name:"Hand-Lindgren"}
-            // ]
         };
     },
     created() {

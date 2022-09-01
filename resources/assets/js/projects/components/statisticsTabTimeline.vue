@@ -34,7 +34,8 @@ echarts.use([
 export default {
     name: "Annotation-Timeline",
     props: {
-        annotationTimeSeries: {required:true, type:Array}
+        annotationTimeSeries: {required:true, type:Array},
+        container: {required:false, type:String}
     },
     components: {
         VChart
@@ -120,6 +121,13 @@ export default {
             // console.log('FINAL: ', JSON.stringify(chartdata));
             return [...chartdata];
         },
+        subtitle() {
+            if(this.container === "statistics") {
+                return 'per user annotations across all volumes of the project, sorted by year'
+            } else {
+                return 'per user annotations of this volume, sorted by year'
+            }
+        },
         option() {
             // create a series Array
             let snippet = {
@@ -146,7 +154,7 @@ export default {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Total contribution',
-                    subtext: 'annotations per user across all volumes of the project, sorted by year',
+                    subtext: this.subtitle,
                     top: '5%',
                     left: '2%',
                     textAlign: "left",

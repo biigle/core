@@ -16,11 +16,11 @@
 
 @section('project-content')
 <div id="projects-show-statistics" class="project-statistics">
-    <annotation-timeline :annotation-time-series="annotationTimeSeries"></annotation-timeline>
+    <annotation-timeline v-if="showTimeline" :annotation-time-series="annotationTimeSeries" :container="container"></annotation-timeline>
     <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
-    <sankey-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
-    <pie-chart :total-images="totalImages" :annotated-images="annotatedImages"></pie-chart>
-    <pie-label :annotation-labels="annotationLabels"></pie-label>
-    <net-map :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
+    <sankey-plot v-if="showSankey" :volume-annotations="volumeAnnotations" :names="volumeNames"></sankey-plot>
+    <pie-chart :total-images="totalImages" :annotated-images="annotatedImages" :container="container"></pie-chart>
+    <pie-label v-if="showPieLabel" :annotation-labels="annotationLabels" :container="container"></pie-label>
+    <net-map v-if="showNetMap" :annotation-labels="annotationLabels" :source-target-labels="sourceTargetLabels"></net-map>
 </div>
 @endsection

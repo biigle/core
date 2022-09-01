@@ -33,7 +33,11 @@ export default {
         [THEME_KEY]: "dark"
     },
     props: {
-        annotationLabels: {required:true, type:Array}
+        annotationLabels: {required:true, type:Array},
+        container: {required:false, type:String}
+    },
+    created() {
+        // console.log("PieLabel: ", this.container);
     },
     computed: {
         dat() {
@@ -48,12 +52,20 @@ export default {
             return ret;
         },
 
+        subtitle() {
+            if(this.container === "statistics") {
+                return '(across all volumes of the project)'
+            } else {
+                return null
+            }
+        },
+
         option() {
             return {
                 backgroundColor: '#222222',
                 title: {
                     text: 'Abundance of annotation labels',
-                    subtext: '(across all volumes of the project)',
+                    subtext: this.subtitle,
                     left: 'center',
                     top: '5%',
                     textStyle: {

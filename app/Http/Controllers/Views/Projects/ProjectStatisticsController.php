@@ -18,6 +18,27 @@ class ProjectStatisticsController extends Controller
      * @param Request $request
      * @param int $id project ID
      * @return \Illuminate\Http\Response
+     * @apiSuccessExample {json} Success response:
+     * {
+     *       "annotatedImages": 1,
+     *       "annotationLabels":[
+     *               {color:"0099ff", count:1, id:1, name:"homenick.mary"},
+     *               {color:"0099ff", count:1, id:2, name:"schmeler.heath"}
+     *       ],
+     *       "annotationTimeSeries": [
+     *           {count:1, fullname:"Aurore Hintz", user_id:5, year:2022},
+     *           {count:1, fullname:"Maybelle Balistreri", user_id:6, year:2022}
+     *       ],
+     *       "sourceTargetLabels":{1:[2]},
+     *       "totalImages":2,
+     *       "volumeAnnotations":[
+     *           {count:1, fullname:"Aurore Hintz", user_id:5, volume_id:1},
+     *           {count:1, fullname:"Maybelle Balistreri", user_id:6, volume_id:1}
+     *       ],
+     *       "volumeName":[
+     *           {id:1, name:"Hand-Lindgren"}
+     *       ]
+     * }
      */
     public function show(Request $request, $id)
     {
