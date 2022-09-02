@@ -129,9 +129,9 @@ class StatisticsControllerTest extends ApiTestCase
                 ]
             ],
             'sourceTargetLabels' => [
-                "1" => [2]
+                $annotationLabel1->label->id => [$annotationLabel2->label->id]
             ]
         ];
-        $response->assertSimilarJson($expect);
+        $response->assertExactJson($expect);
     }
 }
