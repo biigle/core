@@ -110,12 +110,14 @@ class ProjectStatisticsController extends Controller
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
             ->groupBy('labels.id')
             ->get();
+        
 
         $videoAnnotationLabels = $baseQueryVideo->clone()
         ->select('videos.id', 'video_annotation_labels.label_id')
         ->distinct()
         ->get()
         ->groupBy('id');
+        
 
         $sourceTargetLabelsVideo = [];
 
@@ -141,7 +143,7 @@ class ProjectStatisticsController extends Controller
 
         $sourceTargetLabelsVideo = array_map('array_unique', $sourceTargetLabelsVideo);
         $sourceTargetLabelsVideo = array_map('array_values', $sourceTargetLabelsVideo);
-        // dd($sourceTargetLabelsVideo);
+        
 
         // IMAGE
         $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
