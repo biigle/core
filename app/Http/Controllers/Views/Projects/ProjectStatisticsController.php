@@ -9,6 +9,8 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Biigle\Image;
+use Biigle\Video;
+use Biigle\VideoAnnotation;
 
 class ProjectStatisticsController extends Controller
 {
@@ -53,6 +55,95 @@ class ProjectStatisticsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        // VIDEO
+        $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
+            return $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $project->id);
+        })->count();
+        
+
+        $baseQueryVideo = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            ->whereIn('videos.volume_id', function ($query) use ($project) {
+                return $query->select('volume_id')
+                    ->from('project_volume')
+                    ->where('project_id', $project->id);
+            });
+        
+
+        $annotatedVideos = $baseQueryVideo->clone()
+        // ->select(DB::raw('distinct images.id'))
+        ->count(DB::raw('DISTINCT videos.id'));
+        
+
+        $annotationTimeSeriesVideo = $baseQueryVideo->clone()
+        ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
+        ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
+        ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
+        ->get();
+        
+        $volumeAnnotationsVideo = $baseQueryVideo->clone()
+            ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
+            ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), 'videos.volume_id')
+            ->groupBy('video_annotation_labels.user_id', 'fullname', 'videos.volume_id')
+            ->get();
+
+        
+        $AllVolumesOfProject = $project->volumes()->select('id', 'name', 'media_type_id')->get();
+        $volumeNamesVideo = [];
+        $volumeNames = [];
+        // Loop through all volumes of one project and choose in
+        // which list they belong (with regard to their mediaType)
+        foreach ($AllVolumesOfProject as $volume) {
+            $entry = $volume->select('id', 'name')->get();
+            if($volume->isVideoVolume()) {
+                $volumeNamesVideo = $entry;
+            } 
+            if($volume->isImageVolume()) {
+                $volumeNames = $entry;
+            }
+        };
+
+        $annotationLabelsVideo = $baseQueryVideo->clone()
+            ->join('labels', 'labels.id', '=', 'video_annotation_labels.label_id')
+            ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
+            ->groupBy('labels.id')
+            ->get();
+
+        $videoAnnotationLabels = $baseQueryVideo->clone()
+        ->select('videos.id', 'video_annotation_labels.label_id')
+        ->distinct()
+        ->get()
+        ->groupBy('id');
+
+        $sourceTargetLabelsVideo = [];
+
+        foreach ($videoAnnotationLabels as $value) {
+            foreach ($value as $label1) {
+                foreach ($value as $label2) {
+                    if ($label1->label_id === $label2->label_id) {
+                        continue;
+                    }
+                    // set source : target relation
+                    $id1 = min($label1->label_id, $label2->label_id);
+                    $id2 = max($label1->label_id, $label2->label_id);
+                    if(array_key_exists($id1, $sourceTargetLabelsVideo)) {
+                        // append to end of array $arr[]
+                        $sourceTargetLabelsVideo[$id1][] = $id2;
+                    } else {
+                        // first entry
+                        $sourceTargetLabelsVideo[$id1] = [$id2];
+                    }
+                }
+            }
+        }
+
+        $sourceTargetLabelsVideo = array_map('array_unique', $sourceTargetLabelsVideo);
+        $sourceTargetLabelsVideo = array_map('array_values', $sourceTargetLabelsVideo);
+        // dd($sourceTargetLabelsVideo);
+
+        // IMAGE
         $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
             return $query->select('volume_id')
                 ->from('project_volume')
@@ -84,8 +175,8 @@ class ProjectStatisticsController extends Controller
             ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
             ->get();
 
-        $volumeNames = $project->volumes()->select('id', 'name')->get();
-
+        // $volumeNames = $project->volumes()->select('id', 'name')->get();
+        
         $annotationLabels = $baseQuery->clone()
             ->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
@@ -110,7 +201,7 @@ class ProjectStatisticsController extends Controller
                     $id1 = min($label1->label_id, $label2->label_id);
                     $id2 = max($label1->label_id, $label2->label_id);
                     if(array_key_exists($id1, $sourceTargetLabels)) {
-                        // append to end of array
+                        // append to end of array $arr[]
                         $sourceTargetLabels[$id1][] = $id2;
                     } else {
                         // first entry
