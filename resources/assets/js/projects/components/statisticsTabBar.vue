@@ -36,7 +36,7 @@ export default {
         [THEME_KEY]: "dark"
     },
     created() {
-        console.log(this.axisData);
+        // console.log(this.axisData);
     },
     computed: {
         axisData() {

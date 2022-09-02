@@ -118,13 +118,13 @@ class StatisticsControllerTest extends ApiTestCase
                 [
                     'color' => "0099ff",
                     'count' => 1,
-                    'id' => 1,
+                    'id' => $annotationLabel1->label->id,
                     'name' => $annotationLabel1->label->name
                 ],
                 [
                     'color' => "0099ff",
                     'count' => 1,
-                    'id' => 2,
+                    'id' => $annotationLabel2->label->id,
                     'name' => $annotationLabel2->label->name
                 ]
             ],

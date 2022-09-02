@@ -1,7 +1,5 @@
 <script>
-import {handleErrorResponse} from '../core/messages/store';
 import AnnotationTimeline from './components/statisticsTabTimeline.vue';
-import BarPlot from './components/statisticsTabBar.vue';
 import SankeyPlot from './components/statisticsTabSankey.vue';
 import PieChart from './components/statisticsTabPie.vue';
 import NetMap from './components/statisticsTabNetmap.vue';
@@ -23,7 +21,7 @@ export default {
             showSankey: true,
             showPieLabel: true,
             showNetMap: true,
-            container: "statistics",
+            container: "project-statistics",
         };
     },
     components: {

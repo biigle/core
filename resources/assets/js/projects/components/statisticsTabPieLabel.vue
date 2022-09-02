@@ -53,7 +53,7 @@ export default {
         },
 
         subtitle() {
-            if(this.container === "statistics") {
+            if(this.container === "project-statistics") {
                 return '(across all volumes of the project)'
             } else {
                 return null

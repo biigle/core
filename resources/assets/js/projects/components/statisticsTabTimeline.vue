@@ -122,7 +122,7 @@ export default {
             return [...chartdata];
         },
         subtitle() {
-            if(this.container === "statistics") {
+            if(this.container === "project-statistics") {
                 return 'per user annotations across all volumes of the project, sorted by year'
             } else {
                 return 'per user annotations of this volume, sorted by year'

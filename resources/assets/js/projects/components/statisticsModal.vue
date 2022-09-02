@@ -14,8 +14,6 @@
 <script>
 import { Modal } from 'uiv';
 import AnnotationTimeline from './statisticsTabTimeline.vue';
-import BarPlot from './statisticsTabBar.vue';
-import SankeyPlot from './statisticsTabSankey.vue';
 import PieChart from './statisticsTabPie.vue';
 import NetMap from './statisticsTabNetmap.vue';
 import PieLabel from './statisticsTabPieLabel.vue';
@@ -26,8 +24,6 @@ export default{
     components: {
         modal: Modal,
         AnnotationTimeline:AnnotationTimeline,
-        // BarPlot:BarPlot,
-        // SankeyPlot:SankeyPlot,
         PieChart:PieChart,
         PieLabel:PieLabel,
         NetMap:NetMap
