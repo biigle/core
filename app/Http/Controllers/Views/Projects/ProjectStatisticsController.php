@@ -55,6 +55,12 @@ class ProjectStatisticsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        $volumes = $project->volumes()
+        ->select('id', 'name', 'updated_at', 'media_type_id')
+        ->with('mediaType')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
         // VIDEO
         $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
             return $query->select('volume_id')
@@ -118,7 +124,6 @@ class ProjectStatisticsController extends Controller
         ->get()
         ->groupBy('id');
         
-
         $sourceTargetLabelsVideo = [];
 
         foreach ($videoAnnotationLabels as $value) {
@@ -226,6 +231,8 @@ class ProjectStatisticsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'statistics',
+            'volumes' => $volumes,
+            // IMAGES
             'annotationTimeSeries' => $annotationTimeSeries,
             'volumeAnnotations' => $volumeAnnotations,
             'volumeNames' => $volumeNames,
@@ -233,6 +240,14 @@ class ProjectStatisticsController extends Controller
             'totalImages' => $totalImages,
             'annotationLabels' => $annotationLabels,
             'sourceTargetLabels' => collect($sourceTargetLabels),
+            // VIDEOS
+            'totalVideos' => $totalVideos,
+            'annotatedVideos' => $annotatedVideos,
+            'annotationTimeSeriesVideo' => $annotationTimeSeriesVideo,
+            'volumeAnnotationsVideo' => $volumeAnnotationsVideo,
+            'volumeNamesVideo' => $volumeNamesVideo,
+            'annotationLabelsVideo' => $annotationLabelsVideo,
+            'sourceTargetLabelsVideo' => collect($sourceTargetLabelsVideo),
         ]);
     }
 }

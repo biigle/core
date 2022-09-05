@@ -1,12 +1,12 @@
 <template>
     <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg" ok-text="Ok" ok-type="primary">
         <div v-if="showCharts" class="modal-statistics">
-            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries"></annotation-timeline>
+            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries" :container="container"></annotation-timeline>
             <!-- <bar-plot :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></bar-plot> -->
             <!-- <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot> -->
-            <pie-chart :total-images="dat.totalImages" :annotated-images="dat.annotatedImages"></pie-chart>
-            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels"></pie-label>
-            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels"></net-map>
+            <pie-chart :total-images="dat.totalImages" :annotated-images="dat.annotatedImages" :container="container"></pie-chart>
+            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels" :container="container"></pie-label>
+            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels" :container="container"></net-map>
         </div>
     </modal>
 </template>
@@ -43,7 +43,8 @@ export default{
             showSankey: true,
             showPieLabel: true,
             showNetMap: true,
-            dat: {}
+            dat: {},
+            container: "modal-statistics"
         };
     },
     created() {

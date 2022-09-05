@@ -34,12 +34,64 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        sourceTargetLabels: {required:true, type:Object}
+        annotationLabelsVideo: {required:false, type:Array},
+        sourceTargetLabels: {required:true, type:Object},
+        sourceTargetLabelsVideo: {required:false, type:Object},
+        container: {required:true, type:String},
+        showImageVolumes: {required:false, type:Boolean},
+        showVideoVolumes: {required:false, type:Boolean},
+    },
+    data() {
+        return {
+            layoutType: 'circular',
+            mergedAnnotationLabels: [],
+            mergedSourceTarget: {}
+        }
+    },
+    mounted() {
+        // handle different locations (modal, project-statistics)
+        this.$watch(() => this.container, 
+            () => {
+                // console.log("PieLabel: ", this.container);
+                if(this.container === "modal-statistics") {
+                    // TODO: if(volumeType === "image") ...
+                    this.mergedAnnotationLabels = this.annotationLabels;
+                    this.mergedSourceTarget = this.sourceTargetLabels;
+                }
+            },
+            {
+                immediate: true
+            }
+        ),
+        // Select either each dataset itself or merge both
+        // depending on the buttons selected (showImage, showVideo)
+        this.$watch(
+            () => [this.showImageVolumes, this.showVideoVolumes],
+            () => {
+                if(this.showImageVolumes && !this.showVideoVolumes) {
+                    this.updateData(this.annotationLabels, this.sourceTargetLabels);
+                } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                    this.updateData(this.annotationLabelsVideo, this.sourceTargetLabelsVideo);
+                } else { //both true
+                    this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo),
+                    {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo});
+                }
+            },
+            {
+            immediate: true
+            }
+        )
     },
     created() {
         // console.log('layoutType:', this.layoutType);
+        // console.log(JSON.stringify(this.annotationLabelsVideo));
+        // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
     },
     methods: {
+        updateData(annot, sourceTarget) {
+            this.mergedAnnotationLabels = annot;
+            this.mergedSourceTarget = sourceTarget;
+        },
         changeLayout(event) {
             this.layoutType = event;
         },
@@ -47,7 +99,7 @@ export default {
             let nodes = [];
             let cat = [];
 
-            for(let entry of this.annotationLabels) {
+            for(let entry of this.mergedAnnotationLabels) {
                 let nodeObj = {
                     "id": entry.id.toString(),
                     "name": entry.name,
@@ -70,7 +122,7 @@ export default {
             let arr = [];
             
             // iterate over all ids
-            for (const [id, values] of Object.entries(this.sourceTargetLabels)) {
+            for (const [id, values] of Object.entries(this.mergedSourceTarget)) {
                 // iterate over all values of each id
                 for(let val of values) {
                     let entry = {
@@ -149,12 +201,6 @@ export default {
                     }
                 ]
             } //end option
-        }
-    },
-    data() {
-        return {
-            layoutType: 'circular'
-
         }
     }
 };

@@ -35,13 +35,41 @@ export default {
     name: "Annotation-Timeline",
     props: {
         annotationTimeSeries: {required:true, type:Array},
-        container: {required:false, type:String}
+        annotationTimeSeriesVideo: {required:false, type:Array},
+        container: {required:true, type:String},
+        showImageVolumes: {required:false, type:Boolean},
+        showVideoVolumes: {required:false, type:Boolean}
     },
     components: {
         VChart
     },
     provide: {
         [THEME_KEY]: "dark"
+    },
+    data() {
+        return {
+            pieObj: {
+                type: 'pie',
+                id: 'pie',
+                radius: '30%',
+                center: ['55%', '30%'],
+                emphasis: {
+                focus: 'self'
+                },
+                label: {
+                    // formatter: function (params){
+                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
+                    // }
+                    formatter: '{b}: {@[1]} ({d}%)'
+                },
+                encode: {
+                itemName: 'year',
+                tooltip:  1,
+                value: 1
+                }
+            },
+            mergedData: []
+        }
     },
     methods: {
         handleUpdate(event) {
@@ -55,14 +83,35 @@ export default {
             }
         }
     },
-    // created() {
-    //     console.log(this.annotationTimeSeries);
-    //     // this.sourcedata = this.transformData(this.annotationTimeSeries);
-    //     console.log('sourcedata: ', JSON.stringify(this.sourcedata));
-    // },
+    created() {
+        // console.log("Image=", this.showImageVolumes, "\n Volume=", this.showVideoVolumes);
+        // console.log(JSON.stringify(this.mergedData));
+        // this.sourcedata = this.transformData(this.annotationTimeSeries);
+        // console.log('sourcedata: ', JSON.stringify(this.sourcedata));
+        // console.log("showImageVolumes: ", this.showImageVolumes);
+    },
+    mounted() {
+        // Select either each dataset itself or merge both
+        // depending on the buttons selected (showImage, showVideo)
+        this.$watch(
+            () => [this.showImageVolumes, this.showVideoVolumes],
+            () => {
+                if(this.showImageVolumes && !this.showVideoVolumes) {
+                    this.mergedData = this.annotationTimeSeries;
+                } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                    this.mergedData =  this.annotationTimeSeriesVideo;
+                } else { //both true
+                    this.mergedData = this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
+                }
+            },
+            {
+            immediate: true
+            }
+        )
+    },
     computed: {
         sourcedata() {
-            let dat = this.annotationTimeSeries;
+            let dat = this.mergedData;
             let chartdata = [];
 
             // get all X-Axis data
@@ -186,30 +235,6 @@ export default {
                     right: '5%'
                 },
                 series: seriesObj
-            }
-        }
-    },
-    data() {
-        return {
-            pieObj: {
-                type: 'pie',
-                id: 'pie',
-                radius: '30%',
-                center: ['55%', '30%'],
-                emphasis: {
-                focus: 'self'
-                },
-                label: {
-                    // formatter: function (params){
-                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
-                    // }
-                    formatter: '{b}: {@[1]} ({d}%)'
-                },
-                encode: {
-                itemName: 'year',
-                tooltip:  1,
-                value: 1
-                }
             }
         }
     }

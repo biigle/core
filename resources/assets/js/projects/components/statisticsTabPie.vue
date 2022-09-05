@@ -31,11 +31,58 @@ export default {
     },
     props: {
         annotatedImages: {required:true, type:Number},
+        annotatedVideos: {required:false, type:Number},
         totalImages: {required:true, type:Number},
-        container: {required:false, type:String}
+        totalVideos: {required:false, type:Number},
+        container: {required:true, type:String},
+        showImageVolumes: {required:false, type:Boolean},
+        showVideoVolumes: {required:false, type:Boolean},
     },
-    created() {
-        // console.log("Pie: ", this.container);
+    data() {
+        return {      
+            mergedAnnotated: null,
+            mergedTotal: null,
+        }
+    },
+    methods: {
+        updateData(annot, total) {
+            this.mergedAnnotated = annot;
+            this.mergedTotal = total;
+        }
+    },
+    mounted() {
+        // handle different locations (modal, project-statistics)
+        this.$watch(() => this.container, 
+            () => {
+                // console.log("PieLabel: ", this.container);
+                if(this.container === "modal-statistics") {
+                    // TODO: if(volumeType === "image") ...
+                    this.mergedAnnotated = this.annotatedImages;
+                    this.mergedTotal = this.totalImages;
+                }
+            },
+            {
+                immediate: true
+            }
+        ),
+        // Select either each dataset itself or merge both
+        // depending on the buttons selected (showImage, showVideo)
+        this.$watch(
+            () => [this.showImageVolumes, this.showVideoVolumes],
+            () => {
+                if(this.showImageVolumes && !this.showVideoVolumes) {
+                    this.updateData(this.annotatedImages, this.totalImages);
+                } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                    this.updateData(this.annotatedVideos, this.totalVideos);
+                } else { //both true
+                    this.updateData(this.annotatedImages + this.annotatedVideos,
+                                    this.totalImages + this.totalVideos);
+                }
+            },
+            {
+            immediate: true
+            }
+        )
     },
     computed: {
         subtitle() {
@@ -83,16 +130,12 @@ export default {
                     show: false
                     },
                     data: [
-                    { value: this.annotatedImages, name: 'Annotated' },
-                    { value: (this.totalImages - this.annotatedImages), name: 'Not Annotated' },
+                    { value: this.mergedAnnotated, name: 'Annotated' },
+                    { value: (this.mergedTotal - this.mergedAnnotated), name: 'Not Annotated' },
                     ]
                 }
                 ]
             }
-        }
-    },
-    data() {
-        return {        
         }
     }
 }

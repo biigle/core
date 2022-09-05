@@ -22,6 +22,9 @@ export default {
             showPieLabel: true,
             showNetMap: true,
             container: "project-statistics",
+            showImageVolumes: true,
+            showVideoVolumes: true,
+            volumes: null,
         };
     },
     components: {
@@ -33,7 +36,33 @@ export default {
         PieLabel:PieLabel,
         NetMap:NetMap
     },
+    computed: {
+        toggleImageVolumesClass() {
+            return this.showImageVolumes ? 'btn-info active' : 'btn-default';
+        },
+        toggleVideoVolumesClass() {
+            return this.showVideoVolumes ? 'btn-info active' : 'btn-default';
+        },
+        hasVolumes() {
+            return this.volumes.length > 0;
+        },
+        hasMixedMediaTypes() {
+            return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+        }
+    },
     methods: {
+        toggleImageVolumes() {
+            this.showImageVolumes = !this.showImageVolumes;
+            if (!this.showVideoVolumes) {
+                this.showImageVolumes = !this.showImageVolumes;
+            }
+        },
+        toggleVideoVolumes() {
+            this.showVideoVolumes = !this.showVideoVolumes;
+            if (!this.showImageVolumes) {
+                this.showVideoVolumes = !this.showVideoVolumes;
+            }
+        },
         checkForEmptyVals() {
             // check for each statistics-vis if corresponding arrays/objects are empty
             if(this.annotationTimeSeries.length === 0) {
@@ -60,10 +89,18 @@ export default {
         this.totalImages = biigle.$require('projects.totalImages');
         this.annotationLabels =  biigle.$require('projects.annotationLabels');
         this.sourceTargetLabels =  biigle.$require('projects.sourceTargetLabels');
+        this.totalVideos = biigle.$require('projects.totalVideos');
+        this.annotatedVideos = biigle.$require('projects.annotatedVideos');
+        this.annotationTimeSeriesVideo = biigle.$require('projects.annotationTimeSeriesVideo');
+        this.volumeAnnotationsVideo = biigle.$require('projects.volumeAnnotationsVideo');
+        this.volumeNamesVideo = biigle.$require('projects.volumeNamesVideo');
+        this.annotationLabelsVideo = biigle.$require('projects.annotationLabelsVideo');
+        this.sourceTargetLabelsVideo = biigle.$require('projects.sourceTargetLabelsVideo');
+        this.volumes = biigle.$require('projects.volumes');
 
         this.checkForEmptyVals();
         // console.log(JSON.stringify(this.annotatedImages));
-        // console.log(JSON.stringify(this.totalImages));
+        // console.log(JSON.stringify(this.volumes));
         // console.log(JSON.stringify(this.sourceTargetLabels));
         // console.log(JSON.stringify(this.volumeAnnotations));
     },

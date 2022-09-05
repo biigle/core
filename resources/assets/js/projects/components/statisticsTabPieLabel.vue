@@ -34,15 +34,63 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        container: {required:false, type:String}
+        annotationLabelsVideo: {required:false, type:Array},
+        container: {required:true, type:String},
+        showImageVolumes: {required:false, type:Boolean},
+        showVideoVolumes: {required:false, type:Boolean}
+    },
+    data() {
+        return {      
+            mergedAnnotationLabels: []
+        }
+    },
+    methods: {
+        updateData(val) {
+            this.mergedAnnotationLabels = val;
+        }
+    },
+    mounted() {
+        // handle different locations (modal, project-statistics)
+        this.$watch(() => this.container, 
+            () => {
+                // console.log("PieLabel: ", this.container);
+                if(this.container === "modal-statistics") {
+                    // TODO: if(volumeType === "image") ...
+                    this.mergedAnnotationLabels = this.annotationLabels;
+                }
+            },
+            {
+                immediate: true
+            }
+        ),
+        // Select either each dataset itself or merge both
+        // depending on the buttons selected (showImage, showVideo)
+        this.$watch(
+            // do not watch if statistics is openend in modal
+            () => [this.showImageVolumes, this.showVideoVolumes],
+            () => {
+                if(this.showImageVolumes === null || this.showVideoVolumes === null) {
+                    console.log("SHOW is null");
+                }
+                else if (this.showImageVolumes && !this.showVideoVolumes) {
+                    this.updateData(this.annotationLabels);
+                } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                    this.updateData(this.annotationLabelsVideo);
+                } else { //both true
+                    this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo));
+                }
+            },
+            {
+            immediate: true
+            }
+        )
     },
     created() {
-        // console.log("PieLabel: ", this.container);
     },
     computed: {
         dat() {
             let ret = [];
-            for(let entry of this.annotationLabels) {
+            for(let entry of this.mergedAnnotationLabels) {
                 let formatObj = {
                     "name": entry.name, 
                     "value": entry.count, 
@@ -111,10 +159,6 @@ export default {
                 ]
             }
         } //end option
-    },
-    data() {
-        return {        
-        }
     }
 }
 </script>
