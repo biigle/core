@@ -79,15 +79,15 @@ class ProjectStatisticsController extends Controller
         
 
         $annotatedVideos = $baseQueryVideo->clone()
-        // ->select(DB::raw('distinct images.id'))
-        ->count(DB::raw('DISTINCT videos.id'));
+            // ->select(DB::raw('distinct images.id'))
+            ->count(DB::raw('DISTINCT videos.id'));
         
 
         $annotationTimeSeriesVideo = $baseQueryVideo->clone()
-        ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
-        ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
-        ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
-        ->get();
+            ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
+            ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
+            ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
+            ->get();
         
         $volumeAnnotationsVideo = $baseQueryVideo->clone()
             ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')

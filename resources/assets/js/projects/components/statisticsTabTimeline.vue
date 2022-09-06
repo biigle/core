@@ -35,8 +35,10 @@ export default {
     name: "Annotation-Timeline",
     props: {
         annotationTimeSeries: {required:true, type:Array},
-        annotationTimeSeriesVideo: {required:false, type:Array},
         container: {required:true, type:String},
+
+        volumeType: {required:false, type:String},
+        annotationTimeSeriesVideo: {required:false, type:Array},
         showImageVolumes: {required:false, type:Boolean},
         showVideoVolumes: {required:false, type:Boolean}
     },
@@ -91,17 +93,33 @@ export default {
         // console.log("showImageVolumes: ", this.showImageVolumes);
     },
     mounted() {
+        // handle different locations (modal, project-statistics)
+        this.$watch(
+            () => this.container, 
+            () => {
+                if(this.container === "modal-statistics") {
+                    // overwrite the mergedData with default data
+                    this.mergedData = this.annotationTimeSeries;
+                }
+            },
+            {
+                immediate: true
+            }
+        ),
         // Select either each dataset itself or merge both
         // depending on the buttons selected (showImage, showVideo)
         this.$watch(
             () => [this.showImageVolumes, this.showVideoVolumes],
             () => {
-                if(this.showImageVolumes && !this.showVideoVolumes) {
-                    this.mergedData = this.annotationTimeSeries;
-                } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                    this.mergedData =  this.annotationTimeSeriesVideo;
-                } else { //both true
-                    this.mergedData = this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
+                // only relevant when in projects-tab
+                if(this.container === "project-statistics") {
+                    if(this.showImageVolumes && !this.showVideoVolumes) {
+                        this.mergedData = this.annotationTimeSeries;
+                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                        this.mergedData =  this.annotationTimeSeriesVideo;
+                    } else { //both true
+                        this.mergedData = this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
+                    }
                 }
             },
             {
@@ -172,7 +190,12 @@ export default {
         },
         subtitle() {
             if(this.container === "project-statistics") {
-                return 'per user annotations across all volumes of the project, sorted by year'
+                let term = () => {
+                    return !this.showImageVolumes ? ' video '
+                            : !this.showVideoVolumes ? ' image '
+                            : ' ';
+                    }
+                return 'per user annotations across all' + term() + 'volumes of the project, sorted by year'
             } else {
                 return 'per user annotations of this volume, sorted by year'
             }

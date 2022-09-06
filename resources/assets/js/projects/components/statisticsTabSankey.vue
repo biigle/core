@@ -23,12 +23,13 @@ export default {
     },
     props: {
         volumeAnnotations: {required:true, type:Array},
-        volumeAnnotationsVideo: {required:false, type:Array},
         names: {required:true, type:Array},
-        namesVideo: {required:false, type:Array},
-        showImageVolumes: {required:false, type:Boolean},
-        showVideoVolumes: {required:false, type:Boolean},
         container: {required:true, type:String},
+        
+        showImageVolumes: {required:false, type:Boolean},
+        volumeAnnotationsVideo: {required:false, type:Array},
+        namesVideo: {required:false, type:Array},
+        showVideoVolumes: {required:false, type:Boolean},
     },
     provide: {
         [THEME_KEY]: "dark"
@@ -45,16 +46,19 @@ export default {
         this.$watch(
             () => [this.showImageVolumes, this.showVideoVolumes],
             () => {
-                if(this.showImageVolumes && !this.showVideoVolumes) {
-                    this.mergedData = this.volumeAnnotations;
-                    this.mergedNames = this.names;
-                } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                    this.mergedData =  this.volumeAnnotationsVideo;
-                    this.mergedNames = this.namesVideo;
-                } else { //both true
-                    this.mergedData = this.volumeAnnotations.concat(this.volumeAnnotationsVideo);
-                    this.mergedNames = this.names.concat(this.namesVideo);
+                 // only relevant when in projects-tab
+                if(this.container === "project-statistics") {
+                    if(this.showImageVolumes && !this.showVideoVolumes) {
+                        this.mergedData = this.volumeAnnotations;
+                        this.mergedNames = this.names;
+                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                        this.mergedData =  this.volumeAnnotationsVideo;
+                        this.mergedNames = this.namesVideo;
+                    } else { //both true
+                        this.mergedData = this.volumeAnnotations.concat(this.volumeAnnotationsVideo);
+                        this.mergedNames = this.names.concat(this.namesVideo);
 
+                    }
                 }
             },
             {

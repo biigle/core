@@ -34,10 +34,12 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        annotationLabelsVideo: {required:false, type:Array},
         sourceTargetLabels: {required:true, type:Object},
-        sourceTargetLabelsVideo: {required:false, type:Object},
         container: {required:true, type:String},
+
+        volumeType: {required:false, type:String},
+        annotationLabelsVideo: {required:false, type:Array},
+        sourceTargetLabelsVideo: {required:false, type:Object},
         showImageVolumes: {required:false, type:Boolean},
         showVideoVolumes: {required:false, type:Boolean},
     },
@@ -50,11 +52,10 @@ export default {
     },
     mounted() {
         // handle different locations (modal, project-statistics)
-        this.$watch(() => this.container, 
+        this.$watch(
+            () => this.container, 
             () => {
-                // console.log("PieLabel: ", this.container);
                 if(this.container === "modal-statistics") {
-                    // TODO: if(volumeType === "image") ...
                     this.mergedAnnotationLabels = this.annotationLabels;
                     this.mergedSourceTarget = this.sourceTargetLabels;
                 }
@@ -68,13 +69,16 @@ export default {
         this.$watch(
             () => [this.showImageVolumes, this.showVideoVolumes],
             () => {
-                if(this.showImageVolumes && !this.showVideoVolumes) {
-                    this.updateData(this.annotationLabels, this.sourceTargetLabels);
-                } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                    this.updateData(this.annotationLabelsVideo, this.sourceTargetLabelsVideo);
-                } else { //both true
-                    this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo),
-                    {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo});
+                 // only relevant when in projects-tab
+                if(this.container === "project-statistics") {
+                    if(this.showImageVolumes && !this.showVideoVolumes) {
+                        this.updateData(this.annotationLabels, this.sourceTargetLabels);
+                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                        this.updateData(this.annotationLabelsVideo, this.sourceTargetLabelsVideo);
+                    } else { //both true
+                        this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo),
+                        {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo});
+                    }
                 }
             },
             {
