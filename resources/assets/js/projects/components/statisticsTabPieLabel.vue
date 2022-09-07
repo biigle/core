@@ -34,10 +34,18 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        container: {required:false, type:String}
+        container: {required:true, type:String},
+        subtitle: {required:false, type:String},
+    },
+    data() {
+        return {      
+        }
+    },
+    methods: {
+    },
+    mounted() {
     },
     created() {
-        // console.log("PieLabel: ", this.container);
     },
     computed: {
         dat() {
@@ -50,14 +58,6 @@ export default {
                 ret.push(formatObj);
             }
             return ret;
-        },
-
-        subtitle() {
-            if(this.container === "project-statistics") {
-                return '(across all volumes of the project)'
-            } else {
-                return null
-            }
         },
 
         option() {
@@ -111,10 +111,6 @@ export default {
                 ]
             }
         } //end option
-    },
-    data() {
-        return {        
-        }
     }
 }
 </script>

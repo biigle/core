@@ -35,13 +35,39 @@ export default {
     name: "Annotation-Timeline",
     props: {
         annotationTimeSeries: {required:true, type:Array},
-        container: {required:false, type:String}
+        container: {required:true, type:String},
+        subtitle: {required:true, type:String},
+        volumeType: {required:false, type:String},
     },
     components: {
         VChart
     },
     provide: {
         [THEME_KEY]: "dark"
+    },
+    data() {
+        return {
+            pieObj: {
+                type: 'pie',
+                id: 'pie',
+                radius: '30%',
+                center: ['55%', '30%'],
+                emphasis: {
+                focus: 'self'
+                },
+                label: {
+                    // formatter: function (params){
+                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
+                    // }
+                    formatter: '{b}: {@[1]} ({d}%)'
+                },
+                encode: {
+                itemName: 'year',
+                tooltip:  1,
+                value: 1
+                }
+            }
+        }
     },
     methods: {
         handleUpdate(event) {
@@ -55,11 +81,15 @@ export default {
             }
         }
     },
-    // created() {
-    //     console.log(this.annotationTimeSeries);
-    //     // this.sourcedata = this.transformData(this.annotationTimeSeries);
-    //     console.log('sourcedata: ', JSON.stringify(this.sourcedata));
-    // },
+    created() {
+        // console.log("Image=", this.showImageVolumes, "\n Volume=", this.showVideoVolumes);
+        // console.log(JSON.stringify(this.annotationTimeSeries));
+        // this.sourcedata = this.transformData(this.annotationTimeSeries);
+        // console.log('sourcedata: ', JSON.stringify(this.sourcedata));
+        // console.log("showImageVolumes: ", this.showImageVolumes);
+    },
+    mounted() {
+    },
     computed: {
         sourcedata() {
             let dat = this.annotationTimeSeries;
@@ -121,13 +151,6 @@ export default {
             // console.log('FINAL: ', JSON.stringify(chartdata));
             return [...chartdata];
         },
-        subtitle() {
-            if(this.container === "project-statistics") {
-                return 'per user annotations across all volumes of the project, sorted by year'
-            } else {
-                return 'per user annotations of this volume, sorted by year'
-            }
-        },
         option() {
             // create a series Array
             let snippet = {
@@ -186,30 +209,6 @@ export default {
                     right: '5%'
                 },
                 series: seriesObj
-            }
-        }
-    },
-    data() {
-        return {
-            pieObj: {
-                type: 'pie',
-                id: 'pie',
-                radius: '30%',
-                center: ['55%', '30%'],
-                emphasis: {
-                focus: 'self'
-                },
-                label: {
-                    // formatter: function (params){
-                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
-                    // }
-                    formatter: '{b}: {@[1]} ({d}%)'
-                },
-                encode: {
-                itemName: 'year',
-                tooltip:  1,
-                value: 1
-                }
             }
         }
     }

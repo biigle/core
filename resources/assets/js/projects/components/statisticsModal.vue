@@ -1,12 +1,12 @@
 <template>
     <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg" ok-text="Ok" ok-type="primary">
         <div v-if="showCharts" class="modal-statistics">
-            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries"></annotation-timeline>
+            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries" :volumeType="dat.volumeType" :container="container" :subtitle="subtitle"></annotation-timeline>
             <!-- <bar-plot :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></bar-plot> -->
             <!-- <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot> -->
-            <pie-chart :total-images="dat.totalImages" :annotated-images="dat.annotatedImages"></pie-chart>
-            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels"></pie-label>
-            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels"></net-map>
+            <pie-chart :total-files="dat.totalFiles" :annotated-files="dat.annotatedFiles" :volumeType="dat.volumeType" :container="container"></pie-chart>
+            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels" :volumeType="dat.volumeType" :container="container"></pie-label>
+            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels" :volumeType="dat.volumeType" :container="container"></net-map>
         </div>
     </modal>
 </template>
@@ -43,10 +43,12 @@ export default{
             showSankey: true,
             showPieLabel: true,
             showNetMap: true,
-            dat: {}
+            dat: {},
+            container: "modal-statistics",
+            subtitle: 'per user annotations of this volume, sorted by year'
         };
     },
-    created() {
+    computed: {
         // console.log("Full Object: ", this.annotatedImages);
         // console.log("Volume-sourceTarget: ", JSON.stringify(this.dat.annotationLabel));
     },

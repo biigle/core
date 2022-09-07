@@ -30,7 +30,9 @@ export default {
     },
     props: {
         volumeAnnotations: {required:true, type:Array},
-        names: {required:true, type:Array}
+        names: {required:true, type:Array},
+        showImageVolumes: {required:true, type:Boolean},
+        showVideoVolumes: {required:true, type:Boolean}
     },
     provide: {
         [THEME_KEY]: "dark"

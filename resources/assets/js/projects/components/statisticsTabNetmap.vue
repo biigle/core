@@ -34,10 +34,21 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        sourceTargetLabels: {required:true, type:Object}
+        sourceTargetLabels: {required:true, type:Object},
+        container: {required:true, type:String},
+        volumeType: {required:false, type:String},
+    },
+    data() {
+        return {
+            layoutType: 'circular'
+        }
+    },
+    mounted() {
     },
     created() {
         // console.log('layoutType:', this.layoutType);
+        // console.log(JSON.stringify(this.annotationLabelsVideo));
+        // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
     },
     methods: {
         changeLayout(event) {
@@ -149,12 +160,6 @@ export default {
                     }
                 ]
             } //end option
-        }
-    },
-    data() {
-        return {
-            layoutType: 'circular'
-
         }
     }
 };

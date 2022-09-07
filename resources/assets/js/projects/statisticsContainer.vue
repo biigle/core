@@ -17,11 +17,21 @@ export default {
             totalImages: null,
             annotationLabels: null,
             sourceTargetLabels: null,
+            totalVideos: null,
+            annotatedVideos: null,
+            annotationTimeSeriesVideo: null,
+            volumeAnnotationsVideo: null,
+            volumeNamesVideo: null,
+            annotationLabelsVideo: null,
+            sourceTargetLabelsVideo: null,
             showTimeline: true,
             showSankey: true,
             showPieLabel: true,
             showNetMap: true,
             container: "project-statistics",
+            showImageVolumes: false,
+            showVideoVolumes: false,
+            volumes: null,
         };
     },
     components: {
@@ -33,7 +43,74 @@ export default {
         PieLabel:PieLabel,
         NetMap:NetMap
     },
+    computed: {
+        toggleImageVolumesClass() {
+            return this.showImageVolumes ? 'btn-info active' : 'btn-default';
+        },
+        toggleVideoVolumesClass() {
+            return this.showVideoVolumes ? 'btn-info active' : 'btn-default';
+        },
+        hasVolumes() {
+            return this.volumes.length > 0;
+        },
+        hasMixedMediaTypes() {
+            return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+        },
+        computedData() {
+            if(this.showImageVolumes && !this.showVideoVolumes) {
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeries, 
+                    'volumeAnnotations': this.volumeAnnotations,
+                    'volumeNames': this.volumeNames,
+                    'totalFiles': this.totalImages,
+                    'annotatedFiles': this.annotatedImages,
+                    'annotationLabels': this.annotationLabels,
+                    'sourceTargetLabels': this.sourceTargetLabels
+                    };
+            } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeriesVideo, 
+                    'volumeAnnotations': this.volumeAnnotationsVideo,
+                    'volumeNames': this.volumeNamesVideo,
+                    'totalFiles': this.totalVideos,
+                    'annotatedFiles': this.annotatedVideos,
+                    'annotationLabels': this.annotationLabelsVideo,
+                    'sourceTargetLabels': this.sourceTargetLabelsVideo
+                    };
+            } else { //both true or both false
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo), 
+                    'volumeAnnotations': this.volumeAnnotations.concat(this.volumeAnnotationsVideo),
+                    'volumeNames': this.volumeNames.concat(this.volumeNamesVideo),
+                    'totalFiles': this.totalImages + this.totalVideos,
+                    'annotatedFiles': this.annotatedImages + this.annotatedVideos,
+                    'annotationLabels': this.annotationLabels.concat(this.annotationLabelsVideo),
+                    'sourceTargetLabels': {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo}
+                    };
+            }
+        },
+        subtitle() {
+            let term = () => {
+                return this.showImageVolumes ? ' image '
+                        : this.showVideoVolumes ? ' video '
+                        : ' ';
+                }
+            return ['per user annotations across all' + term() + 'volumes of the project, sorted by year', '(across all' + term() + 'volumes of the project)']
+        },
+    },
     methods: {
+        toggleImageVolumes() {
+            this.showImageVolumes = !this.showImageVolumes;
+            if (this.showVideoVolumes) {
+                this.showImageVolumes = !this.showImageVolumes;
+            }
+        },
+        toggleVideoVolumes() {
+            this.showVideoVolumes = !this.showVideoVolumes;
+            if (this.showImageVolumes) {
+                this.showVideoVolumes = !this.showVideoVolumes;
+            }
+        },
         checkForEmptyVals() {
             // check for each statistics-vis if corresponding arrays/objects are empty
             if(this.annotationTimeSeries.length === 0) {
@@ -60,10 +137,18 @@ export default {
         this.totalImages = biigle.$require('projects.totalImages');
         this.annotationLabels =  biigle.$require('projects.annotationLabels');
         this.sourceTargetLabels =  biigle.$require('projects.sourceTargetLabels');
+        this.totalVideos = biigle.$require('projects.totalVideos');
+        this.annotatedVideos = biigle.$require('projects.annotatedVideos');
+        this.annotationTimeSeriesVideo = biigle.$require('projects.annotationTimeSeriesVideo');
+        this.volumeAnnotationsVideo = biigle.$require('projects.volumeAnnotationsVideo');
+        this.volumeNamesVideo = biigle.$require('projects.volumeNamesVideo');
+        this.annotationLabelsVideo = biigle.$require('projects.annotationLabelsVideo');
+        this.sourceTargetLabelsVideo = biigle.$require('projects.sourceTargetLabelsVideo');
+        this.volumes = biigle.$require('projects.volumes');
 
         this.checkForEmptyVals();
         // console.log(JSON.stringify(this.annotatedImages));
-        // console.log(JSON.stringify(this.totalImages));
+        // console.log(JSON.stringify(this.volumes));
         // console.log(JSON.stringify(this.sourceTargetLabels));
         // console.log(JSON.stringify(this.volumeAnnotations));
     },

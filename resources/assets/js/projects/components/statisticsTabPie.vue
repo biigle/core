@@ -30,22 +30,21 @@ export default {
         [THEME_KEY]: "dark"
     },
     props: {
-        annotatedImages: {required:true, type:Number},
-        totalImages: {required:true, type:Number},
-        container: {required:false, type:String}
+        annotatedFiles: {required:true, type:Number},
+        totalFiles: {required:true, type:Number},
+        container: {required:true, type:String},
+        volumeType: {required:false, type:String},
+        subtitle: {required:false, type:String},
     },
-    created() {
-        // console.log("Pie: ", this.container);
+    data() {
+        return {      
+        }
+    },
+    methods: {
+    },
+    mounted() {
     },
     computed: {
-        subtitle() {
-            if(this.container === "project-statistics") {
-                return '(across all volumes of the project)'
-            } else {
-                return null
-            }
-        },
-
         option() {
             return {
                 backgroundColor: '#222222',
@@ -83,16 +82,12 @@ export default {
                     show: false
                     },
                     data: [
-                    { value: this.annotatedImages, name: 'Annotated' },
-                    { value: (this.totalImages - this.annotatedImages), name: 'Not Annotated' },
+                    { value: this.annotatedFiles, name: 'Annotated' },
+                    { value: (this.totalFiles - this.annotatedFiles), name: 'Not Annotated' },
                     ]
                 }
                 ]
             }
-        }
-    },
-    data() {
-        return {        
         }
     }
 }

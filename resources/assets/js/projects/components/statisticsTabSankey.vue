@@ -23,10 +23,17 @@ export default {
     },
     props: {
         volumeAnnotations: {required:true, type:Array},
-        names: {required:true, type:Array}
+        names: {required:true, type:Array},
+        container: {required:true, type:String},
     },
     provide: {
         [THEME_KEY]: "dark"
+    },
+    data() {
+        return {
+        }
+    },
+    mounted() {
     },
     created() {
         // console.log('DATA: ', this.data);
@@ -104,10 +111,6 @@ export default {
                     links: this.links
                 }
             }
-        }
-    },
-    data() {
-        return {        
         }
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Biigle\Image;
 use Biigle\Video;
+use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 
 class ProjectStatisticsController extends Controller
@@ -55,6 +56,12 @@ class ProjectStatisticsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        $volumes = $project->volumes()
+        ->select('id', 'name', 'updated_at', 'media_type_id')
+        ->with('mediaType')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
         // VIDEO
         $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
             return $query->select('volume_id')
@@ -73,15 +80,15 @@ class ProjectStatisticsController extends Controller
         
 
         $annotatedVideos = $baseQueryVideo->clone()
-        // ->select(DB::raw('distinct images.id'))
-        ->count(DB::raw('DISTINCT videos.id'));
+            // ->select(DB::raw('distinct images.id'))
+            ->count(DB::raw('DISTINCT videos.id'));
         
 
         $annotationTimeSeriesVideo = $baseQueryVideo->clone()
-        ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
-        ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
-        ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
-        ->get();
+            ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
+            ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
+            ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
+            ->get();
         
         $volumeAnnotationsVideo = $baseQueryVideo->clone()
             ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
@@ -90,33 +97,30 @@ class ProjectStatisticsController extends Controller
             ->get();
 
         
-        $AllVolumesOfProject = $project->volumes()->select('id', 'name', 'media_type_id')->get();
-        $volumeNamesVideo = [];
-        $volumeNames = [];
-        // Loop through all volumes of one project and choose in
-        // which list they belong (with regard to their mediaType)
-        foreach ($AllVolumesOfProject as $volume) {
-            $entry = $volume->select('id', 'name')->get();
-            if($volume->isVideoVolume()) {
-                $volumeNamesVideo = $entry;
-            } 
-            if($volume->isImageVolume()) {
-                $volumeNames = $entry;
-            }
-        };
+        $volumeNames = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::imageId())
+            ->get();
+        
+        $volumeNamesVideo = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::videoId())
+            ->get();
+
 
         $annotationLabelsVideo = $baseQueryVideo->clone()
             ->join('labels', 'labels.id', '=', 'video_annotation_labels.label_id')
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
             ->groupBy('labels.id')
             ->get();
+        
 
         $videoAnnotationLabels = $baseQueryVideo->clone()
         ->select('videos.id', 'video_annotation_labels.label_id')
         ->distinct()
         ->get()
         ->groupBy('id');
-
+        
         $sourceTargetLabelsVideo = [];
 
         foreach ($videoAnnotationLabels as $value) {
@@ -141,7 +145,7 @@ class ProjectStatisticsController extends Controller
 
         $sourceTargetLabelsVideo = array_map('array_unique', $sourceTargetLabelsVideo);
         $sourceTargetLabelsVideo = array_map('array_values', $sourceTargetLabelsVideo);
-        // dd($sourceTargetLabelsVideo);
+        
 
         // IMAGE
         $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
@@ -224,6 +228,8 @@ class ProjectStatisticsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'statistics',
+            'volumes' => $volumes,
+            // IMAGES
             'annotationTimeSeries' => $annotationTimeSeries,
             'volumeAnnotations' => $volumeAnnotations,
             'volumeNames' => $volumeNames,
@@ -231,6 +237,14 @@ class ProjectStatisticsController extends Controller
             'totalImages' => $totalImages,
             'annotationLabels' => $annotationLabels,
             'sourceTargetLabels' => collect($sourceTargetLabels),
+            // VIDEOS
+            'totalVideos' => $totalVideos,
+            'annotatedVideos' => $annotatedVideos,
+            'annotationTimeSeriesVideo' => $annotationTimeSeriesVideo,
+            'volumeAnnotationsVideo' => $volumeAnnotationsVideo,
+            'volumeNamesVideo' => $volumeNamesVideo,
+            'annotationLabelsVideo' => $annotationLabelsVideo,
+            'sourceTargetLabelsVideo' => collect($sourceTargetLabelsVideo),
         ]);
     }
 }
