@@ -10,6 +10,7 @@ use Biigle\Tests\VideoTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\UserTest;
+use Biigle\MediaType;
 
 class StatisticsControllerTest extends ApiTestCase
 {
@@ -142,7 +143,7 @@ class StatisticsControllerTest extends ApiTestCase
 
     public function testVideoStatistics()
     {
-        $id = $this->volume()->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
 
         $video = VideoTest::create([
             'volume_id' => $this->volume()->id,

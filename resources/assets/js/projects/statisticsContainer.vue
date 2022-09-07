@@ -17,6 +17,13 @@ export default {
             totalImages: null,
             annotationLabels: null,
             sourceTargetLabels: null,
+            totalVideos: null,
+            annotatedVideos: null,
+            annotationTimeSeriesVideo: null,
+            volumeAnnotationsVideo: null,
+            volumeNamesVideo: null,
+            annotationLabelsVideo: null,
+            sourceTargetLabelsVideo: null,
             showTimeline: true,
             showSankey: true,
             showPieLabel: true,
@@ -48,6 +55,23 @@ export default {
         },
         hasMixedMediaTypes() {
             return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+        },
+        computedData() {
+            if(this.showImageVolumes && !this.showVideoVolumes) {
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeries, 
+                    'volumeAnnotations': this.volumeAnnotations,
+                    'names': this.names,
+                    'totalFiles': this.totalImages,
+                    'annotatedFiles': this.annotatedImages,
+                    'annotationLabels': this.annotationLabels,
+                    'sourceTargetLabels': this.sourceTargetLabels
+                    };
+            } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                return this.annotationTimeSeriesVideo;
+            } else { //both true
+                return this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
+            }
         }
     },
     methods: {

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Biigle\Image;
 use Biigle\Video;
+use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 
 class ProjectStatisticsController extends Controller
@@ -96,20 +97,16 @@ class ProjectStatisticsController extends Controller
             ->get();
 
         
-        $AllVolumesOfProject = $project->volumes()->select('id', 'name', 'media_type_id')->get();
-        $volumeNamesVideo = [];
-        $volumeNames = [];
-        // Loop through all volumes of one project and choose in
-        // which list they belong (with regard to their mediaType)
-        foreach ($AllVolumesOfProject as $volume) {
-            $entry = $volume->select('id', 'name')->get();
-            if($volume->isVideoVolume()) {
-                $volumeNamesVideo = $entry;
-            } 
-            if($volume->isImageVolume()) {
-                $volumeNames = $entry;
-            }
-        };
+        $volumeNames = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::imageId())
+            ->get();
+        
+        $volumeNamesVideo = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::videoId())
+            ->get();
+
 
         $annotationLabelsVideo = $baseQueryVideo->clone()
             ->join('labels', 'labels.id', '=', 'video_annotation_labels.label_id')
