@@ -36,55 +36,14 @@ export default {
         annotationLabels: {required:true, type:Array},
         sourceTargetLabels: {required:true, type:Object},
         container: {required:true, type:String},
-
         volumeType: {required:false, type:String},
-        annotationLabelsVideo: {required:false, type:Array},
-        sourceTargetLabelsVideo: {required:false, type:Object},
-        showImageVolumes: {required:false, type:Boolean},
-        showVideoVolumes: {required:false, type:Boolean},
     },
     data() {
         return {
-            layoutType: 'circular',
-            mergedAnnotationLabels: [],
-            mergedSourceTarget: {}
+            layoutType: 'circular'
         }
     },
     mounted() {
-        // handle different locations (modal, project-statistics)
-        this.$watch(
-            () => this.container, 
-            () => {
-                if(this.container === "modal-statistics") {
-                    this.mergedAnnotationLabels = this.annotationLabels;
-                    this.mergedSourceTarget = this.sourceTargetLabels;
-                }
-            },
-            {
-                immediate: true
-            }
-        ),
-        // Select either each dataset itself or merge both
-        // depending on the buttons selected (showImage, showVideo)
-        this.$watch(
-            () => [this.showImageVolumes, this.showVideoVolumes],
-            () => {
-                 // only relevant when in projects-tab
-                if(this.container === "project-statistics") {
-                    if(this.showImageVolumes && !this.showVideoVolumes) {
-                        this.updateData(this.annotationLabels, this.sourceTargetLabels);
-                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                        this.updateData(this.annotationLabelsVideo, this.sourceTargetLabelsVideo);
-                    } else { //both true
-                        this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo),
-                        {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo});
-                    }
-                }
-            },
-            {
-            immediate: true
-            }
-        )
     },
     created() {
         // console.log('layoutType:', this.layoutType);
@@ -92,10 +51,6 @@ export default {
         // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
     },
     methods: {
-        updateData(annot, sourceTarget) {
-            this.mergedAnnotationLabels = annot;
-            this.mergedSourceTarget = sourceTarget;
-        },
         changeLayout(event) {
             this.layoutType = event;
         },
@@ -103,7 +58,7 @@ export default {
             let nodes = [];
             let cat = [];
 
-            for(let entry of this.mergedAnnotationLabels) {
+            for(let entry of this.annotationLabels) {
                 let nodeObj = {
                     "id": entry.id.toString(),
                     "name": entry.name,
@@ -126,7 +81,7 @@ export default {
             let arr = [];
             
             // iterate over all ids
-            for (const [id, values] of Object.entries(this.mergedSourceTarget)) {
+            for (const [id, values] of Object.entries(this.sourceTargetLabels)) {
                 // iterate over all values of each id
                 for(let val of values) {
                     let entry = {

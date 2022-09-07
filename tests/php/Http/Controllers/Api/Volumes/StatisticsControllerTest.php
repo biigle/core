@@ -36,8 +36,8 @@ class StatisticsControllerTest extends ApiTestCase
                 'id' => $id,
                 'name' => $this->volume()->name
             ]],
-            'annotatedImages' => 0,
-            'totalImages' => 0,
+            'annotatedFiles' => 0,
+            'totalFiles' => 0,
             'annotationLabels' => [],
             'sourceTargetLabels' => []
         ];
@@ -118,8 +118,8 @@ class StatisticsControllerTest extends ApiTestCase
                 'name' => $this->volume()->name,
                 'id' => $id
             ]],
-            'annotatedImages' => 1,
-            'totalImages' => 2,
+            'annotatedFiles' => 1,
+            'totalFiles' => 2,
             'annotationLabels' => [
                 [
                     'color' => "0099ff",
@@ -215,8 +215,8 @@ class StatisticsControllerTest extends ApiTestCase
                 'name' => $this->volume()->name,
                 'id' => $id
             ]],
-            'annotatedImages' => 1,
-            'totalImages' => 2,
+            'annotatedFiles' => 1,
+            'totalFiles' => 2,
             'annotationLabels' => [
                 [
                     'color' => "0099ff",

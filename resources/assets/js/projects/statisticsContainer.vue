@@ -29,8 +29,8 @@ export default {
             showPieLabel: true,
             showNetMap: true,
             container: "project-statistics",
-            showImageVolumes: true,
-            showVideoVolumes: true,
+            showImageVolumes: false,
+            showVideoVolumes: false,
             volumes: null,
         };
     },
@@ -61,29 +61,53 @@ export default {
                 return {
                     'annotationTimeSeries' : this.annotationTimeSeries, 
                     'volumeAnnotations': this.volumeAnnotations,
-                    'names': this.names,
+                    'volumeNames': this.volumeNames,
                     'totalFiles': this.totalImages,
                     'annotatedFiles': this.annotatedImages,
                     'annotationLabels': this.annotationLabels,
                     'sourceTargetLabels': this.sourceTargetLabels
                     };
             } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                return this.annotationTimeSeriesVideo;
-            } else { //both true
-                return this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeriesVideo, 
+                    'volumeAnnotations': this.volumeAnnotationsVideo,
+                    'volumeNames': this.volumeNamesVideo,
+                    'totalFiles': this.totalVideos,
+                    'annotatedFiles': this.annotatedVideos,
+                    'annotationLabels': this.annotationLabelsVideo,
+                    'sourceTargetLabels': this.sourceTargetLabelsVideo
+                    };
+            } else { //both true or both false
+                return {
+                    'annotationTimeSeries' : this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo), 
+                    'volumeAnnotations': this.volumeAnnotations.concat(this.volumeAnnotationsVideo),
+                    'volumeNames': this.volumeNames.concat(this.volumeNamesVideo),
+                    'totalFiles': this.totalImages + this.totalVideos,
+                    'annotatedFiles': this.annotatedImages + this.annotatedVideos,
+                    'annotationLabels': this.annotationLabels.concat(this.annotationLabelsVideo),
+                    'sourceTargetLabels': {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo}
+                    };
             }
-        }
+        },
+        subtitle() {
+            let term = () => {
+                return this.showImageVolumes ? ' image '
+                        : this.showVideoVolumes ? ' video '
+                        : ' ';
+                }
+            return ['per user annotations across all' + term() + 'volumes of the project, sorted by year', '(across all' + term() + 'volumes of the project)']
+        },
     },
     methods: {
         toggleImageVolumes() {
             this.showImageVolumes = !this.showImageVolumes;
-            if (!this.showVideoVolumes) {
+            if (this.showVideoVolumes) {
                 this.showImageVolumes = !this.showImageVolumes;
             }
         },
         toggleVideoVolumes() {
             this.showVideoVolumes = !this.showVideoVolumes;
-            if (!this.showImageVolumes) {
+            if (this.showImageVolumes) {
                 this.showVideoVolumes = !this.showVideoVolumes;
             }
         },

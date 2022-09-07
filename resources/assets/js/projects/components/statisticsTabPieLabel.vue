@@ -35,64 +35,22 @@ export default {
     props: {
         annotationLabels: {required:true, type:Array},
         container: {required:true, type:String},
-
-        volumeType: {required:false, type:String},
-        annotationLabelsVideo: {required:false, type:Array},
-        showImageVolumes: {required:false, type:Boolean},
-        showVideoVolumes: {required:false, type:Boolean}
+        subtitle: {required:false, type:String},
     },
     data() {
         return {      
-            mergedAnnotationLabels: []
         }
     },
     methods: {
-        updateData(val) {
-            this.mergedAnnotationLabels = val;
-        }
     },
     mounted() {
-        // handle different locations (modal, project-statistics)
-        this.$watch(
-            () => this.container, 
-            () => {
-                if(this.container === "modal-statistics") {
-                    // overwrite the mergedAnnotationLabels with default data 
-                    this.mergedAnnotationLabels = this.annotationLabels;
-                }
-            },
-            {
-                immediate: true
-            }
-        ),
-        // Select either each dataset itself or merge both
-        // depending on the buttons selected (showImage, showVideo)
-        this.$watch(
-            // do not watch if statistics is openend in modal
-            () => [this.showImageVolumes, this.showVideoVolumes],
-            () => {
-                // only relevant when in projects-tab
-                if(this.container === "project-statistics") {
-                    if (this.showImageVolumes && !this.showVideoVolumes) {
-                        this.updateData(this.annotationLabels);
-                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                        this.updateData(this.annotationLabelsVideo);
-                    } else { //both true
-                        this.updateData(this.annotationLabels.concat(this.annotationLabelsVideo));
-                    }
-                }
-            },
-            {
-            immediate: true
-            }
-        )
     },
     created() {
     },
     computed: {
         dat() {
             let ret = [];
-            for(let entry of this.mergedAnnotationLabels) {
+            for(let entry of this.annotationLabels) {
                 let formatObj = {
                     "name": entry.name, 
                     "value": entry.count, 
@@ -100,19 +58,6 @@ export default {
                 ret.push(formatObj);
             }
             return ret;
-        },
-
-        subtitle() {
-            if(this.container === "project-statistics") {
-                let term = () => {
-                    return !this.showImageVolumes ? ' video '
-                            : !this.showVideoVolumes ? ' image '
-                            : ' ';
-                }
-                return '(across all' + term() + 'volumes of the project)'
-            } else {
-                return null
-            }
         },
 
         option() {

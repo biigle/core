@@ -96,8 +96,8 @@ class StatisticsController extends Controller
             // return VIDEO
             return collect([
             'volumeType' => $volumeType,
-            'totalImages' => $totalVideos,
-            'annotatedImages' => $annotatedVideos,
+            'totalFiles' => $totalVideos,
+            'annotatedFiles' => $annotatedVideos,
             'annotationTimeSeries' => $annotationTimeSeriesVideo,
             'volumeAnnotations' => $volumeAnnotationsVideo,
             'volumeName' => $volumeName,
@@ -176,8 +176,8 @@ class StatisticsController extends Controller
                 'annotationTimeSeries' => $annotationTimeSeries,
                 'volumeAnnotations' => $volumeAnnotations,
                 'volumeName' => $volumeName,
-                'annotatedImages' => $annotatedImages,
-                'totalImages' => $totalImages,
+                'annotatedFiles' => $annotatedImages,
+                'totalFiles' => $totalImages,
                 'annotationLabels' => $annotationLabels,
                 'sourceTargetLabels' => collect($sourceTargetLabels),
             ]);

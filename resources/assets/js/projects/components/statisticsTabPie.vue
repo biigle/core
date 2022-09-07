@@ -30,77 +30,21 @@ export default {
         [THEME_KEY]: "dark"
     },
     props: {
-        annotatedImages: {required:true, type:Number},
-        totalImages: {required:true, type:Number},
+        annotatedFiles: {required:true, type:Number},
+        totalFiles: {required:true, type:Number},
         container: {required:true, type:String},
-
         volumeType: {required:false, type:String},
-        annotatedVideos: {required:false, type:Number},
-        totalVideos: {required:false, type:Number},
-        showImageVolumes: {required:false, type:Boolean},
-        showVideoVolumes: {required:false, type:Boolean},
+        subtitle: {required:false, type:String},
     },
     data() {
         return {      
-            mergedAnnotated: null,
-            mergedTotal: null,
         }
     },
     methods: {
-        updateData(annot, total) {
-            this.mergedAnnotated = annot;
-            this.mergedTotal = total;
-        }
     },
     mounted() {
-        // handle different locations (modal, project-statistics)
-        this.$watch(() => this.container, 
-            () => {
-                if(this.container === "modal-statistics") {
-                    this.mergedAnnotated = this.annotatedImages;
-                    this.mergedTotal = this.totalImages;
-                }
-            },
-            {
-                immediate: true
-            }
-        ),
-        // Select either each dataset itself or merge both
-        // depending on the buttons selected (showImage, showVideo)
-        this.$watch(
-            () => [this.showImageVolumes, this.showVideoVolumes],
-            () => {
-                 // only relevant when in projects-tab
-                if(this.container === "project-statistics") {
-                    if(this.showImageVolumes && !this.showVideoVolumes) {
-                        this.updateData(this.annotatedImages, this.totalImages);
-                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                        this.updateData(this.annotatedVideos, this.totalVideos);
-                    } else { //both true
-                        this.updateData(this.annotatedImages + this.annotatedVideos,
-                                        this.totalImages + this.totalVideos);
-                    }
-                }
-            },
-            {
-            immediate: true
-            }
-        )
     },
     computed: {
-        subtitle() {
-            if(this.container === "project-statistics") {
-                let term = () => {
-                    return !this.showImageVolumes ? ' video '
-                            : !this.showVideoVolumes ? ' image '
-                            : ' ';
-                }
-                return '(across all' + term() + 'volumes of the project)'
-            } else {
-                return null
-            }
-        },
-
         option() {
             return {
                 backgroundColor: '#222222',
@@ -138,8 +82,8 @@ export default {
                     show: false
                     },
                     data: [
-                    { value: this.mergedAnnotated, name: 'Annotated' },
-                    { value: (this.mergedTotal - this.mergedAnnotated), name: 'Not Annotated' },
+                    { value: this.annotatedFiles, name: 'Annotated' },
+                    { value: (this.totalFiles - this.annotatedFiles), name: 'Not Annotated' },
                     ]
                 }
                 ]

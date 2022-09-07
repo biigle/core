@@ -36,11 +36,8 @@ export default {
     props: {
         annotationTimeSeries: {required:true, type:Array},
         container: {required:true, type:String},
-
+        subtitle: {required:true, type:String},
         volumeType: {required:false, type:String},
-        annotationTimeSeriesVideo: {required:false, type:Array},
-        showImageVolumes: {required:false, type:Boolean},
-        showVideoVolumes: {required:false, type:Boolean}
     },
     components: {
         VChart
@@ -69,8 +66,7 @@ export default {
                 tooltip:  1,
                 value: 1
                 }
-            },
-            mergedData: []
+            }
         }
     },
     methods: {
@@ -87,49 +83,16 @@ export default {
     },
     created() {
         // console.log("Image=", this.showImageVolumes, "\n Volume=", this.showVideoVolumes);
-        // console.log(JSON.stringify(this.mergedData));
+        // console.log(JSON.stringify(this.annotationTimeSeries));
         // this.sourcedata = this.transformData(this.annotationTimeSeries);
         // console.log('sourcedata: ', JSON.stringify(this.sourcedata));
         // console.log("showImageVolumes: ", this.showImageVolumes);
     },
     mounted() {
-        // handle different locations (modal, project-statistics)
-        this.$watch(
-            () => this.container, 
-            () => {
-                if(this.container === "modal-statistics") {
-                    // overwrite the mergedData with default data
-                    this.mergedData = this.annotationTimeSeries;
-                }
-            },
-            {
-                immediate: true
-            }
-        ),
-        // Select either each dataset itself or merge both
-        // depending on the buttons selected (showImage, showVideo)
-        this.$watch(
-            () => [this.showImageVolumes, this.showVideoVolumes],
-            () => {
-                // only relevant when in projects-tab
-                if(this.container === "project-statistics") {
-                    if(this.showImageVolumes && !this.showVideoVolumes) {
-                        this.mergedData = this.annotationTimeSeries;
-                    } else if(!this.showImageVolumes && this.showVideoVolumes) {
-                        this.mergedData =  this.annotationTimeSeriesVideo;
-                    } else { //both true
-                        this.mergedData = this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo);
-                    }
-                }
-            },
-            {
-            immediate: true
-            }
-        )
     },
     computed: {
         sourcedata() {
-            let dat = this.mergedData;
+            let dat = this.annotationTimeSeries;
             let chartdata = [];
 
             // get all X-Axis data
@@ -187,18 +150,6 @@ export default {
             // console.log('ID-Dict: ', JSON.stringify(idDict));
             // console.log('FINAL: ', JSON.stringify(chartdata));
             return [...chartdata];
-        },
-        subtitle() {
-            if(this.container === "project-statistics") {
-                let term = () => {
-                    return !this.showImageVolumes ? ' video '
-                            : !this.showVideoVolumes ? ' image '
-                            : ' ';
-                    }
-                return 'per user annotations across all' + term() + 'volumes of the project, sorted by year'
-            } else {
-                return 'per user annotations of this volume, sorted by year'
-            }
         },
         option() {
             // create a series Array

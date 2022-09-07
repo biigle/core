@@ -27,45 +27,30 @@
         <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Show statistics of video volumes only" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
     </span>
     <annotation-timeline v-if="showTimeline" 
-        :annotation-time-series="annotationTimeSeries"
-        :annotation-time-series-video="annotationTimeSeriesVideo"
-        :container="container" 
-        :show-image-volumes="showImageVolumes"
-        :show-video-volumes="showVideoVolumes"
+        :annotation-time-series="computedData.annotationTimeSeries"
+        :container="container"
+        :subtitle="subtitle[0]"
         ></annotation-timeline>
     <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
     <sankey-plot v-if="showSankey" 
-        :volume-annotations="volumeAnnotations" 
-        :volume-annotations-video="volumeAnnotationsVideo"
-        :names="volumeNames"
-        :names-video="volumeNamesVideo"
-        :show-image-volumes="showImageVolumes"
-        :show-video-volumes="showVideoVolumes"
+        :volume-annotations="computedData.volumeAnnotations" 
+        :names="computedData.volumeNames"
         :container="container"
         ></sankey-plot>
     <pie-chart 
-        :total-images="totalImages" 
-        :total-videos="totalVideos"
-        :annotated-images="annotatedImages"
-        :annotated-videos="annotatedVideos"
+        :total-files="computedData.totalFiles" 
+        :annotated-files="computedData.annotatedFiles"
         :container="container"
-        :show-image-volumes="showImageVolumes"
-        :show-video-volumes="showVideoVolumes"
+        :subtitle="subtitle[1]"
         ></pie-chart>
     <pie-label v-if="showPieLabel" 
-        :annotation-labels="annotationLabels"
-        :annotation-labels-video="annotationLabelsVideo"
+        :annotation-labels="computedData.annotationLabels"
         :container="container"
-        :show-image-volumes="showImageVolumes"
-        :show-video-volumes="showVideoVolumes"
+        :subtitle="subtitle[1]"
         ></pie-label>
     <net-map v-if="showNetMap" 
-        :annotation-labels="annotationLabels" 
-        :annotation-labels-video="annotationLabelsVideo"
-        :source-target-labels="sourceTargetLabels"
-        :source-target-labels-video="sourceTargetLabelsVideo"
-        :show-image-volumes="showImageVolumes"
-        :show-video-volumes="showVideoVolumes"
+        :annotation-labels="computedData.annotationLabels" 
+        :source-target-labels="computedData.sourceTargetLabels"
         :container="container"
         ></net-map>
 </div>
