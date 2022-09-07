@@ -235,6 +235,6 @@ class StatisticsControllerTest extends ApiTestCase
                 $annotationLabel1->label->id => [$annotationLabel2->label->id]
             ]
         ];
-        $response->assertExactJson($expect);
+        $response->assertSimilarJson($expect);
     }
 }
