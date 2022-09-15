@@ -117,20 +117,27 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
     protected function createFiles($filenames, $metadataMap)
     {
         return array_map(function ($filename) use ($metadataMap) {
-            $insert = [
+            // This makes sure that the inserts have the same number of columns even if
+            // some images have additional metadata and others not.
+            $insert = array_fill_keys(
+                array_merge(['attrs'], ImageMetadata::ALLOWED_ATTRIBUTES),
+                null
+            );
+
+            $insert = array_merge($insert, [
                 'filename' => $filename,
                 'volume_id' => $this->volume->id,
                 'uuid' => (string) Uuid::uuid4(),
-            ];
+            ]);
 
             $metadata = collect($metadataMap->get($filename));
             if ($metadata) {
                 // Remove empty cells.
                 $metadata = $metadata->filter();
-                $insert = $metadata
-                    ->only(ImageMetadata::ALLOWED_ATTRIBUTES)
-                    ->merge($insert)
-                    ->toArray();
+                $insert = array_merge(
+                    $insert,
+                    $metadata->only(ImageMetadata::ALLOWED_ATTRIBUTES)->toArray()
+                );
 
                 $more = $metadata->only(ImageMetadata::ALLOWED_METADATA);
                 if ($more->isNotEmpty()) {
