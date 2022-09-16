@@ -59,9 +59,24 @@
         <p>
             Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs">Create Volume</button> button of the volumes tab in the project overview. A new volume will be automatically attached to the project it was created for. Volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, enter the name of the volume you want to attach in the input field on the top right of the volumes tab and hit enter. Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i></button> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
         </p>
+        <p>
+            Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-chart-bar"></i></button> button in order to see some statistics about this volume, such as the per-user contribution of annotations, the ratio of annotated vs. not-annotated files, or the abundance of annotation labels. For further details, have a look at the Statistics section below.
+        </p>
 
         <p>
             If a project has lots of volumes, filtering the volumes can help to find a particular volume. To filter the volumes in the project overview, type part of the name of the volume in the input field on the top left of the volumes tab. The volumes list will update as you type. You can also show only image volumes or video volumes with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-image"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-film"></i></button> buttons, respectively.
+        </p>
+
+        <h3><a name="statistics"></a><i class="fa fa-chart-bar"></i> Statistics</h3>
+
+        <p>
+            The statistics-tab encapsulates a number of (interactive) visualizations that are presenting metadata about the project. These are comprised of statistics on annotated vs. not-annotated files, the contribution of annotations per project-member as well as their contribution to each volume of the project, and finally, information on labels that were used in the project.
+        </p>
+        <p>
+            You can choose to see the statistics either across all volumes of the project (the default), or only the image- or video-volumes by pressing the respective filter-button on top.
+        </p>
+        <p>
+            For the NetMap-Graph, which depicts how frequently labels co-occur with other labels on the same file, the layout type can be chosen (circular / forced) and each node can be clicked to highlight its connections.
         </p>
 
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>

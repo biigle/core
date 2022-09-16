@@ -1,6 +1,6 @@
 <template>
     <div class="grid-col-span-3">
-        <v-chart class="chart w_buttons" :option="option" @click="toggleColor"></v-chart>
+        <v-chart class="chart w_buttons" :option="option" @click="toggleColor" :set-option="updateOptions"></v-chart>
         <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
         <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >forced layout</button>
     </div>
@@ -14,7 +14,7 @@ import {
     LegendComponent } from 'echarts/components';
 import { GraphChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
+import VChart, { THEME_KEY, UPDATE_OPTIONS_KEY } from "vue-echarts";
 
 echarts.use([
     TitleComponent,
@@ -29,8 +29,11 @@ export default {
     components: {
         VChart
     },
-    provide: {
-        [THEME_KEY]: "dark"
+    provide() {
+        return {
+            [THEME_KEY]: "dark",
+            // [UPDATE_OPTIONS_KEY]: this.updateOptions,
+        }
     },
     props: {
         annotationLabels: {required:true, type:Array},
@@ -42,18 +45,21 @@ export default {
         return {
             layoutType: 'circular',
             currentNode: {id: null, name: null, color: null},
-            // Init the ECharts base on DOM
         }
-    },
-    mounted() {
     },
     created() {
         console.log('NETMAP:', this.graph);
-        // this.$watch(() => this.graph.categories, (newVal) => {
-        //     consolole.log("cat changed: ", newVal);
-        // });
         // console.log(JSON.stringify(this.annotationLabelsVideo));
         // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
+    },
+    watch: {
+        'this.graph.categories': {
+            handler(newValue, oldValue) {
+                console.log("Reached watcher");
+                this.updateOptions;
+            }
+        },
+        deep: true
     },
     methods: {
         changeLayout(event) {
@@ -61,20 +67,25 @@ export default {
         },
         toggleColor(event) {
             if(event.dataType == 'node') {
-                // change color back when next click on Graph occured & it was not first click
-                if(this.currentNode.id !== null) {
-                    this.graph.categories[this.currentNode.id].itemStyle.color = this.currentNode.color;
-                }
-                console.log("Reached FUNC: ", event);
+                console.log("Reached FUNC: ");
                 // get entry-index of the selected category
                 let idx = this.graph.categories.findIndex(x => x.name === event.name);
-                // save the attributes of the current node
-                this.currentNode.name = event.name;
-                this.currentNode.color = this.graph.categories[idx].itemStyle.color;
-                this.currentNode.id = idx;
-                // change the color to white
-                this.graph.categories[idx].itemStyle.color = "#ffffff";
-                console.log(JSON.stringify(this.graph.categories[idx]));
+                // do nothing when same node gets selected again
+                if (this.currentNode.id === idx) {
+                    return
+                } else {
+                    // change color back when next click on Graph occurred & it was not first click
+                    if(this.currentNode.id !== null) {
+                        this.graph.categories[this.currentNode.id].itemStyle.color = this.currentNode.color;
+                    }
+                    // save the attributes of the current node
+                    this.currentNode.name = event.name;
+                    this.currentNode.color = this.graph.categories[idx].itemStyle.color;
+                    this.currentNode.id = idx;
+                    // change the color to white
+                    this.graph.categories[idx].itemStyle.color = "#ffffff";
+                    console.log(JSON.stringify(this.graph.categories[idx]));
+                }
             }
         },
         createNodesAndCategories() {
@@ -117,9 +128,6 @@ export default {
           
           return arr;
         }
-        // selectedNode(name) {
-        //     return name;
-        // },
     },
     computed: {
         graph() {
@@ -131,6 +139,14 @@ export default {
             obj['links'] = this.createLinks();
 
             return obj;
+        },
+          updateOptions() {
+            console.log("Reached updateOption");
+            return {
+                series: [
+                    {categories: this.graph.categories}
+                ]
+            }
         },
         option() {
             return {
