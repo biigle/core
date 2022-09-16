@@ -155,20 +155,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.project-statistics {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(2, 1fr);
-    padding-bottom: 1.5rem;
-}
-
-.grid-col-span-3 {
-    grid-column: 1 / span 2;
-}
-
-.chart {
-  height: 400px;
-  outline: solid #424242 1px;
-}
-</style>

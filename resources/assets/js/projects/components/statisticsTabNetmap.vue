@@ -1,6 +1,6 @@
 <template>
-    <div class="chart grid-col-span-3" style="height: 600px;">
-        <v-chart class="chart" :option="option" ></v-chart>
+    <div class="grid-col-span-3">
+        <v-chart class="chart w_buttons" :option="option" @click="toggleColor"></v-chart>
         <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
         <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >forced layout</button>
     </div>
@@ -40,19 +40,42 @@ export default {
     },
     data() {
         return {
-            layoutType: 'circular'
+            layoutType: 'circular',
+            currentNode: {id: null, name: null, color: null},
+            // Init the ECharts base on DOM
         }
     },
     mounted() {
     },
     created() {
-        // console.log('layoutType:', this.layoutType);
+        console.log('NETMAP:', this.graph);
+        // this.$watch(() => this.graph.categories, (newVal) => {
+        //     consolole.log("cat changed: ", newVal);
+        // });
         // console.log(JSON.stringify(this.annotationLabelsVideo));
         // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
     },
     methods: {
         changeLayout(event) {
             this.layoutType = event;
+        },
+        toggleColor(event) {
+            if(event.dataType == 'node') {
+                // change color back when next click on Graph occured & it was not first click
+                if(this.currentNode.id !== null) {
+                    this.graph.categories[this.currentNode.id].itemStyle.color = this.currentNode.color;
+                }
+                console.log("Reached FUNC: ", event);
+                // get entry-index of the selected category
+                let idx = this.graph.categories.findIndex(x => x.name === event.name);
+                // save the attributes of the current node
+                this.currentNode.name = event.name;
+                this.currentNode.color = this.graph.categories[idx].itemStyle.color;
+                this.currentNode.id = idx;
+                // change the color to white
+                this.graph.categories[idx].itemStyle.color = "#ffffff";
+                console.log(JSON.stringify(this.graph.categories[idx]));
+            }
         },
         createNodesAndCategories() {
             let nodes = [];
@@ -94,6 +117,9 @@ export default {
           
           return arr;
         }
+        // selectedNode(name) {
+        //     return name;
+        // },
     },
     computed: {
         graph() {
@@ -117,7 +143,15 @@ export default {
                 top: '2%',
                 left: '2%'
                 },
-                tooltip: {},
+                tooltip: {
+                    trigger: 'item',
+                    showContent: true,
+                    // triggerOn: 'click'
+                    // formatter: function(params) {
+                    //     this.selectedNode = params.name;
+                    //     // console.log("formatterFunc: ", this.selectedNode);
+                    // }
+                },
                 // legend: [
                 // {
                 //     data: this.graph.nodes.map(function (a) {
@@ -157,6 +191,13 @@ export default {
                         width: 1,
                         curveness: 0
                         }
+                        // selectMode: 'single',
+                        // disabled: false,
+                        // select: {
+                        //     itemStyle: {
+                        //         color: "rgba(255, 255, 255, 1)"
+                        //     }
+                        // }
                     }
                 ]
             } //end option
