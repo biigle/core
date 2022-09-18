@@ -14,7 +14,7 @@ import {
     LegendComponent } from 'echarts/components';
 import { GraphChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY, UPDATE_OPTIONS_KEY } from "vue-echarts";
+import VChart, { THEME_KEY } from "vue-echarts";
 
 echarts.use([
     TitleComponent,
@@ -48,14 +48,12 @@ export default {
         }
     },
     created() {
-        console.log('NETMAP:', this.graph);
-        // console.log(JSON.stringify(this.annotationLabelsVideo));
-        // console.log(JSON.stringify(this.sourceTargetLabelsVideo));
+        // console.log('NETMAP:', this.graph);
     },
     watch: {
         'this.graph.categories': {
-            handler(newValue, oldValue) {
-                console.log("Reached watcher");
+            handler() {
+                // console.log("Reached watcher");
                 this.updateOptions;
             }
         },
@@ -67,7 +65,7 @@ export default {
         },
         toggleColor(event) {
             if(event.dataType == 'node') {
-                console.log("Reached FUNC: ");
+                // console.log("Reached FUNC: ");
                 // get entry-index of the selected category
                 let idx = this.graph.categories.findIndex(x => x.name === event.name);
                 // do nothing when same node gets selected again
@@ -84,7 +82,7 @@ export default {
                     this.currentNode.id = idx;
                     // change the color to white
                     this.graph.categories[idx].itemStyle.color = "#ffffff";
-                    console.log(JSON.stringify(this.graph.categories[idx]));
+                    // console.log(JSON.stringify(this.graph.categories[idx]));
                 }
             }
         },
@@ -141,7 +139,7 @@ export default {
             return obj;
         },
           updateOptions() {
-            console.log("Reached updateOption");
+            // console.log("Reached updateOption");
             return {
                 series: [
                     {categories: this.graph.categories}
