@@ -1,6 +1,6 @@
 <template>
     <div class="grid-col-span-3">
-        <v-chart class="chart w_buttons" :option="option" @click="toggleColor" :set-option="updateOptions"></v-chart>
+        <v-chart class="chart w_buttons" :option="option" @click="toggleColor"></v-chart> <!-- :set-option="updateOptions" -->
         <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
         <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >forced layout</button>
     </div>
@@ -45,44 +45,31 @@ export default {
         return {
             layoutType: 'circular',
             currentNode: {id: null, name: null, color: null},
+            selectedNodeId: null
         }
     },
     created() {
         // console.log('NETMAP:', this.graph);
     },
-    watch: {
-        'this.graph.categories': {
-            handler() {
-                // console.log("Reached watcher");
-                this.updateOptions;
-            }
-        },
-        deep: true
-    },
+    // watch: {
+    //     'this.graph.categories': {
+    //         handler() {
+    //             console.log("Reached watcher");
+    //             this.updateOptions;
+    //         }
+    //     },
+    //     deep: true
+    // },
     methods: {
         changeLayout(event) {
             this.layoutType = event;
         },
         toggleColor(event) {
-            if(event.dataType == 'node') {
-                // console.log("Reached FUNC: ");
-                // get entry-index of the selected category
-                let idx = this.graph.categories.findIndex(x => x.name === event.name);
-                // do nothing when same node gets selected again
-                if (this.currentNode.id === idx) {
-                    return
+            if(event.dataType === 'node') {
+                if (this.selectedNodeId === event.data.id) {
+                    this.selectedNodeId = null;
                 } else {
-                    // change color back when next click on Graph occurred & it was not first click
-                    if(this.currentNode.id !== null) {
-                        this.graph.categories[this.currentNode.id].itemStyle.color = this.currentNode.color;
-                    }
-                    // save the attributes of the current node
-                    this.currentNode.name = event.name;
-                    this.currentNode.color = this.graph.categories[idx].itemStyle.color;
-                    this.currentNode.id = idx;
-                    // change the color to white
-                    this.graph.categories[idx].itemStyle.color = "#ffffff";
-                    // console.log(JSON.stringify(this.graph.categories[idx]));
+                    this.selectedNodeId = event.data.id;
                 }
             }
         },
@@ -98,10 +85,19 @@ export default {
                     "symbolSize": 15, //( Math.log(entry.count) + 1 * 5 ),
                     "category": entry.name
                     };
-                let catObj = {
+                let catObj = {};
+                // if a specific node is selected, paint white
+                if(this.selectedNodeId === entry.id.toString()) {
+                    catObj = {
                     "name": entry.name,
-                    "itemStyle": {"color": "#" + entry.color}
+                    "itemStyle": {"color": "#ffffff"}
                 };
+                } else { // use default color
+                    catObj = {
+                        "name": entry.name,
+                        "itemStyle": {"color": "#" + entry.color}
+                    };
+                }
 
                 nodes.push(nodeObj);
                 cat.push(catObj);
@@ -138,14 +134,14 @@ export default {
 
             return obj;
         },
-          updateOptions() {
-            // console.log("Reached updateOption");
-            return {
-                series: [
-                    {categories: this.graph.categories}
-                ]
-            }
-        },
+        // updateOptions() {
+        //     console.log("Reached updateOption");
+        //     return {
+        //         series: [
+        //             {categories: this.graph.categories}
+        //         ]
+        //     }
+        // },
         option() {
             return {
                 backgroundColor: '#222222',
