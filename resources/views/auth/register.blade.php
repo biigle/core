@@ -73,6 +73,8 @@
                     @endif
                 </div>
 
+                @mixin('registrationForm')
+
                 @if (View::exists('privacy'))
                     <div class="form-group{{ $errors->has('privacy') ? ' has-error' : '' }}">
                         <div class="checkbox">
@@ -107,7 +109,7 @@
                 @endif
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="Sign up">
+                <input type="submit" class="btn btn-success btn-block" value="Sign up" onclick="this.disabled=true;this.form.submit();">
 
             </form>
             <p class="clearfix">
