@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Notification;
 use Ramsey\Uuid\Uuid;
+use Biigle\Services\Modules;
 use Validator;
 use View;
 
@@ -102,6 +103,12 @@ class RegisterController extends Controller
         } else {
             $user->role_id = Role::editorId();
         }
+
+        app()->make(Modules::class)->callControllerMixins('createNewUser', [
+            'user' => $user,
+            'data' => $data,
+        ]);
+
         $user->save();
 
         return $user;
