@@ -87,7 +87,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
+                <svg style="display:block; margin:auto;" width="300" height="{{ $height + 20 }}">
                     <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
                     @foreach($annotationWeek as $index => $day)
                         <?php $h = round($height * $day['percent']); ?>
@@ -122,7 +122,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
+                <svg style="display:block; margin:auto;" width="300" height="{{ $height + 20 }}">
                     <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
                     @foreach($videoAnnotationWeek as $index => $day)
                         <?php $h = round($height * $day['percent']); ?>
