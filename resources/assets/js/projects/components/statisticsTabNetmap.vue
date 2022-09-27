@@ -2,7 +2,7 @@
     <div class="grid-col-span-3">
         <v-chart class="chart w_buttons" :option="option" @click="toggleColor"></v-chart> <!-- :set-option="updateOptions" -->
         <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
-        <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >forced layout</button>
+        <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >force layout</button>
     </div>
 </template>
 
