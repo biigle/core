@@ -114,7 +114,8 @@ export default {
                 for(let val of values) {
                     let entry = {
                         "source": id,
-                        "target": val.toString()
+                        "target": val.toString(),
+                        "lineStyle": {"opacity": this.selectedNodeId === id || this.selectedNodeId === null ? .5 : 0}
                     }
                     arr.push(entry);
                 }
