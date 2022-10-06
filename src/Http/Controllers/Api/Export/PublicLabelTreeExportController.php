@@ -28,7 +28,9 @@ class PublicLabelTreeExportController extends BaseController
         $export = new PublicLabelTreeExport([$request->tree->id]);
 
         return response()
-            ->download($export->getArchive(), 'biigle_label_tree_export.zip')
+            ->download($export->getArchive(), 'biigle_label_tree_export.zip', [
+                'Content-Type' => 'application/zip',
+            ])
             ->deleteFileAfterSend(true);
     }
 }

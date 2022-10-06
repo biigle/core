@@ -31,7 +31,9 @@ class Controller extends BaseController
         $export = $this->getExport($query->pluck('id')->toArray());
 
         return response()
-            ->download($export->getArchive(), $this->getExportFilename())
+            ->download($export->getArchive(), $this->getExportFilename(), [
+                'Content-Type' => 'application/zip',
+            ])
             ->deleteFileAfterSend(true);
     }
 
