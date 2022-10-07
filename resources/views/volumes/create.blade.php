@@ -202,6 +202,8 @@
                 <span v-else>
                     Select a directory or files below. All selected files will be used for the new volume.
                 </span>
+                <span v-if="isImageMediaType">Only files with a supported image file format are shown (JPEG, PNG and TIFF).</span>
+                <span v-if="isVideoMediaType">Only files with a supported video file format are shown (MP4 (H.264) and WebM (VP8, VP9, AV1)).</span>
             </p>
 
             <file-browser
