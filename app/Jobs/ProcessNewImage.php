@@ -11,13 +11,14 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
 use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
@@ -62,20 +63,6 @@ class ProcessNewImage extends Job implements ShouldQueue
     protected $threshold;
 
     /**
-     * Caches if an image needs a new thumbnail.
-     *
-     * @var array
-     */
-    protected $needsThumbnailCache;
-
-    /**
-     * Caches if an image needs a check for metadata.
-     *
-     * @var array
-     */
-    protected $needsMetadataCache;
-
-    /**
      * Create a new job instance.
      *
      * @param Image $image The image to generate process.
@@ -85,8 +72,6 @@ class ProcessNewImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->needsThumbnailCache = [];
-        $this->needsMetadataCache = [];
     }
 
     /**
@@ -101,71 +86,34 @@ class ProcessNewImage extends Job implements ShouldQueue
         $this->threshold = config('image.tiles.threshold');
 
         try {
-            if ($this->needsProcessing($this->image)) {
-                FileCache::getOnce($this->image, function ($image, $path) {
-                    if (!File::exists($path)) {
-                        throw new Exception("File '{$path}' does not exist.");
-                    }
+            FileCache::getOnce($this->image, function ($image, $path) {
+                if (!File::exists($path)) {
+                    throw new Exception("File '{$path}' does not exist.");
+                }
 
-                    if ($this->needsMetadata($image)) {
-                        $this->collectMetadata($image, $path);
-                        $image->volume->flushGeoInfoCache();
-                    }
+                $this->collectMetadata($image, $path);
+                $image->volume->flushGeoInfoCache();
 
-                    // Do this after collection of metadata so the image has width and
-                    // height attributes. But do it before generating the thumbnail so
-                    // the tile image job can run while the thumbnail is being generated
-                    // (which can take a while for huge images).
-                    if ($this->shouldBeTiled($image)) {
-                        $this->submitTileJob($image);
-                    }
+                $this->makeThumbnail($image, $path);
 
-                    if ($this->needsThumbnail($image)) {
-                        $this->makeThumbnail($image, $path);
-                    }
-                });
-            }
+                // Do this after collection of metadata so the image has width and
+                // height attributes. But do it before generating the thumbnail so
+                // the tile image job can run while the thumbnail is being generated
+                // (which can take a while for huge images).
+                if ($this->shouldBeTiled($image)) {
+                    $this->submitTileJob($image);
+                }
+            });
         } catch (Exception $e) {
             if (App::runningUnitTests()) {
                 throw $e;
+            } elseif ($this->attempts() < $this->tries) {
+                // Retry after 10 minutes.
+                $this->release(600);
             } else {
                 Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
             }
         }
-    }
-
-    /**
-     * Determine if an image needs to be processed.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsProcessing(Image $image)
-    {
-        return $this->needsThumbnail($image) ||
-            $this->needsMetadata($image) ||
-            $this->shouldBeTiled($image);
-    }
-
-    /**
-     * Chack if an image needs a thumbnail.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsThumbnail(Image $image)
-    {
-        if (!array_key_exists($image->id, $this->needsThumbnailCache)) {
-            $prefix = fragment_uuid_path($image->uuid);
-            $format = config('thumbnails.format');
-            $this->needsThumbnailCache[$image->id] =
-                !Storage::disk(config('thumbnails.storage_disk'))
-                    ->exists("{$prefix}.{$format}");
-        }
-
-        return $this->needsThumbnailCache[$image->id];
     }
 
     /**
@@ -193,29 +141,6 @@ class ProcessNewImage extends Job implements ShouldQueue
     }
 
     /**
-     * Chack if an image has missing metadata.
-     *
-     * @param Image $image
-     *
-     * @return bool
-     */
-    protected function needsMetadata(Image $image)
-    {
-        if (!array_key_exists($image->id, $this->needsMetadataCache)) {
-            $this->needsMetadataCache[$image->id] = !$image->taken_at ||
-                !$image->lng ||
-                !$image->lat ||
-                !$image->width ||
-                !$image->height ||
-                !$image->size ||
-                !$image->mimetype ||
-                !array_key_exists('gps_altitude', $image->metadata);
-        }
-
-        return $this->needsMetadataCache[$image->id];
-    }
-
-    /**
      * Collect image metadata.
      *
      * @param Image $image
@@ -223,22 +148,16 @@ class ProcessNewImage extends Job implements ShouldQueue
      */
     protected function collectMetadata(Image $image, $path)
     {
-        if (is_null($image->size)) {
-            $image->size = File::size($path);
-        }
+        $image->size = File::size($path);
 
-        if (is_null($image->mimetype)) {
-            $image->mimetype = File::mimeType($path);
-        }
+        $image->mimetype = File::mimeType($path);
 
-        if (is_null($image->width) || is_null($image->height)) {
-            try {
-                $i = VipsImage::newFromFile($path);
-                $image->width = $i->width;
-                $image->height = $i->height;
-            } catch (Exception $e) {
-                // dimensions stay null
-            }
+        try {
+            $i = VipsImage::newFromFile($path);
+            $image->width = $i->width;
+            $image->height = $i->height;
+        } catch (Exception $e) {
+            // dimensions stay null
         }
 
         $exif = $this->getExif($path);
@@ -283,9 +202,9 @@ class ProcessNewImage extends Job implements ShouldQueue
                 // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
                 // level. We use a negative gps_altitude for below sea level.
                 $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
-                $image->metadata = [
+                $image->metadata = array_merge($image->metadata, [
                     'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
-                ];
+                ]);
             }
         }
 

@@ -18,7 +18,7 @@
             Choose a label tree to merge.
         </p>
         <div class="form-group">
-            <typeahead class="typeahead--block" :items="mergeCandidates" placeholder="Label tree name" v-on:select="chooseCandidate" :template="typeaheadTemplate" title="Choose a label tree to merge"></typeahead>
+            <typeahead class="typeahead--block" :items="mergeCandidates" placeholder="Label tree name" v-on:select="chooseCandidate" more-info="description" title="Choose a label tree to merge"></typeahead>
         </div>
         <div class="pull-right">
             <a href="{{ route('label-trees', $tree->id) }}" class="btn btn-default">Cancel</a>

@@ -31,11 +31,11 @@
     <div class="row">
         <div class="col-xs-6">
             <div class="panel panel-default">
-                <div class="panel-body">
+                <div class="panel-heading">
                     @if ($creatorCount > 0)
-                        Created <strong>{{$creatorCount}}</strong> {{$creatorCount === 1 ? 'project' : 'projects'}} ({{$creatorPercent}} %).
+                        Created <strong>{{$creatorCount}}</strong> {{$creatorCount === 1 ? 'project' : 'projects'}} ({{$creatorPercent}}%).
                     @else
-                        Created no projects yet.
+                        Created no projects.
                     @endif
                 </div>
                 <ul class="list-group user-stats-list-group">
@@ -47,11 +47,11 @@
         </div>
         <div class="col-xs-6">
             <div class="panel panel-default">
-                <div class="panel-body">
+                <div class="panel-heading">
                     @if ($memberCount > 0)
-                        Is member in <strong>{{$memberCount}}</strong> {{$memberCount === 1 ? 'project' : 'projects'}} ({{$memberPercent}} %).
+                        Member of <strong>{{$memberCount}}</strong> {{$memberCount === 1 ? 'project' : 'projects'}} ({{$memberPercent}}%).
                     @else
-                        Is member on no projects.
+                        No member of any project.
                     @endif
                 </div>
                 <ul class="list-group user-stats-list-group">
@@ -66,16 +66,16 @@
 
 <div class="col-xs-6">
     <div class="panel panel-default">
-        <div class="panel-body">
+        <div class="panel-heading">
             @if ($volumesCount > 0)
-                Created <strong>{{$volumesCount}}</strong> {{$volumesCount === 1 ? 'volume' : 'volumes'}} ({{ $volumesPercent}} %)
+                Created <strong>{{$volumesCount}}</strong> {{$volumesCount === 1 ? 'volume' : 'volumes'}} ({{ $volumesPercent}}%)
                 @if ($imagesCount > 0)
-                    which {{$volumesCount === 1 ? 'contains' : 'contain'}} <strong>{{$imagesCount}}</strong> {{$imagesCount === 1 ? 'image' : 'images'}} ({{ $imagesPercent }} %).
+                    with <strong>{{$imagesCount}}</strong> image(s) ({{ $imagesPercent }}%).
                 @else
-                    which {{$volumesCount === 1 ? 'contains' : 'contain'}} no images.
+                    with no images.
                 @endif
             @else
-                Created no volumes yet.
+                Created no volumes.
             @endif
         </div>
         <ul class="list-group user-stats-list-group">
@@ -88,16 +88,16 @@
 
 <div class="col-xs-6">
     <div class="panel panel-default">
-        <div class="panel-body">
-            @if ($totalAnnotationLabels > 0)
-                Attached <strong>{{ $totalAnnotationLabels }}</strong> {{ Str::plural('label', $totalAnnotationLabels) }} ({{ round($relativeAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalAnnotations }}</strong> image {{ Str::plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}&nbsp;%). That's an average of {{ $labelsPerAnnotation }} {{ Str::plural('label', $labelsPerAnnotation) }} per annotation. Recent annotations:
+        <div class="panel-heading">
+            @if ($totalAnnotations > 0)
+                Created <strong>{{ $totalAnnotations }}</strong> image {{ Str::plural('annotation', $totalAnnotations) }} ({{ round($relativeAnnotations * 100, 2) }}%). Recently:
             @else
-                Created no image annotations yet.
+                Created no image annotations.
             @endif
         </div>
         <ul class="list-group user-stats-list-group">
-            @foreach ($recentAnnotations as $annotation)
-                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @foreach ($recentImageAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-image-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
             @endforeach
         </ul>
     </div>
@@ -105,13 +105,18 @@
 
 <div class="col-xs-6">
     <div class="panel panel-default">
-        <div class="panel-body">
-            @if ($totalVideoAnnotationLabels > 0)
-                Attached <strong>{{ $totalVideoAnnotationLabels }}</strong> {{ Str::plural('label', $totalVideoAnnotationLabels) }} ({{ round($relativeVideoAnnotationLabels * 100, 2)}}&nbsp;%) to <strong>{{ $totalVideoAnnotations }}</strong> video {{ Str::plural('annotation', $totalVideoAnnotations) }} ({{ round($relativeVideoAnnotations * 100, 2) }}&nbsp;%).
+        <div class="panel-heading">
+            @if ($totalVideoAnnotations > 0)
+                Created <strong>{{ $totalVideoAnnotations }}</strong> video {{ Str::plural('annotation', $totalVideoAnnotations) }} ({{ round($relativeVideoAnnotations * 100, 2) }}%). Recently:
             @else
-                Created no video annotations yet.
+                Created no video annotations.
             @endif
         </div>
+        <ul class="list-group user-stats-list-group">
+            @foreach ($recentVideoAnnotations as $annotation)
+                <li class="list-group-item">{{ $annotation->created_at }} (<a href="{{ route('show-video-annotation', $annotation->id) }}">#{{ $annotation->id }}</a>)</li>
+            @endforeach
+        </ul>
     </div>
 </div>
 

@@ -104,6 +104,18 @@ class LabelTreeMergeControllerTest extends ApiTestCase
                     [
                         'name' => 'New Label',
                         'color' => 'bada55',
+                        'parent_id' => 'anemone',
+                    ],
+                ],
+            ])
+            // Parent is no ID.
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'create' => [
+                    [
+                        'name' => 'New Label',
+                        'color' => 'bada55',
                         'parent_id' => $otherParent->id,
                     ],
                 ],

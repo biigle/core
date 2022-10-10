@@ -99,56 +99,18 @@ class LabelTreesController extends Controller
             ->select('id', 'name', 'parent_id', 'color', 'source_id')
             ->get();
 
-        $members = $tree->members()
-            ->select('id', 'firstname', 'lastname', 'label_tree_user.role_id')
-            ->get();
-
-        $authorizedProjects = $tree->authorizedProjects()
-            ->select('id', 'name')
-            ->get();
-
-        if ($user->can('sudo')) {
-            $projects = $tree->projects;
-            $authorizedOwnProjects = $authorizedProjects->pluck('id');
-        } else {
-            // all projects of the user that use the label tree
-            $projects = Project::whereIn('id', function ($query) use ($user, $tree) {
-                $query->select('project_user.project_id')
-                    ->from('project_user')
-                    ->join('label_tree_project', 'project_user.project_id', '=', 'label_tree_project.project_id')
-                    ->where('project_user.user_id', $user->id)
-                    ->where('label_tree_project.label_tree_id', $tree->id);
-            })->get();
-
-            // all projects of the user that are authorized to use the label tree
-            $authorizedOwnProjects = Project::whereIn('id', function ($query) use ($user, $tree) {
-                $query->select('project_user.project_id')
-                    ->from('project_user')
-                    ->join('label_tree_authorized_project', 'project_user.project_id', '=', 'label_tree_authorized_project.project_id')
-                    ->where('project_user.user_id', $user->id)
-                    ->where('label_tree_authorized_project.label_tree_id', $tree->id);
-            })->pluck('id');
-        }
-
-        $roles = collect([Role::admin(), Role::editor()]);
-
         $visibilities = collect([
             Visibility::publicId() => Visibility::public()->name,
             Visibility::privateId() => Visibility::private()->name,
         ]);
 
-        return view('label-trees.show', [
+        return view('label-trees.show.labels', [
             'tree' => $tree,
             'labels' => $labels,
-            'projects' => $projects,
-            'members' => $members,
-            'roles' => $roles,
             'visibilities' => $visibilities,
-            'user' => $user,
-            'authorizedProjects' => $authorizedProjects,
-            'authorizedOwnProjects' => $authorizedOwnProjects,
             'private' => $tree->visibility_id === Visibility::privateId(),
             'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
+            'activeTab' => 'labels',
         ]);
     }
 
@@ -179,13 +141,14 @@ class LabelTreesController extends Controller
             })->get();
         }
 
-        return view('label-trees.versions.show', [
+        return view('label-trees.versions.show.labels', [
             'version' => $tree->version,
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
             'labels' => $labels,
             'projects' => $projects,
             'private' => $tree->visibility_id === Visibility::privateId(),
+            'activeTab' => 'labels',
         ]);
     }
 }

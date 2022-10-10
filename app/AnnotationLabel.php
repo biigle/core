@@ -2,10 +2,13 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class AnnotationLabel extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *

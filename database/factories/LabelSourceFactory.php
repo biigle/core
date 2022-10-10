@@ -1,10 +1,22 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\LabelSource::class, function (Faker $faker) {
-    return [
-        'name' => $faker->username(),
-        'description' => $faker->sentence(),
-    ];
-});
+use Biigle\Volume;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class LabelSourceFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->username(),
+            'description' => $this->faker->sentence(),
+        ];
+    }
+}

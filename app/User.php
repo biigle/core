@@ -3,12 +3,13 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasJsonAttributes;
+    use Notifiable, HasJsonAttributes, HasFactory;
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -29,7 +30,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'role_id' => 'int',
-        'settings' => 'array',
+        'attrs' => 'array',
     ];
 
     /**
@@ -82,7 +83,7 @@ class User extends Authenticatable
     /**
      * Api tokens of this user.
      *
-     * @return @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function apiTokens()
     {
@@ -136,10 +137,12 @@ class User extends Authenticatable
     public function setSettings(array $settings)
     {
         foreach ($settings as $key => $value) {
-            $this->setJsonAttr($key, $value, 'settings');
+            $this->setJsonAttr("settings.{$key}", $value);
         }
 
-        $this->save();
+        if (empty($this->settings)) {
+            $this->setJsonAttr('settings', null);
+        }
     }
 
     /**
@@ -152,7 +155,17 @@ class User extends Authenticatable
      */
     public function getSettings($key, $default = null)
     {
-        return $this->getJsonAttr($key, $default, 'settings');
+        return $this->getJsonAttr("settings.{$key}", $default);
+    }
+
+    /**
+     * Get the settings array.
+     *
+     * @return array|null
+     */
+    public function getSettingsAttribute()
+    {
+        return $this->getJsonAttr('settings');
     }
 
     /**

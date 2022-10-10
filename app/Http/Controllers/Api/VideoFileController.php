@@ -4,10 +4,11 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
+use Exception;
 use FileCache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use League\Flysystem\FileNotFoundException;
+use RuntimeException;
 use Storage;
 
 class VideoFileController extends Controller
@@ -42,9 +43,20 @@ class VideoFileController extends Controller
 
         [$disk, $path] = explode('://', $video->volume->url);
 
+        $disk = Storage::disk($disk);
+
         try {
-            $response = Storage::disk($disk)->response("{$path}/{$video->filename}");
-        } catch (FileNotFoundException $e) {
+            $url = $disk->temporaryUrl("{$path}/{$video->filename}", now()->addDay());
+
+            return redirect($url);
+        } catch (RuntimeException $e) {
+            // Temporary URLs not supported.
+            // Continue with code below.
+        }
+
+        try {
+            $response = $disk->response("{$path}/{$video->filename}");
+        } catch (Exception $e) {
             abort(Response::HTTP_NOT_FOUND);
         }
 

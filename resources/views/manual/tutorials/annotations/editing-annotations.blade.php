@@ -75,6 +75,16 @@
             This tool allows you to attach new labels to existing annotations. This can be useful if another user already annotated an object and you want to confirm (or question) the label that the other user attached to the annotation. To attach a label, select the label from the <i class="fa fa-tags"></i> label trees tab in the sidebar, activate the attach labels tool and then click on the annotation you want to attach the label to.
         </p>
 
+        <h3><a name="swap-labels"></a><i class="fa fa-sync-alt"></i> Swap Labels</h3>
+
+        <p>
+            This tool allows you to swap your most recently attached label of an annotation with a new one. The button to activate the swap label tool appears when you hover your cursor over the button of the attach label tool. To swap a label, select the label from the <i class="fa fa-tags"></i> label trees tab in the sidebar, activate the swap labels tool and then click on the annotation you want to swap your most recent label of.
+        </p>
+
+        <p>
+            If none of the original labels of the selected annotation were attached by you, this tool will just attach the new label to the annotation.
+        </p>
+
         <h3><a name="detach-labels"></a>Detach Labels</h3>
 
         <p>

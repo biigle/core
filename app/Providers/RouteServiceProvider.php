@@ -2,17 +2,30 @@
 
 namespace Biigle\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * This namespace is applied to your controller routes.
+     * The path to the "home" route for your application.
      *
-     * In addition, it is set as the URL generator's root namespace.
+     * This is used by Laravel authentication to redirect users after login.
      *
      * @var string
+     */
+    public const HOME = '/';
+
+    /**
+     * The controller namespace for the application.
+     *
+     * When present, controller route declarations will automatically be prefixed with
+     * this namespace.
+     *
+     * @var string|null
      */
     protected $namespace = 'Biigle\Http\Controllers';
 
@@ -35,64 +48,43 @@ class RouteServiceProvider extends ServiceProvider
             'id2' => '[0-9]{1,10}',
         ]);
 
-        parent::boot();
+        $this->configureRateLimiting();
+
+        $this->routes(function () {
+            // Web
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/web.php'));
+
+            // API
+            Route::middleware(['web', 'api', 'auth:web,api'])
+                ->namespace($this->namespace.'\Api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/api.php'));
+
+            // Federated search
+            Route::middleware(['api', 'auth:fs'])
+                ->namespace($this->namespace.'\Api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/federated-search.php'));
+        });
     }
 
     /**
-     * Define the routes for the application.
+     * Configure the rate limiters for the application.
      *
      * @return void
      */
-    public function map()
+    protected function configureRateLimiting()
     {
-        $this->mapWebRoutes();
-        $this->mapApiRoutes();
-        $this->mapFederatedSearchRoutes();
+        RateLimiter::for('api', function (Request $request) {
+            if ($request->user()) {
+                // 3 requests per second.
+                return Limit::perHour(10800)->by($request->user()->id);
+            }
 
-        //
-    }
-
-    /**
-     * Define the "web" routes for the application.
-     *
-     * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
-     */
-    protected function mapWebRoutes()
-    {
-        Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/web.php'));
-    }
-
-    /**
-     * Define the "api" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapApiRoutes()
-    {
-        Route::middleware(['web', 'auth:web,api'])
-            ->namespace($this->namespace.'\Api')
-            ->prefix('api/v1')
-            ->group(base_path('routes/api.php'));
-    }
-
-    /**
-     * Define the "federated search" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapFederatedSearchRoutes()
-    {
-        Route::middleware(['auth:fs'])
-            ->namespace($this->namespace.'\Api')
-            ->prefix('api/v1')
-            ->group(base_path('routes/federated-search.php'));
+            // One request per second.
+            return Limit::perHour(3600)->by($request->ip());
+        });
     }
 }

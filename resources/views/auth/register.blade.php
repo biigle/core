@@ -54,7 +54,7 @@
                         <div class="input-group-addon">
                             <i class="fa fa-building"></i>
                         </div>
-                        <input type="text" placeholder="Affiliation (institute, company, etc.)" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
+                        <input type="text" placeholder="Affiliation (institute name, company, etc.)" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
                     </div>
                     @if($errors->has('affiliation'))
                         <span class="help-block">{{ $errors->first('affiliation') }}</span>
@@ -73,11 +73,13 @@
                     @endif
                 </div>
 
+                @mixin('registrationForm')
+
                 @if (View::exists('privacy'))
                     <div class="form-group{{ $errors->has('privacy') ? ' has-error' : '' }}">
                         <div class="checkbox">
                             <label>
-                                <input name="privacy" type="checkbox" value="1" required @if (old('privacy')) checked @endif> I have read and agree to the <a href="{{route('privacy')}}">privacy notice</a>. This includes the use of my full name, email address and affiliation.
+                                <input name="privacy" type="checkbox" value="1" required @checked(old('privacy'))> I have read and agree to the <a href="{{route('privacy')}}">privacy notice</a>. This includes the use of my full name, email address and affiliation.
                             </label>
                         </div>
                         @if($errors->has('privacy'))
@@ -90,7 +92,7 @@
                     <div class="form-group{{ $errors->has('terms') ? ' has-error' : '' }}">
                         <div class="checkbox">
                             <label>
-                                <input name="terms" type="checkbox" value="1" required @if (old('terms')) checked @endif> I have read and agree to the <a href="{{route('terms')}}">terms of use</a>.
+                                <input name="terms" type="checkbox" value="1" required @checked(old('terms'))> I have read and agree to the <a href="{{route('terms')}}">terms of use</a>.
                             </label>
                         </div>
                         @if($errors->has('terms'))
@@ -107,11 +109,12 @@
                 @endif
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="Sign up">
+                <input type="submit" class="btn btn-success btn-block" value="Sign up" onclick="this.disabled=true;this.form.submit();">
 
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>
+                <a href="{{ url('login') }}" class="pull-right" title="Log in">Log in</a>
             </p>
         </div>
     </div>

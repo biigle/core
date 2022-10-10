@@ -34,7 +34,7 @@ class StoreLabelTreeAuthorizedProject extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|id|exists:projects,id',
+            'id' => 'required|integer|exists:projects,id',
         ];
     }
 }

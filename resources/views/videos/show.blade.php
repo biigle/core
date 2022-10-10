@@ -54,7 +54,6 @@
     </sidebar>
 </div>
 @endsection
-
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('videos.volumeId', {{$volume->id}});
@@ -65,7 +64,7 @@
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
     @endcan
     biigle.$declare('videos.shapes', {!! $shapes !!});
-    biigle.$declare('videos.isEditor', @can('addAnnotation', $video) true @else false @endcan);
+    biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
     biigle.$declare('videos.user', {!! $user !!});

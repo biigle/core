@@ -83,6 +83,7 @@ export default {
         gotBlob(response) {
             let urlCreator = window.URL || window.webkitURL;
             this.thumbnailUrl = urlCreator.createObjectURL(response.body);
+            /* eslint vue/no-mutating-props: "off" */
             this.image.blob = this.thumbnailUrl;
         },
         showEmptyImage() {

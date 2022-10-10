@@ -5,3 +5,10 @@
 .typeahead--block {
     display: block;
 }
+
+.typeahead-item-info {
+    display: inline-block;
+    max-width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

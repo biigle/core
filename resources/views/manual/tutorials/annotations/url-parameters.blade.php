@@ -50,7 +50,7 @@
                     <td><code>true</code>, <code>false</code></td>
                 </tr>
                 <tr>
-                    <td><code>annotationTooltip</code></td>
+                    <td><code>labelTooltip</code></td>
                     <td>Show or hide the annotation tooltip when you hover over an annotation.</td>
                     <td><code>true</code>, <code>false</code></td>
                 </tr>
@@ -111,7 +111,7 @@
             You want to show a specific object to a colleague, who is also a BIIGLE user, to discuss the object's size. First, center the viewport on the object. The <code>x</code>, <code>y</code> and <code>r</code> URL parameters will automatically update accordingly. Now append the <code>scaleLine</code> parameter, so the scale line indicator is activated for your colleague. Example URL:
         </p>
 
-        <pre><code>{{url('')}}/annotate/123?<strong>r=50&amp;x=683&amp;y=512&amp;scaleLine=true</strong></code></pre>
+        <pre><code>/images/123/annotations?<strong>r=50&amp;x=683&amp;y=512&amp;scaleLine=true</strong></code></pre>
 
         <h4>Set a starting point for annotating with Lawnmower Mode</h4>
 
@@ -122,7 +122,7 @@
             Open the first image in the image annotation tool. Now zoom in to the resolution that you want your colleagues to use. You can also use the <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#zoom-to-extent">zoom to original resolution</a> button, which will set the resolution to <code>100</code>. Next, append the URL parameters to disable distracting elements like the minimap, the mouse position or the zoom level indicator from the viewport. Finally, add the URL parameter for the Lawnmower annotation mode. Example URL:
         </p>
 
-        <pre><code>{{url('')}}/annotate/123?<strong>r=100&amp;minimap=false&amp;mousePosition=false&amp;zoomLevel=false&amp;scaleLine=false&amp;annotationMode=lawnmower</strong></code></pre>
+        <pre><code>/images/123/annotations?<strong>r=100&amp;minimap=false&amp;mousePosition=false&amp;zoomLevel=false&amp;scaleLine=false&amp;annotationMode=lawnmower</strong></code></pre>
 
         <h4>Set a base configuration for random sampling</h4>
 
@@ -130,7 +130,7 @@
             You wish to conduct an annotation study using <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#random-sampling">random sampling</a>. Of course every participant should use the exact same number of random annotation samples per image. To do this, configure the <code>randomSamplingNumber</code> parameter with the number of samples. Then append the parameter for the random sampling annotation mode. Example URL:
         </p>
 
-        <pre><code>{{url('')}}/annotate/123?<strong>randomSamplingNumber=20&amp;annotationMode=randomSampling</strong></code></pre>
+        <pre><code>/images/123/annotations?<strong>randomSamplingNumber=20&amp;annotationMode=randomSampling</strong></code></pre>
 
     </div>
 

@@ -4,7 +4,7 @@ import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonB
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../stores/styles';
-import {never, noModifierKeys, click, shiftKeyOnly} from '@biigle/ol/events/condition';
+import {never, noModifierKeys, click, shiftKeyOnly, altKeyOnly} from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -64,6 +64,7 @@ export default {
                     source: this.annotationSource,
                     style: Styles.editing,
                     brushRadius: brushRadius,
+                    resizeCondition: altKeyOnly,
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
@@ -76,6 +77,7 @@ export default {
                     allowRemove: false,
                     addCondition: never,
                     subtractCondition: noModifierKeys,
+                    resizeCondition: altKeyOnly,
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
@@ -89,6 +91,7 @@ export default {
                     brushRadius: brushRadius,
                     addCondition: noModifierKeys,
                     subtractCondition: never,
+                    resizeCondition: altKeyOnly,
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);

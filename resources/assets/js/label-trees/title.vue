@@ -1,4 +1,5 @@
 <script>
+import Dropdown from 'uiv/dist/Dropdown';
 import EditorMixin from '../core/mixins/editor';
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
@@ -13,6 +14,9 @@ export default {
         LoaderMixin,
         EditorMixin,
     ],
+    components: {
+        dropdown: Dropdown,
+    },
     data() {
         return {
             labelTree: null,
@@ -33,6 +37,9 @@ export default {
         },
         isChanged() {
             return this.name !== this.labelTree.name || this.description !== this.labelTree.description || parseInt(this.visibility_id) !== this.labelTree.visibility_id;
+        },
+        disabledClass() {
+            return this.loading ? 'disabled' : '';
         },
     },
     methods: {

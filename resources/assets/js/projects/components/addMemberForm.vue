@@ -1,7 +1,7 @@
 <template>
     <form class="form-inline" @submit.prevent="attachMember">
         <loader :active="loading"></loader>
-        <typeahead :disabled="disabled" :items="availableUsers" placeholder="User name" @select="selectMember" @focus="loadUsers" :value="selectedMemberName" :template="typeaheadTemplate"></typeahead>
+        <typeahead :disabled="disabled" :items="availableUsers" placeholder="User name" @select="selectMember" @focus="loadUsers" :value="selectedMemberName" more-info="affiliation"></typeahead>
         <select :disabled="disabled" class="form-control" title="Role of the new user" v-model="selectedRole">
             <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
         </select>
@@ -43,7 +43,6 @@ export default {
             selectedRole: null,
             usersLoaded: false,
             users: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
         };
     },
     computed: {

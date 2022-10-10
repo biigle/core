@@ -46,25 +46,11 @@
                 @endif
             </div>
             <div class="row">
-                <div class="form-group col-sm-4{{ $errors->has('doi') ? ' has-error' : '' }}">
-                    <label for="doi">DOI</label>
-                    <input type="text" class="form-control" name="doi" id="doi" value="{{ old('doi', $volume->doi) }}" placeholder="10.1000/xyz123">
-                    @if($errors->has('doi'))
-                        <span class="help-block">{{ $errors->first('doi') }}</span>
-                    @endif
-                </div>
-                <div class="form-group col-sm-4{{ $errors->has('video_link') ? ' has-error' : '' }}">
-                    <label for="video_link">Video link</label>
-                    <input type="text" class="form-control" name="video_link" id="video_link" value="{{ old('video_link', $volume->video_link) }}" placeholder="http://example.com">
-                    @if($errors->has('video_link'))
-                        <span class="help-block">{{ $errors->first('video_link') }}</span>
-                    @endif
-                </div>
-                <div class="form-group col-sm-4{{ $errors->has('gis_link') ? ' has-error' : '' }}">
-                    <label for="gis_link">GIS link</label>
-                    <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link', $volume->gis_link) }}" placeholder="http://example.com">
-                    @if($errors->has('gis_link'))
-                        <span class="help-block">{{ $errors->first('gis_link') }}</span>
+                <div class="form-group col-xs-12{{ $errors->has('handle') ? ' has-error' : '' }}">
+                    <label for="handle">Handle or DOI</label>
+                    <input type="text" class="form-control" name="handle" id="handle" value="{{ old('handle', $volume->handle) }}" placeholder="10.1000/xyz123">
+                    @if($errors->has('handle'))
+                        <span class="help-block">{{ $errors->first('handle') }}</span>
                     @endif
                 </div>
             </div>

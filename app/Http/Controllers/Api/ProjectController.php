@@ -81,7 +81,7 @@ class ProjectController extends Controller
      * @api {post} projects Create a new project
      * @apiGroup Projects
      * @apiName StoreProjects
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription The user creating a new project will automatically become project admin.
      *
      * @apiParam (Required attributes) {String} name Name of the new project.

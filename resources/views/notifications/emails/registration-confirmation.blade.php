@@ -18,6 +18,18 @@ I have read and agree to the [terms of use]({{route('terms')}}).
 @endif
 @endcomponent
 
+@if($duplicateUsers->isNotEmpty())
+Some existing users are similar to the new user:
+
+@foreach($duplicateUsers->take(3) as $user)
+- [{{$user->firstname}} {{$user->lastname}}]({{route('admin-users-show', $user->id)}}) ({{$user->affiliation}})
+@endforeach
+
+@if($duplicateUsers->count() > 3)
+{{$duplicateUsers->count() - 3}} more similar users are not shown.
+@endif
+@endif
+
 @component('mail::button', ['url' => route('accept-registration', $newUser->id), 'color' => 'green'])
 Accept as editor
 @endcomponent

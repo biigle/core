@@ -46,15 +46,15 @@ class FilenameControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*")
-            ->assertExactJson([$image->id, $image2->id]);
+            ->assertSimilarJson([$image->id, $image2->id]);
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*.jpg")
-            ->assertExactJson([$image->id, $image2->id, $image3->id]);
+            ->assertSimilarJson([$image->id, $image2->id, $image3->id]);
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/***.jpg")
-            ->assertExactJson([$image->id, $image2->id, $image3->id]);
+            ->assertSimilarJson([$image->id, $image2->id, $image3->id]);
         $response->assertStatus(200);
     }
 
@@ -103,15 +103,15 @@ class FilenameControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*")
-            ->assertExactJson([$video->id, $video2->id]);
+            ->assertSimilarJson([$video->id, $video2->id]);
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*.mp4")
-            ->assertExactJson([$video->id, $video2->id, $video3->id]);
+            ->assertSimilarJson([$video->id, $video2->id, $video3->id]);
         $response->assertStatus(200);
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/***.mp4")
-            ->assertExactJson([$video->id, $video2->id, $video3->id]);
+            ->assertSimilarJson([$video->id, $video2->id, $video3->id]);
         $response->assertStatus(200);
     }
 }

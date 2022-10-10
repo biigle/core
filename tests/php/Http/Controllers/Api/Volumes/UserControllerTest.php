@@ -19,16 +19,15 @@ class UserControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/users")
             ->assertStatus(200);
-        $response->assertExactJson(
-            $this->project()->users()
-                ->select('id', 'firstname', 'lastname', 'affiliation')
-                ->get()
-                ->map(function ($item) {
-                    unset($item->project_role_id);
+        $expect = $this->project()->users()
+            ->select('id', 'firstname', 'lastname', 'affiliation')
+            ->get()
+            ->map(function ($item) {
+                unset($item->project_role_id);
 
-                    return $item;
-                })
-                ->toArray()
-        );
+                return $item;
+            })
+            ->toArray();
+        $response->assertSimilarJson($expect);
     }
 }

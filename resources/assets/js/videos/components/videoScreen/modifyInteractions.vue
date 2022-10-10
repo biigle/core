@@ -6,6 +6,8 @@ import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
+const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
+
 /**
  * Mixin for the videoScreen component that contains logic for the edit/delete
  * interactions.
@@ -23,16 +25,18 @@ export default {
     },
     computed: {
         cannotSplitAnnotation() {
-            let allowedShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
-
             return this.selectedAnnotations.length !== 1 ||
-                allowedShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
+                this.selectedAnnotations[0].frames.length <= 1 ||
+                allowedSplitShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
         },
         cannotLinkAnnotations() {
             return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
         },
         isAttaching() {
             return this.interactionMode === 'attachLabel';
+        },
+        isSwapping() {
+            return this.interactionMode === 'swapLabel';
         },
     },
     methods: {
@@ -127,6 +131,13 @@ export default {
                 this.interactionMode = 'attachLabel';
             }
         },
+        toggleSwapping() {
+            if (this.isSwapping) {
+                this.resetInteractionMode();
+            } else {
+                this.interactionMode = 'swapLabel';
+            }
+        },
         initAttachInteraction(map) {
             this.attachInteraction = new AttachLabelInteraction({
                 features: this.annotationFeatures,
@@ -136,11 +147,28 @@ export default {
             this.attachInteraction.on('attach', this.handleAttachLabel);
             this.map.addInteraction(this.attachInteraction);
         },
+        initSwapInteraction(map) {
+            this.swapInteraction = new AttachLabelInteraction({
+                features: this.annotationFeatures,
+                map: map,
+            });
+            this.swapInteraction.setActive(false);
+            this.swapInteraction.on('attach', this.handleSwapLabel);
+            this.map.addInteraction(this.swapInteraction);
+        },
         handleAttachLabel(e) {
-            this.$emit('attach-label', e.feature.get('annotation'), this.selectedLabel);
+            this.$emit('attach-label', e.feature.get('annotation'));
+        },
+        handleSwapLabel(e) {
+            this.$emit('swap-label', e.feature.get('annotation'));
         },
         maybeResetAttaching(hasNoLabel) {
             if (this.isAttaching && hasNoLabel) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeResetSwapping(hasNoLabel) {
+            if (this.isSwapping && hasNoLabel) {
                 this.resetInteractionMode();
             }
         },
@@ -160,6 +188,15 @@ export default {
             if (this.attachInteraction) {
                 this.attachInteraction.setActive(attaching);
             }
+
+            this.$emit('attaching-active', attaching);
+        },
+        isSwapping(swapping) {
+            if (this.swapInteraction) {
+                this.swapInteraction.setActive(swapping);
+            }
+
+            this.$emit('swapping-active', swapping);
         },
     },
     created() {
@@ -171,14 +208,17 @@ export default {
                 this.$once('map-ready', this.initModifyInteraction);
                 this.$once('map-ready', this.initTranslateInteraction);
                 this.$once('map-ready', this.initAttachInteraction);
+                this.$once('map-ready', this.initSwapInteraction);
             });
 
             this.$watch('isDefaultInteractionMode', this.maybeUpdateModifyInteractionMode);
             this.$watch('isDefaultInteractionMode', this.maybeUpdateIsTranslating);
             this.$watch('hasNoSelectedLabel', this.maybeResetAttaching);
+            this.$watch('hasNoSelectedLabel', this.maybeResetSwapping);
             Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
             Keyboard.on('Escape', this.resetTranslating, 0, this.listenerSet);
             Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
+            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
         }
 
         if (this.canDelete) {

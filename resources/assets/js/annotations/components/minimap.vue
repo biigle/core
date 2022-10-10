@@ -4,7 +4,7 @@
 
 <script>
 import Feature from '@biigle/ol/Feature';
-import Map from '@biigle/ol/Map';
+import {CancelableMap as Map} from '../ol/CancelableMap';
 import Styles from '../stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -31,6 +31,10 @@ export default {
             type: Number,
             default: 200,
         },
+        renderActive: {
+            type: Boolean,
+            default: true,
+        },
     },
     data() {
         return {
@@ -38,17 +42,7 @@ export default {
         };
     },
     computed: {
-        minimap() {
-            return new Map({
-                // remove controls
-                controls: [],
-                // disable interactions
-                interactions: []
-            });
-        },
-        viewport() {
-            return new Feature();
-        },
+        //
     },
     methods: {
         updateViewport() {
@@ -114,14 +108,32 @@ export default {
                 this.refreshImageLayer({element: layer});
             });
         },
+        render() {
+            this.minimap.render();
+        },
     },
     watch: {
         // Refresh the view if the extent (i.e. image size) changed.
         extent() {
             this.updateElementSize();
         },
+        renderActive(render) {
+            if (render) {
+                this.minimap.render();
+            } else {
+                this.minimap.cancelRender();
+            }
+        },
     },
     created() {
+        this.minimap = new Map({
+            // remove controls
+            controls: [],
+            // disable interactions
+            interactions: []
+        });
+        this.viewport = new Feature();
+
         let viewportSource = new VectorSource();
         viewportSource.addFeature(this.viewport);
 
@@ -146,6 +158,8 @@ export default {
         this.minimap.on('pointerdrag', this.dragViewport);
         this.minimap.on('click', this.dragViewport);
         this.initImageLayer(map.getLayers());
+
+        this.$parent.$on('render', this.render);
     },
     mounted() {
         this.updateElementSize();
@@ -161,6 +175,7 @@ export default {
         map.un('change:size', this.updateMapSize);
         map.un('change:view', this.updateMapView);
         map.getLayers().un('add', this.refreshImageLayer);
+        this.$parent.$off('render', this.render);
     },
 };
 </script>

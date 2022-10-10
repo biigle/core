@@ -20,35 +20,18 @@ jobs:
       run: composer validate
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
 
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer
-        restore-keys: |
-          ${{ runner.os }}-composer
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
-    - name: Generate key
-      run: php artisan key:generate
-
-    - name: Docker login
-      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
     - name: Fetch base images
       run: |
-        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
-        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+        docker pull ghcr.io/biigle/app:latest
+        docker pull ghcr.io/biigle/worker:latest
 
     - name: Start test database
       run: docker-compose up -d --no-build database_testing
@@ -70,35 +53,24 @@ jobs:
       run: composer validate
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
 
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer
-        restore-keys: |
-          ${{ runner.os }}-composer
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
 
-    - name: Generate key
-      run: php artisan key:generate
+    - name: Remove BIIGLE modules
+      run: rm -r vendor/biigle
 
-    - name: Docker login
-      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Update BIIGLE modules from source
+      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
 
     - name: Fetch base images
       run: |
-        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/app:latest
-        docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/worker:latest
+        docker pull ghcr.io/biigle/app:latest
+        docker pull ghcr.io/biigle/worker:latest
 
     - name: Start test database
       run: docker-compose up -d --no-build database_testing

@@ -7,12 +7,15 @@ import Keyboard from '../../../core/keyboard';
  *
  * @type {Object}
  */
-let attachLabelInteraction;
+let attachLabelInteraction, swapLabelInteraction;
 
 export default {
     computed: {
         isAttaching() {
             return this.interactionMode === 'attach';
+        },
+        isSwapping() {
+            return this.interactionMode === 'swap';
         },
     },
     methods: {
@@ -23,8 +26,18 @@ export default {
                 this.interactionMode = 'attach';
             }
         },
+        toggleSwapping() {
+            if (this.isSwapping) {
+                this.resetInteractionMode();
+            } else {
+                this.interactionMode = 'swap';
+            }
+        },
         handleAttachLabel(e) {
             this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
+        },
+        handleSwapLabel(e) {
+            this.$emit('swap', e.feature.get('annotation'), this.selectedLabel);
         },
     },
     watch: {
@@ -37,8 +50,17 @@ export default {
                 }
             }
         },
+        isSwapping(swapping) {
+            if (this.canAdd) {
+                if (swapping && !this.hasSelectedLabel) {
+                    this.requireSelectedLabel();
+                } else {
+                    swapLabelInteraction.setActive(swapping);
+                }
+            }
+        },
         selectedLabel(label) {
-            if (!label && this.isAttaching) {
+            if (!label && (this.isAttaching || this.isSwapping)) {
                 this.resetInteractionMode();
             }
         },
@@ -55,7 +77,16 @@ export default {
             attachLabelInteraction.on('attach', this.handleAttachLabel);
             this.map.addInteraction(attachLabelInteraction);
 
+            swapLabelInteraction = new AttachLabelInteraction({
+                features: this.annotationFeatures,
+                map: this.map,
+            });
+            swapLabelInteraction.setActive(false);
+            swapLabelInteraction.on('attach', this.handleSwapLabel);
+            this.map.addInteraction(swapLabelInteraction);
+
             Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
+            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
         }
     },
 };

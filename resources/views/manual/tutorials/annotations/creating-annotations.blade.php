@@ -187,7 +187,7 @@
             <a href="{{asset('assets/images/manual/creating_annotations_polygon_brush_1.jpg')}}"><img src="{{asset('assets/images/manual/creating_annotations_polygon_brush_1.jpg')}}" width="33%"></a>
         </p>
         <p>
-            When activated, the outline of the circular brush is displayed beneath the cursor. You can change the radius of the brush by pressing <kbd>Shift</kbd> and using the mouse wheel. To paint a polygon, simply press and hold the left mouse button, then move the mouse. Release the mouse button to finish the new polygon.
+            When activated, the outline of the circular brush is displayed beneath the cursor. You can change the radius of the brush by pressing <kbd>Alt</kbd> and using the mouse wheel. To paint a polygon, simply press and hold the left mouse button, then move the mouse. Release the mouse button to finish the new polygon.
         </p>
 
         <p class="text-center">

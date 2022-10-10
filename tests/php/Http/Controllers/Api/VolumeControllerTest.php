@@ -32,6 +32,20 @@ class VolumeControllerTest extends ApiTestCase
             ->assertJsonMissing(['name' => $project->name]);
     }
 
+    public function testIndexGlobalAdmin()
+    {
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+
+        $this->beGlobalAdmin();
+        $this->get('/api/v1/volumes/')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            ->assertJsonFragment(['name' => $project->name]);
+    }
+
     public function testShow()
     {
         $project = ProjectTest::create();
@@ -80,51 +94,77 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
     }
 
-    public function testUpdateJsonAttrs()
+    public function testUpdateHandle()
     {
         $volume = $this->volume();
         $id = $volume->id;
         $this->doTestApiRoute('PUT', "/api/v1/volumes/{$id}");
 
         $this->beAdmin();
-        $this->assertNull($volume->fresh()->video_link);
-        $this->assertNull($volume->fresh()->gis_link);
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'video_link' => 'http://example.com',
-            'gis_link' => 'http://my.example.com',
-            'doi' => '10.3389/fmars.2017.00083',
-        ]);
-        $response->assertStatus(200);
-        $this->volume()->refresh();
-        $this->assertEquals('http://example.com', $this->volume()->video_link);
-        $this->assertEquals('http://my.example.com', $this->volume()->gis_link);
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->doi);
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
+        ])->assertStatus(422);
 
-        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
-            'video_link' => '',
-            'gis_link' => '',
-            'doi' => '',
-        ]);
-        $response->assertStatus(200);
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertNull($this->volume()->video_link);
-        $this->assertNull($this->volume()->gis_link);
-        $this->assertNull($this->volume()->doi);
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+
+        // Some DOIs can contain multiple slashes.
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '10.3389/fmars.2017/00083',
+        ])->assertStatus(200);
+
+        // Backwards compatibility.
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'doi' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(200);
+
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'handle' => '',
+        ])->assertStatus(200);
+        $this->volume()->refresh();
+        $this->assertNull($this->volume()->handle);
     }
 
     public function testUpdateUrl()
     {
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('volumes');
-        Storage::disk('test')->put('volumes/file.txt', 'abc');
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        config(['volumes.editor_storage_disks' => ['editor-test']]);
+
+        $disk = Storage::fake('admin-test');
+        $disk->put('volumes/file.txt', 'abc');
+
+        $disk = Storage::fake('editor-test');
+        $disk->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
         $this->expectsJobs(ProcessNewVolumeFiles::class);
-        $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-            'url' => 'test://volumes',
-        ]);
-        $response->assertStatus(200);
-        $this->assertEquals('test://volumes', $this->volume()->fresh()->url);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'admin-test://volumes',
+            ])->assertStatus(422);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'editor-test://volumes',
+            ])->assertStatus(200);
+        $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
+
+        $this->beGlobalAdmin();
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'editor-test://volumes',
+            ])->assertStatus(422);
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+                'url' => 'admin-test://volumes',
+            ])->assertStatus(200);
+        $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
+    }
+
+    public function testUpdateUrlProviderDenylist()
+    {
+        $this->beAdmin();
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+            'url' => 'https://dropbox.com',
+        ])->assertStatus(422);
     }
 
     public function testUpdateGlobalAdmin()

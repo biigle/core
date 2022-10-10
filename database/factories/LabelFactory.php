@@ -1,15 +1,25 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Label::class, function (Faker $faker) {
-    return [
-        'name' => $faker->username(),
-        'color' => '0099ff',
-        'parent_id' => null,
-        'label_tree_id' => function () {
-            return factory(Biigle\LabelTree::class)->create()->id;
-        },
-        'uuid' => $faker->unique()->uuid(),
-    ];
-});
+use Biigle\LabelTree;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class LabelFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->username(),
+            'color' => '0099ff',
+            'parent_id' => null,
+            'label_tree_id' => LabelTree::factory(),
+            'uuid' => $this->faker->unique()->uuid(),
+        ];
+    }
+}

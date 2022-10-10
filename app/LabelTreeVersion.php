@@ -2,10 +2,13 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LabelTreeVersion extends Model
 {
+    use HasFactory;
+
     /**
      * Don't maintain timestamps for this model.
      *

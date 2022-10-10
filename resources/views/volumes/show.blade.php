@@ -36,7 +36,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-file-count" v-text="text">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.doiIndicator')
+    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-file-count" v-text="text">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.handleIndicator') @include('volumes.partials.ifdoIndicator')
 </div>
 @endsection
 
@@ -62,9 +62,24 @@
     <div class="sidebar-container__content">
         <loader-block v-cloak :active="loading"></loader-block>
         <div class="volume-content__messages">
-            <div v-cloak v-if="filterEmpty" class="alert alert-info">
-                There are no {{$type}}s matching your filter rules.
+            <div v-cloak v-if="filterEmpty" class="panel panel-info">
+                <div class="panel-body text-info">
+                    There are no {{$type}}s matching your filter rules.
+                </div>
             </div>
+            @if ($volume->creating_async)
+                <div v-cloak v-if="noContent" class="panel panel-warning">
+                    <div class="panel-body text-warning">
+                        This volume still being processed. Please come back later.
+                    </div>
+                </div>
+            @else
+                <div v-cloak v-if="noContent" class="panel panel-info">
+                    <div class="panel-body text-info">
+                        This volume is empty.
+                    </div>
+                </div>
+            @endif
         </div>
         <image-grid
             empty-url="{{ asset(config('thumbnails.empty_url')) }}"

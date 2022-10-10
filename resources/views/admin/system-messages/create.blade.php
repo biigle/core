@@ -18,7 +18,7 @@
             <label for="type_id">Type</label>
             <select class="form-control" name="type_id" id="type_id" required>
                 @foreach ($types as $type)
-                    <option value="{{$type->id}}" @if (old('type_id') === $type->id) selected="" @endif>{{$type->name}}</option>
+                    <option value="{{$type->id}}" @selected(old('type_id') === $type->id)>{{$type->name}}</option>
                 @endforeach
             </select>
             @if($errors->has('type_id'))

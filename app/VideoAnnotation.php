@@ -122,9 +122,9 @@ class VideoAnnotation extends Annotation
      *
      * @return array
      */
-    public function interpolatePoints($time)
+    public function interpolatePoints(float $time)
     {
-        $frames = $this->frames;
+        $frames = array_map('floatval', $this->frames);
         $startFrame = $frames[0];
         $endFrame = end($frames);
 

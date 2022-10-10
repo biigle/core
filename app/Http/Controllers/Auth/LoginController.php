@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -19,6 +20,7 @@ class LoginController extends Controller
     |
     */
 
+    // use ThrottlesLogins;
     use AuthenticatesUsers {
         credentials as protected baseCredentials;
         attemptLogin as protected baseAttemptLogin;

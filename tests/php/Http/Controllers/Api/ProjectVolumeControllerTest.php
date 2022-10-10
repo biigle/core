@@ -16,6 +16,9 @@ use Biigle\Video;
 use Biigle\Volume;
 use Cache;
 use Event;
+use Exception;
+use FileCache;
+use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;
 
@@ -29,6 +32,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->volume = VolumeTest::create();
         $this->project()->volumes()->attach($this->volume);
         Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
     }
 
     public function testIndex()
@@ -103,6 +107,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
         Storage::disk('test')->put('images/2.jpg', 'abc');
+        Storage::disk('test')->put('images/1.bmp', 'abc');
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -139,7 +144,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
                 'media_type' => 'image',
-                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
+                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
             ])
             ->assertStatus(422);
 
@@ -164,40 +169,58 @@ class ProjectVolumeControllerTest extends ApiTestCase
         });
     }
 
-    public function testStoreJsonAttrs()
+    public function testStoreHandle()
     {
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'media_type' => 'image',
             'files' => '1.jpg',
-            'video_link' => 'http://example.com',
-            'gis_link' => 'http://my.example.com',
-            'doi' => '10.3389/fmars.2017.00083',
-        ]);
-        $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertEquals('http://example.com', $volume->video_link);
-        $this->assertEquals('http://my.example.com', $volume->gis_link);
-        $this->assertEquals('10.3389/fmars.2017.00083', $volume->doi);
+            'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
+        ])->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'media_type' => 'image',
             'files' => '1.jpg',
-            'video_link' => '',
-            'gis_link' => '',
-            'doi' => '',
-        ]);
+            'handle' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertNull($volume->video_link);
-        $this->assertNull($volume->gis_link);
-        $this->assertNull($volume->doi);
+        $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
+
+        // Some DOIs can contain multiple slashes.
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'handle' => '10.3389/fmars.2017/00083',
+        ])->assertStatus(201);
+
+        // Backwards compatibility.
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'doi' => '10.3389/fmars.2017.00083',
+        ])->assertStatus(201);
+
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'handle' => '',
+        ])->assertStatus(201);
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertNull($volume->handle);
     }
 
     public function testStoreFilesArray()
@@ -289,6 +312,25 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreFilesExistException()
+    {
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+        $id = $this->project()->id;
+        $this->beAdmin();
+        FileCache::shouldReceive('exists')
+            ->andThrow(new Exception('Invalid MIME type.'));
+
+        $response = $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type' => 'image',
+                'files' => '1.jpg',
+            ])
+            ->assertStatus(422);
+        $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
+    }
+
     public function testStoreVideos()
     {
         $id = $this->project()->id;
@@ -370,6 +412,304 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 in_array('1.mp4', $job->filenames) &&
                 in_array('2.mp4', $job->filenames);
         });
+    }
+
+    public function testStoreEmptyImageMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
+        });
+    }
+
+    public function testStoreImageMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "filename,area\n1.jpg,2.5",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return $job->metadata[1][0] === '1.jpg' && $job->metadata[1][1] === '2.5';
+        });
+    }
+
+    public function testStoreImageMetadataCsv()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/abc.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return $job->metadata[1][0] === 'abc.jpg' && $job->metadata[1][6] === '2.6';
+        });
+    }
+
+    public function testStoreImageMetadataInvalid()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/1.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => '1.jpg',
+            'metadata_text' => "filename,area\nabc.jpg,2.5",
+        ])->assertStatus(422);
+    }
+
+    public function testStoreEmptyVideoMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/1.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => '1.mp4',
+            'metadata_text' => "",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return empty($job->metadata);
+        });
+    }
+
+    public function testStoreVideoMetadataText()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/1.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => '1.mp4',
+            'metadata_text' => "filename,area\n1.mp4,2.5",
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return $job->metadata[1][0] === '1.mp4' && $job->metadata[1][1] === '2.5';
+        });
+    }
+
+    public function testStoreVideoMetadataCsv()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/video-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/abc.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => 'abc.mp4',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            return $job->metadata[1][0] === 'abc.mp4' && $job->metadata[1][6] === '2.6' && $job->metadata[2][6] === '1.6';
+        });
+    }
+
+    public function testStoreVideoMetadataInvalid()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/1.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => '1.mp4',
+            'metadata_text' => "filename,area\nabc.mp4,2.5",
+        ])->assertStatus(422);
+    }
+
+    public function testStoreImageIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/abc.jpg', 'abc');
+
+        Storage::fake('ifdos');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'ifdo_file' => $file,
+        ])->assertSuccessful();
+
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertTrue($volume->hasIfdo());
+    }
+
+    public function testStoreVideoIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/video-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/abc.mp4', 'abc');
+
+        Storage::fake('ifdos');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => 'abc.mp4',
+            'ifdo_file' => $file,
+        ])->assertSuccessful();
+
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertTrue($volume->hasIfdo());
+    }
+
+    public function testStoreVideoVolumeWithImageIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('videos');
+        Storage::disk('test')->put('videos/abc.mp4', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'media_type' => 'video',
+            'files' => 'abc.mp4',
+            'ifdo_file' => $file,
+        ])->assertStatus(422);
+    }
+
+    public function testStoreImageVolumeWithVideoIfdoFile()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $csv = __DIR__."/../../../../files/video-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/abc.jpg', 'abc');
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'ifdo_file' => $file,
+        ])->assertStatus(422);
+    }
+
+    public function testStoreProviderDenylist()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'https://dropbox.com',
+                'media_type' => 'image',
+                'files' => ['1.jpg', '2.jpg'],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreAuthorizeDisk()
+    {
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        config(['volumes.editor_storage_disks' => ['editor-test']]);
+
+        $adminDisk = Storage::fake('admin-test');
+        $adminDisk->put('images/1.jpg', 'abc');
+
+        $editorDisk = Storage::fake('editor-test');
+        $editorDisk->put('images/2.jpg', 'abc');
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'admin-test://images',
+                'media_type' => 'image',
+                'files' => ['1.jpg'],
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'editor-test://images',
+                'media_type' => 'image',
+                'files' => ['2.jpg'],
+            ])
+            ->assertSuccessful();
+
+        $this->beGlobalAdmin();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'admin-test://images',
+                'media_type' => 'image',
+                'files' => ['1.jpg'],
+            ])
+            ->assertSuccessful();
+
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'name',
+                'url' => 'editor-test://images',
+                'media_type' => 'image',
+                'files' => ['2.jpg'],
+            ])
+            ->assertStatus(422);
     }
 
     public function testAttach()

@@ -35,7 +35,12 @@ export default {
             };
         },
         orderedFiles() {
-            return this.files.slice().sort((a, b) => a.filename < b.filename ? -1 : 1);
+            return this.files.slice().sort(function (a, b) {
+                return a.filename.localeCompare(b.filename, undefined, {
+                    numeric: true,
+                    sensitivity: 'base',
+                });
+            });
         },
         hasNoFiles() {
             return !this.loading && this.files.length === 0;

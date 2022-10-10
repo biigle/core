@@ -53,7 +53,7 @@ class ProjectPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('edit-in', $this->project));
         $this->assertTrue($this->expert->can('edit-in', $this->project));
         $this->assertTrue($this->admin->can('edit-in', $this->project));
-        $this->assertTrue($this->globalAdmin->can('edit-in', $this->project));
+        $this->assertFalse($this->globalAdmin->can('edit-in', $this->project));
     }
 
     public function testForceEditIn()
@@ -63,7 +63,7 @@ class ProjectPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('force-edit-in', $this->project));
         $this->assertTrue($this->expert->can('force-edit-in', $this->project));
         $this->assertTrue($this->admin->can('force-edit-in', $this->project));
-        $this->assertTrue($this->globalAdmin->can('force-edit-in', $this->project));
+        $this->assertFalse($this->globalAdmin->can('force-edit-in', $this->project));
     }
 
     public function testUpdate()

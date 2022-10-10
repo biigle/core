@@ -6,6 +6,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
+import {getRoundToPrecision} from '../../utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.
@@ -18,6 +19,10 @@ export default {
             // A map of annotation IDs to OpenLayers feature objects for all
             // currently rendered annotations.
             renderedAnnotationMap: {},
+            viewFitOptions: {
+                padding: [50, 50, 50, 50],
+                minResolution: 1,
+            },
         };
     },
     computed: {
@@ -53,13 +58,18 @@ export default {
             let toCreate = [];
             let annotation;
             let hasRenderedFeatures = false;
+            const rtp = getRoundToPrecision(time);
+            // Sometimes the video currentTime does not match the annotation time even if
+            // a seek was performed to the exact annotation time. Hence, we  round the
+            // time here to the maximum of 4 decimals, too.
+            time = rtp(time);
 
             for (let i = 0, length = annotations.length; i < length; i++) {
                 // We can skip ahead and break early because of the sorting in the
                 // annotationsPreparedToRender array.
                 // Check for start!=time in case this is a single frame annotation
-                // (start==end). It wwould never be shown otherwise.
-                if (annotations[i].end < time && annotations[i].start !== time) {
+                // (start==end). It would never be shown otherwise.
+                if (rtp(annotations[i].end) < time && rtp(annotations[i].start) !== time) {
                     continue;
                 }
 
@@ -67,7 +77,7 @@ export default {
                     continue;
                 }
 
-                if (annotations[i].start > time) {
+                if (rtp(annotations[i].start) > time) {
                     break;
                 }
 
@@ -87,8 +97,15 @@ export default {
                     selected.remove(feature);
                 });
             } else {
-                source.clear();
-                selected.clear();
+                // Clearing source and selected, even if they are empty, issues a redraw
+                // of the map, so check if there is anything to clear first.
+                if (source.getFeatures().length > 0) {
+                    source.clear();
+                }
+
+                if (selected.getLength() > 0) {
+                    selected.clear();
+                }
             }
 
 
@@ -174,7 +191,7 @@ export default {
             // The y axis should be switched from "top to bottom" to "bottom to top"
             // or vice versa. Our database expects ttb, OpenLayers expects btt.
 
-            let height = this.videoCanvas.height;
+            let height = this.video.videoHeight;
             for (let i = 1; i < points.length; i += 2) {
                 points[i] = height - points[i];
             }
@@ -200,6 +217,12 @@ export default {
             }
 
             return newPoints;
+        },
+        focusAnnotation(annotation) {
+            let feature = this.annotationSource.getFeatureById(annotation.id);
+            if (feature) {
+                this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
+            }
         },
     },
     created() {

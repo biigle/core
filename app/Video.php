@@ -2,8 +2,8 @@
 
 namespace Biigle;
 
-use Biigle\Events\VideoDeleted;
 use Biigle\User;
+use Carbon\Carbon;
 use DB;
 
 class Video extends VolumeFile
@@ -18,6 +18,9 @@ class Video extends VolumeFile
         'video/mp4',
         'video/quicktime',
         'video/webm',
+        // The 3GP container format can also store h.264 videos. Other codecs will be
+        // rejected.
+        'video/3gpp',
     ];
 
     /**
@@ -61,6 +64,13 @@ class Video extends VolumeFile
     const ERROR_MALFORMED = 4;
 
     /**
+     * Error if a video file is too large.
+     *
+     * @var int
+     */
+    const ERROR_TOO_LARGE = 5;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -80,6 +90,8 @@ class Video extends VolumeFile
      */
     protected $casts = [
         'attrs' => 'array',
+        'lng' => 'array',
+        'lat' => 'array',
         'duration' => 'float',
     ];
 
@@ -90,15 +102,6 @@ class Video extends VolumeFile
      */
     protected $hidden = [
         'attrs',
-    ];
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'deleted' => VideoDeleted::class,
     ];
 
     /**
@@ -179,46 +182,6 @@ class Video extends VolumeFile
     }
 
     /**
-     * Get the mimeType attribute.
-     *
-     * @return string
-     */
-    public function getMimeTypeAttribute()
-    {
-        return $this->getJsonAttr('mimetype');
-    }
-
-    /**
-     * Set the mimeType attribute.
-     *
-     * @param string $value
-     */
-    public function setMimeTypeAttribute($value)
-    {
-        $this->setJsonAttr('mimetype', $value);
-    }
-
-    /**
-     * Get the size attribute.
-     *
-     * @return int
-     */
-    public function getSizeAttribute()
-    {
-        return $this->getJsonAttr('size');
-    }
-
-    /**
-     * Set the size attribute.
-     *
-     * @param int $value
-     */
-    public function setSizeAttribute($value)
-    {
-        $this->setJsonAttr('size', $value);
-    }
-
-    /**
      * Determine whether the (new) video has been processed.
      *
      * @return boolean
@@ -236,5 +199,33 @@ class Video extends VolumeFile
     public function labels()
     {
         return $this->hasMany(VideoLabel::class)->with('label', 'user');
+    }
+
+    /**
+     * Set the taken_at timestamps.
+     *
+     * @param array $value
+     */
+    public function setTakenAtAttribute(array $value)
+    {
+        $value = array_map([Carbon::class, 'parse'], $value);
+
+        $this->attributes['taken_at'] = json_encode($value);
+    }
+
+    /**
+     * Get the taken_at timestamps.
+     *
+     * @return array
+     */
+    public function getTakenAtAttribute()
+    {
+        $array = json_decode($this->attributes['taken_at'] ?? null);
+
+        if (!is_array($array)) {
+            return null;
+        }
+
+        return array_map([Carbon::class, 'parse'], $array);
     }
 }

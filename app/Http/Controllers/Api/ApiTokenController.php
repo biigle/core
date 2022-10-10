@@ -53,7 +53,7 @@ class ApiTokenController extends Controller
      * @api {post} api-tokens Create a new API token
      * @apiGroup Api Tokens
      * @apiName StoreApiTokens
-     * @apiPermission user
+     * @apiPermission editor
      * @apiDescription This action is allowed only by session cookie authentication. The token of the response is displayed only this single time!
      *
      * @apiParam (Required parameters) {String} purpose A short description of the purpose of the new token

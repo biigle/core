@@ -1,33 +1,49 @@
-FROM arm64v8/php:7.2-fpm-alpine
+FROM arm64v8/php:8.0-fpm-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
+LABEL org.opencontainers.image.source https://github.com/biigle/core
+
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
+ADD ".docker/app-php.ini" "$PHP_INI_DIR/conf.d/app.ini"
 
 RUN apk add --no-cache \
         openssl \
+        postgresql \
+        libxml2 \
+        libzip \
+    && apk add --no-cache --virtual .build-deps \
         postgresql-dev \
         libxml2-dev \
         libzip-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install \
+    && docker-php-ext-install -j$(nproc) \
         pdo \
         pdo_pgsql \
         pgsql \
-        json \
         zip \
-        fileinfo \
         exif \
-        soap
+        soap \
+    && apk del --purge .build-deps
 
-ARG PHPREDIS_VERSION=5.0.0
+# Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
+RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
+RUN apk add --no-cache yaml \
+    && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
+    && pecl install yaml \
+    && docker-php-ext-enable yaml \
+    && apk del --purge .build-deps
+# Unset proxy configuration again.
+RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
+
+ARG PHPREDIS_VERSION=5.3.7
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
     && mkdir -p /usr/src/php/ext \
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
-    && docker-php-ext-install redis
+    && docker-php-ext-install -j$(nproc) redis
 
 RUN apk add --no-cache ffmpeg
-
-ADD .docker/app-php.ini /usr/local/etc/php/conf.d/php.ini
 
 COPY composer.lock composer.json /var/www/
 
@@ -37,13 +53,11 @@ WORKDIR /var/www
 
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install Composer based on the trusted commit:
+# https://github.com/composer/getcomposer.org/commit/ce25411cc528444e8c3c60775bde77e01921a1ef
 # Ignore platform reqs because the app image is stripped down to the essentials
-# and doens't meet some of the requirements. We do this for the worker, though.
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    && php composer-setup.php \
-    && rm composer-setup.php \
+# and doens't meet some of the requirements.
+RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/ce25411cc528444e8c3c60775bde77e01921a1ef/web/installer | php -- \
     && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
     && rm -r ~/.composer
 

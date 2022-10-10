@@ -13,7 +13,7 @@ class AnnotationUserController extends Controller
     /**
      * List the IDs of images having one or more annotations of the specified user.
      *
-     * @api {get} volumes/:tid/images/filter/annotation-user/:uid Get all images having annotations of a user
+     * @api {get} volumes/:tid/files/filter/annotation-user/:uid Get all images having annotations of a user
      * @apiGroup Volumes
      * @apiName VolumeImagesHasUser
      * @apiPermission projectMember

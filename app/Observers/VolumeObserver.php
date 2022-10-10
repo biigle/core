@@ -4,6 +4,7 @@ namespace Biigle\Observers;
 
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
+use Biigle\Events\VideosDeleted;
 use Biigle\Volume;
 use Exception;
 
@@ -32,12 +33,22 @@ class VolumeObserver
      */
     public function deleting(Volume $volume)
     {
-        event(new ImagesDeleted($volume->images()->pluck('uuid')->toArray()));
+        $uuids = $volume->images()->pluck('uuid')->toArray();
+        if (!empty($uuids)) {
+            event(new ImagesDeleted($uuids));
+        }
 
         $uuids = $volume->images()->where('tiled', true)->pluck('uuid')->toArray();
         if (!empty($uuids)) {
             event(new TiledImagesDeleted($uuids));
         }
+
+        $uuids = $volume->videos()->pluck('uuid')->toArray();
+        if (!empty($uuids)) {
+            event(new VideosDeleted($uuids));
+        }
+
+        $volume->deleteIfdo();
 
         return true;
     }

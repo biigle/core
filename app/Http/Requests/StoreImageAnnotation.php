@@ -35,7 +35,7 @@ class StoreImageAnnotation extends StoreImageAnnotationLabel
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'shape_id' => 'required|id|exists:shapes,id',
+            'shape_id' => 'required|integer|exists:shapes,id',
             'points'   => 'required|array',
         ]);
     }

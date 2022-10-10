@@ -36,30 +36,26 @@
         </p>
 
         <h3><a name="cors"></a>Cross-Origin Resource Sharing</h3>
+
+        <div class="panel panel-info">
+            <div class="panel-body text-info">
+                BIIGLE used to support remote images without CORS but this is no longer possible because of recent changes in web browsers.
+            </div>
+        </div>
+
         <p>
-            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading files from remote sources in BIIGLE. Although those files can be displayed, BIIGLE cannot access the raw data in the browser which is a requirement for some features of the image annotation tool. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process files from remote sources just like regular files.
+            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading files from remote sources in BIIGLE. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. BIIGLE can only process files from remote sources that have a correct CORS configuration.
         </p>
         <p>
-            To set up CORS for the files of your remote source, you have to update the configuration of the webserver that serves the files. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
+            To set up CORS for the files of your remote source, you have to update the configuration of the webserver that serves the files. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for a file:
         </p>
 <pre>
 Access-Control-Allow-Origin "*"
-Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
+Access-Control-Allow-Headers "x-requested-with"
 </pre>
         <p>
-            In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the files. BIIGLE detects if CORS is properly configured for remote files and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
+            In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the files.
         </p>
-        <ul>
-            <li>
-                Live color adjustment of images in the image annotation tool.
-            </li>
-            <li>
-                The magic wand interaction in the image annotation tool.
-            </li>
-            <li>
-                The screenshot button in the image annotation tool. Use the usual functions of your operating system or browser to create screenshots manually.
-            </li>
-        </ul>
 
         <h3><a name="how-to-secure"></a>How to secure a remote location</h3>
         <div class="panel panel-warning">
@@ -80,7 +76,7 @@ Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
             <pre>{{\Ramsey\Uuid\Uuid::uuid4()}}</pre>
         @endif
         <p>
-            In addition to a URL that is hard to guess, you should make sure to use secure HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs.
+            In addition to a URL that is hard to guess, you should make sure to use secure HTTP connections. This means that you should always use <code>https://</code> URLs instead of <code>http://</code> URLs. Furthermore, you must disable directory listing in your web server.
         </p>
     </div>
 @endsection

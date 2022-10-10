@@ -9,6 +9,7 @@ use Biigle\Tests\VideoTest;
 use Biigle\VideoAnnotation;
 use Exception;
 use File;
+use Log;
 use Storage;
 use TestCase;
 
@@ -39,7 +40,6 @@ class TrackObjectTest extends TestCase
         $this->assertEquals(0.5, $input['start_time']);
         $this->assertEquals(123, $input['keyframe_distance']);
         $this->assertArrayHasKey('video_path', $input);
-        $this->assertStringContainsString('my-video.mp4', $input['video_path']);
 
         foreach ($job->paths as $path) {
             $this->assertFalse(File::exists($path));
@@ -90,15 +90,11 @@ class TrackObjectTest extends TestCase
 
     public function testHandleFailure()
     {
+        Log::shouldReceive('warning')->once();
         $annotation = VideoAnnotationTest::create();
         $job = new TrackObjectStub($annotation);
-        try {
-            $job->failed(new Exception);
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            //
-        }
-
+        $job->throw = true;
+        $job->handle();
         $this->assertNull($annotation->fresh());
     }
 
@@ -122,6 +118,16 @@ class TrackObjectStub extends TrackObject
     public $files = [];
     public $paths = [];
     public $keyframes = '[[1.0, 10, 10, 5], [2.0, 20, 20, 6], [3.0, 30, 30, 7]]';
+    public $throw = false;
+
+    protected function getTrackingKeyframes(VideoAnnotation $annotation)
+    {
+        if ($this->throw) {
+            throw new Exception("Error Processing Request");
+        }
+
+        return parent::getTrackingKeyframes($annotation);
+    }
 
     protected function maybeDeleteFile($path)
     {

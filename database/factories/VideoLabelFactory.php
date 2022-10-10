@@ -1,17 +1,20 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\VideoLabel::class, function (Faker $faker) {
-    return [
-        'video_id' => function () {
-            return factory(Biigle\Video::class)->create()->id;
-        },
-        'label_id' => function () {
-            return factory(Biigle\Label::class)->create()->id;
-        },
-        'user_id' => function () {
-            return factory(Biigle\User::class)->create()->id;
-        },
-    ];
-});
+use Biigle\Video;
+
+class VideoLabelFactory extends VolumeFileLabelFactory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return array_merge(parent::definition(), [
+            'video_id' => Video::factory(),
+        ]);
+    }
+}

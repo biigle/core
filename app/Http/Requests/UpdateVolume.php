@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Rules\Handle;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
@@ -37,6 +38,20 @@ class UpdateVolume extends FormRequest
         return [
             'name' => 'filled|max:512',
             'url' => ['filled', new VolumeUrl],
+            'handle' => ['nullable', 'max:256', new Handle],
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        // Backwards compatibility.
+        if ($this->has('doi') && !$this->has('handle')) {
+            $this->merge(['handle' => $this->input('doi')]);
+        }
     }
 }

@@ -24,7 +24,7 @@
             <label for="role_id">Role*</label>
             <select class="form-control" name="role_id" id="role_id" required>
                 @foreach ($roles as $role)
-                    <option value="{{$role->id}}" @if ($affectedUser->role_id === $role->id) selected="" @endif>{{ucfirst($role->name)}}</option>
+                    <option value="{{$role->id}}" @selected($affectedUser->role_id === $role->id)>{{ucfirst($role->name)}}</option>
                 @endforeach
             </select>
             @if($errors->has('role_id'))

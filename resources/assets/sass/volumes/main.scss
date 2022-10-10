@@ -25,6 +25,17 @@ $volume-image-padding: 0.5em;
     background-color: $gray-lighter;
 }
 
+.ifdo-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-top: -3px;
+
+    &.ifdo-icon--btn {
+        margin-top: -2px;
+    }
+}
+
 @import 'components/image-grid';
 @import 'components/image-grid-image';
 @import 'components/image-grid-progress';
@@ -36,4 +47,3 @@ $volume-image-padding: 0.5em;
 
 @import 'edit';
 @import 'search';
-@import 'create';

@@ -37,7 +37,7 @@ class StoreProjectLabelTree extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|id|exists:label_trees,id',
+            'id' => 'required|integer|exists:label_trees,id',
         ];
     }
 
@@ -49,6 +49,10 @@ class StoreProjectLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             $tree = LabelTree::find($this->input('id'));
             if ($tree) {

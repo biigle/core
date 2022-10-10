@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Rules;
 
 use Biigle\Rules\VolumeUrl;
+use Biigle\Role;
+use Biigle\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -15,6 +17,14 @@ use TestCase;
 
 class VolumeUrlTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $this->user = User::factory()->make(['role_id' => Role::editorId()]);
+        $this->be($this->user);
+    }
+
     public function testNoDisk()
     {
         $validator = new VolumeUrl;
@@ -24,9 +34,10 @@ class VolumeUrlTest extends TestCase
 
     public function testUnknownDisk()
     {
+        config(['volumes.editor_storage_disks' => ['abc']]);
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'abc://dir'));
-        $this->assertStringContainsString("Storage disk 'abc' does not exist", $validator->message());
+        $this->assertStringContainsString("Disk [abc] does not have a configured driver", $validator->message());
     }
 
     public function testNotThere()
@@ -39,9 +50,8 @@ class VolumeUrlTest extends TestCase
 
     public function testOkFile()
     {
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('dir');
-        Storage::disk('test')->put('dir/file.txt', 'abc');
+        $disk = Storage::fake('test');
+        $disk->put('dir/file.txt', 'abc');
         $validator = new VolumeUrl;
         $this->assertTrue($validator->passes(null, 'test://dir'));
     }
@@ -51,6 +61,40 @@ class VolumeUrlTest extends TestCase
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('dir/dir2');
         $validator = new VolumeUrl;
+        $this->assertTrue($validator->passes(null, 'test://dir'));
+    }
+
+    public function testAuthorizeDiskAdmin()
+    {
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+
+        $disk = Storage::fake('admin-test');
+        $disk->put('dir/file.txt', 'abc');
+
+        $disk = Storage::fake('test');
+        $disk->put('dir/elif.txt', 'abc');
+
+        $this->user->role_id = Role::adminId();
+
+        $validator = new VolumeUrl;
+        $this->assertFalse($validator->passes(null, 'test://dir'));
+        $this->assertStringContainsString('Not authorized to access this storage disk', $validator->message());
+        $this->assertTrue($validator->passes(null, 'admin-test://dir'));
+    }
+
+    public function testAuthorizeDiskEditor()
+    {
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+
+        $disk = Storage::fake('admin-test');
+        $disk->put('dir/file.txt', 'abc');
+
+        $disk = Storage::fake('test');
+        $disk->put('dir/elif.txt', 'abc');
+
+        $validator = new VolumeUrl;
+        $this->assertFalse($validator->passes(null, 'admin-test://dir'));
+        $this->assertStringContainsString('Not authorized to access this storage disk', $validator->message());
         $this->assertTrue($validator->passes(null, 'test://dir'));
     }
 
@@ -110,10 +154,25 @@ class VolumeUrlTest extends TestCase
 
     public function testRemoteOfflineMode()
     {
+        config(['volumes.editor_storage_disks' => ['http']]);
         config(['biigle.offline_mode' => true]);
 
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
-        $this->assertStringContainsString("disk 'http' does not exist", $validator->message());
+        $this->assertStringContainsString("Disk [http] does not have a configured driver", $validator->message());
+    }
+
+    public function testRemoteProviderBlacklist()
+    {
+        $validator = new VolumeUrl;
+        $this->assertFalse($validator->passes(null, 'http://dropbox.com'));
+        $this->assertStringContainsString('are not supported as remote locations', $validator->message());
+        $this->assertFalse($validator->passes(null, 'https://dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'http://www.dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'https://www.dropbox.com'));
+        $this->assertFalse($validator->passes(null, 'http://onedrive.com'));
+        $this->assertFalse($validator->passes(null, 'https://onedrive.com'));
+        $this->assertFalse($validator->passes(null, 'http://drive.google.com'));
+        $this->assertFalse($validator->passes(null, 'https://drive.google.com'));
     }
 }

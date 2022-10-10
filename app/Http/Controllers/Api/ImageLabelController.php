@@ -88,21 +88,21 @@ class ImageLabelController extends VolumeFileLabelController
      * @apiParam {Number} id The image **label** ID (not the image ID).
      */
 
-     /**
-     * Get the file model class name.
-     *
-     * @return string
-     */
+    /**
+    * Get the file model class name.
+    *
+    * @return string
+    */
     protected function getFileModel()
     {
         return Image::class;
     }
 
-     /**
-     * Get the file label model class name.
-     *
-     * @return string
-     */
+    /**
+    * Get the file label model class name.
+    *
+    * @return string
+    */
     protected function getFileLabelModel()
     {
         return ImageLabel::class;

@@ -45,11 +45,11 @@ class ProjectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $hidden = ['video_link', 'gis_link', 'doi'];
+        $hidden = ['doi'];
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')

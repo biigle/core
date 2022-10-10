@@ -19,15 +19,19 @@
                 </span>
             </div>
         </div>
-        <div class="col-xs-3 form-group">
-            <button type="button" class="btn btn-default btn-block" v-on:click="toggleUnaccepted" :class="unacceptedButtonClass" title="Include unaccepted items from WoRMS in the results">
-                unaccepted
-            </button>
-        </div>
-        <div class="col-xs-3 form-group">
-            <button type="button" class="btn btn-default btn-block" v-on:click="toggleRecursive" :class="recursiveButtonClass" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
-                recursive
-            </button>
+        <div class="col-xs-6">
+            <div class="btn-group btn-group-justified">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" v-on:click="toggleUnaccepted" :class="unacceptedButtonClass" title="Include unaccepted items from WoRMS in the results">
+                        unaccepted
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" v-on:click="toggleRecursive" :class="recursiveButtonClass" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
+                        recursive
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="col-xs-6 form-group">
             <div class="input-group">

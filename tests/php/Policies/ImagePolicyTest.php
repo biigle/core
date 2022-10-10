@@ -47,7 +47,7 @@ class ImagePolicyTest extends TestCase
         $this->assertTrue($this->editor->can('add-annotation', $this->image));
         $this->assertTrue($this->expert->can('add-annotation', $this->image));
         $this->assertTrue($this->admin->can('add-annotation', $this->image));
-        $this->assertTrue($this->globalAdmin->can('add-annotation', $this->image));
+        $this->assertFalse($this->globalAdmin->can('add-annotation', $this->image));
     }
 
     public function testDestroy()
@@ -94,8 +94,8 @@ class ImagePolicyTest extends TestCase
         $this->assertFalse($this->admin->can('attach-label', [$this->image, $disallowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->image, $otherDisallowedLabel]));
 
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $allowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $disallowedLabel]));
-        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $otherDisallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->globalAdmin->can('attach-label', [$this->image, $otherDisallowedLabel]));
     }
 }

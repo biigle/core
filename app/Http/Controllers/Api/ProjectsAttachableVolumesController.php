@@ -16,7 +16,7 @@ class ProjectsAttachableVolumesController extends Controller
      * @api {get} projects/:id/attachable-volumes Get attachable volumes
      * @apiGroup Projects
      * @apiName IndexAttachableVolumes
-     * @apiPermission admin
+     * @apiPermission projectAdmin
      * @apiParam {Number} id ID of the project for which the volumes should be fetched.
      * @apiDescription A list of all volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
      *
@@ -69,7 +69,7 @@ class ProjectsAttachableVolumesController extends Controller
             ->distinct()
             ->get();
 
-        $hidden = ['video_link', 'gis_link', 'doi'];
+        $hidden = ['doi'];
         $volumes->each(function ($item) use ($hidden) {
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')

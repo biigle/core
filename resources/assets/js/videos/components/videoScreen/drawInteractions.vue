@@ -104,7 +104,8 @@ export default {
             this.draw('WholeFrame');
         },
         maybeUpdateDrawInteractionMode(mode) {
-            this.resetPendingAnnotation();
+            let shape = mode.slice(4); // Remove the 'draw' prefix.
+            this.resetPendingAnnotation(shape);
 
             if (this.drawInteraction) {
                 this.map.removeInteraction(this.drawInteraction);
@@ -112,9 +113,7 @@ export default {
             }
 
             if (this.isDrawing && this.hasSelectedLabel) {
-                let shape = mode.slice(4); // Remove the 'draw' prefix.
                 this.pause();
-                this.pendingAnnotation.shape = shape;
 
                 if (this.isDrawingWholeFrame) {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
@@ -137,22 +136,27 @@ export default {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
                     }
                     this.$emit('create-annotation', this.pendingAnnotation);
+
+                    if (this.isDrawingWholeFrame) {
+                        this.resetInteractionMode();
+                    } else {
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                    }
                 }
-                this.resetInteractionMode();
             }
         },
         finishTrackAnnotation() {
             if (this.isDrawing) {
                 if (this.hasPendingAnnotation) {
                     this.$emit('track-annotation', this.pendingAnnotation);
+                    this.resetPendingAnnotation(this.pendingAnnotation.shape);
                 }
-                this.resetInteractionMode();
             }
         },
-        resetPendingAnnotation() {
+        resetPendingAnnotation(shape) {
             this.pendingAnnotationSource.clear();
             this.pendingAnnotation = {
-                shape: '',
+                shape: shape,
                 frames: [],
                 points: [],
             };

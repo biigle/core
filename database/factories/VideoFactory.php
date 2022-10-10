@@ -1,18 +1,33 @@
 <?php
 
-use Biigle\MediaType;
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\Video::class, function (Faker $faker) {
-    return [
-        'uuid' => $faker->unique()->uuid(),
-        'filename' => $faker->unique()->word(),
-        'volume_id' => function () {
-            return factory(Biigle\Volume::class)->create([
-                'media_type_id' => MediaType::videoId(),
-            ])->id;
-        },
-        'attrs' => [],
-        'duration' => 0,
-    ];
-});
+use Biigle\MediaType;
+use Biigle\Volume;
+
+class VideoFactory extends VolumeFileFactory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return array_merge(parent::definition(), [
+            'filename' => $this->faker->unique()->word(),
+            'attrs' => [],
+            'duration' => 0,
+        ]);
+    }
+
+    /**
+     * Get the volume factory.
+     *
+     * @return Factory
+     */
+    protected function getVolumeFactory()
+    {
+        return Volume::factory()->for(MediaType::video());
+    }
+}

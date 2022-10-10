@@ -16,7 +16,7 @@
         </p>
 
         <p>
-            New versions of a label tree can be created by admins of the label tree. Click on the <button class="btn btn-default btn-xs">Version: <strong>latest</strong> <span class="caret"></span></button> button below the label tree name and then on "<i class="fa fa-plus"></i> new version". Now choose a name for the new version. Version names should be short and sequential, similar to software version names (e.g. <code>v1.0</code>, <code>v1.1</code>, <code>v1.2</code>). You can also choose to change the description of the label tree for a new version. Changes to the name, visibility or the authorized projects of a label tree are automatically propagated to all of its versions.
+            New versions of a label tree can be created by admins of the label tree. Click on the <button class="btn btn-default btn-xs">Version: <strong>latest</strong> <span class="caret"></span></button> button right of the label tree name and then on "<i class="fa fa-plus"></i> new version". Now choose a name for the new version. Version names should be short and sequential, similar to software version names (e.g. <code>v1.0</code>, <code>v1.1</code>, <code>v1.2</code>). You can also choose to change the description of the label tree for a new version. Changes to the name, visibility or the authorized projects of a label tree are automatically propagated to all of its versions.
         </p>
 
         <p>
@@ -24,7 +24,7 @@
         </p>
 
         <p>
-            All available versions of a label tree can be displayed with a click on the <button class="btn btn-default btn-xs">Version: <strong>latest</strong> <span class="caret"></span></button> button below the label tree name. Click on the name of a version in the dropdown to be redirected to that version. A specific version of a label tree is indicated by the label tree name followed by an "@" and the version name (e.g. "My Labels @ v1.0").
+            All available versions of a label tree can be displayed with a click on the <button class="btn btn-default btn-xs">Version: <strong>latest</strong> <span class="caret"></span></button> button right of the label tree name. Click on the name of a version in the dropdown to be redirected to that version. A specific version of a label tree is indicated by the label tree name followed by an "@" and the version name (e.g. "My Labels @ v1.0").
         </p>
 
         <p>

@@ -99,19 +99,6 @@ class ProcessNewImageTest extends TestCase
         }
     }
 
-    public function testHandleMakeThumbnailSkipExisting()
-    {
-        Storage::fake('test-thumbs');
-        config(['thumbnails.storage_disk' => 'test-thumbs']);
-        VipsImage::shouldReceive('thumbnail')->never();
-        $image = ImageTest::create();
-        $prefix = fragment_uuid_path($image->uuid);
-        $format = config('thumbnails.format');
-        Storage::disk('test-thumbs')->put("{$prefix}.{$format}", 'content');
-
-        with(new ProcessNewImage($image))->handle();
-    }
-
     public function testHandleTileSmallImage()
     {
         config(['image.tiles.threshold' => 300]);
@@ -181,6 +168,32 @@ class ProcessNewImageTest extends TestCase
         with(new ProcessNewImageMock($image))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tilingInProgress);
+    }
+
+    public function testHandleMergeMetadata()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'exif-test.jpg',
+            'volume_id' => $volume->id,
+            'attrs' => [
+                'metadata' => ['distance_to_ground' => 5],
+            ],
+        ]);
+        $this->assertFalse($volume->hasGeoInfo());
+
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSAltitudeRef' => "\x00",
+            'GPSAltitude' => 500,
+        ];
+        $job->handle();
+        $image = $image->fresh();
+        $expect = [
+            'distance_to_ground' => 5,
+            'gps_altitude' => 500,
+        ];
+        $this->assertEquals($expect, $image->metadata);
     }
 }
 

@@ -12,6 +12,7 @@
             :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
             :has-active-filter="hasActiveAnnotationFilter"
             :own-user-id="{{$user->id}}"
+            :annotations-hidden-by-filter="annotationsHiddenByFilter"
             v-on:select="selectAnnotation"
             v-on:deselect="deselectAnnotation"
             v-on:detach="detachAnnotationLabel"
@@ -20,12 +21,17 @@
             inline-template
             >
                 <div class="annotations-tab">
-                    <filters
-                         :annotation-filters="annotationFilters"
-                         :has-active-filter="hasActiveFilter"
-                         v-on:select="emitSelectFilter"
-                         v-on:unselect="emitUnselectFilter"
-                        ></filters>
+                    <div class="annotations-tab__header">
+                        <filters
+                             :annotation-filters="annotationFilters"
+                             :has-active-filter="hasActiveFilter"
+                             v-on:select="emitSelectFilter"
+                             v-on:unselect="emitUnselectFilter"
+                            ></filters>
+                        <div v-if="annotationsHiddenByFilter" class="text-info">
+                            Some annotations are hidden by a filter.
+                        </div>
+                    </div>
                     <ul class="annotations-tab__list list-unstyled" ref="scrollList">
                         <label-item
                              v-for="item in labelItems"

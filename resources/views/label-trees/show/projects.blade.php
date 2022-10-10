@@ -1,25 +1,23 @@
-<div class="panel panel-default">
-    @if (isset($version))
-        <div class="panel-heading">Projects using this label tree version</div>
-    @else
-        <div class="panel-heading">Projects using this label tree</div>
-    @endif
-    <ul class="list-group list-group-restricted">
-        @if (Route::has('project'))
-            @foreach($projects as $project)
-                <li class="list-group-item"><a href="{{route('project', $project->id)}}">{{$project->name}}</a></li>
-            @endforeach
-        @else
-            @foreach($projects as $project)
-                <li class="list-group-item">{{$project->name}}</li>
-            @endforeach
-        @endif
-        @if ($projects->count() === 0)
-            @if (isset($version))
-                <li class="list-group-item">This label tree version is not used by any of your projects.</li>
-            @else
-                <li class="list-group-item">This label tree is not used by any of your projects.</li>
-            @endif
-        @endif
-    </ul>
+@extends('label-trees.show.base')
+
+@push('scripts')
+<script type="text/javascript">
+    @can('update', $tree)
+        biigle.$declare('labelTrees.authorizedProjects', {!! $authorizedProjects !!});
+        biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});
+    @endcan
+</script>
+@endpush
+
+@section('label-tree-content')
+<div class="row">
+    <div class="col-xs-6">
+        @include('label-trees.show.projects-list')
+    </div>
+    <div class="col-xs-6">
+        @can('update', $tree)
+            @include('label-trees.show.authorized-projects')
+        @endcan
+    </div>
 </div>
+@endsection

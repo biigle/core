@@ -35,7 +35,7 @@ class UpdateLabelTree extends FormRequest
     {
         return [
             'name' => 'filled|max:256',
-            'visibility_id' => 'id|exists:visibilities,id',
+            'visibility_id' => 'integer|exists:visibilities,id',
         ];
     }
 }

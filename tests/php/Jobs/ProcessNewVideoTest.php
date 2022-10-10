@@ -44,6 +44,21 @@ class ProcessNewVideoTest extends TestCase
         }
     }
 
+    public function testHandleTooLarge()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        FileCache::shouldReceive('getOnce')
+            ->andThrow(new Exception('The file is too large with more than 0 bytes.'));
+
+        try {
+            $job->handle();
+            $this->fail('Expected an exception.');
+        } catch (Exception $e) {
+            $this->assertEquals(Video::ERROR_TOO_LARGE, $video->fresh()->error);
+        }
+    }
+
     public function testHandleMimeType()
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
@@ -61,12 +76,36 @@ class ProcessNewVideoTest extends TestCase
         $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
     }
 
+    public function testHandleInvalidMimeTypeFileCache()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        FileCache::shouldReceive('getOnce')
+            ->andThrow(new Exception("Error while caching file 'test.mp4': MIME type 'video/x-m4v' not allowed."));
+
+        try {
+            $job->handle();
+            $this->fail('Expected an exception.');
+        } catch (Exception $e) {
+            $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
+        }
+    }
+
     public function testHandleSize()
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
         $this->assertEquals(104500, $video->fresh()->size);
+    }
+
+    public function testHandleDimensions()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->handle();
+        $this->assertEquals(120, $video->fresh()->width);
+        $this->assertEquals(144, $video->fresh()->height);
     }
 
     public function testHandleMalformed()

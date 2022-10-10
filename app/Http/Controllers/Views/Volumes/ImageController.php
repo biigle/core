@@ -24,6 +24,7 @@ class ImageController extends Controller
             'gps_altitude' => 'GPS Altitude',
             'distance_to_ground' => 'Distance to ground',
             'yaw' => 'Yaw/Heading',
+            'area' => 'Area',
         ];
 
         return view('volumes.images.index', [

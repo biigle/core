@@ -1,17 +1,20 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$factory->define(Biigle\VideoAnnotationLabel::class, function (Faker $faker) {
-    return [
-        'annotation_id' => function () {
-            return factory(Biigle\VideoAnnotation::class)->create()->id;
-        },
-        'label_id' => function () {
-            return factory(Biigle\Label::class)->create()->id;
-        },
-        'user_id' => function () {
-            return factory(Biigle\User::class)->create()->id;
-        },
-    ];
-});
+use Biigle\VideoAnnotation;
+
+class VideoAnnotationLabelFactory extends AnnotationLabelFactory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return array_merge(parent::definition(), [
+            'annotation_id' => VideoAnnotation::factory(),
+        ]);
+    }
+}

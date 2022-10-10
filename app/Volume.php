@@ -7,8 +7,12 @@ use Cache;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
+use Storage;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -16,7 +20,7 @@ use Illuminate\Database\QueryException;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * Regular expression that matches the supported image file extensions.
@@ -36,7 +40,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const VIDEO_FILE_REGEX = '/\.(mpeg|mp4|webm)(\?.+)?$/i';
+    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -57,13 +61,6 @@ class Volume extends Model
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['video_link', 'gis_link', 'doi'];
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -325,7 +322,7 @@ class Volume extends Model
     {
         // We can cache this for 1 hour because it's unlikely to change as long as the
         // volume exists.
-        return Cache::remember("volume-thumbnails-{$this->id}", 3600, function () {
+        return Cache::remember($this->getThumbnailsCacheKey(), 3600, function () {
             $number = 10;
             $total = $this->files()->count();
             $query = $this->orderedFiles();
@@ -357,7 +354,7 @@ class Volume extends Model
      */
     public function flushThumbnailCache()
     {
-        Cache::forget("volume-thumbnails-{$this->id}");
+        Cache::forget($this->getThumbnailsCacheKey());
     }
 
     /**
@@ -367,7 +364,7 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("volume-{$this->id}-has-geo-info", 3600, function () {
+        return Cache::remember($this->getGeoInfoCacheKey(), 3600, function () {
             return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
         });
     }
@@ -377,7 +374,7 @@ class Volume extends Model
      */
     public function flushGeoInfoCache()
     {
-        Cache::forget("volume-{$this->id}-has-geo-info");
+        Cache::forget($this->getGeoInfoCacheKey());
         $this->projects->each(function ($p) {
             $p->flushGeoInfoCache();
         });
@@ -390,71 +387,34 @@ class Volume extends Model
      */
     public function setUrlAttribute($value)
     {
-        return $this->attributes['url'] = $value ? rtrim($value, '/') : $value;
-    }
-
-    /**
-     * Set the video_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setVideoLinkAttribute($value)
-    {
-        return $this->setJsonAttr('video_link', $value);
-    }
-
-    /**
-     * Get the video_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getVideoLinkAttribute()
-    {
-        return $this->getJsonAttr('video_link');
-    }
-
-    /**
-     * Set the gis_link attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setGisLinkAttribute($value)
-    {
-        return $this->setJsonAttr('gis_link', $value);
-    }
-
-    /**
-     * Get the gis_link attribute of this volume.
-     *
-     * @return string
-     */
-    public function getGisLinkAttribute()
-    {
-        return $this->getJsonAttr('gis_link');
-    }
-
-    /**
-     * Set the doi attribute of this volume.
-     *
-     * @param string $value
-     */
-    public function setDoiAttribute($value)
-    {
-        if (is_string($value)) {
-            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
+        // Do not trim the slashes defining the protocol/storage disk.
+        if (is_string($value) && !str_ends_with($value, '://')) {
+            $value = rtrim($value, '/');
         }
 
-        return $this->setJsonAttr('doi', $value);
+        return $this->attributes['url'] = $value;
     }
 
     /**
-     * Get the doi attribute of this volume.
+     * Set the creating_async attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setCreatingAsyncAttribute($value)
+    {
+        $value = $value === false ? null : $value;
+
+        return $this->setJsonAttr('creating_async', $value);
+    }
+
+    /**
+     * Get the creating_async attribute of this volume.
      *
      * @return string
      */
-    public function getDoiAttribute()
+    public function getCreatingAsyncAttribute()
     {
-        return $this->getJsonAttr('doi');
+        return $this->getJsonAttr('creating_async', false);
     }
 
     /**
@@ -488,5 +448,116 @@ class Volume extends Model
     public function isVideoVolume()
     {
         return $this->media_type_id === MediaType::videoId();
+    }
+
+    /**
+     * Save an iFDO metadata file and link it with this volume.
+     *
+     * @param UploadedFile $file iFDO YAML file.
+     *
+     */
+    public function saveIfdo(UploadedFile $file)
+    {
+        $disk = config('volumes.ifdo_storage_disk');
+        $file->storeAs('', $this->getIfdoFilename(), $disk);
+        Cache::forget($this->getIfdoCacheKey());
+    }
+
+    /**
+     * Check if an iFDO metadata file is available for this volume.
+     *
+     * @param bool $ignoreErrors Set to `true` to ignore exceptions and return `false` if iFDO existence could not be determined.
+     * @return boolean
+     */
+    public function hasIfdo($ignoreErrors = false)
+    {
+        try {
+            return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
+                return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
+            });
+        } catch (Exception $e) {
+            if (!$ignoreErrors) {
+                throw $e;
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * Delete the iFDO metadata file linked with this volume.
+     */
+    public function deleteIfdo()
+    {
+        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
+        Cache::forget($this->getIfdoCacheKey());
+    }
+
+    /**
+     * Download the iFDO that is attached to this volume.
+     *
+     * @return Response
+     */
+    public function downloadIfdo()
+    {
+        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
+
+        if (!$disk->exists($this->getIfdoFilename())) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
+    }
+
+    /**
+     * Get the content of the iFDO file associated with this volume.
+     *
+     * @return array
+     */
+    public function getIfdo()
+    {
+        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
+
+        return yaml_parse($content);
+    }
+
+    /**
+     * Get the filename of the volume iFDO in storage.
+     *
+     * @return string
+     */
+    protected function getIfdoFilename()
+    {
+        return $this->id.'.yaml';
+    }
+
+    /**
+     * Get the cache key for volume thumbnails.
+     *
+     * @return string
+     */
+    protected function getThumbnailsCacheKey()
+    {
+        return "volume-thumbnails-{$this->id}";
+    }
+
+    /**
+     * Get the cache key for volume geo info.
+     *
+     * @return string
+     */
+    protected function getGeoInfoCacheKey()
+    {
+        return "volume-{$this->id}-has-geo-info";
+    }
+
+    /**
+     * Get the cache key for volume iFDO info.
+     *
+     * @return string
+     */
+    protected function getIfdoCacheKey()
+    {
+        return "volume-{$this->id}-has-ifdo";
     }
 }

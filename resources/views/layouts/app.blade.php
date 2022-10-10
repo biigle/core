@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="{{ cachebust_asset('favicon.ico') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="{{ cachebust_asset('favicon.png') }}">
     @hasSection('title')
         <title>@yield('title') - BIIGLE</title>
     @else
@@ -29,7 +30,6 @@
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
-        Vue.http.headers.common['X-CSRF-TOKEN'] = '{{csrf_token()}}';
     </script>
     @stack('scripts')
 </body>

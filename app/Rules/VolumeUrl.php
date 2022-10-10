@@ -3,16 +3,30 @@
 namespace Biigle\Rules;
 
 use App;
+use Biigle\User;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
+use InvalidArgumentException;
 use Storage;
 
 class VolumeUrl implements Rule
 {
+    /**
+     * Regexes to match denied storage providers.
+     *
+     * @var array
+     */
+    const PROVIDER_DENYLIST_REGEX = [
+        'https?:\/\/onedrive.*',
+        'https?:\/\/drive.google.*',
+        'https?:\/\/(www\.)?dropbox.*',
+    ];
+
     /**
      * The validation message to display.
      *
@@ -65,6 +79,12 @@ class VolumeUrl implements Rule
     {
         $client = App::make(Client::class);
 
+        if ($this->isDeniedProvider($value)) {
+            $this->message = 'Personal storage providers such as Dropbox, OneDrive or Google Drive are not supported as remote locations.';
+
+            return false;
+        }
+
         try {
             $response = $client->head($value);
         } catch (ServerException $e) {
@@ -105,13 +125,20 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (!config("filesystems.disks.{$url[0]}")) {
-            $this->message = "Storage disk '{$url[0]}' does not exist.";
+        if (Gate::denies('use-disk', $url[0])) {
+            $this->message = "Not authorized to access this storage disk.";
 
             return false;
         }
 
-        $disk = Storage::disk($url[0]);
+        try {
+            $disk = Storage::disk($url[0]);
+        } catch (InvalidArgumentException $e) {
+            $this->message = $e->getMessage();
+
+            return false;
+        }
+
         if (empty($disk->files($url[1])) && empty($disk->directories($url[1]))) {
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
@@ -119,5 +146,23 @@ class VolumeUrl implements Rule
         }
 
         return true;
+    }
+
+    /**
+     * Determine if the new remote volume URL is from a denied provider.
+     *
+     * @param string $value
+     *
+     * @return boolean
+     */
+    protected function isDeniedProvider($value)
+    {
+        foreach (self::PROVIDER_DENYLIST_REGEX as $regex) {
+            if (preg_match("/{$regex}/i", $value) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

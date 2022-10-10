@@ -61,6 +61,12 @@
             These are arguably the most important properties that can be adjusted on an image. Choose a brightness value larger than 0 to increase the brightness of the image. A value lower than 0 decreases the brightness. Adjusting the contrast works just the same. You can also adjust the brightness individually for each color channel of the image. Click on the <i class="fa fa-sliders-h"></i> button and the slider for the brightness will expand into three sliders for the red, green and blue color channels. Press the button again to get back to adjusting the brightness for all color channels at once.
         </p>
 
+        <h4>Gamma</h4>
+
+        <p>
+            Gamma adjustment allows you to make dark regions brighter or bright regions darker in the image. Use a value between 0 and 1 to make dark regions brighter or a value greater than 1 to make bright regions darker.
+        </p>
+
         <h4>Hue</h4>
 
         <p>
@@ -105,6 +111,10 @@
 
         <p>
             The annotation opacity slider allows you to make annotations more transparent or hide them completely. Note that this setting will be remembered permanently so don't be confused if no annotations show up the next time you open an image in the image annotation tool.
+        </p>
+
+        <p>
+            The cached images slider allows to preload the selected amount of images. The default amount is one. This allows you to move between images more quickly.
         </p>
 
         <p>

@@ -20,6 +20,7 @@ import MeasureInteraction from './annotationCanvas/measureInteraction';
 import Minimap from './minimap';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
+import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
@@ -136,9 +137,10 @@ export default {
         return {
             initialized: false,
             // Options to use for the view.fit function.
-            viewFitOptions: {
-                padding: [50, 50, 50, 50],
-                minResolution: 1,
+            focusOptions: {
+                padding: 50,
+                duration: 250,
+                resolution: 1,
             },
             // There are several interaction modes like 'drawPoint', 'attach' or
             // 'translate' etc. For each mode the allowed/active OpenLayers map
@@ -221,14 +223,18 @@ export default {
     },
     methods: {
         createMap() {
+            let control = new ZoomToExtentControl({
+                tipLabel: 'Zoom to show whole image',
+                // fontawesome compress icon
+                label: '\uf066'
+            });
+
+            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+
             let map = new Map({
                 controls: [
                     new ZoomControl(),
-                    new ZoomToExtentControl({
-                        tipLabel: 'Zoom to show whole image',
-                        // fontawesome compress icon
-                        label: '\uf066'
-                    }),
+                    control,
                 ],
                 interactions: defaultInteractions({
                     altShiftDragRotate: false,
@@ -236,14 +242,27 @@ export default {
                     keyboard: false,
                     shiftDragZoom: false,
                     pinchRotate: false,
-                    pinchZoom: false
+                    pinchZoom: false,
+                    mouseWheelZoom: false,
                 }),
             });
 
-            map.addControl(new ZoomToNativeControl({
+            map.addInteraction(new MouseWheelZoom({
+                condition: function (mapBrowserEvent) {
+                    // If Shift is pressed, the event should be handled by the parent
+                    // component to scroll through the images of a volume.
+                    return !shiftKeyOnlyCondition(mapBrowserEvent);
+                },
+            }));
+
+            control = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
-            }));
+            });
+
+            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+
+            map.addControl(control);
 
             return map;
         },
@@ -274,7 +293,10 @@ export default {
                 condition: clickCondition,
                 style: Styles.highlight,
                 layers: [this.annotationLayer],
-                // enable selecting multiple overlapping features at once
+                // Enable selection of multiple overlapping annotations. Otherwise you
+                // could always only select the annotation that was drawn last (i.e. on
+                // the top). Use Shift+Click to deselect overlapping annotations that
+                // shouldn't be selected or use the annotation filter.
                 multi: true
             });
 
@@ -302,6 +324,8 @@ export default {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
+
+
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -399,19 +423,25 @@ export default {
         focusAnnotation(annotation, fast, keepResolution) {
             let feature = this.annotationSource.getFeatureById(annotation.id);
             if (feature) {
-                if (fast) {
-                    delete this.viewFitOptions.duration;
-                } else {
-                    this.viewFitOptions.duration = 250;
+                let view = this.map.getView();
+                let duration = fast ? 0 : this.focusOptions.duration;
+                let resolution = keepResolution ? this.resolution : this.focusOptions.resolution;
+                let extent = feature.getGeometry().getExtent().slice();
+                extent[0] -= this.focusOptions.padding;
+                extent[1] -= this.focusOptions.padding;
+                extent[2] += this.focusOptions.padding;
+                extent[3] += this.focusOptions.padding;
+
+                if (!keepResolution) {
+                    let exactResolution = view.getResolutionForExtent(extent);
+                    resolution = exactResolution > this.focusOptions.resolution ? exactResolution : resolution;
                 }
 
-                if (keepResolution) {
-                    this.viewFitOptions.minResolution = this.resolution;
-                } else {
-                    this.viewFitOptions.minResolution = 1;
-                }
-
-                this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
+                view.animate({
+                    center: getCenter(extent),
+                    resolution: resolution,
+                    duration: duration,
+                });
             }
         },
         fitImage() {
@@ -429,6 +459,22 @@ export default {
         handlePrevious() {
             if (!this.modifyInProgress) {
                 this.$emit('previous');
+            }
+        },
+        conditionalHandleScroll(event) {
+            if (shiftKeyOnlyCondition({originalEvent: event})) {
+                this.handleScroll(event);
+            }
+        },
+        handleScroll(event) {
+            event.preventDefault();
+            // Some systems toggle the scroll direction if Shift is pressed, so we
+            // take deltaX if deltaY is 0.
+            const delta = event.deltaY || event.deltaX;
+            if (delta < 0) {
+                this.handleNext();
+            } else if (delta > 0) {
+                this.handlePrevious();
             }
         },
         handleNext() {
@@ -506,13 +552,18 @@ export default {
                 this.requireSelectedLabel();
             }
         },
-        requireSelectedLabel() {
+        requireSelectedLabel(reset) {
+            reset = reset === undefined ? true : reset;
+
             this.$emit('requires-selected-label');
-            this.resetInteractionMode();
+            if (reset) {
+                this.resetInteractionMode();
+            }
         },
         render() {
             if (this.map) {
                 this.map.render();
+                this.$emit('render');
             }
         },
         handleRegularImage(image) {

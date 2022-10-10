@@ -1,18 +1,40 @@
-<div class="col-md-12 clearfix" id="label-trees-title">
+<div class="clearfix" id="label-trees-title">
+    <span class="pull-right label-tree-buttons">
+        @can('update', $tree)
+            <span v-if="editing" v-cloak>
+                <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
+                <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
+            </span>
+        @endcan
+        @include('label-trees.show.version-button')
+        <dropdown menu-right>
+            <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
+            <template slot="dropdown">
+                <li>
+                    <a href="{{route('label-trees-merge-index', $tree->id)}}" title="Merge another label tree into this one">Merge</a>
+                </li>
+                <li>
+                    <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" title="Create a fork of this label tree" >Fork</a>
+                </li>
+                @mixin('labelTreesShowDropdown')
+                @if ($tree->members()->where('id', $user->id)->exists())
+                    <li :class="disabledClass">
+                        <a title="Revoke your membership of this label tree" v-on:click.prevent="leaveTree" href="#">Leave</a>
+                    </li>
+                @endif
+                @can('update', $tree)
+                    <li role="separator" class="divider"></li>
+                    <li :class="disabledClass">
+                        <a title="Edit this label tree" v-on:click.prevent="startEditing" href="#">Edit</a>
+                    </li>
+                    <li :class="disabledClass">
+                        <a title="Delete this label tree" v-on:click.prevent="deleteTree" href="#">Delete</a>
+                    </li>
+                @endcan
+            </template>
+        </dropdown>
+    </span>
     @can('update', $tree)
-        <span class="pull-right label-tree-buttons" v-if="editing" v-cloak>
-            <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
-            <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
-        </span>
-        <span class="pull-right label-tree-buttons" v-else>
-            <a href="{{route('label-trees-merge-index', $tree->id)}}" class="btn btn-default" title="Merge another label tree into this one">Merge</a>
-            <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
-            <button class="btn btn-default" v-on:click="startEditing" :disabled="loading" title="Edit this label tree">Edit</button>
-            <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading" title="Delete this label tree">Delete</button>
-            @if ($members->pluck('id')->contains($user->id))
-                <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
-            @endif
-        </span>
         <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">
             <div class="form-group">
                 <input class="form-control label-tree-name" type="text" title="Label tree name" placeholder="Name" v-model="name"/>
@@ -35,15 +57,6 @@
         </h2>
     @else
         <h2>
-            <span class="pull-right">
-                @can('create-label', $tree)
-                    <a href="{{route('label-trees-merge-index', $tree->id)}}" class="btn btn-default" title="Merge another label tree into this one">Merge</a>
-                @endcan
-                <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" class="btn btn-default" title="Create a fork of this label tree" >Fork</a>
-                @if ($members->pluck('id')->contains($user->id))
-                    <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading" title="Revoke your membership of this label tree">Leave</button>
-                @endif
-            </span>
             {{$tree->name}}
             @if ($private)
                 <small class="label label-default label-hollow" title="This label tree is private">Private</small>

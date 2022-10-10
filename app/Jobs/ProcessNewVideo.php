@@ -6,6 +6,7 @@ use App;
 use Biigle\Jobs\Job;
 use Biigle\Video;
 use Exception;
+use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
@@ -13,6 +14,8 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Str;
 use Log;
 use Storage;
 use Throwable;
@@ -20,7 +23,7 @@ use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
-    use SerializesModels;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
@@ -70,13 +73,26 @@ class ProcessNewVideo extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->video, [$this, 'handleFile']);
         } catch (Exception $e) {
+            $retry = true;
             if (!$this->video->error) {
-                $this->video->error = Video::ERROR_NOT_FOUND;
+                if (Str::startsWith($e->getMessage(), 'The file is too large')) {
+                    $this->video->error = Video::ERROR_TOO_LARGE;
+                    $retry = false;
+                } elseif (preg_match("/MIME type '.+' not allowed\.$/", $e->getMessage()) === 1) {
+                    $this->video->error = Video::ERROR_MIME_TYPE;
+                    $retry = false;
+                } else {
+                    $this->video->error = Video::ERROR_NOT_FOUND;
+                }
+
                 $this->video->save();
             }
 
             if (App::runningUnitTests()) {
                 throw $e;
+            } elseif ($retry && $this->attempts() < $this->tries) {
+                // Retry after 10 minutes.
+                $this->release(600);
             } else {
                 Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
             }
@@ -114,6 +130,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
         $this->video->size = File::size($path);
         $this->video->duration = $this->getVideoDuration($path);
+
+        try {
+            $dimensions = $this->getVideoDimensions($path);
+            $this->video->width = $dimensions->getWidth();
+            $this->video->height = $dimensions->getHeight();
+        } catch (Throwable $e) {
+            // ignore and leave dimensions at null.
+        }
+
         if ($this->video->error) {
             $this->video->error = null;
         }
@@ -172,6 +197,22 @@ class ProcessNewVideo extends Job implements ShouldQueue
         return (float) FFProbe::create()
             ->format($path)
             ->get('duration');
+    }
+
+    /**
+     * Get the dimensions of a video
+     *
+     * @param string $url URL/path to the video file
+     *
+     * @return Dimension
+     */
+    protected function getVideoDimensions($url)
+    {
+        if (!isset($this->ffprobe)) {
+            $this->ffprobe = FFProbe::create();
+        }
+
+        return $this->ffprobe->streams($url)->videos()->first()->getDimensions();
     }
 
     /**

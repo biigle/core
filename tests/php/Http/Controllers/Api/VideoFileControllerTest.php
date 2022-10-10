@@ -5,14 +5,20 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Tests\VideoTest;
+use Mockery;
+use RuntimeException;
 use Storage;
 
 class VideoFileControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        Storage::fake('test');
-        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
+        $disk->put('files/video.mp4', 'testvideo');
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
@@ -32,7 +38,11 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowNotFound()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
@@ -46,8 +56,12 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowPartial()
     {
-        Storage::fake('test');
-        Storage::disk('test')->put('files/video.mp4', 'testvideo');
+        $disk = Storage::fake('test');
+        $disk->buildTemporaryUrlsUsing(function () {
+            // Act as if the storage disk driver does not support temporary URLs.
+            throw new RuntimeException;
+        });
+        $disk->put('files/video.mp4', 'testvideo');
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
@@ -79,6 +93,24 @@ class VideoFileControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->get("api/v1/videos/{$video->id}/file")->assertRedirect($video->url);
+    }
+
+    public function testShowTempUrl()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $video = VideoTest::create([
+            'filename' => 'video.mp4',
+            'volume_id' => $id,
+            'attrs' => ['size' => 9],
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('temporaryUrl')->once()->andReturn('myurl');
+        Storage::shouldReceive('disk')->andReturn($mock);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")
+            ->assertRedirect('myurl');
     }
 
     public function testShowNotProcessed()

@@ -44,7 +44,9 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'uses' => 'ManualController@index',
     ]);
 
+    // Redirects for backwards compatibility of deleted or renamed manual articles.
     $router->permanentRedirect('/tutorials/volumes/image-labels', '/manual/tutorials/volumes/file-labels');
+    $router->permanentRedirect('/tutorials/volumes/image-metadata', '/manual/tutorials/volumes/file-metadata');
 
     $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
@@ -191,6 +193,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@show',
         ]);
 
+        $router->get('{id}/projects', [
+            'as'   => 'label-tree-projects',
+            'uses' => 'LabelTreeProjectsController@show',
+        ]);
+
+        $router->get('{id}/members', [
+            'as'   => 'label-tree-members',
+            'uses' => 'LabelTreeMembersController@show',
+        ]);
+
         $router->get('{id}/merge', [
             'as'   => 'label-trees-merge-index',
             'uses' => 'LabelTreeMergeController@index',
@@ -268,23 +280,29 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
 
         $router->get('image-annotations/{id}', [
-            'as'   => 'show-annotation',
-            'uses' => 'AnnotationController@show',
+            'as'   => 'show-image-annotation',
+            'uses' => 'ImageAnnotationController@show',
         ]);
+
 
         // Legacy support.
         $router->redirect('annotate/{id}', '/images/{id}/annotations');
         $router->redirect('annotations/{id}', '/image-annotations/{id}');
     });
 
-    $router->group(['namespace' => 'Videos', 'prefix' => 'videos'], function ($router) {
-        $router->get('{id}/annotations', [
+    $router->group(['namespace' => 'Videos'], function ($router) {
+        $router->get('videos/{id}/annotations', [
             'as' => 'video',
             'uses' => 'VideoController@show',
         ]);
 
+        $router->get('video-annotations/{id}', [
+            'as'   => 'show-video-annotation',
+            'uses' => 'VideoAnnotationController@show',
+        ]);
+
         // Legacy support.
-        $router->redirect('{id}', '/videos/{id}/annotations');
+        $router->redirect('videos/{id}', '/videos/{id}/annotations');
     });
 
 });
