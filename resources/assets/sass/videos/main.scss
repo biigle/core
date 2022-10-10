@@ -27,6 +27,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .panel {
+            max-width: 500px;
+        }
     }
 }
 

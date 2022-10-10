@@ -26,6 +26,11 @@ class VideoNotFoundError extends VideoError {}
 class VideoMimeTypeError extends VideoError {}
 class VideoCodecError extends VideoError {}
 class VideoMalformedError extends VideoError {}
+class VideoTooLargeError extends VideoError {}
+
+// Used to round and parse the video current time from the URL, as it is stored as an int
+// there (without decimal dot).
+const URL_CURRENT_TIME_DIVISOR = 1e4
 
 export default {
     mixins: [LoaderMixin],
@@ -43,6 +48,7 @@ export default {
         return {
             volumeId: null,
             videoId: null,
+            videoDuration: 0,
             videoIds: [],
             videoFileUri: '',
             shapes: [],
@@ -72,6 +78,7 @@ export default {
             initialCurrentTime: 0,
             initialMapCenter: [0, 0],
             initialMapResolution: 0,
+            initialFocussedAnnotation: 0,
             annotationFilters: [],
             activeAnnotationFilter: null,
             resizingTimeline: false,
@@ -82,6 +89,8 @@ export default {
             errors: {},
             error: null,
             user: null,
+            attachingLabel: false,
+            swappingLabel: false,
         };
     },
     computed: {
@@ -120,22 +129,23 @@ export default {
         hasVideoError() {
             return this.error instanceof VideoError;
         },
-        errorMessage() {
-            if (this.hasVideoError) {
-                if (this.error instanceof VideoNotProcessedError) {
-                    return 'The video has not been processed yet. Please try again later.'
-                } else if (this.error instanceof VideoNotFoundError) {
-                    return 'The video file has not been found. Please check the source.'
-                } else if (this.error instanceof VideoMimeTypeError) {
-                    return 'The video MIME type is invalid.'
-                } else if (this.error instanceof VideoCodecError) {
-                    return 'The video codec is invalid.'
-                } else if (this.error instanceof VideoMalformedError) {
-                    return 'The video file is malformed.'
-                }
-            }
-
-            return '';
+        hasNotProcessedError() {
+            return this.error instanceof VideoNotProcessedError;
+        },
+        hasNotFoundError() {
+            return this.error instanceof VideoNotFoundError;
+        },
+        hasMimeTypeError() {
+            return this.error instanceof VideoMimeTypeError;
+        },
+        hasCodecError() {
+            return this.error instanceof VideoCodecError;
+        },
+        hasMalformedError() {
+            return this.error instanceof VideoMalformedError;
+        },
+        hasTooLargeError() {
+            return this.error instanceof VideoTooLargeError;
         },
         errorClass() {
             if (this.hasVideoError) {
@@ -147,6 +157,9 @@ export default {
             }
 
             return '';
+        },
+        annotationsHiddenByFilter() {
+            return this.annotations.length !== this.filteredAnnotations.length;
         },
     },
     methods: {
@@ -163,17 +176,39 @@ export default {
 
             return annotation;
         },
-        seek(time) {
-            if (!this.seeking && this.video.currentTime !== time) {
-                this.seeking = true;
-                this.video.currentTime = time;
+        seek(time, force) {
+            if (this.seeking) {
+                return Vue.Promise.resolve();
             }
+
+            if (this.video.currentTime === time && force !== true) {
+                return Vue.Promise.resolve();
+            }
+
+            let promise = new Vue.Promise((resolve, reject) => {
+                this.video.addEventListener('seeked', resolve);
+                this.video.addEventListener('error', reject);
+            });
+            this.seeking = true;
+            this.video.currentTime = time;
+
+            return promise;
         },
         selectAnnotation(annotation, time, shift) {
+            if (this.attachingLabel) {
+                this.attachAnnotationLabel(annotation);
+
+                return Vue.Promise.resolve();
+            } else if (this.swappingLabel) {
+                this.swapAnnotationLabel(annotation);
+
+                return Vue.Promise.resolve();
+            }
+
             if (shift) {
-                this.selectAnnotations([annotation], [], time);
+                return this.selectAnnotations([annotation], [], time);
             } else {
-                this.selectAnnotations([annotation], this.selectedAnnotations, time);
+                return this.selectAnnotations([annotation], this.selectedAnnotations, time);
             }
         },
         selectAnnotations(selected, deselected, time) {
@@ -189,9 +224,12 @@ export default {
                 annotation.selected = time;
             });
 
+
             if (time !== undefined && hadSelected === false) {
-                this.seek(time);
+                return this.seek(time);
             }
+
+            return Vue.Promise.resolve();
         },
         deselectAnnotation(annotation) {
             if (annotation) {
@@ -223,6 +261,14 @@ export default {
             this.updatePendingAnnotation(pendingAnnotation);
             let tmpAnnotation = this.pendingAnnotation;
             this.annotations.push(tmpAnnotation);
+
+            // Catch an edge case where the time of the last key frame is greater than
+            // the actual video duration.
+            // See: https://github.com/biigle/core/issues/305
+            let frameCount = tmpAnnotation.frames.length;
+            if (this.videoDuration > 0 && frameCount > 0 && tmpAnnotation.frames[frameCount - 1] > this.videoDuration) {
+                tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
+            }
 
             let annotation = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
@@ -313,7 +359,7 @@ export default {
             this.urlParams.r = Math.round(resolution * 100);
         },
         updateVideoUrlParams() {
-            this.urlParams.t = Math.round(this.video.currentTime * 100);
+            this.urlParams.t = Math.round(this.video.currentTime * URL_CURRENT_TIME_DIVISOR);
         },
         restoreUrlParams() {
             if (UrlParams.get('r') !== undefined) {
@@ -328,21 +374,31 @@ export default {
             }
 
             if (UrlParams.get('t') !== undefined) {
-                this.initialCurrentTime = parseInt(UrlParams.get('t'), 10) / 100;
+                this.initialCurrentTime = parseInt(UrlParams.get('t'), 10) / URL_CURRENT_TIME_DIVISOR;
+            }
+
+            if (UrlParams.get('annotation') !== undefined) {
+                this.initialFocussedAnnotation = parseInt(UrlParams.get('annotation'), 10);
             }
         },
         maybeInitCurrentTime() {
-            if (this.initialCurrentTime === 0) {
+            // Ignore initial time if an initial annotation is selected.
+            if (this.initialCurrentTime === 0 || this.selectedAnnotations.length > 0) {
                 return Vue.Promise.resolve();
             }
 
-            let promise = new Vue.Promise((resolve, reject) => {
-                this.video.addEventListener('seeked', resolve);
-                this.video.addEventListener('error', reject);
-            });
-            this.seek(this.initialCurrentTime);
+            return this.seek(this.initialCurrentTime);
+        },
+        maybeFocusInitialAnnotation() {
+            if (this.initialFocussedAnnotation) {
+                let annotation = this.annotations.find(annotation => annotation.id === this.initialFocussedAnnotation);
+                if (annotation) {
+                    return this.selectAnnotation(annotation, annotation.startFrame)
+                        .then(() => this.$refs.videoScreen.focusAnnotation(annotation));
+                }
+            }
 
-            return promise;
+            return Vue.Promise.resolve();
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
@@ -354,8 +410,24 @@ export default {
                     .catch(handleErrorResponse);
             }
         },
-        attachAnnotationLabel(annotation, label) {
-            annotation.attachAnnotationLabel(label)
+        attachAnnotationLabel(annotation) {
+            let promise = annotation.attachAnnotationLabel(this.selectedLabel);
+            promise.catch(handleErrorResponse);
+
+            return promise;
+        },
+        swapAnnotationLabel(annotation) {
+            let lastLabel = annotation.labels
+                .filter(l => l.user_id === this.user.id)
+                .sort((a, b) => a.id - b.id)
+                .pop();
+
+            this.attachAnnotationLabel(annotation)
+                .then(() => {
+                    if (lastLabel) {
+                        this.detachAnnotationLabel(annotation, lastLabel);
+                    }
+                })
                 .catch(handleErrorResponse);
         },
         initAnnotationFilters() {
@@ -424,11 +496,14 @@ export default {
                 throw new VideoCodecError();
             } else if (video.error === this.errors['malformed']) {
                 throw new VideoMalformedError();
+            } else if (video.error === this.errors['too-large']) {
+                throw new VideoTooLargeError();
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
 
             this.error = null;
+            this.videoDuration = video.duration;
 
             return video;
         },
@@ -448,6 +523,7 @@ export default {
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.updateAnnotationFilters)
+                .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
             this.video.src = this.videoFileUri.replace(':id', video.id);
@@ -486,6 +562,7 @@ export default {
             this.annotations = [];
             this.seeking = false;
             this.initialCurrentTime = 0;
+            this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
             this.$refs.videoScreen.reset();
         },
@@ -507,6 +584,14 @@ export default {
             }
 
             return ids;
+        },
+        handleAttachingLabelActive(attaching) {
+            this.swappingLabel = false;
+            this.attachingLabel = attaching;
+        },
+        handleSwappingLabelActive(swapping) {
+            this.attachingLabel = false;
+            this.swappingLabel = swapping;
         },
     },
     watch: {
@@ -540,9 +625,14 @@ export default {
         this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = true;
+        this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
-                Messages.danger('The video codec is not supported by your browser.');
+                if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
+                    Messages.danger('Unable to access the video file.');
+                } else {
+                    Messages.danger('The video file could not be accessed or the codec is not supported by your browser.');
+                }
             } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                 Messages.danger('Error while loading video file.');
             }
@@ -559,6 +649,11 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
+
+        // See: https://github.com/biigle/core/issues/391
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+            Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
+        }
     },
 };
 </script>

@@ -42,6 +42,9 @@ class VideoControllerTest extends ApiTestCase
                 'mimeType' => $video->mimeType,
                 'duration' => $video->duration,
                 'error' => null,
+                'taken_at' => null,
+                'lat' => null,
+                'lng' => null,
             ]);
     }
 
@@ -68,6 +71,9 @@ class VideoControllerTest extends ApiTestCase
                 'mimeType' => $video->mimeType,
                 'duration' => $video->duration,
                 'error' => null,
+                'taken_at' => null,
+                'lat' => null,
+                'lng' => null,
             ]);
     }
 
@@ -95,6 +101,9 @@ class VideoControllerTest extends ApiTestCase
                 'mimeType' => $video->mimeType,
                 'duration' => $video->duration,
                 'error' => Video::ERROR_NOT_FOUND,
+                'taken_at' => null,
+                'lat' => null,
+                'lng' => null,
             ]);
     }
 

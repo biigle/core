@@ -349,9 +349,9 @@ class ImageAnnotationTest extends ModelTestCase
         $this->assertEquals($this->model->shape, $this->model->getShape());
     }
 
-    public function testGetImage()
+    public function testGetFile()
     {
-        $this->assertEquals($this->model->image, $this->model->getImage());
+        $this->assertEquals($this->model->image, $this->model->getFile());
     }
 
     public function testGetFileIdAttribute()

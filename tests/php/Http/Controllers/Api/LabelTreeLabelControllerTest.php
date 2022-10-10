@@ -52,6 +52,14 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         // parent is not from same tree
         $response->assertStatus(422);
 
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'parent_id' => 'anemone',
+        ]);
+        // parent id must be integer
+        $response->assertStatus(422);
+
         $this->assertEquals(1, $tree->labels()->count());
         $this->assertFalse($parent->children()->exists());
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [

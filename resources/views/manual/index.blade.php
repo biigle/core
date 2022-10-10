@@ -88,11 +88,11 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Image metadata</a>
+                <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}">File metadata</a>
             </h4>
 
             <p>
-                Upload image metadata to add information that can't be extracted from the images.
+                Upload metadata to add information that can't be extracted from the files.
             </p>
 
             <h4>
@@ -231,6 +231,10 @@
                 <a href="https://doi.org/10.3389/fmars.2017.00083">Langenkämper, D., Zurowietz, M., Schoening, T., & Nattkemper, T. W. (2017). Biigle 2.0-browsing and annotating large marine image collections.</a><br>Frontiers in Marine Science, 4, 83. doi: <code>10.3389/fmars.2017.00083</code>
             </p>
             <p>
+                <strong>Observations From Four Years of BIIGLE 2.0</strong><br>
+                <a href="https://doi.org/10.3389/fmars.2021.760036">Zurowietz, M., & Nattkemper, T. W. (2021). Current Trends and Future Directions of Large Scale Image and Video Annotation: Observations From Four Years of BIIGLE 2.0.</a><br>Frontiers in Marine Science, 8, 760036. doi: <code>10.3389/fmars.2021.760036</code>
+            </p>
+            <p>
                 <strong>Video Object Tracking</strong><br>
                 <a href="https://doi.org/10.1109/CVPR.2017.515">Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.</a> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: <code>10.1109/CVPR.2017.515</code>
             </p>
@@ -250,7 +254,10 @@
                 You may access most of the functionality of this application using the RESTful API. Most of the API requires user authentication via session cookie (being logged in to the website) but it is also available for external requests using a personal API token. You can manage your API tokens in the <a href="{{ route('settings-tokens') }}">user settings</a>.
             </p>
             <p>
-                The API works with form (<code>x-www-form-urlencoded</code>) as well as JSON requests. For form requests, you can use <a href="http://laravel.com/docs/5.5/routing#form-method-spoofing">method spoofing</a> to use different HTTP methods. For the complete documentation, check out the link below.
+                API access is rate-limited to 10,800 requests per hour (3,600 for unauthenticated users). You may access the rate limit and the current number of remaining requests through the <code>X-RateLimit-Limit</code> and <code>X-RateLimit-Remaining</code> HTTP headers.
+            </p>
+            <p>
+                The API works with form (<code>x-www-form-urlencoded</code>) as well as JSON requests. For form requests, you can use <a href="https://laravel.com/docs/9.x/routing#form-method-spoofing">method spoofing</a> to use different HTTP methods. For the complete documentation, check out the link below.
             </p>
             <p>
                 <a class="btn btn-default btn-lg btn-block" href="{{ url('doc/api/index.html') }}">RESTful API documentation</a>
@@ -259,13 +266,13 @@
         <div class="row">
             <h3>Server</h3>
             <p>
-                The server application is written in PHP using the <a href="http://laravel.com/">Laravel</a> framework. Have a look at their <a href="http://laravel.com/docs/6.x">excellent documentation</a> for further information. For the class reference and API documentation, check out the link below.
+                The server application is written in PHP using the <a href="http://laravel.com/">Laravel</a> framework. Have a look at their <a href="http://laravel.com/docs/9.x">excellent documentation</a> for further information. For the class reference and API documentation, check out the link below.
             </p>
             <p>
                 Laravel allows a modular application design using custom packages (or modules). In fact, the core of this application doesn't provide much more than user and database management as well as the RESTful API. Any additional functionality is added by a new module.
             </p>
             <p>
-                We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/6.x/packages">Laravel documentation</a> but we have some tutorials here as well.
+                We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/9.x/packages">Laravel documentation</a> but we have some tutorials here as well.
             </p>
             <p>
                 <a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>

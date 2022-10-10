@@ -4,7 +4,6 @@ namespace Biigle\Http\Requests;
 
 use Biigle\Role;
 use Biigle\User;
-use Hash;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUser extends FormRequest
@@ -47,26 +46,11 @@ class UpdateUser extends FormRequest
             'password' => 'nullable|min:8',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
-            'role_id' => "filled|in:{$roles}",
-            'auth_password' => 'required_with:role_id,password,email',
+            'role_id' => "filled|integer|in:{$roles}",
+            'auth_password' => 'required_with:role_id,password,email|current_password',
             'affiliation' => 'nullable|max:255',
             'super_user_mode' => 'filled|bool',
         ];
-    }
-
-    /**
-     * Configure the validator instance.
-     *
-     * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            if ($this->filled('auth_password') && !Hash::check($this->input('auth_password'), $this->user()->password)) {
-                $validator->errors()->add('auth_password', trans('validation.custom.password'));
-            }
-        });
     }
 
     /**

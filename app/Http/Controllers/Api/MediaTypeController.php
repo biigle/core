@@ -18,11 +18,11 @@ class MediaTypeController extends Controller
      * [
      *    {
      *       "id": 1,
-     *       "name": "time-series"
+     *       "name": "image"
      *    },
      *    {
      *       "id": 2,
-     *       "name": "location-series"
+     *       "name": "video"
      *    }
      * ]
      *
@@ -46,7 +46,7 @@ class MediaTypeController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 1,
-     *    "name": "time-series"
+     *    "name": "image"
      * }
      *
      * @param  int  $id

@@ -14,8 +14,12 @@ use Event;
 use Exception;
 use File;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use ModelTestCase;
+use Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VolumeTest extends ModelTestCase
 {
@@ -437,21 +441,6 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($p->hasGeoInfo());
     }
 
-    public function testLinkAttrs()
-    {
-        foreach (['video_link', 'gis_link'] as $attr) {
-            $this->assertNull($this->model->$attr);
-
-            $this->model->$attr = 'http://example.com';
-            $this->model->save();
-            $this->assertEquals('http://example.com', $this->model->fresh()->$attr);
-
-            $this->model->$attr = null;
-            $this->model->save();
-            $this->assertNull($this->model->fresh()->$attr);
-        }
-    }
-
     public function testHasTiledImages()
     {
         ImageTest::create(['tiled' => false, 'volume_id' => $this->model->id]);
@@ -462,19 +451,11 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($this->model->hasTiledImages());
     }
 
-    public function testSetAndGetDoiAttribute()
+    public function testHandleAttribute()
     {
-        $this->model->doi = '10.3389/fmars.2017.00083';
+        $this->model->handle = '10.3389/fmars.2017.00083';
         $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
-
-        $this->model->doi = 'https://doi.org/10.3389/fmars.2017.00083';
-        $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
-
-        $this->model->doi = 'http://doi.org/10.3389/fmars.2017.00083';
-        $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->handle);
     }
 
     public function testScopeAccessibleBy()
@@ -496,6 +477,9 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->url = 'http://example.com/images/';
         $this->assertEquals('http://example.com/images', $this->model->url);
+
+        $this->model->url = 'disk://';
+        $this->assertEquals('disk://', $this->model->url);
     }
 
     public function testGetThumbnailsAttribute()
@@ -562,5 +546,91 @@ class VolumeTest extends ModelTestCase
 
         $this->model->flushThumbnailCache();
         $this->assertStringContainsString($v->uuid, $this->model->thumbnailsUrl[0]);
+    }
+
+    public function testCreatingAsyncAttr()
+    {
+        $this->assertFalse($this->model->creating_async);
+
+        $this->model->creating_async = true;
+        $this->model->save();
+        $this->assertTrue($this->model->fresh()->creating_async);
+
+        $this->model->creating_async = false;
+        $this->model->save();
+        $this->assertFalse($this->model->fresh()->creating_async);
+    }
+
+    public function testSaveIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $csv = __DIR__."/../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+
+        $this->assertFalse($this->model->hasIfdo());
+        $this->model->saveIfdo($file);
+
+        $disk->assertExists($this->model->id.'.yaml');
+        $this->assertTrue($this->model->hasIfdo());
+    }
+
+    public function testHasIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $this->assertFalse($this->model->hasIfdo());
+        $disk->put($this->model->id.'.yaml', 'abc');
+        $this->assertFalse($this->model->hasIfdo());
+        Cache::flush();
+        $this->assertTrue($this->model->hasIfdo());
+    }
+
+    public function testHasIfdoError()
+    {
+        Storage::shouldReceive('disk')->andThrow(Exception::class);
+        $this->assertFalse($this->model->hasIfdo(true));
+
+        $this->expectException(Exception::class);
+        $this->model->hasIfdo();
+    }
+
+    public function testDeleteIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id.'.yaml', 'abc');
+        $this->assertTrue($this->model->hasIfdo());
+        $this->model->deleteIfdo();
+        $disk->assertMissing($this->model->id.'.yaml');
+        $this->assertFalse($this->model->hasIfdo());
+    }
+
+    public function testDeleteIfdoOnDelete()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id.'.yaml', 'abc');
+        $this->model->delete();
+        $disk->assertMissing($this->model->id.'.yaml');
+    }
+
+    public function testDownloadIfdoNotFound()
+    {
+        $this->expectException(NotFoundHttpException::class);
+        $this->model->downloadIfdo();
+    }
+
+    public function testDownloadIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $disk->put($this->model->id.'.yaml', 'abc');
+        $response = $this->model->downloadIfdo();
+        $this->assertInstanceOf(StreamedResponse::class, $response);
+    }
+
+    public function testGetIfdo()
+    {
+        $disk = Storage::fake('ifdos');
+        $this->assertNull($this->model->getIfdo());
+        $disk->put($this->model->id.'.yaml', 'abc: def');
+        $ifdo = $this->model->getIfdo();
+        $this->assertEquals(['abc' => 'def'], $ifdo);
     }
 }

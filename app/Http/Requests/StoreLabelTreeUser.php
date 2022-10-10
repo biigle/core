@@ -53,8 +53,8 @@ class StoreLabelTreeUser extends FormRequest
         }
 
         return [
-            'id' => 'required|id|exists:users,id',
-            'role_id' => "required|id|in:{$roles}",
+            'id' => 'required|integer|exists:users,id',
+            'role_id' => "required|integer|in:{$roles}",
         ];
     }
 
@@ -66,6 +66,10 @@ class StoreLabelTreeUser extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if ($this->tree->members()->where('id', $this->input('id'))->exists()) {
                 $validator->errors()->add('id', 'The user is already member of this label tree.');

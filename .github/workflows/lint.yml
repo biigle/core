@@ -32,30 +32,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+
     - uses: actions/checkout@v1
       with:
         fetch-depth: 1
-
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer
-        restore-keys: |
-          ${{ runner.os }}-composer
 
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: cp .env.example .env
 
-    - name: Generate key
-      run: php artisan key:generate
+    - name: Set testing key
+      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Run Psalm
       run: composer lint

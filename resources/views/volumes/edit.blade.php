@@ -6,6 +6,7 @@
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
+        biigle.$declare('volumes.hasIfdo', '{!! $volume->hasIfdo() !!}');
     </script>
     @mixin('volumesEditScripts')
 @endpush
@@ -36,9 +37,7 @@
     </div>
     <div class="col-sm-6">
         @include('volumes.edit.files')
-        @if ($volume->isImageVolume())
-            @include('volumes.edit.metadata')
-        @endif
+        @include('volumes.edit.metadata')
         @mixin('volumesEditRight')
     </div>
 </div>

@@ -248,4 +248,30 @@ class RegisterControllerTest extends TestCase
         $this->assertNotNull($user);
         $this->assertEquals(Role::guestId(), $user->role_id);
     }
+
+    public function testRegisterAdminConfirmationPossibleDuplicates()
+    {
+        config(['biigle.user_registration_confirmation' => true]);
+        $user = UserTest::create([
+            'firstname' => 'joe jack',
+            'lastname' => 'user',
+        ]);
+
+        Notification::fake();
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'joe',
+            'lastname'  => 'user',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ]);
+
+        Notification::assertSentTo(new AnonymousNotifiable, RegistrationConfirmation::class, function ($notification) use ($user) {
+            $users = $notification->getDuplicateUsers()->pluck('id');
+
+            return $users->count() === 1 && $users->contains($user->id);
+        });
+    }
 }

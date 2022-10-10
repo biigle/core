@@ -1,17 +1,13 @@
-FROM biigle/app:arm32v6 as intermediate
+FROM ghcr.io/biigle/app:arm32v6 as intermediate
 
-FROM arm32v6/alpine
+FROM arm32v6/nginx:1.22-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
-
-RUN apk add --no-cache nginx
-
-EXPOSE 80
-
-RUN ln -sf /dev/stdout /var/log/nginx/access.log
-RUN ln -sf /dev/stderr /var/log/nginx/error.log
-RUN mkdir -p /run/nginx
+LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
+ADD .docker/ffdhe2048.txt /etc/nginx/conf.d/ffdhe2048.txt
+ADD .docker/headers.include /etc/nginx/conf.d/headers.include
+ADD .docker/ssl.include /etc/nginx/conf.d/ssl.include.special
 
 # Create an alternative configuration for HTTP only. This can be activated by using the
 # nginx-no-ssl.conf instead of the default one. To do this set the command in the Docker
@@ -24,5 +20,3 @@ COPY --from=intermediate /var/www/public /var/www/public
 
 ARG BIIGLE_VERSION
 ENV BIIGLE_VERSION=${BIIGLE_VERSION}
-
-CMD ["nginx", "-g", "daemon off;"]

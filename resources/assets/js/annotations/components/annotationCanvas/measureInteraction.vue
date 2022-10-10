@@ -18,6 +18,7 @@ export default {
         return {
             hasMeasureFeature: false,
             measureFeaturePosition: [0, 0],
+            cantConvertMeasureFeature: true,
         };
     },
     computed: {
@@ -36,6 +37,10 @@ export default {
         handleMeasureDrawStart(e) {
             measureLayer.getSource().clear();
             this.setMeasureFeature(e.feature);
+            this.cantConvertMeasureFeature = true;
+        },
+        handleMeasureDrawEnd() {
+            this.cantConvertMeasureFeature = false;
         },
         updateMeasureFeature(e) {
             this.measureFeaturePosition = e.target.getGeometry().getLastCoordinate();
@@ -51,6 +56,20 @@ export default {
                 feature.on('change', this.updateMeasureFeature);
             }
         },
+        convertMeasurement() {
+            if (!this.hasSelectedLabel) {
+                this.requireSelectedLabel(false);
+            } else {
+                this.annotationSource.addFeature(this.measureFeature);
+                this.handleNewFeature({feature: this.measureFeature});
+                this.clearMeasureFeature();
+            }
+        },
+        clearMeasureFeature() {
+            this.setMeasureFeature(undefined);
+            measureLayer.getSource().clear();
+            this.cantConvertMeasureFeature = true;
+        }
     },
     watch: {
         isMeasuring(measuring) {
@@ -59,8 +78,7 @@ export default {
                 this.map.addInteraction(measureInteraction);
                 this.$emit('measuring');
             } else {
-                measureLayer.getSource().clear();
-                this.setMeasureFeature(undefined);
+                this.clearMeasureFeature();
                 this.map.removeLayer(measureLayer);
                 this.map.removeInteraction(measureInteraction);
             }
@@ -90,6 +108,7 @@ export default {
             style: measureLayer.getStyle(),
         });
         measureInteraction.on('drawstart', this.handleMeasureDrawStart);
+        measureInteraction.on('drawend', this.handleMeasureDrawEnd);
         Keyboard.on('Shift+f', this.toggleMeasuring, 0, this.listenerSet);
 
         // Do not make this reactive.

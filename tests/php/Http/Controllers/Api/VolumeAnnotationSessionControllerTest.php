@@ -98,7 +98,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
-            'users' => [999],
+            'users' => [-1],
         ]);
         // user does not exist
         $response->assertStatus(422);

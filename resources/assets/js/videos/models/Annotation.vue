@@ -1,7 +1,8 @@
 <script>
-import VideoAnnotationApi from '../api/videoAnnotations';
-import {interpolate} from 'polymorph-js';
 import Messages from '../../core/messages/store';
+import VideoAnnotationApi from '../api/videoAnnotations';
+import {getRoundToPrecision} from '../utils';
+import {interpolate} from 'polymorph-js';
 
 /**
  * Annotation model.
@@ -94,9 +95,10 @@ export default Vue.extend({
             this.$emit('tracking-failed', this);
         },
         interpolatePoints(time) {
+            const rtp = getRoundToPrecision(time);
             // This function must be equivalent to the interpolatePoints method of
             // the PHP VideoAnnotation model!
-            if (time < this.startFrame || time > this.endFrame) {
+            if (time < rtp(this.startFrame) || time > rtp(this.endFrame)) {
                 return [];
             }
 
@@ -106,13 +108,18 @@ export default Vue.extend({
 
             let frames = this.frames;
             let i = frames.length - 1;
+
+            if (i === 0) {
+                return this.points[0];
+            }
+
             for (; i >= 0; i--) {
-                if (frames[i] <= time && frames[i] !== null) {
+                if (rtp(frames[i]) <= time && frames[i] !== null) {
                     break;
                 }
             }
 
-            if (frames[i] === time) {
+            if (rtp(frames[i]) === time) {
                 return this.points[i];
             }
 
@@ -210,12 +217,14 @@ export default Vue.extend({
             return points.join(' ');
         },
         hasGapAt(time) {
-            if (time < this.startFrame || time > this.endFrame) {
+            const rtp = getRoundToPrecision(time);
+
+            if (time < rtp(this.startFrame) || time > rtp(this.endFrame)) {
                 return false;
             }
 
             for (let i = this.gapRanges.length - 1; i >= 0; i--) {
-                if (this.gapRanges[i][0] < time && this.gapRanges[i][1] > time) {
+                if (rtp(this.gapRanges[i][0]) < time && rtp(this.gapRanges[i][1]) > time) {
                     return true;
                 }
             }

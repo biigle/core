@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Volume;
 use DB;
@@ -12,6 +13,13 @@ use Queue;
 
 class ProjectVolumeController extends Controller
 {
+    /**
+     * Limit for the number of files above which volume files are created asynchronously.
+     *
+     * @var int
+     */
+    const CREATE_SYNC_LIMIT = 10000;
+
     /**
      * Shows a list of all volumes belonging to the specified project..
      *
@@ -61,9 +69,18 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {String} media_type The media type of the new volume (`image` or `video`). If this attribute is missing, `image` is assumed for backwards compatibility.
      * @apiParam (Required attributes) {String} files List of file names of the images/videos that can be found at the base URL, formatted as comma separated values or as array. With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
      *
-     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
-     * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
-     * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional attributes) {String} metadata_text CSV-like string with file metadata. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp.
+     * @apiParam (Optional attributes) {File} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
+     * @apiParam (Optional attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
+     *
+     * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
+     * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
+     * @apiParam (metadata columns) {Number} lng Longitude where the file was taken in decimal form. If this column is present, `lat` must be present, too. Example: `52.3211`
+     * @apiParam (metadata columns) {Number} lat Latitude where the file was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
+     * @apiParam (metadata columns) {Number} gps_altitude GPS Altitude where the file was taken in meters. Negative for below sea level. Example: `-1500.5`
+     * @apiParam (metadata columns) {Number} distance_to_ground Distance to the sea floor in meters. Example: `30.25`
+     * @apiParam (metadata columns) {Number} area Area shown by the file in m². Example `2.6`.
      *
      * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
@@ -72,9 +89,7 @@ class ProjectVolumeController extends Controller
      * url: 'local://volumes/test-volume'
      * media_type_id: 1
      * files: '1.jpg,2.jpg,3.jpg'
-     * video_link: 'http://example.com'
-     * gis_link: 'http://gis.example.com'
-     * doi: '10.3389/fmars.2017.00083'
+     * handle: '10.3389/fmars.2017.00083'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -85,9 +100,7 @@ class ProjectVolumeController extends Controller
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
      *    "url": "local://volumes/test-volume",
-     *    "video_link": "http://example.com",
-     *    "gis_link": "http://gis.example.com",
-     *    "doi": "10.3389/fmars.2017.00083"
+     *    "handle": "10.3389/fmars.2017.00083"
      * }
      *
      * @param StoreVolume $request
@@ -95,30 +108,40 @@ class ProjectVolumeController extends Controller
      */
     public function store(StoreVolume $request)
     {
-        $volume = new Volume;
-        $volume->name = $request->input('name');
-        $volume->url = $request->input('url');
-        $volume->media_type_id = $request->input('media_type_id');
-        $volume->video_link = $request->input('video_link');
-        $volume->gis_link = $request->input('gis_link');
-        $volume->doi = $request->input('doi');
-        $volume->creator()->associate($request->user());
-        $volume->save();
-        $request->project->volumes()->attach($volume);
+        $volume = DB::transaction(function () use ($request) {
+            $volume = new Volume;
+            $volume->name = $request->input('name');
+            $volume->url = $request->input('url');
+            $volume->media_type_id = $request->input('media_type_id');
+            $volume->handle = $request->input('handle');
+            $volume->creator()->associate($request->user());
+            $volume->save();
+            $request->project->volumes()->attach($volume);
 
-        $files = $request->input('files');
+            $files = $request->input('files');
 
-        // If too many files should be created, do this asynchronously in the
-        // background. Else the script will run in the 30 s execution timeout.
-        $job = new CreateNewImagesOrVideos($volume, $files);
-        if (count($files) > 10000) {
-            Queue::pushOn('high', $job);
-        } else {
-            Queue::connection('sync')->push($job);
-        }
+            $metadata = $request->input('metadata', []);
 
-        // media type shouldn't be returned
-        unset($volume->media_type);
+            // If too many files should be created, do this asynchronously in the
+            // background. Else the script will run in the 30 s execution timeout.
+            $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
+            if (count($files) > self::CREATE_SYNC_LIMIT) {
+                Queue::pushOn('high', $job);
+                $volume->creating_async = true;
+                $volume->save();
+            } else {
+                Queue::connection('sync')->push($job);
+            }
+
+            if ($request->hasFile('ifdo_file')) {
+                $volume->saveIfdo($request->file('ifdo_file'));
+            }
+
+            // media type shouldn't be returned
+            unset($volume->media_type);
+
+            return $volume;
+        });
 
         if ($this->isAutomatedRequest()) {
             return $volume;

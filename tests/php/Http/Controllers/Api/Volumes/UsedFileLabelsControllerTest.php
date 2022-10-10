@@ -38,7 +38,7 @@ class UsedFileLabelsControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("/api/v1/volumes/{$vid}/file-labels/")
             ->assertStatus(200)
-            ->assertExactJson([
+            ->assertSimilarJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,
@@ -75,7 +75,7 @@ class UsedFileLabelsControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("/api/v1/volumes/{$vid}/file-labels/")
             ->assertStatus(200)
-            ->assertExactJson([
+            ->assertSimilarJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,

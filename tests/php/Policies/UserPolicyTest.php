@@ -17,6 +17,13 @@ class UserPolicyTest extends TestCase
         $this->admin = UserTest::create(['role_id' => Role::adminId()]);
     }
 
+    public function testIndex()
+    {
+        $this->assertFalse($this->guest->can('index', User::class));
+        $this->assertTrue($this->editor->can('index', User::class));
+        $this->assertTrue($this->admin->can('index', User::class));
+    }
+
     public function testCreate()
     {
         $this->assertFalse($this->guest->can('create', User::class));

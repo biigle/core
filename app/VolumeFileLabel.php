@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class VolumeFileLabel extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that should be casted to native types.
      *

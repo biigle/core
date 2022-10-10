@@ -8,11 +8,19 @@ export default {
     data() {
         return {
             isBrightnessRgbActive: false,
+            colorAdjustmentDefaults: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+                gamma: [1],
+            },
             colorAdjustment: {
                 brightnessContrast: [0, 0],
                 brightnessRGB: [0, 0, 0],
                 hueSaturation: [0, 0],
                 vibrance: [0],
+                gamma: [1],
             },
         };
     },
@@ -20,11 +28,9 @@ export default {
         resetType(type, index) {
             if (index !== undefined) {
                 // Use splice so Vue is able to detect the change.
-                this.colorAdjustment[type].splice(index, 1, 0);
+                this.colorAdjustment[type].splice(index, 1, this.colorAdjustmentDefaults[type][index]);
             } else {
-                this.colorAdjustment[type] = this.colorAdjustment[type].map(function () {
-                    return 0;
-                });
+                this.colorAdjustment[type] = this.colorAdjustmentDefaults[type].slice();
             }
         },
         reset() {

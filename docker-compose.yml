@@ -3,10 +3,10 @@ version: '2.2'
 services:
   # The application
   app:
-    image: docker.pkg.github.com/biigle/core/app:arm32v6
+    image: ghcr.io/biigle/app:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
-      - cache
+      - database
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
@@ -15,10 +15,9 @@ services:
       - ./:/var/www
     environment:
       - "DB_PORT=5432"
-      - "REDIS_HOST=cache"
 
   worker:
-    image: docker.pkg.github.com/biigle/core/worker:arm32v6
+    image: ghcr.io/biigle/worker:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - app
@@ -29,15 +28,17 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+    tmpfs:
+      - /tmp
+      - /var/www/storage/framework/testing/disks:uid=${USER_ID},gid=${GROUP_ID}
     environment:
       - "DB_PORT=5432"
-      - "REDIS_HOST=cache"
     init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
   # The web server
   web:
-    image: docker.pkg.github.com/biigle/core/web:arm32v6
+    image: ghcr.io/biigle/web:arm32v6
     depends_on:
       - app
     build:
@@ -52,7 +53,7 @@ services:
 
   # The database
   database:
-    image: postgres:10-alpine
+    image: postgres:14-alpine
     volumes:
       - dbdata:/var/lib/postgresql/data
       - ./:/data
@@ -64,16 +65,13 @@ services:
       - "54320:5432"
 
   database_testing:
-    image: postgres:10-alpine
+    image: postgres:14-alpine
     tmpfs:
       - /var/lib/postgresql/data
     environment:
       - "POSTGRES_DB=biigle"
       - "POSTGRES_USER=biigle"
       - "POSTGRES_PASSWORD=secret"
-
-  cache:
-    image: redis:3.0-alpine
 
 volumes:
   dbdata:

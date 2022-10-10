@@ -1,0 +1,45 @@
+.file-browser > .panel {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.file-browser-label {
+    position: relative;
+    padding: $padding-small-vertical;
+    border-radius: $border-radius-small;
+    word-wrap: break-word;
+    white-space: nowrap;
+    height: 32px;
+    max-width: 100%;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+
+        .remove-button {
+            display: block;
+        }
+    }
+
+    &.selected {
+        color: white;
+        font-weight: bold;
+    }
+
+    &.selectable {
+        cursor: pointer;
+    }
+
+    a {
+        color: $text-color;
+    }
+
+    .remove-button {
+        position: absolute;
+        top: $padding-small-vertical;
+        right: $padding-small-vertical;
+        display: none;
+    }
+}

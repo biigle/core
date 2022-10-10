@@ -7,6 +7,8 @@ use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
+use Exception;
+use FileCache;
 use Storage;
 
 class VolumeFileControllerTest extends ApiTestCase
@@ -86,7 +88,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
         // Image filename too long.
         $this->json('POST', "/api/v1/volumes/{$id}/files", [
-                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
+                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
             ])
             ->assertStatus(422);
 
@@ -100,7 +102,7 @@ class VolumeFileControllerTest extends ApiTestCase
             ->where('filename', '!=', 'no.jpg')
             ->select('id', 'filename')->get();
 
-        $response->assertExactJson($images->toArray());
+        $response->assertSimilarJson($images->toArray());
 
         $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
         $this->assertEquals(1, $images->where('filename', '2.jpg')->count());
@@ -196,7 +198,7 @@ class VolumeFileControllerTest extends ApiTestCase
             ->where('filename', '!=', 'no.mp4')
             ->select('id', 'filename')->get();
 
-        $response->assertExactJson($files->toArray());
+        $response->assertSimilarJson($files->toArray());
 
         $this->assertEquals(1, $files->where('filename', '1.mp4')->count());
         $this->assertEquals(1, $files->where('filename', '2.mp4')->count());
@@ -241,4 +243,17 @@ class VolumeFileControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreFilesExistException()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+        FileCache::shouldReceive('exists')
+            ->andThrow(new Exception('Invalid MIME type.'));
+
+        $response = $this->postJson("/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpg',
+            ])
+            ->assertStatus(422);
+        $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
+    }
 }

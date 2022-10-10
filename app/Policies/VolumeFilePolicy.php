@@ -24,7 +24,9 @@ class VolumeFilePolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->can('sudo')) {
+        $except = ['add-annotation', 'attach-label'];
+
+        if ($user->can('sudo') && !in_array($ability, $except)) {
             return true;
         }
     }

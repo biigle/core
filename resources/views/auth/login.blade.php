@@ -39,7 +39,7 @@
                     @endif
                 </div>
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="Sign in">
+                <input type="submit" class="btn btn-success btn-block" value="Log in">
             </form>
             <p class="clearfix">
                 <a href="{{ url('password/reset') }}" class="">{{ trans('auth.forgotpw') }}</a>

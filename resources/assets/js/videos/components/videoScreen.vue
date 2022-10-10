@@ -3,6 +3,7 @@
         <minimap
             v-if="showMinimap && !hasError"
             :extent="extent"
+            :render-active="!seeking"
             ></minimap>
         <label-tooltip
             watch="hoverFeatures"
@@ -174,7 +175,15 @@
                     :active="isAttaching"
                     :disabled="hasNoSelectedLabel || hasError"
                     @click="toggleAttaching"
-                    ></control-button>
+                    >
+                        <control-button
+                            icon="fa-sync-alt"
+                            title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟"
+                            :active="isSwapping"
+                            :disabled="hasNoSelectedLabel || hasError"
+                            @click="toggleSwapping"
+                            ></control-button>
+                    </control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-arrows-alt"
@@ -229,7 +238,7 @@ import ControlButton from '../../annotations/components/controlButton';
 import DrawInteractions from './videoScreen/drawInteractions';
 import Indicators from './videoScreen/indicators';
 import Keyboard from '../../core/keyboard';
-import Map from '@biigle/ol/Map';
+import {CancelableMap as Map} from '../../annotations/ol/CancelableMap';
 import Minimap from '../../annotations/components/minimap';
 import ModifyInteractions from './videoScreen/modifyInteractions';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
@@ -338,6 +347,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        seeking: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -369,14 +382,18 @@ export default {
     },
     methods: {
         createMap() {
+            let control = new ZoomToExtentControl({
+                tipLabel: 'Zoom to show whole video',
+                // fontawesome compress icon
+                label: '\uf066'
+            });
+
+            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+
             let map = new Map({
                 controls: [
                     new ZoomControl(),
-                    new ZoomToExtentControl({
-                        tipLabel: 'Zoom to show whole video',
-                        // fontawesome compress icon
-                        label: '\uf066'
-                    }),
+                    control,
                 ],
                 interactions: defaultInteractions({
                     altShiftDragRotate: false,
@@ -388,10 +405,14 @@ export default {
                 }),
             });
 
-            map.addControl(new ZoomToNativeControl({
+            control = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
-            }));
+            });
+
+            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+
+            map.addControl(control);
 
             return map;
         },

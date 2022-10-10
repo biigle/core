@@ -24,6 +24,38 @@ let filenameSorter = {
     },
 };
 
+let idSorter = {
+    id: 'id',
+    types: ['image', 'video'],
+    component: {
+        mixins: [SortComponent],
+        data() {
+            return {
+                fileIds: [],
+                title: 'Sort images by ID',
+                text: 'ID',
+                id: 'id',
+            };
+        },
+        computed: {
+            ids() {
+                return this.fileIds.slice().sort(this.compare);
+            },
+        },
+        methods: {
+            getSequence() {
+                return new Vue.Promise.resolve(this.ids);
+            },
+            compare(a, b) {
+                return a - b;
+            },
+        },
+        created() {
+            this.fileIds = biigle.$require('volumes.fileIds');
+        },
+    },
+};
+
 let randomSorter = {
     id: 'random',
     types: ['image', 'video'],
@@ -73,5 +105,6 @@ let randomSorter = {
 export default [
     // default sorters
     filenameSorter,
+    idSorter,
     randomSorter,
 ];

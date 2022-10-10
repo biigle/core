@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Notifications\NewSystemMessageNotification;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Notification;
 
@@ -14,6 +15,8 @@ use Notification;
  */
 class SystemMessage extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *

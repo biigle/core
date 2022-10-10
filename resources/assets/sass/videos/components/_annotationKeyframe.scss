@@ -6,10 +6,16 @@
     left: 0;
     border: 1px solid rgba(255, 255, 255, 0.5);
 
-    // The last keyframe be aligned with the end of the annotation clip.
+    // The last keyframe should be aligned with the end of the annotation clip.
     &:last-child:not(:only-child) {
         transform: translateX(-100%);
     }
+}
+
+// If the last segment after a gap has only a single keyframe, move the keyframe inside
+// the annotation-clip (as with the last keyframe of a multi-frame segment above).
+.annotation-segment--gap + .annotation-segment:last-child .annotation-keyframe:only-child {
+    transform: translateX(-100%);
 }
 
 .annotation-keyframe--selected {

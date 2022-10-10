@@ -49,7 +49,7 @@ abstract class StoreVolumeFileLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id'    => 'required|exists:labels,id',
+            'label_id'    => 'required|integer|exists:labels,id',
         ];
     }
 

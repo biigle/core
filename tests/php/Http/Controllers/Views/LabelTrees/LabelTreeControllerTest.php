@@ -97,7 +97,7 @@ class LabelTreeControllerTest extends TestCase
         $response = $this->get('label-trees/create?project='.$project->id);
         $response->assertStatus(200);
 
-        $response = $this->get('label-trees/create?project=999');
+        $response = $this->get('label-trees/create?project=-1');
         $response->assertStatus(404);
     }
 
@@ -113,7 +113,7 @@ class LabelTreeControllerTest extends TestCase
         $response = $this->get('label-trees/create?project='.$project->id);
         $response->assertStatus(200);
 
-        $response = $this->get('label-trees/create?project=999');
+        $response = $this->get('label-trees/create?project=-1');
         $response->assertStatus(404);
     }
 
@@ -130,7 +130,7 @@ class LabelTreeControllerTest extends TestCase
         $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
         $response->assertStatus(200);
 
-        $response = $this->get('label-trees/create?upstream_label_tree=999');
+        $response = $this->get('label-trees/create?upstream_label_tree=-1');
         $response->assertStatus(404);
     }
 }

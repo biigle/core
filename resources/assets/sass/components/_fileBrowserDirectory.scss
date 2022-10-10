@@ -1,0 +1,22 @@
+.file-browser-directory {
+    position: relative;
+
+    &:not(.root) {
+        .file-browser-directory-list {
+            padding-left: 15px;
+        }
+    }
+}
+
+.file-browser-directory-name {
+    .collapse-caret {
+        cursor: pointer;
+    }
+}
+
+
+.file-browser-directory-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: $padding-small-vertical;
+}

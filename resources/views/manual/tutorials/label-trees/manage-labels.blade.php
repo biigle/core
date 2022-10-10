@@ -11,7 +11,7 @@
         </p>
 
         <p>
-            The labels of a label tree can only be modified by label tree <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}#members">members</a>. To create labels, click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the labels panel. This will show you two tabs which are the two ways to create new labels: manually and by WoRMS import.
+            The labels of a label tree can only be modified by label tree <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}#members">members</a>. New labels can be created at the right of the <button class="btn btn-default btn-xs"><i class="fa fa-tags"></i> Labels</button> tab of the label tree overview. There, you find the two tabs <button class="btn btn-default btn-xs">New label</button> and <button class="btn btn-default btn-xs">WoRMS label import</button> which are the two ways to create new labels: manually and by WoRMS import.
         </p>
 
         <h3><a name="manually"></a>Create labels manually</h3>
@@ -21,7 +21,7 @@
         </p>
 
         <p>
-            The "Manual" tab shows three controls: the color chooser, the label parent chooser and the field to enter the new label name. To create your first label, choose a color with the color picker (click on the colored rectangle) or get a random color with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-sync-alt"></i></button> button. Next, enter the new label name and hit enter.
+            The <button class="btn btn-default btn-xs">New label</button> tab shows three controls: the color chooser, the label parent chooser and the field to enter the new label name. To create your first label, choose a color with the color picker (click on the colored rectangle) or get a random color with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-sync-alt"></i></button> button. Next, enter the new label name and hit enter.
         </p>
         <p>
             Once there is a label in the tree, you can (but don't have to) create child labels for it. To do this, select the label in the tree. Its name will appear in the label parent chooser. Alternatively you can enter the name of the parent label in the parent label chooser, too. This is particularly useful for large label trees. When you select a parent label, the selected color will automatically change to the one of the selected label. You can either re-use the same color for child labels or select a new color at this point. Finally, enter the name of the child label and hit enter.
@@ -81,11 +81,11 @@
         </div>
 
         <p>
-            To modify an existing label, first click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the labels panel. This will make a <i class="fa fa-pencil-alt"></i> symbol appear on the right of each label in the tree. Click this symbol to switch a label into edit mode.
+            To modify an existing label, hover the mouse over the label name, then click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> to switch a label into edit mode.
         </p>
 
         <p>
-            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="fa fa-check text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="fa fa-times"></i>. To delete a label from the label tree, click the <i class="fa fa-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an annotation, image or video can be deleted.
+            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <button class="btn btn-success btn-xs"><i class="fa fa-check"></i></button> button to save the changes. To revert unsaved changes and exit edit mode, click <button class="btn btn-default btn-xs"><i class="fa fa-times"></i></button>. To delete a label from the label tree, click the <button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button> button. Only labels that have no child labels and that are not attached to an annotation, image or video can be deleted.
         </p>
 
         <p>

@@ -4,11 +4,12 @@ namespace Biigle;
 
 use Biigle\FileCache\Contracts\File as FileContract;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class VolumeFile extends Model implements FileContract
 {
-    use HasJsonAttributes;
+    use HasJsonAttributes, HasFactory;
 
     /**
      * Don't maintain timestamps for this model.
@@ -43,6 +44,106 @@ abstract class VolumeFile extends Model implements FileContract
     public function volume()
     {
         return $this->belongsTo(Volume::class);
+    }
+
+    /**
+     * Set the metadata attribute.
+     *
+     * @param array $value
+     */
+    public function setMetadataAttribute(array $value)
+    {
+        return $this->setJsonAttr('metadata', $value);
+    }
+
+    /**
+     * Get the metadata attribute.
+     *
+     * @return array
+     */
+    public function getMetadataAttribute()
+    {
+        return $this->getJsonAttr('metadata', []);
+    }
+
+    /**
+     * Set the width attribute.
+     *
+     * @param int $value
+     */
+    public function setWidthAttribute($value)
+    {
+        $this->setJsonAttr('width', $value);
+    }
+
+    /**
+     * Get the width attribute.
+     *
+     * @return int|null
+     */
+    public function getWidthAttribute()
+    {
+        return $this->getJsonAttr('width');
+    }
+
+    /**
+     * Set the height attribute.
+     *
+     * @param int $value
+     */
+    public function setHeightAttribute($value)
+    {
+        $this->setJsonAttr('height', $value);
+    }
+
+    /**
+     * Get the height attribute.
+     *
+     * @return int|null
+     */
+    public function getHeightAttribute()
+    {
+        return $this->getJsonAttr('height');
+    }
+
+    /**
+     * Set the size attribute.
+     *
+     * @param int $value
+     */
+    public function setSizeAttribute($value)
+    {
+        $this->setJsonAttr('size', $value);
+    }
+
+    /**
+     * Get the size attribute.
+     *
+     * @return int|null
+     */
+    public function getSizeAttribute()
+    {
+        return $this->getJsonAttr('size');
+    }
+
+    /**
+     * Get the mimeType attribute.
+     *
+     * @return string
+     */
+    public function getMimeTypeAttribute()
+    {
+        return $this->getJsonAttr('mimetype');
+    }
+
+    /**
+     * Set the mimeType attribute.
+     *
+     * @param string $value
+     */
+    public function setMimeTypeAttribute($value)
+    {
+        $this->setJsonAttr('mimetype', $value);
     }
 
     /**

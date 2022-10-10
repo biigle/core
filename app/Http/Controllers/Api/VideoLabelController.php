@@ -88,21 +88,21 @@ class VideoLabelController extends VolumeFileLabelController
      * @apiParam {Number} id The video **label** ID (not the video ID).
      */
 
-     /**
-     * Get the file model class name.
-     *
-     * @return string
-     */
+    /**
+    * Get the file model class name.
+    *
+    * @return string
+    */
     protected function getFileModel()
     {
         return Video::class;
     }
 
-     /**
-     * Get the file label model class name.
-     *
-     * @return string
-     */
+    /**
+    * Get the file label model class name.
+    *
+    * @return string
+    */
     protected function getFileLabelModel()
     {
         return VideoLabel::class;

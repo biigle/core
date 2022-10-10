@@ -36,8 +36,8 @@ class StoreLabel extends FormRequest
         return [
             'name' => 'required|max:512',
             'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-            'parent_id' => 'id|exists:labels,id',
-            'label_source_id' => 'id|exists:label_sources,id',
+            'parent_id' => 'integer|exists:labels,id',
+            'label_source_id' => 'integer|exists:label_sources,id',
             'source_id' => 'required_with:label_source_id',
         ];
     }
@@ -50,6 +50,10 @@ class StoreLabel extends FormRequest
      */
     public function withValidator($validator)
     {
+        if ($validator->fails()) {
+            return;
+        }
+
         $validator->after(function ($validator) {
             if ($this->filled('parent_id')) {
                 $sameTree = $this->tree->labels()

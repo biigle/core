@@ -41,7 +41,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
      *
      * @var int
      */
-    protected $retryAfter = 300;
+    protected $backoff = 300;
 
     /**
      * Create a new job instance.

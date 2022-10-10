@@ -61,7 +61,7 @@ class UpdateProjectUser extends FormRequest
         $roles = implode(',', $roles);
 
         return [
-            'project_role_id' => "required|in:{$roles}",
+            'project_role_id' => "required|integer|in:{$roles}",
         ];
     }
 

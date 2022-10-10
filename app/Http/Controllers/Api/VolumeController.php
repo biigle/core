@@ -48,9 +48,11 @@ class VolumeController extends Controller
 
         return Volume::accessibleBy($user)
             ->with(['projects' => function ($query) use ($user) {
-                $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
-                    ->where('project_user.user_id', $user->id)
-                    ->select('projects.id', 'projects.name', 'projects.description');
+                $query->when(!$user->can('sudo'), function ($query) use ($user) {
+                    return $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                        ->where('project_user.user_id', $user->id);
+                })
+                ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
@@ -114,9 +116,7 @@ class VolumeController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
      * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
-     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this (image) volume.
-     * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
-     * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
+     * @apiParam (Attributes that can be updated) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      *
      * @param UpdateVolume $request
      * @return \Illuminate\Http\Response
@@ -126,9 +126,7 @@ class VolumeController extends Controller
         $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
         $volume->url = $request->input('url', $volume->url);
-        $volume->video_link = $request->input('video_link', $volume->video_link);
-        $volume->gis_link = $request->input('gis_link', $volume->gis_link);
-        $volume->doi = $request->input('doi', $volume->doi);
+        $volume->handle = $request->input('handle', $volume->handle);
 
         $isDirty = $volume->isDirty();
         $shouldReread = !$isDirty && $request->user()->can('sudo');

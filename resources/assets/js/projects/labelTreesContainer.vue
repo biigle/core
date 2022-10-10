@@ -19,7 +19,6 @@ export default {
             labelTrees: [],
             fetchedAvailableLabelTrees: false,
             availableLabelTrees: [],
-            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
         };
     },
     computed: {

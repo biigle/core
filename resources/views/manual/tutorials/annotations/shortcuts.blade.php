@@ -24,6 +24,16 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next image</td>
                 </tr>
+                    <td><kbd>Shift</kbd>+<kbd>Scroll</kbd></td>
+                    <td>Previous or Next image</td>
+                <tr>
+                    <td><kbd>+</kbd></td>
+                    <td>Zoom the image to the original resolution</td>
+                </tr>
+                <tr>
+                    <td><kbd>-</kbd></td>
+                    <td>Zoom to show the whole image</td>
+                </tr>
                 <tr>
                     <td><kbd>1</kbd> - <kbd>9</kbd></td>
                     <td>Select favourite label 1-9</td>
@@ -87,6 +97,10 @@
                 <tr>
                     <td><kbd>l</kbd></td>
                     <td>Select tool to attach labels to existing annotations</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>l</kbd></td>
+                    <td>Select tool to swap labels of existing annotations</td>
                 </tr>
                 <tr>
                     <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
@@ -180,6 +194,25 @@
                 <tr>
                     <td><kbd>Enter</kbd></td>
                     <td>Create an annotation with the currently selected<br>label at the current sample location</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            When the image labels tab is open:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Attach the currently selected label to the current image</td>
                 </tr>
             </tbody>
         </table>

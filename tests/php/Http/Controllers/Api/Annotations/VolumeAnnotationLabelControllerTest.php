@@ -42,7 +42,7 @@ class VolumeAnnotationLabelControllerTest extends ApiTestCase
         $this->beGuest();
 
         $response = $this->get("/api/v1/volumes/{$tid}/annotation-labels/")
-            ->assertExactJson([
+            ->assertSimilarJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,
@@ -81,7 +81,7 @@ class VolumeAnnotationLabelControllerTest extends ApiTestCase
         $this->beGuest();
         $this->getJson("/api/v1/volumes/{$tid}/annotation-labels/")
             ->assertStatus(200)
-            ->assertExactJson([
+            ->assertSimilarJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,

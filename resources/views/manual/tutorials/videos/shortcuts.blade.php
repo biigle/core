@@ -17,6 +17,22 @@
             </thead>
             <tbody>
                 <tr>
+                    <td><kbd>Arrow left</kbd></td>
+                    <td>Previous video</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow right</kbd></td>
+                    <td>Next video</td>
+                </tr>
+                <tr>
+                    <td><kbd>+</kbd></td>
+                    <td>Zoom the video to the original resolution</td>
+                </tr>
+                <tr>
+                    <td><kbd>-</kbd></td>
+                    <td>Zoom to show the whole video</td>
+                </tr>
+                <tr>
                     <td><kbd>Space</kbd></td>
                     <td>Play/pause the video</td>
                 </tr>
@@ -69,6 +85,14 @@
                     <td>Select the tool to move selected annotations</td>
                 </tr>
                 <tr>
+                    <td><kbd>l</kbd></td>
+                    <td>Select tool to attach labels to existing annotations</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>l</kbd></td>
+                    <td>Select tool to swap labels of existing annotations</td>
+                </tr>
+                <tr>
                     <td><kbd>Enter</kbd></td>
                     <td>Finish the video annotation that is currently drawn</td>
                 </tr>
@@ -83,6 +107,25 @@
                 <tr>
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            When the video labels tab is open:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Attach the currently selected label to the current video</td>
                 </tr>
             </tbody>
         </table>

@@ -21,7 +21,9 @@ class ProjectPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->can('sudo')) {
+        $except = ['edit-in', 'force-edit-in'];
+
+        if ($user->can('sudo') && !in_array($ability, $except)) {
             return true;
         }
     }

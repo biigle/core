@@ -273,7 +273,7 @@ class ImageAnnotationController extends Controller
         $annotation = ImageAnnotation::findOrFail($id);
         $this->authorize('update', $annotation);
         $request->validate([
-            'shape_id' => 'required_without:points|id|exists:shapes,id',
+            'shape_id' => 'required_without:points|integer|exists:shapes,id',
             'points' => 'required_without:shape_id|array',
         ]);
 

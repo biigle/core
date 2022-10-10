@@ -4,6 +4,7 @@ import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
+import {apply as applyTransform} from '@biigle/ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -26,30 +27,52 @@ export default {
         };
     },
     methods: {
-        initVideoLayer(args) {
-            let map = args[0];
-            this.videoCanvas.width = this.video.videoWidth;
-            this.videoCanvas.height = this.video.videoHeight;
-            this.extent = [0, 0, this.videoCanvas.width, this.videoCanvas.height];
+        updateVideoLayer() {
+            this.extent = [0, 0, this.video.videoWidth, this.video.videoHeight];
             let projection = new Projection({
                 code: 'biigle-image',
                 units: 'pixels',
                 extent: this.extent,
             });
 
+            if (this.videoLayer) {
+                this.map.removeLayer(this.videoLayer);
+            }
+
             this.videoLayer = new ImageLayer({
                 name: 'image', // required by the minimap component
                 source: new CanvasSource({
-                    canvas: this.videoCanvas,
+                    canvas: this.dummyCanvas,
                     projection: projection,
                     canvasExtent: this.extent,
-                    canvasSize: [this.extent[0], this.extent[1]],
+                    canvasSize: [this.extent[2], this.extent[3]],
                 }),
             });
 
-            map.addLayer(this.videoLayer);
+            // Based on this: https://stackoverflow.com/a/42902773/1796523
+            this.videoLayer.on('postcompose', (event) => {
+                let frameState = event.frameState;
+                let resolution = frameState.viewState.resolution;
+                // Custom implementation of "map.getPixelFromCoordinate" because this
+                // layer is rendered both on the map of the main view and on the map of
+                // the minimap component (i.e. the map changes).
+                let origin = applyTransform(
+                    frameState.coordinateToPixelTransform,
+                    [0, this.extent[3]]
+                );
+                let context = event.context;
+                context.save();
+                context.scale(frameState.pixelRatio, frameState.pixelRatio);
+                context.translate(origin[0], origin[1]);
+                context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
+                context.restore();
+            });
 
-            map.setView(new View({
+            // The video layer should always be the first layer, otherwise it will be
+            // rendered e.g. above the annotations.
+            this.map.getLayers().insertAt(0, this.videoLayer);
+
+            this.map.setView(new View({
                 // Center is required but will be updated immediately with fit().
                 center: [0, 0],
                 projection: projection,
@@ -58,13 +81,12 @@ export default {
                 extent: this.extent,
             }));
 
-            map.getView().fit(this.extent);
+            this.map.getView().fit(this.extent);
         },
         renderVideo(force) {
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
-                this.videoCanvasCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
                 this.videoLayer.changed();
 
                 let now = Date.now();
@@ -75,20 +97,36 @@ export default {
             }
         },
         startRenderLoop() {
-            this.renderVideo();
-            this.animationFrameId = window.requestAnimationFrame(this.startRenderLoop);
+            let render = () => {
+                this.renderVideo();
+                this.animationFrameId = window.requestAnimationFrame(render);
+            };
+            render();
+            this.map.render();
         },
         stopRenderLoop() {
+            // Explicitly cancel rendering of the map because there could be one
+            // animation frame left that would be executed while the video already began
+            // seeking and thus render an empty video.
+            this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
-            // Make sure the video frame that belongs to the currentTime is drawn.
-            this.renderVideo(true);
         },
         setPlaying() {
             this.playing = true;
+            if (!this.animationFrameId) {
+                this.startRenderLoop();
+            }
         },
         setPaused() {
             this.playing = false;
+            this.stopRenderLoop();
+            // Force render the video frame that belongs to currentTime. This is a
+            // workaround because the displayed frame not the one that belongs to
+            // currentTime (in most cases). With the workaround we can create annotations
+            // at currentTime and be sure that the same frame can be reproduced later for
+            // the annotations. See: https://github.com/biigle/core/issues/433
+            this.$emit('seek', this.video.currentTime, true);
         },
         togglePlaying() {
             if (this.playing) {
@@ -102,27 +140,34 @@ export default {
         },
         pause() {
             this.video.pause();
-            this.renderVideo(true);
         },
         emitMapReady() {
             this.$emit('map-ready', this.map);
         },
+        attachUpdateVideoLayerListener() {
+            // Update the layer (dimensions) if a new video is loaded.
+            this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
+        },
+        handleSeeked() {
+            this.renderVideo(true);
+        },
     },
     watch: {
-        playing(playing) {
-            if (playing && !this.animationFrameId) {
-                this.startRenderLoop();
-            } else if (!playing) {
+        seeking(seeking) {
+            if (seeking) {
                 this.stopRenderLoop();
+            } else if (this.playing) {
+                this.startRenderLoop();
             }
         },
     },
     created() {
-        this.videoCanvas = document.createElement('canvas');
-        this.videoCanvasCtx = this.videoCanvas.getContext('2d');
+        this.dummyCanvas = document.createElement('canvas');
+        this.dummyCanvas.width = 1;
+        this.dummyCanvas.height = 1;
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
-        this.video.addEventListener('seeked', this.renderVideo);
+        this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
         let mapPromise = new Vue.Promise((resolve) => {
@@ -132,8 +177,9 @@ export default {
             this.video.addEventListener('loadedmetadata', resolve);
         });
         Vue.Promise.all([mapPromise, metadataPromise])
-            .then(this.initVideoLayer)
-            .then(this.emitMapReady);
+            .then(this.updateVideoLayer)
+            .then(this.emitMapReady)
+            .then(this.attachUpdateVideoLayerListener);
 
         Keyboard.on(' ', this.togglePlaying);
 

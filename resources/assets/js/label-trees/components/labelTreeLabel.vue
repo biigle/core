@@ -15,10 +15,12 @@
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
                     <span class="fa fa-star" aria-hidden="true" title=""></span>
                 </button>
-                <button v-if="editable && !editing" :title="editTitle" @click.stop="editThis"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
-                <button v-if="editing" class="text-danger" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true" class="fa fa-trash"></span></button>
-                <button v-if="editing" title="Revert changes" @click.stop="revertThis"><span aria-hidden="true" class="fa fa-times"></span></button>
-                <button v-if="editing" class="text-success" title="Save changes" @click.stop="saveThis"><span aria-hidden="true" class="fa fa-check"></span></button>
+                <span if="editable">
+                    <button v-show="showEditButton" :title="editTitle" @click.stop="editThis" class="btn btn-default btn-xs"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
+                    <button v-show="editing" :title="deleteTitle" @click.stop="deleteThis" class="btn btn-danger btn-sm"><span aria-hidden="true" class="fa fa-trash"></span></button>
+                    <button v-show="editing" title="Save changes" @click.stop="saveThis" class="btn btn-success btn-sm"><span aria-hidden="true" class="fa fa-check"></span></button>
+                    <button v-show="editing" title="Revert changes" @click.stop="revertThis" class="btn btn-default btn-sm"><span aria-hidden="true" class="fa fa-times"></span></button>
+                </span>
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
@@ -43,6 +45,7 @@ export default {
             oldColor: '',
             newName: '',
             newColor: '',
+            internalLabel: null,
         };
     },
     props: {
@@ -107,6 +110,9 @@ export default {
         expandable() {
             return !this.flat && !!this.label.children;
         },
+        showEditButton() {
+            return this.editable && this.hover && !this.editing;
+        },
     },
     methods: {
         toggleSelect(e) {
@@ -127,8 +133,8 @@ export default {
             this.newColor = '#' + this.label.color;
         },
         saveThis() {
-            this.label.name = this.newName;
-            this.label.color = this.newColor.substr(1);
+            this.internalLabel.name = this.newName;
+            this.internalLabel.color = this.newColor.substr(1);
             this.editing = false;
 
             if (this.oldName !== this.label.name || this.oldColor !== this.label.color) {
@@ -137,8 +143,8 @@ export default {
         },
         revertThis() {
             this.editing = false;
-            this.label.name = this.oldName;
-            this.label.color = this.oldColor;
+            this.internalLabel.name = this.oldName;
+            this.internalLabel.color = this.oldColor;
         },
         // a method called 'delete' didn't work
         deleteThis() {
@@ -149,7 +155,7 @@ export default {
 
             // If the label cannot be opened, it will be selected here instead.
             if (this.expandable) {
-                this.label.open = !this.label.open;
+                this.internalLabel.open = !this.label.open;
             } else {
                 this.toggleSelect(e);
             }
@@ -185,6 +191,10 @@ export default {
         dontHover() {
             this.hover = false;
         },
+    },
+    created() {
+        // Dirty workarount for ESlint error that props should not be modified.
+        this.internalLabel = this.label;
     },
 };
 </script>
