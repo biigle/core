@@ -21,7 +21,7 @@ class UsersController extends Controller
     /**
      * Shows the admin users page.
      *
-     * @@param Request $request
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function get(Request $request)
