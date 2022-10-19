@@ -401,7 +401,7 @@ export default {
                     keyboard: false,
                     shiftDragZoom: false,
                     pinchRotate: false,
-                    pinchZoom: false
+                    pinchZoom: true,
                 }),
             });
 
