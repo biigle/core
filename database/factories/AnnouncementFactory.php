@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class SystemMessageTypeFactory extends Factory
+class AnnouncementFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,7 +14,8 @@ class SystemMessageTypeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->username(),
+            'body' => $this->faker->text(),
+            'title' => $this->faker->sentence(),
         ];
     }
 }
