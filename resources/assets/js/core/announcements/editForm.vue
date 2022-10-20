@@ -1,6 +1,6 @@
 <script>
 /**
- * The a form that edits/creates a system message
+ * The a form that creates a announcement
  */
 // Set the initial content of the textarea to the 'body' model and then clear the
 // textarea before initializing Vue. Else Vue will complain that v-model does not
@@ -14,10 +14,8 @@ export default {
         };
     },
     beforeMount() {
-        let element = document.getElementById('system-messages-edit-form');
-        let textarea = element.querySelector('textarea[name="body"]');
-        if (textarea) {
-            this.body = textarea.value;
+        if (this.$rel.bodyInput) {
+            this.body = this.$rel.bodyInput.value;
         }
     },
 };
