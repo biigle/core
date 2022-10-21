@@ -6,6 +6,9 @@
 @endif
         <div class="navbar-header">
             <a class="navbar-brand logo" href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span></a>
+            @if ($announcement)
+                @include('partials.announcement')
+            @endif
         </div>
         @hasSection('navbar')
             <div class="navbar-left">
@@ -23,8 +26,13 @@
                     <li>
                         <a href="{{route('search')}}" title="Search BIIGLE"><i class="fa fa-search"></i></a>
                     </li>
-                    <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->count()}}">
-                        <a href="{{route('notifications')}}" class="notifications-icon" v-bind:title="title"><i class="fa fa-bell"></i><span class="notifications-icon__count badge" v-if="hasUnread" v-cloak v-text="unread"></span></a>
+                    <li>
+                        <a href="{{route('notifications')}}" class="notifications-icon" @if ($hasNotification) title="You have unread notifications" @endif>
+                            <i class="fa fa-bell"></i>
+                            @if ($hasNotification)
+                                <span class="notifications-icon__count"></span>
+                            @endif
+                        </a>
                     </li>
                     @include('partials.top-menu')
                 </ul>

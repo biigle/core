@@ -1,4 +1,4 @@
-@keyframes blink {
+@keyframes notification-blink {
     0% {opacity: 0;}
     1% {opacity: 1;}
     2% {opacity: 0;}
@@ -9,20 +9,19 @@
 
 .notifications-icon {
     position: relative;
-
-    &:hover .notifications-icon__count {
-        background-color: lighten($brand-danger, 5%);
-    }
 }
 
 .notifications-icon__count {
     position: absolute;
-    top: 5px;
-    right: 0;
-    background-color: $brand-danger;
-    color: white;
-    font-weight: bold;
-    animation: blink 20s infinite;
+    display: block;
+    top: 10px;
+    right: 7px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: $brand-info;
+    border: 1px solid white;
+    animation: notification-blink 20s infinite;
 }
 
 .notification__action {
