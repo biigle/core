@@ -40,9 +40,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('*', function ($view) {
-            // Make authenticated user available in any view.
-            $view->with('user', Auth::user());
-            // Make active announcement available in any view.
+            // Make some variables available in any view.
+            $user = Auth::user();
+            $view->with('user', $user);
+            if ($user) {
+                $view->with('hasNotification', $user->unreadNotifications()->exists());
+            }
             $view->with('announcement', Announcement::getActive());
         });
 
