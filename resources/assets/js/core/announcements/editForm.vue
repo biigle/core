@@ -1,4 +1,5 @@
 <script>
+import DatepickerDropdown from '../../uiv/datepickerDropdown';
 /**
  * The a form that creates a announcement
  */
@@ -8,15 +9,31 @@
 // validation.
 
 export default {
+    components: {
+        datepickerDropdown: DatepickerDropdown,
+    },
     data() {
         return {
+            title: '',
             body: '',
+            showUntil: '',
+            limitFrom: new Date(),
         };
     },
-    beforeMount() {
-        if (this.$rel.bodyInput) {
-            this.body = this.$rel.bodyInput.value;
-        }
+    computed: {
+        titleChars() {
+            return `${this.title.length}/30`;
+        },
+        titleClass() {
+            return {
+                'has-warning': this.title.length > 30,
+            };
+        },
+    },
+    created() {
+        this.title = biigle.$require('announcement.title');
+        this.body = biigle.$require('announcement.body');
+        this.showUntil = biigle.$require('announcement.showUntil');
     },
 };
 </script>

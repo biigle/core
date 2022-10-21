@@ -8,7 +8,13 @@
     </div>
     <template slot="dropdown">
         <li>
-            <date-picker v-model="internalValue" icon-control-left="fa fa-chevron-left" icon-control-right="fa fa-chevron-right"/>
+            <date-picker
+                v-model="internalValue"
+                icon-control-left="fa fa-chevron-left"
+                icon-control-right="fa fa-chevron-right"
+                :limit-from="limitFrom"
+                :limit-to="limitTo"
+                />
         </li>
     </template>
 </dropdown>
@@ -27,6 +33,14 @@ export default {
         value: {
             type: String,
             default: '',
+        },
+        limitFrom: {
+            type: Date,
+            default: null,
+        },
+        limitTo: {
+            type: Date,
+            default: null,
         },
     },
     components: {
