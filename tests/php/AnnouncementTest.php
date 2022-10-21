@@ -50,4 +50,15 @@ class AnnouncementTest extends ModelTestCase
         $this->model->save();
         $this->assertEquals(1, Announcement::active()->count());
     }
+
+    public function testGetActive()
+    {
+        $this->model->show_until = now()->addDay();
+        $this->model->save();
+
+        $this->assertEquals($this->model->id, Announcement::getActive()->id);
+
+        $this->model->delete();
+        $this->assertNull(Announcement::getActive());
+    }
 }

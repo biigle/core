@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +13,11 @@ use Illuminate\Database\Eloquent\Model;
 class Announcement extends Model
 {
     use HasFactory;
+
+    /**
+     * Key to use to cache the active announcement.
+     */
+    const CACHE_KEY = 'announcement';
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +34,35 @@ class Announcement extends Model
     protected $casts = [
         'show_until' => 'datetime',
     ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::deleted(function ($announcement) {
+            Cache::forget(self::CACHE_KEY);
+        });
+    }
+
+    /**
+     * Get the currently active announcement.
+     *
+     * @return Announcement
+     */
+    public static function getActive()
+    {
+        return Cache::get(self::CACHE_KEY, function () {
+            $announcement = self::active()->first();
+            if ($announcement) {
+                Cache::put(self::CACHE_KEY, $announcement, $announcement->show_until);
+            }
+
+            return $announcement;
+        });
+    }
 
     /**
      * Scope a query to the active announcement.

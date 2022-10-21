@@ -6,16 +6,9 @@
 @endif
         <div class="navbar-header">
             <a class="navbar-brand logo" href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span></a>
-            <span id="announcement" class="announcement">
-                <popover v-on:hide="handleHide">
-                    <button class="btn btn-warning btn-sm" title="View full announcement"><i class="fa fa-bullhorn"></i> <span v-cloak v-if="expandAnnouncement" class="announcement-text">Newsletter and announcements</span></button>
-                    <template slot="popover">
-                        <div class="text-warning">
-                            BIIGLE system messages are now replaced by the new newsletter (for new BIIGLE features and other information) and announcements (for system maintenance information). You can sign up to the newsletter <a href="#">here</a>.
-                        </div>
-                    </template>
-                </popover>
-            </span>
+            @if ($announcement)
+                @include('partials.announcement')
+            @endif
         </div>
         @hasSection('navbar')
             <div class="navbar-left">

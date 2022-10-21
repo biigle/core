@@ -7,18 +7,20 @@ export default {
     },
     data() {
         return {
-            expandAnnouncement: true,
+            expand: false,
+            id: null,
         };
     },
     methods: {
         handleHide() {
-            this.expandAnnouncement = false;
-            // Store ID in local storage to keep collapsed.
+            this.expand = false;
+            window.localStorage.setItem('seen-announcement', this.id);
         },
     },
-    created() {
-        // Collapse announcement if the ID matches local storage.
-        // Delete local storage if the ID is not the one of the current announcement.
+    mounted() {
+        this.id = this.$el.attributes['announcement-id'].value;
+        let seenId = window.localStorage.getItem('seen-announcement');
+        this.expand = this.id !== seenId;
     },
 };
 </script>
