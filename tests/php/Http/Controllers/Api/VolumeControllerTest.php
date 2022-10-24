@@ -7,13 +7,21 @@ use Biigle\Image;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\Modules\ColorSort\SequenceTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Volume;
+use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 use function PHPUnit\Framework\assertTrue;
 
 class VolumeControllerTest extends ApiTestCase
@@ -237,32 +245,91 @@ class VolumeControllerTest extends ApiTestCase
         $this->volume = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
         $id = $this->volume->id;
 
+        $disk = Storage::fake('ifdos');
+        $csv = __DIR__ . "/../../../../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        $this->volume->saveIfdo($file);
+
+        $s1 = SequenceTest::make(['volume_id' => $id]);
+        $s1->sequence = [1, 2];
+        $s1->save();
+
         $project = ProjectTest::create();
         $id2 = $project->id;
 
+        $this->volume->projects()->attach($id2);
+
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
 
-        ImageTest::create([
+        $this->beAdmin();
+
+        $img1 = ImageTest::create([
+            'lng' => 1.5,
+            'lat' => 5.3,
             'filename' => 'a.jpg',
             'volume_id' => $this->volume->id,
         ]);
-        ImageTest::create([
+        $a = ImageAnnotationTest::create([
+            'image_id' => $img1->id,
+            'created_at' => '2010-01-01',
+        ]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $this->admin()->id,
+        ]);
+        $a2 = ImageAnnotationTest::create([
+            'image_id' => $img1->id,
+            'created_at' => '2015-03-03',
+        ]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $img2 = ImageTest::create([
+            'lng' => 9.5,
+            'lat' => 9.0,
             'filename' => 'b.jpg',
             'volume_id' => $this->volume->id,
         ]);
-        ImageTest::create([
+        $img3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $this->volume->id,
         ]);
+        $a3 = ImageAnnotationTest::create([
+            'image_id' => $img3->id,
+            'created_at' => '2000-09-10',
+        ]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $this->admin()->id,
+        ]);
 
-        $this->beAdmin();
+        //        $session = AnnotationSessionTest::create([
+//            'volume_id' => $id,
+//            'starts_at' => Carbon::today(),
+//            'ends_at' => Carbon::tomorrow(),
+//            'hide_own_annotations' => true,
+//            'hide_other_users_annotations' => false,
+//        ]);
+
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
         $response = $this->post("/api/v1/volumes/{$id}/project/{$id2}");
         $response->assertStatus(302);
 
+
         $copy = $response->getSession()->get('copy');
+
+//        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
+//        $this->assertTrue($copy->projects()->exists() == $this->volume->projects()->exists());
+//        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
+//        $this->assertTrue($copy->annotationSessions()->exists() == $this->volume->annotationSessions()->exists());
+//        $this->assertTrue($copy->activeAnnotationSession()->exists() == $this->volume->activeAnnotationSession()->exists());
+
+        $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
+        $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
 
     }
 }
