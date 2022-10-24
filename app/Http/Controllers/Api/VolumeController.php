@@ -3,9 +3,11 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Annotation;
+use Biigle\AnnotationSession;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
+use Biigle\ImageLabel;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Modules\ColorSort\Sequence;
@@ -186,6 +188,7 @@ class VolumeController extends Controller
         $copy->save();
 
         $this->copyImages($volume, $copy);
+        $this->copyAnnotationSessions($volume, $copy);
 
 //        $this->copyColorSortSequence($volume,$copy);
 //        print_r(Sequence::whereIn('volume_id', [$copy->id])->get());
@@ -254,7 +257,7 @@ class VolumeController extends Controller
                     unset($oldLabel->id);
                 }
                 $oldLabels->chunk(10000)->map(function ($chunk) {
-                    ImageAnnotation::insert($chunk->toArray());
+                    ImageLabel::insert($chunk->toArray());
                 });
             }
         });
@@ -292,6 +295,22 @@ class VolumeController extends Controller
 
             $insert->chunk(10000)->map(function ($chunk) {
                 Sequence::insert($chunk->toArray());
+            });
+        });
+    }
+
+    private function copyAnnotationSessions($volume, $copy)
+    {
+        DB::transaction(function () use ($volume, $copy) {
+            $sessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get()->map(function ($session) use ($copy) {
+                $original = $session->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                unset($original['id']);
+                return $original;
+            });
+
+            $sessions->chunk(10000)->map(function ($chunk) {
+                AnnotationSession::insert($chunk->toArray());
             });
         });
     }
