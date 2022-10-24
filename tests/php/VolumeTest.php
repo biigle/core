@@ -584,6 +584,15 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($this->model->hasIfdo());
     }
 
+    public function testHasIfdoError()
+    {
+        Storage::shouldReceive('disk')->andThrow(Exception::class);
+        $this->assertFalse($this->model->hasIfdo(true));
+
+        $this->expectException(Exception::class);
+        $this->model->hasIfdo();
+    }
+
     public function testDeleteIfdo()
     {
         $disk = Storage::fake('ifdos');

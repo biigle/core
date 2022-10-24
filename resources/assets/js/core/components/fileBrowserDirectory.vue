@@ -51,7 +51,6 @@
                     :removable="removable"
                     :selectable="selectable"
                     :files-selectable="filesSelectable"
-                    :download-url="downloadUrl"
                     :expanded="expanded"
                     :empty-text="emptyText"
                     :expand-on-select="expandOnSelect"
@@ -69,7 +68,6 @@
                 v-for="(file, index) in files"
                 :key="index"
                 :file="file"
-                :download-url="downloadUrl"
                 :dirname="fullPath"
                 :removable="removable"
                 :selectable="filesSelectable"
@@ -123,10 +121,6 @@ export default {
         filesSelectable: {
             type: Boolean,
             default: false,
-        },
-        downloadUrl: {
-            type: String,
-            default: '',
         },
         expanded: {
             type: Boolean,

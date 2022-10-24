@@ -62,6 +62,7 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \Biigle\Http\Middleware\RedirectIfAuthenticated::class,
         'session' => \Biigle\Http\Middleware\SessionOnly::class,
+        'signed' => \Biigle\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

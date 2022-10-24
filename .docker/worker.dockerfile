@@ -1,11 +1,12 @@
 FROM ghcr.io/biigle/app as intermediate
 
+# PHP 8.0.20
 #FROM php:8.0-alpine
-FROM php@sha256:8fac1d07277998aa02cf32d2675ec4d30edc237b6328f16a33081dd4f2403bb3
+FROM php@sha256:541812828f5e1996ac78d99a3bac3b4ba14534b6ac04a480a9ec65e1c3f589f8
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
-ARG OPENCV_VERSION=4.5.4
+ARG OPENCV_VERSION=4.6.0
 RUN apk add --no-cache \
         eigen \
         ffmpeg \
@@ -145,7 +146,7 @@ RUN apk add --no-cache --virtual .build-deps \
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
 # Other Python dependencies are added with the OpenCV build above.
-RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib
+RUN apk add --no-cache py3-scipy py3-scikit-learn py3-matplotlib py3-shapely
 
 # Set this library path so the Python modules are linked correctly.
 # See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397

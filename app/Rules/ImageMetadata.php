@@ -135,10 +135,11 @@ class ImageMetadata implements Rule
         }
 
         foreach ($value as $index => $row) {
+            // +1 since index starts at 0.
+            // +1 since column description row was removed above.
+            $line = $index + 2;
+
             if (count($row) !== $colCount) {
-                // +1 since index starts at 0.
-                // +1 since column description row was removed above.
-                $line = $index + 2;
                 $this->message = "Invalid column count in line {$line}.";
 
                 return false;
@@ -146,6 +147,12 @@ class ImageMetadata implements Rule
 
             $combined = array_combine($columns, $row);
             $combined = array_filter($combined);
+            if (!array_key_exists('filename', $combined)) {
+                $this->message = "Filename missing in line {$line}.";
+
+                return false;
+            }
+
             $filename = $combined['filename'];
 
             if (!in_array($filename, $this->files)) {

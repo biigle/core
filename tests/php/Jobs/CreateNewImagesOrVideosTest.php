@@ -102,6 +102,21 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertEmpty($image->metadata);
     }
 
+    public function testHandleImageMetadataIncomplete()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+        ]);
+        $filenames = ['a.jpg', 'b.jpg'];
+        $metadata = [
+            ['filename', 'lng', 'lat'],
+            ['a.jpg', '52.220', '28.123'],
+        ];
+
+        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        $this->assertEquals(2, $volume->images()->count());
+    }
+
     public function testHandleVideoMetadata()
     {
         $volume = VolumeTest::create([
@@ -199,6 +214,21 @@ class CreateNewImagesOrVideosTest extends TestCase
         $expect = ['gps_altitude' => [-1500]];
         $this->assertSame($expect, $video->metadata);
         $this->assertNull($video->taken_at);
+    }
+
+    public function testHandleVideoMetadataIncomplete()
+    {
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $filenames = ['a.mp4', 'b.mp4'];
+        $metadata = [
+            ['filename', 'taken_at', 'lng', 'lat'],
+            ['a.mp4', '2016-12-19 12:28:00', '52.220', '28.123'],
+        ];
+
+        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        $this->assertEquals(2, $volume->videos()->count());
     }
 
     public function testHandleMetadataDateParsing()

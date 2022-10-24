@@ -2,6 +2,9 @@
  * This is the main CSS which is globally available throughout the app.
  */
 
+$font-family-sans-serif: sans-serif;
+$font-family-monospace: monospace;
+
 @import "bootstrap";
 @import "font-awesome";
 
