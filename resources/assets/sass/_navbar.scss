@@ -61,6 +61,9 @@
 }
 
 .navbar-header {
+    // Fix for Safari with an announcement.
+    white-space: nowrap;
+
     .announcement {
         display: inline-block;
         height: 50px;
