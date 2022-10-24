@@ -57,145 +57,110 @@ class ProjectStatisticsController extends Controller
             ->count();
 
         $volumes = $project->volumes()
-        ->select('id', 'name', 'updated_at', 'media_type_id')
-        ->with('mediaType')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-        // VIDEO
-        $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
-            return $query->select('volume_id')
-                ->from('project_volume')
-                ->where('project_id', $project->id);
-        })->count();
-        
-
-        $baseQueryVideo = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
-            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
-            ->whereIn('videos.volume_id', function ($query) use ($project) {
-                return $query->select('volume_id')
-                    ->from('project_volume')
-                    ->where('project_id', $project->id);
-            });
-        
-
-        $annotatedVideos = $baseQueryVideo->clone()
-            // ->select(DB::raw('distinct images.id'))
-            ->count(DB::raw('DISTINCT videos.id'));
-        
-
-        $annotationTimeSeriesVideo = $baseQueryVideo->clone()
-            ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
-            ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from video_annotations.created_at)::integer as year'))
-            ->groupBy('video_annotation_labels.user_id', 'fullname', 'year')
-            ->get();
-        
-        $volumeAnnotationsVideo = $baseQueryVideo->clone()
-            ->leftJoin('users', 'users.id', '=', 'video_annotation_labels.user_id')
-            ->select('video_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(video_annotation_labels.id)'), 'videos.volume_id')
-            ->groupBy('video_annotation_labels.user_id', 'fullname', 'videos.volume_id')
-            ->get();
-
-        
-        $volumeNames = $project->volumes()
-            ->select('id', 'name')
-            ->where('media_type_id', MediaType::imageId())
-            ->get();
-        
-        $volumeNamesVideo = $project->volumes()
-            ->select('id', 'name')
-            ->where('media_type_id', MediaType::videoId())
+            ->select('id', 'name', 'updated_at', 'media_type_id')
+            ->with('mediaType')
+            ->orderBy('created_at', 'desc')
             ->get();
 
 
-        $annotationLabelsVideo = $baseQueryVideo->clone()
-            ->join('labels', 'labels.id', '=', 'video_annotation_labels.label_id')
-            ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
-            ->groupBy('labels.id')
-            ->get();
-        
-
-        $videoAnnotationLabels = $baseQueryVideo->clone()
-        ->select('videos.id', 'video_annotation_labels.label_id')
-        ->distinct()
-        ->get()
-        ->groupBy('id');
-        
-        $sourceTargetLabelsVideo = [];
-
-        foreach ($videoAnnotationLabels as $value) {
-            foreach ($value as $label1) {
-                foreach ($value as $label2) {
-                    if ($label1->label_id === $label2->label_id) {
-                        continue;
-                    }
-                    // set source : target relation
-                    $id1 = min($label1->label_id, $label2->label_id);
-                    $id2 = max($label1->label_id, $label2->label_id);
-                    if(array_key_exists($id1, $sourceTargetLabelsVideo)) {
-                        // append to end of array $arr[]
-                        $sourceTargetLabelsVideo[$id1][] = $id2;
-                    } else {
-                        // first entry
-                        $sourceTargetLabelsVideo[$id1] = [$id2];
-                    }
-                }
-            }
-        }
-
-        $sourceTargetLabelsVideo = array_map('array_unique', $sourceTargetLabelsVideo);
-        $sourceTargetLabelsVideo = array_map('array_values', $sourceTargetLabelsVideo);
-        
-
-        // IMAGE
         $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
             return $query->select('volume_id')
                 ->from('project_volume')
                 ->where('project_id', $project->id);
         })->count();
-        
-        //dataset, col1 == dataset2.col1
-        $baseQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-            ->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->whereIn('images.volume_id', function ($query) use ($project) {
+        $imageVolumeStatistics = $this->getVolumeStatistics($project, 'image');
+
+        $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
+            return $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $project->id);
+        })->count();
+        $videoVolumeStatistics = $this->getVolumeStatistics($project, 'video');
+
+        $volumeNames = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::imageId())
+            ->get();
+
+        $volumeNamesVideo = $project->volumes()
+            ->select('id', 'name')
+            ->where('media_type_id', MediaType::videoId())
+            ->get();
+
+        return view('projects.show.statistics', [
+            'project' => $project,
+            'isMember' => $isMember,
+            'isPinned' => $isPinned,
+            'canPin' => $canPin,
+            'activeTab' => 'statistics',
+            'volumes' => $volumes,
+            // IMAGES
+            'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
+            'annotationLabels' => $imageVolumeStatistics['annotationLabels'],
+            'annotationTimeSeries' => $imageVolumeStatistics['annotationTimeSeries'],
+            'sourceTargetLabels' => collect($imageVolumeStatistics['sourceTargetLabels']),
+            'totalImages' => $totalImages,
+            'volumeAnnotations' => $imageVolumeStatistics['volumeAnnotations'],
+            'volumeNames' => $volumeNames,
+            // VIDEOS
+            'annotatedVideos' => $videoVolumeStatistics['annotatedFiles'],
+            'annotationLabelsVideo' => $videoVolumeStatistics['annotationLabels'],
+            'annotationTimeSeriesVideo' => $videoVolumeStatistics['annotationTimeSeries'],
+            'sourceTargetLabelsVideo' => collect($videoVolumeStatistics['sourceTargetLabels']),
+            'totalVideos' => $totalVideos,
+            'volumeAnnotationsVideo' => $videoVolumeStatistics['volumeAnnotations'],
+            'volumeNamesVideo' => $volumeNamesVideo,
+        ]);
+    }
+
+    /**
+     * Get the statistics of volumes with a certain media type.
+     *
+     * @param Project $project
+     * @param string $type
+     *
+     * @return array
+     */
+    protected function getVolumeStatistics(Project $project, $type)
+    {
+        $baseQuery = DB::table("{$type}_annotations")
+            ->join("{$type}_annotation_labels", "{$type}_annotation_labels.annotation_id", '=', "{$type}_annotations.id")
+            ->join("{$type}s", "{$type}s.id", '=', "{$type}_annotations.{$type}_id")
+            ->whereIn("{$type}s.volume_id", function ($query) use ($project) {
                 return $query->select('volume_id')
                     ->from('project_volume')
                     ->where('project_id', $project->id);
             });
 
-        $annotatedImages = $baseQuery->clone()
-            // ->select(DB::raw('distinct images.id'))
-            ->count(DB::raw('DISTINCT images.id'));
+        $annotatedFiles = $baseQuery->clone()->count(DB::raw("DISTINCT {$type}s.id"));
 
         $annotationTimeSeries = $baseQuery->clone()
-            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
-            ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), DB::raw('EXTRACT(YEAR from image_annotations.created_at)::integer as year'))
-            ->groupBy('image_annotation_labels.user_id', 'fullname', 'year')
+            ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
+            ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), EXTRACT(YEAR from {$type}_annotations.created_at)::integer as year")
+            ->groupBy("{$type}_annotation_labels.user_id", 'fullname', 'year')
             ->get();
 
         $volumeAnnotations = $baseQuery->clone()
-            ->leftJoin('users', 'users.id', '=', 'image_annotation_labels.user_id')
-            ->select('image_annotation_labels.user_id', DB::raw("concat(users.firstname, ' ', users.lastname) as fullname"), DB::raw('count(image_annotation_labels.id)'), 'images.volume_id')
-            ->groupBy('image_annotation_labels.user_id', 'fullname', 'images.volume_id')
+            ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
+            ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), {$type}s.volume_id")
+            ->groupBy("{$type}_annotation_labels.user_id", 'fullname', "{$type}s.volume_id")
             ->get();
 
-        // $volumeNames = $project->volumes()->select('id', 'name')->get();
-        
         $annotationLabels = $baseQuery->clone()
-            ->join('labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+            ->join('labels', 'labels.id', '=', "{$type}_annotation_labels.label_id")
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
             ->groupBy('labels.id')
             ->get();
-        
-        $imageAnnotationLabels = $baseQuery->clone()
-            ->select('images.id', 'image_annotation_labels.label_id')
+
+        $sourceTargetLabelsRaw = $baseQuery->clone()
+            ->select("{$type}s.id", "{$type}_annotation_labels.label_id")
             ->distinct()
             ->get()
             ->groupBy('id');
 
         $sourceTargetLabels = [];
 
-        foreach ($imageAnnotationLabels as $value) {
+        foreach ($sourceTargetLabelsRaw as $value) {
             foreach ($value as $label1) {
                 foreach ($value as $label2) {
                     if ($label1->label_id === $label2->label_id) {
@@ -204,7 +169,7 @@ class ProjectStatisticsController extends Controller
                     // set source : target relation
                     $id1 = min($label1->label_id, $label2->label_id);
                     $id2 = max($label1->label_id, $label2->label_id);
-                    if(array_key_exists($id1, $sourceTargetLabels)) {
+                    if (array_key_exists($id1, $sourceTargetLabels)) {
                         // append to end of array $arr[]
                         $sourceTargetLabels[$id1][] = $id2;
                     } else {
@@ -218,33 +183,12 @@ class ProjectStatisticsController extends Controller
         $sourceTargetLabels = array_map('array_unique', $sourceTargetLabels);
         $sourceTargetLabels = array_map('array_values', $sourceTargetLabels);
 
-        // dd($sourceTargetLabels);
-        
-        
-
-        return view('projects.show.statistics', [
-            'project' => $project,
-            'isMember' => $isMember,
-            'isPinned' => $isPinned,
-            'canPin' => $canPin,
-            'activeTab' => 'statistics',
-            'volumes' => $volumes,
-            // IMAGES
-            'annotationTimeSeries' => $annotationTimeSeries,
-            'volumeAnnotations' => $volumeAnnotations,
-            'volumeNames' => $volumeNames,
-            'annotatedImages' => $annotatedImages,
-            'totalImages' => $totalImages,
+        return [
+            'annotatedFiles' => $annotatedFiles,
             'annotationLabels' => $annotationLabels,
+            'annotationTimeSeries' => $annotationTimeSeries,
             'sourceTargetLabels' => collect($sourceTargetLabels),
-            // VIDEOS
-            'totalVideos' => $totalVideos,
-            'annotatedVideos' => $annotatedVideos,
-            'annotationTimeSeriesVideo' => $annotationTimeSeriesVideo,
-            'volumeAnnotationsVideo' => $volumeAnnotationsVideo,
-            'volumeNamesVideo' => $volumeNamesVideo,
-            'annotationLabelsVideo' => $annotationLabelsVideo,
-            'sourceTargetLabelsVideo' => collect($sourceTargetLabelsVideo),
-        ]);
+            'volumeAnnotations' => $volumeAnnotations,
+        ];
     }
 }
