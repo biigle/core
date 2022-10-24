@@ -2,18 +2,36 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Annotation;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Image;
+use Biigle\ImageAnnotation;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\Modules\ColorSort\Sequence;
 use Biigle\Project;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Uuid;
+use function Amp\Iterator\toArray;
+use function PHPUnit\Framework\assertTrue;
 
 class VolumeController extends Controller
 {
@@ -165,19 +183,96 @@ class VolumeController extends Controller
         $volume = Volume::findOrFail($volumeId);
         $copy = $volume->replicate();
         $copy->created_at = Carbon::now();
+        $copy->save();
 
-        foreach ($volume->getRelations() as $relation => $items) {
-            foreach ($items as $item) {
-                unset($item->id);
-                $copy->{$relation}()->create($item->toArray());
-            }
+        $this->copyImages($volume, $copy);
+
+        //save ifdo-file if exist
+        if ($volume->hasIfdo()) {
+            $this->copyIfdoFile($volumeId, $copy->id);
         }
 
-        $copy->save();
+        $copy->push();
+
         $project->addVolumeId($copy->id);
         $project->push();
+
+//        unset($copy->media_type);
 
         return redirect()->back()->with(['copy' => $copy]);
 
     }
+
+    private function copyImages($volume, $copy)
+    {
+        DB::transaction(function () use ($volume, $copy) {
+            $images = $volume->images()->get()->map(function ($image) use ($copy) {
+                $image->volume_id = $copy->id;
+                $image->uuid = (string) Uuid::uuid4();
+                unset($image->id);
+                return $image;
+            });
+
+            $images->chunk(10000)->map(function ($chunk) {
+                Image::insert($chunk->toArray());
+            });
+        });
+//        print_r($copy->images()->get());
+
+        DB::transaction(function () use ($volume,$copy) {
+            $oldImages = $volume->images()->get();
+            $newImages = $copy->images()->get();
+            for($i=0;$i<count($oldImages);$i++){
+                $oldImage = $oldImages[$i];
+                $newImageId = $newImages[$i]->id;
+                $annotations = $oldImage->annotations->map(function ($annotation) use ($newImageId){
+                    $annotation->image_id = $newImageId;
+                    unset($annotation->id);
+                    return $annotation;
+                });
+
+                $annotations->chunk(10000)->map(function ($chunk) {
+                    ImageAnnotation::insert($chunk->toArray());
+                });
+            }
+        });
+
+//        print_r($copy->images()->first()->annotations()->get());
+    }
+
+    private function copyVideos($Volume)
+    {
+    }
+
+    private function copyUser($Volume)
+    {
+    }
+
+    private function copyAnnotations($Volume)
+    {
+    }
+
+    private function copyIfdoFile($volume_id, $copy_id)
+    {
+        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
+        $iFdoFilename = $volume_id . ".yaml";
+        $copyIFdoFilename = $copy_id . ".yaml";
+        $disk->copy($iFdoFilename, $copyIFdoFilename);
+    }
+
+//    private function copyColorSortSequence($volume, $copy)
+//    {
+//        DB::transaction(function () use ($volume, $copy) {
+//
+//            $insert = Sequence::whereIn('volume_id', [$volume->id])->get()->map(function ($seq) use ($copy) {
+//                $seq->volume_id = $copy->id;
+//                unset($seq->id);
+//                return $seq;
+//            });
+//
+//            $insert->chunk(10000)->map(function ($chunk) {
+//                Sequence::insert($chunk->toArray());
+//            });
+//        });
+//    }
 }
