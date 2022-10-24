@@ -187,6 +187,9 @@ class VolumeController extends Controller
 
         $this->copyImages($volume, $copy);
 
+//        $this->copyColorSortSequence($volume,$copy);
+//        print_r(Sequence::whereIn('volume_id', [$copy->id])->get());
+
         //save ifdo-file if exist
         if ($volume->hasIfdo()) {
             $this->copyIfdoFile($volumeId, $copy->id);
@@ -205,10 +208,11 @@ class VolumeController extends Controller
 
     private function copyImages($volume, $copy)
     {
+        // copy image references
         DB::transaction(function () use ($volume, $copy) {
             $images = $volume->images()->get()->map(function ($image) use ($copy) {
                 $image->volume_id = $copy->id;
-                $image->uuid = (string) Uuid::uuid4();
+                $image->uuid = (string)Uuid::uuid4();
                 unset($image->id);
                 return $image;
             });
@@ -217,18 +221,18 @@ class VolumeController extends Controller
                 Image::insert($chunk->toArray());
             });
         });
-//        print_r($copy->images()->get());
 
-        DB::transaction(function () use ($volume,$copy) {
+        //copy annotation references
+        DB::transaction(function () use ($volume, $copy) {
             $oldImages = $volume->images()->get();
             $newImages = $copy->images()->get();
-            for($i=0;$i<count($oldImages);$i++){
-                $oldImage = $oldImages[$i];
-                $newImageId = $newImages[$i]->id;
-                $annotations = $oldImage->annotations->map(function ($annotation) use ($newImageId){
-                    $annotation->image_id = $newImageId;
-                    unset($annotation->id);
-                    return $annotation;
+            foreach ($oldImages as $index => $oldImage) {
+                $newImageId = $newImages[$index]->id;
+                $annotations = $oldImage->annotations->map(function ($annotation) use ($newImageId) {
+                    $original = $annotation->getRawOriginal();
+                    $original['image_id'] = $newImageId;
+                    unset($original['id']);
+                    return $original;
                 });
 
                 $annotations->chunk(10000)->map(function ($chunk) {
@@ -237,7 +241,23 @@ class VolumeController extends Controller
             }
         });
 
-//        print_r($copy->images()->first()->annotations()->get());
+        // copy label references
+        DB::transaction(function () use ($volume, $copy) {
+            $oldImages = $volume->images()->get();
+            $newImages = $copy->images()->get();
+            foreach ($oldImages as $index => $oldImage) {
+                $newImageId = $newImages[$index]->id;
+                $oldLabels = $oldImage->labels()->get();
+                foreach ($oldLabels as $labelIdx => $oldLabel) {
+                    $oldLabel->image_id = $newImageId;
+                    //oldLabel->label_id = $newLabelId => creation of a new label???
+                    unset($oldLabel->id);
+                }
+                $oldLabels->chunk(10000)->map(function ($chunk) {
+                    ImageAnnotation::insert($chunk->toArray());
+                });
+            }
+        });
     }
 
     private function copyVideos($Volume)
@@ -263,11 +283,11 @@ class VolumeController extends Controller
 //    private function copyColorSortSequence($volume, $copy)
 //    {
 //        DB::transaction(function () use ($volume, $copy) {
-//
 //            $insert = Sequence::whereIn('volume_id', [$volume->id])->get()->map(function ($seq) use ($copy) {
-//                $seq->volume_id = $copy->id;
-//                unset($seq->id);
-//                return $seq;
+//                $original = $seq->getRawOriginal();
+//                $original['volume_id'] = $copy->id;
+//                unset($original['id']);
+//                return $original;
 //            });
 //
 //            $insert->chunk(10000)->map(function ($chunk) {
