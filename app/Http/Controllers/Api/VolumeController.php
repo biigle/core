@@ -280,19 +280,19 @@ class VolumeController extends Controller
         $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 
-//    private function copyColorSortSequence($volume, $copy)
-//    {
-//        DB::transaction(function () use ($volume, $copy) {
-//            $insert = Sequence::whereIn('volume_id', [$volume->id])->get()->map(function ($seq) use ($copy) {
-//                $original = $seq->getRawOriginal();
-//                $original['volume_id'] = $copy->id;
-//                unset($original['id']);
-//                return $original;
-//            });
-//
-//            $insert->chunk(10000)->map(function ($chunk) {
-//                Sequence::insert($chunk->toArray());
-//            });
-//        });
-//    }
+    private function copyColorSortSequence($volume, $copy)
+    {
+        DB::transaction(function () use ($volume, $copy) {
+            $insert = Sequence::whereIn('volume_id', [$volume->id])->get()->map(function ($seq) use ($copy) {
+                $original = $seq->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                unset($original['id']);
+                return $original;
+            });
+
+            $insert->chunk(10000)->map(function ($chunk) {
+                Sequence::insert($chunk->toArray());
+            });
+        });
+    }
 }
