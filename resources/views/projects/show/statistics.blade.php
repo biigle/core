@@ -31,7 +31,6 @@
         :container="container"
         :subtitle="subtitle[0]"
         ></annotation-timeline>
-    <!-- <bar-plot :volume-annotations="volumeAnnotations" :names="volumeNames"></bar-plot> -->
     <sankey-plot v-if="showSankey" 
         :volume-annotations="computedData.volumeAnnotations" 
         :names="computedData.volumeNames"

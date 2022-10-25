@@ -1,11 +1,11 @@
 /**
- * Resource for volume that can be attached to a VOLUME.
+ * Resource for volume statistics.
  *
- * var resource = biigle.$require('api.attachableVolumes');
+ * var resource = biigle.$require('api.volumeStatistics');
  *
- * Get all volumes that can be attached to a project:
+ * Get statistics of a volume.
  *
- * var resource = biigle.$require('api.attachableVolumes');
- * resource.get({id: projectId}).then(...);
+ * var resource = biigle.$require('api.volumeStatistics');
+ * resource.get({id: volumeId}).then(...);
  */
 export default Vue.resource('api/v1/volumes{/id}/statistics');

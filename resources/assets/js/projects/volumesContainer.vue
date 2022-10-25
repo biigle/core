@@ -239,6 +239,9 @@ export default {
         sortByNameUp() {
             this.currentSorting = SORTING.NAME_UP;
         },
+        hideStatisticsModal() {
+            this.showModal = false;
+        },
     },
     watch: {
         volumes(volumes) {
