@@ -10,8 +10,12 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageLabel;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\MediaType;
 use Biigle\Modules\ColorSort\Sequence;
 use Biigle\Project;
+use Biigle\Video;
+use Biigle\VideoAnnotation;
+use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Exception;
@@ -187,11 +191,13 @@ class VolumeController extends Controller
         $copy->created_at = Carbon::now();
         $copy->save();
 
-        $this->copyImages($volume, $copy);
+        if ($volume->mediaType->name=="image") {
+            $this->copyImages($volume, $copy);
+            $this->copyColorSortSequence($volume, $copy);
+        } else {
+            $this->copyVideos($volume, $copy);
+        }
         $this->copyAnnotationSessions($volume, $copy);
-
-//        $this->copyColorSortSequence($volume,$copy);
-//        print_r(Sequence::whereIn('volume_id', [$copy->id])->get());
 
         //save ifdo-file if exist
         if ($volume->hasIfdo()) {
@@ -202,8 +208,6 @@ class VolumeController extends Controller
 
         $project->addVolumeId($copy->id);
         $project->push();
-
-//        unset($copy->media_type);
 
         return redirect()->back()->with(['copy' => $copy]);
 
@@ -253,7 +257,6 @@ class VolumeController extends Controller
                 $oldLabels = $oldImage->labels()->get();
                 foreach ($oldLabels as $labelIdx => $oldLabel) {
                     $oldLabel->image_id = $newImageId;
-                    //oldLabel->label_id = $newLabelId => creation of a new label???
                     unset($oldLabel->id);
                 }
                 $oldLabels->chunk(10000)->map(function ($chunk) {
@@ -261,19 +264,67 @@ class VolumeController extends Controller
                 });
             }
         });
+
+        // annotation_assistance_requests optional
     }
 
-    private function copyVideos($Volume)
+    private function copyVideos($volume, $copy)
     {
+        // copy video references
+        DB::transaction(function () use ($volume, $copy) {
+            $videos = $volume->videos()->get()->map(function ($video) use ($copy) {
+                $video->volume_id = $copy->id;
+                $video->uuid = (string)Uuid::uuid4();
+                unset($video->id);
+                return $video;
+            });
+
+            $videos->chunk(10000)->map(function ($chunk) {
+                Video::insert($chunk->toArray());
+            });
+        });
+
+//        copy annotation references
+        DB::transaction(function () use ($volume, $copy) {
+            $oldVideos = $volume->videos()->get();
+            $newVideos = $copy->videos()->get();
+            foreach ($oldVideos as $index => $oldVideo) {
+                $newVideoId = $newVideos[$index]->id;
+                $annotations = $oldVideo->annotations->map(function ($annotation) use ($newVideoId) {
+                    $original = $annotation->getRawOriginal();
+                    $original['video_id'] = $newVideoId;
+                    unset($original['id']);
+                    return $original;
+                });
+
+                $annotations->chunk(10000)->map(function ($chunk) {
+                    VideoAnnotation::insert($chunk->toArray());
+                });
+            }
+        });
+
+        // copy label references
+        DB::transaction(function () use ($volume, $copy) {
+            $oldVideos = $volume->videos()->get();
+            $newVideos = $copy->videos()->get();
+            foreach ($oldVideos as $index => $oldImage) {
+                $newVideoId = $newVideos[$index]->id;
+                $oldLabels = $oldImage->labels()->get();
+                foreach ($oldLabels as $labelIdx => $oldLabel) {
+                    $oldLabel->image_id = $newVideoId;
+                    unset($oldLabel->id);
+                }
+                $oldLabels->chunk(10000)->map(function ($chunk) {
+                    VideoLabel::insert($chunk->toArray());
+                });
+            }
+        });
     }
 
     private function copyUser($Volume)
     {
     }
 
-    private function copyAnnotations($Volume)
-    {
-    }
 
     private function copyIfdoFile($volume_id, $copy_id)
     {
