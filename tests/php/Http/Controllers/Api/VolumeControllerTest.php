@@ -14,6 +14,7 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\Modules\ColorSort\SequenceTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -305,13 +306,13 @@ class VolumeControllerTest extends ApiTestCase
             'user_id' => $this->admin()->id,
         ]);
 
-        //        $session = AnnotationSessionTest::create([
-//            'volume_id' => $id,
-//            'starts_at' => Carbon::today(),
-//            'ends_at' => Carbon::tomorrow(),
-//            'hide_own_annotations' => true,
-//            'hide_other_users_annotations' => false,
-//        ]);
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
 
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
@@ -322,11 +323,97 @@ class VolumeControllerTest extends ApiTestCase
 
         $copy = $response->getSession()->get('copy');
 
-//        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
-//        $this->assertTrue($copy->projects()->exists() == $this->volume->projects()->exists());
-//        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
-//        $this->assertTrue($copy->annotationSessions()->exists() == $this->volume->annotationSessions()->exists());
-//        $this->assertTrue($copy->activeAnnotationSession()->exists() == $this->volume->activeAnnotationSession()->exists());
+        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
+
+        foreach ($this->volume->images()->get() as $index => $oldImage) {
+            $newImage = $copy->images()->get()[$index];
+
+            $this->assertTrue($oldImage->volume_id == $this->volume->id);
+            $this->assertTrue($newImage->volume_id == $copy->id);
+
+            unset($newImage->id);
+            unset($newImage->uuid);
+            unset($oldImage->id);
+            unset($oldImage->uuid);
+            unset($oldImage->volume_id);
+            unset($newImage->volume_id);
+
+            $this->assertTrue($oldImage->is($newImage));
+        }
+
+        $this->assertTrue($copy->projects()->first()->id == $id2);
+
+        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
+        $this->assertTrue($copy->mediaType->name == $this->volume->mediaType->name);
+
+        $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
+        $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
+
+    }
+
+    public function testCloneVideoVolume()
+    {
+        $this->volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $id = $this->volume->id;
+
+        $disk = Storage::fake('ifdos');
+        $csv = __DIR__ . "/../../../../files/video-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        $this->volume->saveIfdo($file);
+
+        $project = ProjectTest::create();
+        $id2 = $project->id;
+
+        $this->volume->projects()->attach($id2);
+
+        $v1 = VideoTest::create([
+            'filename' => 'a.mp4',
+            'volume_id' => $this->volume->id,
+        ]);
+        $v2 = VideoTest::create([
+            'filename' => 'b.mp4',
+            'volume_id' => $this->volume->id,
+        ]);
+        $v3 = VideoTest::create([
+            'filename' => 'c.mp4',
+            'volume_id' => $this->volume->id,
+        ]);
+
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
+
+        $this->beAdmin();
+
+        $project->addUserId($this->admin()->id, Role::adminId());
+        Cache::flush();
+
+        $response = $this->post("/api/v1/volumes/{$id}/project/{$id2}");
+        $response->assertStatus(302);
+
+
+        $copy = $response->getSession()->get('copy');
+
+        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
+        $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
+        foreach ($this->volume->videos()->get() as $index => $oldVideo) {
+            $newVideo = $copy->videos()->get()[$index];
+
+            $this->assertTrue($oldVideo->volume_id == $this->volume->id);
+            $this->assertTrue($newVideo->volume_id == $copy->id);
+
+            unset($newVideo->id);
+            unset($newVideo->uuid);
+            unset($oldVideo->id);
+            unset($oldVideo->uuid);
+            unset($oldVideo->volume_id);
+            unset($newVideo->volume_id);
+
+            $this->assertTrue($oldVideo->is($newVideo));
+        }
+
+        $this->assertTrue($copy->projects()->first()->id == $id2);
+
+        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
+        $this->assertTrue($copy->mediaType->name == $this->volume->mediaType->name);
 
         $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
         $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
