@@ -1,5 +1,5 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" @updateAxisPointer="handleUpdate"></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions" @updateAxisPointer="handleUpdate"></v-chart>
 </template>
 
 <script>
@@ -54,6 +54,9 @@ export default {
     },
     data() {
         return {
+            updateOptions: {
+                notMerge: true,
+            },
             pieObj: {
                 type: 'pie',
                 id: 'pie',
@@ -222,11 +225,11 @@ export default {
                 dataset: {
                     source: this.sourcedata
                 },
-                xAxis: { 
+                xAxis: {
                     type: 'category',
                     data: this.extractYear()
                 },
-                yAxis: { 
+                yAxis: {
                     gridIndex: 0,
                     name: "annotations",
                     nameLocation: "middle",
