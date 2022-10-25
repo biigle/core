@@ -51,7 +51,7 @@ export default {
             return {
                 backgroundColor: 'transparent',
                 title: {
-                    text: 'Annotated vs. not annotated',
+                    text: 'Annotated vs. not annotated files',
                     subtext: this.subtitle,
                     left: 'center',
                     top: '5%',

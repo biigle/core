@@ -1,8 +1,7 @@
 <template>
-    <div class="grid-col-span-3">
-        <v-chart class="chart w_buttons" :option="option" @click="toggleColor"></v-chart>
-        <button class="btn btn-default" title="circular" v-on:click="changeLayout('circular')" >circular layout</button>
-        <button class="btn btn-default" title="force" v-on:click="changeLayout('force')" >force layout</button>
+    <div class="grid-col-span-3 netmap-chart">
+        <v-chart class="chart" :option="option" @click="toggleColor"></v-chart>
+        <button class="btn btn-default force-button" title="Toggle force layout" v-on:click="toggleForceLayout" :class="buttonClass"><i class="fa fa-project-diagram"></i></button>
     </div>
 </template>
 
@@ -60,8 +59,12 @@ export default {
         }
     },
     methods: {
-        changeLayout(event) {
-            this.layoutType = event;
+        toggleForceLayout() {
+            if (this.layoutType === 'circular') {
+                this.layoutType = 'force';
+            } else {
+                this.layoutType = 'circular';
+            }
         },
         toggleColor(event) {
             if (event.dataType === 'node') {
@@ -135,6 +138,12 @@ export default {
         }
     },
     computed: {
+        buttonClass() {
+            return {
+                active: this.layoutType === 'force',
+                'btn-info': this.layoutType === 'force',
+            };
+        },
         graph() {
             const [nodes, cat] = this.createNodesAndCategories();
 

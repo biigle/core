@@ -1,6 +1,6 @@
 <template>
     <modal id="modal-show-statistics" ref="modal" v-model="show" title="Volume Charts" size="lg" :footer="false" @hide="handleHide">
-        <div v-if="showCharts" class="modal-statistics">
+        <div v-if="showCharts" class="project-volume-charts">
             <annotation-timeline v-if="showTimeline" :annotation-time-series="statisticsData.annotationTimeSeries" :volumeType="statisticsData.volumeType" :subtitle="subtitle"></annotation-timeline>
             <pie-chart :total-files="statisticsData.totalFiles" :annotated-files="statisticsData.annotatedFiles" :volumeType="statisticsData.volumeType"></pie-chart>
             <pie-label v-if="showPieLabel" :annotation-labels="statisticsData.annotationLabels" :volumeType="statisticsData.volumeType"></pie-label>
