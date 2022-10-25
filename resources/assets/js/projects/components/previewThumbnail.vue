@@ -12,12 +12,21 @@
                 :class="iconClass"
                 ></i>
             <button
-                v-if="showRemove"
+                v-if="showRemoveButton"
                 class="btn btn-default btn-sm preview-thumbnail__icon"
                 @click.prevent="remove"
                 :title="removeTitle"
                 >
                 <i class="fas fa-trash"></i>
+            </button>
+            <button
+                v-if="showStatisticsButton"
+                class="btn btn-default btn-sm preview-thumbnail__charts"
+                @click.prevent="showStatistics"
+                :title="statisticsTitle"
+                >
+                <loader v-if="loading" :active="true"></loader>
+                <i v-else class="fas fa-chart-bar"></i>
             </button>
             <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
@@ -46,7 +55,14 @@
  *
  * @type {Object}
  */
+import LoaderMixin from '../../core/mixins/loader';
+import volumeStatisticsApi from '../api/volumeStatistics';
+import {handleErrorResponse} from '../../core/messages/store';
+
+
+
 export default {
+    mixins: [LoaderMixin],
     props: {
         id: {
             type: Number,
@@ -64,6 +80,10 @@ export default {
             type: String,
             default: 'Remove this volume',
         },
+        statisticsTitle: {
+            type: String,
+            default: 'Show charts',
+        },
         icon: {
             type: String,
         },
@@ -75,6 +95,7 @@ export default {
             loaded: [],
             touched: false,
             hovered: false,
+            statisticsData: null,
         };
     },
     computed: {
@@ -101,8 +122,11 @@ export default {
 
             return this.icon;
         },
-        showRemove() {
+        showRemoveButton() {
             return this.removable && this.hovered;
+        },
+        showStatisticsButton() {
+            return this.hovered || this.loading;
         },
     },
     methods: {
@@ -115,6 +139,25 @@ export default {
         },
         remove() {
             this.$emit('remove', this.id);
+        },
+        showStatistics() {
+            // case of loading thumbnail
+            if(this.loading) {
+                return
+            }
+            // If statistics modal has been opened before, use cached data
+            if (this.statisticsData !== null) {
+                this.$emit('statistics', this.statisticsData)
+            } else {
+                this.startLoading();
+                // api request to get data for specific volume
+                volumeStatisticsApi.get({id: this.id})
+                    .then((response) => {
+                        this.$emit('statistics', response.data)
+                        this.statisticsData = response.data;
+                    }, handleErrorResponse)
+                    .finally(this.finishLoading);
+            }
         },
         uriLoaded(i) {
             this.loaded.splice(i, 1, true);

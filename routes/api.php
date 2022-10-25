@@ -339,6 +339,10 @@ $router->group([
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
     ]);
+
+    $router->get('{id}/statistics', [
+        'uses' => 'StatisticsController@index',
+    ]);
 });
 
 $router->group([
