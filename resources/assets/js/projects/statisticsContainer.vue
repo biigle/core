@@ -1,9 +1,9 @@
 <script>
-import AnnotationTimeline from './components/statisticsTabTimeline.vue';
-import SankeyPlot from './components/statisticsTabSankey.vue';
-import PieChart from './components/statisticsTabPie.vue';
-import NetMap from './components/statisticsTabNetmap.vue';
-import PieLabel from './components/statisticsTabPieLabel.vue';
+import AnnotationTimeline from './components/charts/timelinePlot.vue';
+import SankeyPlot from './components/charts/sankeyPlot.vue';
+import PieChart from './components/charts/pieChart.vue';
+import NetMap from './components/charts/netmapDisplay.vue';
+import PieLabel from './components/charts/pieLabelChart.vue';
 
 export default {
     data() {
@@ -35,13 +35,11 @@ export default {
         };
     },
     components: {
-        // html-element : wert
-        AnnotationTimeline:AnnotationTimeline,
-        // BarPlot:BarPlot,
-        PieChart:PieChart,
-        SankeyPlot:SankeyPlot,
-        PieLabel:PieLabel,
-        NetMap:NetMap
+        annotationTimeline: AnnotationTimeline,
+        pieChart: PieChart,
+        sankeyPlot: SankeyPlot,
+        pieLabel: PieLabel,
+        netMap: NetMap
     },
     computed: {
         toggleImageVolumesClass() {
@@ -57,75 +55,145 @@ export default {
             return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
         },
         computedData() {
-            if(this.showImageVolumes && !this.showVideoVolumes) {
+            if (this.showImageVolumes && !this.showVideoVolumes) {
                 return {
-                    'annotationTimeSeries' : this.annotationTimeSeries, 
-                    'volumeAnnotations': this.volumeAnnotations,
-                    'volumeNames': this.volumeNames,
-                    'totalFiles': this.totalImages,
-                    'annotatedFiles': this.annotatedImages,
-                    'annotationLabels': this.annotationLabels,
-                    'sourceTargetLabels': this.sourceTargetLabels
-                    };
-            } else if(!this.showImageVolumes && this.showVideoVolumes) {
+                    annotationTimeSeries : this.annotationTimeSeries,
+                    volumeAnnotations: this.volumeAnnotations,
+                    volumeNames: this.volumeNames,
+                    totalFiles: this.totalImages,
+                    annotatedFiles: this.annotatedImages,
+                    annotationLabels: this.annotationLabels,
+                    sourceTargetLabels: this.sourceTargetLabels
+                };
+            } else if (!this.showImageVolumes && this.showVideoVolumes) {
                 return {
-                    'annotationTimeSeries' : this.annotationTimeSeriesVideo, 
-                    'volumeAnnotations': this.volumeAnnotationsVideo,
-                    'volumeNames': this.volumeNamesVideo,
-                    'totalFiles': this.totalVideos,
-                    'annotatedFiles': this.annotatedVideos,
-                    'annotationLabels': this.annotationLabelsVideo,
-                    'sourceTargetLabels': this.sourceTargetLabelsVideo
-                    };
-            } else { //both true or both false
+                    annotationTimeSeries : this.annotationTimeSeriesVideo,
+                    volumeAnnotations: this.volumeAnnotationsVideo,
+                    volumeNames: this.volumeNamesVideo,
+                    totalFiles: this.totalVideos,
+                    annotatedFiles: this.annotatedVideos,
+                    annotationLabels: this.annotationLabelsVideo,
+                    sourceTargetLabels: this.sourceTargetLabelsVideo
+                };
+            } else {
                 return {
-                    'annotationTimeSeries' : this.annotationTimeSeries.concat(this.annotationTimeSeriesVideo), 
-                    'volumeAnnotations': this.volumeAnnotations.concat(this.volumeAnnotationsVideo),
-                    'volumeNames': this.volumeNames.concat(this.volumeNamesVideo),
-                    'totalFiles': this.totalImages + this.totalVideos,
-                    'annotatedFiles': this.annotatedImages + this.annotatedVideos,
-                    'annotationLabels': this.annotationLabels.concat(this.annotationLabelsVideo),
-                    'sourceTargetLabels': {...this.sourceTargetLabels, ...this.sourceTargetLabelsVideo}
-                    };
+                    annotationTimeSeries : this.mergedAnnotationTimeseries,
+                    volumeAnnotations: this.volumeAnnotations.concat(this.volumeAnnotationsVideo),
+                    volumeNames: this.volumeNames.concat(this.volumeNamesVideo),
+                    totalFiles: this.totalImages + this.totalVideos,
+                    annotatedFiles: this.annotatedImages + this.annotatedVideos,
+                    annotationLabels: this.mergedAnnotationLabels,
+                    sourceTargetLabels: this.mergedSourceTargetLabels,
+                };
             }
         },
         subtitle() {
-            let term = () => {
-                return this.showImageVolumes ? ' image '
-                        : this.showVideoVolumes ? ' video '
-                        : ' ';
+            let term = '';
+            if (this.showImageVolumes) {
+                term = 'image ';
+            } else if (this.showVideoVolumes) {
+                term = 'video ';
+            }
+
+            return [
+                `per user annotations across all ${term}volumes of the project, sorted by year`,
+                `(across all ${term}volumes of the project)`,
+            ];
+        },
+        mergedAnnotationTimeseries() {
+            let a = this.annotationTimeSeries;
+            let b = this.annotationTimeSeriesVideo;
+            let result = [];
+            let ids = {};
+            for (let itemA of a) {
+                let newObject = Object.assign({}, itemA);
+                ids[itemA.user_id + '-' + itemA.year] = true;
+                for (let itemB of b) {
+                    if (newObject.user_id === itemB.user_id && newObject.year === itemB.year) {
+                        newObject.count += itemB.count;
+                    }
                 }
-            return ['per user annotations across all' + term() + 'volumes of the project, sorted by year', '(across all' + term() + 'volumes of the project)']
+                result.push(newObject);
+            }
+
+            for (let itemB of b) {
+                if (ids[itemB.user_id + '-' + itemB.year] !== true) {
+                    result.push(Object.assign({}, itemB));
+                }
+            }
+
+            return result;
+        },
+        mergedAnnotationLabels() {
+            let a = this.annotationLabels;
+            let b = this.annotationLabelsVideo;
+            let result = [];
+            let ids = {};
+            for (let itemA of a) {
+                let newObject = Object.assign({}, itemA);
+                ids[itemA.id] = true;
+                for (let itemB of b) {
+                    if (newObject.id === itemB.id) {
+                        newObject.count += itemB.count;
+                    }
+                }
+                result.push(newObject);
+            }
+
+            for (let itemB of b) {
+                if (ids[itemB.id] !== true) {
+                    result.push(Object.assign({}, itemB));
+                }
+            }
+
+            return result;
+        },
+        mergedSourceTargetLabels() {
+            let a = this.sourceTargetLabels;
+            let b = this.sourceTargetLabelsVideo;
+            let result = {};
+            for (let id in a) {
+                // Concatenate and clone array, removing duplicate entries.
+                result[id] = Array.from(new Set([...a[id], ...b[id] || []]));
+            }
+
+            for (let id in b) {
+                if (!result[id]) {
+                    // Only clone this time.
+                    result[id] = b[id].slice();
+                }
+            }
+
+            return result;
         },
     },
     methods: {
         toggleImageVolumes() {
+            this.showVideoVolumes = false;
             this.showImageVolumes = !this.showImageVolumes;
-            if (this.showVideoVolumes) {
-                this.showImageVolumes = !this.showImageVolumes;
-            }
         },
         toggleVideoVolumes() {
+            this.showImageVolumes = false;
             this.showVideoVolumes = !this.showVideoVolumes;
-            if (this.showImageVolumes) {
-                this.showVideoVolumes = !this.showVideoVolumes;
-            }
         },
         checkForEmptyVals() {
             // check for each statistics-vis if corresponding arrays/objects are empty
-            if(this.annotationTimeSeries.length === 0) {
+            if (this.annotationTimeSeries.length === 0) {
                 this.showTimeline = false;
             }
-            if(this.volumeAnnotations.length === 0) {
+
+            if (this.volumeAnnotations.length === 0) {
                 this.showSankey = false;
             }
-            if(this.annotationLabels.length === 0) {
+
+            if (this.annotationLabels.length === 0) {
                 this.showPieLabel = false;
             }
-            if(Object.keys(this.sourceTargetLabels).length === 0 && this.annotationLabels.length == 0) {
+
+            if (Object.keys(this.sourceTargetLabels).length === 0 && this.annotationLabels.length === 0) {
                 this.showNetMap = false;
             }
-        }
+        },
     },
     created() {
         this.project = biigle.$require('projects.project');
@@ -147,10 +215,6 @@ export default {
         this.volumes = biigle.$require('projects.volumes');
 
         this.checkForEmptyVals();
-        // console.log(JSON.stringify(this.annotatedImages));
-        // console.log(JSON.stringify(this.volumes));
-        // console.log(JSON.stringify(this.sourceTargetLabels));
-        // console.log(JSON.stringify(this.volumeAnnotations));
     },
 };
 </script>
