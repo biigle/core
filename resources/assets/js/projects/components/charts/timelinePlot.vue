@@ -18,16 +18,16 @@ import VChart, { THEME_KEY } from "vue-echarts";
 
 
 echarts.use([
-  DatasetComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  LineChart,
-  PieChart,
-  CanvasRenderer,
-  UniversalTransition,
-  LabelLayout,
-  TitleComponent
+    DatasetComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    LineChart,
+    PieChart,
+    CanvasRenderer,
+    UniversalTransition,
+    LabelLayout,
+    TitleComponent
 ]);
 
 
@@ -35,7 +35,6 @@ export default {
     name: "Annotation-Timeline",
     props: {
         annotationTimeSeries: {required:true, type:Array},
-        container: {required:true, type:String},
         subtitle: {required:true, type:String},
         volumeType: {required:false, type:String},
     },
@@ -99,6 +98,7 @@ export default {
         }
     },
     computed: {
+        // TODO: don't user user names as ID
         sourcedata() {
             // provides special information specifically to pie-chart, namely total contribution of each user 
             // returns array of type [xAxis-array, annotation-array-user1, annotation-array-user2, etc.]:

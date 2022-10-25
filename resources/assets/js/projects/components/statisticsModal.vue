@@ -1,36 +1,39 @@
 <template>
-    <modal id="modal-show-statistics" ref="modal" v-model="show" title="Statistics" size="lg" ok-text="Ok" ok-type="primary">
+    <modal id="modal-show-statistics" ref="modal" v-model="show" title="Volume Charts" size="lg" :footer="false" @hide="handleHide">
         <div v-if="showCharts" class="modal-statistics">
-            <annotation-timeline v-if="showTimeline" :annotation-time-series="dat.annotationTimeSeries" :volumeType="dat.volumeType" :container="container" :subtitle="subtitle"></annotation-timeline>
-            <!-- <bar-plot :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></bar-plot> -->
-            <!-- <sankey-plot v-if="showSankey" :volume-annotations="dat.volumeAnnotations" :names="dat.volumeName"></sankey-plot> -->
-            <pie-chart :total-files="dat.totalFiles" :annotated-files="dat.annotatedFiles" :volumeType="dat.volumeType" :container="container"></pie-chart>
-            <pie-label v-if="showPieLabel" :annotation-labels="dat.annotationLabels" :volumeType="dat.volumeType" :container="container"></pie-label>
-            <net-map v-if="showNetMap" :annotation-labels="dat.annotationLabels" :source-target-labels="dat.sourceTargetLabels" :volumeType="dat.volumeType" :container="container"></net-map>
+            <annotation-timeline v-if="showTimeline" :annotation-time-series="statisticsData.annotationTimeSeries" :volumeType="statisticsData.volumeType" :subtitle="subtitle"></annotation-timeline>
+            <pie-chart :total-files="statisticsData.totalFiles" :annotated-files="statisticsData.annotatedFiles" :volumeType="statisticsData.volumeType"></pie-chart>
+            <pie-label v-if="showPieLabel" :annotation-labels="statisticsData.annotationLabels" :volumeType="statisticsData.volumeType"></pie-label>
+            <net-map v-if="showNetMap" :annotation-labels="statisticsData.annotationLabels" :source-target-labels="statisticsData.sourceTargetLabels" :volumeType="statisticsData.volumeType"></net-map>
         </div>
     </modal>
 </template>
 
 <script>
+import AnnotationTimeline from './charts/timelinePlot.vue';
+import NetMap from './charts/netmapDisplay.vue';
+import PieChart from './charts/pieChart.vue';
+import PieLabel from './charts/pieLabelChart.vue';
 import { Modal } from 'uiv';
-import AnnotationTimeline from './statisticsTabTimeline.vue';
-import PieChart from './statisticsTabPie.vue';
-import NetMap from './statisticsTabNetmap.vue';
-import PieLabel from './statisticsTabPieLabel.vue';
 
 
-export default{
-    name: "statisticsModal",
+export default {
     components: {
         modal: Modal,
-        AnnotationTimeline:AnnotationTimeline,
-        PieChart:PieChart,
-        PieLabel:PieLabel,
-        NetMap:NetMap
+        annotationTimeline: AnnotationTimeline,
+        pieChart: PieChart,
+        pieLabel: PieLabel,
+        netMap: NetMap,
     },
     props: {
-        showModal: {required:true, type:Boolean},
-        statisticsData: {required:true, type:Object}
+        showModal: {
+            required: true,
+            type: Boolean,
+        },
+        statisticsData: {
+            required: true,
+            type: Object,
+        },
     },
     data() {
         return {
@@ -43,40 +46,39 @@ export default{
             showSankey: true,
             showPieLabel: true,
             showNetMap: true,
-            dat: {},
-            container: "modal-statistics",
             subtitle: 'per user annotations of this volume, sorted by year'
         };
-    },
-    computed: {
-        // console.log("Full Object: ", this.annotatedImages);
-        // console.log("Volume-sourceTarget: ", JSON.stringify(this.dat.annotationLabel));
     },
     methods: {
         checkForEmptyVals() {
             // check for each statistics-vis if corresponding arrays/objects are empty
-            if(this.dat.annotationTimeSeries.length === 0) {
+            if (this.statisticsData.annotationTimeSeries.length === 0) {
                 this.showTimeline = false;
             }
-            if(this.dat.volumeAnnotations.length === 0) {
+            if (this.statisticsData.volumeAnnotations.length === 0) {
                 this.showSankey = false;
             }
-            if(this.dat.annotationLabels.length === 0) {
+            if (this.statisticsData.annotationLabels.length === 0) {
                 this.showPieLabel = false;
             }
-            if(Object.keys(this.dat.sourceTargetLabels).length === 0 && this.dat.annotationLabels.length == 0) {
+            if (Object.keys(this.statisticsData.sourceTargetLabels).length === 0 && this.statisticsData.annotationLabels.length === 0) {
                 this.showNetMap = false;
             }
-        }
+        },
+        handleHide() {
+            this.showCharts = false;
+            this.showTimeline = true;
+            this.showSankey = true;
+            this.showPieLabel = true;
+            this.showNetMap = true;
+        },
     },
     watch: {
         // if volume-statistics-button pressed, trigger modal
-        showModal: function(){
-            if (this.showModal){
-                this.dat = this.statisticsData
+        showModal: function () {
+            if (this.showModal) {
                 this.checkForEmptyVals();
                 this.show = true;
-                // console.log("Volume: ", JSON.stringify(this.dat.annotationLabels));
             }
         },
         // if modal is closed, trigger the close-modal-event, which sets 'showModal' in parent container to false again
@@ -85,12 +87,6 @@ export default{
                 this.$nextTick(() => this.showCharts = true);
             } else {
                 this.$emit('close-modal');
-                // console.log('SHOW: ', this.show);
-                this.showCharts = false;
-                this.showTimeline = true;
-                this.showSankey = true;
-                this.showPieLabel = true;
-                this.showNetMap = true;
             }
         }
     }

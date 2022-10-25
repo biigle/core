@@ -32,7 +32,6 @@ export default {
     props: {
         annotatedFiles: {required:true, type:Number},
         totalFiles: {required:true, type:Number},
-        container: {required:true, type:String},
         volumeType: {required:false, type:String},
         subtitle: {required:false, type:String},
     },

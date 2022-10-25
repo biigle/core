@@ -34,7 +34,6 @@ export default {
     },
     props: {
         annotationLabels: {required:true, type:Array},
-        container: {required:true, type:String},
         subtitle: {required:false, type:String},
     },
     data() {

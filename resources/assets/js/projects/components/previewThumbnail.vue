@@ -12,7 +12,7 @@
                 :class="iconClass"
                 ></i>
             <button
-                v-if="showRemove"
+                v-if="showRemoveButton"
                 class="btn btn-default btn-sm preview-thumbnail__icon"
                 @click.prevent="remove"
                 :title="removeTitle"
@@ -20,9 +20,9 @@
                 <i class="fas fa-trash"></i>
             </button>
             <button
-                v-if="showStatistics"
-                class="btn btn-default btn-sm preview-thumbnail__icon2"
-                @click.prevent="statistics"
+                v-if="showStatisticsButton"
+                class="btn btn-default btn-sm preview-thumbnail__charts"
+                @click.prevent="showStatistics"
                 :title="statisticsTitle"
                 >
                 <loader v-if="loading" :active="true"></loader>
@@ -82,7 +82,7 @@ export default {
         },
         statisticsTitle: {
             type: String,
-            default: 'Show statistics',
+            default: 'Show charts',
         },
         icon: {
             type: String,
@@ -122,11 +122,11 @@ export default {
 
             return this.icon;
         },
-        showRemove() {
+        showRemoveButton() {
             return this.removable && this.hovered;
         },
-        showStatistics() {
-            return this.removable && this.hovered;
+        showStatisticsButton() {
+            return this.hovered || this.loading;
         },
     },
     methods: {
@@ -140,23 +140,23 @@ export default {
         remove() {
             this.$emit('remove', this.id);
         },
-        statistics() {
+        showStatistics() {
             // case of loading thumbnail
             if(this.loading) {
                 return
             }
             // If statistics modal has been opened before, use cached data
-            if(this.statisticsData !== null) {
+            if (this.statisticsData !== null) {
                 this.$emit('statistics', this.statisticsData)
             } else {
                 this.startLoading();
                 // api request to get data for specific volume
                 volumeStatisticsApi.get({id: this.id})
-                .then(response => {
-                    this.$emit('statistics', response.data)
-                    this.statisticsData = response.data;
+                    .then((response) => {
+                        this.$emit('statistics', response.data)
+                        this.statisticsData = response.data;
                     }, handleErrorResponse)
-                .finally(this.finishLoading);
+                    .finally(this.finishLoading);
             }
         },
         uriLoaded(i) {
@@ -181,6 +181,6 @@ export default {
         }
 
         this.loaded = this.uris.map(() => false);
-    }
+    },
 };
 </script>
