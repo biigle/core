@@ -146,7 +146,7 @@ export default {
         },
         option() {
             return {
-                backgroundColor: '#222222',
+                backgroundColor: 'transparent',
                 title: {
                     text: 'NetMap Display',
                     textStyle: {

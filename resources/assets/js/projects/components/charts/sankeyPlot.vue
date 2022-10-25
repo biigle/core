@@ -10,46 +10,43 @@ import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
 
 echarts.use([
-    SankeyChart, 
+    SankeyChart,
     CanvasRenderer,
     TitleComponent
-    ]);
+]);
 
 
 export default {
-    name: "SankeyDiagram",
     components: {
         VChart
     },
     props: {
-        volumeAnnotations: {required:true, type:Array},
-        names: {required:true, type:Array},
-        container: {required:true, type:String},
+        volumeAnnotations: {
+            required: true,
+            type: Array,
+        },
+        names: {
+            required: true,
+            type: Array,
+        },
+        container: {
+            required: true,
+            type: String,
+        },
     },
     provide: {
         [THEME_KEY]: "dark"
-    },
-    data() {
-        return {
-        }
-    },
-    mounted() {
-    },
-    created() {
-        // console.log('DATA: ', this.data);
-        // console.log('LINKS: ', this.links);
-        // console.log(this.option);
     },
     computed: {
         data() {
             // returns an array of User-names and volume-names
             let volNames = this.volumeAnnotations.map(entry => {
-                return  this.names.find(x => x.id ===  entry.volume_id).name;
+                return this.names.find(x => x.id ===  entry.volume_id).name;
             });
             volNames = [...new Set(volNames)];
 
             let userNames = this.volumeAnnotations.map(entry => {
-                if(entry.fullname === " ") {
+                if (entry.fullname === " ") {
                     return "Deleted Account"
                 }
                 return entry.fullname;
@@ -60,7 +57,7 @@ export default {
             combined = combined.map(entry => {
                 return {name: entry}
             })
-            
+
             return combined;
         },
 
@@ -73,7 +70,7 @@ export default {
                     source: obj.fullname === " " ? "Deleted Account" : obj.fullname,
                     target: this.names.find(x => x.id ===  obj.volume_id).name,
                     value: obj.count
-                }
+                };
                 // append to result array
                 result_array.push(entry);
             }
@@ -83,7 +80,7 @@ export default {
 
         option() {
             return {
-                backgroundColor: '#222222',
+                backgroundColor: 'transparent',
                 title: {
                     text: 'User contribution to volumes',
                     top: '5%',
@@ -108,10 +105,10 @@ export default {
                         focus: 'adjacency'
                     },
                     data: this.data,
-                    links: this.links
-                }
-            }
-        }
-    }
+                    links: this.links,
+                },
+            };
+        },
+    },
 }
 </script>

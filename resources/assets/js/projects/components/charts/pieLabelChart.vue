@@ -15,17 +15,15 @@ import { CanvasRenderer } from 'echarts/renderers';
 import VChart, { THEME_KEY } from "vue-echarts";
 
 echarts.use([
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  PieChart,
-  CanvasRenderer,
-  LabelLayout
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    PieChart,
+    CanvasRenderer,
+    LabelLayout
 ]);
 
-
 export default {
-    name: "PieChart",
     components: {
         VChart
     },
@@ -33,35 +31,35 @@ export default {
         [THEME_KEY]: "dark"
     },
     props: {
-        annotationLabels: {required:true, type:Array},
-        subtitle: {required:false, type:String},
-    },
-    data() {
-        return {      
-        }
-    },
-    methods: {
-    },
-    mounted() {
-    },
-    created() {
+        annotationLabels: {
+            required: true,
+            type: Array,
+        },
+        subtitle: {
+            required:false,
+            type:String,
+        },
     },
     computed: {
-        dat() {
+        data() {
             let ret = [];
-            for(let entry of this.annotationLabels) {
+            for (let entry of this.annotationLabels) {
                 let formatObj = {
-                    "name": entry.name, 
-                    "value": entry.count, 
-                    "itemStyle": {"color": "#" + entry.color}};
+                    name: entry.name,
+                    value: entry.count,
+                    itemStyle: {
+                        color: "#" + entry.color,
+                        borderColor: '#222222',
+                    },
+                };
                 ret.push(formatObj);
             }
+
             return ret;
         },
-
         option() {
             return {
-                backgroundColor: '#222222',
+                backgroundColor: 'transparent',
                 title: {
                     text: 'Abundance of annotation labels',
                     subtext: this.subtitle,
@@ -75,41 +73,26 @@ export default {
                     trigger: 'item',
                     formatter: '{b} : <b>{c}</b> ({d}%)'
                 },
-                // legend: {
-                //     type: 'scroll',
-                //     orient: 'horizontal',
-                //     bottom: '5%',
-                //     data: ['label1', 'label2', 'label3', 'label4']
-                // },
-                // color: [
-                //     '#7cffb2',
-                //     '#ff6e76'
-                // ],
                 series: [
-                {
-                    name: 'Annotation Label',
-                    type: 'pie',
-                    radius: '50%',
-                    avoidLabelOverlap: false,
-                    label: {
-                    show: true,
-                    position: 'outside'
+                    {
+                        type: 'pie',
+                        radius: '50%',
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: true,
+                            position: 'outside'
+                        },
+                        labelLine: {
+                            show: true
+                        },
+                        data: this.data,
+                        emphasis: {
+                            focus: 'self'
+                        },
                     },
-                    labelLine: {
-                    show: true
-                    },
-                    data: this.dat,
-                    emphasis: {
-                        itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
-                }
-                ]
-            }
-        } //end option
-    }
+                ],
+            };
+        },
+    },
 }
 </script>

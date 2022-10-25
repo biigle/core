@@ -32,11 +32,19 @@ echarts.use([
 
 
 export default {
-    name: "Annotation-Timeline",
     props: {
-        annotationTimeSeries: {required:true, type:Array},
-        subtitle: {required:true, type:String},
-        volumeType: {required:false, type:String},
+        annotationTimeSeries: {
+            required: true,
+            type: Array,
+        },
+        subtitle: {
+            required: true,
+            type: String,
+        },
+        volumeType: {
+            required: false,
+            type: String,
+        },
     },
     components: {
         VChart
@@ -52,39 +60,32 @@ export default {
                 radius: '30%',
                 center: ['55%', '30%'],
                 emphasis: {
-                focus: 'self'
+                    focus: 'self'
                 },
                 label: {
-                    // formatter: function (params){
-                    //     return `${params.name}: ${params.value[1]} (${params.percent}%)`;
-                    // }
                     formatter: '{b}: {@[0]} ({d}%)'
                 },
                 encode: {
-                itemName: 'year',
-                tooltip:  0,
-                value: 0
-                }
-            }
-        }
+                    itemName: 'year',
+                    tooltip:  0,
+                    value: 0
+                },
+            },
+        };
     },
     methods: {
         handleUpdate(event) {
-            const xAxisInfo = event.axesInfo[0];
+            let xAxisInfo = event.axesInfo[0];
+            let dimension = 0;
             if (xAxisInfo) {
                 // if mouse hovered on the x-axis of timeline
                 // skip first two entries (+2) of sourcedata annotation-array-user (see sourcedata-property)
-                const dimension = xAxisInfo.value + 2;
-                // console.log('DIMENSION: ', dimension);
-                this.pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)';
-                this.pieObj.encode.value = dimension;
-                this.pieObj.encode.tooltip = dimension;
-            } else {
-                // if mouse not over any x-axis line, use the first entry (0) of user-series from sourcedata (the total contribution)
-                this.pieObj.label.formatter = '{b}: {@[' + 0 + ']} ({d}%)';
-                this.pieObj.encode.value = 0;
-                this.pieObj.encode.tooltip = 0;
+                dimension = xAxisInfo.value + 2;
             }
+
+            this.pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)';
+            this.pieObj.encode.value = dimension;
+            this.pieObj.encode.tooltip = dimension;
         },
         extractYear() {
             // helper-function to get all X-Axis data (years)
@@ -93,12 +94,12 @@ export default {
             });
             // filter duplicated years
             xAxis = [...new Set(xAxis)];
+
              // sort the years (increasing)
             return xAxis.sort();
         }
     },
     computed: {
-        // TODO: don't user user names as ID
         sourcedata() {
             // provides special information specifically to pie-chart, namely total contribution of each user 
             // returns array of type [xAxis-array, annotation-array-user1, annotation-array-user2, etc.]:
@@ -107,32 +108,33 @@ export default {
             let xAxis = this.extractYear();
             let chartdata = [];
 
+            let users = {};
+
             // get all unique User-names
-            let id = dat.map((entry) => {
-                return entry.fullname;
+            dat.forEach((entry) => {
+                users[entry.user_id] = entry.fullname;
             });
-            // filter duplicated name-entries
-            let id_unique = [...new Set(id)];
+
             let idDict = {};
             // create object with "year-slots" for each user (e.g. {id: {"2020":0, "2021":0, "2022":0]}))
-            for(let x of id_unique) {
+            for (let id in users) {
                 let yearDict = {};
                 for(let y of xAxis) {
                     yearDict[y] = 0;
                 }
-                idDict[x] = yearDict;
+                idDict[id] = yearDict;
             }
             // console.log('xAxis: ', xAxis);
             // console.log('ID: ', id_unique);
 
             // assemble the annotations of each user in correct order of year
             // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
-            for(let year of xAxis) {
-                for(let entry of dat) {
-                    if(entry.year.toString() == year) {
-                        idDict[entry.fullname][year] += entry.count;
+            for (let year of xAxis) {
+                for (let entry of dat) {
+                    if (entry.year.toString() === year) {
+                        idDict[entry.user_id][year] += entry.count;
                     } else {
-                        idDict[entry.fullname][year] += 0;
+                        idDict[entry.user_id][year] += 0;
                     }
                 }
             }
@@ -150,17 +152,16 @@ export default {
                 Object.values(entry[1]).forEach(val => {
                     sum += val;
                 })
+                let name = users[entry[0]];
                 // case of deleted account
-                if(entry[0] === " ") {
+                if (name === " ") {
                     chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]) ]);
                 } else { // case of existing user
-                    chartdata.push([sum, entry[0], ...Object.values(entry[1]) ]);
+                    chartdata.push([sum, name, ...Object.values(entry[1]) ]);
                 }
             });
 
-            // console.log('ID-Dict: ', JSON.stringify(idDict));
-            // console.log('FINAL: ', JSON.stringify(chartdata));
-            return [...chartdata];
+            return chartdata;
         },
         createTimelineSeries() {
             // create a series Array with entries for each user, used for the timeline-plot
@@ -170,7 +171,7 @@ export default {
             // create a series of data which is specific to each user
             // skip first entry (idx=1), as it is an array of x-axis names and not user-data
             // sourcedata-structure: [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4]]
-            for(let idx=1; idx < this.sourcedata.length; idx++) {
+            for (let idx=1; idx < this.sourcedata.length; idx++) {
                 let snippet = {
                     name: this.sourcedata[idx][1],
                     type: 'line',
@@ -178,11 +179,11 @@ export default {
                     seriesLayoutBy: 'row',
                     emphasis: { focus: 'series' },
                     // skip first two entries as they are irrelevant for the timeline-data
-                    data: this.sourcedata[idx].slice(2,end)
+                    data: this.sourcedata[idx].slice(2, end)
                 };
                 series.push(snippet)
             }
-            // console.log('series: ', JSON.stringify(series));
+
             return series;
         },
         option() {
@@ -197,10 +198,10 @@ export default {
                     orient: 'vertical'
                 },
                 tooltip: {
-                trigger: 'axis',
-                showContent: false
+                    trigger: 'axis',
+                    showContent: false
                 },
-                backgroundColor: '#222222',
+                backgroundColor: 'transparent',
                 title: {
                     text: 'Total contribution',
                     subtext: this.subtitle,
@@ -230,9 +231,10 @@ export default {
                     name: "annotations",
                     nameLocation: "middle",
                     nameTextStyle: { verticalAlign: "middle" },
-                    nameGap: 60 },
-                grid: { 
-                    top: '60%', 
+                    nameGap: 60
+                },
+                grid: {
+                    top: '60%',
                     bottom: '10%',
                     left: '20%',
                     right: '5%'
