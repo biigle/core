@@ -16,16 +16,16 @@ class ProjectStatisticsControllerTest extends TestCase
         $id = $project->id;
         $user = UserTest::create();
 
-        $this->get("projects/{$id}/statistics")->assertStatus(302);
+        $this->get("projects/{$id}/charts")->assertStatus(302);
 
         $this->be($user);
-        $this->get("projects/{$id}/statistics")->assertStatus(403);
+        $this->get("projects/{$id}/charts")->assertStatus(403);
 
         $project->addUserId($user->id, Role::editorId());
         Cache::flush();
-        $this->get("projects/{$id}/statistics")->assertStatus(200);
+        $this->get("projects/{$id}/charts")->assertStatus(200);
 
         // doesn't exist
-        $this->get('projects/-1/statistics')->assertStatus(404);
+        $this->get('projects/-1/charts')->assertStatus(404);
     }
 }
