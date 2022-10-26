@@ -71,7 +71,7 @@ class ProjectStatisticsController extends Controller
             'isMember' => $isMember,
             'isPinned' => $isPinned,
             'canPin' => $canPin,
-            'activeTab' => 'statistics',
+            'activeTab' => 'charts',
             'volumes' => $volumes,
             // IMAGES
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],

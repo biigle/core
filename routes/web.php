@@ -233,8 +233,8 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'ProjectUserController@show',
         ]);
 
-        $router->get('{id}/statistics', [
-            'as'   => 'project-statistics',
+        $router->get('{id}/charts', [
+            'as'   => 'project-charts',
             'uses' => 'ProjectStatisticsController@show',
         ]);
     });

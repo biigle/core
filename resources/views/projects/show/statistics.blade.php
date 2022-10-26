@@ -26,28 +26,28 @@
         <button class="btn btn-default" :class="toggleImageVolumesClass" title="Show statistics of image volumes only" v-on:click="toggleImageVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-image"></i></button>
         <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Show statistics of video volumes only" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
     </span>
-    <annotation-timeline v-if="showTimeline" 
+    <annotation-timeline v-if="showTimeline"
         :annotation-time-series="computedData.annotationTimeSeries"
         :container="container"
         :subtitle="subtitle[0]"
         ></annotation-timeline>
-    <sankey-plot v-if="showSankey" 
+    <sankey-plot v-if="showSankey"
         :volume-annotations="computedData.volumeAnnotations" 
         :names="computedData.volumeNames"
         :container="container"
         ></sankey-plot>
-    <pie-chart 
+    <pie-chart
         :total-files="computedData.totalFiles" 
         :annotated-files="computedData.annotatedFiles"
         :container="container"
         :subtitle="subtitle[1]"
         ></pie-chart>
-    <pie-label v-if="showPieLabel" 
+    <pie-label v-if="showPieLabel"
         :annotation-labels="computedData.annotationLabels"
         :container="container"
         :subtitle="subtitle[1]"
         ></pie-label>
-    <net-map v-if="showNetMap" 
+    <net-map v-if="showNetMap"
         :annotation-labels="computedData.annotationLabels" 
         :source-target-labels="computedData.sourceTargetLabels"
         :container="container"
