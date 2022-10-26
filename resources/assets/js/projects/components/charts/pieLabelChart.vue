@@ -67,7 +67,9 @@ export default {
                         avoidLabelOverlap: false,
                         label: {
                             show: true,
-                            position: 'outside'
+                            position: 'outside',
+                            width: 150,
+                            overflow: 'truncate',
                         },
                         labelLine: {
                             show: true

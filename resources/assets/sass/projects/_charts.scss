@@ -13,6 +13,10 @@
         width: 100%;
         outline: solid $nav-tabs-border-color 1px;
         border-radius: $border-radius-base;
+
+        &.chart--netmap {
+            height: 600px;
+        }
     }
 
     .netmap-chart {

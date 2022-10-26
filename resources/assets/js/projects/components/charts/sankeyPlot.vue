@@ -92,7 +92,9 @@ export default {
                     top: "15%",
                     draggable: false,
                     label: {
-                        position: "right"
+                        position: "right",
+                        width: 200,
+                        overflow: 'truncate',
                     },
                     emphasis: {
                         focus: 'adjacency'

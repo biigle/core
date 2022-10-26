@@ -1,6 +1,6 @@
 <template>
     <div class="grid-col-span-3 netmap-chart">
-        <v-chart class="chart" :option="option" @click="toggleColor"></v-chart>
+        <v-chart class="chart chart--netmap" :option="option" @click="toggleColor"></v-chart>
         <button class="btn btn-default force-button" title="Toggle force layout" v-on:click="toggleForceLayout" :class="buttonClass"><i class="fa fa-project-diagram"></i></button>
     </div>
 </template>
@@ -176,6 +176,7 @@ export default {
                         name: 'NetmapDisplay',
                         type: 'graph',
                         layout: this.layoutType,
+                        height: '70%',
                         circular: {
                             rotateLabel: true
                         },
@@ -194,7 +195,9 @@ export default {
                         categories: this.graph.categories,
                         roam: true,
                         label: {
-                            show: true
+                            show: true,
+                            width: 100,
+                            overflow: 'truncate',
                         },
                         lineStyle: {
                             color: 'source',

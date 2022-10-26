@@ -44,14 +44,13 @@ export default {
             },
             pieObj: {
                 type: 'pie',
-                id: 'pie',
                 radius: '30%',
                 center: ['55%', '30%'],
                 emphasis: {
                     focus: 'self'
                 },
                 label: {
-                    formatter: '{b}: {@[0]} ({d}%)'
+                    formatter: '{b}: {@[0]} ({d}%)',
                 },
                 encode: {
                     itemName: 'year',
@@ -183,7 +182,11 @@ export default {
                 legend: {
                     left: '2%',
                     top: '24%',
-                    orient: 'vertical'
+                    orient: 'vertical',
+                    textStyle: {
+                        width: 150,
+                        overflow: 'break',
+                    },
                 },
                 tooltip: {
                     trigger: 'axis',
