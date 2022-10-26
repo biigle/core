@@ -103,6 +103,10 @@ export default {
                             color: "#" + entry.color,
                         },
                     };
+
+                    if (this.sourceTargetLabels[this.selectedNodeId] && !this.sourceTargetLabels[this.selectedNodeId].includes(entry.id)) {
+                        catObj.itemStyle.opacity = 0.25;
+                    }
                 }
 
                 nodes.push(nodeObj);
@@ -135,7 +139,7 @@ export default {
             }
 
           return arr;
-        }
+        },
     },
     computed: {
         buttonClass() {
@@ -158,8 +162,16 @@ export default {
                 backgroundColor: 'transparent',
                 title: {
                     text: 'NetMap Display',
+                    subtext: 'shows which labels occur together in the same files',
                     textStyle: {
                         fontSize: 15
+                    },
+                    subtextStyle: {
+                        width: 250,
+                        overflow: "break",
+                        lineHeight: 15,
+                        align: "center",
+                        verticalAlign: "top"
                     },
                     top: '2%',
                     left: '2%',
