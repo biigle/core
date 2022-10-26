@@ -7,21 +7,10 @@
 
 <script>
 import * as echarts from 'echarts/core';
-import {
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent } from 'echarts/components';
+import {TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart, { THEME_KEY } from "vue-echarts";
-
-echarts.use([
-    TitleComponent,
-    TooltipComponent,
-    LegendComponent,
-    GraphChart,
-    CanvasRenderer,
-]);
 
 export default {
     name: "NetmapDisplay",
@@ -216,6 +205,14 @@ export default {
                 ],
             };
         },
+    },
+    beforeCreate() {
+        echarts.use([
+            TitleComponent,
+            TooltipComponent,
+            GraphChart,
+            CanvasRenderer,
+        ]);
     },
 };
 

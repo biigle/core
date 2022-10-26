@@ -8,28 +8,13 @@ import {
   DatasetComponent,
   TooltipComponent,
   GridComponent,
-  LegendComponent
+  LegendComponent,
+  TitleComponent,
 } from 'echarts/components';
 import { LineChart, PieChart } from 'echarts/charts';
-import { UniversalTransition, LabelLayout } from 'echarts/features';
+import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
-
-
-echarts.use([
-    DatasetComponent,
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-    LineChart,
-    PieChart,
-    CanvasRenderer,
-    UniversalTransition,
-    LabelLayout,
-    TitleComponent
-]);
-
 
 export default {
     props: {
@@ -245,6 +230,19 @@ export default {
                 series: seriesObj
             }
         }
-    }
+    },
+    beforeCreate() {
+        echarts.use([
+            DatasetComponent,
+            TooltipComponent,
+            GridComponent,
+            LegendComponent,
+            LineChart,
+            PieChart,
+            CanvasRenderer,
+            LabelLayout,
+            TitleComponent,
+        ]);
+    },
 };
 </script>

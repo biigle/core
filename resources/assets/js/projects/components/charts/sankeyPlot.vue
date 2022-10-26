@@ -6,15 +6,8 @@
 import * as echarts from 'echarts/core';
 import { SankeyChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import { TitleComponent } from 'echarts/components';
+import { TitleComponent, TooltipComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
-
-echarts.use([
-    SankeyChart,
-    CanvasRenderer,
-    TitleComponent
-]);
-
 
 export default {
     components: {
@@ -109,6 +102,14 @@ export default {
                 },
             };
         },
+    },
+    beforeCreate() {
+        echarts.use([
+            SankeyChart,
+            CanvasRenderer,
+            TitleComponent,
+            TooltipComponent,
+        ]);
     },
 }
 </script>

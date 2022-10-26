@@ -4,22 +4,11 @@
 
 <script>
 import * as echarts from 'echarts/core';
-import { TooltipComponent, LegendComponent } from 'echarts/components';
+import { TooltipComponent, LegendComponent, TitleComponent } from 'echarts/components';
 import { PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import { TitleComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
-
-echarts.use([
-    TooltipComponent,
-    LegendComponent,
-    PieChart,
-    CanvasRenderer,
-    LabelLayout,
-    TitleComponent
-]);
-
 
 export default {
     components: {
@@ -96,6 +85,16 @@ export default {
                 ],
             };
         }
-    }
+    },
+    beforeCreate() {
+        echarts.use([
+            TooltipComponent,
+            LegendComponent,
+            PieChart,
+            CanvasRenderer,
+            LabelLayout,
+            TitleComponent,
+        ]);
+    },
 }
 </script>
