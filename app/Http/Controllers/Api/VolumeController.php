@@ -337,18 +337,25 @@ class VolumeController extends Controller
     private function copyAnnotationSessions($volume, $copy)
     {
         DB::transaction(function () use ($volume, $copy) {
-            $sessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get()->map(function ($session) use ($copy) {
-                $original = $session->getRawOriginal();
-                $original['volume_id'] = $copy->id;
-                unset($original['id']);
-                return $original;
-            });
-
-            $sessions->chunk(10000)->map(function ($chunk) {
+            $oldSessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get()
+                ->map(function ($oldSession) use ($copy) {
+                    $original = $oldSession->getRawOriginal();
+                    $original['volume_id'] = $copy->id;
+                    unset($original['id']);
+                    return $original;
+                });
+            $oldSessions->chunk(10000)->map(function ($chunk) {
                 AnnotationSession::insert($chunk->toArray());
             });
-        });
 
-        //TODO: user mitkopieren
+            //copy users references
+            $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id])->get();
+            $oldSessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get();
+            foreach ($newSessions as $idx => $newSession) {
+                $newSession->users()->attach($oldSessions[$idx]->users()->get());
+            }
+            $newSession->push();
+
+        });
     }
 }
