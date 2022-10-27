@@ -7,6 +7,7 @@ use Biigle\AnnotationSession;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
@@ -15,6 +16,7 @@ use Biigle\Modules\ColorSort\Sequence;
 use Biigle\Project;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -191,7 +193,7 @@ class VolumeController extends Controller
         $copy->created_at = Carbon::now();
         $copy->save();
 
-        if ($volume->mediaType->name=="image") {
+        if ($volume->mediaType->name == "image") {
             $this->copyImages($volume, $copy);
             $this->copyColorSortSequence($volume, $copy);
         } else {
@@ -229,38 +231,29 @@ class VolumeController extends Controller
             });
         });
 
-        //copy annotation references
         DB::transaction(function () use ($volume, $copy) {
             $oldImages = $volume->images()->get();
             $newImages = $copy->images()->get();
             foreach ($oldImages as $index => $oldImage) {
-                $newImageId = $newImages[$index]->id;
-                $annotations = $oldImage->annotations->map(function ($annotation) use ($newImageId) {
-                    $original = $annotation->getRawOriginal();
-                    $original['image_id'] = $newImageId;
-                    unset($original['id']);
-                    return $original;
-                });
+                $newImage = $newImages[$index];
+                $oldImage->annotations()->get()->map(function ($oldAnnotation) use ($newImage) {
+                    // copy annotation object
+                    $newAnnotation = $oldAnnotation->replicate();
+                    $newAnnotation->image_id = $newImage->id;
+                    $newAnnotation->created_at = Carbon::now();
+                    $newAnnotation->save();
 
-                $annotations->chunk(10000)->map(function ($chunk) {
-                    ImageAnnotation::insert($chunk->toArray());
-                });
-            }
-        });
+                    // copy label references
+                    $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                        $oldLabel->annotation_id = $newAnnotation->id;
+                        unset($oldLabel->id);
+                        return $oldLabel;
+                    });
 
-        // copy label references
-        DB::transaction(function () use ($volume, $copy) {
-            $oldImages = $volume->images()->get();
-            $newImages = $copy->images()->get();
-            foreach ($oldImages as $index => $oldImage) {
-                $newImageId = $newImages[$index]->id;
-                $oldLabels = $oldImage->labels()->get();
-                foreach ($oldLabels as $labelIdx => $oldLabel) {
-                    $oldLabel->image_id = $newImageId;
-                    unset($oldLabel->id);
-                }
-                $oldLabels->chunk(10000)->map(function ($chunk) {
-                    ImageLabel::insert($chunk->toArray());
+                    $annotations->chunk(10000)->map(function ($chunk) {
+                        ImageAnnotationLabel::insert($chunk->toArray());
+                    });
+
                 });
             }
         });
@@ -284,38 +277,29 @@ class VolumeController extends Controller
             });
         });
 
-//        copy annotation references
         DB::transaction(function () use ($volume, $copy) {
             $oldVideos = $volume->videos()->get();
             $newVideos = $copy->videos()->get();
             foreach ($oldVideos as $index => $oldVideo) {
-                $newVideoId = $newVideos[$index]->id;
-                $annotations = $oldVideo->annotations->map(function ($annotation) use ($newVideoId) {
-                    $original = $annotation->getRawOriginal();
-                    $original['video_id'] = $newVideoId;
-                    unset($original['id']);
-                    return $original;
-                });
+                $newVideo = $newVideos[$index];
+                $oldVideo->annotations()->get()->map(function ($oldAnnotation) use ($newVideo) {
+                    // copy annotation object
+                    $newAnnotation = $oldAnnotation->replicate();
+                    $newAnnotation->video_id = $newVideo->id;
+                    $newAnnotation->created_at = Carbon::now();
+                    $newAnnotation->save();
 
-                $annotations->chunk(10000)->map(function ($chunk) {
-                    VideoAnnotation::insert($chunk->toArray());
-                });
-            }
-        });
+                    // copy label references
+                    $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                        $oldLabel->annotation_id = $newAnnotation->id;
+                        unset($oldLabel->id);
+                        return $oldLabel;
+                    });
 
-        // copy label references
-        DB::transaction(function () use ($volume, $copy) {
-            $oldVideos = $volume->videos()->get();
-            $newVideos = $copy->videos()->get();
-            foreach ($oldVideos as $index => $oldImage) {
-                $newVideoId = $newVideos[$index]->id;
-                $oldLabels = $oldImage->labels()->get();
-                foreach ($oldLabels as $labelIdx => $oldLabel) {
-                    $oldLabel->image_id = $newVideoId;
-                    unset($oldLabel->id);
-                }
-                $oldLabels->chunk(10000)->map(function ($chunk) {
-                    VideoLabel::insert($chunk->toArray());
+                    $annotations->chunk(10000)->map(function ($chunk) {
+                        VideoAnnotationLabel::insert($chunk->toArray());
+                    });
+
                 });
             }
         });
@@ -364,5 +348,7 @@ class VolumeController extends Controller
                 AnnotationSession::insert($chunk->toArray());
             });
         });
+
+        //TODO: user mitkopieren
     }
 }
