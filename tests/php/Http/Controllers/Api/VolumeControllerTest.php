@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationSession;
 use Biigle\Image;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
@@ -320,6 +321,13 @@ class VolumeControllerTest extends ApiTestCase
             'hide_own_annotations' => true,
             'hide_other_users_annotations' => false,
         ]);
+        $u1 = UserTest::create();
+        $u2 = UserTest::create();
+        $u3 = UserTest::create();
+        $session->users()->attach($this->admin()->id);
+        $session->users()->attach($u1);
+        $session->users()->attach($u2);
+        $session->users()->attach($u3);
 
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
@@ -370,6 +378,27 @@ class VolumeControllerTest extends ApiTestCase
             unset($newImage->volume_id);
 
             $this->assertTrue($oldImage->is($newImage));
+        }
+
+        $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
+        $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
+
+        self::assertTrue($oldSessions->exists() == $newSessions->exists());
+
+        foreach ($oldSessions->get() as $idx => $oldSession) {
+            $newSession = $newSessions->get()[$idx];
+            $oldUsers = $oldSession->users()->get();
+            $newUsers = $newSession->users()->get();
+            foreach ($oldUsers as $userIdx => $oldUser) {
+                $newUser = $newUsers[$userIdx];
+                self::assertTrue($newUser->is($oldUser));
+            }
+            self::assertTrue($oldSession->volume_id != $newSession->volume_id);
+            unset($oldSession->id);
+            unset($oldSession->volume_id);
+            unset($newSession->id);
+            unset($newSession->volume_id);
+            self::assertTrue($oldSession->is($newSession));
         }
 
         $this->assertTrue($copy->projects()->first()->id == $id2);
@@ -442,6 +471,22 @@ class VolumeControllerTest extends ApiTestCase
             'user_id' => $this->admin()->id,
         ]);
 
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $u1 = UserTest::create();
+        $u2 = UserTest::create();
+        $u3 = UserTest::create();
+        $session->users()->attach($this->admin()->id);
+        $session->users()->attach($u1);
+        $session->users()->attach($u2);
+        $session->users()->attach($u3);
+
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
@@ -493,6 +538,26 @@ class VolumeControllerTest extends ApiTestCase
             unset($newVideo->volume_id);
 
             $this->assertTrue($oldVideo->is($newVideo));
+        }
+        $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
+        $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
+
+        self::assertTrue($oldSessions->exists() == $newSessions->exists());
+
+        foreach ($oldSessions->get() as $idx => $oldSession) {
+            $newSession = $newSessions->get()[$idx];
+            $oldUsers = $oldSession->users()->get();
+            $newUsers = $newSession->users()->get();
+            foreach ($oldUsers as $userIdx => $oldUser) {
+                $newUser = $newUsers[$userIdx];
+                self::assertTrue($newUser->is($oldUser));
+            }
+            self::assertTrue($oldSession->volume_id != $newSession->volume_id);
+            unset($oldSession->id);
+            unset($oldSession->volume_id);
+            unset($newSession->id);
+            unset($newSession->volume_id);
+            self::assertTrue($oldSession->is($newSession));
         }
 
         $this->assertTrue($copy->projects()->first()->id == $id2);
