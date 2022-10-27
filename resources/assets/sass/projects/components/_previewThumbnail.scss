@@ -81,12 +81,11 @@
     color: white;
     opacity: 0.75;
     z-index: 1;
+}
 
-    &.fa-trash {
-        color: $brand-danger;
-
-        &:hover {
-            opacity: 1;
-        }
-    }
+.preview-thumbnail__buttons {
+    position: absolute;
+    top: .5em;
+    right: .5em;
+    z-index: 1;
 }

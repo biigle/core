@@ -232,6 +232,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-members',
             'uses' => 'ProjectUserController@show',
         ]);
+
+        $router->get('{id}/charts', [
+            'as'   => 'project-charts',
+            'uses' => 'ProjectStatisticsController@show',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {

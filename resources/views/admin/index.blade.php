@@ -74,12 +74,8 @@
             </div>
         </div>
     </div>
-<?php
-    $height = 50;
-    $width = 40;
-?>
     <div class="col-sm-6">
-        <div class="panel panel-default">
+        <div id="admin-image-annotations" class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     Image Annotations
@@ -87,16 +83,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
-                    <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
-                    @foreach($annotationWeek as $index => $day)
-                        <?php $h = round($height * $day['percent']); ?>
-                        <g transform="translate({{ $index * $width }}, 0)">
-                            <rect fill="#ccc" y="{{$height - $h}}" width="{{ $width / 2 }}" height="{{ $h }}"><title>{{ $day['count'] }}</title></rect>
-                            <text fill="{{$day['count'] ? '#ccc' : '#888'}}" x="0" y="{{ $height + 15 }}" dy=".35em">{{ $day['day']->format('D') }}</text>
-                        </g>
-                    @endforeach
-                </svg>
+                <chart class="admin-chart" v-bind:data="data"></chart>
             </div>
         </div>
     </div>
@@ -114,7 +101,7 @@
         </div>
     </div>
     <div class="col-sm-6">
-        <div class="panel panel-default">
+        <div id="admin-video-annotations" class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     Video Annotations
@@ -122,16 +109,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <svg style="display:block; margin:auto;" class="chart" width="300" height="{{ $height + 20 }}">
-                    <line stroke="#ccc" x1="0" y1="{{$height}}" x2="300" y2="{{$height}}" />
-                    @foreach($videoAnnotationWeek as $index => $day)
-                        <?php $h = round($height * $day['percent']); ?>
-                        <g transform="translate({{ $index * $width }}, 0)">
-                            <rect fill="#ccc" y="{{$height - $h}}" width="{{ $width / 2 }}" height="{{ $h }}"><title>{{ $day['count'] }}</title></rect>
-                            <text fill="{{$day['count'] ? '#ccc' : '#888'}}" x="0" y="{{ $height + 15 }}" dy=".35em">{{ $day['day']->format('D') }}</text>
-                        </g>
-                    @endforeach
-                </svg>
+                <chart class="admin-chart" v-bind:data="data"></chart>
             </div>
         </div>
     </div>
@@ -139,3 +117,11 @@
         @include($module.'::adminIndex')
     @endforeach
 @endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        biigle.$declare('admin.dayNames', {!! $dayNames !!});
+        biigle.$declare('admin.imageAnnotationWeek', {!! $imageAnnotationWeek !!});
+        biigle.$declare('admin.videoAnnotationWeek', {!! $videoAnnotationWeek !!});
+    </script>
+@endpush
