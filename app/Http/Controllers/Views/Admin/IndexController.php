@@ -28,54 +28,43 @@ class IndexController extends Controller
 
         $installedModules = $modules->getInstalledModules();
 
-        $days = ImageAnnotation::selectRaw('cast(created_at as date) as day, count(id)')
+        $days = collect([7, 6, 5, 4, 3, 2, 1, 0])
+            ->map(fn($item) => Carbon::today()->subDays($item));
+
+        $imageData = ImageAnnotation::selectRaw('created_at::date as day, count(id)')
             ->where('created_at', '>=', Carbon::today()->subWeek())
             ->groupBy('day')
             ->pluck('count', 'day');
-        $max = $days->max() ?: 0;
-        $annotationWeek = collect([7, 6, 5, 4, 3, 2, 1, 0])
-            ->map(function ($item) use ($days, $max) {
-                $day = Carbon::today()->subDays($item);
-                $count = $days->get($day->toDateString(), 0);
 
-                return [
-                    'day' => $day,
-                    'count' => $count,
-                    'percent' => ($max !== 0) ? $count / $max : 0,
-                ];
-            });
+        $imageAnnotationWeek = $days->map(function ($day) use ($imageData) {
+            return $imageData->get($day->toDateString(), 0);
+        });
         $totalAnnotations = number_format(ImageAnnotation::count());
 
-        $days = VideoAnnotation::selectRaw('cast(created_at as date) as day, count(id)')
+        $videoData = VideoAnnotation::selectRaw('created_at::date as day, count(id)')
             ->where('created_at', '>=', Carbon::today()->subWeek())
             ->groupBy('day')
             ->pluck('count', 'day');
-        $max = $days->max() ?: 0;
-        $videoAnnotationWeek = collect([7, 6, 5, 4, 3, 2, 1, 0])
-            ->map(function ($item) use ($days, $max) {
-                $day = Carbon::today()->subDays($item);
-                $count = $days->get($day->toDateString(), 0);
 
-                return [
-                    'day' => $day,
-                    'count' => $count,
-                    'percent' => ($max !== 0) ? $count / $max : 0,
-                ];
-            });
-
+        $videoAnnotationWeek = $days->map(function ($day) use ($videoData) {
+            return $videoData->get($day->toDateString(), 0);
+        });
         $totalVideoAnnotations = number_format(VideoAnnotation::count());
 
+        $dayNames = $days->map(fn($day) => $day->format('D'));
+
         return view('admin.index', compact(
-            'allUsers',
-            'loginUsers',
+            'activeUsersLastDay',
             'activeUsersLastMonth',
             'activeUsersLastWeek',
-            'activeUsersLastDay',
+            'allUsers',
+            'dayNames',
+            'imageAnnotationWeek',
             'installedModules',
-            'annotationWeek',
+            'loginUsers',
             'totalAnnotations',
+            'totalVideoAnnotations',
             'videoAnnotationWeek',
-            'totalVideoAnnotations'
         ));
     }
 }
