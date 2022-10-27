@@ -6,28 +6,33 @@
         @mouseleave="unsetHovered"
         @click="emitClick"
         >
+            <span
+                v-show="showButtons"
+                class="preview-thumbnail__buttons"
+                >
+                <button
+                    class="btn btn-default btn-sm"
+                    @click.prevent="showStatistics"
+                    :title="statisticsTitle"
+                    >
+                    <loader v-if="loading" :active="true"></loader>
+                    <i v-else class="fas fa-chart-bar"></i>
+                </button>
+                <button
+                    v-if="removable"
+                    class="btn btn-default btn-sm"
+                    @click.prevent="remove"
+                    :title="removeTitle"
+                    >
+                    <i class="fas fa-trash"></i>
+                </button>
+            </span>
             <i
-                v-if="showIcon"
+                v-if="hasIcon"
+                v-show="!showButtons"
                 class="preview-thumbnail__icon fas fa-lg"
                 :class="iconClass"
                 ></i>
-            <button
-                v-if="showRemoveButton"
-                class="btn btn-default btn-sm preview-thumbnail__icon"
-                @click.prevent="remove"
-                :title="removeTitle"
-                >
-                <i class="fas fa-trash"></i>
-            </button>
-            <button
-                v-if="showStatisticsButton"
-                class="btn btn-default btn-sm preview-thumbnail__charts"
-                @click.prevent="showStatistics"
-                :title="statisticsTitle"
-                >
-                <loader v-if="loading" :active="true"></loader>
-                <i v-else class="fas fa-chart-bar"></i>
-            </button>
             <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
                     v-for="(uri, i) in uris"
@@ -115,17 +120,10 @@ export default {
         iconClass() {
             return this.icon ? 'fa-' + this.icon : '';
         },
-        showIcon() {
-            if (this.removable) {
-                return !this.hovered && this.icon;
-            }
-
+        hasIcon() {
             return this.icon;
         },
-        showRemoveButton() {
-            return this.removable && this.hovered;
-        },
-        showStatisticsButton() {
+        showButtons() {
             return this.hovered || this.loading;
         },
     },
@@ -141,10 +139,10 @@ export default {
             this.$emit('remove', this.id);
         },
         showStatistics() {
-            // case of loading thumbnail
-            if(this.loading) {
+            if (this.loading) {
                 return
             }
+
             // If statistics modal has been opened before, use cached data
             if (this.statisticsData !== null) {
                 this.$emit('statistics', this.statisticsData)
