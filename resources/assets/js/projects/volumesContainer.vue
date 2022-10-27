@@ -3,9 +3,11 @@ import AttachableVolumesApi from './api/attachableVolumes';
 import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
+import statisticsModal from './components/statisticsModal';
 import ProjectsApi from '../core/api/projects';
 import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
+
 
 const SORTING = {
     DATE_DOWN: 'date-down',
@@ -33,11 +35,14 @@ export default {
             showImageVolumes: true,
             showVideoVolumes: true,
             currentSorting: SORTING.DATE_DOWN,
+            showModal: false,
+            statisticsData: {}
         };
     },
     components: {
         previewThumbnail: PreviewThumbnail,
         typeahead: Typeahead,
+        statisticsModal: statisticsModal
     },
     computed: {
         sortedVolumes() {
@@ -156,6 +161,14 @@ export default {
                 }
             }
         },
+        showStatistics(dat) {
+            // handle case of empty php-object (which is returned as an array)
+            if(Array.isArray(dat.sourceTargetLabels)) {
+                dat.sourceTargetLabels = {};
+            }
+            this.statisticsData = dat;
+            this.showModal = true;
+        },
         hasVolume(id) {
             for (let i = this.volumes.length - 1; i >= 0; i--) {
                 if (this.volumes[i].id === id) {
@@ -225,6 +238,9 @@ export default {
         },
         sortByNameUp() {
             this.currentSorting = SORTING.NAME_UP;
+        },
+        hideStatisticsModal() {
+            this.showModal = false;
         },
     },
     watch: {

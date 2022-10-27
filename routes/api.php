@@ -40,6 +40,11 @@ $router->resource('annotation-sessions', 'AnnotationSessionController', [
     'parameters' => ['annotation-sessions' => 'id'],
 ]);
 
+$router->resource('announcements', 'AnnouncementController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['announcements' => 'id'],
+]);
+
 $router->resource('api-tokens', 'ApiTokenController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['api-tokens' => 'id'],
@@ -201,11 +206,6 @@ $router->resource('shapes', 'ShapeController', [
     'parameters' => ['shapes' => 'id'],
 ]);
 
-$router->resource('system-messages', 'SystemMessageController', [
-    'only' => ['store', 'update', 'destroy'],
-    'parameters' => ['system-messages' => 'id'],
-]);
-
 $router->get('videos/{id}/file', 'VideoFileController@show');
 
 $router->resource('videos', 'VideoController', [
@@ -338,6 +338,10 @@ $router->group([
 
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
+    ]);
+
+    $router->get('{id}/statistics', [
+        'uses' => 'StatisticsController@index',
     ]);
 });
 

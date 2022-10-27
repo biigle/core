@@ -1,4 +1,4 @@
-.system-message__html-preview {
+.announcement__html-preview {
     max-height: 320px;
     overflow-y: auto;
 }
@@ -11,4 +11,9 @@
 .user-stats-list-group {
     max-height: 200px;
     overflow-y: auto;
+}
+
+.admin-chart {
+    display: block;
+    height: 70px;
 }
