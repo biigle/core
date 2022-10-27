@@ -14,8 +14,11 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\Modules\ColorSort\SequenceTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -301,6 +304,10 @@ class VolumeControllerTest extends ApiTestCase
             'image_id' => $img3->id,
             'created_at' => '2000-09-10',
         ]);
+        $a3 = ImageAnnotationTest::create([
+            'image_id' => $img3->id,
+            'created_at' => '2000-09-10',
+        ]);
         ImageAnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $this->admin()->id,
@@ -324,12 +331,36 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
 
         $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
+        $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
 
         foreach ($this->volume->images()->get() as $index => $oldImage) {
             $newImage = $copy->images()->get()[$index];
-
             $this->assertTrue($oldImage->volume_id == $this->volume->id);
             $this->assertTrue($newImage->volume_id == $copy->id);
+
+            foreach ($oldImage->annotations()->get() as $annotationIdx => $oldAnnotation) {
+                $newAnnotation = $newImage->annotations()->get()[$annotationIdx];
+                $this->assertTrue($newAnnotation->image_id == $newImage->id);
+
+                $oldLabels = $oldAnnotation->labels()->get();
+                $newLabels = $newAnnotation->labels()->get();
+
+                foreach ($oldLabels as $labelIdx => $oldLabel) {
+                    $newLabel = $newLabels[$labelIdx];
+                    self::assertTrue($newLabel->annotation_id != $oldLabel->annotation_id);
+                    unset($newLabel->id);
+                    unset($newLabel->annotation_id);
+                    unset($oldLabel->id);
+                    unset($oldLabel->annotation_id);
+                    self::assertTrue($newLabel->is($oldLabel));
+                }
+
+                unset($newAnnotation->id);
+                unset($oldAnnotation->id);
+                unset($oldAnnotation->image_id);
+                unset($newAnnotation->image_id);
+                $this->assertTrue($newAnnotation->is($oldAnnotation));
+            }
 
             unset($newImage->id);
             unset($newImage->uuid);
@@ -364,24 +395,52 @@ class VolumeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
         $id2 = $project->id;
 
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
+
         $this->volume->projects()->attach($id2);
+
+        $this->beAdmin();
 
         $v1 = VideoTest::create([
             'filename' => 'a.mp4',
             'volume_id' => $this->volume->id,
+            'lng' => 9.9,
+            'lat' => 4.333,
+        ]);
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $v1->id,
+            'created_at' => '2000-09-10',
+        ]);
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->admin()->id,
         ]);
         $v2 = VideoTest::create([
             'filename' => 'b.mp4',
             'volume_id' => $this->volume->id,
+            'lng' => 0.12,
+            'lat' => 43,
+        ]);
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $v2->id,
+            'created_at' => '2000-10-10',
+        ]);
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $this->admin()->id,
         ]);
         $v3 = VideoTest::create([
             'filename' => 'c.mp4',
             'volume_id' => $this->volume->id,
         ]);
-
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
-
-        $this->beAdmin();
+        $a3 = VideoAnnotationTest::create([
+            'video_id' => $v3->id,
+            'created_at' => '2000-10-10',
+        ]);
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $this->admin()->id,
+        ]);
 
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
@@ -394,11 +453,37 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
         $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
+
         foreach ($this->volume->videos()->get() as $index => $oldVideo) {
             $newVideo = $copy->videos()->get()[$index];
 
             $this->assertTrue($oldVideo->volume_id == $this->volume->id);
             $this->assertTrue($newVideo->volume_id == $copy->id);
+
+
+            foreach ($oldVideo->annotations()->get() as $annotationIdx => $oldAnnotation) {
+                $newAnnotation = $newVideo->annotations()->get()[$annotationIdx];
+
+                $oldLabels = $oldAnnotation->labels()->get();
+                $newLabels = $newAnnotation->labels()->get();
+
+                foreach ($oldLabels as $labelIdx => $oldLabel) {
+                    $newLabel = $newLabels[$labelIdx];
+                    self::assertTrue($newLabel->annotation_id != $oldLabel->annotation_id);
+                    unset($newLabel->id);
+                    unset($newLabel->annotation_id);
+                    unset($oldLabel->id);
+                    unset($oldLabel->annotation_id);
+                    self::assertTrue($newLabel->is($oldLabel));
+                }
+
+                $this->assertTrue($newAnnotation->video_id == $newVideo->id);
+                unset($newAnnotation->id);
+                unset($oldAnnotation->id);
+                unset($oldAnnotation->video_id);
+                unset($newAnnotation->video_id);
+                $this->assertTrue($newAnnotation->is($oldAnnotation));
+            }
 
             unset($newVideo->id);
             unset($newVideo->uuid);
