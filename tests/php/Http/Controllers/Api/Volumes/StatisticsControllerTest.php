@@ -27,7 +27,7 @@ class StatisticsControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/statistics")
             ->assertStatus(200);
-        
+
         $expect = [
             'volumeType' => $this->volume()->isImageVolume() ? 'image' : 'video',
             'annotationTimeSeries' => [],
