@@ -554,6 +554,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
 
         foreach ($this->volume->videos()->get() as $index => $oldVideo) {
+            //check if copy has equal content as original
             $newVideo = $copy->videos()->get()[$index];
             self::assertTrue($oldVideo->volume_id == $this->volume->id);
             self::assertTrue($newVideo->volume_id == $copy->id);
@@ -563,6 +564,7 @@ class VolumeControllerTest extends ApiTestCase
             unset($newVideo->volume_id);
             unset($newVideo->id);
             unset($newVideo->uuid);
+            // fails: comparison of attr=null with attr=[]
             self::assertEquals($newVideo->getAttributes(), $oldVideo->getAttributes());
 
             $newVideoLabels = $newVideo->labels()->get();
