@@ -258,6 +258,22 @@ class VolumeController extends Controller
             }
         });
 
+        DB::transaction(function () use ($volume, $copy) {
+            foreach ($volume->images()->get() as $imageIdx => $oldImage){
+                $newImage = $copy->images()->get()[$imageIdx];
+                $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage){
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['image_id'] = $newImage->id;
+                    unset($origin['id']);
+                    return $origin;
+                });
+                $labels->chunk(10000)->map(function ($chunk) {
+                    ImageLabel::insert($chunk->toArray());
+                });
+
+            }
+        });
+
         // annotation_assistance_requests optional
     }
 
@@ -303,12 +319,23 @@ class VolumeController extends Controller
                 });
             }
         });
-    }
 
-    private function copyUser($Volume)
-    {
-    }
+        DB::transaction(function () use ($volume, $copy) {
+            foreach ($volume->videos()->get() as $videoIdx => $oldVideo){
+                $newVideo = $copy->videos()->get()[$videoIdx];
+                $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo){
+                   $origin = $oldLabel->getRawOriginal();
+                   $origin['video_id'] = $newVideo->id;
+                   unset($origin['id']);
+                   return $origin;
+                });
+                $labels->chunk(10000)->map(function ($chunk) {
+                    VideoLabel::insert($chunk->toArray());
+                });
 
+            }
+        });
+    }
 
     private function copyIfdoFile($volume_id, $copy_id)
     {
@@ -353,8 +380,9 @@ class VolumeController extends Controller
             $oldSessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get();
             foreach ($newSessions as $idx => $newSession) {
                 $newSession->users()->attach($oldSessions[$idx]->users()->get());
+                $newSession->push();
             }
-            $newSession->push();
+
 
         });
     }
