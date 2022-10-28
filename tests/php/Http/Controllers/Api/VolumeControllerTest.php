@@ -11,15 +11,18 @@ use Biigle\Role;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\Modules\ColorSort\SequenceTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\VideoAnnotationLabel;
+use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -274,6 +277,10 @@ class VolumeControllerTest extends ApiTestCase
             'filename' => 'a.jpg',
             'volume_id' => $this->volume->id,
         ]);
+        ImageLabelTest::create(['image_id' => $img1->id]);
+        ImageLabelTest::create(['image_id' => $img1->id]);
+        ImageLabelTest::create(['image_id' => $img1->id]);
+
         $a = ImageAnnotationTest::create([
             'image_id' => $img1->id,
             'created_at' => '2010-01-01',
@@ -297,6 +304,8 @@ class VolumeControllerTest extends ApiTestCase
             'filename' => 'b.jpg',
             'volume_id' => $this->volume->id,
         ]);
+        ImageLabelTest::create(['image_id' => $img2->id]);
+
         $img3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $this->volume->id,
@@ -305,6 +314,9 @@ class VolumeControllerTest extends ApiTestCase
             'image_id' => $img3->id,
             'created_at' => '2000-09-10',
         ]);
+        ImageLabelTest::create(['image_id' => $img2->id]);
+        ImageLabelTest::create(['image_id' => $img2->id]);
+
         $a3 = ImageAnnotationTest::create([
             'image_id' => $img3->id,
             'created_at' => '2000-09-10',
@@ -329,6 +341,7 @@ class VolumeControllerTest extends ApiTestCase
         $session->users()->attach($u2);
         $session->users()->attach($u3);
 
+
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
@@ -345,6 +358,16 @@ class VolumeControllerTest extends ApiTestCase
             $newImage = $copy->images()->get()[$index];
             $this->assertTrue($oldImage->volume_id == $this->volume->id);
             $this->assertTrue($newImage->volume_id == $copy->id);
+
+            $newImageLabels = $newImage->labels()->get();
+            foreach ($oldImage->labels()->get() as $vlIdx => $oldImageLabel){
+                $newImageLabel = $newImageLabels[$vlIdx];
+                self::assertTrue($oldImageLabel->image_id != $newImageLabel->image_id);
+                self::assertTrue($oldImageLabel->label_id == $newImageLabel->label_id);
+                self::assertTrue($oldImageLabel->user_id == $newImageLabel->user_id);
+                self::assertTrue($oldImageLabel->created_at == $newImageLabel->created_at);
+                self::assertTrue($oldImageLabel->updated_at == $newImageLabel->updated_at);
+            }
 
             foreach ($oldImage->annotations()->get() as $annotationIdx => $oldAnnotation) {
                 $newAnnotation = $newImage->annotations()->get()[$annotationIdx];
@@ -436,6 +459,10 @@ class VolumeControllerTest extends ApiTestCase
             'lng' => 9.9,
             'lat' => 4.333,
         ]);
+        VideoLabelTest::create(['video_id' => $v1->id]);
+        VideoLabelTest::create(['video_id' => $v1->id]);
+        VideoLabelTest::create(['video_id' => $v1->id]);
+
         $a1 = VideoAnnotationTest::create([
             'video_id' => $v1->id,
             'created_at' => '2000-09-10',
@@ -450,6 +477,9 @@ class VolumeControllerTest extends ApiTestCase
             'lng' => 0.12,
             'lat' => 43,
         ]);
+        VideoLabelTest::create(['video_id' => $v2->id]);
+        VideoLabelTest::create(['video_id' => $v2->id]);
+
         $a2 = VideoAnnotationTest::create([
             'video_id' => $v2->id,
             'created_at' => '2000-10-10',
@@ -462,6 +492,9 @@ class VolumeControllerTest extends ApiTestCase
             'filename' => 'c.mp4',
             'volume_id' => $this->volume->id,
         ]);
+        VideoLabelTest::create(['video_id' => $v3->id]);
+        VideoLabelTest::create(['video_id' => $v3->id]);
+
         $a3 = VideoAnnotationTest::create([
             'video_id' => $v3->id,
             'created_at' => '2000-10-10',
@@ -504,6 +537,16 @@ class VolumeControllerTest extends ApiTestCase
 
             $this->assertTrue($oldVideo->volume_id == $this->volume->id);
             $this->assertTrue($newVideo->volume_id == $copy->id);
+
+            $newVideoLabels = $newVideo->labels()->get();
+            foreach ($oldVideo->labels()->get() as $vlIdx => $oldVideoLabel){
+                $newVideoLabel = $newVideoLabels[$vlIdx];
+                self::assertTrue($oldVideoLabel->video_id != $newVideoLabel->video_id);
+                self::assertTrue($oldVideoLabel->label_id == $newVideoLabel->label_id);
+                self::assertTrue($oldVideoLabel->user_id == $newVideoLabel->user_id);
+                self::assertTrue($oldVideoLabel->created_at == $newVideoLabel->created_at);
+                self::assertTrue($oldVideoLabel->updated_at == $newVideoLabel->updated_at);
+            }
 
 
             foreach ($oldVideo->annotations()->get() as $annotationIdx => $oldAnnotation) {
