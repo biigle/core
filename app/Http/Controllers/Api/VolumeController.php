@@ -184,20 +184,21 @@ class VolumeController extends Controller
         }
     }
 
-    public function clone($volumeId, $destProjectId)
+    public function clone($volumeId, $destProjectId, Request $request)
     {
         $project = Project::findOrFail($destProjectId);
         $this->authorize('update', $project);
         $volume = Volume::findOrFail($volumeId);
         $copy = $volume->replicate();
+        $copy->name = $request->input('name', $volume->name);
         $copy->created_at = Carbon::now();
         $copy->save();
 
         if ($volume->mediaType->name == "image") {
-            $this->copyImages($volume, $copy);
+            $this->copyImages($volume, $copy, $request->input('imageIds', []));
             $this->copyColorSortSequence($volume, $copy);
         } else {
-            $this->copyVideos($volume, $copy);
+            $this->copyVideos($volume, $copy, $request->input('videoIds', []));
         }
         $this->copyAnnotationSessions($volume, $copy);
 
@@ -215,11 +216,12 @@ class VolumeController extends Controller
 
     }
 
-    private function copyImages($volume, $copy)
+    private function copyImages($volume, $copy, $imageIds)
     {
         // copy image references
-        DB::transaction(function () use ($volume, $copy) {
-            $images = $volume->images()->get()->map(function ($image) use ($copy) {
+        DB::transaction(function () use ($volume, $copy, $imageIds) {
+            $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
+            $images = $images->map(function ($image) use ($copy) {
                 $image->volume_id = $copy->id;
                 $image->uuid = (string)Uuid::uuid4();
                 unset($image->id);
@@ -231,8 +233,8 @@ class VolumeController extends Controller
             });
         });
 
-        DB::transaction(function () use ($volume, $copy) {
-            $oldImages = $volume->images()->get();
+        DB::transaction(function () use ($volume, $copy, $imageIds) {
+            $oldImages = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
             $newImages = $copy->images()->get();
             foreach ($oldImages as $index => $oldImage) {
                 $newImage = $newImages[$index];
@@ -258,10 +260,11 @@ class VolumeController extends Controller
             }
         });
 
-        DB::transaction(function () use ($volume, $copy) {
-            foreach ($volume->images()->get() as $imageIdx => $oldImage){
+        DB::transaction(function () use ($volume, $copy, $imageIds) {
+            $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
+            foreach ($images as $imageIdx => $oldImage) {
                 $newImage = $copy->images()->get()[$imageIdx];
-                $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage){
+                $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
                     $origin = $oldLabel->getRawOriginal();
                     $origin['image_id'] = $newImage->id;
                     unset($origin['id']);
@@ -277,11 +280,12 @@ class VolumeController extends Controller
         // annotation_assistance_requests optional
     }
 
-    private function copyVideos($volume, $copy)
+    private function copyVideos($volume, $copy, $videoIds)
     {
         // copy video references
-        DB::transaction(function () use ($volume, $copy) {
-            $videos = $volume->videos()->get()->map(function ($video) use ($copy) {
+        DB::transaction(function () use ($volume, $copy, $videoIds) {
+            $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
+            $videos = $videos->map(function ($video) use ($copy) {
                 $video->volume_id = $copy->id;
                 $video->uuid = (string)Uuid::uuid4();
                 unset($video->id);
@@ -293,8 +297,8 @@ class VolumeController extends Controller
             });
         });
 
-        DB::transaction(function () use ($volume, $copy) {
-            $oldVideos = $volume->videos()->get();
+        DB::transaction(function () use ($volume, $copy, $videoIds) {
+            $oldVideos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
             $newVideos = $copy->videos()->get();
             foreach ($oldVideos as $index => $oldVideo) {
                 $newVideo = $newVideos[$index];
@@ -320,14 +324,15 @@ class VolumeController extends Controller
             }
         });
 
-        DB::transaction(function () use ($volume, $copy) {
-            foreach ($volume->videos()->get() as $videoIdx => $oldVideo){
+        DB::transaction(function () use ($volume, $copy, $videoIds) {
+            $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
+            foreach ($videos as $videoIdx => $oldVideo) {
                 $newVideo = $copy->videos()->get()[$videoIdx];
-                $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo){
-                   $origin = $oldLabel->getRawOriginal();
-                   $origin['video_id'] = $newVideo->id;
-                   unset($origin['id']);
-                   return $origin;
+                $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['video_id'] = $newVideo->id;
+                    unset($origin['id']);
+                    return $origin;
                 });
                 $labels->chunk(10000)->map(function ($chunk) {
                     VideoLabel::insert($chunk->toArray());
