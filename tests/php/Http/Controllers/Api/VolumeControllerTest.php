@@ -25,6 +25,7 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
+use http\Env\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -253,11 +254,14 @@ class VolumeControllerTest extends ApiTestCase
         foreach ($m1->getAttributes() as $key => $content1) {
             print_r($key . "\n");
             $content2 = $m2->{$key};
-            self::assertTrue($content1 == $content2);
+            $this->assertTrue($content1 == $content2);
         }
 
     }
 
+
+    //TODO: add javadocs
+    //TODO: split test
     public function testCloneImageVolume()
     {
         $this->volume = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
@@ -366,51 +370,51 @@ class VolumeControllerTest extends ApiTestCase
 
         foreach ($this->volume->images()->get() as $index => $oldImage) {
             $newImage = $copy->images()->get()[$index];
-            self::assertTrue($oldImage->volume_id == $this->volume->id);
-            self::assertTrue($newImage->volume_id == $copy->id);
+            $this->assertTrue($oldImage->volume_id == $this->volume->id);
+            $this->assertTrue($newImage->volume_id == $copy->id);
             unset($oldImage->volume_id);
             unset($oldImage->id);
             unset($oldImage->uuid);
             unset($newImage->volume_id);
             unset($newImage->id);
             unset($newImage->uuid);
-            self::assertEquals($newImage->getAttributes(), $oldImage->getAttributes());
+            $this->assertEquals($newImage->getAttributes(), $oldImage->getAttributes());
 
             $newImageLabels = $newImage->labels()->get();
             foreach ($oldImage->labels()->get() as $vlIdx => $oldImageLabel) {
                 $newImageLabel = $newImageLabels[$vlIdx];
-                self::assertTrue($oldImageLabel->image_id == $oldImage->id);
-                self::assertTrue($newImageLabel->image_id == $newImage->id);
+                $this->assertTrue($oldImageLabel->image_id == $oldImage->id);
+                $this->assertTrue($newImageLabel->image_id == $newImage->id);
                 unset($oldImageLabel->id);
                 unset($oldImageLabel->image_id);
                 unset($newImageLabel->id);
                 unset($newImageLabel->image_id);
-                self::assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
+                $this->assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
             }
 
             foreach ($oldImage->annotations()->get() as $annotationIdx => $oldAnnotation) {
                 $newAnnotation = $newImage->annotations()->get()[$annotationIdx];
-                self::assertTrue($newAnnotation->image_id == $newImage->id);
+                $this->assertTrue($newAnnotation->image_id == $newImage->id);
 
                 $oldLabels = $oldAnnotation->labels()->get();
                 $newLabels = $newAnnotation->labels()->get();
 
                 foreach ($oldLabels as $labelIdx => $oldLabel) {
                     $newLabel = $newLabels[$labelIdx];
-                    self::assertTrue($newLabel->annotation_id == $newAnnotation->id);
-                    self::assertTrue($newLabel->annotation_id == $oldAnnotation->id);
+                    $this->assertTrue($newLabel->annotation_id == $newAnnotation->id);
+                    $this->assertTrue($newLabel->annotation_id == $oldAnnotation->id);
                     unset($newLabel->id);
                     unset($newLabel->annotation_id);
                     unset($oldLabel->id);
                     unset($oldLabel->annotation_id);
-                    self::assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
+                    $this->assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
                 }
 
                 unset($newAnnotation->id);
                 unset($oldAnnotation->id);
                 unset($oldAnnotation->image_id);
                 unset($newAnnotation->image_id);
-                self::assertEquals($newAnnotation->getAttributes(), $oldAnnotation->getAttributes());
+                $this->assertEquals($newAnnotation->getAttributes(), $oldAnnotation->getAttributes());
             }
 
             unset($newImage->id);
@@ -420,13 +424,13 @@ class VolumeControllerTest extends ApiTestCase
             unset($oldImage->volume_id);
             unset($newImage->volume_id);
 
-            self::assertEquals($oldImage->getAttributes(), $newImage->getAttributes());
+            $this->assertEquals($oldImage->getAttributes(), $newImage->getAttributes());
         }
 
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
         $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
 
-        self::assertTrue($oldSessions->exists() == $newSessions->exists());
+        $this->assertTrue($oldSessions->exists() == $newSessions->exists());
 
         foreach ($oldSessions->get() as $idx => $oldSession) {
             $newSession = $newSessions->get()[$idx];
@@ -434,15 +438,15 @@ class VolumeControllerTest extends ApiTestCase
             $newUsers = $newSession->users()->get();
             foreach ($oldUsers as $userIdx => $oldUser) {
                 $newUser = $newUsers[$userIdx];
-                self::assertEquals($oldUser->getAttributes(),$newUser->getAttributes());
+                $this->assertEquals($oldUser->getAttributes(), $newUser->getAttributes());
             }
-            self::assertTrue($oldSession->volume_id == $this->volume->id);
-            self::assertTrue($newSession->volume_id == $copy->id);
+            $this->assertTrue($oldSession->volume_id == $this->volume->id);
+            $this->assertTrue($newSession->volume_id == $copy->id);
             unset($oldSession->id);
             unset($oldSession->volume_id);
             unset($newSession->id);
             unset($newSession->volume_id);
-            self::assertEquals($oldSession->getAttributes(),$newSession->getAttributes());
+            $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
 
         $this->assertTrue($copy->projects()->first()->id == $id2);
@@ -455,6 +459,8 @@ class VolumeControllerTest extends ApiTestCase
 
     }
 
+    //TODO: add javadocs
+    //TODO: split test
     public function testCloneVideoVolume()
     {
         $this->volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
@@ -556,52 +562,52 @@ class VolumeControllerTest extends ApiTestCase
         foreach ($this->volume->videos()->get() as $index => $oldVideo) {
             //check if copy has equal content as original
             $newVideo = $copy->videos()->get()[$index];
-            self::assertTrue($oldVideo->volume_id == $this->volume->id);
-            self::assertTrue($newVideo->volume_id == $copy->id);
+            $this->assertTrue($oldVideo->volume_id == $this->volume->id);
+            $this->assertTrue($newVideo->volume_id == $copy->id);
             unset($oldVideo->volume_id);
             unset($oldVideo->id);
             unset($oldVideo->uuid);
             unset($newVideo->volume_id);
             unset($newVideo->id);
             unset($newVideo->uuid);
-            // fails: comparison of attr=null with attr=[]
-            self::assertEquals($newVideo->getAttributes(), $oldVideo->getAttributes());
+
+            $this->assertEquals($newVideo->getAttributes(), $oldVideo->getAttributes());
 
             $newVideoLabels = $newVideo->labels()->get();
             foreach ($oldVideo->labels()->get() as $vlIdx => $oldVideoLabel) {
                 $newVideoLabel = $newVideoLabels[$vlIdx];
-                self::assertTrue($oldVideoLabel->video_id == $oldVideo->id);
-                self::assertTrue($newVideoLabel->video_id == $newVideo->id);
+                $this->assertTrue($oldVideoLabel->video_id == $oldVideo->id);
+                $this->assertTrue($newVideoLabel->video_id == $newVideo->id);
                 unset($oldVideoLabel->id);
                 unset($oldVideoLabel->video_id);
                 unset($newVideoLabel->id);
                 unset($newVideoLabel->video_id);
-                self::assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
+                $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
             }
 
             foreach ($oldVideo->annotations()->get() as $annotationIdx => $oldAnnotation) {
                 $newAnnotation = $newVideo->annotations()->get()[$annotationIdx];
-                self::assertTrue($newAnnotation->video_id == $newVideo->id);
+                $this->assertTrue($newAnnotation->video_id == $newVideo->id);
 
                 $oldLabels = $oldAnnotation->labels()->get();
                 $newLabels = $newAnnotation->labels()->get();
 
                 foreach ($oldLabels as $labelIdx => $oldLabel) {
                     $newLabel = $newLabels[$labelIdx];
-                    self::assertTrue($newLabel->annotation_id == $newAnnotation->id);
-                    self::assertTrue($newLabel->annotation_id == $oldAnnotation->id);
+                    $this->assertTrue($newLabel->annotation_id == $newAnnotation->id);
+                    $this->assertTrue($newLabel->annotation_id == $oldAnnotation->id);
                     unset($newLabel->id);
                     unset($newLabel->annotation_id);
                     unset($oldLabel->id);
                     unset($oldLabel->annotation_id);
-                    self::assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
+                    $this->assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
                 }
 
                 unset($newAnnotation->id);
                 unset($oldAnnotation->id);
                 unset($oldAnnotation->video_id);
                 unset($newAnnotation->video_id);
-                self::assertEquals($newAnnotation->getAttributes(), $oldAnnotation->getAttributes());
+                $this->assertEquals($newAnnotation->getAttributes(), $oldAnnotation->getAttributes());
             }
 
             unset($newVideo->id);
@@ -611,13 +617,13 @@ class VolumeControllerTest extends ApiTestCase
             unset($oldVideo->volume_id);
             unset($newVideo->volume_id);
 
-            self::assertEquals($oldVideo->getAttributes(), $newVideo->getAttributes());
+            $this->assertEquals($oldVideo->getAttributes(), $newVideo->getAttributes());
         }
 
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
         $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
 
-        self::assertTrue($oldSessions->exists() == $newSessions->exists());
+        $this->assertTrue($oldSessions->exists() == $newSessions->exists());
 
         foreach ($oldSessions->get() as $idx => $oldSession) {
             $newSession = $newSessions->get()[$idx];
@@ -625,15 +631,15 @@ class VolumeControllerTest extends ApiTestCase
             $newUsers = $newSession->users()->get();
             foreach ($oldUsers as $userIdx => $oldUser) {
                 $newUser = $newUsers[$userIdx];
-                self::assertEquals($oldUser->getAttributes(),$newUser->getAttributes());
+                $this->assertEquals($oldUser->getAttributes(), $newUser->getAttributes());
             }
-            self::assertTrue($oldSession->volume_id == $this->volume->id);
-            self::assertTrue($newSession->volume_id == $copy->id);
+            $this->assertTrue($oldSession->volume_id == $this->volume->id);
+            $this->assertTrue($newSession->volume_id == $copy->id);
             unset($oldSession->id);
             unset($oldSession->volume_id);
             unset($newSession->id);
             unset($newSession->volume_id);
-            self::assertEquals($oldSession->getAttributes(),$newSession->getAttributes());
+            $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
 
         $this->assertTrue($copy->projects()->first()->id == $id2);
