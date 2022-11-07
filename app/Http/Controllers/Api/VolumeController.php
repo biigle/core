@@ -184,164 +184,164 @@ class VolumeController extends Controller
         }
     }
 
+    //TODO: add javadocs
     public function clone($volumeId, $destProjectId, Request $request)
     {
-        $project = Project::findOrFail($destProjectId);
-        $this->authorize('update', $project);
-        $volume = Volume::findOrFail($volumeId);
-        $copy = $volume->replicate();
-        $copy->name = $request->input('name', $volume->name);
-        $copy->created_at = Carbon::now();
-        $copy->save();
+        return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
+            $project = Project::findOrFail($destProjectId);
+            $this->authorize('update', $project);
+            $volume = Volume::findOrFail($volumeId);
+            $copy = $volume->replicate();
+            $copy->name = $request->input('name', $volume->name);
+            $copy->created_at = Carbon::now();
+            $copy->save();
 
-        if ($volume->mediaType->name == "image") {
-            $this->copyImages($volume, $copy, $request->input('imageIds', []));
-            $this->copyColorSortSequence($volume, $copy);
-        } else {
-            $this->copyVideos($volume, $copy, $request->input('videoIds', []));
-        }
-        $this->copyAnnotationSessions($volume, $copy);
+            if ($volume->mediaType->name == "image") {
+                $this->copyImages($volume, $copy, $request->input('imageIds', []));
+                $this->copyColorSortSequence($volume, $copy);
+            } else {
+                $this->copyVideos($volume, $copy, $request->input('videoIds', []));
+            }
+            $this->copyAnnotationSessions($volume, $copy);
 
-        //save ifdo-file if exist
-        if ($volume->hasIfdo()) {
-            $this->copyIfdoFile($volumeId, $copy->id);
-        }
+            //save ifdo-file if exist
+            if ($volume->hasIfdo()) {
+                $this->copyIfdoFile($volumeId, $copy->id);
+            }
 
-        $copy->push();
+            $copy->push();
 
-        $project->addVolumeId($copy->id);
-        $project->push();
+            $project->addVolumeId($copy->id);
+            $project->push();
 
-        return redirect()->back()->with(['copy' => $copy]);
+            return redirect()->back()->with(['copy' => $copy]);
+        });
 
     }
 
+    //TODO: add javadocs
     private function copyImages($volume, $copy, $imageIds)
     {
         // copy image references
-        DB::transaction(function () use ($volume, $copy, $imageIds) {
-            $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
-            $images = $images->map(function ($image) use ($copy) {
-                $image->volume_id = $copy->id;
-                $image->uuid = (string)Uuid::uuid4();
-                unset($image->id);
-                return $image;
+        $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
+        $images = $images->map(function ($image) use ($copy) {
+            $original = $image->getRawOriginal();
+            $original['volume_id'] = $copy->id;
+            $original['uuid'] = (string)Uuid::uuid4();
+            unset($original['id']);
+            return $original;
+        });
+
+        $images->chunk(10000)->map(function ($chunk) {
+            Image::insert($chunk->toArray());
+        });
+
+
+        $oldImages = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
+        $newImages = $copy->images()->get();
+        foreach ($oldImages as $index => $oldImage) {
+            $newImage = $newImages[$index];
+            $oldImage->annotations()->get()->map(function ($oldAnnotation) use ($newImage) {
+                // copy annotation object
+                $newAnnotation = $oldAnnotation->replicate();
+                $newAnnotation->image_id = $newImage->id;
+                $newAnnotation->created_at = Carbon::now();
+                $newAnnotation->save();
+
+                // copy label references
+                $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                    $original = $oldLabel->getRawOriginal();
+                    $original['annotation_id'] = $newAnnotation->id;
+                    unset($original['id']);
+                    return $original;
+                });
+
+                $annotations->chunk(10000)->map(function ($chunk) {
+                    ImageAnnotationLabel::insert($chunk->toArray());
+                });
+
+            });
+        }
+
+        $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
+        foreach ($images as $imageIdx => $oldImage) {
+            $newImage = $copy->images()->get()[$imageIdx];
+            $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
+                $origin = $oldLabel->getRawOriginal();
+                $origin['image_id'] = $newImage->id;
+                unset($origin['id']);
+                return $origin;
+            });
+            $labels->chunk(10000)->map(function ($chunk) {
+                ImageLabel::insert($chunk->toArray());
             });
 
-            $images->chunk(10000)->map(function ($chunk) {
-                Image::insert($chunk->toArray());
-            });
-        });
-
-        DB::transaction(function () use ($volume, $copy, $imageIds) {
-            $oldImages = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
-            $newImages = $copy->images()->get();
-            foreach ($oldImages as $index => $oldImage) {
-                $newImage = $newImages[$index];
-                $oldImage->annotations()->get()->map(function ($oldAnnotation) use ($newImage) {
-                    // copy annotation object
-                    $newAnnotation = $oldAnnotation->replicate();
-                    $newAnnotation->image_id = $newImage->id;
-                    $newAnnotation->created_at = Carbon::now();
-                    $newAnnotation->save();
-
-                    // copy label references
-                    $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
-                        $oldLabel->annotation_id = $newAnnotation->id;
-                        unset($oldLabel->id);
-                        return $oldLabel;
-                    });
-
-                    $annotations->chunk(10000)->map(function ($chunk) {
-                        ImageAnnotationLabel::insert($chunk->toArray());
-                    });
-
-                });
-            }
-        });
-
-        DB::transaction(function () use ($volume, $copy, $imageIds) {
-            $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
-            foreach ($images as $imageIdx => $oldImage) {
-                $newImage = $copy->images()->get()[$imageIdx];
-                $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
-                    $origin = $oldLabel->getRawOriginal();
-                    $origin['image_id'] = $newImage->id;
-                    unset($origin['id']);
-                    return $origin;
-                });
-                $labels->chunk(10000)->map(function ($chunk) {
-                    ImageLabel::insert($chunk->toArray());
-                });
-
-            }
-        });
+        }
 
         // annotation_assistance_requests optional
     }
 
+    //TODO: add javadocs
     private function copyVideos($volume, $copy, $videoIds)
     {
         // copy video references
-        DB::transaction(function () use ($volume, $copy, $videoIds) {
-            $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
-            $videos = $videos->map(function ($video) use ($copy) {
-                $video->volume_id = $copy->id;
-                $video->uuid = (string)Uuid::uuid4();
-                unset($video->id);
-                return $video;
+        $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
+        $videos = $videos->map(function ($video) use ($copy) {
+            $origin = $video->getRawOriginal();
+            $origin['volume_id'] = $copy->id;
+            $origin['uuid'] = (string)Uuid::uuid4();
+            unset($origin['id']);
+            return $origin;
+        });
+
+        $videos->chunk(10000)->map(function ($chunk) {
+            Video::insert($chunk->toArray());
+        });
+
+        $oldVideos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
+        $newVideos = $copy->videos()->get();
+        foreach ($oldVideos as $index => $oldVideo) {
+            $newVideo = $newVideos[$index];
+            $oldVideo->annotations()->get()->map(function ($oldAnnotation) use ($newVideo) {
+                // copy annotation object
+                $newAnnotation = $oldAnnotation->replicate();
+                $newAnnotation->video_id = $newVideo->id;
+                $newAnnotation->created_at = Carbon::now();
+                $newAnnotation->save();
+
+                // copy label references
+                $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                    $original = $oldLabel->getRawOriginal();
+                    $original['annotation_id'] = $newAnnotation->id;
+                    unset($original['id']);
+                    return $original;
+                });
+
+                $annotations->chunk(10000)->map(function ($chunk) {
+                    VideoAnnotationLabel::insert($chunk->toArray());
+                });
+
+            });
+        }
+
+        $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
+        foreach ($videos as $videoIdx => $oldVideo) {
+            $newVideo = $copy->videos()->get()[$videoIdx];
+            $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
+                $origin = $oldLabel->getRawOriginal();
+                $origin['video_id'] = $newVideo->id;
+                unset($origin['id']);
+                return $origin;
+            });
+            $labels->chunk(10000)->map(function ($chunk) {
+                VideoLabel::insert($chunk->toArray());
             });
 
-            $videos->chunk(10000)->map(function ($chunk) {
-                Video::insert($chunk->toArray());
-            });
-        });
+        }
 
-        DB::transaction(function () use ($volume, $copy, $videoIds) {
-            $oldVideos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
-            $newVideos = $copy->videos()->get();
-            foreach ($oldVideos as $index => $oldVideo) {
-                $newVideo = $newVideos[$index];
-                $oldVideo->annotations()->get()->map(function ($oldAnnotation) use ($newVideo) {
-                    // copy annotation object
-                    $newAnnotation = $oldAnnotation->replicate();
-                    $newAnnotation->video_id = $newVideo->id;
-                    $newAnnotation->created_at = Carbon::now();
-                    $newAnnotation->save();
-
-                    // copy label references
-                    $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
-                        $oldLabel->annotation_id = $newAnnotation->id;
-                        unset($oldLabel->id);
-                        return $oldLabel;
-                    });
-
-                    $annotations->chunk(10000)->map(function ($chunk) {
-                        VideoAnnotationLabel::insert($chunk->toArray());
-                    });
-
-                });
-            }
-        });
-
-        DB::transaction(function () use ($volume, $copy, $videoIds) {
-            $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
-            foreach ($videos as $videoIdx => $oldVideo) {
-                $newVideo = $copy->videos()->get()[$videoIdx];
-                $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
-                    $origin = $oldLabel->getRawOriginal();
-                    $origin['video_id'] = $newVideo->id;
-                    unset($origin['id']);
-                    return $origin;
-                });
-                $labels->chunk(10000)->map(function ($chunk) {
-                    VideoLabel::insert($chunk->toArray());
-                });
-
-            }
-        });
     }
 
+    //TODO: add javadocs
     private function copyIfdoFile($volume_id, $copy_id)
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
@@ -350,6 +350,7 @@ class VolumeController extends Controller
         $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 
+    //TODO: add javadocs
     private function copyColorSortSequence($volume, $copy)
     {
         DB::transaction(function () use ($volume, $copy) {
@@ -366,6 +367,7 @@ class VolumeController extends Controller
         });
     }
 
+    //TODO: add javadocs
     private function copyAnnotationSessions($volume, $copy)
     {
         DB::transaction(function () use ($volume, $copy) {
