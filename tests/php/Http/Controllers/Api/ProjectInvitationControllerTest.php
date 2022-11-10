@@ -6,6 +6,7 @@ use ApiTestCase;
 use Biigle\Project;
 use Biigle\ProjectInvitation;
 use Biigle\Role;
+use Biigle\User;
 
 class ProjectInvitationControllerTest extends ApiTestCase
 {
@@ -40,7 +41,6 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
         $this->assertEquals(Role::editorId(), $invitation->role_id);
-
     }
 
     public function testStoreOptionalAttributes()
@@ -92,5 +92,100 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->deleteJson("/api/v1/project-invitations/{$id}")->assertSuccessful();
 
         $this->assertNull($invitation->fresh());
+    }
+
+    public function testJoin()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+            'role_id' => Role::guestId(),
+        ]);
+        $id = $invitation->id;
+        $this->doTestApiRoute('POST', "/api/v1/project-invitations/{$id}/join");
+
+        $this->beUser();
+        // Invitation uuid is required.
+        $this->postJson("/api/v1/project-invitations/{$id}/join")
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => 'caa3183e-a7ee-46c9-a744-0fc91d1a1fc4',
+            ])
+            ->assertStatus(422);
+
+        $this->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertSuccessful();
+
+        $this->assertEquals(0, $invitation->current_uses);
+        $projectUser = $this->project()->users()->find($this->user()->id);
+        $this->assertNotNull($projectUser);
+        $this->assertEquals(Role::guestId(), $projectUser->project_role_id);
+        $this->assertEquals(1, $invitation->fresh()->current_uses);
+    }
+
+    public function testJoinRedirect()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $id = $invitation->id;
+        $pid = $this->project()->id;
+
+        $this->beUser();
+        $this->post("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertRedirect("projects/{$pid}");
+    }
+
+    public function testJoinExpiredUses()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+            'role_id' => Role::guestId(),
+            'current_uses' => 1,
+            'max_uses' => 1,
+        ]);
+        $id = $invitation->id;
+
+        $this->beUser();
+        $this->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertStatus(404);
+    }
+
+    public function testJoinExpiredDate()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+            'role_id' => Role::guestId(),
+            'expires_at' => '2022-11-09 00:00:00',
+        ]);
+        $id = $invitation->id;
+
+        $this->beUser();
+        $this->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertStatus(404);
+    }
+
+    public function testJoinAlreadyMember()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $id = $invitation->id;
+
+        $this->beGuest();
+        $this->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertSuccessful();
+
+        $this->assertEquals(0, $invitation->fresh()->current_uses);
     }
 }

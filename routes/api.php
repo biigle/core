@@ -205,6 +205,10 @@ $router->resource('project-invitations', 'ProjectInvitationController', [
     'only' => ['destroy'],
     'parameters' => ['project-invitations' => 'id'],
 ]);
+$router->post(
+    'project-invitations/{id}/join',
+    'ProjectInvitationController@join'
+);
 
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],

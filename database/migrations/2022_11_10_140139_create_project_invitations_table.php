@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->timestampTz('expires_at');
-            $table->uuid('uuid');
+            $table->uuid('uuid')->unique();
             // How many users have used the invitation to add themselves to the project.
             $table->unsignedInteger('current_uses')->default(0);
             // How many uses are allowed before the invitation expires.
