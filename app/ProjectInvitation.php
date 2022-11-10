@@ -28,7 +28,7 @@ class ProjectInvitation extends Model
      * @var array
      */
     protected $casts = [
-        'expires_at' => 'date',
+        'expires_at' => 'datetime',
     ];
 
     /**

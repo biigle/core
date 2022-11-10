@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('project_invitations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->timestamp('expires_at');
+            $table->timestampTz('expires_at');
             $table->uuid('uuid');
             // How many users have used the invitation to add themselves to the project.
             $table->unsignedInteger('current_uses')->default(0);

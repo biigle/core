@@ -154,6 +154,11 @@ $router->resource('projects', 'ProjectController', [
 
 $router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
 
+$router->resource('projects.invitations', 'ProjectInvitationController', [
+    'only' => ['store'],
+    'parameters' => ['projects' => 'id'],
+]);
+
 $router->get(
     'projects/{id}/label-trees/available',
     'ProjectLabelTreeController@available'
@@ -194,6 +199,11 @@ $router->post(
 $router->resource('projects.users', 'ProjectUserController', [
     'only' => ['index', 'update', 'destroy'],
     'parameters' => ['projects' => 'id', 'users' => 'id2'],
+]);
+
+$router->resource('project-invitations', 'ProjectInvitationController', [
+    'only' => ['destroy'],
+    'parameters' => ['project-invitations' => 'id'],
 ]);
 
 $router->resource('roles', 'RoleController', [
