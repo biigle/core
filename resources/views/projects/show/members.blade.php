@@ -34,7 +34,7 @@
                 <div class="clearfix">
                     <span class="pull-right">
                         <loader :active="loading"></loader>
-                        <button id="member-btn" class="btn btn-default"><i class="fa fa-user-plus" title="Add a new member to the project"></i> Add member</button>
+                        <button id="member-btn" class="btn btn-default" title="Add a new member to the project"><i class="fa fa-user-plus"></i> Add member</button>
                         <button id="invitation-btn" class="btn btn-default" title="Create a new project invitation"><i class="fa fa-envelope"></i> Create invitation</button>
                     </span>
                 </div>
