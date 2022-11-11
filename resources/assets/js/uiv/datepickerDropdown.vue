@@ -1,7 +1,7 @@
 <template>
 <dropdown>
     <div class="input-group">
-        <input class="form-control" type="text" v-model="internalValue" :placeholder="placeholder">
+        <input class="form-control" type="text" v-model="internalValue" :placeholder="placeholder" :required="required">
         <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle"><i class="fa fa-calendar"></i></button>
         </div>
@@ -14,6 +14,7 @@
                 icon-control-right="fa fa-chevron-right"
                 :limit-from="limitFrom"
                 :limit-to="limitTo"
+                :week-starts-with="1"
                 />
         </li>
     </template>
@@ -41,6 +42,10 @@ export default {
         limitTo: {
             type: Date,
             default: null,
+        },
+        required: {
+            type: Boolean,
+            default: false,
         },
     },
     components: {

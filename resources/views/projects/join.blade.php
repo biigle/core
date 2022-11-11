@@ -18,7 +18,7 @@
                 </form>
             @else
                 <div class="well project-invitation text-center text-warning">
-                    This project invitation is no longer open.
+                    This project invitation is expired.
                 </div>
             @endif
         </div>

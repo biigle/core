@@ -29,17 +29,21 @@
             </div>
         </div>
         <div class="col-xs-6">
-            <span class="top-bar pull-right">
+            <span class="pull-right">
                 <loader :active="loading"></loader>
-                <add-member-form
-                    class="inline-block-form"
-                    :members="members"
-                    :roles="roles"
-                    :default-role="defaultRole"
-                    :disabled="loading"
-                    v-on:attach="attachMember"
-                    ></add-member-form>
+                <button id="member-btn" class="btn btn-default" title="Add a new member to the label tree"><i class="fa fa-user-plus"></i> Add member</button>
             </span>
+            <popover target="#member-btn" placement="left"  v-model="memberPopoverOpen">
+                <template slot="popover">
+                    <add-member-form
+                        :members="members"
+                        :roles="roles"
+                        :default-role="defaultRole"
+                        :disabled="loading"
+                        v-on:attach="attachMember"
+                        ></add-member-form>
+                </template>
+            </popover>
         </div>
     </div>
 </div>

@@ -1,14 +1,13 @@
 <script>
+import AddMemberForm from './components/addMemberForm';
+import CreateInvitationForm from './components/createInvitationForm';
 import Events from '../core/events';
 import LoaderMixin from '../core/mixins/loader';
 import MemberList from './components/memberList';
-import AddMemberForm from './components/addMemberForm';
+import Popover from 'uiv/dist/Popover';
 import ProjectsApi from '../core/api/projects';
 import {handleErrorResponse} from '../core/messages/store';
 
-/**
- * The panel for editing the members of a project
- */
 export default {
     mixins: [LoaderMixin],
     data() {
@@ -19,14 +18,25 @@ export default {
             roles: {},
             defaultRole: null,
             userId: null,
+            invitations: [],
+            invitationPopoverOpen: false,
+            memberPopoverOpen: false,
         };
     },
     components: {
         memberList: MemberList,
         addMemberForm: AddMemberForm,
+        popover: Popover,
+        createInvitationForm: CreateInvitationForm,
+    },
+    computed: {
+        rolesWithoutAdmin() {
+            return this.roles.filter(r => r.name !== 'admin');
+        },
     },
     methods: {
         attachMember(user) {
+            this.memberPopoverOpen = false;
             this.startLoading();
             ProjectsApi.addUser({id: this.project.id, user_id: user.id}, {
                     project_role_id: user.role_id,
@@ -61,6 +71,10 @@ export default {
                 }
             }
         },
+        handleCreatedInvitation(invitation) {
+            this.invitations.push(invitation);
+            this.invitationPopoverOpen = false;
+        },
     },
     watch: {
         members(members) {
@@ -74,6 +88,7 @@ export default {
         this.defaultRole = biigle.$require('projects.defaultRole');
         this.members = biigle.$require('projects.members');
         this.userId = biigle.$require('projects.userId');
+        this.invitations = biigle.$require('projects.invitations');
     },
 };
 </script>
