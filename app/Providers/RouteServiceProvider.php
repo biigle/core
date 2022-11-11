@@ -46,6 +46,8 @@ class RouteServiceProvider extends ServiceProvider
         Route::patterns([
             'id' => '[0-9]{1,10}',
             'id2' => '[0-9]{1,10}',
+            // From: \Ramsey\Uuid\Uuid::getFactory()->getValidator()->getPattern()
+            'uuid' => "\A[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\z",
         ]);
 
         $this->configureRateLimiting();
