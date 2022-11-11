@@ -188,4 +188,21 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $this->assertEquals(0, $invitation->fresh()->current_uses);
     }
+
+    public function testShowQrCode()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $id = $invitation->id;
+        $this->doTestApiRoute('GET', "/api/v1/project-invitations/{$id}/qr");
+
+        $this->beEditor();
+        $this->getJson("/api/v1/project-invitations/{$id}/qr")->assertStatus(403);
+
+        $this->beAdmin();
+        $this->getJson("/api/v1/project-invitations/{$id}/qr")
+            ->assertSuccessful()
+            ->assertHeader('Content-Type', 'image/svg+xml');
+    }
 }

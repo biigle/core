@@ -209,6 +209,10 @@ $router->post(
     'project-invitations/{id}/join',
     'ProjectInvitationController@join'
 );
+$router->get(
+    'project-invitations/{id}/qr',
+    'ProjectInvitationController@showQrCode'
+);
 
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],

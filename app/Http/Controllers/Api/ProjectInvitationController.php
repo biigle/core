@@ -2,11 +2,15 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\ProjectInvitation;
-use Biigle\Role;
 use Biigle\Http\Requests\JoinProjectInvitation;
 use Biigle\Http\Requests\StoreProjectInvitation;
+use Biigle\ProjectInvitation;
+use Biigle\Role;
 use DB;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
 use Ramsey\Uuid\Uuid;
 
 class ProjectInvitationController extends Controller
@@ -89,7 +93,7 @@ class ProjectInvitationController extends Controller
      * @api {delete} project-invitations/:id Delete an invitation
      * @apiGroup Projects
      * @apiName DestroyProjectInvitations
-     * @apiPermission projectDamin
+     * @apiPermission projectAdmin
      *
      * @apiParam {Number} id The invitation ID.
      *
@@ -101,5 +105,37 @@ class ProjectInvitationController extends Controller
         $invitation = ProjectInvitation::findOrFail($id);
         $this->authorize('destroy', $invitation);
         $invitation->delete();
+    }
+
+    /**
+     * Get the QR code of an invitation
+     *
+     * @api {get} project-invitations/:id/qr Get QR Code
+     * @apiGroup Projects
+     * @apiName ShowProjectInvitationsQrCode
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The invitation ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showQrCode($id)
+    {
+        $invitation = ProjectInvitation::findOrFail($id);
+        $this->authorize('access', $invitation);
+
+        $qrCode = QrCode::create(route('project-invitation', $invitation->uuid))
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setSize(300)
+            ->setMargin(10);
+
+        $writer = new SvgWriter();
+        $result = $writer->write($qrCode);
+
+        return response($result->getString())
+            ->header('Content-Type', 'image/svg+xml')
+            ->header('Content-Disposition', 'inline');
     }
 }

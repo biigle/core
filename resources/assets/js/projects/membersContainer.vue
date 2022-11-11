@@ -2,8 +2,11 @@
 import AddMemberForm from './components/addMemberForm';
 import CreateInvitationForm from './components/createInvitationForm';
 import Events from '../core/events';
+import InvitationApi from './api/projectInvitations.js';
+import InvitationListItem from './components/invitationListItem';
 import LoaderMixin from '../core/mixins/loader';
 import MemberList from './components/memberList';
+import Modal from 'uiv/dist/Modal';
 import Popover from 'uiv/dist/Popover';
 import ProjectsApi from '../core/api/projects';
 import {handleErrorResponse} from '../core/messages/store';
@@ -21,6 +24,9 @@ export default {
             invitations: [],
             invitationPopoverOpen: false,
             memberPopoverOpen: false,
+            invitationModalOpen: false,
+            shownInvitation: null,
+            invitationUrl: '',
         };
     },
     components: {
@@ -28,10 +34,28 @@ export default {
         addMemberForm: AddMemberForm,
         popover: Popover,
         createInvitationForm: CreateInvitationForm,
+        invitationListItem: InvitationListItem,
+        modal: Modal,
     },
     computed: {
         rolesWithoutAdmin() {
             return this.roles.filter(r => r.name !== 'admin');
+        },
+        sortedInvitations() {
+            let sorted = this.invitations.slice();
+            sorted.sort((a, b) => a.id < b.id);
+
+            return sorted;
+        },
+        shownInvitationLink() {
+            let uuid = this.shownInvitation ? this.shownInvitation.uuid : '';
+
+            return `${this.invitationUrl}/${uuid}`;
+        },
+        shownInvitationQrLink() {
+            let id = this.shownInvitation ? this.shownInvitation.id : '';
+
+            return this.invitationQrUrl.replace('{id}', id);
         },
     },
     methods: {
@@ -75,6 +99,18 @@ export default {
             this.invitations.push(invitation);
             this.invitationPopoverOpen = false;
         },
+        handleDeleteInvitation(id) {
+            this.startLoading();
+            InvitationApi.delete({id: id})
+                .then(() => {
+                    this.invitations = this.invitations.filter(i => i.id !== id)
+                }, handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        handleShowInvitation(invitation) {
+            this.invitationModalOpen = true;
+            this.shownInvitation = invitation;
+        },
     },
     watch: {
         members(members) {
@@ -89,6 +125,8 @@ export default {
         this.members = biigle.$require('projects.members');
         this.userId = biigle.$require('projects.userId');
         this.invitations = biigle.$require('projects.invitations');
+        this.invitationUrl = biigle.$require('projects.invitationUrl');
+        this.invitationQrUrl = biigle.$require('projects.invitationQrUrl');
     },
 };
 </script>

@@ -27,6 +27,24 @@ class ProjectInvitationPolicy extends CachedPolicy
     }
 
     /**
+     * Determine if the user can access the given invitation.
+     *
+     * @param  User  $user
+     * @param  ProjectInvitation  $invitation
+     * @return bool
+     */
+    public function access(User $user, ProjectInvitation $invitation)
+    {
+        return $this->remember("project-invitation-can-access-{$user->id}-{$invitation->project_id}", function () use ($user, $invitation) {
+            return DB::table('project_user')
+                ->where('user_id', $user->id)
+                ->where('project_id', $invitation->project_id)
+                ->where('project_role_id', Role::adminId())
+                ->exists();
+        });
+    }
+
+    /**
      * Determine if the user can delete the given invitation.
      *
      * @param  User  $user
@@ -35,12 +53,6 @@ class ProjectInvitationPolicy extends CachedPolicy
      */
     public function destroy(User $user, ProjectInvitation $invitation)
     {
-        return $this->remember("project-invitation-can-destroy-{$user->id}-{$invitation->project_id}", function () use ($user, $invitation) {
-            return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->where('project_id', $invitation->project_id)
-                ->where('project_role_id', Role::adminId())
-                ->exists();
-        });
+        return $this->access($user, $invitation);
     }
 }

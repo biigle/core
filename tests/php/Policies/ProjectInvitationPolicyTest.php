@@ -27,6 +27,20 @@ class ProjectInvitationPolicyTest extends TestCase
         $this->project->addUserId($this->admin->id, Role::adminId());
     }
 
+    public function testAccess()
+    {
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project->id,
+        ]);
+
+        $this->assertFalse($this->user->can('access', $invitation));
+        $this->assertFalse($this->guest->can('access', $invitation));
+        $this->assertFalse($this->editor->can('access', $invitation));
+        $this->assertFalse($this->expert->can('access', $invitation));
+        $this->assertTrue($this->admin->can('access', $invitation));
+        $this->assertTrue($this->globalAdmin->can('access', $invitation));
+    }
+
     public function testDestroy()
     {
         $invitation = ProjectInvitation::factory()->create([
