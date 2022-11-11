@@ -1,11 +1,39 @@
 <template>
-    <form class="form-inline" @submit.prevent="attachMember">
-        <loader :active="loading"></loader>
-        <typeahead :disabled="disabled" :items="availableUsers" placeholder="User name" @select="selectMember" @focus="loadUsers" :value="selectedMemberName" more-info="affiliation"></typeahead>
-        <select :disabled="disabled" class="form-control" title="Role of the new user" v-model="selectedRole">
-            <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
-        </select>
-        <button class="btn btn-default" type="submit" :disabled="!canAttachMember">Add member</button>
+    <form @submit.prevent="attachMember">
+        <div class="form-group">
+            <label>User name</label>
+            <typeahead
+                more-info="affiliation"
+                placeholder=""
+                :disabled="disabled"
+                :items="availableUsers"
+                :value="selectedMemberName"
+                @select="selectMember"
+                @focus="loadUsers"
+                class="typeahead--block"
+                ></typeahead>
+        </div>
+        <div class="form-group">
+            <label>New member role</label>
+            <select
+                class="form-control"
+                v-model="selectedRole"
+                :disabled="disabled"
+                >
+                <option
+                    v-for="role in roles"
+                    :value="role.id"
+                    v-text="role.name"
+                    ></option>
+            </select>
+        </div>
+        <button
+            class="btn btn-success btn-block"
+            type="submit"
+            :disabled="!canAttachMember"
+            >
+            Add
+        </button>
     </form>
 </template>
 

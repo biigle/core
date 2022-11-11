@@ -57,6 +57,7 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \Biigle\Http\Middleware\Authenticate::class,
+        'reg' => \Biigle\Http\Middleware\AuthenticateRegister::class,
         // 'auth.api' => \Biigle\Http\Middleware\AuthenticateAPI::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,

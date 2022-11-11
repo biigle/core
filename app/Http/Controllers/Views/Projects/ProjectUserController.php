@@ -61,6 +61,7 @@ class ProjectUserController extends Controller
             'activeTab' => 'members',
             'roles' => $roles,
             'members' => $members,
+            'invitations' => $project->invitations,
         ]);
     }
 }
