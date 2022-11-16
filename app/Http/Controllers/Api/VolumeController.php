@@ -219,8 +219,12 @@ class VolumeController extends Controller
     private function copyImages($volume, $copy, $imageIds)
     {
         // copy image references
-        $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
-        $images = $images->map(function ($image) use ($copy) {
+        $images = $volume->images()
+            ->when(!empty($images), function ($query) use ($imageIds) {
+                $query->whereIn('id', $imageIds);
+            })->get();
+
+        $copyImages = $images->map(function ($image) use ($copy) {
             $original = $image->getRawOriginal();
             $original['volume_id'] = $copy->id;
             $original['uuid'] = (string)Uuid::uuid4();
@@ -228,14 +232,13 @@ class VolumeController extends Controller
             return $original;
         });
 
-        $images->chunk(10000)->map(function ($chunk) {
+        $copyImages->chunk(10000)->map(function ($chunk) {
             Image::insert($chunk->toArray());
         });
 
 
-        $oldImages = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
         $newImages = $copy->images()->get();
-        foreach ($oldImages as $index => $oldImage) {
+        foreach ($images as $index => $oldImage) {
             $newImage = $newImages[$index];
             $oldImage->annotations()->get()->map(function ($oldAnnotation) use ($newImage) {
                 // copy annotation object
@@ -259,7 +262,6 @@ class VolumeController extends Controller
             });
         }
 
-        $images = count($imageIds) == 0 ? $volume->images()->get() : $volume->images()->whereIn('id', $imageIds)->get();
         foreach ($images as $imageIdx => $oldImage) {
             $newImage = $copy->images()->get()[$imageIdx];
             $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
@@ -281,8 +283,12 @@ class VolumeController extends Controller
     private function copyVideos($volume, $copy, $videoIds)
     {
         // copy video references
-        $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
-        $videos = $videos->map(function ($video) use ($copy) {
+        $videos = $volume->videos()
+            ->when(!empty($videos), function ($query) use ($videoIds) {
+                $query->whereIn('id', $videoIds);
+            })->get();
+
+        $copyVideos = $videos->map(function ($video) use ($copy) {
             $origin = $video->getRawOriginal();
             $origin['volume_id'] = $copy->id;
             $origin['uuid'] = (string)Uuid::uuid4();
@@ -290,13 +296,12 @@ class VolumeController extends Controller
             return $origin;
         });
 
-        $videos->chunk(10000)->map(function ($chunk) {
+        $copyVideos->chunk(10000)->map(function ($chunk) {
             Video::insert($chunk->toArray());
         });
 
-        $oldVideos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
         $newVideos = $copy->videos()->get();
-        foreach ($oldVideos as $index => $oldVideo) {
+        foreach ($videos as $index => $oldVideo) {
             $newVideo = $newVideos[$index];
             $oldVideo->annotations()->get()->map(function ($oldAnnotation) use ($newVideo) {
                 // copy annotation object
@@ -320,7 +325,6 @@ class VolumeController extends Controller
             });
         }
 
-        $videos = count($videoIds) == 0 ? $volume->videos()->get() : $volume->videos()->whereIn('id', $videoIds)->get();
         foreach ($videos as $videoIdx => $oldVideo) {
             $newVideo = $copy->videos()->get()[$videoIdx];
             $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
