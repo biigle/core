@@ -185,6 +185,7 @@ class VolumeController extends Controller
             $project = Project::findOrFail($destProjectId);
             $this->authorize('update', $project);
             $volume = Volume::findOrFail($volumeId);
+            $this->authorize('update', $volume);
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
             $copy->created_at = Carbon::now();
@@ -241,7 +242,6 @@ class VolumeController extends Controller
                 // copy annotation object
                 $newAnnotation = $oldAnnotation->replicate();
                 $newAnnotation->image_id = $newImage->id;
-                $newAnnotation->created_at = Carbon::now();
                 $newAnnotation->save();
 
                 // copy label references
@@ -301,7 +301,6 @@ class VolumeController extends Controller
                 // copy annotation object
                 $newAnnotation = $oldAnnotation->replicate();
                 $newAnnotation->video_id = $newVideo->id;
-                $newAnnotation->created_at = Carbon::now();
                 $newAnnotation->save();
 
                 // copy label references
