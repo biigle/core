@@ -204,7 +204,13 @@ class VolumeController extends Controller
 
             $project->addVolumeId($copy->id);
 
-            return redirect()->back()->with(['copy' => $copy]);
+            if ($this->isAutomatedRequest()) {
+                return $volume;
+            }
+
+            return $this->fuzzyRedirect()
+                ->with(["copy" => $copy])
+                ->with('messageType', 'success');
         });
 
     }
