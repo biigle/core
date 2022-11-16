@@ -259,7 +259,7 @@ $router->resource('visibilities', 'VisibilityController', [
 ]);
 
 $router->post(
-    'volumes/{id}/project/{id2}', 'VolumeController@clone'
+    'volumes/{id}/clone-to/{id2}', 'VolumeController@clone'
 );
 
 $router->resource('volumes', 'VolumeController', [

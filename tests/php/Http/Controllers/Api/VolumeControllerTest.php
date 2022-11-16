@@ -13,7 +13,6 @@ use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\Modules\ColorSort\SequenceTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -272,16 +271,12 @@ class VolumeControllerTest extends ApiTestCase
         $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
         $this->volume->saveIfdo($file);
 
-        $s1 = SequenceTest::make(['volume_id' => $id]);
-        $s1->sequence = [1, 2];
-        $s1->save();
-
         $project = ProjectTest::create();
         $id2 = $project->id;
 
         $this->volume->projects()->attach($id2);
 
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{id}/clone-to/{id2}");
 
         $this->beAdmin();
 
@@ -359,7 +354,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
-        $response = $this->post("/api/v1/volumes/{$id}/project/{$id2}");
+        $response = $this->post("/api/v1/volumes/{id}/clone-to/{id2}");
         $response->assertStatus(302);
 
 
@@ -474,7 +469,7 @@ class VolumeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
         $id2 = $project->id;
 
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/project/{$id2}");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{id}/clone-to/{id2}");
 
         $this->volume->projects()->attach($id2);
 
@@ -550,7 +545,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
-        $response = $this->post("/api/v1/volumes/{$id}/project/{$id2}");
+        $response = $this->post("/api/v1/volumes/{$id}/clone-to/{$id2}");
         $response->assertStatus(302);
 
 
