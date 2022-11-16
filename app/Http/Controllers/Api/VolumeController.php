@@ -190,7 +190,7 @@ class VolumeController extends Controller
             $copy->created_at = Carbon::now();
             $copy->save();
 
-            if ($volume->mediaType->name == "image") {
+            if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $request->input('imageIds', []));
             } else {
                 $this->copyVideos($volume, $copy, $request->input('videoIds', []));
