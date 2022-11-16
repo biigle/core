@@ -202,10 +202,7 @@ class VolumeController extends Controller
                 $this->copyIfdoFile($volumeId, $copy->id);
             }
 
-            $copy->push();
-
             $project->addVolumeId($copy->id);
-            $project->push();
 
             return redirect()->back()->with(['copy' => $copy]);
         });
