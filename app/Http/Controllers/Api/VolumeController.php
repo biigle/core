@@ -43,12 +43,6 @@ use function PHPUnit\Framework\assertTrue;
 
 class VolumeController extends Controller
 {
-    /**
-     * Limit for the number of files above which volume files are created asynchronously.
-     *
-     * @var int
-     */
-    const CREATE_SYNC_LIMIT = 10000;
 
     /**
      * Shows all volumes the user has access to.
@@ -198,7 +192,6 @@ class VolumeController extends Controller
 
             if ($volume->mediaType->name == "image") {
                 $this->copyImages($volume, $copy, $request->input('imageIds', []));
-                $this->copyColorSortSequence($volume, $copy);
             } else {
                 $this->copyVideos($volume, $copy, $request->input('videoIds', []));
             }
@@ -348,23 +341,6 @@ class VolumeController extends Controller
         $iFdoFilename = $volume_id . ".yaml";
         $copyIFdoFilename = $copy_id . ".yaml";
         $disk->copy($iFdoFilename, $copyIFdoFilename);
-    }
-
-    //TODO: add javadocs
-    private function copyColorSortSequence($volume, $copy)
-    {
-        DB::transaction(function () use ($volume, $copy) {
-            $insert = Sequence::whereIn('volume_id', [$volume->id])->get()->map(function ($seq) use ($copy) {
-                $original = $seq->getRawOriginal();
-                $original['volume_id'] = $copy->id;
-                unset($original['id']);
-                return $original;
-            });
-
-            $insert->chunk(10000)->map(function ($chunk) {
-                Sequence::insert($chunk->toArray());
-            });
-        });
     }
 
     //TODO: add javadocs
