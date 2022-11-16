@@ -224,18 +224,15 @@ class VolumeController extends Controller
                 $query->whereIn('id', $imageIds);
             })->get();
 
-        $copyImages = $images->map(function ($image) use ($copy) {
+        $images->map(function ($image) use ($copy) {
             $original = $image->getRawOriginal();
             $original['volume_id'] = $copy->id;
             $original['uuid'] = (string)Uuid::uuid4();
             unset($original['id']);
             return $original;
-        });
-
-        $copyImages->chunk(10000)->map(function ($chunk) {
+        })->chunk(10000)->each(function ($chunk) {
             Image::insert($chunk->toArray());
         });
-
 
         $newImages = $copy->images()->get();
         foreach ($images as $index => $oldImage) {
@@ -248,32 +245,27 @@ class VolumeController extends Controller
                 $newAnnotation->save();
 
                 // copy label references
-                $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
                     $original = $oldLabel->getRawOriginal();
                     $original['annotation_id'] = $newAnnotation->id;
                     unset($original['id']);
                     return $original;
-                });
-
-                $annotations->chunk(10000)->map(function ($chunk) {
+                })->chunk(10000)->each(function ($chunk) {
                     ImageAnnotationLabel::insert($chunk->toArray());
                 });
-
             });
         }
 
         foreach ($images as $imageIdx => $oldImage) {
             $newImage = $copy->images()->get()[$imageIdx];
-            $labels = $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
+            $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
                 $origin = $oldLabel->getRawOriginal();
                 $origin['image_id'] = $newImage->id;
                 unset($origin['id']);
                 return $origin;
-            });
-            $labels->chunk(10000)->map(function ($chunk) {
+            })->chunk(10000)->each(function ($chunk) {
                 ImageLabel::insert($chunk->toArray());
             });
-
         }
 
         // annotation_assistance_requests optional
@@ -288,17 +280,19 @@ class VolumeController extends Controller
                 $query->whereIn('id', $videoIds);
             })->get();
 
-        $copyVideos = $videos->map(function ($video) use ($copy) {
-            $origin = $video->getRawOriginal();
-            $origin['volume_id'] = $copy->id;
-            $origin['uuid'] = (string)Uuid::uuid4();
-            unset($origin['id']);
-            return $origin;
-        });
+        $videos
+            ->map(function ($video) use ($copy) {
+                $origin = $video->getRawOriginal();
+                $origin['volume_id'] = $copy->id;
+                $origin['uuid'] = (string)Uuid::uuid4();
+                unset($origin['id']);
+                return $origin;
+            })
+            ->chunk(10000)
+            ->each(function ($chunk) {
+                Video::insert($chunk->toArray());
+            });
 
-        $copyVideos->chunk(10000)->map(function ($chunk) {
-            Video::insert($chunk->toArray());
-        });
 
         $newVideos = $copy->videos()->get();
         foreach ($videos as $index => $oldVideo) {
@@ -311,29 +305,27 @@ class VolumeController extends Controller
                 $newAnnotation->save();
 
                 // copy label references
-                $annotations = $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
+                $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
                     $original = $oldLabel->getRawOriginal();
                     $original['annotation_id'] = $newAnnotation->id;
                     unset($original['id']);
                     return $original;
-                });
-
-                $annotations->chunk(10000)->map(function ($chunk) {
-                    VideoAnnotationLabel::insert($chunk->toArray());
-                });
+                })->chunk(10000)
+                    ->each(function ($chunk) {
+                        VideoAnnotationLabel::insert($chunk->toArray());
+                    });
 
             });
         }
 
         foreach ($videos as $videoIdx => $oldVideo) {
             $newVideo = $copy->videos()->get()[$videoIdx];
-            $labels = $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
+            $oldVideo->labels()->get()->map(function ($oldLabel) use ($newVideo) {
                 $origin = $oldLabel->getRawOriginal();
                 $origin['video_id'] = $newVideo->id;
                 unset($origin['id']);
                 return $origin;
-            });
-            $labels->chunk(10000)->map(function ($chunk) {
+            })->chunk(10000)->each(function ($chunk) {
                 VideoLabel::insert($chunk->toArray());
             });
 
@@ -354,16 +346,15 @@ class VolumeController extends Controller
     private function copyAnnotationSessions($volume, $copy)
     {
         DB::transaction(function () use ($volume, $copy) {
-            $oldSessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get()
+            AnnotationSession::whereIn('volume_id', [$volume->id])->get()
                 ->map(function ($oldSession) use ($copy) {
                     $original = $oldSession->getRawOriginal();
                     $original['volume_id'] = $copy->id;
                     unset($original['id']);
                     return $original;
+                })->chunk(10000)->each(function ($chunk) {
+                    AnnotationSession::insert($chunk->toArray());
                 });
-            $oldSessions->chunk(10000)->map(function ($chunk) {
-                AnnotationSession::insert($chunk->toArray());
-            });
 
             //copy users references
             $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id])->get();
