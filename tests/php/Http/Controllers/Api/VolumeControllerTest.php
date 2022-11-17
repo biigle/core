@@ -349,7 +349,48 @@ class VolumeControllerTest extends ApiTestCase
 
     }
 
-//    public function testCloneVolumeVideos(){}
+    public function testCloneVolumeVideos()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $oldVideo = VideoTest::create([
+            'filename' => 'a.jpg',
+            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
+            'volume_id' => $volume->id,
+            'lng' => 1.5,
+            'lat' => 5.3,
+            'duration' => 42.42])->fresh();
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newVideo = $copy->videos()->first();
+
+        $this->assertTrue($copy->videos()->exists());
+        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
+        $this->assertNotEquals($newVideo->id, $oldVideo->id);
+        $this->assertNotEquals($newVideo->uuid, $oldVideo->uuid);
+        $this->assertEquals($newVideo->volume_id, $copy->id);
+
+        unset($newVideo->id);
+        unset($oldVideo->id);
+        unset($newVideo->volume_id);
+        unset($oldVideo->volume_id);
+        unset($oldVideo->uuid);
+        unset($newVideo->uuid);
+
+        $this->assertEquals($oldVideo->getAttributes(), $newVideo->getAttributes());
+
+    }
 //
 //    public function testCloneVolumeImageAnnotations(){}
 //    public function testCloneVolumeVideoAnnotations(){}
@@ -634,22 +675,8 @@ class VolumeControllerTest extends ApiTestCase
 
         $copy = $response->getSession()->get('copy');
 
-        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
-        $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
 
         foreach ($this->volume->videos()->get() as $index => $oldVideo) {
-            //check if copy has equal content as original
-            $newVideo = $copy->videos()->get()[$index];
-            $this->assertTrue($oldVideo->volume_id == $this->volume->id);
-            $this->assertTrue($newVideo->volume_id == $copy->id);
-            unset($oldVideo->volume_id);
-            unset($oldVideo->id);
-            unset($oldVideo->uuid);
-            unset($newVideo->volume_id);
-            unset($newVideo->id);
-            unset($newVideo->uuid);
-
-            $this->assertEquals($newVideo->getAttributes(), $oldVideo->getAttributes());
 
             $newVideoLabels = $newVideo->labels()->get();
             foreach ($oldVideo->labels()->get() as $vlIdx => $oldVideoLabel) {
