@@ -276,7 +276,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->volume->projects()->attach($id2);
 
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{id}/clone-to/{id2}");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/clone-to/{$id2}");
 
         $this->beAdmin();
 
@@ -354,7 +354,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
-        $response = $this->post("/api/v1/volumes/{id}/clone-to/{id2}");
+        $response = $this->post("/api/v1/volumes/{$id}/clone-to/{$id2}");
         $response->assertStatus(302);
 
 
@@ -469,7 +469,7 @@ class VolumeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
         $id2 = $project->id;
 
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{id}/clone-to/{id2}");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/clone-to/{$id2}");
 
         $this->volume->projects()->attach($id2);
 
