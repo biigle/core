@@ -391,8 +391,41 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals($oldVideo->getAttributes(), $newVideo->getAttributes());
 
     }
-//
-//    public function testCloneVolumeImageAnnotations(){}
+
+    public function testCloneVolumeImageAnnotations(){
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
+
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newImage = $copy->images()->first();
+        $newAnnotation = $newImage->annotations()->first();
+
+        $this->assertNotEquals($oldAnnotation->id,$newAnnotation->id);
+        $this->assertEquals($oldAnnotation->updated_at,$newAnnotation->updated_at);
+        $this->assertEquals($oldAnnotation->created_at,$newAnnotation->created_at);
+
+        unset($oldAnnotation->id);
+        unset($newAnnotation->id);
+        unset($oldAnnotation->image_id);
+        unset($newAnnotation->image_id);
+
+        $this->assertEquals($oldAnnotation->getAttributes(),$newAnnotation->getAttributes());
+
+    }
 //    public function testCloneVolumeVideoAnnotations(){}
 
 //    public function testCloneVolumeImageAnnotationLabels(){}
@@ -520,10 +553,6 @@ class VolumeControllerTest extends ApiTestCase
 
             foreach ($oldImage->annotations()->get() as $annotationIdx => $oldAnnotation) {
                 $newAnnotation = $newImage->annotations()->get()[$annotationIdx];
-                $this->assertTrue($newAnnotation->image_id == $newImage->id);
-
-                $oldLabels = $oldAnnotation->labels()->get();
-                $newLabels = $newAnnotation->labels()->get();
 
                 foreach ($oldLabels as $labelIdx => $oldLabel) {
                     $newLabel = $newLabels[$labelIdx];
@@ -535,22 +564,7 @@ class VolumeControllerTest extends ApiTestCase
                     unset($oldLabel->annotation_id);
                     $this->assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
                 }
-
-                unset($newAnnotation->id);
-                unset($oldAnnotation->id);
-                unset($oldAnnotation->image_id);
-                unset($newAnnotation->image_id);
-                $this->assertEquals($newAnnotation->getAttributes(), $oldAnnotation->getAttributes());
             }
-
-            unset($newImage->id);
-            unset($newImage->uuid);
-            unset($oldImage->id);
-            unset($oldImage->uuid);
-            unset($oldImage->volume_id);
-            unset($newImage->volume_id);
-
-            $this->assertEquals($oldImage->getAttributes(), $newImage->getAttributes());
         }
 
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
