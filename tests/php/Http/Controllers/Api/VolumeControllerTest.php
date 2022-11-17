@@ -307,12 +307,55 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals($volume->handle, $copy->handle);
     }
 
-//
-//    public function testCloneVolumeImages(){}
+    public function testCloneVolumeImages()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $oldImage = ImageTest::create([
+            'filename' => 'a.jpg',
+            'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
+            'volume_id' => $volume->id,
+            'lng' => 1.5,
+            'lat' => 5.3,
+            'tiled' => true])->fresh();
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newImage = $copy->images()->first();
+
+        $this->assertTrue($copy->images()->exists());
+        $this->assertEquals($volume->images()->count(), $copy->images()->count());
+        $this->assertNotEquals($newImage->id, $oldImage->id);
+        $this->assertNotEquals($newImage->uuid, $oldImage->uuid);
+        $this->assertEquals($newImage->volume_id, $copy->id);
+
+        unset($newImage->id);
+        unset($oldImage->id);
+        unset($newImage->volume_id);
+        unset($oldImage->volume_id);
+        unset($oldImage->uuid);
+        unset($newImage->uuid);
+
+        $this->assertEquals($oldImage->getAttributes(), $newImage->getAttributes());
+
+    }
+
 //    public function testCloneVolumeVideos(){}
 //
 //    public function testCloneVolumeImageAnnotations(){}
 //    public function testCloneVolumeVideoAnnotations(){}
+
+//    public function testCloneVolumeImageAnnotationLabels(){}
+//    public function testCloneVolumeVideoAnnotationLabels(){}
 //
 //    public function testCloneVolumeImageLabels(){}
 //    public function testCloneVolumeVideoLabels(){}
@@ -419,21 +462,9 @@ class VolumeControllerTest extends ApiTestCase
 
         $copy = $response->getSession()->get('copy');
 
-        $this->assertTrue($copy->images()->exists() == $this->volume->images()->exists());
         $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
 
         foreach ($this->volume->images()->get() as $index => $oldImage) {
-            $newImage = $copy->images()->get()[$index];
-            $this->assertTrue($oldImage->volume_id == $this->volume->id);
-            $this->assertTrue($newImage->volume_id == $copy->id);
-            unset($oldImage->volume_id);
-            unset($oldImage->id);
-            unset($oldImage->uuid);
-            unset($newImage->volume_id);
-            unset($newImage->id);
-            unset($newImage->uuid);
-            $this->assertEquals($newImage->getAttributes(), $oldImage->getAttributes());
-
             $newImageLabels = $newImage->labels()->get();
             foreach ($oldImage->labels()->get() as $vlIdx => $oldImageLabel) {
                 $newImageLabel = $newImageLabels[$vlIdx];
