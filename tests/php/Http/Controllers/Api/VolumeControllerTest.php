@@ -592,8 +592,35 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
     }
-//
-//    public function testCloneVolumeIfDoFiles(){}
+
+    public function testCloneVolumeIfDoFiles()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh();
+        // Use fresh() to load even the null fields.
+
+        Storage::fake('ifdos');
+        $csv = __DIR__ . "/../../../../files/image-ifdo.yaml";
+        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        $volume->saveIfdo($file);
+
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+
+        $this->assertTrue($copy->hasIfdo());
+        $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
+    }
+
+//    public function testCloneVolumeAnnotationSessions(){}
 
 
     //TODO: add javadocs
@@ -602,11 +629,6 @@ class VolumeControllerTest extends ApiTestCase
     {
         $this->volume = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
         $id = $this->volume->id;
-
-        $disk = Storage::fake('ifdos');
-        $csv = __DIR__ . "/../../../../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        $this->volume->saveIfdo($file);
 
         $project = ProjectTest::create();
         $id2 = $project->id;
@@ -680,10 +702,6 @@ class VolumeControllerTest extends ApiTestCase
             unset($newSession->volume_id);
             $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
-
-        $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
-        $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
-
     }
 
     //TODO: add javadocs
@@ -692,11 +710,6 @@ class VolumeControllerTest extends ApiTestCase
     {
         $this->volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $id = $this->volume->id;
-
-        $disk = Storage::fake('ifdos');
-        $csv = __DIR__ . "/../../../../files/video-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        $this->volume->saveIfdo($file);
 
         $project = ProjectTest::create();
         $id2 = $project->id;
@@ -748,7 +761,7 @@ class VolumeControllerTest extends ApiTestCase
 
 
         $copy = $response->getSession()->get('copy');
-        
+
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
         $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
 
@@ -770,8 +783,5 @@ class VolumeControllerTest extends ApiTestCase
             unset($newSession->volume_id);
             $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
-        $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
-        $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
-
     }
 }
