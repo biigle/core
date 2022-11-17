@@ -248,15 +248,63 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertSessionHas('saved', true);
     }
 
-    private function areEqual($m1, $m2)
-    {
-        foreach ($m1->getAttributes() as $key => $content1) {
-            print_r($key . "\n");
-            $content2 = $m2->{$key};
-            $this->assertTrue($content1 == $content2);
-        }
+    public function testCloneVolumeApi(){
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+
+        $this->be($project->creator);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            // No update permissions in the source project.
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            // No update permissions in the target project.
+            ->assertStatus(403);
+
+        $project->addUserId($this->admin()->id, Role::adminId());
+        Cache::flush();
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            ->assertStatus(200);
 
     }
+
+//    public function testCloneImageVolume(){
+//        $volume = $this->volume([
+//            'created_at' => '2022-11-09 14:37:00',
+//            'updated_at' => '2022-11-09 14:37:00',
+//        ])->fresh(); // Use fresh() to load even the null fields.
+//        // The target project.
+//        $project = ProjectTest::create();
+//
+//        $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+//
+//        $image = ImageTest::create(['volume_id' => $volume->id])->fresh();
+//        $imageLabel = ImageLabelTest::create(['image_id' => $image->id]);
+//        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+//        $annotationLabel = ImageAnnotationLabelTest::create([
+//            'annotation_id' => $annotation->id,
+//        ]);
+//    }
+//    public function testCloneVideoVolume(){}
+//
+//    public function testCloneVolumeImages(){}
+//    public function testCloneVolumeVideos(){}
+//
+//    public function testCloneVolumeImageAnnotations(){}
+//    public function testCloneVolumeVideoAnnotations(){}
+//
+//    public function testCloneVolumeImageLabels(){}
+//    public function testCloneVolumeVideoLabels(){}
+//
+//    public function testCloneVolumeIfDoFiles(){}
+
 
 
     //TODO: add javadocs
@@ -275,8 +323,6 @@ class VolumeControllerTest extends ApiTestCase
         $id2 = $project->id;
 
         $this->volume->projects()->attach($id2);
-
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/clone-to/{$id2}");
 
         $this->beAdmin();
 
@@ -468,8 +514,6 @@ class VolumeControllerTest extends ApiTestCase
 
         $project = ProjectTest::create();
         $id2 = $project->id;
-
-        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/clone-to/{$id2}");
 
         $this->volume->projects()->attach($id2);
 
