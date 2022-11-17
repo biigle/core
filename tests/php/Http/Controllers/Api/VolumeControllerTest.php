@@ -559,8 +559,39 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
     }
-//
-//    public function testCloneVolumeVideoLabels(){}
+
+    public function testCloneVolumeVideoLabels()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
+        $oldVideoLabel = VideoLabelTest::create(['video_id' => $oldVideo->id]);
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newVideo = $copy->videos()->first();
+        $newVideoLabel = $newVideo->labels()->first();
+
+        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
+        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
+
+        unset($newVideoLabel->id);
+        unset($oldVideoLabel->id);
+        unset($newVideoLabel->video_id);
+        unset($oldVideoLabel->video_id);
+
+        $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
+    }
 //
 //    public function testCloneVolumeIfDoFiles(){}
 
@@ -717,23 +748,7 @@ class VolumeControllerTest extends ApiTestCase
 
 
         $copy = $response->getSession()->get('copy');
-
-
-        foreach ($this->volume->videos()->get() as $index => $oldVideo) {
-
-            $newVideoLabels = $newVideo->labels()->get();
-            foreach ($oldVideo->labels()->get() as $vlIdx => $oldVideoLabel) {
-                $newVideoLabel = $newVideoLabels[$vlIdx];
-                $this->assertTrue($oldVideoLabel->video_id == $oldVideo->id);
-                $this->assertTrue($newVideoLabel->video_id == $newVideo->id);
-                unset($oldVideoLabel->id);
-                unset($oldVideoLabel->video_id);
-                unset($newVideoLabel->id);
-                unset($newVideoLabel->video_id);
-                $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
-            }
-        }
-
+        
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
         $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
 
