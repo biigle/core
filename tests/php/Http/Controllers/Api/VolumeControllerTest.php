@@ -392,7 +392,8 @@ class VolumeControllerTest extends ApiTestCase
 
     }
 
-    public function testCloneVolumeImageAnnotations(){
+    public function testCloneVolumeImageAnnotations()
+    {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -412,19 +413,21 @@ class VolumeControllerTest extends ApiTestCase
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();
 
-        $this->assertNotEquals($oldAnnotation->id,$newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at,$newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at,$newAnnotation->created_at);
+        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
+        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
+        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
 
         unset($oldAnnotation->id);
         unset($newAnnotation->id);
         unset($oldAnnotation->image_id);
         unset($newAnnotation->image_id);
 
-        $this->assertEquals($oldAnnotation->getAttributes(),$newAnnotation->getAttributes());
+        $this->assertEquals($oldAnnotation->getAttributes(), $newAnnotation->getAttributes());
 
     }
-    public function testCloneVolumeVideoAnnotations(){
+
+    public function testCloneVolumeVideoAnnotations()
+    {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -445,20 +448,21 @@ class VolumeControllerTest extends ApiTestCase
         $newVideo = $copy->videos()->first();
         $newAnnotation = $newVideo->annotations()->first();
 
-        $this->assertNotEquals($oldAnnotation->id,$newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at,$newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at,$newAnnotation->created_at);
+        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
+        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
+        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
 
         unset($oldAnnotation->id);
         unset($newAnnotation->id);
         unset($oldAnnotation->video_id);
         unset($newAnnotation->video_id);
 
-        $this->assertEquals($oldAnnotation->getAttributes(),$newAnnotation->getAttributes());
+        $this->assertEquals($oldAnnotation->getAttributes(), $newAnnotation->getAttributes());
 
     }
 
-    public function testCloneVolumeImageAnnotationLabels(){
+    public function testCloneVolumeImageAnnotationLabels()
+    {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -479,18 +483,19 @@ class VolumeControllerTest extends ApiTestCase
         $newAnnotation = $copy->images()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
-        $this->assertNotEquals($oldAnnotationLabel->id,$newAnnotationLabel->id);
-        $this->assertEquals($newAnnotationLabel->annotation_id,$newAnnotation->id);
+        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
 
         unset($oldAnnotationLabel->id);
         unset($newAnnotationLabel->id);
         unset($oldAnnotationLabel->annotation_id);
         unset($newAnnotationLabel->annotation_id);
 
-        $this->assertEquals($oldAnnotationLabel->getAttributes(),$newAnnotationLabel->getAttributes());
+        $this->assertEquals($oldAnnotationLabel->getAttributes(), $newAnnotationLabel->getAttributes());
     }
 
-    public function testCloneVolumeVideoAnnotationLabels(){
+    public function testCloneVolumeVideoAnnotationLabels()
+    {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -512,15 +517,47 @@ class VolumeControllerTest extends ApiTestCase
         $newAnnotation = $copy->videos()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
-        $this->assertNotEquals($oldAnnotationLabel->id,$newAnnotationLabel->id);
-        $this->assertEquals($newAnnotationLabel->annotation_id,$newAnnotation->id);
+        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
 
         unset($oldAnnotationLabel->id);
         unset($newAnnotationLabel->id);
         unset($oldAnnotationLabel->annotation_id);
         unset($newAnnotationLabel->annotation_id);
 
-        $this->assertEquals($oldAnnotationLabel->getAttributes(),$newAnnotationLabel->getAttributes());
+        $this->assertEquals($oldAnnotationLabel->getAttributes(), $newAnnotationLabel->getAttributes());
+    }
+
+    public function testCloneVolumeImageLabels()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
+        $oldImageLabel = ImageLabelTest::create(['image_id' => $oldImage->id]);
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newImage = $copy->images()->first();
+        $newImageLabel = $newImage->labels()->first();
+
+        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
+        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
+
+        unset($newImageLabel->id);
+        unset($oldImageLabel->id);
+        unset($newImageLabel->image_id);
+        unset($oldImageLabel->image_id);
+
+        $this->assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
     }
 //
 //    public function testCloneVolumeVideoLabels(){}
@@ -590,22 +627,6 @@ class VolumeControllerTest extends ApiTestCase
 
 
         $copy = $response->getSession()->get('copy');
-
-        $this->assertTrue($copy->videos()->exists() == $this->volume->videos()->exists());
-
-        foreach ($this->volume->images()->get() as $index => $oldImage) {
-            $newImageLabels = $newImage->labels()->get();
-            foreach ($oldImage->labels()->get() as $vlIdx => $oldImageLabel) {
-                $newImageLabel = $newImageLabels[$vlIdx];
-                $this->assertTrue($oldImageLabel->image_id == $oldImage->id);
-                $this->assertTrue($newImageLabel->image_id == $newImage->id);
-                unset($oldImageLabel->id);
-                unset($oldImageLabel->image_id);
-                unset($newImageLabel->id);
-                unset($newImageLabel->image_id);
-                $this->assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
-            }
-        }
 
         $oldSessions = AnnotationSession::whereIn('volume_id', [$this->volume->id]);
         $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id]);
