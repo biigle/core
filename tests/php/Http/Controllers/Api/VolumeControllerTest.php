@@ -248,7 +248,8 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertSessionHas('saved', true);
     }
 
-    public function testCloneVolumeApi(){
+    public function testCloneVolumeApi()
+    {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -275,24 +276,37 @@ class VolumeControllerTest extends ApiTestCase
 
     }
 
-//    public function testCloneImageVolume(){
-//        $volume = $this->volume([
-//            'created_at' => '2022-11-09 14:37:00',
-//            'updated_at' => '2022-11-09 14:37:00',
-//        ])->fresh(); // Use fresh() to load even the null fields.
-//        // The target project.
-//        $project = ProjectTest::create();
-//
-//        $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-//
-//        $image = ImageTest::create(['volume_id' => $volume->id])->fresh();
-//        $imageLabel = ImageLabelTest::create(['image_id' => $image->id]);
-//        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
-//        $annotationLabel = ImageAnnotationLabelTest::create([
-//            'annotation_id' => $annotation->id,
-//        ]);
-//    }
-//    public function testCloneVideoVolume(){}
+    public function testCloneVolume()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+
+        ])->fresh(); // Use fresh() to load even the null fields.
+
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+
+        $this->assertNotEquals($volume->id, $copy->id);
+        $this->assertNotEquals($volume->created_at, $copy->created_at);
+        $this->assertNotEquals($volume->updated_at, $copy->updated_at);
+
+        $this->assertEquals($volume->name, $copy->name);
+        $this->assertEquals($volume->creator()->first()->id, $copy->creator()->first()->id);
+        $this->assertEquals($volume->mediaType()->get(), $copy->mediaType()->get());
+        $this->assertEquals($copy->projects()->count(), $volume->projects()->count());
+        $this->assertEquals($copy->projects()->first()->id, $project->id);
+        $this->assertEquals($volume->url, $copy->url);
+        $this->assertEquals($volume->handle, $copy->handle);
+    }
+
 //
 //    public function testCloneVolumeImages(){}
 //    public function testCloneVolumeVideos(){}
@@ -304,7 +318,6 @@ class VolumeControllerTest extends ApiTestCase
 //    public function testCloneVolumeVideoLabels(){}
 //
 //    public function testCloneVolumeIfDoFiles(){}
-
 
 
     //TODO: add javadocs
@@ -489,11 +502,6 @@ class VolumeControllerTest extends ApiTestCase
             unset($newSession->volume_id);
             $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
-
-        $this->assertTrue($copy->projects()->first()->id == $id2);
-
-        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
-        $this->assertTrue($copy->mediaType->name == $this->volume->mediaType->name);
 
         $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
         $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
@@ -680,12 +688,6 @@ class VolumeControllerTest extends ApiTestCase
             unset($newSession->volume_id);
             $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
         }
-
-        $this->assertTrue($copy->projects()->first()->id == $id2);
-
-        $this->assertTrue($copy->mediaType()->exists() == $this->volume->mediaType()->exists());
-        $this->assertTrue($copy->mediaType->name == $this->volume->mediaType->name);
-
         $this->assertTrue($copy->hasIfdo() == $this->volume->hasIfdo());
         $this->assertTrue($copy->getIfdo() == $this->volume->getIfdo());
 
