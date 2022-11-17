@@ -403,8 +403,6 @@ class VolumeControllerTest extends ApiTestCase
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
 
-        $project = ProjectTest::create();
-
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
@@ -437,8 +435,6 @@ class VolumeControllerTest extends ApiTestCase
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-
-        $project = ProjectTest::create();
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
@@ -474,8 +470,6 @@ class VolumeControllerTest extends ApiTestCase
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
         $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $project = ProjectTest::create();
-
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
@@ -496,9 +490,39 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals($oldAnnotationLabel->getAttributes(),$newAnnotationLabel->getAttributes());
     }
 
-//    public function testCloneVolumeVideoAnnotationLabels(){}
+    public function testCloneVolumeVideoAnnotationLabels(){
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
+        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(302);
+        $copy = $response->getSession()->get('copy');
+        $newAnnotation = $copy->videos()->first()->annotations()->first();
+        $newAnnotationLabel = $newAnnotation->labels()->first();
+
+        $this->assertNotEquals($oldAnnotationLabel->id,$newAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id,$newAnnotation->id);
+
+        unset($oldAnnotationLabel->id);
+        unset($newAnnotationLabel->id);
+        unset($oldAnnotationLabel->annotation_id);
+        unset($newAnnotationLabel->annotation_id);
+
+        $this->assertEquals($oldAnnotationLabel->getAttributes(),$newAnnotationLabel->getAttributes());
+    }
 //
-//    public function testCloneVolumeImageLabels(){}
 //    public function testCloneVolumeVideoLabels(){}
 //
 //    public function testCloneVolumeIfDoFiles(){}
@@ -635,49 +659,17 @@ class VolumeControllerTest extends ApiTestCase
             'lng' => 9.9,
             'lat' => 4.333,
         ]);
-        VideoLabelTest::create(['video_id' => $v1->id]);
-        VideoLabelTest::create(['video_id' => $v1->id]);
-        VideoLabelTest::create(['video_id' => $v1->id]);
 
-        $a1 = VideoAnnotationTest::create([
-            'video_id' => $v1->id,
-            'created_at' => '2000-09-10',
-        ]);
-        VideoAnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $this->admin()->id,
-        ]);
         $v2 = VideoTest::create([
             'filename' => 'b.mp4',
             'volume_id' => $this->volume->id,
             'lng' => 0.12,
             'lat' => 43,
         ]);
-        VideoLabelTest::create(['video_id' => $v2->id]);
-        VideoLabelTest::create(['video_id' => $v2->id]);
 
-        $a2 = VideoAnnotationTest::create([
-            'video_id' => $v2->id,
-            'created_at' => '2000-10-10',
-        ]);
-        VideoAnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-            'user_id' => $this->admin()->id,
-        ]);
         $v3 = VideoTest::create([
             'filename' => 'c.mp4',
             'volume_id' => $this->volume->id,
-        ]);
-        VideoLabelTest::create(['video_id' => $v3->id]);
-        VideoLabelTest::create(['video_id' => $v3->id]);
-
-        $a3 = VideoAnnotationTest::create([
-            'video_id' => $v3->id,
-            'created_at' => '2000-10-10',
-        ]);
-        VideoAnnotationLabelTest::create([
-            'annotation_id' => $a3->id,
-            'user_id' => $this->admin()->id,
         ]);
 
         $session = AnnotationSessionTest::create([
@@ -718,24 +710,6 @@ class VolumeControllerTest extends ApiTestCase
                 unset($newVideoLabel->id);
                 unset($newVideoLabel->video_id);
                 $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
-            }
-
-            foreach ($oldVideo->annotations()->get() as $annotationIdx => $oldAnnotation) {
-                $newAnnotation = $newVideo->annotations()->get()[$annotationIdx];
-
-                $oldLabels = $oldAnnotation->labels()->get();
-                $newLabels = $newAnnotation->labels()->get();
-
-                foreach ($oldLabels as $labelIdx => $oldLabel) {
-                    $newLabel = $newLabels[$labelIdx];
-                    $this->assertTrue($newLabel->annotation_id == $newAnnotation->id);
-                    $this->assertTrue($newLabel->annotation_id == $oldAnnotation->id);
-                    unset($newLabel->id);
-                    unset($newLabel->annotation_id);
-                    unset($oldLabel->id);
-                    unset($oldLabel->annotation_id);
-                    $this->assertEquals($newLabel->getAttributes(), $oldLabel->getAttributes());
-                }
             }
         }
 
