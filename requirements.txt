@@ -6,5 +6,5 @@ scipy==1.7.2
 scikit-learn
 matplotlib==3.5.2
 PyExcelerate==0.6.7
-Pillow==9.0.*
+Pillow==9.3.*
 Shapely==1.8.1
