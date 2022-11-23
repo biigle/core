@@ -193,6 +193,8 @@ class VolumeController extends Controller
 
             if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $request->input('imageIds', []));
+                $this->copyImageAnnotation($volume, $copy, $request->input('imageIds', []));
+                $this->copyImageLabels($volume, $copy, $request->input('imageIds', []));
             } else {
                 $this->copyVideos($volume, $copy, $request->input('videoIds', []));
             }
@@ -234,6 +236,10 @@ class VolumeController extends Controller
             Image::insert($chunk->toArray());
         });
 
+    }
+
+    private function copyImageAnnotation($volume, $copy, $imageIds)
+    {
         $chunkSize = 100;
         $newImageIds = empty($imageIds) ? $copy->images()->orderBy('id')->pluck('id') : $imageIds;
         $volume->images()
@@ -278,7 +284,12 @@ class VolumeController extends Controller
                 }
                 ImageAnnotationLabel::insert($insertData);
             });
+    }
 
+    private function copyImageLabels($volume, $copy, $imageIds)
+    {
+        $images = empty($imageIds) ? $volume->images()->orderBy('id')->get() :
+            Image::whereIn('id', $imageIds)->orderBy('id')->get();
         foreach ($images as $imageIdx => $oldImage) {
             $newImage = $copy->images()->get()[$imageIdx];
             $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
@@ -290,8 +301,6 @@ class VolumeController extends Controller
                 ImageLabel::insert($chunk->toArray());
             });
         }
-
-        // annotation_assistance_requests optional
     }
 
     //TODO: add javadocs
