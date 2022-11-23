@@ -9,11 +9,12 @@ class LargoJobControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $this->doTestApiRoute('GET', 'api/v1/largo-jobs/123');
+        $uuid = '2fd5efe2-1bb8-47cf-a655-81707a367626';
+        $this->doTestApiRoute('GET', "api/v1/largo-jobs/{$uuid}");
 
         $this->beUser();
-        $this->get('api/v1/largo-jobs/123')->assertStatus(404);
-        VolumeTest::create(['attrs' => ['largo_job_id' => '123']]);
-        $this->get('api/v1/largo-jobs/123')->assertStatus(200);
+        $this->get("api/v1/largo-jobs/{$uuid}")->assertStatus(404);
+        VolumeTest::create(['attrs' => ['largo_job_id' => $uuid]]);
+        $this->get("api/v1/largo-jobs/{$uuid}")->assertStatus(200);
     }
 }
