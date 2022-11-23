@@ -551,13 +551,13 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
         $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
+        $this->assertNotNull($newImageLabel);
 
-        unset($newImageLabel->id);
-        unset($oldImageLabel->id);
-        unset($newImageLabel->image_id);
-        unset($oldImageLabel->image_id);
-
-        $this->assertEquals($oldImageLabel->getAttributes(), $newImageLabel->getAttributes());
+        $ignore = ['id', 'image_id'];
+        $this->assertEquals(
+            $oldImageLabel->makeHidden($ignore)->toArray(),
+            $newImageLabel->makeHidden($ignore)->toArray()
+        );
     }
 
     public function testCloneVolumeVideoLabels()
@@ -584,13 +584,13 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
         $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
+        $this->assertNotNull($newVideoLabel);
 
-        unset($newVideoLabel->id);
-        unset($oldVideoLabel->id);
-        unset($newVideoLabel->video_id);
-        unset($oldVideoLabel->video_id);
-
-        $this->assertEquals($oldVideoLabel->getAttributes(), $newVideoLabel->getAttributes());
+        $ignore = ['id', 'image_id'];
+        $this->assertEquals(
+            $oldVideoLabel->makeHidden($ignore)->toArray(),
+            $newVideoLabel->makeHidden($ignore)->toArray()
+        );
     }
 
     public function testCloneVolumeIfDoFiles()
