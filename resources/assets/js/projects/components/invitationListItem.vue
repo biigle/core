@@ -11,20 +11,21 @@
                 (expires in <span v-text="expiresInHoursText"></span>)
             </small>
             <span class="pull-right invitation-list-buttons">
-                <!-- <button
-                    class="btn btn-sm btn-default"
-                    title="Copy link to clipboard"
-                    @click="handleCopyLink"
-                    disabled
-                    >
-                    <i class="fa fa-link"></i>
-                </button> -->
                 <button
                     class="btn btn-sm btn-default"
                     title="Show QR code"
                     @click="handleShowQrCode"
                     >
                     <i class="fa fa-qrcode"></i>
+                </button>
+                <button
+                    class="btn btn-sm btn-default"
+                    title="Copy link to clipboard"
+                    @click="handleCopyLink"
+                    :disabled="clipboardWriteSuccess"
+                    >
+                    <span v-if="clipboardWriteSuccess">Link copied!</span>
+                    <i v-else class="fa fa-link"></i>
                 </button>
                 <button
                     class="btn btn-sm btn-default"
@@ -45,6 +46,8 @@
 </template>
 
 <script>
+import Messages from '../../core/messages/store';
+
 export default {
     props: {
         invitation: {
@@ -62,7 +65,7 @@ export default {
     },
     data() {
         return {
-            //
+            clipboardWriteSuccess: false,
         };
     },
     computed: {
@@ -113,22 +116,36 @@ export default {
     },
     methods: {
         handleCopyLink() {
-            // navigator.permissions.query({name: "clipboard-rite"}).then((result) => {
-            //     if (result.state === "granted" || result.state === "prompt") {
-            //         navigator.clipboard.writeText(this.link).then(() => {
-            //            /* clipboard successfully set */
-            //         }, () => {
-            //             /* clipboard write failed */
-            //         });
-            //     }
-            // });
+            navigator.permissions.query({name: "clipboard-write"})
+                .then((result) => {
+                    if (result.state === "granted" || result.state === "prompt") {
+                        this.writeLinkToClipboard();
+                    }
+                // If the permission could not be requested, maybe we are in Firefox
+                // and it works without permission, so try anyway.
+                }, this.writeLinkToClipboard)
+                .catch(() => Messages.danger('Could not write to clipboard.'));
+        },
+        writeLinkToClipboard() {
+            return navigator.clipboard.writeText(this.link).then(() => {
+               this.clipboardWriteSuccess = true;
+            });
         },
         handleShowQrCode() {
             this.$emit('show', this.invitation);
         },
         handleDelete() {
-            this.$emit('delete', this.invitation.id);
+            if (confirm('Do you really want to delete the invitation?')) {
+                this.$emit('delete', this.invitation.id);
+            }
         },
     },
+    watch: {
+        clipboardWriteSuccess(success) {
+            if (success) {
+                window.setTimeout(() => this.clipboardWriteSuccess = false, 3000);
+            }
+        }
+    }
 };
 </script>
