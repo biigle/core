@@ -412,13 +412,15 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
         $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
+        $this->assertNotEquals($oldAnnotation->image_id,$newAnnotation->image_id);
+        $this->assertEquals($newImage->id,$newAnnotation->image_id);
+        $this->assertNotNull($newAnnotation);
 
-        unset($oldAnnotation->id);
-        unset($newAnnotation->id);
-        unset($oldAnnotation->image_id);
-        unset($newAnnotation->image_id);
-
-        $this->assertEquals($oldAnnotation->getAttributes(), $newAnnotation->getAttributes());
+        $ignore = ['id', 'image_id'];
+        $this->assertEquals(
+            $oldAnnotation->makeHidden($ignore)->toArray(),
+            $newAnnotation->makeHidden($ignore)->toArray()
+        );
 
     }
 
@@ -447,13 +449,15 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
         $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
+        $this->assertNotEquals($oldAnnotation->video_id,$newAnnotation->video_id);
+        $this->assertEquals($newVideo->id,$newAnnotation->video_id);
+        $this->assertNotNull($newAnnotation);
 
-        unset($oldAnnotation->id);
-        unset($newAnnotation->id);
-        unset($oldAnnotation->video_id);
-        unset($newAnnotation->video_id);
-
-        $this->assertEquals($oldAnnotation->getAttributes(), $newAnnotation->getAttributes());
+        $ignore = ['id', 'video_id'];
+        $this->assertEquals(
+            $oldAnnotation->makeHidden($ignore)->toArray(),
+            $newAnnotation->makeHidden($ignore)->toArray()
+        );
 
     }
 
