@@ -196,7 +196,6 @@ class VolumeController extends Controller
             } else {
                 $this->copyVideos($volume, $copy, $request->input('videoIds', []));
             }
-            $this->copyAnnotationSessions($volume, $copy);
 
             //save ifdo-file if exist
             if ($volume->hasIfdo()) {
@@ -329,7 +328,6 @@ class VolumeController extends Controller
             });
 
         }
-
     }
 
     //TODO: add javadocs
@@ -339,31 +337,5 @@ class VolumeController extends Controller
         $iFdoFilename = $volume_id . ".yaml";
         $copyIFdoFilename = $copy_id . ".yaml";
         $disk->copy($iFdoFilename, $copyIFdoFilename);
-    }
-
-    //TODO: add javadocs
-    private function copyAnnotationSessions($volume, $copy)
-    {
-        DB::transaction(function () use ($volume, $copy) {
-            AnnotationSession::whereIn('volume_id', [$volume->id])->get()
-                ->map(function ($oldSession) use ($copy) {
-                    $original = $oldSession->getRawOriginal();
-                    $original['volume_id'] = $copy->id;
-                    unset($original['id']);
-                    return $original;
-                })->chunk(10000)->each(function ($chunk) {
-                    AnnotationSession::insert($chunk->toArray());
-                });
-
-            //copy users references
-            $newSessions = AnnotationSession::whereIn('volume_id', [$copy->id])->get();
-            $oldSessions = AnnotationSession::whereIn('volume_id', [$volume->id])->get();
-            foreach ($newSessions as $idx => $newSession) {
-                $newSession->users()->attach($oldSessions[$idx]->users()->get());
-                $newSession->push();
-            }
-
-
-        });
     }
 }

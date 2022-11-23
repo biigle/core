@@ -620,46 +620,4 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
     }
 
-    public function testCloneVolumeAnnotationSessions()
-    {
-
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh(); // Use fresh() to load even the null fields.
-        // The target project.
-        $project = ProjectTest::create();
-
-        $oldSession = AnnotationSessionTest::create([
-            'volume_id' => $volume->id,
-            'starts_at' => Carbon::today(),
-            'ends_at' => Carbon::tomorrow(),
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => false,
-        ]);
-        $oldUser = UserTest::create();
-        $oldSession->users()->attach($oldUser);
-
-        $this->beAdmin();
-        $project->addUserId($this->admin()->id, Role::adminId());
-
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
-
-        $newSession = AnnotationSession::whereIn('volume_id', [$copy->id])->first();
-        $newUser = $newSession->users()->first();
-
-        $this->assertNotEquals($oldSession->id, $newSession->id);
-        $this->assertNotEquals($oldSession->volume_id, $newSession->volume_id);
-        $this->assertEquals($oldUser->id, $newUser->id);
-
-        unset($oldSession->id);
-        unset($newSession->id);
-        unset($oldSession->volume_id);
-        unset($newSession->volume_id);
-
-        $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
-    }
-
 }
