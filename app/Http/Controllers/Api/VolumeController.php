@@ -234,26 +234,50 @@ class VolumeController extends Controller
             Image::insert($chunk->toArray());
         });
 
-        $newImages = $copy->images()->get();
-        foreach ($images as $index => $oldImage) {
-            $newImage = $newImages[$index];
-            $oldImage->annotations()->get()->map(function ($oldAnnotation) use ($newImage) {
-                // copy annotation object
-                $newAnnotation = $oldAnnotation->replicate();
-                $newAnnotation->image_id = $newImage->id;
-                $newAnnotation->save();
+        $chunkSize = 100;
+        $newImageIds = empty($imageIds) ? $copy->images()->orderBy('id')->pluck('id') : $imageIds;
+        $volume->images()
+            ->orderBy('id')
+            ->with('annotations.labels')
+            // Note the use of chunkById() instead of previously eachById().
+            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize) {
+                $insertData = [];
+                $chunkNewImageIds = [];
+                // Consider all previous image chunks when calculating the start of the index.
+                // This was previously done by eachById().
+                $baseImageIndex = ($page - 1) * $chunkSize;
+                foreach ($chunk as $index => $image) {
+                    $newImageId = $newImageIds[$baseImageIndex + $index];
+                    // Collect relevant image IDs for the annotation query below.
+                    $chunkNewImageIds[] = $newImageId;
+                    foreach ($image->annotations as $annotation) {
+                        $original = $annotation->getRawOriginal();
+                        $original['image_id'] = $newImageId;
+                        unset($original['id']);
+                        $insertData[] = $original;
+                    }
+                }
 
-                // copy label references
-                $oldAnnotation->labels()->get()->map(function ($oldLabel) use ($newAnnotation) {
-                    $original = $oldLabel->getRawOriginal();
-                    $original['annotation_id'] = $newAnnotation->id;
-                    unset($original['id']);
-                    return $original;
-                })->chunk(10000)->each(function ($chunk) {
-                    ImageAnnotationLabel::insert($chunk->toArray());
-                });
+                ImageAnnotation::insert($insertData);
+                // Get the IDs of all newly inserted annotations. Ordering is essential.
+                $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
+                    ->orderBy('id')
+                    ->pluck('id');
+
+                $insertData = [];
+                foreach ($chunk as $index => $image) {
+                    foreach ($image->annotations as $annotation) {
+                        $newAnnotationId = $newAnnotationIds->shift();
+                        foreach ($annotation->labels as $annotationLabel) {
+                            $original = $annotationLabel->getRawOriginal();
+                            $original['annotation_id'] = $newAnnotationId;
+                            unset($original['id']);
+                            $insertData[] = $original;
+                        }
+                    }
+                }
+                ImageAnnotationLabel::insert($insertData);
             });
-        }
 
         foreach ($images as $imageIdx => $oldImage) {
             $newImage = $copy->images()->get()[$imageIdx];
