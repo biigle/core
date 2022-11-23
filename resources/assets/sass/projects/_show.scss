@@ -98,3 +98,19 @@
         margin-top: 15px;
     }
 }
+
+.add-member-popover {
+    max-width: 4000px;
+}
+
+.invitation-list-item {
+    .invitation-list-buttons {
+        display: none;
+    }
+
+    &:hover {
+        .invitation-list-buttons {
+            display: inline-block;
+        }
+    }
+}

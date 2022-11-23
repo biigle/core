@@ -11,6 +11,7 @@
                 class="preview-thumbnail__buttons"
                 >
                 <button
+                    v-if="showStatsButton"
                     class="btn btn-default btn-sm"
                     @click.prevent="showStatistics"
                     :title="statisticsTitle"
@@ -29,7 +30,7 @@
             </span>
             <i
                 v-if="hasIcon"
-                v-show="!showButtons"
+                v-show="!hasButtons || !showButtons"
                 class="preview-thumbnail__icon fas fa-lg"
                 :class="iconClass"
                 ></i>
@@ -64,8 +65,6 @@ import LoaderMixin from '../../core/mixins/loader';
 import volumeStatisticsApi from '../api/volumeStatistics';
 import {handleErrorResponse} from '../../core/messages/store';
 
-
-
 export default {
     mixins: [LoaderMixin],
     props: {
@@ -91,6 +90,10 @@ export default {
         },
         icon: {
             type: String,
+        },
+        showStatsButton: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -125,6 +128,9 @@ export default {
         },
         showButtons() {
             return this.hovered || this.loading;
+        },
+        hasButtons() {
+            return this.removable || this.showStatsButton;
         },
     },
     methods: {

@@ -24,10 +24,6 @@ export default {
             volumeNamesVideo: null,
             annotationLabelsVideo: null,
             sourceTargetLabelsVideo: null,
-            showTimeline: true,
-            showSankey: true,
-            showPieLabel: true,
-            showNetMap: true,
             container: "project-statistics",
             showImageVolumes: false,
             showVideoVolumes: false,
@@ -166,6 +162,18 @@ export default {
 
             return result;
         },
+        showTimeline() {
+            return this.computedData.annotationTimeSeries.length > 0;
+        },
+        showSankey() {
+            return this.computedData.volumeAnnotations.length > 0;
+        },
+        showPieLabel() {
+            return this.computedData.annotationLabels.length > 0;
+        },
+        showNetMap() {
+            return this.computedData.annotationLabels.length > 0 && Object.keys(this.computedData.sourceTargetLabels).length > 0;
+        },
     },
     methods: {
         toggleImageVolumes() {
@@ -175,24 +183,6 @@ export default {
         toggleVideoVolumes() {
             this.showImageVolumes = false;
             this.showVideoVolumes = !this.showVideoVolumes;
-        },
-        checkForEmptyVals() {
-            // check for each statistics-vis if corresponding arrays/objects are empty
-            if (this.annotationTimeSeries.length === 0) {
-                this.showTimeline = false;
-            }
-
-            if (this.volumeAnnotations.length === 0) {
-                this.showSankey = false;
-            }
-
-            if (this.annotationLabels.length === 0) {
-                this.showPieLabel = false;
-            }
-
-            if (Object.keys(this.sourceTargetLabels).length === 0 && this.annotationLabels.length === 0) {
-                this.showNetMap = false;
-            }
         },
     },
     created() {
@@ -213,8 +203,6 @@ export default {
         this.annotationLabelsVideo = biigle.$require('projects.annotationLabelsVideo');
         this.sourceTargetLabelsVideo = biigle.$require('projects.sourceTargetLabelsVideo');
         this.volumes = biigle.$require('projects.volumes');
-
-        this.checkForEmptyVals();
     },
 };
 </script>

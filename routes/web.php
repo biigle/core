@@ -294,3 +294,8 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
     });
 
 });
+
+$router->get('project-invitations/{uuid}', [
+    'as'   => 'project-invitation',
+    'uses' => 'Views\Projects\ProjectInvitationController@show',
+]);

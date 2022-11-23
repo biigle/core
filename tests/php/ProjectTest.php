@@ -5,6 +5,7 @@ namespace Biigle\Tests;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\ProjectInvitation;
 use Biigle\Role;
 use Biigle\Video;
 use Illuminate\Database\QueryException;
@@ -335,5 +336,12 @@ class ProjectTest extends ModelTestCase
         $this->assertFalse(Project::accessibleBy($user)->exists());
         $this->model->addUserId($user->id, Role::guestId());
         $this->assertTrue(Project::accessibleBy($user)->exists());
+    }
+
+    public function testInvitations()
+    {
+        $this->assertFalse($this->model->invitations()->exists());
+        ProjectInvitation::factory(['project_id' => $this->model->id])->create();
+        $this->assertTrue($this->model->invitations()->exists());
     }
 }

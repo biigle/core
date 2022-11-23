@@ -4,6 +4,7 @@ import Events from '../core/events';
 import LabelTreesApi from '../core/api/labelTree';
 import LoaderMixin from '../core/mixins/loader';
 import MemberList from '../projects/components/memberList';
+import Popover from 'uiv/dist/Popover';
 import {handleErrorResponse} from '../core/messages/store';
 
 /**
@@ -18,11 +19,13 @@ export default {
             roles: [],
             defaultRole: null,
             userId: null,
+            memberPopoverOpen: false,
         };
     },
     components: {
         memberList: MemberList,
         addMemberForm: AddMemberForm,
+        popover: Popover,
     },
     computed: {
         hasMembers() {
@@ -31,6 +34,7 @@ export default {
     },
     methods: {
         attachMember(user) {
+            this.memberPopoverOpen = false;
             this.startLoading();
             LabelTreesApi.addUser({id: this.labelTree.id}, {
                     id: user.id,
