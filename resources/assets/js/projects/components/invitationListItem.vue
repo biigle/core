@@ -7,8 +7,8 @@
             <small v-if="expired">
                 (expired)
             </small>
-            <small v-else>
-                (valid for <span :title="expiresDateTitle" v-text="invitation.expires_at_for_humans"></span>)
+            <small v-else :title="expiresDateTitle">
+                (expires in <span v-text="expiresInHoursText"></span>)
             </small>
             <span class="pull-right invitation-list-buttons">
                 <!-- <button
@@ -89,10 +89,26 @@ export default {
         expiresDateTitle() {
             let date = new Date(this.invitation.expires_at);
 
-            return `Expires on ${date.toDateString()}`;
+            return `Expires on ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
         },
         link() {
             return `${this.baseUrl}/${this.invitation.uuid}`;
+        },
+        expiresInHours() {
+            let expiresDate = new Date(this.invitation.expires_at);
+            let now = new Date();
+
+            // Subtraction returns the difference in ms. We want h.
+            return (expiresDate - now) / 3600000;
+        },
+        expiresInHoursText() {
+            if (this.expiresInHours < 1) {
+                let minutes = Math.round(this.expiresInHours * 60);
+
+                return `${minutes} minutes`;
+            }
+
+            return `${Math.round(this.expiresInHours)} hours`;
         },
     },
     methods: {
