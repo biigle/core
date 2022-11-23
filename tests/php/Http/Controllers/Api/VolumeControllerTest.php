@@ -484,14 +484,14 @@ class VolumeControllerTest extends ApiTestCase
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
+        $this->assertEquals($newAnnotation->id,$newAnnotationLabel->annotation_id);
+        $this->assertNotNull($oldAnnotationLabel);
 
-        unset($oldAnnotationLabel->id);
-        unset($newAnnotationLabel->id);
-        unset($oldAnnotationLabel->annotation_id);
-        unset($newAnnotationLabel->annotation_id);
-
-        $this->assertEquals($oldAnnotationLabel->getAttributes(), $newAnnotationLabel->getAttributes());
+        $ignore = ['id', 'annotation_id'];
+        $this->assertEquals(
+            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
+            $newAnnotationLabel->makeHidden($ignore)->toArray()
+        );
     }
 
     public function testCloneVolumeVideoAnnotationLabels()
@@ -519,13 +519,13 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
         $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
+        $this->assertNotNull($oldAnnotationLabel);
 
-        unset($oldAnnotationLabel->id);
-        unset($newAnnotationLabel->id);
-        unset($oldAnnotationLabel->annotation_id);
-        unset($newAnnotationLabel->annotation_id);
-
-        $this->assertEquals($oldAnnotationLabel->getAttributes(), $newAnnotationLabel->getAttributes());
+        $ignore = ['id', 'annotation_id'];
+        $this->assertEquals(
+            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
+            $newAnnotationLabel->makeHidden($ignore)->toArray()
+        );
     }
 
     public function testCloneVolumeImageLabels()
