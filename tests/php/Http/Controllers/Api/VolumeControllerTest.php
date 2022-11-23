@@ -338,14 +338,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($newImage->uuid, $oldImage->uuid);
         $this->assertEquals($newImage->volume_id, $copy->id);
 
-        unset($newImage->id);
-        unset($oldImage->id);
-        unset($newImage->volume_id);
-        unset($oldImage->volume_id);
-        unset($oldImage->uuid);
-        unset($newImage->uuid);
-
-        $this->assertEquals($oldImage->getAttributes(), $newImage->getAttributes());
+        $this->assertNotNull($newImage);
+        $ignore = ['id', 'volume_id', 'uuid'];
+        $this->assertEquals(
+            $oldImage->makeHidden($ignore)->toArray(),
+            $newImage->makeHidden($ignore)->toArray()
+        );
 
     }
 
@@ -381,14 +379,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($newVideo->uuid, $oldVideo->uuid);
         $this->assertEquals($newVideo->volume_id, $copy->id);
 
-        unset($newVideo->id);
-        unset($oldVideo->id);
-        unset($newVideo->volume_id);
-        unset($oldVideo->volume_id);
-        unset($oldVideo->uuid);
-        unset($newVideo->uuid);
-
-        $this->assertEquals($oldVideo->getAttributes(), $newVideo->getAttributes());
+        $this->assertNotNull($newVideo);
+        $ignore = ['id', 'volume_id', 'uuid'];
+        $this->assertEquals(
+            $oldVideo->makeHidden($ignore)->toArray(),
+            $newVideo->makeHidden($ignore)->toArray()
+        );
 
     }
 
@@ -620,7 +616,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
     }
 
-    public function testCloneVolumeAnnotationSessions(){
+    public function testCloneVolumeAnnotationSessions()
+    {
 
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
@@ -649,16 +646,16 @@ class VolumeControllerTest extends ApiTestCase
         $newSession = AnnotationSession::whereIn('volume_id', [$copy->id])->first();
         $newUser = $newSession->users()->first();
 
-        $this->assertNotEquals($oldSession->id,$newSession->id);
-        $this->assertNotEquals($oldSession->volume_id,$newSession->volume_id);
-        $this->assertEquals($oldUser->id,$newUser->id);
+        $this->assertNotEquals($oldSession->id, $newSession->id);
+        $this->assertNotEquals($oldSession->volume_id, $newSession->volume_id);
+        $this->assertEquals($oldUser->id, $newUser->id);
 
         unset($oldSession->id);
         unset($newSession->id);
         unset($oldSession->volume_id);
         unset($newSession->volume_id);
 
-        $this->assertEquals($oldSession->getAttributes(),$newSession->getAttributes());
+        $this->assertEquals($oldSession->getAttributes(), $newSession->getAttributes());
     }
 
 }
