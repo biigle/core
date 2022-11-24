@@ -288,13 +288,11 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($volume->created_at, $copy->created_at);
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
 
-        $this->assertEquals($volume->name, $copy->name);
-        $this->assertEquals($volume->creator()->first()->id, $copy->creator()->first()->id);
-        $this->assertEquals($volume->mediaType()->get(), $copy->mediaType()->get());
-        $this->assertEquals($copy->projects()->count(), $volume->projects()->count());
-        $this->assertEquals($copy->projects()->first()->id, $project->id);
-        $this->assertEquals($volume->url, $copy->url);
-        $this->assertEquals($volume->handle, $copy->handle);
+        $ignore = ['id','created_at','updated_at'];
+        $this->assertEquals(
+            $volume->makeHidden($ignore)->toArray(),
+            $copy->makeHidden($ignore)->toArray()
+        );
     }
 
     public function testCloneVolumeImages()
