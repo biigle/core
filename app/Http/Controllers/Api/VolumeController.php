@@ -241,7 +241,7 @@ class VolumeController extends Controller
     private function copyImageAnnotation($volume, $copy, $imageIds)
     {
         $chunkSize = 100;
-        $newImageIds = empty($imageIds) ? $copy->images()->orderBy('id')->pluck('id') : $imageIds;
+        $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->orderBy('id')
             ->with('annotations.labels')
