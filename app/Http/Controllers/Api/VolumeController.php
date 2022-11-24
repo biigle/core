@@ -240,6 +240,7 @@ class VolumeController extends Controller
 
     private function copyImageAnnotation($volume, $copy, $imageIds)
     {
+        //TODO: use only given imageIds
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
@@ -288,13 +289,15 @@ class VolumeController extends Controller
 
     private function copyImageLabels($volume, $copy, $imageIds)
     {
-        $images = empty($imageIds) ? $volume->images()->orderBy('id')->get() :
-            Image::whereIn('id', $imageIds)->orderBy('id')->get();
-        foreach ($images as $imageIdx => $oldImage) {
-            $newImage = $copy->images()->get()[$imageIdx];
-            $oldImage->labels()->get()->map(function ($oldLabel) use ($newImage) {
+        $oldImages = empty($imageIds) ? $volume->images()->orderBy('id')->with('labels')->get() :
+            Image::whereIn('id', $imageIds)->orderBy('id')->with('labels')->get();
+        $newImageIds = $copy->images()->orderBy('id')->get()->pluck('id');
+
+        foreach ($oldImages as $imageIdx => $oldImage) {
+            $newImageId = $newImageIds[$imageIdx];
+            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
                 $origin = $oldLabel->getRawOriginal();
-                $origin['image_id'] = $newImage->id;
+                $origin['image_id'] = $newImageId;
                 unset($origin['id']);
                 return $origin;
             })->chunk(10000)->each(function ($chunk) {
