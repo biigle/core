@@ -572,7 +572,8 @@ class VolumeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldVideoLabel = VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        $oldVideoLabel = $oldVideo->labels()->first();
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
@@ -587,7 +588,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
         $this->assertNotNull($newVideoLabel);
 
-        $ignore = ['id', 'image_id'];
+        $ignore = ['id', 'video_id'];
         $this->assertEquals(
             $oldVideoLabel->makeHidden($ignore)->toArray(),
             $newVideoLabel->makeHidden($ignore)->toArray()
