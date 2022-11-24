@@ -283,6 +283,7 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertStatus(302);
         $copy = $response->getSession()->get('copy');
 
+        $this->assertNotNull($copy);
         $this->assertNotEquals($volume->id, $copy->id);
         $this->assertNotEquals($volume->created_at, $copy->created_at);
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
@@ -321,7 +322,6 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
         $newImage = $copy->images()->first();
 
-        $this->assertTrue($copy->images()->exists());
         $this->assertEquals($volume->images()->count(), $copy->images()->count());
         $this->assertNotEquals($newImage->id, $oldImage->id);
         $this->assertNotEquals($newImage->uuid, $oldImage->uuid);
@@ -362,7 +362,6 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
         $newVideo = $copy->videos()->first();
 
-        $this->assertTrue($copy->videos()->exists());
         $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
         $this->assertNotEquals($newVideo->id, $oldVideo->id);
         $this->assertNotEquals($newVideo->uuid, $oldVideo->uuid);
