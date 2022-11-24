@@ -34,17 +34,6 @@ use function PHPUnit\Framework\assertTrue;
 
 class VolumeControllerTest extends ApiTestCase
 {
-    private $volume;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->volume = VolumeTest::create();
-        $this->project()->volumes()->attach($this->volume);
-        Storage::fake('test');
-        config(['volumes.editor_storage_disks' => ['test']]);
-    }
-
 
     public function testIndex()
     {
