@@ -538,11 +538,12 @@ class VolumeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
 
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldImageLabel = ImageLabelTest::create(['image_id' => $oldImage->id]);
+        ImageLabelTest::create(['image_id' => $oldImage->id]);
+        $oldImageLabel = $oldImage->labels()->first();
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
-
+//        print_r([$oldImage->id,$oldImage2->id]);
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
         $copy = $response->getSession()->get('copy');
