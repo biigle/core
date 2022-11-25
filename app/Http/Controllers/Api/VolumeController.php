@@ -16,6 +16,7 @@ use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
@@ -27,7 +28,7 @@ class VolumeController extends Controller
      * Shows all volumes the user has access to.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @api {get} volumes Get accessible volumes
      * @apiGroup Volumes
      * @apiName IndexVolumes
@@ -120,7 +121,7 @@ class VolumeController extends Controller
      * Updates the attributes of the specified volume.
      *
      * @param UpdateVolume $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @api {put} volumes/:id Update a volume
      * @apiGroup Volumes
      * @apiName UpdateVolumes
@@ -157,7 +158,35 @@ class VolumeController extends Controller
         }
     }
 
-    //TODO: add javadocs
+    /**
+     * Clones volume to destination project.
+     *
+     * @param int $volumeId
+     * @param int $destProjectId
+     * @param Request $request
+     * @return Response
+     * @api {post} volumes/:id/clone-to/:project_id Clones a volume
+     * @apiGroup Volumes
+     * @apiName CloneVolume
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The volume ID.
+     * @apiParam {Number} project_id The target project ID.
+     * @apiParam (image IDs that can be used for cloning) {Array} imageIds selected subset of image IDs from original volume. Only images from this subset will be cloned.
+     * @apiParam (video IDs that can be used for cloning) {Array} videoIds selected subset of video IDs from original volume. Only videos from this subset will be cloned.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     * "name": "Kulas Group",
+     * "media_type_id": 3,
+     * "creator_id": 5,
+     * "url": "test://files",
+     * "handle": null,
+     * "created_at": "2022-11-25T13:10:12.000000Z",
+     * "updated_at": "2022-11-25T13:10:12.000000Z",
+     * "id": 4
+     * }
+     **/
     public function clone($volumeId, $destProjectId, Request $request)
     {
         return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
@@ -198,13 +227,19 @@ class VolumeController extends Controller
 
     }
 
-    //TODO: add javadocs
-    private function copyImages($volume, $copy, $imageIds)
+    /**
+     * Copies (selected) images from given volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedImageIds
+     **/
+    private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
         $images = $volume->images()
-            ->when(!empty($images), function ($query) use ($imageIds) {
-                $query->whereIn('id', $imageIds);
+            ->when(!empty($images), function ($query) use ($selectedImageIds) {
+                $query->whereIn('id', $selectedImageIds);
             })->get();
 
         $images->map(function ($image) use ($copy) {
@@ -219,9 +254,16 @@ class VolumeController extends Controller
 
     }
 
-    private function copyImageAnnotation($volume, $copy, $imageIds)
+    /**
+     * Copies (selected) image annotation and annotation labels from volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedImageIds
+     **/
+    private function copyImageAnnotation($volume, $copy, $selectedImageIds)
     {
-        //TODO: use only given imageIds
+        //TODO: use selected imageIds
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
@@ -268,10 +310,17 @@ class VolumeController extends Controller
             });
     }
 
-    private function copyImageLabels($volume, $copy, $imageIds)
+    /**
+     * Copies (selected) image labels from given volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedImageIds
+     **/
+    private function copyImageLabels($volume, $copy, $selectedImageIds)
     {
-        $oldImages = empty($imageIds) ? $volume->images()->orderBy('id')->with('labels')->get() :
-            Image::whereIn('id', $imageIds)->orderBy('id')->with('labels')->get();
+        $oldImages = empty($selectedImageIds) ? $volume->images()->orderBy('id')->with('labels')->get() :
+            Image::whereIn('id', $selectedImageIds)->orderBy('id')->with('labels')->get();
         $newImageIds = $copy->images()->orderBy('id')->get()->pluck('id');
 
         foreach ($oldImages as $imageIdx => $oldImage) {
@@ -287,13 +336,19 @@ class VolumeController extends Controller
         }
     }
 
-    //TODO: add javadocs
-    private function copyVideos($volume, $copy, $videoIds)
+    /**
+     * Copies (selected) videos from given volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedVideoIds
+     **/
+    private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
         $videos = $volume->videos()
-            ->when(!empty($videos), function ($query) use ($videoIds) {
-                $query->whereIn('id', $videoIds);
+            ->when(!empty($videos), function ($query) use ($selectedVideoIds) {
+                $query->whereIn('id', $selectedVideoIds);
             })->get();
 
         $videos->map(function ($video) use ($copy) {
@@ -308,9 +363,16 @@ class VolumeController extends Controller
 
     }
 
-    private function copyVideoAnnotation($volume, $copy, $videoIds)
+    /**
+     * Copies (selected) video annotations and annotation labels from given volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedVideoIds
+     **/
+    private function copyVideoAnnotation($volume, $copy, $selectedVideoIds)
     {
-        //TODO: use only given videoIds
+        //TODO: use selected videoIds
         $chunkSize = 100;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
@@ -357,10 +419,17 @@ class VolumeController extends Controller
             });
     }
 
-    private function copyVideoLabels($volume, $copy, $videoIds)
+    /**
+     * Copies (selected) video labels from volume to volume copy.
+     *
+     * @param Volume $volume
+     * @param Volume $copy
+     * @param int[] $selectedVideoIds
+     **/
+    private function copyVideoLabels($volume, $copy, $selectedVideoIds)
     {
-        $oldVideos = empty($videoIds) ? $volume->videos()->orderBy('id')->with('labels')->get() :
-            Video::whereIn('id', $videoIds)->orderBy('id')->with('labels')->get();
+        $oldVideos = empty($selectedVideoIds) ? $volume->videos()->orderBy('id')->with('labels')->get() :
+            Video::whereIn('id', $selectedVideoIds)->orderBy('id')->with('labels')->get();
         $newVideoIds = $copy->videos()->orderBy('id')->get()->pluck('id');
 
         foreach ($oldVideos as $videoIdx => $oldVideo) {
@@ -376,7 +445,12 @@ class VolumeController extends Controller
         }
     }
 
-    //TODO: add javadocs
+    /**
+     * Copies ifDo-Files from given volume to volume copy.
+     *
+     * @param int $volume_id
+     * @param int $copy_id
+     **/
     private function copyIfdoFile($volume_id, $copy_id)
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
