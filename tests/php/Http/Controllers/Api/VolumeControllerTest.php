@@ -272,14 +272,14 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
 
         $this->assertNotNull($copy);
-        $this->assertNotEquals($volume->id, $copy->id);
-        $this->assertNotEquals($volume->created_at, $copy->created_at);
-        $this->assertNotEquals($volume->updated_at, $copy->updated_at);
+        $this->assertNotEquals($copy->id, $volume->id);
+        $this->assertNotEquals($copy->created_at, $volume->created_at);
+        $this->assertNotEquals($copy->updated_at, $volume->updated_at);
 
-        $ignore = ['id','created_at','updated_at'];
+        $ignore = ['id', 'created_at', 'updated_at'];
         $this->assertEquals(
-            $volume->makeHidden($ignore)->toArray(),
-            $copy->makeHidden($ignore)->toArray()
+            $copy->makeHidden($ignore)->toArray(),
+            $volume->makeHidden($ignore)->toArray()
         );
     }
 
@@ -308,16 +308,16 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
         $newImage = $copy->images()->first();
 
-        $this->assertEquals($volume->images()->count(), $copy->images()->count());
+        $this->assertNotNull($newImage);
+        $this->assertEquals($copy->images()->count(), $volume->images()->count());
         $this->assertNotEquals($newImage->id, $oldImage->id);
         $this->assertNotEquals($newImage->uuid, $oldImage->uuid);
         $this->assertEquals($newImage->volume_id, $copy->id);
 
-        $this->assertNotNull($newImage);
         $ignore = ['id', 'volume_id', 'uuid'];
         $this->assertEquals(
-            $oldImage->makeHidden($ignore)->toArray(),
-            $newImage->makeHidden($ignore)->toArray()
+            $newImage->makeHidden($ignore)->toArray(),
+            $oldImage->makeHidden($ignore)->toArray()
         );
 
     }
@@ -348,16 +348,16 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $response->getSession()->get('copy');
         $newVideo = $copy->videos()->first();
 
-        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
+        $this->assertNotNull($newVideo);
+        $this->assertEquals($copy->videos()->count(), $volume->videos()->count());
         $this->assertNotEquals($newVideo->id, $oldVideo->id);
         $this->assertNotEquals($newVideo->uuid, $oldVideo->uuid);
         $this->assertEquals($newVideo->volume_id, $copy->id);
 
-        $this->assertNotNull($newVideo);
         $ignore = ['id', 'volume_id', 'uuid'];
         $this->assertEquals(
-            $oldVideo->makeHidden($ignore)->toArray(),
-            $newVideo->makeHidden($ignore)->toArray()
+            $newVideo->makeHidden($ignore)->toArray(),
+            $oldVideo->makeHidden($ignore)->toArray()
         );
 
     }
@@ -383,17 +383,17 @@ class VolumeControllerTest extends ApiTestCase
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();
 
-        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
-        $this->assertNotEquals($oldAnnotation->image_id,$newAnnotation->image_id);
-        $this->assertEquals($newImage->id,$newAnnotation->image_id);
         $this->assertNotNull($newAnnotation);
+        $this->assertNotEquals($newAnnotation->id, $oldAnnotation->id);
+        $this->assertEquals($newAnnotation->updated_at, $oldAnnotation->updated_at);
+        $this->assertEquals($newAnnotation->created_at, $oldAnnotation->created_at);
+        $this->assertNotEquals($newAnnotation->image_id, $oldAnnotation->image_id);
+        $this->assertEquals($newImage->id, $newAnnotation->image_id);
 
         $ignore = ['id', 'image_id'];
         $this->assertEquals(
-            $oldAnnotation->makeHidden($ignore)->toArray(),
-            $newAnnotation->makeHidden($ignore)->toArray()
+            $newAnnotation->makeHidden($ignore)->toArray(),
+            $oldAnnotation->makeHidden($ignore)->toArray()
         );
 
     }
@@ -420,12 +420,12 @@ class VolumeControllerTest extends ApiTestCase
         $newVideo = $copy->videos()->first();
         $newAnnotation = $newVideo->annotations()->first();
 
-        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
-        $this->assertNotEquals($oldAnnotation->video_id,$newAnnotation->video_id);
-        $this->assertEquals($newVideo->id,$newAnnotation->video_id);
         $this->assertNotNull($newAnnotation);
+        $this->assertNotEquals($newAnnotation->id, $oldAnnotation->id);
+        $this->assertEquals($newAnnotation->updated_at, $oldAnnotation->updated_at);
+        $this->assertEquals($newAnnotation->created_at, $oldAnnotation->created_at);
+        $this->assertNotEquals($newAnnotation->video_id, $oldAnnotation->video_id);
+        $this->assertEquals($newAnnotation->video_id, $newVideo->id);
 
         $ignore = ['id', 'video_id'];
         $this->assertEquals(
@@ -457,14 +457,14 @@ class VolumeControllerTest extends ApiTestCase
         $newAnnotation = $copy->images()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
-        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotation->id,$newAnnotationLabel->annotation_id);
-        $this->assertNotNull($oldAnnotationLabel);
+        $this->assertNotNull($newAnnotationLabel);
+        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
 
         $ignore = ['id', 'annotation_id'];
         $this->assertEquals(
-            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
-            $newAnnotationLabel->makeHidden($ignore)->toArray()
+            $newAnnotationLabel->makeHidden($ignore)->toArray(),
+            $oldAnnotationLabel->makeHidden($ignore)->toArray()
         );
     }
 
@@ -491,14 +491,15 @@ class VolumeControllerTest extends ApiTestCase
         $newAnnotation = $copy->videos()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
-        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
+        $this->assertNotNull($newAnnotationLabel);
+        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
         $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
-        $this->assertNotNull($oldAnnotationLabel);
+
 
         $ignore = ['id', 'annotation_id'];
         $this->assertEquals(
-            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
-            $newAnnotationLabel->makeHidden($ignore)->toArray()
+            $newAnnotationLabel->makeHidden($ignore)->toArray(),
+            $oldAnnotationLabel->makeHidden($ignore)->toArray()
         );
     }
 
@@ -517,16 +518,17 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
-//        print_r([$oldImage->id,$oldImage2->id]);
+
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
         $copy = $response->getSession()->get('copy');
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->first();
 
-        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
-        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
         $this->assertNotNull($newImageLabel);
+        $this->assertNotEquals($newImageLabel->id, $oldImageLabel->id);
+        $this->assertNotEquals($newImageLabel->image_id, $oldImageLabel->image_id);
+
 
         $ignore = ['id', 'image_id'];
         $this->assertEquals(
@@ -558,14 +560,14 @@ class VolumeControllerTest extends ApiTestCase
         $newVideo = $copy->videos()->first();
         $newVideoLabel = $newVideo->labels()->first();
 
-        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
-        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
         $this->assertNotNull($newVideoLabel);
+        $this->assertNotEquals($newVideoLabel->id, $oldVideoLabel->id);
+        $this->assertNotEquals($newVideoLabel->video_id, $oldVideoLabel->video_id);
 
         $ignore = ['id', 'video_id'];
         $this->assertEquals(
-            $oldVideoLabel->makeHidden($ignore)->toArray(),
-            $newVideoLabel->makeHidden($ignore)->toArray()
+            $newVideoLabel->makeHidden($ignore)->toArray(),
+            $oldVideoLabel->makeHidden($ignore)->toArray()
         );
     }
 
@@ -592,6 +594,7 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertStatus(302);
         $copy = $response->getSession()->get('copy');
 
+        $this->assertNotNull($copy->getIfdo());
         $this->assertTrue($copy->hasIfdo());
         $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
     }
