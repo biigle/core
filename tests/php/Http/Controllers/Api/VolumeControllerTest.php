@@ -97,19 +97,19 @@ class VolumeControllerTest extends ApiTestCase
         $this->doesntExpectJobs(ProcessNewVolumeFiles::class);
 
         $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
-        $this->doTestApiRoute('PUT', '/api/v1/volumes/' . $id);
+        $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
-        $response = $this->put('/api/v1/volumes/' . $id);
+        $response = $this->put('/api/v1/volumes/'.$id);
         $response->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->put('/api/v1/volumes/' . $id);
+        $response = $this->put('/api/v1/volumes/'.$id);
         $response->assertStatus(403);
 
         $this->beAdmin();
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
-        $response = $this->json('PUT', '/api/v1/volumes/' . $id, [
+        $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
             'media_type_id' => MediaType::videoId(),
         ]);
@@ -166,19 +166,19 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->expectsJobs(ProcessNewVolumeFiles::class);
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id, [
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'admin-test://volumes',
         ])->assertStatus(422);
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id, [
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'editor-test://volumes',
         ])->assertStatus(200);
         $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id, [
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'editor-test://volumes',
         ])->assertStatus(422);
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id, [
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'admin-test://volumes',
         ])->assertStatus(200);
         $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
@@ -187,7 +187,7 @@ class VolumeControllerTest extends ApiTestCase
     public function testUpdateUrlProviderDenylist()
     {
         $this->beAdmin();
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id, [
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'https://dropbox.com',
         ])->assertStatus(422);
     }
@@ -198,7 +198,7 @@ class VolumeControllerTest extends ApiTestCase
         // A request that changes no attributes performed by a global admin triggers
         // a reread.
         $this->expectsJobs(ProcessNewVolumeFiles::class);
-        $this->json('PUT', '/api/v1/volumes/' . $this->volume()->id)
+        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id)
             ->assertStatus(200);
     }
 
@@ -223,14 +223,14 @@ class VolumeControllerTest extends ApiTestCase
     public function testUpdateRedirect()
     {
         $this->beAdmin();
-        $response = $this->put('/api/v1/volumes/' . $this->volume()->id, [
+        $response = $this->put('/api/v1/volumes/'.$this->volume()->id, [
             '_redirect' => 'settings/profile',
         ]);
         $response->assertRedirect('settings/profile');
         $response->assertSessionHas('saved', false);
 
         $this->get('/');
-        $response = $this->put('/api/v1/volumes/' . $this->volume()->id, [
+        $response = $this->put('/api/v1/volumes/'.$this->volume()->id, [
             'name' => 'abc',
         ]);
         $response->assertRedirect('/');
@@ -590,7 +590,7 @@ class VolumeControllerTest extends ApiTestCase
         // Use fresh() to load even the null fields.
 
         Storage::fake('ifdos');
-        $csv = __DIR__ . "/../../../../files/image-ifdo.yaml";
+        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
         $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
         $volume->saveIfdo($file);
 

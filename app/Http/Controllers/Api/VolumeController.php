@@ -401,8 +401,8 @@ class VolumeController extends Controller
     private function copyIfdoFile($volume_id, $copy_id)
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volume_id . ".yaml";
-        $copyIFdoFilename = $copy_id . ".yaml";
+        $iFdoFilename = $volume_id.".yaml";
+        $copyIFdoFilename = $copy_id.".yaml";
         $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 }
