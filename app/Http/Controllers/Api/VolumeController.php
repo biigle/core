@@ -2,17 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Annotation;
-use Biigle\AnnotationSession;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
-use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
-use Biigle\Modules\ColorSort\Sequence;
 use Biigle\Project;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
@@ -20,26 +15,10 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Uuid;
-use function Amp\Iterator\toArray;
-use function PHPUnit\Framework\assertTrue;
 
 class VolumeController extends Controller
 {

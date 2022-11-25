@@ -3,34 +3,22 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\AnnotationSession;
-use Biigle\Image;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
-use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\VideoAnnotationLabel;
-use Biigle\VideoLabel;
-use Biigle\Volume;
 use Carbon\Carbon;
-use http\Env\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Arr;
-use function PHPUnit\Framework\assertTrue;
 
 class VolumeControllerTest extends ApiTestCase
 {
