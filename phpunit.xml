@@ -9,9 +9,6 @@
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
-    <extensions>
-        <extension class="Biigle\Tests\Bootstrap"/>
-    </extensions>
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./app</directory>
@@ -33,7 +30,7 @@
         <env name="LOG_CHANNEL" value="errorlog"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <env name="MAIL_MAILER" value="log"/>
+        <env name="MAIL_MAILER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
@@ -42,10 +39,5 @@
         <env name="DB_HOST" value="database_testing"/>
         <env name="DB_USERNAME" value="biigle"/>
         <env name="DB_PASSWORD" value="secret"/>
-        <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config.phpunit.php"/>
-        <env name="APP_SERVICES_CACHE" value="bootstrap/cache/services.phpunit.php"/>
-        <env name="APP_PACKAGES_CACHE" value="bootstrap/cache/packages.phpunit.php"/>
-        <env name="APP_ROUTES_CACHE" value="bootstrap/cache/routes.phpunit.php"/>
-        <env name="APP_EVENTS_CACHE" value="bootstrap/cache/events.phpunit.php"/>
     </php>
 </phpunit>
