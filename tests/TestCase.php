@@ -10,6 +10,8 @@ class TestCase extends BaseTestCase
 {
     use CreatesApplication, MockeryPHPUnitIntegration, RefreshDatabase;
 
+    public static $cachedPdo;
+
     protected $baseUrl = 'http://localhost';
 
     /**
@@ -32,5 +34,15 @@ class TestCase extends BaseTestCase
     public function tearDown(): void
     {
         parent::tearDown();
+    }
+
+    protected function beforeRefreshingDatabase()
+    {
+        // Cache PDO for faster tests.
+        if (static::$cachedPdo) {
+            DB::setPdo(static::$cachedPdo);
+        } else {
+            static::$cachedPdo = DB::getPdo();
+        }
     }
 }
