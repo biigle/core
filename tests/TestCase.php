@@ -4,12 +4,11 @@ use Biigle\Tests\CreatesApplication;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Queue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TestCase extends BaseTestCase
 {
-    use CreatesApplication, MockeryPHPUnitIntegration;
-
-    protected static $pdo;
+    use CreatesApplication, MockeryPHPUnitIntegration, RefreshDatabase;
 
     protected $baseUrl = 'http://localhost';
 
@@ -19,16 +18,6 @@ class TestCase extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        // Reuse connection, else too many tests will reach the connection limit.
-        if (!static::$pdo) {
-            static::$pdo = DB::getPdo();
-        } else {
-            DB::setPdo(static::$pdo);
-        }
-
-        $database = $this->app->make('db');
-        $database->connection(null)->beginTransaction();
 
         // Don't execute queued jobs
         Queue::fake();
@@ -42,8 +31,6 @@ class TestCase extends BaseTestCase
 
     public function tearDown(): void
     {
-        $database = $this->app->make('db');
-        $database->connection(null)->rollBack();
         parent::tearDown();
     }
 }

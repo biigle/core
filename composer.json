@@ -66,8 +66,7 @@
             "tests/TestCase.php",
             "tests/ApiTestCase.php",
             "tests/ModelTestCase.php",
-            "tests/CreatesApplication.php",
-            "tests/Bootstrap.php"
+            "tests/CreatesApplication.php"
         ]
     },
     "extra": {
