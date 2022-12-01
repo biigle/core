@@ -14,7 +14,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -196,7 +195,6 @@ class VolumeController extends Controller
             $this->authorize('update', $volume);
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
-            $copy->created_at = Carbon::now();
             $copy->save();
 
             if ($volume->isImageVolume()) {
