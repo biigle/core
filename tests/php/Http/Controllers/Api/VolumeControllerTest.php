@@ -225,7 +225,7 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertSessionHas('saved', true);
     }
 
-    public function testCloneVolumeApi()
+    public function testCloneVolume()
     {
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
@@ -250,16 +250,6 @@ class VolumeControllerTest extends ApiTestCase
         Cache::flush();
         $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             ->assertStatus(200);
-
-    }
-
-    public function testCloneVolume()
-    {
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-
-        ])->fresh(); // Use fresh() to load even the null fields.
 
         // The target project.
         $project = ProjectTest::create();
