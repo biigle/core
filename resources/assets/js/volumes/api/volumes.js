@@ -91,6 +91,6 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
     },
     clone: {
         method: 'POST',
-        url: 'api/v1/volumes{/id}/project{/project_id}'
+        url: 'api/v1/volumes{/id}/clone-to{/project_id}'
     }
 });
