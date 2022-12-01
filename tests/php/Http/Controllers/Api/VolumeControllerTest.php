@@ -269,7 +269,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
 
         $this->assertNotNull($copy);
         $this->assertNotEquals($copy->id, $volume->id);
@@ -305,7 +305,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
 
         $this->assertNotNull($newImage);
@@ -345,7 +345,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
 
         $this->assertNotNull($newVideo);
@@ -379,7 +379,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();
 
@@ -416,7 +416,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newAnnotation = $newVideo->annotations()->first();
 
@@ -453,7 +453,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newAnnotation = $copy->images()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
@@ -487,7 +487,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newAnnotation = $copy->videos()->first()->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
 
@@ -521,7 +521,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->first();
 
@@ -556,7 +556,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newVideoLabel = $newVideo->labels()->first();
 
@@ -592,7 +592,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
-        $copy = $response->getSession()->get('copy');
+        $copy = $project->volumes()->first();
 
         $this->assertNotNull($copy->getIfdo());
         $this->assertTrue($copy->hasIfdo());
