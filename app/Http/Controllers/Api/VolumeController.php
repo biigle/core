@@ -198,13 +198,23 @@ class VolumeController extends Controller
             $copy->save();
 
             if ($volume->isImageVolume()) {
-                $this->copyImages($volume, $copy, $request->input('imageIds', []));
-                $this->copyImageAnnotation($volume, $copy, $request->input('imageIds', []));
-                $this->copyImageLabels($volume, $copy, $request->input('imageIds', []));
+                $this->copyImages($volume, $copy, $request->input('imageIds'));
+                // check if annotation label ids exist
+                if ($request->has('labelIds')) {
+                    $this->copyImageAnnotation($volume, $copy, $request->input('labelIds'));
+                }
+                if ($request->has("imageLabelIds")) {
+                    $this->copyImageLabels($volume, $copy, $request->input('imageLabelIds'));
+                }
             } else {
-                $this->copyVideos($volume, $copy, $request->input('videoIds', []));
-                $this->copyVideoAnnotation($volume, $copy, $request->input('videoIds', []));
-                $this->copyVideoLabels($volume, $copy, $request->input('videoIds', []));
+                $this->copyVideos($volume, $copy, $request->input('videoIds'));
+                // check if annotation label ids exist
+                if ($request->has('labelIds')) {
+                    $this->copyVideoAnnotation($volume, $copy, $request->input('labelIds'));
+                }
+                if ($request->has('videoLabelIds')) {
+                    $this->copyVideoLabels($volume, $copy, $request->input('videoLabelIds'));
+                }
             }
 
             //save ifdo-file if exist
@@ -256,9 +266,9 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedImageIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyImageAnnotation($volume, $copy, $selectedImageIds)
+    private function copyImageAnnotation($volume, $copy, $selectedLabelIds)
     {
         //TODO: use selected imageIds
         $chunkSize = 100;
@@ -311,13 +321,13 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedImageIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyImageLabels($volume, $copy, $selectedImageIds)
+    private function copyImageLabels($volume, $copy, $selectedLabelIds)
     {
         $oldImages = $volume->images()
-            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                $query->whereIn('id', $selectedImageIds);
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                $query->whereIn('id', $selectedLabelIds);
             })
             ->orderBy('id')
             ->with('labels')
@@ -369,9 +379,9 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedVideoIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyVideoAnnotation($volume, $copy, $selectedVideoIds)
+    private function copyVideoAnnotation($volume, $copy, $selectedLabelIds)
     {
         //TODO: use selected videoIds
         $chunkSize = 100;
@@ -424,13 +434,13 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedVideoIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyVideoLabels($volume, $copy, $selectedVideoIds)
+    private function copyVideoLabels($volume, $copy, $selectedLabelIds)
     {
         $oldVideos = $volume->videos()
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                $query->whereIn('id', $selectedVideoIds);
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                $query->whereIn('id', $selectedLabelIds);
             })
             ->orderBy('id')
             ->with('labels')
