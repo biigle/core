@@ -292,22 +292,34 @@ class VolumeControllerTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'tiled' => true])->fresh();
+        ImageLabelTest::create(['image_id' => $oldImage->id]);
+        $oldImageLabel = $oldImage->labels()->first();
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
+        $newImageLabel = $newImage->labels()->first();
 
+        $this->assertNotNull($newImageLabel);
         $this->assertNotNull($newImage);
         $this->assertEquals($volume->images()->count(), $copy->images()->count());
         $this->assertNotEquals($oldImage->id, $newImage->id);
         $this->assertNotEquals($oldImage->uuid, $newImage->uuid);
         $this->assertEquals($copy->id, $newImage->volume_id);
+        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
+        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
 
         $ignore = ['id', 'volume_id', 'uuid'];
         $this->assertEquals(
             $oldImage->makeHidden($ignore)->toArray(),
             $newImage->makeHidden($ignore)->toArray()
+        );
+
+        $ignore = ['id', 'image_id'];
+        $this->assertEquals(
+            $oldImageLabel->makeHidden($ignore)->toArray(),
+            $newImageLabel->makeHidden($ignore)->toArray()
         );
 
     }
@@ -447,41 +459,7 @@ class VolumeControllerTest extends ApiTestCase
 
         );
     }
-
-    public function testCloneVolumeImageLabels()
-    {
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh(); // Use fresh() to load even the null fields.
-        // The target project.
-        $project = ProjectTest::create();
-
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        ImageLabelTest::create(['image_id' => $oldImage->id]);
-        $oldImageLabel = $oldImage->labels()->first();
-
-        $this->beAdmin();
-        $project->addUserId($this->admin()->id, Role::adminId());
-
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
-        $copy = $project->volumes()->first();
-        $newImage = $copy->images()->first();
-        $newImageLabel = $newImage->labels()->first();
-
-        $this->assertNotNull($newImageLabel);
-        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
-        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
-
-
-        $ignore = ['id', 'image_id'];
-        $this->assertEquals(
-            $oldImageLabel->makeHidden($ignore)->toArray(),
-            $newImageLabel->makeHidden($ignore)->toArray()
-        );
-    }
-
+    
     public function testCloneVolumeVideoLabels()
     {
         $volume = $this->volume([
