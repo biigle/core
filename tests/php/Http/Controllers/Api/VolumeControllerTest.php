@@ -363,6 +363,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
+        $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
@@ -372,18 +373,28 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();
+        $newAnnotationLabel = $newAnnotation->labels()->first();
 
         $this->assertNotNull($newAnnotation);
+        $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($newAnnotation->id, $oldAnnotation->id);
         $this->assertEquals($newAnnotation->updated_at, $oldAnnotation->updated_at);
         $this->assertEquals($newAnnotation->created_at, $oldAnnotation->created_at);
         $this->assertNotEquals($newAnnotation->image_id, $oldAnnotation->image_id);
         $this->assertEquals($newImage->id, $newAnnotation->image_id);
+        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
 
         $ignore = ['id', 'image_id'];
         $this->assertEquals(
             $newAnnotation->makeHidden($ignore)->toArray(),
             $oldAnnotation->makeHidden($ignore)->toArray()
+        );
+
+        $ignore = ['id', 'annotation_id'];
+        $this->assertEquals(
+            $newAnnotationLabel->makeHidden($ignore)->toArray(),
+            $oldAnnotationLabel->makeHidden($ignore)->toArray()
         );
 
     }
@@ -423,39 +434,6 @@ class VolumeControllerTest extends ApiTestCase
             $newAnnotation->makeHidden($ignore)->toArray()
         );
 
-    }
-
-    public function testCloneVolumeImageAnnotationLabels()
-    {
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh(); // Use fresh() to load even the null fields.
-        // The target project.
-        $project = ProjectTest::create();
-
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $this->beAdmin();
-        $project->addUserId($this->admin()->id, Role::adminId());
-
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
-        $copy = $project->volumes()->first();
-        $newAnnotation = $copy->images()->first()->annotations()->first();
-        $newAnnotationLabel = $newAnnotation->labels()->first();
-
-        $this->assertNotNull($newAnnotationLabel);
-        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
-        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
-
-        $ignore = ['id', 'annotation_id'];
-        $this->assertEquals(
-            $newAnnotationLabel->makeHidden($ignore)->toArray(),
-            $oldAnnotationLabel->makeHidden($ignore)->toArray()
-        );
     }
 
     public function testCloneVolumeVideoAnnotationLabels()
