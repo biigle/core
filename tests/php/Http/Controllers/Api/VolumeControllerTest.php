@@ -295,7 +295,8 @@ class VolumeControllerTest extends ApiTestCase
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['imageIds'=>[$oldImage->id],'imageLabelIds'=>[$oldImageLabel->id]]);
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -347,7 +348,8 @@ class VolumeControllerTest extends ApiTestCase
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['videoIds'=>[$oldVideo->id],'videoLabelIds'=>[$oldVideoLabel->id]]);
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
@@ -392,7 +394,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['imageIds'=>[$oldImage->id],'labelIds'=>[$oldAnnotationLabel->id]]);
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -440,7 +443,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['videoIds'=>[$oldVideo->id],'labelIds'=>[$oldAnnotationLabel->id]]);
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
