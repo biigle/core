@@ -267,12 +267,12 @@ class VolumeController extends Controller
         $volume->images()
             ->orderBy('id')
             ->with('annotations.labels')
-            // Note the use of chunkById() instead of previously eachById().
+            // This is an optimized implementation to clone the annotations with only few database
+            // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
             ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize) {
                 $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
-                // This was previously done by eachById().
                 $baseImageIndex = ($page - 1) * $chunkSize;
                 foreach ($chunk as $index => $image) {
                     $newImageId = $newImageIds[$baseImageIndex + $index];
@@ -291,7 +291,6 @@ class VolumeController extends Controller
                 $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
                     ->orderBy('id')
                     ->pluck('id');
-
                 $insertData = [];
                 foreach ($chunk as $index => $image) {
                     foreach ($image->annotations as $annotation) {
@@ -376,12 +375,12 @@ class VolumeController extends Controller
         $volume->videos()
             ->orderBy('id')
             ->with('annotations.labels')
-            // Note the use of chunkById() instead of previously eachById().
+            // This is an optimized implementation to clone the annotations with only few database
+            // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
             ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
-                // This was previously done by eachById().
                 $baseVideoIndex = ($page - 1) * $chunkSize;
                 foreach ($chunk as $index => $video) {
                     $newVideoId = $newVideoIds[$baseVideoIndex + $index];
@@ -400,7 +399,6 @@ class VolumeController extends Controller
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
                     ->orderBy('id')
                     ->pluck('id');
-
                 $insertData = [];
                 foreach ($chunk as $index => $video) {
                     foreach ($video->annotations as $annotation) {
