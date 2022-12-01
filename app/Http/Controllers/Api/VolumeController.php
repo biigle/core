@@ -323,7 +323,7 @@ class VolumeController extends Controller
             ->orderBy('id')
             ->with('labels')
             ->get();
-        $newImageIds = $copy->images()->orderBy('id')->get()->pluck('id');
+        $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
         foreach ($oldImages as $imageIdx => $oldImage) {
             $newImageId = $newImageIds[$imageIdx];
@@ -436,7 +436,7 @@ class VolumeController extends Controller
             ->orderBy('id')
             ->with('labels')
             ->get();
-        $newVideoIds = $copy->videos()->orderBy('id')->get()->pluck('id');
+        $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
 
         foreach ($oldVideos as $videoIdx => $oldVideo) {
             $newVideoId = $newVideoIds[$videoIdx];
