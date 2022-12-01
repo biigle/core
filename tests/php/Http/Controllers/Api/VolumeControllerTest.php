@@ -344,22 +344,34 @@ class VolumeControllerTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'duration' => 42.42])->fresh();
+        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        $oldVideoLabel = $oldVideo->labels()->first();
 
         $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(302);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
+        $newVideoLabel = $newVideo->labels()->first();
 
         $this->assertNotNull($newVideo);
+        $this->assertNotNull($newVideoLabel);
         $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
         $this->assertNotEquals($oldVideo->id, $newVideo->id);
         $this->assertNotEquals($oldVideo->uuid, $newVideo->uuid);
         $this->assertEquals($copy->id, $newVideo->volume_id);
+        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
+        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
 
         $ignore = ['id', 'volume_id', 'uuid'];
         $this->assertEquals(
             $oldVideo->makeHidden($ignore)->toArray(),
             $newVideo->makeHidden($ignore)->toArray()
+        );
+
+        $ignore = ['id', 'video_id'];
+        $this->assertEquals(
+            $oldVideoLabel->makeHidden($ignore)->toArray(),
+            $newVideoLabel->makeHidden($ignore)->toArray()
         );
 
     }
@@ -457,40 +469,6 @@ class VolumeControllerTest extends ApiTestCase
             $oldAnnotationLabel->makeHidden($ignore)->toArray(),
             $newAnnotationLabel->makeHidden($ignore)->toArray()
 
-        );
-    }
-    
-    public function testCloneVolumeVideoLabels()
-    {
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::videoId()
-        ])->fresh(); // Use fresh() to load even the null fields.
-        // The target project.
-        $project = ProjectTest::create();
-
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        VideoLabelTest::create(['video_id' => $oldVideo->id]);
-        $oldVideoLabel = $oldVideo->labels()->first();
-
-        $this->beAdmin();
-        $project->addUserId($this->admin()->id, Role::adminId());
-
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
-        $copy = $project->volumes()->first();
-        $newVideo = $copy->videos()->first();
-        $newVideoLabel = $newVideo->labels()->first();
-
-        $this->assertNotNull($newVideoLabel);
-        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
-        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
-
-        $ignore = ['id', 'video_id'];
-        $this->assertEquals(
-            $oldVideoLabel->makeHidden($ignore)->toArray(),
-            $newVideoLabel->makeHidden($ignore)->toArray()
         );
     }
 
