@@ -316,8 +316,13 @@ class VolumeController extends Controller
      **/
     private function copyImageLabels($volume, $copy, $selectedImageIds)
     {
-        $oldImages = empty($selectedImageIds) ? $volume->images()->orderBy('id')->with('labels')->get() :
-            Image::whereIn('id', $selectedImageIds)->orderBy('id')->with('labels')->get();
+        $oldImages = $volume->images()
+            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
+                $query->whereIn('id', $selectedImageIds);
+            })
+            ->orderBy('id')
+            ->with('labels')
+            ->get();
         $newImageIds = $copy->images()->orderBy('id')->get()->pluck('id');
 
         foreach ($oldImages as $imageIdx => $oldImage) {
@@ -424,8 +429,13 @@ class VolumeController extends Controller
      **/
     private function copyVideoLabels($volume, $copy, $selectedVideoIds)
     {
-        $oldVideos = empty($selectedVideoIds) ? $volume->videos()->orderBy('id')->with('labels')->get() :
-            Video::whereIn('id', $selectedVideoIds)->orderBy('id')->with('labels')->get();
+        $oldVideos = $volume->videos()
+            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
+                $query->whereIn('id', $selectedVideoIds);
+            })
+            ->orderBy('id')
+            ->with('labels')
+            ->get();
         $newVideoIds = $copy->videos()->orderBy('id')->get()->pluck('id');
 
         foreach ($oldVideos as $videoIdx => $oldVideo) {
