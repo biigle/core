@@ -237,7 +237,7 @@ class VolumeController extends Controller
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
-        $images = $volume->images()
+        $images = $volume->images()->orderBy('id')
             ->when(!empty($images), function ($query) use ($selectedImageIds) {
                 $query->whereIn('id', $selectedImageIds);
             })->get();
@@ -346,7 +346,7 @@ class VolumeController extends Controller
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $videos = $volume->videos()
+        $videos = $volume->videos()->orderBy('id')
             ->when(!empty($videos), function ($query) use ($selectedVideoIds) {
                 $query->whereIn('id', $selectedVideoIds);
             })->get();
