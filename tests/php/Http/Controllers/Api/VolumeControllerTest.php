@@ -411,6 +411,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
+        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
@@ -420,49 +421,23 @@ class VolumeControllerTest extends ApiTestCase
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newAnnotation = $newVideo->annotations()->first();
+        $newAnnotationLabel = $newAnnotation->labels()->first();
 
         $this->assertNotNull($newAnnotation);
+        $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($newAnnotation->id, $oldAnnotation->id);
         $this->assertEquals($newAnnotation->updated_at, $oldAnnotation->updated_at);
         $this->assertEquals($newAnnotation->created_at, $oldAnnotation->created_at);
         $this->assertNotEquals($newAnnotation->video_id, $oldAnnotation->video_id);
         $this->assertEquals($newAnnotation->video_id, $newVideo->id);
+        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
+        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
 
         $ignore = ['id', 'video_id'];
         $this->assertEquals(
             $oldAnnotation->makeHidden($ignore)->toArray(),
             $newAnnotation->makeHidden($ignore)->toArray()
         );
-
-    }
-
-    public function testCloneVolumeVideoAnnotationLabels()
-    {
-        $volume = $this->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::videoId()
-        ])->fresh(); // Use fresh() to load even the null fields.
-        // The target project.
-        $project = ProjectTest::create();
-
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $this->beAdmin();
-        $project->addUserId($this->admin()->id, Role::adminId());
-
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
-        $copy = $project->volumes()->first();
-        $newAnnotation = $copy->videos()->first()->annotations()->first();
-        $newAnnotationLabel = $newAnnotation->labels()->first();
-
-        $this->assertNotNull($newAnnotationLabel);
-        $this->assertNotEquals($newAnnotationLabel->id, $oldAnnotationLabel->id);
-        $this->assertEquals($newAnnotationLabel->annotation_id, $newAnnotation->id);
-
 
         $ignore = ['id', 'annotation_id'];
         $this->assertEquals(
