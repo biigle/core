@@ -218,9 +218,8 @@ class VolumeController extends Controller
                 return $volume;
             }
 
-            return $this->fuzzyRedirect()
-                ->with(["copy" => $copy])
-                ->with('messageType', 'success');
+            return $this->fuzzyRedirect('project', $destProjectId)
+                ->with('message', 'The volume was cloned');
         });
 
     }
