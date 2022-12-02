@@ -260,7 +260,6 @@ class VolumeController extends Controller
      **/
     private function copyImageAnnotation($volume, $copy, $selectedImageIds)
     {
-        //TODO: use selected imageIds
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
@@ -453,14 +452,14 @@ class VolumeController extends Controller
     /**
      * Copies ifDo-Files from given volume to volume copy.
      *
-     * @param int $volume_id
-     * @param int $copy_id
+     * @param int $volumeId
+     * @param int $copyId
      **/
-    private function copyIfdoFile($volume_id, $copy_id)
+    private function copyIfdoFile($volumeId, $copyId)
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volume_id.".yaml";
-        $copyIFdoFilename = $copy_id.".yaml";
+        $iFdoFilename = $volumeId.".yaml";
+        $copyIFdoFilename = $copyId.".yaml";
         $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 }
