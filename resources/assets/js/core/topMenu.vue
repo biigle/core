@@ -1,9 +1,9 @@
 <script>
 import Dropdown from 'uiv/dist/Dropdown';
 
-export default new Vue({
+export default {
     components: {
         dropdown: Dropdown,
     },
-});
+};
 </script>

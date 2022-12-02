@@ -24,16 +24,17 @@
                         </li>
                     @endcan
                     <li>
-                        <a href="{{route('search')}}" title="Search BIIGLE"><i class="fa fa-search"></i></a>
+                        <a href="{{route('search')}}" title="Search"><i class="fa fa-search"></i></a>
                     </li>
                     <li>
-                        <a href="{{route('notifications')}}" class="notifications-icon" @if ($hasNotification) title="You have unread notifications" @endif>
+                        <a href="{{route('notifications')}}" class="notifications-icon" @if ($hasNotification) title="You have unread notifications" @else title="Notifications" @endif>
                             <i class="fa fa-bell"></i>
                             @if ($hasNotification)
                                 <span class="notifications-icon__count"></span>
                             @endif
                         </a>
                     </li>
+                    @include('partials.help-menu')
                     @include('partials.top-menu')
                 </ul>
             </div>

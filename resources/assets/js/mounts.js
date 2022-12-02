@@ -12,6 +12,7 @@ mount('admin-image-annotations', AdminImageAnnotations);
 mount('admin-video-annotations', AdminVideoAnnotations);
 mount('announcement', AnnouncementContainer);
 mount('announcements-edit-form', AnnouncementsEditForm);
+mount('help-menu', TopMenu);
 mount('messages-display', MessagesDisplay);
 mount('notifications-list', NotificationsList);
 mount('notifications-unread-count', NotificationsUnreadCount);
