@@ -235,7 +235,7 @@ class VolumeController extends Controller
     {
         // copy image references
         $images = $volume->images()->orderBy('id')
-            ->when(!empty($images), function ($query) use ($selectedImageIds) {
+            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
                 $query->whereIn('id', $selectedImageIds);
             })->get();
 
@@ -348,7 +348,7 @@ class VolumeController extends Controller
     {
         // copy video references
         $videos = $volume->videos()->orderBy('id')
-            ->when(!empty($videos), function ($query) use ($selectedVideoIds) {
+            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
                 $query->whereIn('id', $selectedVideoIds);
             })->get();
 
