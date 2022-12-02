@@ -402,8 +402,6 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotNull($newAnnotation);
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
         $this->assertNotEquals($oldAnnotation->image_id, $newAnnotation->image_id);
         $this->assertEquals($newAnnotation->image_id, $newImage->id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
@@ -450,8 +448,6 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotNull($newAnnotation);
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
-        $this->assertEquals($oldAnnotation->updated_at, $newAnnotation->updated_at);
-        $this->assertEquals($oldAnnotation->created_at, $newAnnotation->created_at);
         $this->assertNotEquals($oldAnnotation->video_id, $newAnnotation->video_id);
         $this->assertEquals($newVideo->id, $newAnnotation->video_id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
