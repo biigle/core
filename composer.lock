@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e80ddd7b67eaff19b5f28e19fd6a263",
+    "content-hash": "e73a468a5038e09bfdf3d287d049c2e8",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -247,6 +247,56 @@
                 "source": "https://github.com/biigle/demo"
             },
             "time": "2022-03-09T09:58:20+00:00"
+        },
+        {
+            "name": "biigle/denbi-service",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/denbi-service.git",
+                "reference": "9466f3c8cdece661432da8f44e8b18505354c1d3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/denbi-service/zipball/9466f3c8cdece661432da8f44e8b18505354c1d3",
+                "reference": "9466f3c8cdece661432da8f44e8b18505354c1d3",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\DenbiService\\DenbiServiceServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\DenbiService\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A module to add the de.NBI service evaluation link to the help menu.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/denbi-service/issues",
+                "source": "https://github.com/biigle/denbi-service"
+            },
+            "time": "2022-12-02T10:22:48+00:00"
         },
         {
             "name": "biigle/geo",
@@ -12281,6 +12331,7 @@
         "biigle/ananas": 20,
         "biigle/color-sort": 20,
         "biigle/demo": 20,
+        "biigle/denbi-service": 20,
         "biigle/geo": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
@@ -12306,5 +12357,5 @@
     "platform-overrides": {
         "php": "8.0.20"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

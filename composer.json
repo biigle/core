@@ -26,6 +26,7 @@
         "biigle/ananas": "dev-master",
         "biigle/color-sort": "dev-master",
         "biigle/demo": "dev-master",
+        "biigle/denbi-service": "dev-master",
         "biigle/geo": "dev-master",
         "biigle/laravel-file-cache": "^4.0",
         "biigle/largo": "dev-master",
