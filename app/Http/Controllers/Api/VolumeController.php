@@ -199,12 +199,22 @@ class VolumeController extends Controller
 
             if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $request->input('file_ids', []));
-                $this->copyImageAnnotation($volume, $copy, $request->input('file_ids', []));
-                $this->copyImageLabels($volume, $copy, $request->input('file_ids', []));
+                // check if annotation label ids exist
+                if ($request->has('labelIds')) {
+                    $this->copyImageAnnotation($volume, $copy, $request->input('file_ids', []));
+                }
+                if ($request->has("imageLabelIds")) {
+                    $this->copyImageLabels($volume, $copy, $request->input('file_ids', []));
+                }
             } else {
                 $this->copyVideos($volume, $copy, $request->input('file_ids', []));
-                $this->copyVideoAnnotation($volume, $copy, $request->input('file_ids', []));
-                $this->copyVideoLabels($volume, $copy, $request->input('file_ids', []));
+                // check if annotation label ids exist
+                if ($request->has('labelIds')) {
+                   $this->copyVideoAnnotation($volume, $copy, $request->input('file_ids', []));
+                }
+                if ($request->has('videoLabelIds')) {
+                    $this->copyVideoLabels($volume, $copy, $request->input('file_ids', []));
+                }
             }
 
             //save ifdo-file if exist
@@ -256,9 +266,9 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedImageIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyImageAnnotation($volume, $copy, $selectedImageIds)
+    private function copyImageAnnotation($volume, $copy, $selectedLabelIds)
     {
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
@@ -310,13 +320,13 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedImageIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyImageLabels($volume, $copy, $selectedImageIds)
+    private function copyImageLabels($volume, $copy, $selectedLabelIds)
     {
         $oldImages = $volume->images()
-            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                $query->whereIn('id', $selectedImageIds);
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                $query->whereIn('id', $selectedLabelIds);
             })
             ->orderBy('id')
             ->with('labels')
@@ -368,9 +378,9 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedVideoIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyVideoAnnotation($volume, $copy, $selectedVideoIds)
+    private function copyVideoAnnotation($volume, $copy, $selectedLabelIds)
     {
         //TODO: use selected videoIds
         $chunkSize = 100;
@@ -423,13 +433,13 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedVideoIds
+     * @param int[] $selectedLabelIds
      **/
-    private function copyVideoLabels($volume, $copy, $selectedVideoIds)
+    private function copyVideoLabels($volume, $copy, $selectedLabelIds)
     {
         $oldVideos = $volume->videos()
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                $query->whereIn('id', $selectedVideoIds);
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                $query->whereIn('id', $selectedLabelIds);
             })
             ->orderBy('id')
             ->with('labels')
