@@ -198,13 +198,13 @@ class VolumeController extends Controller
             $copy->save();
 
             if ($volume->isImageVolume()) {
-                $this->copyImages($volume, $copy, $request->input('imageIds', []));
-                $this->copyImageAnnotation($volume, $copy, $request->input('imageIds', []));
-                $this->copyImageLabels($volume, $copy, $request->input('imageIds', []));
+                $this->copyImages($volume, $copy, $request->input('file_ids', []));
+                $this->copyImageAnnotation($volume, $copy, $request->input('file_ids', []));
+                $this->copyImageLabels($volume, $copy, $request->input('file_ids', []));
             } else {
-                $this->copyVideos($volume, $copy, $request->input('videoIds', []));
-                $this->copyVideoAnnotation($volume, $copy, $request->input('videoIds', []));
-                $this->copyVideoLabels($volume, $copy, $request->input('videoIds', []));
+                $this->copyVideos($volume, $copy, $request->input('file_ids', []));
+                $this->copyVideoAnnotation($volume, $copy, $request->input('file_ids', []));
+                $this->copyVideoLabels($volume, $copy, $request->input('file_ids', []));
             }
 
             //save ifdo-file if exist
