@@ -354,23 +354,23 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
+     * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyImageLabels($volume, $copy, $selectedLabelIds)
+    private function copyImageLabels($volume, $copy, $selectedFileIds,$selectedLabelIds)
     {
-        $oldImages = $volume->images()
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                $query->whereIn('id', $selectedLabelIds);
-            })
+        $oldImages = $volume->images()->whereIn('id', $selectedFileIds)
             ->orderBy('id')
             ->with('labels')
             ->get();
-
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
         foreach ($oldImages as $imageIdx => $oldImage) {
             $newImageId = $newImageIds[$imageIdx];
-            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
+            $filteredLabels = $oldImage->labels->filter(function ($label) use ($selectedLabelIds){
+                return in_array($label->id,$selectedLabelIds);
+            });
+            $filteredLabels->map(function ($oldLabel) use ($newImageId) {
                 $origin = $oldLabel->getRawOriginal();
                 $origin['image_id'] = $newImageId;
                 unset($origin['id']);
