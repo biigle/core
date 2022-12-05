@@ -365,6 +365,7 @@ class VolumeController extends Controller
             ->orderBy('id')
             ->with('labels')
             ->get();
+
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
         foreach ($oldImages as $imageIdx => $oldImage) {
@@ -390,10 +391,7 @@ class VolumeController extends Controller
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $videos = $volume->videos()->orderBy('id')
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                $query->whereIn('id', $selectedVideoIds);
-            })->get();
+        $videos = $volume->videos()->orderBy('id')->whereIn('id', $selectedVideoIds)->get();
 
         $videos->map(function ($video) use ($copy) {
             $original = $video->getRawOriginal();
