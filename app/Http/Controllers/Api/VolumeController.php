@@ -197,23 +197,33 @@ class VolumeController extends Controller
             $copy->name = $request->input('name', $volume->name);
             $copy->save();
 
-            if ($volume->isImageVolume()) {
-                $this->copyImages($volume, $copy, $request->input('file_ids', []));
-                // check if annotation label ids exist
-                if ($request->has('labelIds')) {
-                    $this->copyImageAnnotation($volume, $copy, $request->input('file_ids', []));
-                }
-                if ($request->has("imageLabelIds")) {
-                    $this->copyImageLabels($volume, $copy, $request->input('file_ids', []));
-                }
-            } else {
-                $this->copyVideos($volume, $copy, $request->input('file_ids', []));
-                // check if annotation label ids exist
-                if ($request->has('labelIds')) {
-                   $this->copyVideoAnnotation($volume, $copy, $request->input('file_ids', []));
-                }
-                if ($request->has('videoLabelIds')) {
-                    $this->copyVideoLabels($volume, $copy, $request->input('file_ids', []));
+            $fileIds = $request->input('file_ids', []);
+
+            if (!empty($fileIds)) {
+                $fileLabelIds = $request->input('file_label_ids', []);
+                $annotationLabelIds = $request->input('label_ids', []);
+
+                $fileLabelIds = empty($fileLabelIds) ? [] :
+                    $this->filterLabels($fileIds, $fileLabelIds, $volume->isImageVolume(), true);
+                $annotationLabelIds = empty($annotationLabelIds) ? [] :
+                    $this->filterLabels($fileIds, $annotationLabelIds, $volume->isImageVolume(), false);
+
+                if ($volume->isImageVolume()) {
+                    $this->copyImages($volume, $copy, $fileIds);
+                    if (!empty($annotationLabelIds)) {
+                        $this->copyImageAnnotation($volume, $copy, $annotationLabelIds);
+                    }
+                    if (!empty($fileLabelIds)) {
+                        $this->copyImageLabels($volume, $copy, $fileLabelIds);
+                    }
+                } else {
+                    $this->copyVideos($volume, $copy, $fileIds);
+                    if (!empty($annotationLabelIds)) {
+                        $this->copyVideoAnnotation($volume, $copy, $annotationLabelIds);
+                    }
+                    if (!empty($fileLabelIds)) {
+                        $this->copyVideoLabels($volume, $copy, $fileLabelIds);
+                    }
                 }
             }
 
@@ -231,6 +241,33 @@ class VolumeController extends Controller
             return $this->fuzzyRedirect('project', $destProjectId)
                 ->with('message', 'The volume was cloned');
         });
+
+    }
+
+    /**
+     * Discard label ids whose files were not copied.
+     * @param int[] $fileIds image or video ids
+     * @param int[] $labelIds file labels if isFileLabel is true otherwise annotation labels
+     * @param boolean $isImageVol true if volume is image volume else false
+     * @param boolean $isFileLabel true if labelIds are image/video labels otherwise false
+     * @return int[] label ids of files which were copied
+     **/
+    private function filterLabels($fileIds, $labelIds, $isImageVol, $isFileLabel)
+    {
+        $fileType = $isImageVol ? 'image_id' : 'video_id';
+        if ($isFileLabel) {
+            $labels = $isImageVol ? ImageLabel::find($labelIds) : VideoLabel::find($labelIds);
+            return $labels->filter(function ($label) use ($fileIds, $fileType) {
+                return in_array($label->$fileType, $fileIds);
+            })->pluck('id');
+        } else {
+            $labels = $isImageVol ? ImageAnnotationLabel::find($labelIds) : VideoAnnotationLabel::find($labelIds);
+            $annotationIds = $labels->pluck('annotation_id');
+            $annotations = $isImageVol ? ImageAnnotation::find($annotationIds) : VideoAnnotation::find($annotationIds);
+            return $annotations->filter(function ($label) use ($fileIds, $fileType) {
+                return in_array($label->$fileType, $fileIds);
+            })->pluck('id');
+        }
 
     }
 
