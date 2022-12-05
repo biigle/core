@@ -214,7 +214,7 @@ class VolumeController extends Controller
                         $this->copyImageAnnotation($volume, $copy, $annotationLabelIds);
                     }
                     if (!empty($fileLabelIds)) {
-                        $this->copyImageLabels($volume, $copy, $fileLabelIds);
+                        $this->copyImageLabels($volume, $copy, $fileIds, $fileLabelIds);
                     }
                 } else {
                     $this->copyVideos($volume, $copy, $fileIds);
@@ -222,7 +222,7 @@ class VolumeController extends Controller
                         $this->copyVideoAnnotation($volume, $copy, $annotationLabelIds);
                     }
                     if (!empty($fileLabelIds)) {
-                        $this->copyVideoLabels($volume, $copy, $fileLabelIds);
+                        $this->copyVideoLabels($volume, $copy, $fileIds, $fileLabelIds);
                     }
                 }
             }
@@ -357,7 +357,7 @@ class VolumeController extends Controller
      * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyImageLabels($volume, $copy, $selectedFileIds,$selectedLabelIds)
+    private function copyImageLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
         $oldImages = $volume->images()->whereIn('id', $selectedFileIds)
             ->orderBy('id')
@@ -367,8 +367,8 @@ class VolumeController extends Controller
 
         foreach ($oldImages as $imageIdx => $oldImage) {
             $newImageId = $newImageIds[$imageIdx];
-            $filteredLabels = $oldImage->labels->filter(function ($label) use ($selectedLabelIds){
-                return in_array($label->id,$selectedLabelIds);
+            $filteredLabels = $oldImage->labels->filter(function ($label) use ($selectedLabelIds) {
+                return in_array($label->id, $selectedLabelIds);
             });
             $filteredLabels->map(function ($oldLabel) use ($newImageId) {
                 $origin = $oldLabel->getRawOriginal();
@@ -465,14 +465,12 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
+     * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyVideoLabels($volume, $copy, $selectedLabelIds)
+    private function copyVideoLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $oldVideos = $volume->videos()
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                $query->whereIn('id', $selectedLabelIds);
-            })
+        $oldVideos = $volume->videos()->whereIn('id', $selectedFileIds)
             ->orderBy('id')
             ->with('labels')
             ->get();
@@ -480,7 +478,10 @@ class VolumeController extends Controller
 
         foreach ($oldVideos as $videoIdx => $oldVideo) {
             $newVideoId = $newVideoIds[$videoIdx];
-            $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
+            $filteredLabels = $oldVideo->labels->filter(function ($label) use ($selectedLabelIds) {
+                return in_array($label->id, $selectedLabelIds);
+            });
+            $filteredLabels->map(function ($oldLabel) use ($newVideoId) {
                 $origin = $oldLabel->getRawOriginal();
                 $origin['video_id'] = $newVideoId;
                 unset($origin['id']);
