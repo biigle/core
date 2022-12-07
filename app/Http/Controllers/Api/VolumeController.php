@@ -323,17 +323,19 @@ class VolumeController extends Controller
             ->get();
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
-        foreach ($oldImages as $imageIdx => $oldImage) {
-            $newImageId = $newImageIds[$imageIdx];
-            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['image_id'] = $newImageId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
+        $oldImages->map(function ($oldImage, $imageIdx) use ($newImageIds) {
+                $newImageId = $newImageIds[$imageIdx];
+                return $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['image_id'] = $newImageId;
+                    unset($origin['id']);
+                    return $origin;
+                });
+            })
+            ->flatten(1)
+            ->chunk(10000)->each(function ($chunk) {
                 ImageLabel::insert($chunk->toArray());
             });
-        }
     }
 
     /**
@@ -436,17 +438,19 @@ class VolumeController extends Controller
             ->get();
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
 
-        foreach ($oldVideos as $videoIdx => $oldVideo) {
-            $newVideoId = $newVideoIds[$videoIdx];
-            $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['video_id'] = $newVideoId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
+        $oldVideos->map(function ($oldVideo, $videoIdx) use ($newVideoIds) {
+                $newVideoId = $newVideoIds[$videoIdx];
+                return $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['video_id'] = $newVideoId;
+                    unset($origin['id']);
+                    return $origin;
+                });
+            })
+            ->flatten(1)
+            ->chunk(10000)->each(function ($chunk) {
                 VideoLabel::insert($chunk->toArray());
             });
-        }
     }
 
     /**
