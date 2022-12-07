@@ -219,7 +219,7 @@ class VolumeController extends Controller
                 } else {
                     $this->copyVideos($volume, $copy, $fileIds);
                     if (!empty($annotationLabelIds)) {
-                        $this->copyVideoAnnotation($volume, $copy, $annotationLabelIds);
+                        $this->copyVideoAnnotation($volume, $copy, $fileIds, $annotationLabelIds);
                     }
                     if (!empty($fileLabelIds)) {
                         $this->copyVideoLabels($volume, $copy, $fileIds, $fileLabelIds);
@@ -300,6 +300,7 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
+     * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
     private function copyImageAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
@@ -430,19 +431,29 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
+     * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyVideoAnnotation($volume, $copy, $selectedLabelIds)
+    private function copyVideoAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        //TODO: use selected videoIds
+        $usedAnnotationIds = VideoAnnotation::with('labels')
+            ->whereIn('video_id', $selectedFileIds)
+            ->orderBy('id')
+            ->get()
+            ->filter(function ($annotation) use ($selectedLabelIds) {
+                return !empty(array_intersect($annotation->labels->pluck('id')->toArray(), $selectedLabelIds));
+            })
+            ->pluck('id')
+            ->toArray();
         $chunkSize = 100;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
+            ->whereIn('id', $selectedFileIds)
             ->orderBy('id')
             ->with('annotations.labels')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize) {
+            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize, $usedAnnotationIds, $selectedLabelIds) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
@@ -452,10 +463,12 @@ class VolumeController extends Controller
                     // Collect relevant video IDs for the annotation query below.
                     $chunkNewVideoIds[] = $newVideoId;
                     foreach ($video->annotations as $annotation) {
-                        $original = $annotation->getRawOriginal();
-                        $original['video_id'] = $newVideoId;
-                        unset($original['id']);
-                        $insertData[] = $original;
+                        if (in_array($annotation->id, $usedAnnotationIds)) {
+                            $original = $annotation->getRawOriginal();
+                            $original['video_id'] = $newVideoId;
+                            unset($original['id']);
+                            $insertData[] = $original;
+                        }
                     }
                 }
 
@@ -465,14 +478,19 @@ class VolumeController extends Controller
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
-                foreach ($chunk as $index => $video) {
-                    foreach ($video->annotations as $annotation) {
+                foreach ($chunk as $video) {
+                    $annotations = $video->annotations->filter(function ($annotation) use ($usedAnnotationIds) {
+                        return in_array($annotation->id, $usedAnnotationIds);
+                    });
+                    foreach ($annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
-                            $original = $annotationLabel->getRawOriginal();
-                            $original['annotation_id'] = $newAnnotationId;
-                            unset($original['id']);
-                            $insertData[] = $original;
+                            if (in_array($annotationLabel->id, $selectedLabelIds)) {
+                                $original = $annotationLabel->getRawOriginal();
+                                $original['annotation_id'] = $newAnnotationId;
+                                unset($original['id']);
+                                $insertData[] = $original;
+                            }
                         }
                     }
                 }
