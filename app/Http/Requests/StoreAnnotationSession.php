@@ -38,7 +38,7 @@ class StoreAnnotationSession extends FormRequest
             'starts_at' => 'required|date',
             'ends_at' => 'required|date|after:starts_at',
             'users' => 'required|array',
-            'users.*' => 'distinct|exists:users,id',
+            'users.*' => 'distinct|integer|exists:users,id',
             'hide_other_users_annotations' => 'filled|boolean',
             'hide_own_annotations' => 'filled|boolean',
         ];
