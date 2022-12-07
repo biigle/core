@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\CloneVolume;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -186,13 +187,11 @@ class VolumeController extends Controller
      * "id": 4
      * }
      **/
-    public function clone($volumeId, $destProjectId, Request $request)
+    public function clone($volumeId, $destProjectId, CloneVolume $request)
     {
         return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
             $project = Project::findOrFail($destProjectId);
-            $this->authorize('update', $project);
             $volume = Volume::findOrFail($volumeId);
-            $this->authorize('update', $volume);
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
             $copy->save();
