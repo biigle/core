@@ -40,6 +40,11 @@ $router->resource('annotation-sessions', 'AnnotationSessionController', [
     'parameters' => ['annotation-sessions' => 'id'],
 ]);
 
+$router->resource('announcements', 'AnnouncementController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['announcements' => 'id'],
+]);
+
 $router->resource('api-tokens', 'ApiTokenController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['api-tokens' => 'id'],
@@ -149,6 +154,11 @@ $router->resource('projects', 'ProjectController', [
 
 $router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
 
+$router->resource('projects.invitations', 'ProjectInvitationController', [
+    'only' => ['store'],
+    'parameters' => ['projects' => 'id'],
+]);
+
 $router->get(
     'projects/{id}/label-trees/available',
     'ProjectLabelTreeController@available'
@@ -191,6 +201,19 @@ $router->resource('projects.users', 'ProjectUserController', [
     'parameters' => ['projects' => 'id', 'users' => 'id2'],
 ]);
 
+$router->resource('project-invitations', 'ProjectInvitationController', [
+    'only' => ['destroy'],
+    'parameters' => ['project-invitations' => 'id'],
+]);
+$router->post(
+    'project-invitations/{id}/join',
+    'ProjectInvitationController@join'
+);
+$router->get(
+    'project-invitations/{id}/qr',
+    'ProjectInvitationController@showQrCode'
+);
+
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],
     'parameters' => ['roles' => 'id'],
@@ -199,11 +222,6 @@ $router->resource('roles', 'RoleController', [
 $router->resource('shapes', 'ShapeController', [
     'only' => ['index', 'show'],
     'parameters' => ['shapes' => 'id'],
-]);
-
-$router->resource('system-messages', 'SystemMessageController', [
-    'only' => ['store', 'update', 'destroy'],
-    'parameters' => ['system-messages' => 'id'],
 ]);
 
 $router->get('videos/{id}/file', 'VideoFileController@show');
@@ -342,6 +360,10 @@ $router->group([
 
     $router->get('{id}/users', [
         'uses' => 'UserController@index',
+    ]);
+
+    $router->get('{id}/statistics', [
+        'uses' => 'StatisticsController@index',
     ]);
 });
 

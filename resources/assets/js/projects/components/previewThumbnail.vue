@@ -6,19 +6,34 @@
         @mouseleave="unsetHovered"
         @click="emitClick"
         >
+            <span
+                v-show="showButtons"
+                class="preview-thumbnail__buttons"
+                >
+                <button
+                    v-if="showStatsButton"
+                    class="btn btn-default btn-sm"
+                    @click.prevent="showStatistics"
+                    :title="statisticsTitle"
+                    >
+                    <loader v-if="loading" :active="true"></loader>
+                    <i v-else class="fas fa-chart-bar"></i>
+                </button>
+                <button
+                    v-if="removable"
+                    class="btn btn-default btn-sm"
+                    @click.prevent="remove"
+                    :title="removeTitle"
+                    >
+                    <i class="fas fa-trash"></i>
+                </button>
+            </span>
             <i
-                v-if="showIcon"
+                v-if="hasIcon"
+                v-show="!hasButtons || !showButtons"
                 class="preview-thumbnail__icon fas fa-lg"
                 :class="iconClass"
                 ></i>
-            <button
-                v-if="showRemove"
-                class="btn btn-default btn-sm preview-thumbnail__icon"
-                @click.prevent="remove"
-                :title="removeTitle"
-                >
-                <i class="fas fa-trash"></i>
-            </button>
             <div v-if="touched" v-show="showPreview" class="preview-thumbnail__images">
                 <img
                     v-for="(uri, i) in uris"
@@ -46,7 +61,12 @@
  *
  * @type {Object}
  */
+import LoaderMixin from '../../core/mixins/loader';
+import volumeStatisticsApi from '../api/volumeStatistics';
+import {handleErrorResponse} from '../../core/messages/store';
+
 export default {
+    mixins: [LoaderMixin],
     props: {
         id: {
             type: Number,
@@ -64,8 +84,16 @@ export default {
             type: String,
             default: 'Remove this volume',
         },
+        statisticsTitle: {
+            type: String,
+            default: 'Show charts',
+        },
         icon: {
             type: String,
+        },
+        showStatsButton: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -75,6 +103,7 @@ export default {
             loaded: [],
             touched: false,
             hovered: false,
+            statisticsData: null,
         };
     },
     computed: {
@@ -94,15 +123,14 @@ export default {
         iconClass() {
             return this.icon ? 'fa-' + this.icon : '';
         },
-        showIcon() {
-            if (this.removable) {
-                return !this.hovered && this.icon;
-            }
-
+        hasIcon() {
             return this.icon;
         },
-        showRemove() {
-            return this.removable && this.hovered;
+        showButtons() {
+            return this.hovered || this.loading;
+        },
+        hasButtons() {
+            return this.removable || this.showStatsButton;
         },
     },
     methods: {
@@ -115,6 +143,25 @@ export default {
         },
         remove() {
             this.$emit('remove', this.id);
+        },
+        showStatistics() {
+            if (this.loading) {
+                return
+            }
+
+            // If statistics modal has been opened before, use cached data
+            if (this.statisticsData !== null) {
+                this.$emit('statistics', this.statisticsData)
+            } else {
+                this.startLoading();
+                // api request to get data for specific volume
+                volumeStatisticsApi.get({id: this.id})
+                    .then((response) => {
+                        this.$emit('statistics', response.data)
+                        this.statisticsData = response.data;
+                    }, handleErrorResponse)
+                    .finally(this.finishLoading);
+            }
         },
         uriLoaded(i) {
             this.loaded.splice(i, 1, true);

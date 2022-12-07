@@ -122,6 +122,16 @@ class Project extends Model
     }
 
     /**
+     * The project invitations of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function invitations()
+    {
+        return $this->hasMany(ProjectInvitation::class);
+    }
+
+    /**
      * Adds the user with the given role to this project.
      *
      * @param int $userId

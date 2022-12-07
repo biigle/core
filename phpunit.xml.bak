@@ -18,9 +18,6 @@
             <directory suffix=".php">./app</directory>
         </whitelist>
     </filter>
-    <extensions>
-        <extension class="Biigle\Tests\Bootstrap"/>
-    </extensions>
     <php>
         <server name="APP_ENV" value="testing"/>
         <server name="LOG_CHANNEL" value="errorlog"/>

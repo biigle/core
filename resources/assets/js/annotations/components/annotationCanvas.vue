@@ -242,7 +242,7 @@ export default {
                     keyboard: false,
                     shiftDragZoom: false,
                     pinchRotate: false,
-                    pinchZoom: false,
+                    pinchZoom: true,
                     mouseWheelZoom: false,
                 }),
             });
@@ -688,7 +688,7 @@ export default {
                 // cannot be represented in the URL parameters.
                 minResolution: 0.01,
                 // Restrict movement.
-                extent: extent
+                extent: extent,
             }));
 
             if (this.resolution === undefined) {

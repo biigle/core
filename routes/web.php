@@ -74,18 +74,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'SearchController@index',
     ]);
 
-    $router->group(['namespace' => 'SystemMessages', 'prefix' => 'system-messages'], function ($router) {
-        $router->get('/', [
-            'as' => 'system-messages',
-            'uses' => 'SystemMessagesController@index',
-        ]);
-
-        $router->get('{id}', [
-            'as' => 'system-messages-show',
-            'uses' => 'SystemMessagesController@show',
-        ]);
-    });
-
     $router->group(['prefix' => 'settings'], function ($router) {
         $router->get('/', [
             'as' => 'settings',
@@ -141,19 +129,14 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'UsersController@show',
         ]);
 
-        $router->get('system-messages', [
-            'as' => 'admin-system-messages',
-            'uses' => 'SystemMessagesController@index',
+        $router->get('announcements', [
+            'as' => 'admin-announcements',
+            'uses' => 'AnnouncementsController@index',
         ]);
 
-        $router->get('system-messages/new', [
-            'as' => 'admin-system-messages-new',
-            'uses' => 'SystemMessagesController@create',
-        ]);
-
-        $router->get('system-messages/{id}', [
-            'as' => 'admin-system-messages-edit',
-            'uses' => 'SystemMessagesController@update',
+        $router->get('announcements/new', [
+            'as' => 'admin-announcements-new',
+            'uses' => 'AnnouncementsController@create',
         ]);
 
         $router->get('logs', [
@@ -249,6 +232,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-members',
             'uses' => 'ProjectUserController@show',
         ]);
+
+        $router->get('{id}/charts', [
+            'as'   => 'project-charts',
+            'uses' => 'ProjectStatisticsController@show',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {
@@ -306,3 +294,8 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
     });
 
 });
+
+$router->get('project-invitations/{uuid}', [
+    'as'   => 'project-invitation',
+    'uses' => 'Views\Projects\ProjectInvitationController@show',
+]);

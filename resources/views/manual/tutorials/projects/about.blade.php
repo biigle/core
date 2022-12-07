@@ -18,8 +18,13 @@
         <h3><a name="members"></a><i class="fa fa-users"></i> Members</h3>
 
         <p>
-            Each project is only visible to project members. Each member has one of four roles: admin, expert, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-users"></i> Members</button> tab of the project overview to modify members. Enter a username in the input field on the top right, choose a role and click <button class="btn btn-default btn-xs">Add member</button> to add a new member to the project. Hover the mouse over a member in the list to choose a new user role using the dropdown list or click the <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i></button> button to remove a member from the roject. You cannot modify or remove yourself as a member of the project. Instead, ask another project admin to do this.
+            Each project is only visible to project members. Each member has one of four roles: admin, expert, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-users"></i> Members</button> tab of the project overview to modify members. To add a new member, click the <button class="btn btn-default btn-xs"><i class="fa fa-user-plus"></i> Add member</button> button at the top right, then enter a username, choose a role and click <button class="btn btn-success btn-xs">Add</button> to add a new member to the project. Hover the mouse over a member in the list to choose a new user role using the dropdown list or click the <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i></button> button to remove a member from the roject. You cannot modify or remove yourself as a member of the project. Instead, ask another project admin to do this.
         </p>
+        <p>
+            You can also create links to invite users as new members to the project. To create a new invitation link, click the <button class="btn btn-default btn-xs"><i class="fa fa-envelope"></i> Create invitation</button> button at the top right of the members tab. Then choose an expiration date, new member role and optional number of maximum uses for the invitation link and click <button class="btn btn-success btn-xs">Create</button>. By visiting the invitation link, users can add themselves to the project as long as the expiration date is not past and the number of maximum uses for the link is not met. This link can also be sent to people without a BIIGLE account, as they will be automatically redirected to the sign up page and then asked to join the project after they have created a user account.
+        </p>
+
+        <h4>Member roles</h4>
         <p>
             A <strong>guest</strong> is not allowed to modify anything in project. They can see all volumes, label trees and members that belong to the project. But they cannot modify anything related to the project and particularly cannot create or modify annotations in the volumes that belong to the project. A guest is able to access all label trees that are attached to the project, even if a label tree is private and the guest is no member of the tree.
         </p>
@@ -59,9 +64,24 @@
         <p>
             Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs">Create Volume</button> button of the volumes tab in the project overview. A new volume will be automatically attached to the project it was created for. Volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, enter the name of the volume you want to attach in the input field on the top right of the volumes tab and hit enter. Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-trash"></i></button> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
         </p>
+        <p>
+            Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-chart-bar"></i></button> button in order to see some charts of this volume, such as the per-user contribution of annotations, the ratio of annotated vs. not-annotated files, or the abundance of annotation labels. For further details, have a look at the Charts section below.
+        </p>
 
         <p>
             If a project has lots of volumes, filtering the volumes can help to find a particular volume. To filter the volumes in the project overview, type part of the name of the volume in the input field on the top left of the volumes tab. The volumes list will update as you type. You can also show only image volumes or video volumes with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-image"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-film"></i></button> buttons, respectively.
+        </p>
+
+        <h3><a name="charts"></a><i class="fa fa-chart-bar"></i> Charts</h3>
+
+        <p>
+            The charts tab encapsulates a number of (interactive) visualizations that are presenting metadata about the project. These are comprised of charts on annotated vs. not-annotated files, the contribution of annotations per project-member as well as their contribution to each volume of the project, and finally, information on labels that were used in the project.
+        </p>
+        <p>
+            You can choose to see the charts either across all volumes of the project (the default), or only the image- or video-volumes by pressing the respective filter-button at the top.
+        </p>
+        <p>
+            The NetMap Display depicts labels that co-occur with other labels on the same file. Individual labels can be selected to highlight only the connections of this label. Click the <button class="btn btn-default btn-xs"><i class="fa fa-project-diagram"></i></button> button to toggle between the circular and force layouts.
         </p>
 
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>

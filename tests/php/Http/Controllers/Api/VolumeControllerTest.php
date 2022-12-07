@@ -257,8 +257,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            ->assertStatus(200);
         $copy = $project->volumes()->first();
 
         $this->assertNotNull($copy);
@@ -295,9 +295,9 @@ class VolumeControllerTest extends ApiTestCase
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldImage->id],'file_label_ids'=>[$oldImageLabel->id]]);
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['file_ids'=>[$oldImage],'file_label_ids'=>[$oldImageLabel->id]])
+            ->assertStatus(200);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->first();
@@ -348,9 +348,8 @@ class VolumeControllerTest extends ApiTestCase
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldVideo->id],'file_label_ids'=>[$oldVideoLabel->id]]);
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            ->assertStatus(200);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newVideoLabel = $newVideo->labels()->first();
@@ -394,9 +393,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->post("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldImage->id],'label_ids'=>[$oldAnnotationLabel->id]]);
-        $response->assertStatus(302);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            ->assertStatus(200);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();

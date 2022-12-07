@@ -15,7 +15,7 @@ return new class extends Migration
     {
         // Create a collation to sort strings "naturally".
         // See: https://stackoverflow.com/a/67975489/1796523
-        DB::statement('CREATE COLLATION "natural" (provider = icu, locale = "en@colNumeric=yes");');
+        DB::statement('CREATE COLLATION IF NOT EXISTS "natural" (provider = icu, locale = "en@colNumeric=yes");');
 
         DB::statement('ALTER TABLE "images" ALTER COLUMN "filename" type VARCHAR(512) COLLATE "natural";');
         DB::statement('ALTER TABLE "videos" ALTER COLUMN "filename" type VARCHAR(512) COLLATE "natural";');

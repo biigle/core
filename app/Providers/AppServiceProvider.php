@@ -3,6 +3,7 @@
 namespace Biigle\Providers;
 
 use Auth;
+use Biigle\Announcement;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
@@ -39,8 +40,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('*', function ($view) {
-            // Make authenticated user available in any view.
-            $view->with('user', Auth::user());
+            // Make some variables available in any view.
+            $user = Auth::user();
+            $view->with('user', $user);
+            if ($user) {
+                $view->with('hasNotification', $user->unreadNotifications()->exists());
+            }
+            $view->with('announcement', Announcement::getActive());
         });
 
         // Configure global proxy settings for readfile() and the likes.

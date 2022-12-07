@@ -365,6 +365,7 @@ class VolumeController extends Controller
             ->get();
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
+
         foreach ($oldImages as $imageIdx => $oldImage) {
             $newImageId = $newImageIds[$imageIdx];
             $filteredLabels = $oldImage->labels->filter(function ($label) use ($selectedLabelIds) {
@@ -376,8 +377,8 @@ class VolumeController extends Controller
                 unset($origin['id']);
                 return $origin;
             })->chunk(10000)->each(function ($chunk) {
-                ImageLabel::insert($chunk->toArray());
-            });
+                    ImageLabel::insert($chunk->toArray());
+                });
         }
     }
 
@@ -486,9 +487,11 @@ class VolumeController extends Controller
                 $origin['video_id'] = $newVideoId;
                 unset($origin['id']);
                 return $origin;
-            })->chunk(10000)->each(function ($chunk) {
-                VideoLabel::insert($chunk->toArray());
-            });
+            })
+//                ->flatten(1)
+                ->chunk(10000)->each(function ($chunk) {
+                    VideoLabel::insert($chunk->toArray());
+                });
         }
     }
 

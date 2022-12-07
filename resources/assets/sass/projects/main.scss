@@ -18,5 +18,10 @@
     text-align: center;
 }
 
+.project-invitation {
+    margin-top: 5em;
+}
+
 @import 'components/previewThumbnail';
 @import 'show';
+@import 'charts';
