@@ -60,7 +60,7 @@ class StoreVolumeReport extends StoreReport
 
         return array_merge(parent::rules(), [
             'type_id' => ['required', Rule::in($types)],
-            'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
+            'annotation_session_id' => "nullable|integer|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
         ]);
     }
 

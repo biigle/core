@@ -36,7 +36,7 @@ class StoreProjectReport extends StoreReport
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'type_id' => 'required|exists:report_types,id',
+            'type_id' => 'required|integer|exists:report_types,id',
         ]);
     }
 

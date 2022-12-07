@@ -23,7 +23,7 @@ class StoreReport extends FormRequest
             'export_area' => 'nullable|boolean',
             'newest_label' => 'nullable|boolean',
             'only_labels' => 'nullable|array',
-            'only_labels.*' => 'exists:labels,id',
+            'only_labels.*' => 'integer|exists:labels,id',
             'aggregate_child_labels' => "nullable|boolean",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
