@@ -8,10 +8,6 @@ let instance = null;
 
 let leases = 0;
 
-let newInstance = function () {
-    return
-};
-
 export default {
     getInstance() {
         if (!instance) {

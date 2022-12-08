@@ -4,12 +4,6 @@ import VideoAnnotationApi from '../api/videoAnnotations';
 import {getRoundToPrecision} from '../utils';
 import {interpolate} from 'polymorph-js';
 
-/**
- * Annotation model.
- *
- * @type {Object}
- */
-const POLL_INTERVAL = 5000;
 
 export default Vue.extend({
     data() {
