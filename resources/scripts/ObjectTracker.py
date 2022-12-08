@@ -22,7 +22,7 @@ class ObjectTracker(object):
         self.tracker.init(frame, track_window)
 
     def center_out_of_frame(self, center):
-        return center[0] <= 0 or center[1] <= 0 or center[0] >= self.width or center[1] >= self.height
+        return center[0] <= 1 or center[1] <= 1 or center[0] >= self.width - 1 or center[1] >= self.height - 1
 
     def __iter__(self):
         return self
