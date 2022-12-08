@@ -35,6 +35,7 @@
         "laravel/ui": "^3.0",
         "msurguy/honeypot": "^1.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
+        "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.0",
         "ramsey/uuid-doctrine": "^1.8"
     },
