@@ -8,6 +8,8 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Project;
 use Biigle\Video;
@@ -23,6 +25,7 @@ use Ramsey\Uuid\Uuid;
 
 class VolumeController extends Controller
 {
+
 
     /**
      * Shows all volumes the user has access to.
@@ -190,6 +193,8 @@ class VolumeController extends Controller
     public function clone($volumeId, $destProjectId, CloneVolume $request)
     {
         return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
+            $createSyncLimit = 10000;
+
             $project = Project::findOrFail($destProjectId);
             $volume = Volume::findOrFail($volumeId);
             $copy = $volume->replicate();
@@ -197,32 +202,19 @@ class VolumeController extends Controller
             $copy->save();
 
             $fileIds = $request->input('file_ids', []);
+            $fileLabelIds = $request->input('file_label_ids', []);
+            $annotationLabelIds = $request->input('label_ids', []);
 
             if (!empty($fileIds)) {
-                $fileLabelIds = $request->input('file_label_ids', []);
-                $annotationLabelIds = $request->input('label_ids', []);
-
-                $fileLabelIds = empty($fileLabelIds) ? [] :
-                    $this->filterLabels($fileIds, $fileLabelIds, $volume->isImageVolume(), true);
-                $annotationLabelIds = empty($annotationLabelIds) ? [] :
-                    $this->filterLabels($fileIds, $annotationLabelIds, $volume->isImageVolume(), false);
-
-                if ($volume->isImageVolume()) {
-                    $this->copyImages($volume, $copy, $fileIds);
-                    if (!empty($annotationLabelIds)) {
-                        $this->copyImageAnnotation($volume, $copy, $fileIds, $annotationLabelIds);
-                    }
-                    if (!empty($fileLabelIds)) {
-                        $this->copyImageLabels($volume, $copy, $fileIds, $fileLabelIds);
-                    }
+                // If too many files should be created, do this asynchronously in the
+                // background. Else the script will run in the 30 s execution timeout.
+                $job = new CloneImagesOrVideos($volume, $copy, $fileIds, $fileLabelIds, $annotationLabelIds);
+                if (count($fileIds) > $createSyncLimit) {
+                    Queue::pushOn('high', $job);
+                    $copy->creating_async = true;
+                    $copy->save();
                 } else {
-                    $this->copyVideos($volume, $copy, $fileIds);
-                    if (!empty($annotationLabelIds)) {
-                        $this->copyVideoAnnotation($volume, $copy, $fileIds, $annotationLabelIds);
-                    }
-                    if (!empty($fileLabelIds)) {
-                        $this->copyVideoLabels($volume, $copy, $fileIds, $fileLabelIds);
-                    }
+                    Queue::connection('sync')->push($job);
                 }
             }
 
