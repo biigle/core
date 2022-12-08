@@ -33,7 +33,7 @@ class ObjectTrackingFailed implements ShouldBroadcast
     /**
      * Create a new event instance.
      *
-     * @param VideoAnnotations $annotation
+     * @param VideoAnnotation $annotation
      * @param User $user
      * @return void
      */
