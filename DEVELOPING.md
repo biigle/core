@@ -60,25 +60,7 @@ Now perform these steps:
 
 6. Start the whole application with `docker compose up -d`. The BIIGLE application is now running at <http://localhost:8000>. You can stop the containers with `docker compose stop` or destroy them with `docker compose down`. To delete the development database as well, run `docker volume prune` after the containers were destroyed.
 
-### 3. Initialize the application
-
-Before you can start using or developing BIIGLE, you need to create the first user with:
-
-```
-docker compose exec app php artisan user:new
-```
-
-Follow these steps to create a new project and volume with test images:
-
-1. Create a new directory containing a few images in the `storage/images` directory. Example: `storage/images/test`.
-
-2. Open BIIGLE at <http://localhost:8000> in the browser.
-
-3. Create a new project and volume in BIIGLE. Choose "Storage disk" as volume file source and you should be able to select the directory with images created before.
-
-Now BIIGLE is up and running and you can start developing! As a first step, you can get familiar with the [Laravel directory structure](https://laravel.com/docs/9.x/structure).
-
-## Building JavaScript and assets
+### 3. Build JavaScript and assets
 
 The JavaScript and asset source files are located in `resources/assets`. The files are built using NPM and Laravel Mix. Before you start, you have to configure NPM to authenticate to GitHub:
 
@@ -96,7 +78,26 @@ Important commands for development are:
 
 - `npm run watch`: Starts a continuous process to watch for file changes. Rebuilds the assets whenever a file is changed. This can be used during development.
 
-- `npm run prod`: Builds and minifies the assets. This command should be run before each new commit that changes assets.
+- `npm run dev`: Builds the assets only once. **You should run this command now.**
+
+### 4. Initialize the application
+
+Before you can start using or developing BIIGLE, you need to create the first user with:
+
+```
+docker compose exec app php artisan user:new
+```
+
+Follow these steps to create a new project and volume with test images:
+
+1. Create a new directory containing a few images in the `storage/images` directory. Example: `storage/images/test`.
+
+2. Open BIIGLE at <http://localhost:8000> in the browser.
+
+3. Create a new project and volume in BIIGLE. Choose "Storage disk" as volume file source and you should be able to select the directory with images created before.
+
+Now BIIGLE is up and running and you can start developing! As a first step, you can get familiar with the [Laravel directory structure](https://laravel.com/docs/9.x/structure).
+
 
 ## Runing the tests
 
