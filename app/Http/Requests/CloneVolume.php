@@ -31,14 +31,11 @@ class CloneVolume extends FormRequest
      */
     public function authorize()
     {
-        $this->project = Project::findOrFail($this->route('id2'));
         $this->volume = Volume::findOrFail($this->route('id'));
+        $this->project = Project::findOrFail($this->route('id2'));
 
-        $canUpdateProject = $this->user()->can('update', $this->project);
-        $canCloneVolume = $this->user()->can('copy',$this->volume);
-
-        //TODO: include $canCloneVolume
-        return $canUpdateProject;
+        return $this->user()->can('update', $this->project) &&
+            $this->user()->can('update', $this->volume);
     }
 
     /**
@@ -58,16 +55,6 @@ class CloneVolume extends FormRequest
             'file_label_ids.*' => 'int|gte:0'
             ];
     }
-
-//    /**
-//     * Prepare the data for validation.
-//     *
-//     * @return void
-//     */
-//    protected function prepareForValidation()
-//    {
-//        UpdateVolume::prepareForValidation();
-//    }
 
 
 }
