@@ -36,11 +36,12 @@ if (csrfTokenElement) {
  */
 
 // import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
 
-window.Pusher = require('pusher-js');
+// window.Pusher = Pusher;
+
 
 // The Echo instance can be obtained through resources/assets/js/core/echo.js.
-
 // window.Echo = new Echo({
 //     broadcaster: 'pusher',
 //     key: process.env.MIX_PUSHER_APP_KEY,

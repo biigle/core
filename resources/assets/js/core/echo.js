@@ -3,6 +3,7 @@
 // it's no longer needed. This keeps the websocket server free.
 
 import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
 let instance = null;
 
@@ -11,7 +12,7 @@ let leases = 0;
 export default {
     getInstance() {
         if (!instance) {
-            instance = new Echo({
+            const options = {
                 broadcaster: 'pusher',
                 key: process.env.MIX_PUSHER_APP_KEY,
                 wsHost: process.env.MIX_PUSHER_APP_HOST,
@@ -22,6 +23,12 @@ export default {
                 disableStats: true,
                 enableTransports: ['ws', 'wss'],
                 disabledTransports: ['xhr_streaming', 'xhr_polling', 'sockjs'],
+                authEndpoint: '/broadcasting/auth',
+            };
+
+            instance = new Echo({
+                ...options,
+                client: new Pusher(options.key, options),
             });
         }
 
