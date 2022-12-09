@@ -36,11 +36,25 @@ services:
     init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
+  websockets:
+    image: quay.io/soketi/soketi:1.4-16-alpine
+    environment:
+      - SOKETI_DEFAULT_APP_ID=${SOKETI_DEFAULT_APP_ID}
+      - SOKETI_DEFAULT_APP_KEY=${SOKETI_DEFAULT_APP_KEY}
+      - SOKETI_DEFAULT_APP_SECRET=${SOKETI_DEFAULT_APP_SECRET}
+      - SOKETI_DEFAULT_APP_USER_AUTHENTICATION=1
+      - SOKETI_SHUTDOWN_GRACE_PERIOD=3000
+      - SOKETI_METRICS_ENABLED=0
+      # - SOKETI_DEBUG=1
+    ports:
+      - 6001:6001
+
   # The web server
   web:
     image: ghcr.io/biigle/web
     depends_on:
       - app
+      - websockets
     build:
       context: ./
       dockerfile: .docker/web.dockerfile

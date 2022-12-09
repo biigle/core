@@ -185,7 +185,7 @@ return [
          * Application Service Providers...
          */
         Biigle\Providers\AppServiceProvider::class,
-        // Biigle\Providers\BroadcastServiceProvider::class,
+        Biigle\Providers\BroadcastServiceProvider::class,
         Biigle\Providers\AuthServiceProvider::class,
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,

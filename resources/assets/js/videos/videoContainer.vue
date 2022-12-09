@@ -1,6 +1,7 @@
 <script>
 import Annotation from './models/Annotation';
 import AnnotationsTab from './components/viaAnnotationsTab';
+import Echo from '../core/echo';
 import Events from '../core/events';
 import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
 import LabelTrees from '../label-trees/components/labelTrees';
@@ -171,7 +172,6 @@ export default {
         },
         addCreatedAnnotation(response) {
             let annotation = this.prepareAnnotation(response.body);
-            annotation.$on('tracking-failed', this.removeAnnotation);
             this.annotations.push(annotation);
 
             return annotation;
@@ -288,11 +288,11 @@ export default {
         trackAnnotation(pendingAnnotation) {
             pendingAnnotation.track = true;
             this.createAnnotation(pendingAnnotation)
-                .then(this.startPollTrackingAnnotation);
+                .then(this.setAnnotationTrackingState);
         },
-        startPollTrackingAnnotation(annotation) {
+        setAnnotationTrackingState(annotation) {
             if (annotation) {
-                annotation.startPollTracking();
+                annotation.startTracking();
             }
         },
         handleSelectedLabel(label) {
@@ -593,6 +593,25 @@ export default {
             this.attachingLabel = false;
             this.swappingLabel = swapping;
         },
+        initializeEcho() {
+            // Use the websocket connection to get events on object tracking.
+            // Previously this was done with XHR polling.
+            Echo.getInstance().private(`user-${this.user.id}`)
+                .listen('.Biigle\\Events\\ObjectTrackingSucceeded', this.handleSucceededTracking)
+                .listen('.Biigle\\Events\\ObjectTrackingFailed', this.handleFailedTracking);
+        },
+        handleSucceededTracking(event) {
+            let annotation = this.annotations.find(a => a.id === event.annotation.id);
+            if (annotation) {
+                annotation.finishTracking(event.annotation);
+            }
+        },
+        handleFailedTracking(event) {
+            let annotation = this.annotations.find(a => a.id === event.annotation.id);
+            if (annotation) {
+                annotation.failTracking();
+            }
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -643,6 +662,10 @@ export default {
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
+        }
+
+        if (this.canEdit) {
+            this.initializeEcho();
         }
     },
     mounted() {
