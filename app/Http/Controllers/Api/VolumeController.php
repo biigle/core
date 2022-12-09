@@ -156,7 +156,7 @@ class VolumeController extends Controller
      *
      * @param int $volumeId
      * @param int $destProjectId
-     * @param Request $request
+     * @param CloneVolume $request
      * @return Response
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
      * @apiGroup Volumes
@@ -192,10 +192,10 @@ class VolumeController extends Controller
             $copy->save();
 
             $fileIds = $request->input('file_ids', []);
-            $fileLabelIds = $request->input('file_label_ids', []);
-            $annotationLabelIds = $request->input('label_ids', []);
 
             if (!empty($fileIds)) {
+                $fileLabelIds = $request->input('file_label_ids', []);
+                $annotationLabelIds = $request->input('label_ids', []);
                 // If too many files should be created, do this asynchronously in the
                 // background. Else the script will run in the 30 s execution timeout.
                 $job = new CloneImagesOrVideos($volume, $copy, $fileIds, $fileLabelIds, $annotationLabelIds);
