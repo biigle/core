@@ -5,6 +5,7 @@
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
     <script type="text/javascript">
+        biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});

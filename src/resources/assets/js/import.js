@@ -1,3 +1,4 @@
+export let Echo = biigle.$require('echo');
 export let Events = biigle.$require('events');
 export let handleErrorResponse = biigle.$require('messages').handleErrorResponse;
 export let ImageGrid = biigle.$require('volumes.components.imageGrid');

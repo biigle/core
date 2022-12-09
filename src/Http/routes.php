@@ -60,8 +60,4 @@ $router->group([
     $router->get('labels/{id}/video-annotations', [
         'uses' => 'Labels\VideoAnnotationsController@index',
     ]);
-
-    $router->get('largo-jobs/{uuid}', [
-        'uses' => 'LargoJobController@show',
-    ]);
 });

@@ -2,6 +2,8 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\Modules\Largo\Events\LargoSessionFailed;
+use Biigle\Modules\Largo\Events\LargoSessionSaved;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
@@ -13,6 +15,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Illuminate\Support\Facades\Event;
 use TestCase;
 
 class ApplyLargoSessionTest extends TestCase
@@ -579,6 +582,48 @@ class ApplyLargoSessionTest extends TestCase
         }
 
         $this->assertEmpty($volume->fresh()->attrs);
+    }
+
+    public function testDispatchEventOnSuccess()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        Event::assertDispatched(function (LargoSessionSaved $event) use ($user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals('job_id', $event->id);
+            return true;
+        });
+    }
+
+    public function testDispatchEventOnError()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSessionStub('job_id', $user, $dismissed, $changed, [], [], false);
+        try {
+            $job->handle();
+        } catch (\Exception $e) {
+            // ignore
+        }
+
+        Event::assertDispatched(function (LargoSessionFailed $event) use ($user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals('job_id', $event->id);
+            return true;
+        });
     }
 }
 

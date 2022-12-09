@@ -1,7 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
-import LargoJobApi from '../api/jobs';
 import RelabelImageGrid from '../components/relabelImageGrid';
+import {Echo} from '../import';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
 import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants';
@@ -27,12 +27,14 @@ export default {
     },
     data() {
         return {
+            user: null,
             labelTrees: [],
             step: 0,
             selectedLabel: null,
             annotationsCache: {},
             lastSelectedImage: null,
             forceChange: false,
+            waitForSessionId: null,
         };
     },
     computed: {
@@ -216,30 +218,31 @@ export default {
                     changed_video_annotations: this.changedVideoAnnotationsToSave,
                     force: this.forceChange,
                 })
-                .then(this.waitForJobToFinish, (response) => {
-                    this.finishLoading();
-                    handleErrorResponse(response);
-                });
+                .then(
+                    response => this.waitForSessionId = response.body.id,
+                    (response) => {
+                        this.finishLoading();
+                        handleErrorResponse(response);
+                    }
+                );
         },
-        waitForJobToFinish(response) {
-            let id = response.body.id;
-            let wait = () => {
-                window.setTimeout(() => {
-                    LargoJobApi.get({id: id}).then(wait, this.saved);
-                }, 2000);
-            };
-
-            wait();
-        },
-        saved() {
-            this.finishLoading();
-            Messages.success('Saved. You can now start a new re-evaluation session.');
-            this.step = 0;
-            for (let key in this.annotationsCache) {
-                if (!this.annotationsCache.hasOwnProperty(key)) continue;
-                delete this.annotationsCache[key];
+        handleSessionSaved(event) {
+            if (event.id == this.waitForSessionId) {
+                this.finishLoading();
+                Messages.success('Saved. You can now start a new re-evaluation session.');
+                this.step = 0;
+                for (let key in this.annotationsCache) {
+                    if (!this.annotationsCache.hasOwnProperty(key)) continue;
+                    delete this.annotationsCache[key];
+                }
+                this.handleSelectedLabel(this.selectedLabel);
             }
-            this.handleSelectedLabel(this.selectedLabel);
+        },
+        handleSessionFailed(event) {
+            if (event.id == this.waitForSessionId) {
+                this.finishLoading();
+                Messages.danger('There was an unexpected error.');
+            }
         },
         performOnAllImagesBetween(image1, image2, callback) {
             let index1 = this.allAnnotations.indexOf(image1);
@@ -300,6 +303,11 @@ export default {
 
             return changed;
         },
+        initializeEcho() {
+            Echo.getInstance().private(`user-${this.user.id}`)
+                .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
+                .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
+        },
     },
     watch: {
         annotations(annotations) {
@@ -318,6 +326,8 @@ export default {
         },
     },
     created() {
+        this.user = biigle.$require('largo.user');
+
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {
                 e.preventDefault();
@@ -326,6 +336,8 @@ export default {
                 return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
             }
         });
+
+        this.initializeEcho();
     },
 };
 </script>

@@ -5,6 +5,7 @@
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
     <script type="text/javascript">
+        biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');

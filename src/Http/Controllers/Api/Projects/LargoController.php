@@ -44,6 +44,8 @@ class LargoController extends Controller
         }
 
         $uuid = Uuid::uuid4();
+        // Set job ID in volumes to lock them for any other Largo sessions to save while
+        // this session is saved.
         $request->volumes->each(function ($volume) use ($uuid) {
             $attrs = $volume->attrs;
             $attrs['largo_job_id'] = $uuid;

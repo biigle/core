@@ -6,6 +6,8 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Jobs\Job;
 use Biigle\Label;
+use Biigle\Modules\Largo\Events\LargoSessionFailed;
+use Biigle\Modules\Largo\Events\LargoSessionSaved;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\User;
@@ -121,6 +123,10 @@ class ApplyLargoSession extends Job implements ShouldQueue
                 $this->handleImageAnnotations();
                 $this->handleVideoAnnotations();
             });
+
+            LargoSessionSaved::dispatch($this->id, $this->user);
+        } catch (\Exception $e) {
+            LargoSessionFailed::dispatch($this->id, $this->user);
         } finally {
             Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
                 $attrs = $volume->attrs;
