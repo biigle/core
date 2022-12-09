@@ -30,7 +30,7 @@ class UserChannel extends PrivateChannel
     /**
      * Authenticate the user's access to the channel.
      *
-     * @param  \App\Models\User  $user
+     * @param  User  $user
      * @param  int  $id
      * @return bool
      */
