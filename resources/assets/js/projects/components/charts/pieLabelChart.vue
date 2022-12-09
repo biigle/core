@@ -41,8 +41,8 @@ export default {
                 };
                 ret.push(formatObj);
             }
-
-            return ret;
+            
+            return ret.sort(function(a, b) { return b.value-a.value; });
         },
         option() {
             return {
@@ -80,7 +80,7 @@ export default {
                         labelLine: {
                             show: true
                         },
-                        data: this.data.sort(function(a, b) { return b.value-a.value; }),
+                        data: this.data,
                         emphasis: {
                             focus: 'self'
                         },
