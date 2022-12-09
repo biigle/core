@@ -163,7 +163,7 @@ class VolumeController extends Controller
      *
      * @param int $volumeId
      * @param int $destProjectId
-     * @param Request $request
+     * @param CloneVolume $request
      * @return Response
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
      * @apiGroup Volumes
