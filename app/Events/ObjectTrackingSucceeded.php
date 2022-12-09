@@ -2,6 +2,7 @@
 
 namespace Biigle\Events;
 
+use Biigle\Broadcasting\UserChannel;
 use Biigle\User;
 use Biigle\VideoAnnotation;
 use Illuminate\Broadcasting\Channel;
@@ -50,7 +51,7 @@ class ObjectTrackingSucceeded implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel("user-{$this->user->id}");
+        return new UserChannel($this->user);
     }
 
     /**
