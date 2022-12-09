@@ -15,7 +15,7 @@ use Biigle\Volume;
 use \Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 class CloneImagesOrVideos extends Job implements ShouldQueue
@@ -87,16 +87,9 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             }
         });
 
-        $newIds = $copy->files()
-            ->orderBy('id', 'desc')
-            ->take($copy->files()->count())
-            ->pluck('id')
-            ->toArray();
 
         if ($copy->files()->exists()) {
-//            ProcessNewVolumeFiles::dispatch($copy, $newIds);
-        } else {
-//            ProcessNewVolumeFiles::dispatch($copy);
+            ProcessNewVolumeFiles::dispatch($copy);
         }
 
         $copy->flushThumbnailCache();
@@ -107,7 +100,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         }
 
         if ($copy->isImageVolume()) {
-            event('images.cloned', [$copy->id, $newIds]);
+            event('images.cloned', [$copy->id]);
         }
     }
 
