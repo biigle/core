@@ -41,8 +41,8 @@ export default {
                 };
                 ret.push(formatObj);
             }
-            
-            return ret.sort(function(a, b) { return b.value-a.value; });
+
+            return ret.sort((a, b) => b.value - a.value);
         },
         option() {
             return {
