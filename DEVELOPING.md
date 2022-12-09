@@ -78,7 +78,7 @@ Important commands for development are:
 
 - `npm run watch`: Starts a continuous process to watch for file changes. Rebuilds the assets whenever a file is changed. This can be used during development.
 
-- `npm run dev`: Builds the assets only once. **You should run this command now.**
+- `npm run dev`: Builds the assets once. **You should run this command now.**
 
 ### 4. Initialize the application
 
