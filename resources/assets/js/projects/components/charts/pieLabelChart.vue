@@ -60,6 +60,12 @@ export default {
                     trigger: 'item',
                     formatter: '{b} : <b>{c}</b> ({d}%)'
                 },
+                legend: {
+                    orient: 'horizontal',
+                    bottom: '5%',
+                    left: 'center',
+                    type: 'scroll',
+                },
                 series: [
                     {
                         type: 'pie',
