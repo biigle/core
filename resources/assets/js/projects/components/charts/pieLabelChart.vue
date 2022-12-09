@@ -74,7 +74,7 @@ export default {
                         labelLine: {
                             show: true
                         },
-                        data: this.data,
+                        data: this.data.sort(function(a, b) { return b.value-a.value; }),
                         emphasis: {
                             focus: 'self'
                         },
