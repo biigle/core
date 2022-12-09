@@ -2,8 +2,11 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Events\ObjectTrackingFailed;
+use Biigle\Events\ObjectTrackingSucceeded;
 use Biigle\Jobs\Job;
 use Biigle\Shape;
+use Biigle\User;
 use Biigle\VideoAnnotation;
 use Exception;
 use File;
@@ -29,6 +32,13 @@ class TrackObject extends Job implements ShouldQueue
     protected $annotation;
 
     /**
+     * The user who initialized the tracking request.
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
      * Ignore this job if the annotation does not exist any more.
      *
      * @var bool
@@ -46,10 +56,12 @@ class TrackObject extends Job implements ShouldQueue
      * Create a new instance.
      *
      * @param VideoAnnotation $annotation The annotation that defines the initial object to track.
+     * @param User $user The user who initialized the tracking request.
      */
-    public function __construct(VideoAnnotation $annotation)
+    public function __construct(VideoAnnotation $annotation, User $user)
     {
         $this->annotation = $annotation;
+        $this->user = $user;
     }
 
     /**
@@ -65,7 +77,7 @@ class TrackObject extends Job implements ShouldQueue
             $points = $this->annotation->points;
 
             if (empty($keyframes)) {
-                $this->annotation->delete();
+                ObjectTrackingFailed::dispatch($this->annotation, $this->user);
 
                 return;
             }
@@ -80,10 +92,11 @@ class TrackObject extends Job implements ShouldQueue
             // If the annotation has been deleted in the meantime, ignore the result.
             if ($this->annotation->exists()) {
                 $this->annotation->save();
+                ObjectTrackingSucceeded::dispatch($this->annotation, $this->user);
             }
         } catch (Exception $e) {
             Log::warning("Could not track object for video {$this->annotation->video->id}: {$e->getMessage()}");
-            $this->annotation->delete();
+            ObjectTrackingFailed::dispatch($this->annotation, $this->user);
         }
     }
 
