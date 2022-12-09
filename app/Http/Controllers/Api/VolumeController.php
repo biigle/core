@@ -257,13 +257,17 @@ class VolumeController extends Controller
         if ($isFileLabel) {
             $labels = $isImageVol ? ImageLabel::find($labelIds) : VideoLabel::find($labelIds);
             return $labels->filter(function ($label) use ($fileIds, $fileType) {
+                //filter labels whose files were not copied
                 return in_array($label->$fileType, $fileIds);
             })->pluck('id')->toArray();
         } else {
             $labels = $isImageVol ? ImageAnnotationLabel::find($labelIds) : VideoAnnotationLabel::find($labelIds);
+            //get annotation ids
             $annotationIds = $labels->pluck('annotation_id');
+            //get annotations
             $annotations = $isImageVol ? ImageAnnotation::find($annotationIds) : VideoAnnotation::find($annotationIds);
             return $annotations->filter(function ($label) use ($fileIds, $fileType) {
+                //filter annotations whose files were not copied
                 return in_array($label->$fileType, $fileIds);
             })->pluck('id')->toArray();
         }
