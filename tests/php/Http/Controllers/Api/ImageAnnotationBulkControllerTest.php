@@ -186,6 +186,15 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $this->assertEquals(1, $this->annotation->image->annotations()->count());
+
+        $this->postJson($url, [[
+                'image_id' => $this->annotation->image_id + 0.9,
+                'shape_id' => Shape::pointId(),
+                'points' => [100, 100],
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 999,
+            ]])
+            ->assertStatus(422);
     }
 
     public function testStoreLimit()
