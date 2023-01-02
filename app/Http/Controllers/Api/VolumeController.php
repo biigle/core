@@ -268,31 +268,33 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $selectedFileIds
-     * @param int[] $selectedLabelIds
+     * @param int[] $fileIds
+     * @param int[] $labelIds
      **/
-    private function copyImageAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
+    private function copyImageAnnotation($volume, $copy, $fileIds, $labelIds)
     {
 
-        $usedAnnotationIds = ImageAnnotation::with('labels')
-            ->whereIn('image_id', $selectedFileIds)
-            ->orderBy('id')
-            ->get()
-            ->filter(function ($annotation) use ($selectedLabelIds) {
-                return !empty(array_intersect($annotation->labels->pluck('id')->toArray(), $selectedLabelIds));
+        $fileIds = empty($fileIds) ? $volume->images()->pluck('id')->toArray() : $fileIds;
+        $usedAnnotationIds = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->when(!empty($labelIds), function ($query) use ($labelIds) {
+                return $query->whereIn('image_annotation_labels.label_id', $labelIds);
             })
-            ->pluck('id')
+            ->whereIn('image_annotations.image_id', $fileIds)
+            ->distinct() // because an annotation with multiple labels would be duplicated
+            ->pluck('image_annotations.id')
             ->toArray();
 
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
-            ->whereIn('id', $selectedFileIds)
+            ->when($volume->images->count() != count($fileIds), function ($query) use ($fileIds) {
+                return $query->whereIn('id', $fileIds);
+            })
             ->orderBy('id')
             ->with('annotations.labels')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize, $usedAnnotationIds, $selectedLabelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize, $usedAnnotationIds, $labelIds) {
                 $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
@@ -324,7 +326,7 @@ class VolumeController extends Controller
                     foreach ($annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
-                            if (in_array($annotationLabel->id, $selectedLabelIds)) {
+                            if (in_array($annotationLabel->id, $labelIds)) {
                                 $original = $annotationLabel->getRawOriginal();
                                 $original['annotation_id'] = $newAnnotationId;
                                 unset($original['id']);

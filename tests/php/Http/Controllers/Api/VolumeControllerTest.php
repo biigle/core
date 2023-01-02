@@ -296,7 +296,7 @@ class VolumeControllerTest extends ApiTestCase
         $oldImageLabel = $oldImage->labels()->first();
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldImage->id],'file_label_ids'=>[$oldImageLabel->id]]);
+            ['file_ids' => [$oldImage->id], 'file_label_ids' => [$oldImageLabel->id]]);
         $response->assertStatus(200);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -349,7 +349,7 @@ class VolumeControllerTest extends ApiTestCase
         $oldVideoLabel = $oldVideo->labels()->first();
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldVideo->id],'file_label_ids'=>[$oldVideoLabel->id]]);
+            ['file_ids' => [$oldVideo->id], 'file_label_ids' => [$oldVideoLabel->id]]);
         $response->assertStatus(200);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
@@ -395,7 +395,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldImage->id],'label_ids'=>[$oldAnnotationLabel->id]]);
+            ['only_files' => [$oldImage->id], 'clone_annotations' => [true], 'only_annotation_labels' => [$oldAnnotationLabel->id]]);
         $response->assertStatus(200);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -442,7 +442,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['file_ids'=>[$oldVideo->id],'label_ids'=>[$oldAnnotationLabel->id]]);
+            ['file_ids' => [$oldVideo->id], 'label_ids' => [$oldAnnotationLabel->id]]);
         $response->assertStatus(200);
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
