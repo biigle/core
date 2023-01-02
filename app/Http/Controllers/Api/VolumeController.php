@@ -190,8 +190,8 @@ class VolumeController extends Controller
     public function clone($volumeId, $destProjectId, CloneVolume $request)
     {
         return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
-            $project = Project::findOrFail($destProjectId);
-            $volume = Volume::findOrFail($volumeId);
+            $project = $request->project;
+            $volume = $request->volume;
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
             $copy->save();
