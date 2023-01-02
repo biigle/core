@@ -196,33 +196,29 @@ class VolumeController extends Controller
             $copy->name = $request->input('name', $volume->name);
             $copy->save();
 
-            $fileIds = $request->input('file_ids', []);
+            $onlyFiles = $request->input('only_files', []);
 
-            if (!empty($fileIds)) {
-                $fileLabelIds = $request->input('file_label_ids', []);
-                $annotationLabelIds = $request->input('label_ids', []);
+            $cloneAnnotations = $request->input('clone_annotations', false);
+            $onlyAnnotationLabels = $request->input('only_annotation_labels', []);
 
-                $fileLabelIds = empty($fileLabelIds) ? [] :
-                    $this->filterLabels($fileIds, $fileLabelIds, $volume->isImageVolume(), true);
-                $annotationLabelIds = empty($annotationLabelIds) ? [] :
-                    $this->filterLabels($fileIds, $annotationLabelIds, $volume->isImageVolume(), false);
+            $cloneFileLabels = $request->input('clone_file_labels', false);
+            $onlyFileLabels = $request->input('only_file_labels', []);
 
-                if ($volume->isImageVolume()) {
-                    $this->copyImages($volume, $copy, $fileIds);
-                    if (!empty($annotationLabelIds)) {
-                        $this->copyImageAnnotation($volume, $copy, $fileIds, $annotationLabelIds);
-                    }
-                    if (!empty($fileLabelIds)) {
-                        $this->copyImageLabels($volume, $copy, $fileIds, $fileLabelIds);
-                    }
-                } else {
-                    $this->copyVideos($volume, $copy, $fileIds);
-                    if (!empty($annotationLabelIds)) {
-                        $this->copyVideoAnnotation($volume, $copy, $fileIds, $annotationLabelIds);
-                    }
-                    if (!empty($fileLabelIds)) {
-                        $this->copyVideoLabels($volume, $copy, $fileIds, $fileLabelIds);
-                    }
+            if ($volume->isImageVolume()) {
+                $this->copyImages($volume, $copy, $onlyFiles);
+                if ($cloneAnnotations) {
+                    $this->copyImageAnnotation($volume, $copy, $onlyFiles, $onlyAnnotationLabels);
+                }
+                if ($cloneFileLabels) {
+                    $this->copyImageLabels($volume, $copy, $onlyFiles, $onlyFileLabels);
+                }
+            } else {
+                $this->copyVideos($volume, $copy, $onlyFiles);
+                if ($cloneAnnotations) {
+                    $this->copyVideoAnnotation($volume, $copy, $onlyFiles, $onlyAnnotationLabels);
+                }
+                if ($cloneFileLabels) {
+                    $this->copyVideoLabels($volume, $copy, $onlyFiles, $onlyFileLabels);
                 }
             }
 
@@ -240,37 +236,6 @@ class VolumeController extends Controller
             return $this->fuzzyRedirect('project', $destProjectId)
                 ->with('message', 'The volume was cloned');
         });
-
-    }
-
-    /**
-     * Discard label ids whose files were not copied.
-     * @param int[] $fileIds image or video ids
-     * @param int[] $labelIds file labels if isFileLabel is true otherwise annotation labels
-     * @param boolean $isImageVol true if volume is image volume else false
-     * @param boolean $isFileLabel true if labelIds are image/video labels otherwise false
-     * @return int[] label ids of files which were copied
-     **/
-    private function filterLabels($fileIds, $labelIds, $isImageVol, $isFileLabel)
-    {
-        $fileType = $isImageVol ? 'image_id' : 'video_id';
-        if ($isFileLabel) {
-            $labels = $isImageVol ? ImageLabel::find($labelIds) : VideoLabel::find($labelIds);
-            return $labels->filter(function ($label) use ($fileIds, $fileType) {
-                //filter labels whose files were not copied
-                return in_array($label->$fileType, $fileIds);
-            })->pluck('id')->toArray();
-        } else {
-            $labels = $isImageVol ? ImageAnnotationLabel::find($labelIds) : VideoAnnotationLabel::find($labelIds);
-            //get annotation ids
-            $annotationIds = $labels->pluck('annotation_id');
-            //get annotations
-            $annotations = $isImageVol ? ImageAnnotation::find($annotationIds) : VideoAnnotation::find($annotationIds);
-            return $annotations->filter(function ($label) use ($fileIds, $fileType) {
-                //filter annotations whose files were not copied
-                return in_array($label->$fileType, $fileIds);
-            })->pluck('id')->toArray();
-        }
 
     }
 
