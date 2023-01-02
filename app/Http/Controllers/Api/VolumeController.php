@@ -249,7 +249,11 @@ class VolumeController extends Controller
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
-        $images = $volume->images()->orderBy('id')->whereIn('id', $selectedImageIds)->get();
+        $images = $volume->images()
+            ->orderBy('id')
+            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
+                return $query->whereIn('id', $selectedImageIds);})
+            ->get();
 
         $images->map(function ($image) use ($copy) {
             $original = $image->getRawOriginal();
