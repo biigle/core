@@ -287,12 +287,15 @@ class VolumeController extends Controller
             })
             ->whereIn('image_annotations.image_id', $oldImageIds);
 
+
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = array_unique($annotationJoinLabel
+            //->orderBy('image_annotations.id')
             ->pluck('image_annotations.id')
             ->toArray());
 
         $imageAnnotationLabelIds = $annotationJoinLabel
+            //->orderBy('image_annotation_labels.id')
             ->pluck('image_annotation_labels.id')
             ->toArray();
 
@@ -357,19 +360,20 @@ class VolumeController extends Controller
      **/
     private function copyImageLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $oldImages = $volume->images()->whereIn('id', $selectedFileIds)
+        $selectedFileIds = empty($selectedFileIds) ?
+            $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
+        $oldImages = $volume->images()
+            ->whereIn('id', $selectedFileIds)
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                return $query->whereIn('labels.id', $selectedLabelIds);
+            })
             ->orderBy('id')
-            ->with('labels')
             ->get();
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
-
         foreach ($oldImages as $imageIdx => $oldImage) {
             $newImageId = $newImageIds[$imageIdx];
-            $filteredLabels = $oldImage->labels->filter(function ($label) use ($selectedLabelIds) {
-                return in_array($label->id, $selectedLabelIds);
-            });
-            $filteredLabels->map(function ($oldLabel) use ($newImageId) {
+            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
                 $origin = $oldLabel->getRawOriginal();
                 $origin['image_id'] = $newImageId;
                 unset($origin['id']);
