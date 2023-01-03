@@ -296,20 +296,20 @@ class VolumeControllerTest extends ApiTestCase
         $oldImageLabel = $oldImage->labels()->first();
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['only_file_labels' => [$oldImageLabel->id], 'clone_file_labels' => [true]]);
+            ['clone_file_labels' => [true]]);
         $response->assertStatus(200);
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->first();
 
-//        $this->assertNotNull($newImageLabel);
+        $this->assertNotNull($newImageLabel);
         $this->assertNotNull($newImage);
         $this->assertEquals($volume->images()->count(), $copy->images()->count());
         $this->assertNotEquals($oldImage->id, $newImage->id);
         $this->assertNotEquals($oldImage->uuid, $newImage->uuid);
         $this->assertEquals($copy->id, $newImage->volume_id);
-//        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
-//        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
+        $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
+        $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
 
         $ignore = ['id', 'volume_id', 'uuid'];
         $this->assertEquals(
@@ -317,66 +317,66 @@ class VolumeControllerTest extends ApiTestCase
             $newImage->makeHidden($ignore)->toArray()
         );
 
-//        $ignore = ['id', 'image_id'];
-//        $this->assertEquals(
-//            $oldImageLabel->makeHidden($ignore)->toArray(),
-//            $newImageLabel->makeHidden($ignore)->toArray()
-//        );
+        $ignore = ['id', 'image_id'];
+        $this->assertEquals(
+            $oldImageLabel->makeHidden($ignore)->toArray(),
+            $newImageLabel->makeHidden($ignore)->toArray()
+        );
 
     }
 //
-//    public function testCloneVolumeVideos()
-//    {
-//        $volume = $this->volume([
-//            'created_at' => '2022-11-09 14:37:00',
-//            'updated_at' => '2022-11-09 14:37:00',
-//            'media_type_id' => MediaType::videoId()
-//        ])->fresh(); // Use fresh() to load even the null fields.
-//        // The target project.
-//        $project = ProjectTest::create();
-//
-//        $this->beAdmin();
-//        $project->addUserId($this->admin()->id, Role::adminId());
-//
-//        $oldVideo = VideoTest::create([
-//            'filename' => 'a.jpg',
-//            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
-//            'volume_id' => $volume->id,
-//            'lng' => 1.5,
-//            'lat' => 5.3,
-//            'duration' => 42.42])->fresh();
-//        VideoLabelTest::create(['video_id' => $oldVideo->id]);
-//        $oldVideoLabel = $oldVideo->labels()->first();
-//
-//        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-//            ['file_ids' => [$oldVideo->id], 'file_label_ids' => [$oldVideoLabel->id]]);
-//        $response->assertStatus(200);
-//        $copy = $project->volumes()->first();
-//        $newVideo = $copy->videos()->first();
-//        $newVideoLabel = $newVideo->labels()->first();
-//
-//        $this->assertNotNull($newVideo);
-//        $this->assertNotNull($newVideoLabel);
-//        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
-//        $this->assertNotEquals($oldVideo->id, $newVideo->id);
-//        $this->assertNotEquals($oldVideo->uuid, $newVideo->uuid);
-//        $this->assertEquals($copy->id, $newVideo->volume_id);
-//        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
-//        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
-//
-//        $ignore = ['id', 'volume_id', 'uuid'];
-//        $this->assertEquals(
-//            $oldVideo->makeHidden($ignore)->toArray(),
-//            $newVideo->makeHidden($ignore)->toArray()
-//        );
-//
-//        $ignore = ['id', 'video_id'];
-//        $this->assertEquals(
-//            $oldVideoLabel->makeHidden($ignore)->toArray(),
-//            $newVideoLabel->makeHidden($ignore)->toArray()
-//        );
-//
-//    }
+    public function testCloneVolumeVideos()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $oldVideo = VideoTest::create([
+            'filename' => 'a.jpg',
+            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
+            'volume_id' => $volume->id,
+            'lng' => 1.5,
+            'lat' => 5.3,
+            'duration' => 42.42])->fresh();
+        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        $oldVideoLabel = $oldVideo->labels()->first();
+
+        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['clone_file_labels' => [true]]);
+        $response->assertStatus(200);
+        $copy = $project->volumes()->first();
+        $newVideo = $copy->videos()->first();
+        $newVideoLabel = $newVideo->labels()->first();
+
+        $this->assertNotNull($newVideo);
+        $this->assertNotNull($newVideoLabel);
+        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
+        $this->assertNotEquals($oldVideo->id, $newVideo->id);
+        $this->assertNotEquals($oldVideo->uuid, $newVideo->uuid);
+        $this->assertEquals($copy->id, $newVideo->volume_id);
+        $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
+        $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
+
+        $ignore = ['id', 'volume_id', 'uuid'];
+        $this->assertEquals(
+            $oldVideo->makeHidden($ignore)->toArray(),
+            $newVideo->makeHidden($ignore)->toArray()
+        );
+
+        $ignore = ['id', 'video_id'];
+        $this->assertEquals(
+            $oldVideoLabel->makeHidden($ignore)->toArray(),
+            $newVideoLabel->makeHidden($ignore)->toArray()
+        );
+
+    }
 
     public function testCloneVolumeImageAnnotations()
     {
