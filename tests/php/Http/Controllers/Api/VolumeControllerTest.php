@@ -422,53 +422,52 @@ class VolumeControllerTest extends ApiTestCase
 
     }
 
-//    public function testCloneVolumeVideoAnnotations()
-//    {
-//        $volume = $this->volume([
-//            'created_at' => '2022-11-09 14:37:00',
-//            'updated_at' => '2022-11-09 14:37:00',
-//            'media_type_id' => MediaType::videoId()
-//        ])->fresh(); // Use fresh() to load even the null fields.
-//        // The target project.
-//        $project = ProjectTest::create();
-//
-//        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-//        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-//        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-//
-//        $this->beAdmin();
-//        $project->addUserId($this->admin()->id, Role::adminId());
-//
-//        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-//            ['file_ids' => [$oldVideo->id], 'label_ids' => [$oldAnnotationLabel->id]]);
-//        $response->assertStatus(200);
-//        $copy = $project->volumes()->first();
-//        $newVideo = $copy->videos()->first();
-//        $newAnnotation = $newVideo->annotations()->first();
-//        $newAnnotationLabel = $newAnnotation->labels()->first();
-//
-//        $this->assertNotNull($newAnnotation);
-//        $this->assertNotNull($newAnnotationLabel);
-//        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
-//        $this->assertNotEquals($oldAnnotation->video_id, $newAnnotation->video_id);
-//        $this->assertEquals($newVideo->id, $newAnnotation->video_id);
-//        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-//        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
-//
-//        $ignore = ['id', 'video_id'];
-//        $this->assertEquals(
-//            $oldAnnotation->makeHidden($ignore)->toArray(),
-//            $newAnnotation->makeHidden($ignore)->toArray()
-//
-//        );
-//
-//        $ignore = ['id', 'annotation_id'];
-//        $this->assertEquals(
-//            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
-//            $newAnnotationLabel->makeHidden($ignore)->toArray()
-//
-//        );
-//    }
+    public function testCloneVolumeVideoAnnotations()
+    {
+        $volume = $this->volume([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
+        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}", ['clone_annotations' => [true]]);
+        $response->assertStatus(200);
+        $copy = $project->volumes()->first();
+        $newVideo = $copy->videos()->first();
+        $newAnnotation = $newVideo->annotations()->first();
+        $newAnnotationLabel = $newAnnotation->labels()->first();
+
+        $this->assertNotNull($newAnnotation);
+        $this->assertNotNull($newAnnotationLabel);
+        $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
+        $this->assertNotEquals($oldAnnotation->video_id, $newAnnotation->video_id);
+        $this->assertEquals($newVideo->id, $newAnnotation->video_id);
+        $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
+        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
+
+        $ignore = ['id', 'video_id'];
+        $this->assertEquals(
+            $oldAnnotation->makeHidden($ignore)->toArray(),
+            $newAnnotation->makeHidden($ignore)->toArray()
+
+        );
+
+        $ignore = ['id', 'annotation_id'];
+        $this->assertEquals(
+            $oldAnnotationLabel->makeHidden($ignore)->toArray(),
+            $newAnnotationLabel->makeHidden($ignore)->toArray()
+
+        );
+    }
 
     public function testCloneVolumeIfDoFiles()
     {
