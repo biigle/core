@@ -390,7 +390,12 @@ class VolumeController extends Controller
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $videos = $volume->videos()->orderBy('id')->whereIn('id', $selectedVideoIds)->get();
+        $videos = $volume->videos()
+            ->orderBy('id')
+            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
+                return $query->whereIn('id', $selectedVideoIds);
+            })
+            ->get();
 
         $videos->map(function ($video) use ($copy) {
             $original = $video->getRawOriginal();
@@ -412,26 +417,40 @@ class VolumeController extends Controller
      * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyVideoAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
+    private function copyVideoAnnotation($volume, $copy, $oldVideoIds, $labelIds)
     {
-        $usedAnnotationIds = VideoAnnotation::with('labels')
-            ->whereIn('video_id', $selectedFileIds)
-            ->orderBy('id')
-            ->get()
-            ->filter(function ($annotation) use ($selectedLabelIds) {
-                return !empty(array_intersect($annotation->labels->pluck('id')->toArray(), $selectedLabelIds));
+        // if no video ids specified use all videos
+        $oldVideoIds = empty($oldVideoIds) ? $volume->videos()->pluck('id')->toArray() : $oldVideoIds;
+
+        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+            ->when(!empty($labelIds), function ($query) use ($labelIds) {
+                return $query->whereIn('video_annotation_labels.label_id', $labelIds);
             })
-            ->pluck('id')
+            ->whereIn('video_annotations.video_id', $oldVideoIds);
+
+        // use unique ids, because an annotation with multiple labels would be duplicated
+        $usedAnnotationIds = array_unique($annotationJoinLabel
+            ->pluck('video_annotations.id')
+            ->toArray());
+
+        $videoAnnotationLabelIds = $annotationJoinLabel
+            ->pluck('video_annotation_labels.id')
             ->toArray();
+
         $chunkSize = 100;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
-            ->whereIn('id', $selectedFileIds)
+            ->with([
+                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
+                'annotations.labels' => fn($q) => $q->whereIn('id', $videoAnnotationLabelIds),
+            ])
+            ->when($volume->videos->count() != count($oldVideoIds), function ($query) use ($oldVideoIds) {
+                return $query->whereIn('id', $oldVideoIds);
+            })
             ->orderBy('id')
-            ->with('annotations.labels')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize, $usedAnnotationIds, $selectedLabelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize, $usedAnnotationIds, $labelIds) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
@@ -441,15 +460,13 @@ class VolumeController extends Controller
                     // Collect relevant video IDs for the annotation query below.
                     $chunkNewVideoIds[] = $newVideoId;
                     foreach ($video->annotations as $annotation) {
-                        if (in_array($annotation->id, $usedAnnotationIds)) {
-                            $original = $annotation->getRawOriginal();
-                            $original['video_id'] = $newVideoId;
-                            unset($original['id']);
-                            $insertData[] = $original;
-                        }
+                        $original = $annotation->getRawOriginal();
+                        $original['video_id'] = $newVideoId;
+                        unset($original['id']);
+                        $insertData[] = $original;
+
                     }
                 }
-
                 VideoAnnotation::insert($insertData);
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
@@ -457,18 +474,13 @@ class VolumeController extends Controller
                     ->pluck('id');
                 $insertData = [];
                 foreach ($chunk as $video) {
-                    $annotations = $video->annotations->filter(function ($annotation) use ($usedAnnotationIds) {
-                        return in_array($annotation->id, $usedAnnotationIds);
-                    });
-                    foreach ($annotations as $annotation) {
+                    foreach ($video->annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
-                            if (in_array($annotationLabel->id, $selectedLabelIds)) {
-                                $original = $annotationLabel->getRawOriginal();
-                                $original['annotation_id'] = $newAnnotationId;
-                                unset($original['id']);
-                                $insertData[] = $original;
-                            }
+                            $original = $annotationLabel->getRawOriginal();
+                            $original['annotation_id'] = $newAnnotationId;
+                            unset($original['id']);
+                            $insertData[] = $original;
                         }
                     }
                 }
