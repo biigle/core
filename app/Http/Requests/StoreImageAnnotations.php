@@ -44,10 +44,20 @@ class StoreImageAnnotations extends FormRequest
     public function authorize()
     {
         $input = collect($this->all());
-        $this->imageIds = $input->pluck('image_id')->unique();
+        $this->imageIds = $input->pluck('image_id')
+            ->unique()
+            // Filter because the IDs are validated *after* authorization and could be
+            // e.g. floats here.
+            ->filter(fn ($id) => is_int($id));
+
         $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
 
-        $labelIds = $input->pluck('label_id')->unique();
+        $labelIds = $input->pluck('label_id')
+            ->unique()
+            // Filter because the IDs are validated *after* authorization and could be
+            // e.g. floats here.
+            ->filter(fn ($id) => is_int($id));
+
         $this->labels = Label::findMany($labelIds)->keyBy('id');
 
         return $this->images->reduce(function ($carry, $image) {
@@ -63,6 +73,7 @@ class StoreImageAnnotations extends FormRequest
     public function rules()
     {
         return [
+            '*.image_id' => 'required|integer|exists:images,id',
             '*.label_id' => 'required|integer|exists:labels,id',
             '*.confidence' => 'required|numeric|between:0,1',
             '*.shape_id' => 'required|integer|exists:shapes,id',
