@@ -279,7 +279,7 @@ class VolumeController extends Controller
     private function copyImageAnnotation($volume, $copy, $oldImageIds, $labelIds)
     {
         // if no image ids specified use all images
-        $oldImageIds = empty($oldImageIds) ? $volume->images()->pluck('id')->toArray() : $oldImageIds;
+        $oldImageIds = empty($oldImageIds) ? $volume->images()->pluck('id')->sortBy('id') : $oldImageIds;
 
         $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
             ->when(!empty($labelIds), function ($query) use ($labelIds) {
@@ -290,12 +290,12 @@ class VolumeController extends Controller
 
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = array_unique($annotationJoinLabel
-            //->orderBy('image_annotations.id')
+            ->orderBy('image_annotations.id')
             ->pluck('image_annotations.id')
             ->toArray());
 
         $imageAnnotationLabelIds = $annotationJoinLabel
-            //->orderBy('image_annotation_labels.id')
+            ->orderBy('image_annotation_labels.id')
             ->pluck('image_annotation_labels.id')
             ->toArray();
 
@@ -424,7 +424,7 @@ class VolumeController extends Controller
     private function copyVideoAnnotation($volume, $copy, $oldVideoIds, $labelIds)
     {
         // if no video ids specified use all videos
-        $oldVideoIds = empty($oldVideoIds) ? $volume->videos()->pluck('id')->toArray() : $oldVideoIds;
+        $oldVideoIds = empty($oldVideoIds) ? $volume->videos()->pluck('id')->sortBy('id') : $oldVideoIds;
 
         $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
             ->when(!empty($labelIds), function ($query) use ($labelIds) {
@@ -434,10 +434,12 @@ class VolumeController extends Controller
 
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = array_unique($annotationJoinLabel
+            ->orderBy('video_annotations.id')
             ->pluck('video_annotations.id')
             ->toArray());
 
         $videoAnnotationLabelIds = $annotationJoinLabel
+            ->orderBy('video_annotation_labels.id')
             ->pluck('video_annotation_labels.id')
             ->toArray();
 
