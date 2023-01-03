@@ -105,7 +105,7 @@ class VolumeFiles implements Rule
 
         if ($this->typeId === MediaType::imageId()) {
             if ($count !== count(preg_grep(Volume::IMAGE_FILE_REGEX, $value))) {
-                $this->message = 'Only JPEG, PNG or TIFF image formats are supported.';
+                $this->message = 'Only JPEG, PNG, WebP or TIFF image formats are supported.';
 
                 return false;
             }

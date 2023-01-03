@@ -83,7 +83,7 @@ class StatisticsControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/statistics")
             ->assertStatus(200);
-        
+
         $expect = [
             'volumeType' => 'image',
             'annotationTimeSeries' => [
@@ -91,13 +91,13 @@ class StatisticsControllerTest extends ApiTestCase
                     'count' => 1,
                     'fullname' => $user1->firstname . " " . $user1->lastname,
                     'user_id' => $user1->id,
-                    'year' => 2022
+                    'year' => $annotation1->created_at->year,
                 ],
                 [
                     'count' => 1,
                     'fullname' => $user2->firstname . " " . $user2->lastname,
                     'user_id' => $user2->id,
-                    'year' => 2022
+                    'year' => $annotation2->created_at->year,
                 ]
             ],
             'volumeAnnotations' => [
@@ -188,13 +188,13 @@ class StatisticsControllerTest extends ApiTestCase
                     'count' => 1,
                     'fullname' => $user1->firstname . " " . $user1->lastname,
                     'user_id' => $user1->id,
-                    'year' => 2022
+                    'year' => $annotation1->created_at->year,
                 ],
                 [
                     'count' => 1,
                     'fullname' => $user2->firstname . " " . $user2->lastname,
                     'user_id' => $user2->id,
-                    'year' => 2022
+                    'year' => $annotation2->created_at->year,
                 ]
             ],
             'volumeAnnotations' => [
