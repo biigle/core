@@ -20,6 +20,7 @@ class Image extends VolumeFile
         'image/jpeg',
         'image/png',
         'image/tiff',
+        'image/webp',
     ];
 
     /**

@@ -30,7 +30,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const IMAGE_FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
+    const IMAGE_FILE_REGEX = '/\.(jpe?g|png|tif?f|webp)(\?.+)?$/i';
 
     /**
      * Regular expression that matches the supported video file extensions.
