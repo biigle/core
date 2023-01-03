@@ -252,7 +252,8 @@ class VolumeController extends Controller
         $images = $volume->images()
             ->orderBy('id')
             ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                return $query->whereIn('id', $selectedImageIds);})
+                return $query->whereIn('id', $selectedImageIds);
+            })
             ->get();
 
         $images->map(function ($image) use ($copy) {
@@ -272,30 +273,40 @@ class VolumeController extends Controller
      *
      * @param Volume $volume
      * @param Volume $copy
-     * @param int[] $fileIds
+     * @param int[] $oldImageIds
      * @param int[] $labelIds
      **/
-    private function copyImageAnnotation($volume, $copy, $fileIds, $labelIds)
+    private function copyImageAnnotation($volume, $copy, $oldImageIds, $labelIds)
     {
+        // if no image ids specified use all images
+        $oldImageIds = empty($oldImageIds) ? $volume->images()->pluck('id')->toArray() : $oldImageIds;
 
-        $fileIds = empty($fileIds) ? $volume->images()->pluck('id')->toArray() : $fileIds;
-        $usedAnnotationIds = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
             ->when(!empty($labelIds), function ($query) use ($labelIds) {
                 return $query->whereIn('image_annotation_labels.label_id', $labelIds);
             })
-            ->whereIn('image_annotations.image_id', $fileIds)
-            ->distinct() // because an annotation with multiple labels would be duplicated
+            ->whereIn('image_annotations.image_id', $oldImageIds);
+
+        // use unique ids, because an annotation with multiple labels would be duplicated
+        $usedAnnotationIds = array_unique($annotationJoinLabel
             ->pluck('image_annotations.id')
+            ->toArray());
+
+        $imageAnnotationLabelIds = $annotationJoinLabel
+            ->pluck('image_annotation_labels.id')
             ->toArray();
 
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
-            ->when($volume->images->count() != count($fileIds), function ($query) use ($fileIds) {
-                return $query->whereIn('id', $fileIds);
+            ->with([
+                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
+                'annotations.labels' => fn($q) => $q->whereIn('id', $imageAnnotationLabelIds),
+            ])
+            ->when($volume->images->count() != count($oldImageIds), function ($query) use ($oldImageIds) {
+                return $query->whereIn('id', $oldImageIds);
             })
             ->orderBy('id')
-            ->with('annotations.labels')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
             ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize, $usedAnnotationIds, $labelIds) {
@@ -308,15 +319,13 @@ class VolumeController extends Controller
                     // Collect relevant image IDs for the annotation query below.
                     $chunkNewImageIds[] = $newImageId;
                     foreach ($image->annotations as $annotation) {
-                        if (in_array($annotation->id, $usedAnnotationIds)) {
-                            $original = $annotation->getRawOriginal();
-                            $original['image_id'] = $newImageId;
-                            unset($original['id']);
-                            $insertData[] = $original;
-                        }
+                        $original = $annotation->getRawOriginal();
+                        $original['image_id'] = $newImageId;
+                        unset($original['id']);
+                        $insertData[] = $original;
+
                     }
                 }
-
                 ImageAnnotation::insert($insertData);
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
@@ -324,18 +333,13 @@ class VolumeController extends Controller
                     ->pluck('id');
                 $insertData = [];
                 foreach ($chunk as $image) {
-                    $annotations = $image->annotations->filter(function ($annotation) use ($usedAnnotationIds) {
-                        return in_array($annotation->id, $usedAnnotationIds);
-                    });
-                    foreach ($annotations as $annotation) {
+                    foreach ($image->annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
-                            if (in_array($annotationLabel->id, $labelIds)) {
-                                $original = $annotationLabel->getRawOriginal();
-                                $original['annotation_id'] = $newAnnotationId;
-                                unset($original['id']);
-                                $insertData[] = $original;
-                            }
+                            $original = $annotationLabel->getRawOriginal();
+                            $original['annotation_id'] = $newAnnotationId;
+                            unset($original['id']);
+                            $insertData[] = $original;
                         }
                     }
                 }
