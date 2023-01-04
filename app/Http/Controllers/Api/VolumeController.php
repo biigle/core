@@ -185,29 +185,32 @@ class VolumeController extends Controller
         return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
             $createSyncLimit = 10000;
 
-            $project = Project::findOrFail($destProjectId);
-            $volume = Volume::findOrFail($volumeId);
+            $project = $request->project;
+            $volume = $request->volume;
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
             $copy->save();
 
-            $fileIds = $request->input('file_ids', []);
+            $onlyFiles = $request->input('only_files', []);
 
-            if (!empty($fileIds)) {
-                $fileLabelIds = $request->input('file_label_ids', []);
-                $annotationLabelIds = $request->input('label_ids', []);
-                // If too many files should be created, do this asynchronously in the
-                // background. Else the script will run in the 30 s execution timeout.
-                $job = new CloneImagesOrVideos($volume, $copy, $fileIds, $fileLabelIds, $annotationLabelIds);
-                if (count($fileIds) > $createSyncLimit) {
-                    Queue::pushOn('high', $job);
-                    $copy->creating_async = true;
-                    $copy->save();
-                } else {
-                    Queue::connection('sync')->push($job);
-                }
+            $cloneAnnotations = $request->input('clone_annotations', false);
+            $onlyAnnotationLabels = $request->input('only_annotation_labels', []);
+
+            $cloneFileLabels = $request->input('clone_file_labels', false);
+            $onlyFileLabels = $request->input('only_file_labels', []);
+
+            // If too many files should be created, do this asynchronously in the
+            // background. Else the script will run in the 30 s execution timeout.
+            $job = new CloneImagesOrVideos($volume, $copy,
+                $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels);
+            if (count($onlyFiles) > $createSyncLimit) {
+                Queue::pushOn('high', $job);
+                $copy->creating_async = true;
+                $copy->save();
+            } else {
+                Queue::connection('sync')->push($job);
             }
-
+            
             //save ifdo-file if exist
             if ($volume->hasIfdo()) {
                 $this->copyIfdoFile($volumeId, $copy->id);
