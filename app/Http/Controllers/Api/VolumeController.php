@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Queue;
 
 class VolumeController extends Controller
 {
@@ -210,7 +211,6 @@ class VolumeController extends Controller
                 $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels, $cloneFileLabels, $onlyFileLabels);
             if (count($onlyFiles) > $createSyncLimit) {
                 Queue::pushOn('high', $job);
-                $copy->creating_async = true;
                 $copy->save();
             } else {
                 Queue::connection('sync')->push($job);
