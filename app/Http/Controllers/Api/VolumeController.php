@@ -151,6 +151,7 @@ class VolumeController extends Controller
         }
     }
 
+
     /**
      * Clones volume to destination project.
      *
@@ -163,10 +164,14 @@ class VolumeController extends Controller
      * @apiName CloneVolume
      * @apiPermission projectAdmin
      *
-     * @apiParam {Number} id The volume ID.
-     * @apiParam {Number} project_id The target project ID.
-     * @apiParam (image IDs that can be used for cloning) {Array} imageIds selected subset of image IDs from original volume. Only images from this subset will be cloned.
-     * @apiParam (video IDs that can be used for cloning) {Array} videoIds selected subset of video IDs from original volume. Only videos from this subset will be cloned.
+     * @apiParam {Number} id The volume id.
+     * @apiParam {Number} project_id The target project id.
+     * @apiParam {string} name volume name of cloned volume.
+     * @apiParam (file ids) {Array} only_files ids of files which should be cloned.
+     * @apiParam {bool} clone_annotations Switch to clone annotation labels.
+     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned.
+     * @apiParam {bool} clone_file_labels Switch to clone file labels.
+     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -202,7 +207,7 @@ class VolumeController extends Controller
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30 s execution timeout.
             $job = new CloneImagesOrVideos($volume, $copy,
-                $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels);
+                $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels, $cloneFileLabels, $onlyFileLabels);
             if (count($onlyFiles) > $createSyncLimit) {
                 Queue::pushOn('high', $job);
                 $copy->creating_async = true;
@@ -210,7 +215,7 @@ class VolumeController extends Controller
             } else {
                 Queue::connection('sync')->push($job);
             }
-            
+
             //save ifdo-file if exist
             if ($volume->hasIfdo()) {
                 $this->copyIfdoFile($volumeId, $copy->id);
@@ -228,12 +233,11 @@ class VolumeController extends Controller
 
     }
 
-    /**
-     * Copies ifDo-Files from given volume to volume copy.
-     *
-     * @param int $volumeId
-     * @param int $copyId
-     **/
+    /** Copies ifDo-Files from given volume to volume copy.
+    *
+    * @param int $volumeId
+    * @param int $copyId
+    **/
     private function copyIfdoFile($volumeId, $copyId)
     {
         $disk = Storage::disk(config('volumes.ifdo_storage_disk'));

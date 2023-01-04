@@ -55,12 +55,14 @@ class CloneVolume extends FormRequest
     {
         return [
             'name' => 'max:512',
-            'file_ids' => 'array',
-            'file_ids.*' => 'int|gte:0',
-            'label_ids' => 'array',
-            'label_ids.*' => 'int|gte:0',
-            'file_label_ids' => 'array',
-            'file_label_ids.*' => 'int|gte:0'
+            'only_files.*' => 'int|gt:0',
+            'only_files' => 'array',
+            'clone_annotations' => 'bool',
+            'only_annotation_labels.*' => 'int|gt:0',
+            'only_annotation_labels' => 'array',
+            'clone_file_labels' => 'bool',
+            'only_file_labels.*' => 'int|gt:0',
+            'only_file_labels' => 'array'
         ];
     }
 
