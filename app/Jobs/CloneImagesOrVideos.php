@@ -42,7 +42,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     public $onlyFileLabels;
 
 
-
     /**
      * Create a new job instance.
      *
@@ -73,8 +72,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $cloneFileLabels = $this->cloneFileLabels;
         $onlyFileLabels = $this->onlyFileLabels;
 
-        DB::transaction(function () use ($volume, $copy,  $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels,
-        $cloneFileLabels, $onlyFileLabels) {
+        DB::transaction(function () use (
+            $volume, $copy, $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels,
+            $cloneFileLabels, $onlyFileLabels
+        ) {
 
             if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $onlyFiles);
@@ -103,13 +104,11 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $copy->flushThumbnailCache();
 
         if ($copy->creating_async) {
-            $copy->creating_async = false;
             $copy->save();
         }
 
-        if ($copy->isImageVolume()) {
-            event('images.cloned', [$copy->id]);
-        }
+        event('volume.cloned', [$copy->id]);
+
     }
 
     /**
