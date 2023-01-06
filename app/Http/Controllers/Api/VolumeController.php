@@ -367,28 +367,30 @@ class VolumeController extends Controller
      **/
     private function copyImageLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $selectedFileIds = empty($selectedFileIds) ?
-            $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
-        $oldImages = $volume->images()
-            ->whereIn('id', $selectedFileIds)
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('labels.id', $selectedLabelIds);
-            })
-            ->orderBy('id')
-            ->get();
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
-        foreach ($oldImages as $imageIdx => $oldImage) {
-            $newImageId = $newImageIds[$imageIdx];
-            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['image_id'] = $newImageId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
-                ImageLabel::insert($chunk->toArray());
+        $volume->images()
+            ->when(!empty($selectedFileIds),
+                function ($q) use ($selectedFileIds) {
+                    return $q->whereIn('id', $selectedFileIds);
+                })
+            ->when(!empty($selectedLabelIds),
+                function ($q) use ($selectedLabelIds) {
+                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
+                },
+                fn($q) => $q->with('labels'))
+            ->orderBy('id')
+            ->get()->map(function ($oldImage) use ($newImageIds) {
+                $newImageId = $newImageIds->shift();
+                $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['image_id'] = $newImageId;
+                    unset($origin['id']);
+                    return $origin;
+                })->chunk(10000)->each(function ($chunk) {
+                    ImageLabel::insert($chunk->toArray());
+                });
             });
-        }
     }
 
     /**
@@ -513,29 +515,32 @@ class VolumeController extends Controller
      **/
     private function copyVideoLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $selectedFileIds = empty($selectedFileIds) ?
-            $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
-        $oldVideos = $volume->videos()
-            ->whereIn('id', $selectedFileIds)
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('labels.id', $selectedLabelIds);
-            })
-            ->orderBy('id')
-            ->get();
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
 
-        foreach ($oldVideos as $videoIdx => $oldVideo) {
-            $newVideoId = $newVideoIds[$videoIdx];
-            $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['video_id'] = $newVideoId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
-                VideoLabel::insert($chunk->toArray());
+        $volume->videos()
+            ->when(!empty($selectedFileIds),
+                function ($q) use ($selectedFileIds) {
+                    return $q->whereIn('id', $selectedFileIds);
+                })
+            ->when(!empty($selectedLabelIds),
+                function ($q) use ($selectedLabelIds) {
+                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
+                },
+                fn($q) => $q->with('labels'))
+            ->orderBy('id')
+            ->get()->map(function ($oldVideo) use ($newVideoIds) {
+                $newVideoId = $newVideoIds->shift();
+                $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['video_id'] = $newVideoId;
+                    unset($origin['id']);
+                    return $origin;
+                })->chunk(10000)->each(function ($chunk) {
+                    VideoLabel::insert($chunk->toArray());
+                });
             });
-        }
     }
+
 
     /**
      * Copies ifDo-Files from given volume to volume copy.
