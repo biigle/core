@@ -80,9 +80,12 @@ class CloneVolume extends FormRequest
 
         $validator->after(function ($validator) {
             $fileIds = $this->input('only_files', []);
-            if(!empty($fileIds) && !$this->volume->files()->get()->contains('id',$fileIds)){
-                $validator->errors()->add('$fileIds',
+            if (!empty($fileIds)) {
+                $intersection = array_intersect($fileIds, $this->volume->files()->pluck('id')->toArray());
+                if (count($intersection) != count($fileIds)) {
+                    $validator->errors()->add('$fileIds',
                         'Cloning volume failed. Unauthorized access to files that do not belong to the volume');
+                }
             }
         });
     }
