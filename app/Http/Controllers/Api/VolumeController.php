@@ -254,14 +254,12 @@ class VolumeController extends Controller
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
-        $images = $volume->images()
+        $volume->images()
             ->orderBy('id')
             ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
                 return $query->whereIn('id', $selectedImageIds);
             })
-            ->get();
-
-        $images->map(function ($image) use ($copy) {
+            ->get()->map(function ($image) use ($copy) {
             $original = $image->getRawOriginal();
             $original['volume_id'] = $copy->id;
             $original['uuid'] = (string)Uuid::uuid4();
@@ -403,14 +401,12 @@ class VolumeController extends Controller
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $videos = $volume->videos()
+        $volume->videos()
             ->orderBy('id')
             ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
                 return $query->whereIn('id', $selectedVideoIds);
             })
-            ->get();
-
-        $videos->map(function ($video) use ($copy) {
+            ->get()->map(function ($video) use ($copy) {
             $original = $video->getRawOriginal();
             $original['volume_id'] = $copy->id;
             $original['uuid'] = (string)Uuid::uuid4();
