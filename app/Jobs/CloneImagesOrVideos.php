@@ -148,22 +148,20 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
-        $images = $volume->images()
+        $volume->images()
             ->orderBy('id')
             ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
                 return $query->whereIn('id', $selectedImageIds);
             })
-            ->get();
-
-        $images->map(function ($image) use ($copy) {
-            $original = $image->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Image::insert($chunk->toArray());
-        });
+            ->get()->map(function ($image) use ($copy) {
+                $original = $image->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                $original['uuid'] = (string)Uuid::uuid4();
+                unset($original['id']);
+                return $original;
+            })->chunk(10000)->each(function ($chunk) {
+                Image::insert($chunk->toArray());
+            });
 
     }
 
@@ -175,43 +173,50 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyImageAnnotation($volume, $copy, $oldImageIds, $labelIds)
+    private function copyImageAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
         // if no image ids specified use all images
-        $oldImageIds = empty($oldImageIds) ? $volume->images()->pluck('id')->sortBy('id') : $oldImageIds;
+        $selectedFileIds = empty($selectedFileIds) ?
+            $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->when(!empty($labelIds), function ($query) use ($labelIds) {
-                return $query->whereIn('image_annotation_labels.label_id', $labelIds);
+        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels',
+            'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                return $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds);
             })
-            ->whereIn('image_annotations.image_id', $oldImageIds);
+            ->whereIn('image_annotations.image_id', $selectedFileIds);
 
 
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = array_unique($annotationJoinLabel
-            ->orderBy('image_annotations.id')
             ->pluck('image_annotations.id')
             ->toArray());
 
-        $imageAnnotationLabelIds = $annotationJoinLabel
-            ->orderBy('image_annotation_labels.id')
-            ->pluck('image_annotation_labels.id')
-            ->toArray();
+        if (empty($selectedLabelIds)) {
+            $imageAnnotationLabelIds = $annotationJoinLabel
+                ->pluck('image_annotation_labels.label_id')
+                ->toArray();
+        } else {
+            $imageAnnotationLabelIds = $selectedLabelIds;
+        }
 
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->with([
                 'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
-                'annotations.labels' => fn($q) => $q->whereIn('id', $imageAnnotationLabelIds),
+                'annotations.labels' => fn($q) => $q->whereIn('label_id', $imageAnnotationLabelIds),
             ])
-            ->when($volume->images->count() != count($oldImageIds), function ($query) use ($oldImageIds) {
-                return $query->whereIn('id', $oldImageIds);
+            ->when($volume->images->count() != count($selectedFileIds), function ($query) use ($selectedFileIds) {
+                return $query->whereIn('id', $selectedFileIds);
             })
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize, $usedAnnotationIds, $labelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use (
+                $newImageIds, $chunkSize,
+                $usedAnnotationIds, $selectedLabelIds
+            ) {
                 $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
@@ -259,28 +264,30 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     private function copyImageLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $selectedFileIds = empty($selectedFileIds) ?
-            $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
-        $oldImages = $volume->images()
-            ->whereIn('id', $selectedFileIds)
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('labels.id', $selectedLabelIds);
-            })
-            ->orderBy('id')
-            ->get();
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
-        foreach ($oldImages as $imageIdx => $oldImage) {
-            $newImageId = $newImageIds[$imageIdx];
-            $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['image_id'] = $newImageId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
-                ImageLabel::insert($chunk->toArray());
+        $volume->images()
+            ->when(!empty($selectedFileIds),
+                function ($q) use ($selectedFileIds) {
+                    return $q->whereIn('id', $selectedFileIds);
+                })
+            ->when(!empty($selectedLabelIds),
+                function ($q) use ($selectedLabelIds) {
+                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
+                },
+                fn($q) => $q->with('labels'))
+            ->orderBy('id')
+            ->get()->map(function ($oldImage) use ($newImageIds) {
+                $newImageId = $newImageIds->shift();
+                $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['image_id'] = $newImageId;
+                    unset($origin['id']);
+                    return $origin;
+                })->chunk(10000)->each(function ($chunk) {
+                    ImageLabel::insert($chunk->toArray());
+                });
             });
-        }
     }
 
     /**
@@ -293,22 +300,20 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $videos = $volume->videos()
+        $volume->videos()
             ->orderBy('id')
             ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
                 return $query->whereIn('id', $selectedVideoIds);
             })
-            ->get();
-
-        $videos->map(function ($video) use ($copy) {
-            $original = $video->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Video::insert($chunk->toArray());
-        });
+            ->get()->map(function ($video) use ($copy) {
+                $original = $video->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                $original['uuid'] = (string)Uuid::uuid4();
+                unset($original['id']);
+                return $original;
+            })->chunk(10000)->each(function ($chunk) {
+                Video::insert($chunk->toArray());
+            });
 
     }
 
@@ -320,42 +325,49 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      * @param int[] $selectedFileIds
      * @param int[] $selectedLabelIds
      **/
-    private function copyVideoAnnotation($volume, $copy, $oldVideoIds, $labelIds)
+    private function copyVideoAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
         // if no video ids specified use all videos
-        $oldVideoIds = empty($oldVideoIds) ? $volume->videos()->pluck('id')->sortBy('id') : $oldVideoIds;
+        $selectedFileIds = empty($selectedFileIds) ?
+            $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
-            ->when(!empty($labelIds), function ($query) use ($labelIds) {
-                return $query->whereIn('video_annotation_labels.label_id', $labelIds);
+        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels',
+            'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
+                return $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds);
             })
-            ->whereIn('video_annotations.video_id', $oldVideoIds);
+            ->whereIn('video_annotations.video_id', $selectedFileIds);
 
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = array_unique($annotationJoinLabel
-            ->orderBy('video_annotations.id')
             ->pluck('video_annotations.id')
             ->toArray());
 
-        $videoAnnotationLabelIds = $annotationJoinLabel
-            ->orderBy('video_annotation_labels.id')
-            ->pluck('video_annotation_labels.id')
-            ->toArray();
+        if (empty($selectedLabelIds)) {
+            $videoAnnotationLabelIds = $annotationJoinLabel
+                ->pluck('video_annotation_labels.label_id')
+                ->toArray();
+        } else {
+            $videoAnnotationLabelIds = $selectedLabelIds;
+        }
 
         $chunkSize = 100;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
             ->with([
                 'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
-                'annotations.labels' => fn($q) => $q->whereIn('id', $videoAnnotationLabelIds),
+                'annotations.labels' => fn($q) => $q->whereIn('label_id', $videoAnnotationLabelIds),
             ])
-            ->when($volume->videos->count() != count($oldVideoIds), function ($query) use ($oldVideoIds) {
-                return $query->whereIn('id', $oldVideoIds);
+            ->when($volume->videos->count() != count($selectedFileIds), function ($query) use ($selectedFileIds) {
+                return $query->whereIn('id', $selectedFileIds);
             })
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize, $usedAnnotationIds, $labelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use (
+                $newVideoIds, $chunkSize,
+                $usedAnnotationIds, $selectedLabelIds
+            ) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
@@ -403,28 +415,30 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     private function copyVideoLabels($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
-        $selectedFileIds = empty($selectedFileIds) ?
-            $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
-        $oldVideos = $volume->videos()
-            ->whereIn('id', $selectedFileIds)
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('labels.id', $selectedLabelIds);
-            })
-            ->orderBy('id')
-            ->get();
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
 
-        foreach ($oldVideos as $videoIdx => $oldVideo) {
-            $newVideoId = $newVideoIds[$videoIdx];
-            $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
-                $origin = $oldLabel->getRawOriginal();
-                $origin['video_id'] = $newVideoId;
-                unset($origin['id']);
-                return $origin;
-            })->chunk(10000)->each(function ($chunk) {
-                VideoLabel::insert($chunk->toArray());
+        $volume->videos()
+            ->when(!empty($selectedFileIds),
+                function ($q) use ($selectedFileIds) {
+                    return $q->whereIn('id', $selectedFileIds);
+                })
+            ->when(!empty($selectedLabelIds),
+                function ($q) use ($selectedLabelIds) {
+                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
+                },
+                fn($q) => $q->with('labels'))
+            ->orderBy('id')
+            ->get()->map(function ($oldVideo) use ($newVideoIds) {
+                $newVideoId = $newVideoIds->shift();
+                $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
+                    $origin = $oldLabel->getRawOriginal();
+                    $origin['video_id'] = $newVideoId;
+                    unset($origin['id']);
+                    return $origin;
+                })->chunk(10000)->each(function ($chunk) {
+                    VideoLabel::insert($chunk->toArray());
+                });
             });
-        }
     }
 
 }
