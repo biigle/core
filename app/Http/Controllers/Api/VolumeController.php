@@ -174,11 +174,11 @@ class VolumeController extends Controller
      * @apiParam {Number} id The volume id.
      * @apiParam {Number} project_id The target project id.
      * @apiParam {string} name volume name of cloned volume.
-     * @apiParam (file ids) {Array} only_files ids of files which should be cloned.
+     * @apiParam (file ids) {Array} only_files ids of files which should be cloned. If empty all files are cloned.
      * @apiParam {bool} clone_annotations Switch to clone annotation labels.
-     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned.
+     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned. If empty all labels are cloned.
      * @apiParam {bool} clone_file_labels Switch to clone file labels.
-     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned.
+     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned. If empty all labels are cloned.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -260,14 +260,14 @@ class VolumeController extends Controller
                 return $query->whereIn('id', $selectedImageIds);
             })
             ->get()->map(function ($image) use ($copy) {
-            $original = $image->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Image::insert($chunk->toArray());
-        });
+                $original = $image->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                $original['uuid'] = (string)Uuid::uuid4();
+                unset($original['id']);
+                return $original;
+            })->chunk(10000)->each(function ($chunk) {
+                Image::insert($chunk->toArray());
+            });
 
     }
 
@@ -282,9 +282,11 @@ class VolumeController extends Controller
     private function copyImageAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
         // if no image ids specified use all images
-        $selectedFileIds = empty($selectedFileIds) ? $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
+        $selectedFileIds = empty($selectedFileIds) ?
+            $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels',
+            'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
             ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
                 return $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds);
             })
@@ -317,7 +319,10 @@ class VolumeController extends Controller
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize, $usedAnnotationIds, $selectedLabelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use (
+                $newImageIds, $chunkSize,
+                $usedAnnotationIds, $selectedLabelIds
+            ) {
                 $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
@@ -407,14 +412,14 @@ class VolumeController extends Controller
                 return $query->whereIn('id', $selectedVideoIds);
             })
             ->get()->map(function ($video) use ($copy) {
-            $original = $video->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Video::insert($chunk->toArray());
-        });
+                $original = $video->getRawOriginal();
+                $original['volume_id'] = $copy->id;
+                $original['uuid'] = (string)Uuid::uuid4();
+                unset($original['id']);
+                return $original;
+            })->chunk(10000)->each(function ($chunk) {
+                Video::insert($chunk->toArray());
+            });
 
     }
 
@@ -429,9 +434,11 @@ class VolumeController extends Controller
     private function copyVideoAnnotation($volume, $copy, $selectedFileIds, $selectedLabelIds)
     {
         // if no video ids specified use all videos
-        $selectedFileIds = empty($selectedFileIds) ? $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
+        $selectedFileIds = empty($selectedFileIds) ?
+            $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels',
+            'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
             ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
                 return $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds);
             })
@@ -463,7 +470,10 @@ class VolumeController extends Controller
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize, $usedAnnotationIds, $selectedLabelIds) {
+            ->chunkById($chunkSize, function ($chunk, $page) use (
+                $newVideoIds, $chunkSize,
+                $usedAnnotationIds, $selectedLabelIds
+            ) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
