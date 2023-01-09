@@ -1,6 +1,9 @@
 /node_modules
 /public/hot
 /public/storage
+/public/assets/scripts
+/public/assets/styles
+/public/mix-manifest.json
 /public/vendor
 /storage/*.key
 /storage/largo_patches

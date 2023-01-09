@@ -2,13 +2,17 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Events\ObjectTrackingFailed;
+use Biigle\Events\ObjectTrackingSucceeded;
 use Biigle\Jobs\TrackObject;
 use Biigle\Shape;
+use Biigle\User;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\VideoAnnotation;
 use Exception;
 use File;
+use Illuminate\Support\Facades\Event;
 use Log;
 use Storage;
 use TestCase;
@@ -26,6 +30,7 @@ class TrackObjectTest extends TestCase
     {
         config(['videos.keyframe_distance' => 123]);
 
+        $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::pointId(),
             'frames' => [0.5],
@@ -33,7 +38,7 @@ class TrackObjectTest extends TestCase
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
-        $job = new TrackObjectStub($annotation);
+        $job = new TrackObjectStub($annotation, $user);
         $job->handle();
         $this->assertEquals(2, count($job->files));
         $input = json_decode($job->files[0], true);
@@ -48,8 +53,10 @@ class TrackObjectTest extends TestCase
 
     public function testHandlePoint()
     {
+        Event::fake();
         config(['videos.tracking_point_padding' => 15]);
 
+        $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::pointId(),
             'frames' => [0.5],
@@ -57,8 +64,14 @@ class TrackObjectTest extends TestCase
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
-        $job = new TrackObjectStub($annotation);
+        $job = new TrackObjectStub($annotation, $user);
         $job->handle();
+
+        Event::assertDispatched(function (ObjectTrackingSucceeded $event) use ($annotation, $user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals($annotation->id, $event->annotation->id);
+            return true;
+        });
 
         $this->assertEquals([0.5, 1.0, 2.0, 3.0], $annotation->fresh()->frames);
         $expect = [[0, 0], [10, 10], [20, 20], [30, 30]];
@@ -70,6 +83,8 @@ class TrackObjectTest extends TestCase
 
     public function testHandleCirlce()
     {
+        Event::fake();
+        $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::circleId(),
             'frames' => [0.5],
@@ -77,8 +92,14 @@ class TrackObjectTest extends TestCase
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
-        $job = new TrackObjectStub($annotation);
+        $job = new TrackObjectStub($annotation, $user);
         $job->handle();
+
+        Event::assertDispatched(function (ObjectTrackingSucceeded $event) use ($annotation, $user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals($annotation->id, $event->annotation->id);
+            return true;
+        });
 
         $this->assertEquals([0.5, 1.0, 2.0, 3.0], $annotation->fresh()->frames);
         $expect = [[10, 10, 5], [10, 10, 5], [20, 20, 6], [30, 30, 7]];
@@ -90,26 +111,50 @@ class TrackObjectTest extends TestCase
 
     public function testHandleFailure()
     {
+        Event::fake();
         Log::shouldReceive('warning')->once();
-        $annotation = VideoAnnotationTest::create();
-        $job = new TrackObjectStub($annotation);
+        $user = User::factory()->create();
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'frames' => [0.5],
+            'points' => [[10, 10]],
+        ]);
+        $job = new TrackObjectStub($annotation, $user);
         $job->throw = true;
         $job->handle();
-        $this->assertNull($annotation->fresh());
+        Event::assertDispatched(function (ObjectTrackingFailed $event) use ($annotation, $user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals($annotation->id, $event->annotation->id);
+            return true;
+        });
+
+        $annotation->refresh();
+        $this->assertEquals([0.5], $annotation->frames);
+        $this->assertEquals([[10, 10]], $annotation->points);
     }
 
     public function testHandleEmpty()
     {
+        Event::fake();
+        $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::circleId(),
             'frames' => [0.5],
             'points' => [[10, 10, 5]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
-        $job = new TrackObjectStub($annotation);
+        $job = new TrackObjectStub($annotation, $user);
         $job->keyframes = '[]';
         $job->handle();
-        $this->assertNull($annotation->fresh());
+        Event::assertDispatched(function (ObjectTrackingFailed $event) use ($annotation, $user) {
+            $this->assertEquals($user->id, $event->user->id);
+            $this->assertEquals($annotation->id, $event->annotation->id);
+            return true;
+        });
+
+        $annotation->refresh();
+        $this->assertEquals([0.5], $annotation->frames);
+        $this->assertEquals([[10, 10, 5]], $annotation->points);
     }
 }
 

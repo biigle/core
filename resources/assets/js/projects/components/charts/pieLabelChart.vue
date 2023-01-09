@@ -42,7 +42,7 @@ export default {
                 ret.push(formatObj);
             }
 
-            return ret;
+            return ret.sort((a, b) => b.value - a.value);
         },
         option() {
             return {
@@ -59,6 +59,12 @@ export default {
                 tooltip: {
                     trigger: 'item',
                     formatter: '{b} : <b>{c}</b> ({d}%)'
+                },
+                legend: {
+                    orient: 'horizontal',
+                    bottom: '5%',
+                    left: 'center',
+                    type: 'scroll',
                 },
                 series: [
                     {
