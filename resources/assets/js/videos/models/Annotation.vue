@@ -4,12 +4,6 @@ import VideoAnnotationApi from '../api/videoAnnotations';
 import {getRoundToPrecision} from '../utils';
 import {interpolate} from 'polymorph-js';
 
-/**
- * Annotation model.
- *
- * @type {Object}
- */
-const POLL_INTERVAL = 5000;
 
 export default Vue.extend({
     data() {
@@ -68,31 +62,17 @@ export default Vue.extend({
         },
     },
     methods: {
-        startPollTracking() {
+        startTracking() {
             this.tracking = true;
-            this.continuePollTracking();
         },
-        pollTracking() {
-            VideoAnnotationApi.get({id: this.id})
-                .then(this.maybeFinishPollTracking, this.cancelPollTracking);
+        finishTracking(annotation) {
+            this.tracking = false;
+            this.frames = annotation.frames;
+            this.points = annotation.points;
         },
-        maybeFinishPollTracking(response) {
-            let annotation = response.body;
-            if (annotation.frames.length > 1) {
-                this.tracking = false;
-                this.frames = annotation.frames;
-                this.points = annotation.points;
-            } else {
-                this.continuePollTracking();
-            }
-        },
-        continuePollTracking() {
-            this.pollTimeout = window.setTimeout(this.pollTracking, POLL_INTERVAL);
-        },
-        cancelPollTracking() {
+        failTracking() {
             Messages.danger(`Tracking of annotation ${this.id} failed.`);
             this.tracking = false;
-            this.$emit('tracking-failed', this);
         },
         interpolatePoints(time) {
             const rtp = getRoundToPrecision(time);

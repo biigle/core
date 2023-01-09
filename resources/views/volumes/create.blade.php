@@ -171,7 +171,7 @@
                     <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
                         <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
-                           The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
+                           The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG, WebP and TIFF.
                         </p>
                     </div>
                     <div v-else @unless ($mediaType === 'video') v-cloak @endif>
@@ -202,7 +202,7 @@
                 <span v-else>
                     Select a directory or files below. All selected files will be used for the new volume.
                 </span>
-                <span v-if="isImageMediaType">Only files with a supported image file format are shown (JPEG, PNG and TIFF).</span>
+                <span v-if="isImageMediaType">Only files with a supported image file format are shown (JPEG, PNG, WebP and TIFF).</span>
                 <span v-if="isVideoMediaType">Only files with a supported video file format are shown (MP4 (H.264) and WebM (VP8, VP9, AV1)).</span>
             </p>
 

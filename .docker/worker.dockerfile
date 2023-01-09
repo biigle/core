@@ -1,12 +1,12 @@
 FROM ghcr.io/biigle/app as intermediate
 
-# PHP 8.0.20
-#FROM php:8.0-alpine
-FROM php@sha256:541812828f5e1996ac78d99a3bac3b4ba14534b6ac04a480a9ec65e1c3f589f8
+# PHP 8.1.13
+#FROM php:8.1-alpine
+FROM php@sha256:f9e31f22bdd89c1334a03db5c8800a5f3b1e1fe042d470adccf58a29672c6202
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
-ARG OPENCV_VERSION=4.6.0
+ARG OPENCV_VERSION=4.6.0-r3
 RUN apk add --no-cache \
         eigen \
         ffmpeg \
@@ -14,53 +14,7 @@ RUN apk add --no-cache \
         openblas \
         py3-numpy \
         python3 \
-    && apk add --no-cache --virtual .build-deps \
-        build-base \
-        clang-dev \
-        cmake \
-        curl \
-        eigen-dev \
-        ffmpeg-dev \
-        g++ \
-        gcc \
-        lapack-dev \
-        linux-headers \
-        openblas-dev \
-        py3-numpy-dev \
-        python3-dev \
-    && cd /tmp \
-    && curl -L https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
-    && tar -xzf ${OPENCV_VERSION}.tar.gz \
-    && curl -L https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.tar.gz -o ${OPENCV_VERSION}.tar.gz \
-    && tar -xzf ${OPENCV_VERSION}.tar.gz \
-    && mkdir /tmp/opencv-${OPENCV_VERSION}/build \
-    && cd /tmp/opencv-${OPENCV_VERSION}/build \
-    && cmake \
-        -D BUILD_DOCS=OFF \
-        -D BUILD_EXAMPLES=OFF \
-        -D BUILD_JAVA=OFF \
-        -D BUILD_opencv_apps=OFF \
-        -D BUILD_opencv_highgui=OFF \
-        -D BUILD_opencv_python2=OFF \
-        -D BUILD_opencv_wechat_qrcode=OFF \
-        -D BUILD_PERF_TESTS=OFF \
-        -D BUILD_TESTS=OFF \
-        -D CMAKE_BUILD_TYPE=RELEASE \
-        -D CMAKE_INSTALL_PREFIX=/usr \
-        -D HIGHGUI_ENABLE_PLUGINS=OFF \
-        -D INSTALL_C_EXAMPLES=OFF \
-        -D INSTALL_PYTHON_EXAMPLES=OFF \
-        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib-${OPENCV_VERSION}/modules \
-        -D VIDEOIO_PLUGIN_LIST=ffmpeg \
-        -D WITH_GTK=OFF \
-        -D WITH_QT=OFF \
-        -D WITH_V4L=OFF \
-        -D WITH_WIN32UI=OFF \
-        .. \
-    && make -j $(nproc) \
-    && make install \
-    && apk del --purge .build-deps \
-    && rm -r /tmp/*
+        py3-opencv="$OPENCV_VERSION"
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
@@ -102,7 +56,7 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && docker-php-ext-install -j$(nproc) redis
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-# Install vips from source because the apk package does not have dzsave support. Install
+# Install vips from source because the apk package does not have dzsave support! Install
 # libvips and the vips PHP extension in one go so the *-dev dependencies are reused.
 ARG LIBVIPS_VERSION=8.12.2
 ARG PHP_VIPS_EXT_VERSION=1.0.13

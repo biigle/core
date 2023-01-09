@@ -1,4 +1,5 @@
 import AnnotationsApi from './core/api/annotations';
+import Echo from './core/echo';
 import EditorMixin from './core/mixins/editor';
 import FileBrowserComponent from './core/components/fileBrowser';
 import FileBrowserDirectoryComponent from './core/components/fileBrowserDirectory';
@@ -68,6 +69,7 @@ biigle.$declare('utils.urlParams', urlParams);
 biigle.$declare('urlParams', urlParams); // Legacy support.
 biigle.$declare('utils.throttle', throttle);
 
+biigle.$declare('echo', Echo);
 biigle.$declare('events', Events);
 biigle.$declare('keyboard', Keyboard);
 biigle.$declare('core.keyboard', Keyboard); // Legacy support.
