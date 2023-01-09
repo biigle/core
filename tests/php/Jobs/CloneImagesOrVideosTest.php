@@ -16,6 +16,7 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Queue;
@@ -33,22 +34,12 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(200);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
+
+        $this->expectsEvents('volume.cloned');
+        with(new CloneImagesOrVideos($request))->handle();
 
         $copy = $project->volumes()->first();
-
-        $onlyFiles = [];
-        $cloneAnnotations = false;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = false;
-        $onlyFileLabels = [];
-
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
-//        Queue::assertPushed(ProcessNewVolumeFiles::class);
 
         $this->assertNotNull($copy);
         $this->assertNotEquals($volume->id, $copy->id);
@@ -85,23 +76,14 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
 
-        $onlyFiles = [];
-        $cloneAnnotations = false;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = true;
-        $onlyFileLabels = [];
-
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['clone_file_labels' => $cloneFileLabels]);
-        $response->assertStatus(200);
-        $copy = $project->volumes()->first();
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
+        with(new CloneImagesOrVideos($request))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
 
+        $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->first();
 
@@ -127,7 +109,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         );
 
     }
-//
+
     public function testCloneVolumeVideos()
     {
         $volume = $this->volume([
@@ -151,23 +133,14 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
 
-        $onlyFiles = [];
-        $cloneAnnotations = false;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = true;
-        $onlyFileLabels = [];
-
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['clone_file_labels' => $cloneFileLabels]);
-        $response->assertStatus(200);
-        $copy = $project->volumes()->first();
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
+        with(new CloneImagesOrVideos($request))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
 
+        $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newVideoLabel = $newVideo->labels()->first();
 
@@ -210,23 +183,14 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $onlyFiles = [];
-        $cloneAnnotations = true;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = false;
-        $onlyFileLabels = [];
-
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['clone_annotations' => $cloneAnnotations]);
-        $response->assertStatus(200);
-        $copy = $project->volumes()->first();
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
+        with(new CloneImagesOrVideos($request))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
 
+        $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
         $newAnnotation = $newImage->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
@@ -270,23 +234,14 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $onlyFiles = [];
-        $cloneAnnotations = true;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = false;
-        $onlyFileLabels = [];
-
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['clone_annotations' => $cloneAnnotations]);
-        $response->assertStatus(200);
-        $copy = $project->volumes()->first();
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
+        with(new CloneImagesOrVideos($request))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
 
+        $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
         $newAnnotation = $newVideo->annotations()->first();
         $newAnnotationLabel = $newAnnotation->labels()->first();
@@ -334,20 +289,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $onlyFiles = [];
-        $cloneAnnotations = false;
-        $onlyAnnotationLabels = [];
-        $cloneFileLabels = false;
-        $onlyFileLabels = [];
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(200);
-        $copy = $project->volumes()->first();
-
-        Queue::fake();
         $this->expectsEvents('volume.cloned');
-        with(new CloneImagesOrVideos($volume,$copy,$onlyFiles,
-            $cloneAnnotations,$onlyAnnotationLabels,$cloneFileLabels,$onlyFileLabels))->handle();
+        with(new CloneImagesOrVideos($request))->handle();
+        $copy = $project->volumes()->first();
 
         $this->assertNotNull($copy->getIfdo());
         $this->assertTrue($copy->hasIfdo());
