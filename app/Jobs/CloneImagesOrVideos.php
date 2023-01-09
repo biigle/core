@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
@@ -13,6 +14,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
+use http\Env\Request;
 use \Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -49,7 +51,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Volume $volume The volume to create the files for.
+     * @param CloneVolume $request containing the project, volume, new volume name and ids of files and labels.
      *
      * @return void
      */
