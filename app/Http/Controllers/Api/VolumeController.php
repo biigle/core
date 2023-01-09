@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Queue;
+use voku\helper\ASCII;
 
 class VolumeController extends Controller
 {
@@ -156,8 +157,6 @@ class VolumeController extends Controller
     /**
      * Clones volume to destination project.
      *
-     * @param int $volumeId
-     * @param int $destProjectId
      * @param CloneVolume $request
      * @return Response
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
@@ -168,11 +167,11 @@ class VolumeController extends Controller
      * @apiParam {Number} id The volume id.
      * @apiParam {Number} project_id The target project id.
      * @apiParam {string} name volume name of cloned volume.
-     * @apiParam (file ids) {Array} only_files ids of files which should be cloned.
+     * @apiParam (file ids) {Array} only_files ids of files which should be cloned. If empty all files are cloned.
      * @apiParam {bool} clone_annotations Switch to clone annotation labels.
-     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned.
+     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned. If empty all labels are cloned.
      * @apiParam {bool} clone_file_labels Switch to clone file labels.
-     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned.
+     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned. If empty all labels are cloned.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -186,63 +185,32 @@ class VolumeController extends Controller
      * "id": 4
      * }
      **/
-    public function clone($volumeId, $destProjectId, CloneVolume $request)
+    public function clone(CloneVolume $request)
     {
-        return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
+        return DB::transaction(function () use ($request) {
             $createSyncLimit = 10000;
 
             $project = $request->project;
             $volume = $request->volume;
-            $copy = $volume->replicate();
-            $copy->name = $request->input('name', $volume->name);
-            $copy->save();
 
-            $onlyFiles = $request->input('only_files', []);
-
-            $cloneAnnotations = $request->input('clone_annotations', false);
-            $onlyAnnotationLabels = $request->input('only_annotation_labels', []);
-
-            $cloneFileLabels = $request->input('clone_file_labels', false);
-            $onlyFileLabels = $request->input('only_file_labels', []);
+            $nbrFiles = count($request->input('only_files', []));
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30 s execution timeout.
-            $job = new CloneImagesOrVideos($volume, $copy,
-                $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels, $cloneFileLabels, $onlyFileLabels);
-            if (count($onlyFiles) > $createSyncLimit) {
+            $job = new CloneImagesOrVideos($request);
+            if (($nbrFiles === 0 && $volume->files()->count() > 0) || $nbrFiles > $createSyncLimit) {
                 Queue::pushOn('high', $job);
-                $copy->save();
             } else {
                 Queue::connection('sync')->push($job);
             }
-
-            //save ifdo-file if exist
-            if ($volume->hasIfdo()) {
-                $this->copyIfdoFile($volumeId, $copy->id);
-            }
-
-            $project->addVolumeId($copy->id);
 
             if ($this->isAutomatedRequest()) {
                 return $volume;
             }
 
-            return $this->fuzzyRedirect('project', $destProjectId)
+            return $this->fuzzyRedirect('project', $project->id)
                 ->with('message', 'The volume was cloned');
         });
 
-    }
-
-    /** Copies ifDo-Files from given volume to volume copy.
-    *
-    * @param int $volumeId
-    * @param int $copyId
-    **/
-    private function copyIfdoFile($volumeId, $copyId)
-    {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volumeId.".yaml";
-        $copyIFdoFilename = $copyId.".yaml";
-        $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 }

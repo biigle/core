@@ -6,6 +6,7 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
+use Biigle\Project;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
@@ -16,6 +17,7 @@ use \Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
 class CloneImagesOrVideos extends Job implements ShouldQueue
@@ -27,9 +29,11 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @var Volume
      */
+    public $project;
+
     public $volume;
 
-    public $copy;
+    public $cloneName;
 
     public $onlyFiles;
 
@@ -49,33 +53,33 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Volume $volume, Volume $copy,
-                                array  $onlyFiles, bool $cloneAnnotations, array $onlyAnnotationLabels,
-                                bool   $cloneFileLabels, array $onlyFileLabels)
+    public function __construct($request)
     {
-        $this->volume = $volume;
-        $this->copy = $copy;
-        $this->onlyFiles = $onlyFiles;
-        $this->cloneAnnotations = $cloneAnnotations;
-        $this->onlyAnnotationLabels = $onlyAnnotationLabels;
-        $this->cloneFileLabels = $cloneFileLabels;
-        $this->onlyFileLabels = $onlyFileLabels;
+        $this->project = $request->project;
+        $this->volume = $request->volume;
+        $this->cloneName = $request->input('name', $this->volume->name);
+        $this->onlyFiles = $request->input('only_files', []);
+        $this->cloneAnnotations = $request->input('clone_annotations', false);
+        $this->onlyAnnotationLabels = $request->input('only_annotation_labels', []);
+        $this->cloneFileLabels = $request->input('clone_file_labels', false);
+        $this->onlyFileLabels = $request->input('only_file_labels', []);
+
     }
 
     public function handle()
     {
-        $volume = $this->volume;
-        $copy = $this->copy;
-        $onlyFiles = $this->onlyFiles;
-        $cloneAnnotations = $this->cloneAnnotations;
-        $onlyAnnotationLabels = $this->onlyAnnotationLabels;
-        $cloneFileLabels = $this->cloneFileLabels;
-        $onlyFileLabels = $this->onlyFileLabels;
+        DB::transaction(function () {
+            $project = $this->project;
+            $volume = $this->volume;
+            $onlyFiles = $this->onlyFiles;
+            $cloneAnnotations = $this->cloneAnnotations;
+            $onlyAnnotationLabels = $this->onlyAnnotationLabels;
+            $cloneFileLabels = $this->cloneFileLabels;
+            $onlyFileLabels = $this->onlyFileLabels;
 
-        DB::transaction(function () use (
-            $volume, $copy, $onlyFiles, $cloneAnnotations, $onlyAnnotationLabels,
-            $cloneFileLabels, $onlyFileLabels
-        ) {
+            $copy = $volume->replicate();
+            $copy->name = $this->cloneName;
+            $copy->save();
 
             if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $onlyFiles);
@@ -94,47 +98,24 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     $this->copyVideoLabels($volume, $copy, $onlyFiles, $onlyFileLabels);
                 }
             }
+            if ($copy->files()->exists()) {
+                ProcessNewVolumeFiles::dispatch($copy);
+            }
+
+            //save ifdo-file if exist
+            if ($volume->hasIfdo()) {
+                $this->copyIfdoFile($volume->id, $copy->id);
+            }
+
+            $project->addVolumeId($copy->id);
+
+            $copy->flushThumbnailCache();
+
+            $copy->save();
+
+            event('volume.cloned',[$copy->id]);
         });
 
-
-        if ($copy->files()->exists()) {
-            ProcessNewVolumeFiles::dispatch($copy);
-        }
-
-        $copy->flushThumbnailCache();
-
-        if ($copy->creating_async) {
-            $copy->save();
-        }
-
-        event('volume.cloned', [$copy->id]);
-
-    }
-
-    /**
-     * Discard label ids whose files were not copied.
-     * @param int[] $fileIds image or video ids
-     * @param int[] $labelIds file labels if isFileLabel is true otherwise annotation labels
-     * @param boolean $isImageVol true if volume is image volume else false
-     * @param boolean $isFileLabel true if labelIds are image/video labels otherwise false
-     * @return int[] label ids of files which were copied
-     **/
-    private function filterLabels($fileIds, $labelIds, $isImageVol, $isFileLabel)
-    {
-        $fileType = $isImageVol ? 'image_id' : 'video_id';
-        if ($isFileLabel) {
-            $labels = $isImageVol ? ImageLabel::find($labelIds) : VideoLabel::find($labelIds);
-            return $labels->filter(function ($label) use ($fileIds, $fileType) {
-                return in_array($label->$fileType, $fileIds);
-            })->pluck('id')->toArray();
-        } else {
-            $labels = $isImageVol ? ImageAnnotationLabel::find($labelIds) : VideoAnnotationLabel::find($labelIds);
-            $annotationIds = $labels->pluck('annotation_id');
-            $annotations = $isImageVol ? ImageAnnotation::find($annotationIds) : VideoAnnotation::find($annotationIds);
-            return $annotations->filter(function ($label) use ($fileIds, $fileType) {
-                return in_array($label->$fileType, $fileIds);
-            })->pluck('id')->toArray();
-        }
 
     }
 
@@ -439,6 +420,19 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     VideoLabel::insert($chunk->toArray());
                 });
             });
+    }
+
+    /** Copies ifDo-Files from given volume to volume copy.
+     *
+     * @param int $volumeId
+     * @param int $copyId
+     **/
+    private function copyIfdoFile($volumeId, $copyId)
+    {
+        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
+        $iFdoFilename = $volumeId.".yaml";
+        $copyIFdoFilename = $copyId.".yaml";
+        $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 
 }
