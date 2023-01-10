@@ -15,13 +15,14 @@ class VolumeFilesTest extends TestCase
         $this->assertTrue($validator->passes(null, ['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']));
         $this->assertTrue($validator->passes(null, ['1.png', '2.PNG']));
         $this->assertTrue($validator->passes(null, ['1.tif', '2.tiff', '2.TIF', '3.TIFF']));
+        $this->assertTrue($validator->passes(null, ['1.webp', '2.WEBP']));
     }
 
     public function testImageFormatNotOk()
     {
         $validator = new VolumeFilesStub('', MediaType::imageId());
         $this->assertFalse($validator->passes(null, ['1.jpg', '2.bmp']));
-        $this->assertStringContainsString('Only JPEG, PNG or TIFF', $validator->message());
+        $this->assertStringContainsString('Only JPEG, PNG, WebP or TIFF', $validator->message());
     }
 
     public function testVideoFormatOk()
