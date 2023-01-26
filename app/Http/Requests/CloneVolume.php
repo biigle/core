@@ -82,8 +82,8 @@ class CloneVolume extends FormRequest
             $fileIds = $this->input('only_files', []);
             if (!empty($fileIds)) {
                 $intersection = array_intersect($fileIds, $this->volume->files()->pluck('id')->toArray());
-                if (count($intersection) != count($fileIds)) {
-                    $validator->errors()->add('$fileIds',
+                if (count($intersection) !== count($fileIds)) {
+                    $validator->errors()->add('only_files',
                         'Cloning volume failed. Unauthorized access to files that do not belong to the volume');
                 }
             }
