@@ -189,8 +189,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->with([
-                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
-                'annotations.labels' => fn($q) => $q->whereIn('label_id', $imageAnnotationLabelIds),
+                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
+                'annotations.labels' => fn($q) => $q->whereIn('label_id', $imageAnnotationLabelIds)->orderBy('id'),
             ])
             ->when($volume->images->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
                 return $query->whereIn('id', $selectedFileIds);
@@ -343,8 +343,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
             ->with([
-                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
-                'annotations.labels' => fn($q) => $q->whereIn('label_id', $videoAnnotationLabelIds),
+                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
+                'annotations.labels' => fn($q) => $q->whereIn('label_id', $videoAnnotationLabelIds)->orderBy('id'),
             ])
             ->when($volume->videos->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
                 return $query->whereIn('id', $selectedFileIds);
