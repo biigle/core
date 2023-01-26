@@ -115,7 +115,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
             $copy->save();
 
-            event('volume.cloned',[$copy->id]);
+            event('volume.cloned', [$copy->id]);
         });
 
 
@@ -171,12 +171,14 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
 
         // use unique ids, because an annotation with multiple labels would be duplicated
-        $usedAnnotationIds = array_unique($annotationJoinLabel
+        $usedAnnotationIds = $annotationJoinLabel
+            ->distinct()
             ->pluck('image_annotations.id')
-            ->toArray());
+            ->toArray();
 
         if (empty($selectedLabelIds)) {
             $imageAnnotationLabelIds = $annotationJoinLabel
+                ->distinct()
                 ->pluck('image_annotation_labels.label_id')
                 ->toArray();
         } else {
@@ -190,7 +192,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
                 'annotations.labels' => fn($q) => $q->whereIn('label_id', $imageAnnotationLabelIds),
             ])
-            ->when($volume->images->count() != count($selectedFileIds), function ($query) use ($selectedFileIds) {
+            ->when($volume->images->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
                 return $query->whereIn('id', $selectedFileIds);
             })
             ->orderBy('id')
@@ -319,15 +321,18 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
                 return $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds);
             })
-            ->whereIn('video_annotations.video_id', $selectedFileIds);
+            ->whereIn('video_annotations.video_id', $selectedFileIds)
+            ->distinct();
 
         // use unique ids, because an annotation with multiple labels would be duplicated
-        $usedAnnotationIds = array_unique($annotationJoinLabel
+        $usedAnnotationIds = $annotationJoinLabel
+            ->distinct()
             ->pluck('video_annotations.id')
-            ->toArray());
+            ->toArray();
 
         if (empty($selectedLabelIds)) {
             $videoAnnotationLabelIds = $annotationJoinLabel
+                ->distinct()
                 ->pluck('video_annotation_labels.label_id')
                 ->toArray();
         } else {
@@ -341,7 +346,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds),
                 'annotations.labels' => fn($q) => $q->whereIn('label_id', $videoAnnotationLabelIds),
             ])
-            ->when($volume->videos->count() != count($selectedFileIds), function ($query) use ($selectedFileIds) {
+            ->when($volume->videos->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
                 return $query->whereIn('id', $selectedFileIds);
             })
             ->orderBy('id')
