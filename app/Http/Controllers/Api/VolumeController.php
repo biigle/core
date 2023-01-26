@@ -168,10 +168,10 @@ class VolumeController extends Controller
      * @apiParam {Number} project_id The target project id.
      * @apiParam {string} name volume name of cloned volume.
      * @apiParam (file ids) {Array} only_files ids of files which should be cloned. If empty all files are cloned.
-     * @apiParam {bool} clone_annotations Switch to clone annotation labels.
-     * @apiParam (annotation label ids) {Array} only_annotation_labels ids of annotation labels which should be cloned. If empty all labels are cloned.
-     * @apiParam {bool} clone_file_labels Switch to clone file labels.
-     * @apiParam (file label ids) {Array} only_file_labels ids of file labels which should be cloned. If empty all labels are cloned.
+     * @apiParam {bool} clone_annotations Set to `true` to also clone annotations
+     * @apiParam (annotation label ids) {Array} only_annotation_labels Label IDs to filter cloned annotations. If empty, all annotations are cloned. Only has an effect if `clone_annotations` is `true`.
+     * @apiParam {bool} clone_file_labels Set to `true` to also clone image/video labels.
+     * @apiParam (file label ids) {Array} only_file_labels Label IDs to filter cloned file labels. If empty, all file labels are cloned. Only has an effect if `clone_file_labels` is `true`.
      *
      * @apiSuccessExample {json} Success response:
      * {
