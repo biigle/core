@@ -15,6 +15,7 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -34,6 +35,15 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
+        $oldImage = ImageTest::create([
+            'filename' => 'a123.jpg',
+            'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
+            'volume_id' => $volume->id,
+            'lng' => 1.5,
+            'lat' => 5.3,
+            'tiled' => true])->fresh();
+        ImageLabelTest::create(['image_id' => $oldImage->id]);
+
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
         $this->expectsEvents('volume.cloned');
@@ -45,12 +55,47 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($volume->id, $copy->id);
         $this->assertNotEquals($volume->created_at, $copy->created_at);
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
+        $this->assertEmpty($copy->images()->first()->labels()->get());
 
         $ignore = ['id', 'created_at', 'updated_at'];
         $this->assertEquals(
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
         );
+
+        // test for video
+
+        $volume2 = $this->volume(
+            ['created_at' => '2023-01-09 14:37:00',
+                'updated_at' => '2023-01-09 14:37:00',
+                'media_type_id' => MediaType::videoId()])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project2 = ProjectTest::create();
+
+        $this->beAdmin();
+        $project2->addUserId($this->admin()->id, Role::adminId());
+
+        dd($volume2->isImageVolume());
+
+//        $oldVideo = VideoTest::create([
+//            'filename' => 'a321123.jpg',
+//            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
+//            'volume_id' => $volume2->id,
+//            'lng' => 1.5,
+//            'lat' => 5.3,
+//            'duration' => 42.42])->fresh();
+//        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+//
+//        $request = new Request(['project' => $project2, 'volume' => $volume2]);
+//
+//        $this->expectsEvents('volume.cloned');
+//        with(new CloneImagesOrVideos($request))->handle();
+//
+//        $copy = $project2->volumes()->first();
+
+
+//        $this->assertEmpty($copy->videos()->first()->labels()->get());
+
     }
 
     public function testCloneVolumeImages()
@@ -164,7 +209,6 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $oldVideoLabel->makeHidden($ignore)->toArray(),
             $newVideoLabel->makeHidden($ignore)->toArray()
         );
-
     }
 
     public function testCloneVolumeImageAnnotations()
