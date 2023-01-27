@@ -65,36 +65,33 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         // test for video
 
-        $volume2 = $this->volume(
+        $volume = VolumeTest::create(
             ['created_at' => '2023-01-09 14:37:00',
                 'updated_at' => '2023-01-09 14:37:00',
                 'media_type_id' => MediaType::videoId()])->fresh(); // Use fresh() to load even the null fields.
         // The target project.
-        $project2 = ProjectTest::create();
+        $project = ProjectTest::create();
 
         $this->beAdmin();
-        $project2->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::adminId());
 
-        dd($volume2->isImageVolume());
+        $oldVideo = VideoTest::create([
+            'filename' => 'a321123.jpg',
+            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
+            'volume_id' => $volume->id,
+            'lng' => 1.5,
+            'lat' => 5.3,
+            'duration' => 42.42])->fresh();
+        VideoLabelTest::create(['video_id' => $oldVideo->id]);
 
-//        $oldVideo = VideoTest::create([
-//            'filename' => 'a321123.jpg',
-//            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
-//            'volume_id' => $volume2->id,
-//            'lng' => 1.5,
-//            'lat' => 5.3,
-//            'duration' => 42.42])->fresh();
-//        VideoLabelTest::create(['video_id' => $oldVideo->id]);
-//
-//        $request = new Request(['project' => $project2, 'volume' => $volume2]);
-//
-//        $this->expectsEvents('volume.cloned');
-//        with(new CloneImagesOrVideos($request))->handle();
-//
-//        $copy = $project2->volumes()->first();
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
+        $this->expectsEvents('volume.cloned');
+        with(new CloneImagesOrVideos($request))->handle();
 
-//        $this->assertEmpty($copy->videos()->first()->labels()->get());
+        $copy = $project->volumes()->first();
+
+        $this->assertEmpty($copy->videos()->first()->labels()->get());
 
     }
 
@@ -153,7 +150,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $newImageLabel->makeHidden($ignore)->toArray()
         );
 
-        // second test for cloning only a subset of labels
+        // second test cloning only a subset of labels
 
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
