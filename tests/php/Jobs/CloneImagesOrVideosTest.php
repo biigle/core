@@ -153,6 +153,35 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $newImageLabel->makeHidden($ignore)->toArray()
         );
 
+        // second test for cloning only a subset of labels
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $oldImage->volume_id = $volume->id;
+        $oldImage->save();
+        // there are three labels in total
+        $l2 = ImageLabelTest::create(['image_id' => $oldImage->id]);
+        $l3 = ImageLabelTest::create(['image_id' => $oldImage->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
+            'only_file_labels' => [$l2->label_id, $l3->label_id]]);
+
+        with(new CloneImagesOrVideos($request))->handle();
+
+        $copy = $project->volumes()->first();
+        $newImage = $copy->images()->first();
+        $newImageLabel = $newImage->labels()->get();
+
+        $this->assertEquals(2, $newImageLabel->count());
     }
 
     public function testCloneVolumeVideos()
@@ -209,6 +238,36 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $oldVideoLabel->makeHidden($ignore)->toArray(),
             $newVideoLabel->makeHidden($ignore)->toArray()
         );
+
+        // second test cloning only a subset of labels
+
+        $volume = VolumeTest::create([
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+            'media_type_id' => MediaType::videoId()
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $oldVideo->volume_id = $volume->id;
+        $oldVideo->save();
+        // there are three labels in total
+        $l2 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        $l3 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
+            'only_file_labels' => [$l2->label_id, $l3->label_id]]);
+
+        with(new CloneImagesOrVideos($request))->handle();
+
+        $copy = $project->volumes()->first();
+        $newVideo = $copy->videos()->first();
+        $newVideoLabels = $newVideo->labels()->get();
+
+        $this->assertEquals(2, $newVideoLabels->count());
     }
 
     public function testCloneVolumeImageAnnotations()
