@@ -315,6 +315,33 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $newAnnotationLabel->makeHidden($ignore)->toArray()
         );
 
+        // second test
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+        $oldImage->volume_id = $volume->id;
+        $oldImage->save();
+        // there are three labels in total
+        $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
+            'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
+
+        with(new CloneImagesOrVideos($request))->handle();
+
+        $copy = $project->volumes()->first();
+        $newImage = $copy->images()->first();
+        $newAnnotation = $newImage->annotations()->first();
+        $newAnnotationLabels = $newAnnotation->labels()->get();
+
+        $this->assertEquals(2, $newAnnotationLabels->count());
+
     }
 
     public function testCloneVolumeVideoAnnotations()
@@ -367,6 +394,33 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             $newAnnotationLabel->makeHidden($ignore)->toArray()
 
         );
+
+        // second test
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+        // The target project.
+        $project = ProjectTest::create();
+        $oldVideo->volume_id = $volume->id;
+        $oldVideo->save();
+        // there are three labels in total
+        $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
+            'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
+
+        with(new CloneImagesOrVideos($request))->handle();
+
+        $copy = $project->volumes()->first();
+        $newVideo = $copy->videos()->first();
+        $newAnnotation = $newVideo->annotations()->first();
+        $newAnnotationLabels = $newAnnotation->labels()->get();
+
+        $this->assertEquals(2, $newAnnotationLabels->count());
     }
 
     public function testCloneVolumeIfDoFiles()
