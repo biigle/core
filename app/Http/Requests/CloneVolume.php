@@ -2,18 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Image;
-use Biigle\ImageAnnotation;
-use Biigle\ImageAnnotationLabel;
-use Biigle\ImageLabel;
 use Biigle\Project;
-use Biigle\Video;
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
-use Biigle\VideoLabel;
 use Biigle\Volume;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use \Illuminate\Foundation\Http\FormRequest;
 
 class CloneVolume extends FormRequest
