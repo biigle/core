@@ -90,7 +90,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(CloneVolume $request)
+    public function __construct($request)
     {
         $this->project = $request->project;
         $this->volume = $request->volume;
