@@ -6,14 +6,11 @@ use Biigle\Http\Requests\CloneVolume;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Queue;
-use voku\helper\ASCII;
 
 class VolumeController extends Controller
 {
