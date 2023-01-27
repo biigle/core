@@ -14,7 +14,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
-use http\Env\Request;
 use \Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -26,26 +25,62 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels, ChecksMetadataStrings;
 
+
     /**
-     * The volume to create the files for.
+     * The target project.
+     *
+     * @var Project
+     */
+    public Project $project;
+
+    /**
+     * The volume to clone.
      *
      * @var Volume
      */
-    public $project;
+    public Volume $volume;
 
-    public $volume;
+    /**
+     * The new name of the volume clone.
+     *
+     * @var string
+     **/
+    public string $cloneName;
 
-    public $cloneName;
+    /**
+     * Array containing file ids.
+     *
+     * @var array
+     **/
+    public array $onlyFiles;
 
-    public $onlyFiles;
+    /**
+     * Boolean for cloning annotation labels.
+     *
+     * @var bool
+     **/
+    public bool $cloneAnnotations;
 
-    public $cloneAnnotations;
+    /**
+     * Array containing annotation label ids.
+     *
+     * @var array
+     **/
+    public array $onlyAnnotationLabels;
 
-    public $onlyAnnotationLabels;
+    /**
+     * Boolean for cloning file labels.
+     *
+     * @var bool
+     **/
+    public bool $cloneFileLabels;
 
-    public $cloneFileLabels;
-
-    public $onlyFileLabels;
+    /**
+     * Array containing file label ids.
+     *
+     * @var array
+     **/
+    public array $onlyFileLabels;
 
 
     /**
@@ -55,7 +90,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($request)
+    public function __construct(CloneVolume $request)
     {
         $this->project = $request->project;
         $this->volume = $request->volume;
