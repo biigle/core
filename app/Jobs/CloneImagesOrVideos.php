@@ -82,6 +82,12 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     public array $onlyFileLabels;
 
+    /**
+     * Ignore this job if the project or volume does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -144,9 +150,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $this->copyIfdoFile($volume->id, $copy->id);
             }
 
-            $project->addVolumeId($copy->id);
-
-            $copy->flushThumbnailCache();
+//            $project->addVolumeId($copy->id);
 
             $copy->save();
 
