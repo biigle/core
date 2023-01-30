@@ -44,8 +44,10 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
 
+        Queue::fake();
         $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request))->handle();
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
 
         $copy = $project->volumes()->first();
 
@@ -81,8 +83,10 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
 
+        Queue::fake();
         $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request))->handle();
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
 
         $copy = $project->volumes()->first();
 
