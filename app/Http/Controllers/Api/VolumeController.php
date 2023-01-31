@@ -6,6 +6,7 @@ use Biigle\Http\Requests\CloneVolume;
 use Biigle\Http\Requests\UpdateVolume;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -185,21 +186,13 @@ class VolumeController extends Controller
     public function clone(CloneVolume $request)
     {
         return DB::transaction(function () use ($request) {
-            $createSyncLimit = 10000;
 
             $project = $request->project;
             $volume = $request->volume;
 
-            $nbrFiles = count($request->input('only_files', []));
-
-            // If too many files should be created, do this asynchronously in the
-            // background. Else the script will run in the 30 s execution timeout.
             $job = new CloneImagesOrVideos($request);
-            if (($nbrFiles === 0 && $volume->files()->count() > 0) || $nbrFiles > $createSyncLimit) {
-                Queue::pushOn('high', $job);
-            } else {
-                Queue::connection('sync')->push($job);
-            }
+            Queue::pushOn('high', $job);
+
 
             if ($this->isAutomatedRequest()) {
                 return $volume;
