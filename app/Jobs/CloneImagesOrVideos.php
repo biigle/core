@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use AdvancedJsonRpc\Request;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -150,7 +151,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $this->copyIfdoFile($volume->id, $copy->id);
             }
 
-//            $project->addVolumeId($copy->id);
+            $project->addVolumeId($copy->id);
 
             $copy->save();
 
