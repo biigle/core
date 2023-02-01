@@ -31,6 +31,13 @@ class LargoSessionSaved implements ShouldBroadcast
     public $id;
 
     /**
+     * The name of the queue the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $queue;
+
+    /**
      * Create a new event instance.
      *
      * @param string $id
@@ -39,6 +46,7 @@ class LargoSessionSaved implements ShouldBroadcast
      */
     public function __construct($id, User $user)
     {
+        $this->queue = config('largo.apply_session_queue');
         $this->id = $id;
         $this->user = $user;
     }
