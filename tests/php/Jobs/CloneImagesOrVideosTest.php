@@ -42,7 +42,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             'tiled' => true])->fresh();
         ImageLabelTest::create(['image_id' => $oldImage->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -81,7 +81,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             'duration' => 42.42])->fresh();
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -113,7 +113,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -170,7 +170,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $l2 = ImageLabelTest::create(['image_id' => $oldImage->id]);
         $l3 = ImageLabelTest::create(['image_id' => $oldImage->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
             'only_file_labels' => [$l2->label_id, $l3->label_id]]);
 
         with(new CloneImagesOrVideos($request))->handle();
@@ -204,7 +204,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -260,7 +260,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $l2 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $l3 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
             'only_file_labels' => [$l2->label_id, $l3->label_id]]);
 
         with(new CloneImagesOrVideos($request))->handle();
@@ -289,7 +289,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -339,7 +339,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
             'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
 
         with(new CloneImagesOrVideos($request))->handle();
@@ -368,7 +368,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
         with(new CloneImagesOrVideos($request))->handle();
 
@@ -392,7 +392,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
         $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
         Queue::fake();
         $this->expectsEvents('volume.cloned');
@@ -445,7 +445,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
             'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
 
         with(new CloneImagesOrVideos($request))->handle();
@@ -474,7 +474,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
         with(new CloneImagesOrVideos($request))->handle();
 
@@ -500,7 +500,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         // The target project.
         $project = ProjectTest::create();
 
-        $request = new CloneVolume(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume]);
 
         $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request))->handle();
