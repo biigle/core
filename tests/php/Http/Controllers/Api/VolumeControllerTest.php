@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Http\Requests\CloneVolume;
+use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
@@ -239,10 +239,15 @@ class VolumeControllerTest extends ApiTestCase
             ->assertStatus(403);
 
         $project->addUserId($this->admin()->id, Role::adminId());
+
         Cache::flush();
+
+        Queue::fake();
+
         $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
             ['volume' => $volume, 'project' => $project])
             ->assertStatus(200);
+        Queue::assertPushed(CloneImagesOrVideos::class);
 
         // The target project.
         $project = ProjectTest::create();
@@ -253,6 +258,7 @@ class VolumeControllerTest extends ApiTestCase
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
             ['volume' => $volume, 'project' => $project]);
         $response->assertStatus(200);
+        Queue::assertPushed(CloneImagesOrVideos::class);
     }
 
 }
