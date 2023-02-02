@@ -143,7 +143,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                ProcessNewVolumeFiles::dispatch($copy);
+                (new PostProcessingVolumeCloning($copy))->handle();
             }
 
             //save ifdo-file if exist
