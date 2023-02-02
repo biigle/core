@@ -2,6 +2,7 @@
 
 namespace Biigle\Providers;
 
+use Biigle\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -80,7 +81,13 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
-            if ($request->user()) {
+            // Check User class because a FederatedSearchInstance could be a user here,
+            // too. The relaxeed rate limiting should only apply to actual users.
+            if ($request->user() instanceof User) {
+                if ($request->user()->can('sudo')) {
+                    return Limit::none();
+                }
+
                 // 3 requests per second.
                 return Limit::perHour(10800)->by($request->user()->id);
             }

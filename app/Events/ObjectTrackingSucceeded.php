@@ -32,6 +32,13 @@ class ObjectTrackingSucceeded implements ShouldBroadcast
     public $annotation;
 
     /**
+     * Ignore this event if the annotation does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
+    /**
      * Create a new event instance.
      *
      * @param VideoAnnotation $annotation
