@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
@@ -220,25 +221,33 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(
             ['created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',])->fresh();
+                'updated_at' => '2022-11-09 14:37:00',])->fresh();
         $project = ProjectTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
 
         $this->be($project->creator);
-        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['volume' => $volume, 'project' => $project])
             // No update permissions in the source project.
             ->assertStatus(403);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+        $this->postJSon("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['volume' => $volume, 'project' => $project])
             // No update permissions in the target project.
             ->assertStatus(403);
 
         $project->addUserId($this->admin()->id, Role::adminId());
+
         Cache::flush();
-        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+
+        Queue::fake();
+
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['volume' => $volume, 'project' => $project])
             ->assertStatus(200);
+        Queue::assertPushed(CloneImagesOrVideos::class);
 
         // The target project.
         $project = ProjectTest::create();
@@ -246,8 +255,10 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
+            ['volume' => $volume, 'project' => $project]);
         $response->assertStatus(200);
+        Queue::assertPushed(CloneImagesOrVideos::class);
     }
 
 }

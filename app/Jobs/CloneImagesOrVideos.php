@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use AdvancedJsonRpc\Request;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -82,11 +83,17 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     public array $onlyFileLabels;
 
+    /**
+     * Ignore this job if the project or volume does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
      *
-     * @param CloneVolume $request containing the project, volume, new volume name and ids of files and labels.
+     * @param CloneVolume|Request $request containing the project, volume, new volume name and ids of files and labels.
      *
      * @return void
      */
@@ -136,7 +143,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                ProcessNewVolumeFiles::dispatch($copy);
+                (new PostProcessingVolumeCloning($copy))->handle();
             }
 
             //save ifdo-file if exist
@@ -145,8 +152,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             }
 
             $project->addVolumeId($copy->id);
-
-            $copy->flushThumbnailCache();
 
             $copy->save();
 
