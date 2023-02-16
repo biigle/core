@@ -31,10 +31,8 @@ trait HasConstantInstances
      * @param string $key Can be he instance name like "myName" or to get the instance ID
      * "myNameId".
      * @param mixed $arguments
-     *
-     * @return \Illuminate\Database\Eloquent\Model|int
      */
-    public static function __callStatic($key, $arguments)
+    public static function __callStatic($key, $arguments): mixed
     {
         if (is_array(static::INSTANCES)) {
             $wantsId = Str::endsWith($key, 'Id');
