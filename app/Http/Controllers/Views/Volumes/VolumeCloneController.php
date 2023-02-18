@@ -27,7 +27,7 @@ class VolumeCloneController extends Controller
         dd($filesWithAllLabels->toArray());
 
         return view('clone', [
-            'filename' => $volume->filename,
+            'name' => $volume->name,
             'destProjects' => $destinationProjects,
             'files' => $filesWithAllLabels
         ]);
