@@ -2,12 +2,14 @@
 
 namespace Biigle\Jobs;
 
-use AdvancedJsonRpc\Request;
+use Illuminate\Http\Request;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
+use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Project;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
@@ -143,7 +145,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                (new PostProcessingVolumeCloning($copy))->handle();
+                $this->postProcessCloning($copy);
             }
 
             //save ifdo-file if exist
@@ -158,7 +160,44 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             event('volume.cloned', [$copy->id]);
         });
 
+    }
 
+    /**
+     * Initiate file thumbnail creation
+     * @param Volume $volume for which thumbnail creation should be started
+     * @return void
+     **/
+    public function postProcessCloning($volume)
+    {
+        ProcessNewVolumeFiles::dispatch($volume);
+
+        if (class_exists(GenerateImageAnnotationPatch::class)) {
+            ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
+                ->where('images.volume_id', "=", $volume->id)
+                ->select('image_annotations.id')
+                ->eachById(function ($annotation) {
+                    /**
+                     * See: https://github.com/vimeo/psalm/issues/9317
+                     * @psalm-suppress UndefinedClass
+                     */
+                    GenerateImageAnnotationPatch::dispatch($annotation)
+                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                }, 1000, 'image_annotations.id', 'id');
+        }
+
+        if (class_exists(GenerateVideoAnnotationPatch::class)) {
+            VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+                ->where('videos.volume_id', "=", $volume->id)
+                ->select('video_annotations.id')
+                ->eachById(function ($annotation) {
+                    /**
+                     * See: https://github.com/vimeo/psalm/issues/9317
+                     * @psalm-suppress UndefinedClass
+                     */
+                    GenerateVideoAnnotationPatch::dispatch($annotation)
+                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                }, 1000, 'video_annotations.id', 'id');
+        }
     }
 
     /**

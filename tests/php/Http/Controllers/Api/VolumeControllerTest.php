@@ -227,14 +227,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
 
         $this->be($project->creator);
-        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['volume' => $volume, 'project' => $project])
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             // No update permissions in the source project.
             ->assertStatus(403);
 
         $this->beAdmin();
-        $this->postJSon("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['volume' => $volume, 'project' => $project])
+        $this->postJSon("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             // No update permissions in the target project.
             ->assertStatus(403);
 
@@ -244,8 +242,7 @@ class VolumeControllerTest extends ApiTestCase
 
         Queue::fake();
 
-        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['volume' => $volume, 'project' => $project])
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             ->assertStatus(200);
         Queue::assertPushed(CloneImagesOrVideos::class);
 
@@ -255,8 +252,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}",
-            ['volume' => $volume, 'project' => $project]);
+        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(200);
         Queue::assertPushed(CloneImagesOrVideos::class);
     }

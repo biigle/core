@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Http\Requests\CloneVolume;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Role;
+use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
@@ -509,6 +509,82 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotNull($copy->getIfdo());
         $this->assertTrue($copy->hasIfdo());
         $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
+    }
+
+    public function testHandleVolumeImages()
+    {
+        // The target project.
+        $project = ProjectTest::create();
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+
+        ImageTest::create(['volume_id' => $volume->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume]);
+        (new CloneImagesOrVideos($request))->handle();
+
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertNotPushed(GenerateImageAnnotationPatch::class);
+    }
+
+
+
+    public function testHandleImageAnnotationPatches()
+    {
+        if (!class_exists(GenerateImageAnnotationPatch::class)) {
+            $this->markTestSkipped('Requires '.GenerateImageAnnotationPatch::class);
+        }
+
+        // The target project.
+        $project = ProjectTest::create();
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+
+        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        (new CloneImagesOrVideos($request))->handle();
+
+        // One job for the creation of the annotation and one job for GenerateImageAnnotationPatch
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(GenerateImageAnnotationPatch::class);
+    }
+
+    public function testHandleVideoAnnotationPatches()
+    {
+        if (!class_exists(GenerateVideoAnnotationPatch::class)) {
+            $this->markTestSkipped('Requires '.GenerateVideoAnnotationPatch::class);
+        }
+
+        // The target project.
+        $project = ProjectTest::create();
+
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::videoId(),
+            'created_at' => '2022-11-09 14:37:00',
+            'updated_at' => '2022-11-09 14:37:00',
+        ])->fresh(); // Use fresh() to load even the null fields.
+
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        (new CloneImagesOrVideos($request))->handle();
+
+        // One job for the creation of the annotation and one job for GenerateVideoAnnotationPatch
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(GenerateVideoAnnotationPatch::class);
     }
 
 }
