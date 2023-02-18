@@ -2,7 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use AdvancedJsonRpc\Request;
+use Illuminate\Http\Request;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
