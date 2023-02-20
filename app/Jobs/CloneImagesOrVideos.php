@@ -176,10 +176,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 ->where('images.volume_id', "=", $volume->id)
                 ->select('image_annotations.id')
                 ->eachById(function ($annotation) {
-                    /**
-                     * See: https://github.com/vimeo/psalm/issues/9317
-                     * @psalm-suppress UndefinedClass
-                     */
                     GenerateImageAnnotationPatch::dispatch($annotation)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
                 }, 1000, 'image_annotations.id', 'id');
@@ -190,10 +186,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 ->where('videos.volume_id', "=", $volume->id)
                 ->select('video_annotations.id')
                 ->eachById(function ($annotation) {
-                    /**
-                     * See: https://github.com/vimeo/psalm/issues/9317
-                     * @psalm-suppress UndefinedClass
-                     */
                     GenerateVideoAnnotationPatch::dispatch($annotation)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
                 }, 1000, 'video_annotations.id', 'id');
