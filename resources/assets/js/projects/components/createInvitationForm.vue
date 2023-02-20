@@ -1,6 +1,7 @@
 <template>
     <form @submit.prevent="submit">
-        <div class="form-group">
+        <div class="form-group clearfix">
+            <a class="pull-right" href="/manual/tutorials/projects/about#members" title="Learn more about project invitations" target="_blank"><i class="fa fa-question-circle"></i></a>
             <label>Expiration date</label>
             <datepicker-dropdown
                 v-model="expiresAt"

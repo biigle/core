@@ -1,6 +1,7 @@
 <template>
     <form @submit.prevent="attachMember">
-        <div class="form-group">
+        <div class="form-group clearfix">
+            <a class="pull-right" href="/manual/tutorials/projects/about#members" title="Learn more about project members" target="_blank"><i class="fa fa-question-circle"></i></a>
             <label>User name</label>
             <typeahead
                 more-info="affiliation"
