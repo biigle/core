@@ -19,14 +19,14 @@ class VolumeCloneController extends Controller
         $user = $request->user();
         $destinationProjects = $user->projects()->get()->map(function ($project) use ($user) {
             if ($user->can('sudo') || $user->can('update', $project)) {
-                return $project;
+                return $project->name;
             }
         });
 
         $filesWithAllLabels = $volume->files()->with(['Labels','Annotations.labels'])->get();
-        dd($filesWithAllLabels->toArray());
 
-        return view('clone', [
+
+        return view('volumes.clone', [
             'name' => $volume->name,
             'destProjects' => $destinationProjects,
             'files' => $filesWithAllLabels
