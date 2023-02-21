@@ -254,10 +254,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'volume',
             'uses' => 'VolumeController@index',
         ]);
-        $router->get('clone/{id}',[
-            'as' => 'clone-volume',
-            'uses' => 'VolumeController@clone'
-        ]);
     });
 
     $router->get('images/{id}', [
