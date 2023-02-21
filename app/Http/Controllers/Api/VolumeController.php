@@ -2,26 +2,20 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\CloneVolume;
 use Biigle\Http\Requests\UpdateVolume;
-use Biigle\Image;
-use Biigle\ImageAnnotation;
-use Biigle\ImageAnnotationLabel;
-use Biigle\ImageLabel;
+use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Project;
-use Biigle\Video;
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
-use Biigle\VideoLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Ramsey\Uuid\Uuid;
+use Queue;
 
 class VolumeController extends Controller
 {
+
 
     /**
      * Shows all volumes the user has access to.
@@ -157,22 +151,25 @@ class VolumeController extends Controller
         }
     }
 
+
     /**
      * Clones volume to destination project.
      *
-     * @param int $volumeId
-     * @param int $destProjectId
-     * @param Request $request
+     * @param CloneVolume $request
      * @return Response
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
      * @apiGroup Volumes
      * @apiName CloneVolume
      * @apiPermission projectAdmin
      *
-     * @apiParam {Number} id The volume ID.
-     * @apiParam {Number} project_id The target project ID.
-     * @apiParam (image IDs that can be used for cloning) {Array} imageIds selected subset of image IDs from original volume. Only images from this subset will be cloned.
-     * @apiParam (video IDs that can be used for cloning) {Array} videoIds selected subset of video IDs from original volume. Only videos from this subset will be cloned.
+     * @apiParam {Number} id The volume id.
+     * @apiParam {Number} project_id The target project id.
+     * @apiParam {string} name volume name of cloned volume.
+     * @apiParam (file ids) {Array} only_files ids of files which should be cloned. If empty all files are cloned.
+     * @apiParam {bool} clone_annotations Set to `true` to also clone annotations
+     * @apiParam (annotation label ids) {Array} only_annotation_labels Label IDs to filter cloned annotations. If empty, all annotations are cloned. Only has an effect if `clone_annotations` is `true`.
+     * @apiParam {bool} clone_file_labels Set to `true` to also clone image/video labels.
+     * @apiParam (file label ids) {Array} only_file_labels Label IDs to filter cloned file labels. If empty, all file labels are cloned. Only has an effect if `clone_file_labels` is `true`.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -186,284 +183,24 @@ class VolumeController extends Controller
      * "id": 4
      * }
      **/
-    public function clone($volumeId, $destProjectId, Request $request)
+    public function clone(CloneVolume $request)
     {
-        return DB::transaction(function () use ($volumeId, $destProjectId, $request) {
-            $project = Project::findOrFail($destProjectId);
-            $this->authorize('update', $project);
-            $volume = Volume::findOrFail($volumeId);
-            $this->authorize('update', $volume);
-            $copy = $volume->replicate();
-            $copy->name = $request->input('name', $volume->name);
-            $copy->save();
+        return DB::transaction(function () use ($request) {
 
-            if ($volume->isImageVolume()) {
-                $this->copyImages($volume, $copy, $request->input('file_ids', []));
-                $this->copyImageAnnotation($volume, $copy, $request->input('file_ids', []));
-                $this->copyImageLabels($volume, $copy, $request->input('file_ids', []));
-            } else {
-                $this->copyVideos($volume, $copy, $request->input('file_ids', []));
-                $this->copyVideoAnnotation($volume, $copy, $request->input('file_ids', []));
-                $this->copyVideoLabels($volume, $copy, $request->input('file_ids', []));
-            }
+            $project = $request->project;
+            $volume = $request->volume;
 
-            //save ifdo-file if exist
-            if ($volume->hasIfdo()) {
-                $this->copyIfdoFile($volumeId, $copy->id);
-            }
+            $job = new CloneImagesOrVideos($request);
+            Queue::pushOn('high', $job);
 
-            $project->addVolumeId($copy->id);
 
             if ($this->isAutomatedRequest()) {
                 return $volume;
             }
 
-            return $this->fuzzyRedirect('project', $destProjectId)
+            return $this->fuzzyRedirect('project', $project->id)
                 ->with('message', 'The volume was cloned');
         });
 
-    }
-
-    /**
-     * Copies (selected) images from given volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedImageIds
-     **/
-    private function copyImages($volume, $copy, $selectedImageIds)
-    {
-        // copy image references
-        $images = $volume->images()->orderBy('id')
-            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                $query->whereIn('id', $selectedImageIds);
-            })->get();
-
-        $images->map(function ($image) use ($copy) {
-            $original = $image->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Image::insert($chunk->toArray());
-        });
-
-    }
-
-    /**
-     * Copies (selected) image annotation and annotation labels from volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedImageIds
-     **/
-    private function copyImageAnnotation($volume, $copy, $selectedImageIds)
-    {
-        $chunkSize = 100;
-        $newImageIds = $copy->images()->orderBy('id')->pluck('id');
-        $volume->images()
-            ->orderBy('id')
-            ->with('annotations.labels')
-            // This is an optimized implementation to clone the annotations with only few database
-            // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newImageIds, $chunkSize) {
-                $insertData = [];
-                $chunkNewImageIds = [];
-                // Consider all previous image chunks when calculating the start of the index.
-                $baseImageIndex = ($page - 1) * $chunkSize;
-                foreach ($chunk as $index => $image) {
-                    $newImageId = $newImageIds[$baseImageIndex + $index];
-                    // Collect relevant image IDs for the annotation query below.
-                    $chunkNewImageIds[] = $newImageId;
-                    foreach ($image->annotations as $annotation) {
-                        $original = $annotation->getRawOriginal();
-                        $original['image_id'] = $newImageId;
-                        unset($original['id']);
-                        $insertData[] = $original;
-                    }
-                }
-
-                ImageAnnotation::insert($insertData);
-                // Get the IDs of all newly inserted annotations. Ordering is essential.
-                $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
-                    ->orderBy('id')
-                    ->pluck('id');
-                $insertData = [];
-                foreach ($chunk as $index => $image) {
-                    foreach ($image->annotations as $annotation) {
-                        $newAnnotationId = $newAnnotationIds->shift();
-                        foreach ($annotation->labels as $annotationLabel) {
-                            $original = $annotationLabel->getRawOriginal();
-                            $original['annotation_id'] = $newAnnotationId;
-                            unset($original['id']);
-                            $insertData[] = $original;
-                        }
-                    }
-                }
-                ImageAnnotationLabel::insert($insertData);
-            });
-    }
-
-    /**
-     * Copies (selected) image labels from given volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedImageIds
-     **/
-    private function copyImageLabels($volume, $copy, $selectedImageIds)
-    {
-        $oldImages = $volume->images()
-            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                $query->whereIn('id', $selectedImageIds);
-            })
-            ->orderBy('id')
-            ->with('labels')
-            ->get();
-        $newImageIds = $copy->images()->orderBy('id')->pluck('id');
-
-        $oldImages->map(function ($oldImage, $imageIdx) use ($newImageIds) {
-                $newImageId = $newImageIds[$imageIdx];
-                return $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
-                    $origin = $oldLabel->getRawOriginal();
-                    $origin['image_id'] = $newImageId;
-                    unset($origin['id']);
-                    return $origin;
-                });
-            })
-            ->flatten(1)
-            ->chunk(10000)->each(function ($chunk) {
-                ImageLabel::insert($chunk->toArray());
-            });
-    }
-
-    /**
-     * Copies (selected) videos from given volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedVideoIds
-     **/
-    private function copyVideos($volume, $copy, $selectedVideoIds)
-    {
-        // copy video references
-        $videos = $volume->videos()->orderBy('id')
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                $query->whereIn('id', $selectedVideoIds);
-            })->get();
-
-        $videos->map(function ($video) use ($copy) {
-            $original = $video->getRawOriginal();
-            $original['volume_id'] = $copy->id;
-            $original['uuid'] = (string)Uuid::uuid4();
-            unset($original['id']);
-            return $original;
-        })->chunk(10000)->each(function ($chunk) {
-            Video::insert($chunk->toArray());
-        });
-
-    }
-
-    /**
-     * Copies (selected) video annotations and annotation labels from given volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedVideoIds
-     **/
-    private function copyVideoAnnotation($volume, $copy, $selectedVideoIds)
-    {
-        //TODO: use selected videoIds
-        $chunkSize = 100;
-        $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
-        $volume->videos()
-            ->orderBy('id')
-            ->with('annotations.labels')
-            // This is an optimized implementation to clone the annotations with only few database
-            // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
-            ->chunkById($chunkSize, function ($chunk, $page) use ($newVideoIds, $chunkSize) {
-                $insertData = [];
-                $chunkNewVideoIds = [];
-                // Consider all previous video chunks when calculating the start of the index.
-                $baseVideoIndex = ($page - 1) * $chunkSize;
-                foreach ($chunk as $index => $video) {
-                    $newVideoId = $newVideoIds[$baseVideoIndex + $index];
-                    // Collect relevant video IDs for the annotation query below.
-                    $chunkNewVideoIds[] = $newVideoId;
-                    foreach ($video->annotations as $annotation) {
-                        $original = $annotation->getRawOriginal();
-                        $original['video_id'] = $newVideoId;
-                        unset($original['id']);
-                        $insertData[] = $original;
-                    }
-                }
-
-                VideoAnnotation::insert($insertData);
-                // Get the IDs of all newly inserted annotations. Ordering is essential.
-                $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
-                    ->orderBy('id')
-                    ->pluck('id');
-                $insertData = [];
-                foreach ($chunk as $index => $video) {
-                    foreach ($video->annotations as $annotation) {
-                        $newAnnotationId = $newAnnotationIds->shift();
-                        foreach ($annotation->labels as $annotationLabel) {
-                            $original = $annotationLabel->getRawOriginal();
-                            $original['annotation_id'] = $newAnnotationId;
-                            unset($original['id']);
-                            $insertData[] = $original;
-                        }
-                    }
-                }
-                VideoAnnotationLabel::insert($insertData);
-            });
-    }
-
-    /**
-     * Copies (selected) video labels from volume to volume copy.
-     *
-     * @param Volume $volume
-     * @param Volume $copy
-     * @param int[] $selectedVideoIds
-     **/
-    private function copyVideoLabels($volume, $copy, $selectedVideoIds)
-    {
-        $oldVideos = $volume->videos()
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                $query->whereIn('id', $selectedVideoIds);
-            })
-            ->orderBy('id')
-            ->with('labels')
-            ->get();
-        $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
-
-        $oldVideos->map(function ($oldVideo, $videoIdx) use ($newVideoIds) {
-                $newVideoId = $newVideoIds[$videoIdx];
-                return $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
-                    $origin = $oldLabel->getRawOriginal();
-                    $origin['video_id'] = $newVideoId;
-                    unset($origin['id']);
-                    return $origin;
-                });
-            })
-            ->flatten(1)
-            ->chunk(10000)->each(function ($chunk) {
-                VideoLabel::insert($chunk->toArray());
-            });
-    }
-
-    /**
-     * Copies ifDo-Files from given volume to volume copy.
-     *
-     * @param int $volumeId
-     * @param int $copyId
-     **/
-    private function copyIfdoFile($volumeId, $copyId)
-    {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volumeId.".yaml";
-        $copyIFdoFilename = $copyId.".yaml";
-        $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
 }
