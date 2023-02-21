@@ -19,12 +19,14 @@ export default {
             destinationProjects: [],
             files: [],
             selectedProject: "",
-            text: '',
         };
     },
     computed: {
     },
     methods: {
+        setProject(project) {
+           this.selectedProject = project;
+        }
     },
     watch: {
     },

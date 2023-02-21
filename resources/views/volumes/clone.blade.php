@@ -40,7 +40,7 @@
                             <template slot="dropdown">
                                 @foreach($destProjects as $p)
                                     <li>
-                                        <a>{{$p}}</a>
+                                        <a v-on:click="setProject('{{$p}}')">{{$p}}</a>
                                     </li>
                                 @endforeach
                             </template>
