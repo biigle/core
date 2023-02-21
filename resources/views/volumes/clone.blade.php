@@ -28,6 +28,26 @@
                     </div>
                 </fieldset>
 
+                <fieldset>
+                    <legend>
+                        2. Select destination
+                    </legend>
+                    <div class="form-group">
+                        <dropdown tag="span">
+                            <button class="btn btn-default dropdown-toggle" type="button">
+                                <i></i> Project <span class="caret"></span>
+                            </button>
+                            <template slot="dropdown">
+                                @foreach($destProjects as $p)
+                                    <li>
+                                        <a>{{$p}}</a>
+                                    </li>
+                                @endforeach
+                            </template>
+                        </dropdown>
+                    </div>
+                </fieldset>
+
 {{--                <fieldset>--}}
 {{--                    <legend>--}}
 {{--                        2. Choose files to clone--}}
