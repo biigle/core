@@ -1,6 +1,6 @@
 <script>
 import LoaderMixin from '../core/mixins/loader';
-import Dropdown from "uiv/dist/Dropdown";
+import Typeahead from "../core/components/typeahead";
 
 
 // const numberFormatter = new Intl.NumberFormat();
@@ -11,30 +11,39 @@ import Dropdown from "uiv/dist/Dropdown";
 export default {
     mixins: [LoaderMixin],
     components: {
-        dropdown: Dropdown,
+        typeahead: Typeahead,
     },
     data() {
         return {
             name: '',
             destinationProjects: [],
             files: [],
-            selectedProject: "",
+            selectedProject: {},
+            filePattern: "",
+            selectedFiles: []
         };
     },
     computed: {
+        getProjects(){
+            return this.destinationProjects;
+        }
     },
     methods: {
         setProject(project) {
-           this.selectedProject = project;
+             this.selectedProject = project;
+        },
+        getMatchingFiles() {
+            // eslint-disable-next-line no-console
+            console.log(this.filePattern)
+            // eslint-disable-next-line no-undef
+            // axios.get("https://biigle.de//api/v1/volumes/:id/files/filter/filename/:pattern")
         }
     },
-    watch: {
-    },
+    watch: {},
     created() {
         this.name = biigle.$require('name');
-        this.destinationProjects = biigle.$require('$destProjects');
-        this.files = biigle.$require('files');
-        this.text = 'test1234';
+        this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
+        // this.destinationProjects = biigle.$require('$destinationProjects');
 
 
     },
