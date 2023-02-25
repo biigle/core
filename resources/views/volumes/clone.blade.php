@@ -8,7 +8,7 @@
         biigle.$declare('destinationProjects', '{!!$destinationProjects!!}');
         biigle.$declare('files', '{!!$files!!}');
         biigle.$declare('volume', '{!!$volume!!}');
-        {{--biigle.$declare('files', {{$files}});--}}
+        biigle.$declare('labelTrees', '{!!$labelTrees!!}');
     </script>
 @endpush
 
@@ -50,7 +50,8 @@
                 <input type="checkbox" id="files" v-model="cloneFiles">
                 <label>clone files</label>
 
-                <div id="file-panel" v-if="cloneFiles" class="panel panel-default volume-files-panel">
+                <div v-if="cloneFiles">
+                <div id="file-panel" class="panel panel-default volume-files-panel">
                     <div class="panel-heading">
                         <div class="form-group">
                             <label>Filename(s):&nbsp;</label>
@@ -65,7 +66,6 @@
                     </div>
                     <div class="panel-body">
                         <ul class="list-group files-list" v-cloak>
-{{--                            <li v-for="file in files" v-text="file.filename"></li>--}}
                             <li v-for="file in selectedFiles" class="list-group-item"><span class="text-muted">#<span v-text="file.id"></span></span> <span v-text="file.filename"></span></li>
                         </ul>
                     </div>
@@ -73,15 +73,19 @@
 
 
                 <BR>
-                <input type="checkbox" v-if="cloneFiles" id="fileLabels" v-model="cloneFileLabels">
+                <input type="checkbox" id="fileLabels" v-model="cloneFileLabels">
                 <label v-if="cloneFiles">clone file Labels</label>
+                <label-trees v-if="cloneFileLabels" :trees='{{$labelTrees}}' :multiselect="true" :allow-select-siblings="true" :allow-select-children="true"></label-trees>
+
                 <BR>
-                <input type="checkbox" v-if="cloneFiles" id="annotations" v-model="cloneAnnotations">
+                <input type="checkbox" id="annotations" v-model="cloneAnnotations">
                 <label v-if="cloneFiles">clone annotations</label>
                 <BR>
-                <input type="checkbox" v-if="cloneFiles && cloneAnnotations" id="annotationLabel"
+                <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
                        v-model="cloneAnnotationLabels">
                 <label v-if="cloneFiles && cloneAnnotations">clone annotation labels</label>
+
+                </div>
 
             </form>
         </div>
