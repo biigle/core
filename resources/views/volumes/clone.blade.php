@@ -7,6 +7,7 @@
         biigle.$declare('name', '{{$name}}');
         biigle.$declare('destinationProjects', '{!!$destinationProjects!!}');
         biigle.$declare('files', '{!!$files!!}');
+        biigle.$declare('volume', '{!!$volume!!}');
         {{--biigle.$declare('files', {{$files}});--}}
     </script>
 @endpush
@@ -53,9 +54,9 @@
                     <div class="panel-heading">
                         <div class="form-group">
                             <label>Filename(s):&nbsp;</label>
-                            @if ($type=='image')
+                            @if ($volume->isImageVolume())
                                 <input type="text" class="form-control" id="files"
-                                       placeholder="img*.jpg" v-model="filePattern" required v-on:keydown.enter="getMatchingFiles">
+                                       placeholder="img*.jpg" v-model="filePattern" required v-on:keydown.enter="loadFilesMatchingPattern">
                             @else
                                 <input type="text" class="form-control" id="files"
                                        placeholder="video*.mp4" v-model="filePattern" required>
@@ -65,7 +66,7 @@
                     <div class="panel-body">
                         <ul class="list-group files-list" v-cloak>
 {{--                            <li v-for="file in files" v-text="file.filename"></li>--}}
-                            <li v-for="file in files" class="list-group-item"><span class="text-muted">#<span v-text="file.id"></span></span> <span v-text="file.filename"></span></li>
+                            <li v-for="file in selectedFiles" class="list-group-item"><span class="text-muted">#<span v-text="file.id"></span></span> <span v-text="file.filename"></span></li>
                         </ul>
                     </div>
                 </div>
