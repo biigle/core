@@ -1,6 +1,10 @@
 <script>
 import LoaderMixin from '../core/mixins/loader';
 import Typeahead from "../core/components/typeahead";
+import FileItem from "./components/filePanelItem";
+import {handleErrorResponse} from "../core/messages/store";
+import VolumeApi from '../volumes/api/volumes'
+// import LabelTreeLabel from "../label-trees/components/labelTreeLabel";
 
 
 // const numberFormatter = new Intl.NumberFormat();
@@ -12,38 +16,53 @@ export default {
     mixins: [LoaderMixin],
     components: {
         typeahead: Typeahead,
+        fileItem: FileItem
+        // labelTreeLabel: LabelTreeLabel,
     },
     data() {
         return {
             name: '',
+            volume: {},
+            id: -1,
             destinationProjects: [],
             files: [],
             selectedProject: {},
+            cloneFiles: false,
+            cloneFileLabels: false,
+            cloneAnnotations: false,
+            cloneAnnotationLabels: false,
             filePattern: "",
-            selectedFiles: []
+            selectedFiles: [],
         };
     },
     computed: {
-        getProjects(){
+        getProjects() {
             return this.destinationProjects;
         }
     },
     methods: {
         setProject(project) {
-             this.selectedProject = project;
+            this.selectedProject = project;
         },
-        getMatchingFiles() {
-            // eslint-disable-next-line no-console
-            console.log(this.filePattern)
-            // eslint-disable-next-line no-undef
-            // axios.get("https://biigle.de//api/v1/volumes/:id/files/filter/filename/:pattern")
-        }
+        loadFilesMatchingPattern() {
+            this.startLoading();
+            VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
+                .then((response) => this.getMatchedFiles(response.body), handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        getMatchedFiles(ids) {
+            this.selectedFiles = this.files.filter((file) => {
+                return ids.includes(file.id)
+            });
+        },
     },
     watch: {},
     created() {
-        this.name = biigle.$require('name');
+        this.volume = JSON.parse(biigle.$require('volume'));
+        this.id = this.volume.id;
+        this.name = this.volume.name;
         this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
-        // this.destinationProjects = biigle.$require('$destinationProjects');
+        this.files = JSON.parse(biigle.$require('files'));
 
 
     },
