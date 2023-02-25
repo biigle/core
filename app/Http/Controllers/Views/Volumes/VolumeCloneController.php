@@ -6,7 +6,6 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use function Amp\Iterator\map;
 
 class VolumeCloneController extends Controller
 {
@@ -17,19 +16,13 @@ class VolumeCloneController extends Controller
         $this->authorize('update', $volume);
 
         $user = $request->user();
-        $destinationProjects = $user->projects()->get()->map(function ($project) use ($user) {
-            if ($user->can('sudo') || $user->can('update', $project)) {
-                return $project->name;
-            }
-        });
-
-        $filesWithAllLabels = $volume->files()->with(['Labels','Annotations.labels'])->get();
-
+        $destProjects = $user->projects()->where('project_role_id', \Biigle\Role::adminId())->get();
 
         return view('volumes.clone', [
+            'volume' => $volume,
             'name' => $volume->name,
-            'destProjects' => $destinationProjects,
-            'files' => $filesWithAllLabels
+            'destinationProjects' => collect($destProjects)->values(),
+            'files' => collect($volume->files()->get())->values(),
         ]);
     }
 
