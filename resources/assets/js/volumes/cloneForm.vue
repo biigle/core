@@ -4,7 +4,7 @@ import Typeahead from "../core/components/typeahead";
 import FileItem from "./components/filePanelItem";
 import {handleErrorResponse} from "../core/messages/store";
 import VolumeApi from '../volumes/api/volumes'
-// import LabelTreeLabel from "../label-trees/components/labelTreeLabel";
+import LabelTrees from "../label-trees/components/labelTrees";
 
 
 // const numberFormatter = new Intl.NumberFormat();
@@ -16,14 +16,14 @@ export default {
     mixins: [LoaderMixin],
     components: {
         typeahead: Typeahead,
-        fileItem: FileItem
-        // labelTreeLabel: LabelTreeLabel,
+        fileItem: FileItem,
+        LabelTrees,
     },
     data() {
         return {
-            name: '',
+            name: "",
             volume: {},
-            id: -1,
+            id: 0,
             destinationProjects: [],
             files: [],
             selectedProject: {},
@@ -33,12 +33,14 @@ export default {
             cloneAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
+            labelTrees: [],
+            labels: []
         };
     },
     computed: {
         getProjects() {
             return this.destinationProjects;
-        }
+        },
     },
     methods: {
         setProject(project) {
@@ -63,6 +65,7 @@ export default {
         this.name = this.volume.name;
         this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
         this.files = JSON.parse(biigle.$require('files'));
+        this.labelTrees = JSON.parse(biigle.$require('labelTrees'));
 
 
     },
