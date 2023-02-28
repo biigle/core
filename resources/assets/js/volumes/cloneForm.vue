@@ -48,7 +48,9 @@ export default {
         async loadFilesMatchingPattern() {
             this.startLoading();
             let id2filenames = await VolumeApi.queryFilenames({id: this.id})
-                .then((response) => {return response.body;}, handleErrorResponse);
+                .then((response) => {
+                    return response.body;
+                }, handleErrorResponse);
             VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
                 .then((response2) => {
                     let ids = response2.body;
@@ -62,7 +64,13 @@ export default {
             this.selectedFiles = filenames;
         },
     },
-    watch: {},
+    watch: {
+        cloneAnnotations(newState) {
+            if (!newState) {
+                this.cloneAnnotationLabels = false;
+            }
+        }
+    },
     created() {
         this.volume = JSON.parse(biigle.$require('volume'));
         this.id = this.volume.id;
