@@ -33,7 +33,6 @@ class VolumeCloneController extends Controller
             'volume' => $volume,
             'name' => $volume->name,
             'destinationProjects' => collect($destProjects)->values(),
-            'files' => collect($volume->files()->get())->values(),
             'labelTrees' => $labelTrees
         ]);
     }
