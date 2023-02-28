@@ -25,7 +25,6 @@ export default {
             volume: {},
             id: 0,
             destinationProjects: [],
-            files: [],
             selectedProject: {},
             cloneFiles: false,
             cloneFileLabels: false,
@@ -46,16 +45,21 @@ export default {
         setProject(project) {
             this.selectedProject = project;
         },
-        loadFilesMatchingPattern() {
+        async loadFilesMatchingPattern() {
             this.startLoading();
+            let id2filenames = await VolumeApi.queryFilenames({id: this.id})
+                .then((response) => {return response.body;}, handleErrorResponse);
             VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
-                .then((response) => this.getMatchedFiles(response.body), handleErrorResponse)
+                .then((response2) => {
+                    let ids = response2.body;
+                    this.setMatchedFiles(ids.map(id => {
+                        return {id: id, filename: id2filenames[id]}
+                    }));
+                }, handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        getMatchedFiles(ids) {
-            this.selectedFiles = this.files.filter((file) => {
-                return ids.includes(file.id)
-            });
+        setMatchedFiles(filenames) {
+            this.selectedFiles = filenames;
         },
     },
     watch: {},
@@ -64,7 +68,6 @@ export default {
         this.id = this.volume.id;
         this.name = this.volume.name;
         this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
-        this.files = JSON.parse(biigle.$require('files'));
         this.labelTrees = JSON.parse(biigle.$require('labelTrees'));
 
 

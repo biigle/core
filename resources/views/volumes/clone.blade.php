@@ -6,7 +6,6 @@
     <script type="text/javascript">
         biigle.$declare('name', '{{$name}}');
         biigle.$declare('destinationProjects', '{!!$destinationProjects!!}');
-        biigle.$declare('files', '{!!$files!!}');
         biigle.$declare('volume', '{!!$volume!!}');
         biigle.$declare('labelTrees', '{!!$labelTrees!!}');
     </script>
