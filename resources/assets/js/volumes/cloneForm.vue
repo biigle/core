@@ -26,6 +26,7 @@ export default {
             id: 0,
             destinationProjects: [],
             selectedProject: {},
+            showMoreOptions: false,
             cloneFiles: false,
             cloneFileLabels: false,
             cloneAnnotations: false,
@@ -63,13 +64,16 @@ export default {
         setMatchedFiles(filenames) {
             this.selectedFiles = filenames;
         },
+        setShowMoreOptions() {
+            this.showMoreOptions = !this.showMoreOptions;
+        }
     },
     watch: {
         cloneAnnotations(newState) {
             if (!newState) {
                 this.cloneAnnotationLabels = false;
             }
-        }
+        },
     },
     created() {
         this.volume = JSON.parse(biigle.$require('volume'));
