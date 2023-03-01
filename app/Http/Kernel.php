@@ -18,7 +18,7 @@ class Kernel extends HttpKernel
         // see: https://github.com/laravel/laravel/pull/5477
         // \Biigle\Http\Middleware\TrustHosts::class,
         // \Biigle\Http\Middleware\TrustProxies::class,
-        \Fruitcake\Cors\HandleCors::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         \Biigle\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Biigle\Http\Middleware\TrimStrings::class,
