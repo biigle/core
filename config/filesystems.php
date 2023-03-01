@@ -63,8 +63,8 @@ return [
 
         'swift' => [
             'driver' => 's3',
-            'key' => env('AWS_USER_STORAGE_ACCESS_KEY_ID'),
-            'secret' => env('AWS_USER_STORAGE_SECRET_ACCESS_KEY'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => 'BiigleImages',
             'endpoint' => env('AWS_ENDPOINT'),
