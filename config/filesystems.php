@@ -62,15 +62,22 @@ return [
         ],
 
         'swift' => [
-            'driver'    => 'swift',
-            'authUrl'   => env('OS_AUTH_URL', ''),
-            'region'    => env('OS_REGION_NAME', ''),
-            'user'      => env('OS_USERNAME', ''),
-            'domain'    => env('OS_USER_DOMAIN_NAME', 'default'),
-            'password'  => env('OS_PASSWORD', ''),
-            'projectId' => env('OS_PROJECT_ID', ''),
-            'container' => env('OS_CONTAINER_NAME', ''),
-            'tempUrlKey' => env('OS_TEMP_URL_KEY', ''),
+            'driver' => 's3',
+            'key' => env('AWS_USER_STORAGE_ACCESS_KEY_ID'),
+            'secret' => env('AWS_USER_STORAGE_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => 'BiigleImages',
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'stream_reads' => true,
+            'http' => [
+                'connect_timeout' => 5,
+            ],
+            'throw' => true,
+            'options' => [
+                'mup_threshold' => 314572800, // 300 MiB
+                'part_size' => 104857600, // 100 MiB
+            ],
         ],
 
         'largo' => [
