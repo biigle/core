@@ -43,16 +43,20 @@ export default {
             return this.destinationProjects;
         },
         selectedFileLabels() {
-            return this.flatLabels(this.fileLabelTrees).filter((label) => label.selected);
+            let selection = this.flatLabels(this.fileLabelTrees).filter((label) => label.selected);
+            this.setFileLabels(selection.map((label) => label.id));
+            return selection;
         },
         selectedAnnotationLabels() {
-            return this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
+            let selection = this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
+            this.setAnnotationLabels(selection.map((label) => label.id))
+            return selection;
         },
         selectedFileLabelsCount() {
-            return this.fileLabels.length;
+            return this.selectedFileLabels.length;
         },
         selectedAnnotationLabelsCount() {
-            return this.annotationLabels.length;
+            return this.selectedAnnotationLabels.length;
         },
     },
     methods: {
@@ -87,6 +91,12 @@ export default {
 
             return labels;
         },
+        setFileLabels(labelIds){
+            this.fileLabels = labelIds;
+        },
+        setAnnotationLabels(labelIds){
+            this.annotationLabels = labelIds;
+        }
     },
     watch: {
         cloneAnnotations(newState) {
