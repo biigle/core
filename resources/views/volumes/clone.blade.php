@@ -78,60 +78,57 @@
                                 </ul>
                             </div>
                         </div>
-
-
-                        <div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                              v-model="cloneFileLabels">
-                                    @if($volume->isImageVolume())
-                                        Clone image labels
-                                    @else
-                                        Clone video labels
-                                    @endif
-
-                                </label>
-                            </div>
-
-                            <div class="checkbox" v-if="cloneFileLabels">
-                                <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
-                                              v-model="restrictFileLabels">
-                                    @if($volume->isImageVolume())
-                                        Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                        selected)
-                                    @else
-                                        Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                        selected)
-                                    @endif
-
-                                </label>
-                            </div>
-                            <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
-                                         :allow-select-siblings="true" :allow-select-children="true"
-                                         class="request-labels-well well well-sm"></label-trees>
-                        </div>
-
-
+                    </div>
+                    <div>
                         <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="annotations" v-model="cloneAnnotations"> Clone
-                                annotations
+                            <label><input type="checkbox" class="checkbox" id="fileLabels"
+                                          v-model="cloneFileLabels">
+                                @if($volume->isImageVolume())
+                                    Clone image labels
+                                @else
+                                    Clone video labels
+                                @endif
+
                             </label>
                         </div>
 
-                        <div v-if="cloneAnnotations">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
-                                           v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
-                                        v-text="selectedAnnotationLabelsCount"></span> labels selected)
-                                </label>
-                            </div>
-                            <label-trees v-if="cloneAnnotations && restrictAnnotationLabels" :trees="annotationLabelTrees"
-                                         :multiselect="true"
-                                         :allow-select-siblings="true" :allow-select-children="true"
-                                         class="request-labels-well well well-sm"></label-trees>
+                        <div class="checkbox" v-if="cloneFileLabels">
+                            <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
+                                          v-model="restrictFileLabels">
+                                @if($volume->isImageVolume())
+                                    Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                    selected)
+                                @else
+                                    Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                    selected)
+                                @endif
+
+                            </label>
                         </div>
+                        <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                                     :allow-select-siblings="true" :allow-select-children="true"
+                                     class="request-labels-well well well-sm"></label-trees>
+                    </div>
+                    
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="annotations" v-model="cloneAnnotations"> Clone
+                            annotations
+                        </label>
+                    </div>
+
+                    <div v-if="cloneAnnotations">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
+                                       v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
+                                    v-text="selectedAnnotationLabelsCount"></span> labels selected)
+                            </label>
+                        </div>
+                        <label-trees v-if="cloneAnnotations && restrictAnnotationLabels" :trees="annotationLabelTrees"
+                                     :multiselect="true"
+                                     :allow-select-siblings="true" :allow-select-children="true"
+                                     class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
             </form>
