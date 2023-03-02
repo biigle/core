@@ -60,19 +60,21 @@ export default {
             this.selectedProject = project;
         },
         async loadFilesMatchingPattern() {
-            this.startLoading();
-            let id2filenames = await VolumeApi.queryFilenames({id: this.id})
-                .then((response) => {
-                    return response.body;
-                }, handleErrorResponse);
-            VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
-                .then((response2) => {
-                    let ids = response2.body;
-                    this.setMatchedFiles(ids.map(id => {
-                        return {id: id, filename: id2filenames[id]}
-                    }));
-                }, handleErrorResponse)
-                .finally(this.finishLoading);
+            if (this.filePattern.length > 0) {
+                this.startLoading();
+                let id2filenames = await VolumeApi.queryFilenames({id: this.id})
+                    .then((response) => {
+                        return response.body;
+                    }, handleErrorResponse);
+                VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
+                    .then((response2) => {
+                        let ids = response2.body;
+                        this.setMatchedFiles(ids.map(id => {
+                            return {id: id, filename: id2filenames[id]}
+                        }));
+                    }, handleErrorResponse)
+                    .finally(this.finishLoading);
+            }
         },
         setMatchedFiles(filenames) {
             this.selectedFiles = filenames;
