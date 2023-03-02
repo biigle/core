@@ -119,10 +119,11 @@ export default {
         }
     },
     created() {
-        this.volume = JSON.parse(biigle.$require('volume'));
+        this.volume = biigle.$require('volume');
         this.id = this.volume.id;
         this.name = this.volume.name;
-        this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
+        this.destinationProjects = biigle.$require('destinationProjects');
+        // use JSON.parse to create to independent label trees
         let fileLabelTrees = JSON.parse(biigle.$require('labelTrees'));
         let annotationLabelTrees = JSON.parse(biigle.$require('labelTrees'));
         let nbrTrees = fileLabelTrees.length;

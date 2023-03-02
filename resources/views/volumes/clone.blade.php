@@ -5,8 +5,8 @@
 @push('scripts')
     <script type="text/javascript">
         biigle.$declare('name', '{{$name}}');
-        biigle.$declare('destinationProjects', '{!!$destinationProjects!!}');
-        biigle.$declare('volume', '{!!$volume!!}');
+        biigle.$declare('destinationProjects', {!!$destinationProjects!!});
+        biigle.$declare('volume', {!!$volume!!});
         biigle.$declare('labelTrees', '{!!$labelTrees!!}');
     </script>
 @endpush
