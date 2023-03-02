@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Clone volume')
+@section('title', 'clone volume')
 
 @push('scripts')
     <script type="text/javascript">
@@ -19,7 +19,7 @@
                 <br>
             </div>
             <form id="clone-volume-form" class="clearfix" role="form"
-                  {{--                  method="POST" action="{{ url('api/v1/volumes/'.($volume->id).'/clone-to/'.$destinationId) }}"--}}
+                  {{--                  method="POST" action="{{ url('api/v1/volumes/'.($volume->id).'/Clone-to/'.$destinationId) }}"--}}
                   enctype="multipart/form-data"
                   v-on:submit="startLoading">
                 <div class="row">
@@ -37,83 +37,89 @@
                                    v-on:select="setProject" :clear-on-select="false"></typeahead>
                     </div>
 
-                    <div class="form-group">
-                        <div v-if="showMoreOptions">
-                        <button type="button" class="btn btn-default" v-on:click="setShowMoreOptions">hide options
-                        </button>
-                        </div>
-                        <div v-else>
-                            <button type="button" class="btn btn-default" v-on:click="setShowMoreOptions">more options
-                            </button>
-                        </div>
-{{--                        <button type="button" class="btn btn-default">cancel</button>--}}
-{{--                        <button type="button" class="btn btn-default">submit</button>--}}
+
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="files" v-model="cloneFiles">
+                            @if($volume->isImageVolume())
+                                Clone images
+                            @else
+                                Clone videos
+                            @endif
+                        </label>
                     </div>
-
-                    <div v-if="showMoreOptions">
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="files" v-model="cloneFiles"> clone files</label>
-                        </div>
-                        <div v-if="cloneFiles">
-                            <div id="file-panel" class="panel panel-default volume-files-panel">
-                                <div class="panel-heading">
-                                    <div class="form-group">
-                                        <label>Filename(s):&nbsp;</label>
-                                        @if ($volume->isImageVolume())
-                                            <input type="text" class="form-control" id="files"
-                                                   placeholder="img*.jpg" v-model="filePattern" required
-                                                   v-on:keydown.enter="loadFilesMatchingPattern">
+                    <div v-if="cloneFiles">
+                        <div id="file-panel" class="panel panel-default volume-files-panel">
+                            <div class="panel-heading">
+                                <div class="form-group">
+                                    <label>
+                                        @if($volume->isImageVolume())
+                                            Image(s):
                                         @else
-                                            <input type="text" class="form-control" id="files"
-                                                   placeholder="video*.mp4" v-model="filePattern" required>
+                                            Video(s):
                                         @endif
-                                    </div>
-                                </div>
-                                <div class="panel-body">
-                                    <ul class="list-group files-list" v-cloak>
-                                        <li v-for="file in selectedFiles" class="list-group-item"><span
-                                                class="text-muted">#<span v-text="file.id"></span></span> <span
-                                                v-text="file.filename"></span></li>
-                                    </ul>
+                                    </label>
+                                    @if ($volume->isImageVolume())
+                                        <input type="text" class="form-control" id="files"
+                                               placeholder="img*.jpg" v-model="filePattern" required
+                                               v-on:keydown.enter="loadFilesMatchingPattern">
+                                    @else
+                                        <input type="text" class="form-control" id="files"
+                                               placeholder="video*.mp4" v-model="filePattern" required>
+                                    @endif
                                 </div>
                             </div>
-
-
-                            <div>
-                                <div class="checkbox">
-                                    <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                                  v-model="cloneFileLabels">clone
-                                        file Labels</label>
-                                </div>
-                                <label-trees v-if="cloneFileLabels" :trees='{{$labelTrees}}' :multiselect="true"
-                                             :allow-select-siblings="true" :allow-select-children="true"
-                                             class="request-labels-well well well-sm"></label-trees>
+                            <div class="panel-body">
+                                <ul class="list-group files-list" v-cloak>
+                                    <li v-for="file in selectedFiles" class="list-group-item"><span
+                                            class="text-muted">#<span v-text="file.id"></span></span> <span
+                                            v-text="file.filename"></span></li>
+                                </ul>
                             </div>
+                        </div>
 
 
+                        <div>
                             <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" id="annotations" v-model="cloneAnnotations"> clone
-                                    annotations
+                                <label><input type="checkbox" class="checkbox" id="fileLabels"
+                                              v-model="cloneFileLabels">
+                                    @if($volume->isImageVolume())
+                                        Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                        selected)
+                                    @else
+                                        Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                        selected)
+                                    @endif
+
                                 </label>
                             </div>
+                            <label-trees v-if="cloneFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                                         :allow-select-siblings="true" :allow-select-children="true"
+                                         class="request-labels-well well well-sm"></label-trees>
+                        </div>
 
-                            <div v-if="cloneAnnotations">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
-                                               v-model="cloneAnnotationLabels"> clone annotation labels
-                                    </label>
-                                </div>
-                                <label-trees v-if="cloneAnnotations && cloneAnnotationLabels" :trees='{{$labelTrees}}'
-                                             :multiselect="true"
-                                             :allow-select-siblings="true" :allow-select-children="true"
-                                             class="request-labels-well well well-sm"></label-trees>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="annotations" v-model="cloneAnnotations"> Clone
+                                annotations
+                            </label>
+                        </div>
+
+                        <div v-if="cloneAnnotations">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
+                                           v-model="cloneAnnotationLabels"> Restrict annotation labels (<span
+                                        v-text="selectedAnnotationLabelsCount"></span> labels selected)
+                                </label>
                             </div>
+                            <label-trees v-if="cloneAnnotations && cloneAnnotationLabels" :trees="annotationLabelTrees"
+                                         :multiselect="true"
+                                         :allow-select-siblings="true" :allow-select-children="true"
+                                         class="request-labels-well well well-sm"></label-trees>
                         </div>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
