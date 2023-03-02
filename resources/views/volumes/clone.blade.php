@@ -18,7 +18,7 @@
                 <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
                 <br>
             </div>
-            <form id="clone-volume-form" class="clearfix" role="form"
+            <form id="clone-volume-form" class="clearfix" role="form" v-on:submit.prevent="submit"
                   {{--                  method="POST" action="{{ url('api/v1/volumes/'.($volume->id).'/Clone-to/'.$destinationId) }}"--}}
                   enctype="multipart/form-data"
                   v-on:submit="startLoading">
@@ -34,7 +34,7 @@
                         <typeahead class="typeahead--block" :items="getProjects"
                                    placeholder="Select destination project"
                                    title="Select project to clone volume to"
-                                   v-on:select="setProject" :clear-on-select="false"></typeahead>
+                                   v-on:select="setProject" :clear-on-select="false" required></typeahead>
                     </div>
 
 
@@ -109,7 +109,7 @@
                                      :allow-select-siblings="true" :allow-select-children="true"
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
-                    
+
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" id="annotations" v-model="cloneAnnotations"> Clone
@@ -131,6 +131,8 @@
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
+                <button class="btn btn-success pull-right" type="button" @click="submit">Submit</button>
+                <button class="btn btn-default pull-right" type="button">Cancel</button>
             </form>
         </div>
     </div>
