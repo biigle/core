@@ -15,7 +15,7 @@
     <div class="container">
         <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
             <div class="form-group">
-                <h2>Clone volume "{!! $volume->name !!}"</h2>
+                <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
                 <br>
             </div>
             <form id="clone-volume-form" class="clearfix" role="form"
