@@ -28,8 +28,9 @@ export default {
             selectedProject: {},
             cloneFiles: false,
             cloneFileLabels: false,
+            restrictFileLabels: false,
             cloneAnnotations: false,
-            cloneAnnotationLabels: false,
+            restrictAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
             fileLabelTrees: [],
@@ -91,26 +92,31 @@ export default {
 
             return labels;
         },
-        setFileLabels(labelIds){
+        setFileLabels(labelIds) {
             this.fileLabels = labelIds;
         },
-        setAnnotationLabels(labelIds){
+        setAnnotationLabels(labelIds) {
             this.annotationLabels = labelIds;
         }
     },
     watch: {
         cloneAnnotations(newState) {
             if (!newState) {
-                this.cloneAnnotationLabels = false;
+                this.restrictAnnotationLabels = false;
             }
         },
-        cloneFiles(newState){
-            if(!newState){
-                this.cloneFileLabels = false;
+        cloneFiles(newState) {
+            if (!newState) {
+                this.restrictFileLabels = false;
                 this.cloneAnnotations = false;
-                this.cloneAnnotationLabels = false;
+                this.restrictAnnotationLabels = false;
             }
         },
+        cloneFileLabels(newState) {
+            if (!newState) {
+                this.restrictFileLabels = false;
+            }
+        }
     },
     created() {
         this.volume = JSON.parse(biigle.$require('volume'));

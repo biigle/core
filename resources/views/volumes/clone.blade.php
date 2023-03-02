@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>New volume location</label>
+                        <label>New volume destination project</label>
                         <typeahead class="typeahead--block" :items="getProjects"
                                    placeholder="Select destination project"
                                    title="Select project to clone volume to"
@@ -40,11 +40,13 @@
 
                     <div class="checkbox">
                         <label><input type="checkbox" id="files" v-model="cloneFiles">
+                            Filter <span>
                             @if($volume->isImageVolume())
-                                Clone images
-                            @else
-                                Clone videos
-                            @endif
+                                    images
+                                @else
+                                    videos
+                                @endif
+                            </span>
                         </label>
                     </div>
                     <div v-if="cloneFiles">
@@ -83,6 +85,18 @@
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
                                               v-model="cloneFileLabels">
                                     @if($volume->isImageVolume())
+                                        Clone image labels
+                                    @else
+                                        Clone video labels
+                                    @endif
+
+                                </label>
+                            </div>
+
+                            <div class="checkbox" v-if="cloneFileLabels">
+                                <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
+                                              v-model="restrictFileLabels">
+                                    @if($volume->isImageVolume())
                                         Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
                                         selected)
                                     @else
@@ -92,7 +106,7 @@
 
                                 </label>
                             </div>
-                            <label-trees v-if="cloneFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                            <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
                                          class="request-labels-well well well-sm"></label-trees>
                         </div>
@@ -109,11 +123,11 @@
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
-                                           v-model="cloneAnnotationLabels"> Restrict annotation labels (<span
+                                           v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
                                         v-text="selectedAnnotationLabelsCount"></span> labels selected)
                                 </label>
                             </div>
-                            <label-trees v-if="cloneAnnotations && cloneAnnotationLabels" :trees="annotationLabelTrees"
+                            <label-trees v-if="cloneAnnotations && restrictAnnotationLabels" :trees="annotationLabelTrees"
                                          :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
                                          class="request-labels-well well well-sm"></label-trees>
