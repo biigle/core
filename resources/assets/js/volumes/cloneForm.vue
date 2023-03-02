@@ -25,7 +25,7 @@ export default {
             volume: {},
             id: 0,
             destinationProjects: [],
-            selectedProject: {},
+            selectedProjectId: 0,
             cloneFiles: false,
             cloneFileLabels: false,
             restrictFileLabels: false,
@@ -35,8 +35,8 @@ export default {
             selectedFiles: [],
             fileLabelTrees: [],
             annotationLabelTrees: [],
-            fileLabels: [],
-            annotationLabels: []
+            fileLabelIds: [],
+            annotationLabelIds: [],
         };
     },
     computed: {
@@ -61,8 +61,39 @@ export default {
         },
     },
     methods: {
+        submit() {
+            let fileIds = [];
+            let annotationLabelIds = [];
+            let fileLabelIds = [];
+
+            if (this.selectedFiles.length !== 0) {
+                fileIds = this.selectedFiles.map((entry) => entry.id);
+            }
+
+            if (this.cloneAnnotations && this.restrictAnnotationLabels) {
+                annotationLabelIds = this.annotationLabelIds;
+            }
+
+            if (this.cloneFileLabels && this.restrictFileLabels) {
+                fileLabelIds = this.fileLabelIds;
+            }
+
+            let request = {
+                'name': this.name,
+                'only_files': fileIds,
+                'clone_annotations': this.cloneAnnotations,
+                'only_annotation_labels': annotationLabelIds,
+                'clone_file_labels': this.cloneFiles,
+                'only_file_labels': fileLabelIds
+            };
+            this.startLoading();
+            
+            VolumeApi.clone({id: this.id, project_id: this.selectedProjectId},request)
+                .then(() => console.log("success"),handleErrorResponse)
+                .finally(this.finishLoading);
+        },
         setProject(project) {
-            this.selectedProject = project;
+            this.selectedProjectId = project.id;
         },
         async loadFilesMatchingPattern() {
             if (this.filePattern.length > 0) {
@@ -93,11 +124,11 @@ export default {
             return labels;
         },
         setFileLabels(labelIds) {
-            this.fileLabels = labelIds;
+            this.fileLabelIds = labelIds;
         },
         setAnnotationLabels(labelIds) {
-            this.annotationLabels = labelIds;
-        }
+            this.annotationLabelIds = labelIds;
+        },
     },
     watch: {
         cloneAnnotations(newState) {
