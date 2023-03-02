@@ -32,13 +32,27 @@ export default {
             cloneAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
-            labelTrees: [],
-            labels: []
+            fileLabelTrees: [],
+            annotationLabelTrees: [],
+            fileLabels: [],
+            annotationLabels: []
         };
     },
     computed: {
         getProjects() {
             return this.destinationProjects;
+        },
+        selectedFileLabels() {
+            return this.flatLabels(this.fileLabelTrees).filter((label) => label.selected);
+        },
+        selectedAnnotationLabels() {
+            return this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
+        },
+        selectedFileLabelsCount() {
+            return this.fileLabels.length;
+        },
+        selectedAnnotationLabelsCount() {
+            return this.annotationLabels.length;
         },
     },
     methods: {
@@ -63,6 +77,14 @@ export default {
         setMatchedFiles(filenames) {
             this.selectedFiles = filenames;
         },
+        flatLabels(trees) {
+            let labels = [];
+            trees.forEach(function (tree) {
+                Array.prototype.push.apply(labels, tree.labels);
+            });
+
+            return labels;
+        },
     },
     watch: {
         cloneAnnotations(newState) {
@@ -76,7 +98,17 @@ export default {
         this.id = this.volume.id;
         this.name = this.volume.name;
         this.destinationProjects = JSON.parse(biigle.$require('destinationProjects'));
-        this.labelTrees = JSON.parse(biigle.$require('labelTrees'));
+        let fileLabelTrees = JSON.parse(biigle.$require('labelTrees'));
+        let annotationLabelTrees = JSON.parse(biigle.$require('labelTrees'));
+        let nbrTrees = fileLabelTrees.length;
+
+        for (let i = 0; i < nbrTrees; i++) {
+            fileLabelTrees[i].labels.forEach((label) => label.selected = false);
+            annotationLabelTrees[i].labels.forEach((label) => label.selected = false);
+        }
+
+        this.fileLabelTrees = fileLabelTrees;
+        this.annotationLabelTrees = annotationLabelTrees;
 
 
     },
