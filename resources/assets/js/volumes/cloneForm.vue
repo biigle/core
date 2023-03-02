@@ -94,6 +94,13 @@ export default {
                 this.cloneAnnotationLabels = false;
             }
         },
+        cloneFiles(newState){
+            if(!newState){
+                this.cloneFileLabels = false;
+                this.cloneAnnotations = false;
+                this.cloneAnnotationLabels = false;
+            }
+        },
     },
     created() {
         this.volume = JSON.parse(biigle.$require('volume'));
