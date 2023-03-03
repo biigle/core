@@ -18,10 +18,7 @@
                 <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
                 <br>
             </div>
-            <form id="clone-volume-form" class="clearfix" role="form" v-on:submit.prevent="submit"
-                  {{--                  method="POST" action="{{ url('api/v1/volumes/'.($volume->id).'/Clone-to/'.$destinationId) }}"--}}
-                  enctype="multipart/form-data"
-                  v-on:submit="startLoading">
+            <form id="clone-volume-form" class="clearfix" role="form" v-on:submit.prevent="submit" >
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
@@ -131,8 +128,8 @@
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
-                <button class="btn btn-success pull-right" type="button" @click="submit">Submit</button>
-                <button class="btn btn-default pull-right" type="button">Cancel</button>
+                <a class="btn btn-success pull-right" type="button" @click="submit">Submit</a>
+                <a class="btn btn-default pull-right" type="button" href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
             </form>
         </div>
     </div>
