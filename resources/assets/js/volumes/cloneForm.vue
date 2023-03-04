@@ -21,7 +21,7 @@ export default {
     },
     data() {
         return {
-            name: "",
+            volumeName: "",
             volume: {},
             id: 0,
             destinationProjects: [],
@@ -82,7 +82,7 @@ export default {
             }
 
             let request = {
-                'name': this.name,
+                'name': this.volumeName,
                 'only_files': fileIds,
                 'clone_annotations': this.cloneAnnotations,
                 'only_annotation_labels': annotationLabelIds,
@@ -155,7 +155,7 @@ export default {
     created() {
         this.volume = biigle.$require('volume');
         this.id = this.volume.id;
-        this.name = this.volume.name;
+        this.volumeName = this.volume.name;
         this.destinationProjects = biigle.$require('destinationProjects');
         // use JSON.parse to create two independent label trees
         let fileLabelTrees = JSON.parse(biigle.$require('labelTrees'));

@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
-                        <input type="text" class="form-control" name="name" id="name" v-model="name"
+                        <input type="text" class="form-control" name="name" id="name" v-model="volumeName"
                                placeholder="My new volume name" ref="nameInput" required autofocus>
                     </div>
 
