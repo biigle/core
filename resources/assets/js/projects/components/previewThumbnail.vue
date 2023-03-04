@@ -19,6 +19,14 @@
                     <loader v-if="loading" :active="true"></loader>
                     <i v-else class="fas fa-chart-bar"></i>
                 </button>
+                <a
+                    :href="volumeCloneUrl"
+                    class="btn btn-default btn-sm"
+                    :title="cloneVolumeTitle"
+                >
+                    <loader v-if="loading" :active="true"></loader>
+                    <i v-else class="fas fa-clone"></i>
+                </a>
                 <button
                     v-if="removable"
                     class="btn btn-default btn-sm"
@@ -95,6 +103,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        volumeUrlTemplate: {
+            type: String,
+            default: ""
+        },
+        cloneVolumeTitle:{
+            type: String,
+            default: "Clone volume"
+        }
     },
     data() {
         return {
@@ -132,6 +148,9 @@ export default {
         hasButtons() {
             return this.removable || this.showStatsButton;
         },
+        volumeCloneUrl() {
+            return this.volumeUrlTemplate.replace(':id', String(this.id));
+        }
     },
     methods: {
         thumbShown(i) {
