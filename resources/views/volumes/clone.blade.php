@@ -31,7 +31,8 @@
                         <typeahead class="typeahead--block" :items="getProjects"
                                    placeholder="Select destination project"
                                    title="Select project to clone volume to"
-                                   v-on:select="setProject" :clear-on-select="false" required></typeahead>
+                                   v-on:select="setProject" :clear-on-select="false"
+                                   :value="setDefaultProject" required></typeahead>
                     </div>
 
 

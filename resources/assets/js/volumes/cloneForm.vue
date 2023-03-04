@@ -59,6 +59,9 @@ export default {
         selectedAnnotationLabelsCount() {
             return this.selectedAnnotationLabels.length;
         },
+        setDefaultProject(){
+            return this.destinationProjects.filter((p) => p.id === this.selectedProjectId)[0].name;
+        }
     },
     methods: {
         submit() {
@@ -87,7 +90,7 @@ export default {
                 'only_file_labels': fileLabelIds
             };
             this.startLoading();
-            
+
             VolumeApi.clone({id: this.id, project_id: this.selectedProjectId},request)
                 .then(() => console.log("success"),handleErrorResponse)
                 .finally(this.finishLoading);
@@ -154,7 +157,7 @@ export default {
         this.id = this.volume.id;
         this.name = this.volume.name;
         this.destinationProjects = biigle.$require('destinationProjects');
-        // use JSON.parse to create to independent label trees
+        // use JSON.parse to create two independent label trees
         let fileLabelTrees = JSON.parse(biigle.$require('labelTrees'));
         let annotationLabelTrees = JSON.parse(biigle.$require('labelTrees'));
         let nbrTrees = fileLabelTrees.length;
@@ -166,6 +169,7 @@ export default {
 
         this.fileLabelTrees = fileLabelTrees;
         this.annotationLabelTrees = annotationLabelTrees;
+        this.selectedProjectId = Number(location.href.split('=')[1]);
 
 
     },
