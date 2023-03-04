@@ -59,41 +59,43 @@ export default {
         selectedAnnotationLabelsCount() {
             return this.selectedAnnotationLabels.length;
         },
-        setDefaultProject(){
+        setDefaultProject() {
             return this.destinationProjects.filter((p) => p.id === this.selectedProjectId)[0].name;
         }
     },
     methods: {
         submit() {
-            let fileIds = [];
-            let annotationLabelIds = [];
-            let fileLabelIds = [];
+            if (this.hasValidInput()) {
+                let fileIds = [];
+                let annotationLabelIds = [];
+                let fileLabelIds = [];
 
-            if (this.selectedFiles.length !== 0) {
-                fileIds = this.selectedFiles.map((entry) => entry.id);
+                if (this.selectedFiles.length !== 0) {
+                    fileIds = this.selectedFiles.map((entry) => entry.id);
+                }
+
+                if (this.cloneAnnotations && this.restrictAnnotationLabels) {
+                    annotationLabelIds = this.annotationLabelIds;
+                }
+
+                if (this.cloneFileLabels && this.restrictFileLabels) {
+                    fileLabelIds = this.fileLabelIds;
+                }
+
+                let request = {
+                    'name': this.volumeName,
+                    'only_files': fileIds,
+                    'clone_annotations': this.cloneAnnotations,
+                    'only_annotation_labels': annotationLabelIds,
+                    'clone_file_labels': this.cloneFiles,
+                    'only_file_labels': fileLabelIds
+                };
+                this.startLoading();
+
+                VolumeApi.clone({id: this.id, project_id: this.selectedProjectId}, request)
+                    .then(() => console.log("success"), handleErrorResponse)
+                    .finally(this.finishLoading);
             }
-
-            if (this.cloneAnnotations && this.restrictAnnotationLabels) {
-                annotationLabelIds = this.annotationLabelIds;
-            }
-
-            if (this.cloneFileLabels && this.restrictFileLabels) {
-                fileLabelIds = this.fileLabelIds;
-            }
-
-            let request = {
-                'name': this.volumeName,
-                'only_files': fileIds,
-                'clone_annotations': this.cloneAnnotations,
-                'only_annotation_labels': annotationLabelIds,
-                'clone_file_labels': this.cloneFiles,
-                'only_file_labels': fileLabelIds
-            };
-            this.startLoading();
-
-            VolumeApi.clone({id: this.id, project_id: this.selectedProjectId},request)
-                .then(() => console.log("success"),handleErrorResponse)
-                .finally(this.finishLoading);
         },
         setProject(project) {
             this.selectedProjectId = project.id;
@@ -132,6 +134,11 @@ export default {
         setAnnotationLabels(labelIds) {
             this.annotationLabelIds = labelIds;
         },
+        hasValidInput(){
+            // volume name must not contain only whitespaces
+            let vName = this.volumeName.replace(/\s/g,"");
+            return ((vName.length > 0) && (this.selectedProjectId !== 0));
+        }
     },
     watch: {
         cloneAnnotations(newState) {

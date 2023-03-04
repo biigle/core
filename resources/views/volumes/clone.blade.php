@@ -18,7 +18,7 @@
                 <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
                 <br>
             </div>
-            <form id="clone-volume-form" class="clearfix" role="form" v-on:submit.prevent="submit" >
+            <form id="clone-volume-form" class="clearfix" role="form" @submit.prevent  @keydown.enter="$event.preventDefault()" >
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
@@ -129,7 +129,7 @@
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
-                <a class="btn btn-success pull-right" type="button" @click="submit">Submit</a>
+                <button class="btn btn-success pull-right" @click="submit">Submit</button>
                 <a class="btn btn-default pull-right" type="button" href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
             </form>
         </div>
