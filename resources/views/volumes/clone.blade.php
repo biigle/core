@@ -18,12 +18,13 @@
                 <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
                 <br>
             </div>
-            <form id="clone-volume-form" class="clearfix" role="form" @submit.prevent  @keydown.enter="$event.preventDefault()" >
+            <form id="clone-volume-form" class="clearfix" role="form" @submit.prevent
+                  @keydown.enter="$event.preventDefault()">
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
                         <input type="text" class="form-control" name="name" id="name" v-model="volumeName"
-                               placeholder="My new volume name" ref="nameInput" required autofocus>
+                               placeholder="My new volume name" ref="nameInput" required autofocus pattern="[A-Za-z]+">
                     </div>
 
                     <div class="form-group">
@@ -129,8 +130,10 @@
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
-                <button class="btn btn-success pull-right" @click="submit" :disabled="getSubmitButtonStatus">Submit</button>
-                <a class="btn btn-default pull-right" type="button" href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
+                <button class="btn btn-success pull-right" @click="submit" :disabled="getSubmitButtonStatus">Submit
+                </button>
+                <a class="btn btn-default pull-right" type="button"
+                   href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
             </form>
         </div>
     </div>

@@ -69,7 +69,6 @@ export default {
     },
     methods: {
         submit() {
-            if (this.hasValidInput()) {
                 let fileIds = [];
                 let annotationLabelIds = [];
                 let fileLabelIds = [];
@@ -101,7 +100,6 @@ export default {
                 VolumeApi.clone({id: this.id, project_id: this.selectedProjectId}, request)
                     .then(() => console.log("success"), handleErrorResponse)
                     .finally(this.finishLoading);
-            }
         },
         setProject(project) {
             this.selectedProjectId = project.id;
@@ -140,11 +138,6 @@ export default {
         setAnnotationLabels(labelIds) {
             this.annotationLabelIds = labelIds;
         },
-        hasValidInput(){
-            // volume name must not contain only whitespaces
-            let vName = this.volumeName.replace(/\s/g,"");
-            return ((vName.length > 0) && (this.selectedProjectId !== 0));
-        }
     },
     watch: {
         cloneAnnotations(newState) {
