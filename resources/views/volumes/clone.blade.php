@@ -129,7 +129,7 @@
                                      class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
-                <button class="btn btn-success pull-right" @click="submit">Submit</button>
+                <button class="btn btn-success pull-right" @click="submit" :disabled="getSubmitButtonStatus">Submit</button>
                 <a class="btn btn-default pull-right" type="button" href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
             </form>
         </div>

@@ -37,6 +37,7 @@ export default {
             annotationLabelTrees: [],
             fileLabelIds: [],
             annotationLabelIds: [],
+            submitButtonDisabled: false,
         };
     },
     computed: {
@@ -61,6 +62,9 @@ export default {
         },
         setDefaultProject() {
             return this.destinationProjects.filter((p) => p.id === this.selectedProjectId)[0].name;
+        },
+        getSubmitButtonStatus(){
+            return this.submitButtonDisabled;
         }
     },
     methods: {
@@ -91,6 +95,8 @@ export default {
                     'only_file_labels': fileLabelIds
                 };
                 this.startLoading();
+
+                this.submitButtonDisabled = true;
 
                 VolumeApi.clone({id: this.id, project_id: this.selectedProjectId}, request)
                     .then(() => console.log("success"), handleErrorResponse)
