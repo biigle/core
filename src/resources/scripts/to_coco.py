@@ -117,7 +117,7 @@ for path in paths:
     annotations = []
 
     data['fileid'] = data['filename'].astype('category').cat.codes
-    data['categoryid'] = pd.Categorical(data['label_name'], ordered=True).codes
+    data['categoryid'] = pd.Categorical(data['label_id'], ordered=True).codes
     data['categoryid'] = data['categoryid']+1
     imagedf = data.drop_duplicates(subset=['fileid']).sort_values(by='fileid')
     catdf = data.drop_duplicates(
