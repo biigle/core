@@ -36,19 +36,14 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      */
     public Project $project;
 
+    public Volume $copy;
+
     /**
      * The volume to clone.
      *
      * @var Volume
      */
     public Volume $volume;
-
-    /**
-     * The new name of the volume clone.
-     *
-     * @var string
-     **/
-    public string $cloneName;
 
     /**
      * Array containing file ids.
@@ -99,11 +94,11 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($request)
+    public function __construct($request,$copy)
     {
         $this->project = $request->project;
+        $this->copy = $copy;
         $this->volume = $request->volume;
-        $this->cloneName = $request->input('name', $this->volume->name);
         $this->onlyFiles = $request->input('only_files', []);
         $this->cloneAnnotations = $request->input('clone_annotations', false);
         $this->onlyAnnotationLabels = $request->input('only_annotation_labels', []);
@@ -122,10 +117,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             $onlyAnnotationLabels = $this->onlyAnnotationLabels;
             $cloneFileLabels = $this->cloneFileLabels;
             $onlyFileLabels = $this->onlyFileLabels;
-
-            $copy = $volume->replicate();
-            $copy->name = $this->cloneName;
-            $copy->save();
+            $copy = $this->copy;
 
             if ($volume->isImageVolume()) {
                 $this->copyImages($volume, $copy, $onlyFiles);
@@ -156,6 +148,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             $project->addVolumeId($copy->id);
 
             $copy->save();
+
+            $copy->creating_async = false;
 
             event('volume.cloned', [$copy->id]);
         });
