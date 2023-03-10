@@ -4,10 +4,14 @@
 
 @push('scripts')
     <script type="text/javascript">
-        biigle.$declare('name', '{{$name}}');
         biigle.$declare('destinationProjects', {!!$destinationProjects!!});
         biigle.$declare('volume', {!!$volume!!});
-        biigle.$declare('labelTrees', '{!!$labelTrees!!}');
+        biigle.$declare('name', '{!!old('name',$volume->name)!!}');
+        biigle.$declare('fileLabelTrees', '{!!$labelTrees!!}');
+        biigle.$declare('fileLabelIds', '{!! collect(old('only_file_labels')) !!}');
+        biigle.$declare('annotationLabelTrees', '{!!$labelTrees!!}');
+        biigle.$declare('annotationLabelIds', '{!! collect(old('only_annotation_labels', [])) !!}');
+        biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
     </script>
 @endpush
 
@@ -15,16 +19,17 @@
     <div class="container">
         <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
             <div class="form-group">
-                <h2 class="row">Clone volume "{!! $volume->name !!}"</h2>
+                <h2 class="row">Clone volume "{{$volume->name}}"</h2>
                 <br>
             </div>
-            <form id="clone-volume-form" class="clearfix" role="form" @submit.prevent
-                  @keydown.enter="$event.preventDefault()">
+            <form id="clone-volume-form" class="clearfix" role="form" method="POST" :action="getCloneUrl"
+                  enctype="multipart/form-data" v-on:submit="startLoading" v-on:keydown.enter.prevent>
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
-                        <input type="text" class="form-control" name="name" id="name" v-model="volumeName"
-                               placeholder="My new volume name" ref="nameInput" required autofocus pattern="[A-Za-z]+">
+                        <input type="text" class="form-control" name="name" id="name" v-model="name"
+                               placeholder="My new volume name" ref="nameInput" value="{{old('name')}}" required
+                               autofocus>
                     </div>
 
                     <div class="form-group">
@@ -78,62 +83,76 @@
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div v-cloak>
                         <div class="checkbox">
-                            <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                          v-model="cloneFileLabels">
-                                @if($volume->isImageVolume())
-                                    Clone image labels
-                                @else
-                                    Clone video labels
-                                @endif
+                            <div>
+                                <label><input type="checkbox" class="checkbox" id="fileLabels"
+                                              v-model="cloneFileLabels">
+                                    @if($volume->isImageVolume())
+                                        Clone image labels
+                                    @else
+                                        Clone video labels
+                                    @endif
 
-                            </label>
+                                </label>
+                            </div>
+
+                            <div v-if="cloneFileLabels">
+                                <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
+                                              v-model="restrictFileLabels">
+                                    @if($volume->isImageVolume())
+                                        Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                        selected)
+                                    @else
+                                        Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
+                                        selected)
+                                    @endif
+
+                                </label>
+                            </div>
+                            <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                                         :allow-select-siblings="true" :allow-select-children="true"
+                                         class="request-labels-well well well-sm"></label-trees>
                         </div>
 
-                        <div class="checkbox" v-if="cloneFileLabels">
-                            <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
-                                          v-model="restrictFileLabels">
-                                @if($volume->isImageVolume())
-                                    Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                    selected)
-                                @else
-                                    Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                    selected)
-                                @endif
-
-                            </label>
-                        </div>
-                        <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
-                                     :allow-select-siblings="true" :allow-select-children="true"
-                                     class="request-labels-well well well-sm"></label-trees>
-                    </div>
-
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="annotations" v-model="cloneAnnotations"> Clone
-                            annotations
-                        </label>
-                    </div>
-
-                    <div v-if="cloneAnnotations">
                         <div class="checkbox">
-                            <label>
-                                <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
-                                       v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
-                                    v-text="selectedAnnotationLabelsCount"></span> labels selected)
-                            </label>
+                            <div>
+                                <label>
+                                    <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels">
+                                    Clone annotations</label>
+                            </div>
+
+                            <div v-if="cloneAnnotationLabels">
+                                <div>
+                                    <label>
+                                        <input type="checkbox" v-if="cloneAnnotationLabels" id="annotationLabel"
+                                               v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
+                                            v-text="selectedAnnotationLabelsCount"></span> labels selected)
+                                    </label>
+                                </div>
+                                <label-trees v-if="cloneAnnotationLabels && restrictAnnotationLabels"
+                                             :trees="annotationLabelTrees"
+                                             :multiselect="true"
+                                             :allow-select-siblings="true" :allow-select-children="true"
+                                             class="request-labels-well well well-sm"></label-trees>
+                            </div>
                         </div>
-                        <label-trees v-if="cloneAnnotations && restrictAnnotationLabels" :trees="annotationLabelTrees"
-                                     :multiselect="true"
-                                     :allow-select-siblings="true" :allow-select-children="true"
-                                     class="request-labels-well well well-sm"></label-trees>
                     </div>
                 </div>
-                <button class="btn btn-success pull-right" @click="submit" :disabled="getSubmitButtonStatus">Submit
-                </button>
-                <a class="btn btn-default pull-right" type="button"
-                   href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-success pull-right" :disabled="cannotSubmit" value="Clone">
+                    <a class="btn btn-default pull-right" :disabled="loading" type="button"
+                       href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
+                    <input v-for="id in annotationLabelIds" type="hidden" name="only_annotation_labels[]"
+                           v-bind:value="id">
+                    <input v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]" v-bind:value="id">
+                    <input v-for="file in selectedFiles" type="hidden" name="only_files[]" v-bind:value="file.id">
+                    <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value=1>
+                    <input type="hidden" name="clone_annotations" v-else v-bind:value=0>
+                    <input type="hidden" name="clone_file_labels" v-if="cloneFileLabels" v-bind:value=1>
+                    <input type="hidden" name="clone_file_labels" v-else v-bind:value=0>
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                </div>
             </form>
         </div>
     </div>

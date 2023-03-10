@@ -21,7 +21,7 @@ export default {
     },
     data() {
         return {
-            volumeName: "",
+            name: "",
             volume: {},
             id: 0,
             destinationProjects: [],
@@ -29,7 +29,7 @@ export default {
             cloneFiles: false,
             cloneFileLabels: false,
             restrictFileLabels: false,
-            cloneAnnotations: false,
+            cloneAnnotationLabels: false,
             restrictAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
@@ -37,7 +37,7 @@ export default {
             annotationLabelTrees: [],
             fileLabelIds: [],
             annotationLabelIds: [],
-            submitButtonDisabled: false,
+            cloneUrlTemplate: "",
         };
     },
     computed: {
@@ -63,44 +63,14 @@ export default {
         setDefaultProject() {
             return this.destinationProjects.filter((p) => p.id === this.selectedProjectId)[0].name;
         },
-        getSubmitButtonStatus(){
-            return this.submitButtonDisabled;
+        cannotSubmit() {
+            return this.name === '' || this.selectedProjectId < 0 || this.loading;
+        },
+        getCloneUrl() {
+            return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
         }
     },
     methods: {
-        submit() {
-                let fileIds = [];
-                let annotationLabelIds = [];
-                let fileLabelIds = [];
-
-                if (this.selectedFiles.length !== 0) {
-                    fileIds = this.selectedFiles.map((entry) => entry.id);
-                }
-
-                if (this.cloneAnnotations && this.restrictAnnotationLabels) {
-                    annotationLabelIds = this.annotationLabelIds;
-                }
-
-                if (this.cloneFileLabels && this.restrictFileLabels) {
-                    fileLabelIds = this.fileLabelIds;
-                }
-
-                let request = {
-                    'name': this.volumeName,
-                    'only_files': fileIds,
-                    'clone_annotations': this.cloneAnnotations,
-                    'only_annotation_labels': annotationLabelIds,
-                    'clone_file_labels': this.cloneFiles,
-                    'only_file_labels': fileLabelIds
-                };
-                this.startLoading();
-
-                this.submitButtonDisabled = true;
-
-                VolumeApi.clone({id: this.id, project_id: this.selectedProjectId}, request)
-                    .then(() => console.log("success"), handleErrorResponse)
-                    .finally(this.finishLoading);
-        },
         setProject(project) {
             this.selectedProjectId = project.id;
         },
@@ -138,6 +108,29 @@ export default {
         setAnnotationLabels(labelIds) {
             this.annotationLabelIds = labelIds;
         },
+        initializeLabelTrees(fileLabelTrees, annotationLabelTrees) {
+            const nbrTrees = fileLabelTrees.length;  // labels of fileLabelTrees and annotationLabelTrees are equal
+
+            if (this.fileLabelIds.length > 0) {
+                this.cloneFileLabels = true;
+                this.restrictFileLabels = true;
+            }
+
+            if (this.annotationLabelIds.length > 0) {
+                this.cloneAnnotationLabels = true;
+                this.restrictAnnotationLabels = true;
+            }
+
+            for (let i = 0; i < nbrTrees; i++) {
+                fileLabelTrees[i].labels.forEach((label) => this.fileLabelIds.includes(String(label.id)) ?
+                    label.selected = true : label.selected = false);
+                annotationLabelTrees[i].labels.forEach((label) => this.annotationLabelIds.includes(String(label.id)) ?
+                    label.selected = true : label.selected = false);
+            }
+
+            this.fileLabelTrees = fileLabelTrees;
+            this.annotationLabelTrees = annotationLabelTrees;
+        }
     },
     watch: {
         cloneAnnotations(newState) {
@@ -148,7 +141,7 @@ export default {
         cloneFiles(newState) {
             if (!newState) {
                 this.restrictFileLabels = false;
-                this.cloneAnnotations = false;
+                this.cloneAnnotationLabels = false;
                 this.restrictAnnotationLabels = false;
             }
         },
@@ -156,26 +149,21 @@ export default {
             if (!newState) {
                 this.restrictFileLabels = false;
             }
-        }
+        },
     },
     created() {
         this.volume = biigle.$require('volume');
         this.id = this.volume.id;
-        this.volumeName = this.volume.name;
+        this.name = biigle.$require('name');
         this.destinationProjects = biigle.$require('destinationProjects');
-        // use JSON.parse to create two independent label trees
-        let fileLabelTrees = JSON.parse(biigle.$require('labelTrees'));
-        let annotationLabelTrees = JSON.parse(biigle.$require('labelTrees'));
-        let nbrTrees = fileLabelTrees.length;
-
-        for (let i = 0; i < nbrTrees; i++) {
-            fileLabelTrees[i].labels.forEach((label) => label.selected = false);
-            annotationLabelTrees[i].labels.forEach((label) => label.selected = false);
-        }
-
-        this.fileLabelTrees = fileLabelTrees;
-        this.annotationLabelTrees = annotationLabelTrees;
+        this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
         this.selectedProjectId = Number(location.href.split('=')[1]);
+        this.annotationLabelIds = JSON.parse(biigle.$require('annotationLabelIds'));
+        this.fileLabelIds = JSON.parse(biigle.$require('fileLabelIds'));
+        let fileLabelTrees = JSON.parse(biigle.$require('fileLabelTrees'));
+        let annotationLabelTrees = JSON.parse(biigle.$require('annotationLabelTrees'));
+
+        this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
 
 
     },
