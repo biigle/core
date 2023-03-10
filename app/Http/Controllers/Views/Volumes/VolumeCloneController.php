@@ -41,7 +41,6 @@ class VolumeCloneController extends Controller
 
         return view('volumes.clone', [
             'volume' => $volume,
-            'name' => $volume->name,
             'destinationProjects' => collect($destProjects)->values(),
             'labelTrees' => $labelTrees
         ]);
