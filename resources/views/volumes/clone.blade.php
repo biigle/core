@@ -74,7 +74,8 @@
                                                v-on:keydown.enter="loadFilesMatchingPattern">
                                     @else
                                         <input type="text" class="form-control" id="files"
-                                               placeholder="video*.mp4" v-model="filePattern" required>
+                                               placeholder="video*.mp4" v-model="filePattern" required
+                                               v-on:keydown.enter="loadFilesMatchingPattern">
                                     @endif
                                 </div>
                             </div>
