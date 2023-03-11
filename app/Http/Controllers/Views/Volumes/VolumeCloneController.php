@@ -7,10 +7,18 @@ use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use \Illuminate\Contracts\View\View;
 
 class VolumeCloneController extends Controller
 {
 
+    /**
+     * Shows the volume clone page.
+     * @param Request $request
+     * @param $id volume ID
+     *
+     * @return View
+     **/
     function clone(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
