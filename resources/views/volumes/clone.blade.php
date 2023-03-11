@@ -12,6 +12,8 @@
         biigle.$declare('selectedFiles', '{!! collect(old('selected_files',[])) !!}');
         biigle.$declare('fileLabelIds', '{!! collect(old('only_file_labels',[])) !!}');
         biigle.$declare('annotationLabelTrees', '{!!$labelTrees!!}');
+        biigle.$declare('cloneFileLabels', {{old('clone_file_labels',false)}});
+        biigle.$declare('cloneAnnotations', {{old('clone_annotations',false)}});
         biigle.$declare('annotationLabelIds', '{!! collect(old('only_annotation_labels', [])) !!}');
         biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
     </script>
@@ -179,7 +181,8 @@
                            v-bind:value="id">
                     <input v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]" v-bind:value="id">
                     <input v-for="file in selectedFiles" type="hidden" name="only_files[]" v-bind:value="file.id">
-                    <input v-for="file in selectedFiles" type="hidden" name="selected_files[]" v-bind:value="file.filename">
+                    <input v-for="file in selectedFiles" type="hidden" name="selected_files[]"
+                           v-bind:value="file.filename">
                     <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value=1>
                     <input type="hidden" name="clone_annotations" v-else v-bind:value=0>
                     <input type="hidden" name="clone_file_labels" v-if="cloneFileLabels" v-bind:value=1>
