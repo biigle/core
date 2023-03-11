@@ -20,6 +20,7 @@
                     <i v-else class="fas fa-chart-bar"></i>
                 </button>
                 <a
+                    v-if="showCloneButton"
                     :href="volumeCloneUrl"
                     class="btn btn-default btn-sm"
                     :title="cloneVolumeTitle"
@@ -110,6 +111,10 @@ export default {
         cloneVolumeTitle:{
             type: String,
             default: "Clone volume"
+        },
+        showCloneButton: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {
@@ -146,7 +151,7 @@ export default {
             return this.hovered || this.loading;
         },
         hasButtons() {
-            return this.removable || this.showStatsButton;
+            return this.removable || this.showStatsButton || this.showCloneButton;
         },
         volumeCloneUrl() {
             return this.volumeUrlTemplate.replace(':id', String(this.id));
