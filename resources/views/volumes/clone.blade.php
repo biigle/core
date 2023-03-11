@@ -8,7 +8,7 @@
         biigle.$declare('volume', {!!$volume!!});
         biigle.$declare('name', '{!!old('name',$volume->name)!!}');
         biigle.$declare('fileLabelTrees', '{!!$labelTrees!!}');
-        biigle.$declare('fileLabelIds', '{!! collect(old('only_file_labels')) !!}');
+        biigle.$declare('fileLabelIds', '{!! collect(old('only_file_labels',[])) !!}');
         biigle.$declare('annotationLabelTrees', '{!!$labelTrees!!}');
         biigle.$declare('annotationLabelIds', '{!! collect(old('only_annotation_labels', [])) !!}');
         biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
