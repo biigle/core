@@ -68,7 +68,7 @@ export default {
         },
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
-        }
+        },
     },
     methods: {
         setProject(project) {
@@ -130,6 +130,15 @@ export default {
 
             this.fileLabelTrees = fileLabelTrees;
             this.annotationLabelTrees = annotationLabelTrees;
+        },
+        initializeFileList(ids, filenames) {
+            const nbrFiles = ids.length;
+            if (nbrFiles > 0) {
+                this.cloneFiles = true;
+                for (let i = 0; i < nbrFiles; i++) {
+                    this.selectedFiles.push({id: ids[i], filename: filenames[i]});
+                }
+            }
         }
     },
     watch: {
@@ -162,8 +171,12 @@ export default {
         this.fileLabelIds = JSON.parse(biigle.$require('fileLabelIds'));
         let fileLabelTrees = JSON.parse(biigle.$require('fileLabelTrees'));
         let annotationLabelTrees = JSON.parse(biigle.$require('annotationLabelTrees'));
+        let ids = JSON.parse(biigle.$require('selectedFilesIds'));
+        let filenames = JSON.parse(biigle.$require('selectedFiles'));
 
         this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
+
+        this.initializeFileList(ids, filenames);
 
 
     },
