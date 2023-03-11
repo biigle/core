@@ -29,7 +29,12 @@
                         <label>New volume name</label>
                         <input type="text" class="form-control" name="name" id="name" v-model="name"
                                placeholder="My new volume name" ref="nameInput" value="{{old('name')}}" required
-                               autofocus>
+                               autofocus minlength="1" maxlength="512">
+                    </div>
+                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                        @if($errors->has('name'))
+                            <span class="help-block">{{ $errors->first('name') }}</span>
+                        @endif
                     </div>
 
                     <div class="form-group">
@@ -40,7 +45,6 @@
                                    v-on:select="setProject" :clear-on-select="false"
                                    :value="setDefaultProject" required></typeahead>
                     </div>
-
 
                     <div class="checkbox">
                         <label><input type="checkbox" id="files" v-model="cloneFiles">
@@ -81,6 +85,11 @@
                                             v-text="file.filename"></span></li>
                                 </ul>
                             </div>
+                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
+                                @if($errors->has('clone_files'))
+                                    <span class="help-block">{{ $errors->first('clone_files') }}</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div v-cloak>
@@ -96,6 +105,11 @@
 
                                 </label>
                             </div>
+                            <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
+                                @if($errors->has('clone_file_labels'))
+                                    <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
+                                @endif
+                            </div>
 
                             <div v-if="cloneFileLabels">
                                 <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
@@ -110,6 +124,11 @@
 
                                 </label>
                             </div>
+                            <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
+                                @if($errors->has('only_file_labels'))
+                                    <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
+                                @endif
+                            </div>
                             <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
                                          class="request-labels-well well well-sm"></label-trees>
@@ -120,6 +139,11 @@
                                 <label>
                                     <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels">
                                     Clone annotations</label>
+                            </div>
+                            <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
+                                @if($errors->has('clone_annotations'))
+                                    <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
+                                @endif
                             </div>
 
                             <div v-if="cloneAnnotationLabels">
@@ -135,6 +159,11 @@
                                              :multiselect="true"
                                              :allow-select-siblings="true" :allow-select-children="true"
                                              class="request-labels-well well well-sm"></label-trees>
+                            </div>
+                            <div class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}">
+                                @if($errors->has('only_annotation_labels'))
+                                    <span class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
+                                @endif
                             </div>
                         </div>
                     </div>
