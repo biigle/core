@@ -33,6 +33,7 @@ export default {
             restrictAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
+            volumeFilenames: [],
             fileLabelTrees: [],
             annotationLabelTrees: [],
             fileLabelIds: [],
@@ -75,21 +76,26 @@ export default {
             this.selectedProjectId = project.id;
         },
         async loadFilesMatchingPattern() {
-            if (this.filePattern.length > 0) {
-                this.startLoading();
-                let id2filenames = await VolumeApi.queryFilenames({id: this.id})
+            if (this.filePattern.length === 0) {
+                return;
+            }
+            this.startLoading();
+            if (!this.volumeFilenames.length) {
+                this.volumeFilenames = await VolumeApi.queryFilenames({id: this.id})
                     .then((response) => {
                         return response.body;
                     }, handleErrorResponse);
-                VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
-                    .then((response2) => {
-                        let ids = response2.body;
-                        this.setMatchedFiles(ids.map(id => {
-                            return {id: id, filename: id2filenames[id]}
-                        }));
-                    }, handleErrorResponse)
-                    .finally(this.finishLoading);
             }
+
+            VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
+                .then((response) => {
+                    let ids = response.body;
+                    this.setMatchedFiles(ids.map(id => {
+                        return {id: id, filename: this.volumeFilenames[id]}
+                    }));
+                }, handleErrorResponse)
+                .finally(this.finishLoading);
+
         },
         setMatchedFiles(filenames) {
             this.selectedFiles = filenames;
