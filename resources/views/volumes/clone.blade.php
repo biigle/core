@@ -61,7 +61,7 @@
                             </span>
                         </label>
                     </div>
-                    <div v-if="cloneFiles"  v-cloak>
+                    <div v-if="cloneFiles" v-cloak>
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
                                 <div class="form-group">
@@ -174,13 +174,18 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="submit" class="btn btn-success pull-right" :disabled="cannotSubmit" value="Clone">
-                    <a class="btn btn-default pull-right" :disabled="loading" type="button"
-                       href="{{URL::previous()}}">Cancel</a>
-                    <input v-if="restrictAnnotationLabels" v-for="id in annotationLabelIds" type="hidden" name="only_annotation_labels[]"
+                    <span class="pull-right">
+                        <a class="btn btn-default" :disabled="loading" type="button"
+                           href="{{URL::previous()}}">Cancel</a>
+                    <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
+                    </span>
+                    <input v-if="restrictAnnotationLabels" v-for="id in annotationLabelIds" type="hidden"
+                           name="only_annotation_labels[]"
                            v-bind:value="id">
-                    <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]" v-bind:value="id">
-                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]" v-bind:value="file.id">
+                    <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]"
+                           v-bind:value="id">
+                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
+                           v-bind:value="file.id">
                     <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="selected_files[]"
                            v-bind:value="file.filename">
                     <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value="1">
