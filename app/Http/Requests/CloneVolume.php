@@ -47,10 +47,10 @@ class CloneVolume extends FormRequest
             'name' => 'max:512',
             'only_files.*' => 'int|gt:0',
             'only_files' => 'array',
-            'clone_annotations' => 'int|digits_between: 0,1',
+            'clone_annotations' => 'bool',
             'only_annotation_labels.*' => 'int|gt:0',
             'only_annotation_labels' => 'array',
-            'clone_file_labels' => 'int|digits_between: 0,1',
+            'clone_file_labels' => 'bool',
             'only_file_labels.*' => 'int|gt:0',
             'only_file_labels' => 'array'
         ];
