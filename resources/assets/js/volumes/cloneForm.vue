@@ -60,9 +60,6 @@ export default {
         selectedAnnotationLabelsCount() {
             return this.selectedAnnotationLabels.length;
         },
-        setDefaultProject() {
-            return this.destinationProjects.filter((p) => p.id === this.selectedProjectId)[0].name;
-        },
         cannotSubmit() {
             return this.name === '' || this.selectedProjectId < 0 || this.loading;
         },
@@ -71,6 +68,9 @@ export default {
         },
     },
     methods: {
+        setDefaultProject() {
+            return this.destinationProjects.find(p => p.id === this.selectedProjectId).name;
+        },
         setProject(project) {
             this.selectedProjectId = project.id;
         },
