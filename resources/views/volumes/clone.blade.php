@@ -180,11 +180,11 @@
                     <input v-if="restrictAnnotationLabels" v-for="id in annotationLabelIds" type="hidden" name="only_annotation_labels[]"
                            v-bind:value="id">
                     <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]" v-bind:value="id">
-                    <input v-for="file in selectedFiles" type="hidden" name="only_files[]" v-bind:value="file.id">
-                    <input v-for="file in selectedFiles" type="hidden" name="selected_files[]"
+                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]" v-bind:value="file.id">
+                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="selected_files[]"
                            v-bind:value="file.filename">
-                    <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value="asda">
-                    <input type="hidden" name="clone_annotations" v-else v-bind:value="asdad">
+                    <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value="1">
+                    <input type="hidden" name="clone_annotations" v-else v-bind:value="0">
                     <input type="hidden" name="clone_file_labels" v-if="cloneFileLabels" v-bind:value=1>
                     <input type="hidden" name="clone_file_labels" v-else v-bind:value=0>
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
