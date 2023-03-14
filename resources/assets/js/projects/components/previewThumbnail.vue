@@ -25,8 +25,7 @@
                     class="btn btn-default btn-sm"
                     :title="cloneVolumeTitle"
                 >
-                    <loader v-if="loading" :active="true"></loader>
-                    <i v-else class="fas fa-clone"></i>
+                    <i class="fas fa-clone"></i>
                 </a>
                 <button
                     v-if="removable"
