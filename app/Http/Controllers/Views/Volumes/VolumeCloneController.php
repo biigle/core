@@ -49,7 +49,7 @@ class VolumeCloneController extends Controller
 
         return view('volumes.clone', [
             'volume' => $volume,
-            'destinationProjects' => collect($destProjects)->values(),
+            'destinationProjects' => $destProjects,
             'labelTrees' => $labelTrees
         ]);
     }
