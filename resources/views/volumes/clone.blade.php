@@ -61,7 +61,7 @@
                             </span>
                         </label>
                     </div>
-                    <div v-if="cloneFiles">
+                    <div v-if="cloneFiles"  v-cloak>
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
                                 <div class="form-group">
@@ -97,9 +97,9 @@
                             </div>
                         </div>
                     </div>
-                    <div v-cloak>
+                    <div>
                         <div class="checkbox">
-                            <div>
+                            <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
                                               v-model="cloneFileLabels">
                                     @if($volume->isImageVolume())
@@ -116,7 +116,7 @@
                                 @endif
                             </div>
 
-                            <div v-if="cloneFileLabels">
+                            <div v-if="cloneFileLabels" v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
                                               v-model="restrictFileLabels">
                                     @if($volume->isImageVolume())
@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="checkbox">
-                            <div>
+                            <div v-cloak>
                                 <label>
                                     <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels">
                                     Clone annotations</label>
@@ -152,7 +152,7 @@
                             </div>
 
                             <div v-if="cloneAnnotationLabels">
-                                <div>
+                                <div v-cloak>
                                     <label>
                                         <input type="checkbox" v-if="cloneAnnotationLabels" id="annotationLabel"
                                                v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
