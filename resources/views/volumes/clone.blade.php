@@ -176,7 +176,7 @@
                 <div class="form-group">
                     <input type="submit" class="btn btn-success pull-right" :disabled="cannotSubmit" value="Clone">
                     <a class="btn btn-default pull-right" :disabled="loading" type="button"
-                       href="{{\Illuminate\Support\Facades\URL::previous()}}">Cancel</a>
+                       href="{{URL::previous()}}">Cancel</a>
                     <input v-if="restrictAnnotationLabels" v-for="id in annotationLabelIds" type="hidden" name="only_annotation_labels[]"
                            v-bind:value="id">
                     <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]" v-bind:value="id">
