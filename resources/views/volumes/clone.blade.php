@@ -27,7 +27,7 @@
                 <br>
             </div>
             <form id="clone-volume-form" class="clearfix" role="form" method="POST" :action="getCloneUrl"
-                  enctype="multipart/form-data" v-on:submit="startLoading" v-on:keydown.enter.prevent>
+                  enctype="multipart/form-data" v-on:submit="startLoading">
                 <div class="row">
                     <div class="form-group">
                         <label>New volume name</label>
