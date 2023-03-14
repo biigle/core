@@ -173,14 +173,14 @@ export default {
         this.destinationProjects = biigle.$require('destinationProjects');
         this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
         this.selectedProjectId = Number(location.href.split('=')[1]);
-        this.annotationLabelIds = JSON.parse(biigle.$require('annotationLabelIds'));
-        this.fileLabelIds = JSON.parse(biigle.$require('fileLabelIds'));
+        this.annotationLabelIds = biigle.$require('annotationLabelIds');
+        this.fileLabelIds = biigle.$require('fileLabelIds');
         this.cloneFileLabels = biigle.$require('cloneFileLabels');
         this.cloneAnnotationLabels = biigle.$require('cloneAnnotations');
-        let fileLabelTrees = JSON.parse(biigle.$require('fileLabelTrees'));
-        let annotationLabelTrees = JSON.parse(biigle.$require('annotationLabelTrees'));
-        let ids = JSON.parse(biigle.$require('selectedFilesIds'));
-        let filenames = JSON.parse(biigle.$require('selectedFiles'));
+        let fileLabelTrees = biigle.$require('fileLabelTrees');
+        let annotationLabelTrees = biigle.$require('annotationLabelTrees');
+        let ids = biigle.$require('selectedFilesIds');
+        let filenames = biigle.$require('selectedFiles');
 
         this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
 

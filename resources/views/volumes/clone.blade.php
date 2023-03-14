@@ -7,14 +7,14 @@
         biigle.$declare('destinationProjects', {!!$destinationProjects!!});
         biigle.$declare('volume', {!!$volume!!});
         biigle.$declare('name', '{!!old('name',$volume->name)!!}');
-        biigle.$declare('fileLabelTrees', '{!!$labelTrees!!}');
-        biigle.$declare('selectedFilesIds', '{!! collect(old('only_files',[])) !!}');
-        biigle.$declare('selectedFiles', '{!! collect(old('selected_files',[])) !!}');
-        biigle.$declare('fileLabelIds', '{!! collect(old('only_file_labels',[])) !!}');
-        biigle.$declare('annotationLabelTrees', '{!!$labelTrees!!}');
+        biigle.$declare('fileLabelTrees', {!!$labelTrees!!});
+        biigle.$declare('selectedFilesIds', {!! collect(old('only_files',[])) !!});
+        biigle.$declare('selectedFiles', {!! collect(old('selected_files',[])) !!});
+        biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels',[])) !!});
+        biigle.$declare('annotationLabelTrees', {!!$labelTrees!!});
         biigle.$declare('cloneFileLabels', {{old('clone_file_labels',false)}});
         biigle.$declare('cloneAnnotations', {{old('clone_annotations',false)}});
-        biigle.$declare('annotationLabelIds', '{!! collect(old('only_annotation_labels', [])) !!}');
+        biigle.$declare('annotationLabelIds', {!! collect(old('only_annotation_labels', [])) !!});
         biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
     </script>
 @endpush
