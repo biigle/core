@@ -9,7 +9,6 @@
         biigle.$declare('name', '{!!old('name',$volume->name)!!}');
         biigle.$declare('fileLabelTrees', {!!$labelTrees!!});
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files',[])) !!});
-        biigle.$declare('selectedFiles', {!! collect(old('selected_files',[])) !!});
         biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels',[])) !!});
         biigle.$declare('annotationLabelTrees', {!!$labelTrees!!});
         biigle.$declare('cloneFileLabels', {{old('clone_file_labels',false)}});
@@ -187,8 +186,6 @@
                            v-bind:value="id">
                     <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
                            v-bind:value="file.id">
-                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="selected_files[]"
-                           v-bind:value="file.filename">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 </div>
             </form>

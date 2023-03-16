@@ -137,13 +137,17 @@ export default {
             this.fileLabelTrees = fileLabelTrees;
             this.annotationLabelTrees = annotationLabelTrees;
         },
-        initializeFileList(ids, filenames) {
+        initializeFileList(ids) {
             const nbrFiles = ids.length;
             if (nbrFiles > 0) {
-                this.cloneFiles = true;
-                for (let i = 0; i < nbrFiles; i++) {
-                    this.selectedFiles.push({id: ids[i], filename: filenames[i]});
-                }
+                VolumeApi.queryFilenames({id: this.id})
+                    .then(response => {
+                        let filenames = response.body;
+                        this.cloneFiles = true;
+                        for (let i = 0; i < nbrFiles; i++) {
+                            this.selectedFiles.push({id: ids[i], filename: filenames[Number(ids[i])]});
+                        }
+                    })
             }
         }
     },
@@ -180,11 +184,10 @@ export default {
         let fileLabelTrees = biigle.$require('fileLabelTrees');
         let annotationLabelTrees = biigle.$require('annotationLabelTrees');
         let ids = biigle.$require('selectedFilesIds');
-        let filenames = biigle.$require('selectedFiles');
 
         this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
 
-        this.initializeFileList(ids, filenames);
+        this.initializeFileList(ids);
 
 
     },
