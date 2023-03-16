@@ -101,7 +101,7 @@
                         <div class="checkbox">
                             <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                              v-model="cloneFileLabels">
+                                              v-model="cloneFileLabels" name="cloneFileLabels" value="1">
                                     @if($volume->isImageVolume())
                                         Clone image labels
                                     @else
@@ -142,7 +142,8 @@
                         <div class="checkbox">
                             <div v-cloak>
                                 <label>
-                                    <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels">
+                                    <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels"
+                                           name="clone_annotations" value="1">
                                     Clone annotations</label>
                             </div>
                             <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
@@ -188,10 +189,6 @@
                            v-bind:value="file.id">
                     <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="selected_files[]"
                            v-bind:value="file.filename">
-                    <input type="hidden" name="clone_annotations" v-if="cloneAnnotationLabels" v-bind:value="1">
-                    <input type="hidden" name="clone_annotations" v-else v-bind:value="0">
-                    <input type="hidden" name="clone_file_labels" v-if="cloneFileLabels" v-bind:value=1>
-                    <input type="hidden" name="clone_file_labels" v-else v-bind:value=0>
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 </div>
             </form>
