@@ -188,11 +188,14 @@ class VolumeController extends Controller
         $copy = DB::transaction(function () use ($request) {
 
             $volume = $request->volume;
+            $project = $request->project;
 
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
             $copy->creating_async = true;
             $copy->save();
+            $project->addVolumeId($copy->id);
+
             $job = new CloneImagesOrVideos($request, $copy);
             Queue::pushOn('high', $job);
 

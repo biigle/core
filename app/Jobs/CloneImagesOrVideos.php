@@ -144,9 +144,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             if ($volume->hasIfdo()) {
                 $this->copyIfdoFile($volume->id, $copy->id);
             }
-
-            $project->addVolumeId($copy->id);
-
             $copy->save();
 
             $copy->creating_async = false;
