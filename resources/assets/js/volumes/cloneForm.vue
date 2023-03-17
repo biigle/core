@@ -5,7 +5,7 @@ import FileItem from "./components/filePanelItem";
 import {handleErrorResponse} from "../core/messages/store";
 import VolumeApi from '../volumes/api/volumes'
 import LabelTrees from "../label-trees/components/labelTrees";
-
+import {urlParams as UrlParams} from '../core/utils';
 
 // const numberFormatter = new Intl.NumberFormat();
 
@@ -176,7 +176,7 @@ export default {
         this.name = biigle.$require('name');
         this.destinationProjects = biigle.$require('destinationProjects');
         this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
-        this.selectedProjectId = Number(location.href.split('=')[1]);
+        this.selectedProjectId = Number(UrlParams.get('project'));
         this.annotationLabelIds = biigle.$require('annotationLabelIds');
         this.fileLabelIds = biigle.$require('fileLabelIds');
         this.cloneFileLabels = biigle.$require('cloneFileLabels');
