@@ -26,7 +26,7 @@ export default {
             id: 0,
             destinationProjects: [],
             selectedProjectId: 0,
-            cloneFiles: false,
+            filterFiles: false,
             cloneFileLabels: false,
             restrictFileLabels: false,
             cloneAnnotationLabels: false,
@@ -149,7 +149,7 @@ export default {
                 VolumeApi.queryFilenames({id: this.id})
                     .then(response => {
                         let filenames = response.body;
-                        this.cloneFiles = true;
+                        this.filterFiles = true;
                         for (let i = 0; i < nbrFiles; i++) {
                             this.selectedFiles.push({id: ids[i], filename: filenames[Number(ids[i])]});
                         }

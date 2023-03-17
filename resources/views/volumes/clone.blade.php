@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="checkbox">
-                        <label><input type="checkbox" id="files" v-model="cloneFiles">
+                        <label><input type="checkbox" id="files" v-model="filterFiles">
                             Filter <span>
                             @if($volume->isImageVolume())
                                     images
@@ -60,7 +60,7 @@
                             </span>
                         </label>
                     </div>
-                    <div v-if="cloneFiles" v-cloak>
+                    <div v-if="filterFiles" v-cloak>
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
                                 <div class="form-group">
@@ -185,7 +185,7 @@
                            v-bind:value="id">
                     <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]"
                            v-bind:value="id">
-                    <input v-if="cloneFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
+                    <input v-if="filterFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
                            v-bind:value="file.id">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 </div>
