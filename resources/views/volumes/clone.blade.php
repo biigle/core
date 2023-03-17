@@ -87,6 +87,7 @@
                                     <li v-for="file in selectedFiles" class="list-group-item"><span
                                             class="text-muted">#<span v-text="file.id"></span></span> <span
                                             v-text="file.filename"></span></li>
+                                    <li v-if="noFilesFoundByPattern" class="list-group-item">No files found</li>
                                 </ul>
                             </div>
                             <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">

@@ -39,6 +39,7 @@ export default {
             fileLabelIds: [],
             annotationLabelIds: [],
             cloneUrlTemplate: "",
+            noFilesFoundByPattern: false
         };
     },
     computed: {
@@ -94,7 +95,12 @@ export default {
                         return {id: id, filename: this.volumeFilenames[id]}
                     }));
                 }, handleErrorResponse)
-                .finally(this.finishLoading);
+                .finally(() => {
+                    this.finishLoading();
+                    if (this.selectedFiles.length === 0) {
+                        this.noFilesFoundByPattern = true;
+                    }
+                });
 
         },
         setMatchedFiles(filenames) {
@@ -162,6 +168,7 @@ export default {
                 this.restrictFileLabels = false;
                 this.cloneAnnotationLabels = false;
                 this.restrictAnnotationLabels = false;
+                this.noFilesFoundByPattern = false;
             }
         },
         cloneFileLabels(newState) {
