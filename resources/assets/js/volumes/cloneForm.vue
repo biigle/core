@@ -24,6 +24,7 @@ export default {
             name: "",
             volume: {},
             id: 0,
+            isImageVolume: true,
             destinationProjects: [],
             selectedProjectId: 0,
             filterFiles: false,
@@ -155,6 +156,12 @@ export default {
                         }
                     })
             }
+        },
+        getFileType(capital){
+            if(this.isImageVolume){
+                return capital ? 'Image' : 'image';
+            }
+            return capital ? 'Video' : 'video';
         }
     },
     watch: {
@@ -191,6 +198,7 @@ export default {
         let fileLabelTrees = biigle.$require('fileLabelTrees');
         let annotationLabelTrees = biigle.$require('annotationLabelTrees');
         let ids = biigle.$require('selectedFilesIds');
+        this.isImageVolume = biigle.$require('isImageVolume');
 
         this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
 

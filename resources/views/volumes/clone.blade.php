@@ -6,6 +6,7 @@
     <script type="text/javascript">
         biigle.$declare('destinationProjects', {!!$destinationProjects!!});
         biigle.$declare('volume', {!!$volume!!});
+        biigle.$declare('isImageVolume', {{$volume->isImageVolume()}});
         biigle.$declare('name', '{!!old('name',$volume->name)!!}');
         biigle.$declare('fileLabelTrees', {!!$labelTrees!!});
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files',[])) !!});
@@ -49,21 +50,18 @@
                                    :value="setDefaultProject()" required></typeahead>
                     </div>
 
-                    <div class="checkbox">
+                    <div class="checkbox" v-cloak>
                         <label><input type="checkbox" id="files" v-model="filterFiles">
-                            Filter <span>
-                            @if($volume->isImageVolume())
-                                    images
-                                @else
-                                    videos
-                                @endif
-                            </span>
+                            <span v-text="'Filter '+getFileType(false)+'s'"></span>
                             <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
                                 @if($errors->has('clone_files'))
                                     <span class="help-block">{{ $errors->first('clone_files') }}</span>
-                                    @else
-                                    <span class="help-block">
-                                        Check, if files should be restricted
+                                @else
+                                    <span class="help-block"
+                                          v-text="'Check, if only filtered '+getFileType(false)+'s should be cloned'">                                    </span>
+                                    <span v-if="filterFiles" class="help-block">
+                                        Filter by using a pattern that matches specific file names.<BR>
+                                        A pattern may contain the wildcard character * that matches any string of zero or more characters
                                     </span>
                                 @endif
                             </div>
@@ -73,22 +71,14 @@
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
                                 <div class="form-group">
-                                    <label>
-                                        @if($volume->isImageVolume())
-                                            Image(s):
-                                        @else
-                                            Video(s):
-                                        @endif
-                                    </label>
-                                    @if ($volume->isImageVolume())
-                                        <input type="text" class="form-control" id="files"
-                                               placeholder="img*.jpg" v-model="filePattern" required
-                                               v-on:keydown.enter="loadFilesMatchingPattern">
-                                    @else
-                                        <input type="text" class="form-control" id="files"
-                                               placeholder="video*.mp4" v-model="filePattern" required
-                                               v-on:keydown.enter="loadFilesMatchingPattern">
-                                    @endif
+                                    <label v-text="getFileType(true)+'(s):'"></label>
+                                    <input v-if="isImageVolume" type="text" class="form-control" id="files"
+                                           placeholder="img*.jpg" v-model="filePattern" required
+                                           v-on:keydown.enter="loadFilesMatchingPattern">
+
+                                    <input v-else type="text" class="form-control" id="files"
+                                           placeholder="video*.mp4" v-model="filePattern" required
+                                           v-on:keydown.enter="loadFilesMatchingPattern">
                                 </div>
                             </div>
                             <div class="panel-body">
@@ -106,20 +96,13 @@
                             <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
                                               v-model="cloneFileLabels" name="cloneFileLabels" value="1">
-                                    @if($volume->isImageVolume())
-                                        Clone image labels
-                                    @else
-                                        Clone video labels
-                                    @endif
+                                    <span v-text="'Clone '+getFileType(false)+' labels'"></span>
                                     <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('clone_file_labels'))
                                             <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
                                         @else
-                                            <span class="help-block">
-                                        Check, if
-                                        <span v-if="{{$volume->isImageVolume()}}">image</span>
-                                        <span v-else>video</span>
-                                        labels should be cloned too
+                                            <span class="help-block"
+                                                  v-text="'Check, if '+getFileType(false)+' labels should be cloned too'">
                                     </span>
                                         @endif
                                     </div>
@@ -129,23 +112,12 @@
                             <div v-if="cloneFileLabels" v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
                                               v-model="restrictFileLabels">
-                                    @if($volume->isImageVolume())
-                                        Restrict image labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                        selected)
-                                    @else
-                                        Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
-                                        selected)
-                                    @endif
+                                    <span v-text="'Restrict '+getFileType(false)+' labels '+'('+selectedFileLabelsCount+' labels selected)'"></span>
                                     <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('only_file_labels'))
                                             <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
                                         @else
-                                            <span v-if="cloneFileLabels" class="help-block">
-                                        Check, if
-                                        <span v-if="{{$volume->isImageVolume()}}">image</span>
-                                        <span v-else>video</span>
-                                        labels should be restricted
-                                    </span>
+                                            <span v-if="cloneFileLabels" class="help-block" v-text="'Check, if '+getFileType(false)+' labels should be restricted'"></span>
                                         @endif
                                     </div>
 
