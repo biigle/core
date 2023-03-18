@@ -35,6 +35,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create([
             'filename' => 'a123.jpg',
@@ -77,6 +78,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create([
             'filename' => 'a321123.jpg',
@@ -110,6 +112,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create([
             'filename' => 'j.jpg',
@@ -166,6 +169,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create([
             'filename' => 'z.jpg',
@@ -206,6 +210,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create([
             'filename' => 'a.jpg',
@@ -261,6 +266,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create([
             'filename' => 'y.jpg',
@@ -301,6 +307,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
@@ -351,6 +358,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
@@ -386,6 +394,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
@@ -413,6 +422,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
@@ -465,6 +475,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
@@ -500,6 +511,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
@@ -533,6 +545,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         // The target project.
         $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
 
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
