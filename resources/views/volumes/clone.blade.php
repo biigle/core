@@ -95,7 +95,7 @@
                         <div class="checkbox">
                             <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                              v-model="cloneFileLabels" name="cloneFileLabels" value="1">
+                                              v-model="cloneFileLabels" name="clone_file_labels" value="1">
                                     <span v-text="'Clone '+getFileType(false)+' labels'"></span>
                                     <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('clone_file_labels'))
