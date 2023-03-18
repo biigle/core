@@ -2,50 +2,47 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
-use Biigle\Http\Controllers\Views\Volumes\VolumeCloneController;
 use ApiTestCase;
-use Biigle\ImageAnnotationLabel;
-use Biigle\ImageLabel;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageLabelTest;
-use Biigle\Tests\ImageTest;
 
 class VolumeCloneControllerTest extends ApiTestCase
 {
 
-    function testClone()
+    public function testClone()
     {
-
         $id = $this->volume()->id;
-        $img = ImageTest::create(
-            ['filename' => 'abx.jpg',
-                'volume_id' => $id]);
-        ImageLabelTest::create(['image_id' => $img->id]);
-        ImageLabelTest::create(['image_id' => $img->id]);
-        ImageLabelTest::create(['image_id' => $img->id]);
 
-        $a = ImageAnnotationTest::create(['image_id'=>$img->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a->id]);
+        $this->beUser();
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(403);
 
+        $this->beGuest();
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(403);
 
-        $img2 = ImageTest::create(
-            ['filename' => 'hgfhf.jpg',
-                'volume_id' => $id]);
-        ImageLabelTest::create(['image_id' => $img2->id]);
+        $this->beEditor();
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(403);
 
-        $a2 = ImageAnnotationTest::create(['image_id'=>$img2->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a2->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a2->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a2->id]);
-        ImageAnnotationLabelTest::create(['annotation_id'=> $a2->id]);
+        $this->beExpert();
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(403);
 
+        // even the volume creator is not allowed if they are no project admin
+        $this->be($this->volume()->creator);
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(403);
 
+        // if project creator and volume creator are the same, the volume can be cloned
+        $this->be($this->project()->creator);
+        $response = $this->get("volumes/clone/{$id}");
+        $response->assertStatus(200);
 
         $this->beAdmin();
         $response = $this->get("volumes/clone/{$id}");
         $response->assertStatus(200);
+
+        $response = $this->get('volumes/clone/999');
+        $response->assertStatus(404);
     }
 
 }
