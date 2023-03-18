@@ -58,6 +58,15 @@
                                     videos
                                 @endif
                             </span>
+                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
+                                @if($errors->has('clone_files'))
+                                    <span class="help-block">{{ $errors->first('clone_files') }}</span>
+                                    @else
+                                    <span class="help-block">
+                                        Check, if files should be restricted
+                                    </span>
+                                @endif
+                            </div>
                         </label>
                     </div>
                     <div v-if="filterFiles" v-cloak>
@@ -90,11 +99,6 @@
                                     <li v-if="noFilesFoundByPattern" class="list-group-item">No files found</li>
                                 </ul>
                             </div>
-                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
-                                @if($errors->has('clone_files'))
-                                    <span class="help-block">{{ $errors->first('clone_files') }}</span>
-                                @endif
-                            </div>
                         </div>
                     </div>
                     <div>
@@ -107,13 +111,19 @@
                                     @else
                                         Clone video labels
                                     @endif
-
+                                    <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
+                                        @if($errors->has('clone_file_labels'))
+                                            <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
+                                        @else
+                                            <span class="help-block">
+                                        Check, if
+                                        <span v-if="{{$volume->isImageVolume()}}">image</span>
+                                        <span v-else>video</span>
+                                        labels should be cloned too
+                                    </span>
+                                        @endif
+                                    </div>
                                 </label>
-                            </div>
-                            <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
-                                @if($errors->has('clone_file_labels'))
-                                    <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
-                                @endif
                             </div>
 
                             <div v-if="cloneFileLabels" v-cloak>
@@ -126,13 +136,20 @@
                                         Restrict video labels (<span v-text="selectedFileLabelsCount"></span> labels
                                         selected)
                                     @endif
+                                    <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
+                                        @if($errors->has('only_file_labels'))
+                                            <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
+                                        @else
+                                            <span v-if="cloneFileLabels" class="help-block">
+                                        Check, if
+                                        <span v-if="{{$volume->isImageVolume()}}">image</span>
+                                        <span v-else>video</span>
+                                        labels should be restricted
+                                    </span>
+                                        @endif
+                                    </div>
 
                                 </label>
-                            </div>
-                            <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
-                                @if($errors->has('only_file_labels'))
-                                    <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
-                                @endif
                             </div>
                             <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
@@ -144,12 +161,17 @@
                                 <label>
                                     <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels"
                                            name="clone_annotations" value="1">
-                                    Clone annotations</label>
-                            </div>
-                            <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
-                                @if($errors->has('clone_annotations'))
-                                    <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
-                                @endif
+                                    Clone annotations
+                                    <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
+                                        @if($errors->has('clone_annotations'))
+                                            <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
+                                        @else
+                                            <span class="help-block">
+                                        Check, if annotation labels should be cloned too
+                                    </span>
+                                        @endif
+                                    </div>
+                                </label>
                             </div>
 
                             <div v-if="cloneAnnotationLabels">
@@ -158,6 +180,17 @@
                                         <input type="checkbox" v-if="cloneAnnotationLabels" id="annotationLabel"
                                                v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
                                             v-text="selectedAnnotationLabelsCount"></span> labels selected)
+                                        <div
+                                            class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}">
+                                            @if($errors->has('only_annotation_labels'))
+                                                <span
+                                                    class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
+                                            @else
+                                                <span v-if="cloneAnnotationLabels" class="help-block">
+                                        Check, if annotation labels should be restricted
+                                    </span>
+                                            @endif
+                                        </div>
                                     </label>
                                 </div>
                                 <label-trees v-if="cloneAnnotationLabels && restrictAnnotationLabels"
@@ -165,11 +198,6 @@
                                              :multiselect="true"
                                              :allow-select-siblings="true" :allow-select-children="true"
                                              class="request-labels-well well well-sm"></label-trees>
-                            </div>
-                            <div class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}">
-                                @if($errors->has('only_annotation_labels'))
-                                    <span class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
-                                @endif
                             </div>
                         </div>
                     </div>
