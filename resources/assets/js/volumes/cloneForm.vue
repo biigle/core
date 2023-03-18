@@ -81,21 +81,25 @@ export default {
             if (this.filePattern.length === 0) {
                 return;
             }
-            this.startLoading();
-            if (!this.volumeFilenames.length) {
-                this.volumeFilenames = await VolumeApi.queryFilenames({id: this.id})
-                    .then((response) => {
-                        return response.body;
-                    }, handleErrorResponse);
-            }
 
-            VolumeApi.queryFilesWithFilename({id: this.id, pattern: this.filePattern})
-                .then((response) => {
-                    let ids = response.body;
+            this.startLoading();
+            let promise1 = VolumeApi.queryFilenames({id: this.id});
+            let promise2 = VolumeApi.queryFilesWithFilename({
+                id: this.id,
+                pattern: this.filePattern
+            });
+
+            Promise.all([promise1, promise2])
+                .then(values => {
+                    return values.map(r => r.body);
+                })
+                .then(values => {
+                    let [id2filenames, ids] = values;
                     this.setMatchedFiles(ids.map(id => {
-                        return {id: id, filename: this.volumeFilenames[id]}
+                        return {id: id, filename: id2filenames[id]}
                     }));
-                }, handleErrorResponse)
+                })
+                .catch(handleErrorResponse)
                 .finally(() => {
                     this.finishLoading();
                     if (this.selectedFiles.length === 0) {
@@ -157,8 +161,8 @@ export default {
                     })
             }
         },
-        getFileType(capital){
-            if(this.isImageVolume){
+        getFileType(capital) {
+            if (this.isImageVolume) {
                 return capital ? 'Image' : 'image';
             }
             return capital ? 'Video' : 'video';
