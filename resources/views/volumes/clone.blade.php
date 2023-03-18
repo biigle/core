@@ -180,10 +180,10 @@
                            href="{{URL::previous()}}">Cancel</a>
                     <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
                     </span>
-                    <input v-if="restrictAnnotationLabels" v-for="id in annotationLabelIds" type="hidden"
+                    <input v-if="restrictAnnotationLabels" v-for="id in selectedAnnotationLabelIds" type="hidden"
                            name="only_annotation_labels[]"
                            v-bind:value="id">
-                    <input v-if="restrictFileLabels" v-for="id in fileLabelIds" type="hidden" name="only_file_labels[]"
+                    <input v-if="restrictFileLabels" v-for="id in selectedFileLabelIds" type="hidden" name="only_file_labels[]"
                            v-bind:value="id">
                     <input v-if="filterFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
                            v-bind:value="file.id">

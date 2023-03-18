@@ -7,8 +7,6 @@ import VolumeApi from '../volumes/api/volumes'
 import LabelTrees from "../label-trees/components/labelTrees";
 import {urlParams as UrlParams} from '../core/utils';
 
-// const numberFormatter = new Intl.NumberFormat();
-
 /**
  * View model for the create volume form.
  */
@@ -48,20 +46,23 @@ export default {
             return this.destinationProjects;
         },
         selectedFileLabels() {
-            let selection = this.flatLabels(this.fileLabelTrees).filter((label) => label.selected);
-            this.setFileLabels(selection.map((label) => label.id));
-            return selection;
+            return this.flatLabels(this.fileLabelTrees).filter(label => label.selected)
+        },
+        selectedFileLabelIds() {
+            return this.selectedFileLabels.map(label => label.id);
         },
         selectedAnnotationLabels() {
-            let selection = this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
-            this.setAnnotationLabels(selection.map((label) => label.id))
-            return selection;
+            return this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
+
+        },
+        selectedAnnotationLabelIds(){
+            return this.selectedAnnotationLabels.map((label) => label.id);
         },
         selectedFileLabelsCount() {
-            return this.selectedFileLabels.length;
+            return this.selectedFileLabelIds.length;
         },
         selectedAnnotationLabelsCount() {
-            return this.selectedAnnotationLabels.length;
+            return this.selectedAnnotationLabelIds.length;
         },
         cannotSubmit() {
             return this.name === '' || this.selectedProjectId < 0 || this.loading;
@@ -119,14 +120,20 @@ export default {
 
             return labels;
         },
-        setFileLabels(labelIds) {
-            this.fileLabelIds = labelIds;
-        },
-        setAnnotationLabels(labelIds) {
-            this.annotationLabelIds = labelIds;
-        },
-        initializeLabelTrees(fileLabelTrees, annotationLabelTrees) {
+        initializeLabelTrees(fileLabelTrees, annotationLabelTrees, fileLabelIds, annotationLabelIds) {
             const nbrTrees = fileLabelTrees.length;  // labels of fileLabelTrees and annotationLabelTrees are equal
+
+            for (let i = 0; i < nbrTrees; i++) {
+                fileLabelTrees[i].labels.forEach((label) => fileLabelIds.includes(String(label.id)) ?
+                    label.selected = true : label.selected = false);
+                annotationLabelTrees[i].labels.forEach((label) => annotationLabelIds.includes(String(label.id)) ?
+                    label.selected = true : label.selected = false);
+            }
+
+            this.fileLabelTrees = fileLabelTrees;
+            this.annotationLabelTrees = annotationLabelTrees;
+            this.fileLabelIds = fileLabelIds;
+            this.annotationLabelIds = annotationLabelIds;
 
             if (this.fileLabelIds.length > 0) {
                 this.cloneFileLabels = true;
@@ -137,16 +144,6 @@ export default {
                 this.cloneAnnotationLabels = true;
                 this.restrictAnnotationLabels = true;
             }
-
-            for (let i = 0; i < nbrTrees; i++) {
-                fileLabelTrees[i].labels.forEach((label) => this.fileLabelIds.includes(String(label.id)) ?
-                    label.selected = true : label.selected = false);
-                annotationLabelTrees[i].labels.forEach((label) => this.annotationLabelIds.includes(String(label.id)) ?
-                    label.selected = true : label.selected = false);
-            }
-
-            this.fileLabelTrees = fileLabelTrees;
-            this.annotationLabelTrees = annotationLabelTrees;
         },
         initializeFileList(ids) {
             const nbrFiles = ids.length;
@@ -192,19 +189,19 @@ export default {
         this.volume = biigle.$require('volume');
         this.id = this.volume.id;
         this.name = biigle.$require('name');
+        this.isImageVolume = biigle.$require('isImageVolume');
         this.destinationProjects = biigle.$require('destinationProjects');
         this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
         this.selectedProjectId = Number(UrlParams.get('project'));
-        this.annotationLabelIds = biigle.$require('annotationLabelIds');
-        this.fileLabelIds = biigle.$require('fileLabelIds');
         this.cloneFileLabels = biigle.$require('cloneFileLabels');
         this.cloneAnnotationLabels = biigle.$require('cloneAnnotations');
         let fileLabelTrees = biigle.$require('fileLabelTrees');
         let annotationLabelTrees = biigle.$require('annotationLabelTrees');
         let ids = biigle.$require('selectedFilesIds');
-        this.isImageVolume = biigle.$require('isImageVolume');
+        let annotationLabelIds = biigle.$require('annotationLabelIds');
+        let fileLabelIds = biigle.$require('fileLabelIds');
 
-        this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees);
+        this.initializeLabelTrees(fileLabelTrees, annotationLabelTrees,fileLabelIds,annotationLabelIds);
 
         this.initializeFileList(ids);
 
