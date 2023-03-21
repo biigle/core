@@ -70,11 +70,11 @@ export default {
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
         },
-    },
-    methods: {
-        setDefaultProject() {
+        defaultProjectName() {
             return this.destinationProjects.find(p => p.id === this.selectedProjectId).name;
         },
+    },
+    methods: {
         setProject(project) {
             this.selectedProjectId = project.id;
         },

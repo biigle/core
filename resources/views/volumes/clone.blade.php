@@ -47,7 +47,7 @@
                                    placeholder="Select destination project"
                                    title="Select project to clone volume to"
                                    v-on:select="setProject" :clear-on-select="false"
-                                   :value="setDefaultProject()" required></typeahead>
+                                   :value="defaultProjectName" required></typeahead>
                     </div>
 
                     <div class="checkbox" v-cloak>
