@@ -26,9 +26,9 @@ export default {
             destinationProjects: [],
             selectedProjectId: 0,
             filterFiles: false,
-            cloneFileLabels: false,
+            filterFileLabels: false,
             restrictFileLabels: false,
-            cloneAnnotationLabels: false,
+            filterAnnotationLabels: false,
             restrictAnnotationLabels: false,
             filePattern: "",
             selectedFiles: [],
@@ -136,12 +136,12 @@ export default {
             this.annotationLabelIds = annotationLabelIds;
 
             if (this.fileLabelIds.length > 0) {
-                this.cloneFileLabels = true;
+                this.filterFileLabels = true;
                 this.restrictFileLabels = true;
             }
 
             if (this.annotationLabelIds.length > 0) {
-                this.cloneAnnotationLabels = true;
+                this.filterAnnotationLabels = true;
                 this.restrictAnnotationLabels = true;
             }
         },
@@ -166,7 +166,7 @@ export default {
         }
     },
     watch: {
-        cloneAnnotationLabels(newState) {
+        filterAnnotationLabels(newState) {
             if (!newState) {
                 this.restrictAnnotationLabels = false;
             }
@@ -176,7 +176,7 @@ export default {
                 this.noFilesFoundByPattern = false;
             }
         },
-        cloneFileLabels(newState) {
+        filterFileLabels(newState) {
             if (!newState) {
                 this.restrictFileLabels = false;
             }
@@ -190,8 +190,8 @@ export default {
         this.destinationProjects = biigle.$require('destinationProjects');
         this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
         this.selectedProjectId = Number(UrlParams.get('project'));
-        this.cloneFileLabels = biigle.$require('cloneFileLabels');
-        this.cloneAnnotationLabels = biigle.$require('cloneAnnotations');
+        this.filterFileLabels = biigle.$require('filterFileLabels');
+        this.filterAnnotationLabels = biigle.$require('cloneAnnotations');
         let fileLabelTrees = biigle.$require('fileLabelTrees');
         let annotationLabelTrees = biigle.$require('annotationLabelTrees');
         let ids = biigle.$require('selectedFilesIds');

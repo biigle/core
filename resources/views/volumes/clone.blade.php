@@ -12,7 +12,7 @@
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files',[])) !!});
         biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels',[])) !!});
         biigle.$declare('annotationLabelTrees', {!!$labelTrees!!});
-        biigle.$declare('cloneFileLabels', {{old('clone_file_labels',false)}});
+        biigle.$declare('filterFileLabels', {{old('clone_file_labels',false)}});
         biigle.$declare('cloneAnnotations', {{old('clone_annotations',false)}});
         biigle.$declare('annotationLabelIds', {!! collect(old('only_annotation_labels', [])) !!});
         biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
@@ -94,7 +94,7 @@
                         <div class="checkbox">
                             <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                              v-model="cloneFileLabels" name="clone_file_labels" value="1">
+                                              v-model="filterFileLabels" name="clone_file_labels" value="1">
                                     <span>Clone file labels</span>
                                     <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('clone_file_labels'))
@@ -104,7 +104,7 @@
                                 </label>
                             </div>
 
-                            <div v-if="cloneFileLabels" v-cloak>
+                            <div v-if="filterFileLabels" v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
                                               v-model="restrictFileLabels">
                                     <span
@@ -113,7 +113,7 @@
                                         @if($errors->has('only_file_labels'))
                                             <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
                                         @else
-                                            <span v-if="cloneFileLabels" class="help-block">Clone only a subset of the file labels</span>
+                                            <span v-if="filterFileLabels" class="help-block">Clone only a subset of the file labels</span>
                                         @endif
                                     </div>
 
@@ -127,7 +127,7 @@
                         <div class="checkbox">
                             <div v-cloak>
                                 <label>
-                                    <input type="checkbox" id="annotations" v-model="cloneAnnotationLabels"
+                                    <input type="checkbox" id="annotations" v-model="filterAnnotationLabels"
                                            name="clone_annotations" value="1">
                                     Clone annotations
                                     <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
@@ -138,10 +138,10 @@
                                 </label>
                             </div>
 
-                            <div v-if="cloneAnnotationLabels">
+                            <div v-if="filterAnnotationLabels">
                                 <div v-cloak>
                                     <label>
-                                        <input type="checkbox" v-if="cloneAnnotationLabels" id="annotationLabel"
+                                        <input type="checkbox" v-if="filterAnnotationLabels" id="annotationLabel"
                                                v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
                                             v-text="selectedAnnotationLabelsCount"></span> labels selected)
                                         <div
@@ -150,14 +150,14 @@
                                                 <span
                                                     class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
                                             @else
-                                                <span v-if="cloneAnnotationLabels" class="help-block">
+                                                <span v-if="filterAnnotationLabels" class="help-block">
                                         Clone only a subset of the annotations
                                     </span>
                                             @endif
                                         </div>
                                     </label>
                                 </div>
-                                <label-trees v-if="cloneAnnotationLabels && restrictAnnotationLabels"
+                                <label-trees v-if="filterAnnotationLabels && restrictAnnotationLabels"
                                              :trees="annotationLabelTrees"
                                              :multiselect="true"
                                              :allow-select-siblings="true" :allow-select-children="true"
