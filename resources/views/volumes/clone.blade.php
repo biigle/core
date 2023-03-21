@@ -35,7 +35,7 @@
                                placeholder="My new volume name" ref="nameInput" value="{{old('name')}}" required
                                autofocus minlength="1" maxlength="512">
                     </div>
-                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}" v-cloak>
                         @if($errors->has('name'))
                             <span class="help-block">{{ $errors->first('name') }}</span>
                         @endif
@@ -50,10 +50,10 @@
                                    :value="defaultProjectName" required></typeahead>
                     </div>
 
-                    <div class="checkbox" v-cloak>
+                    <div class="checkbox">
                         <label><input type="checkbox" id="files" v-model="filterFiles">
                             <span>Filter files</span>
-                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
+                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}" v-cloak>
                                 @if($errors->has('clone_files'))
                                     <span class="help-block">{{ $errors->first('clone_files') }}</span>
                                 @else
@@ -69,7 +69,7 @@
                     <div v-if="filterFiles" v-cloak>
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
-                                <div class="form-group">
+                                <div class="form-group" v-cloak>
                                     @if ($volume->isImageVolume())
                                         <label>Image(s):</label>
                                         <input type="text" class="form-control" id="files"
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                             <div class="panel-body">
-                                <ul class="list-group files-list" v-cloak>
+                                <ul class="list-group files-list">
                                     <li v-for="file in selectedFiles" class="list-group-item"><span
                                             class="text-muted">#<span v-text="file.id"></span></span> <span
                                             v-text="file.filename"></span></li>
@@ -95,11 +95,11 @@
                     </div>
                     <div>
                         <div class="checkbox">
-                            <div v-cloak>
+                            <div>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
                                               v-model="filterFileLabels" name="clone_file_labels" value="1">
                                     <span>Clone file labels</span>
-                                    <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
+                                    <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}" v-cloak>
                                         @if($errors->has('clone_file_labels'))
                                             <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
                                         @endif
@@ -112,7 +112,7 @@
                                               v-model="restrictFileLabels">
                                     <span
                                         v-text="'Restrict file labels '+'('+selectedFileLabelsCount+' labels selected)'"></span>
-                                    <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
+                                    <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}" v-cloak>
                                         @if($errors->has('only_file_labels'))
                                             <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
                                         @else
@@ -124,16 +124,16 @@
                             </div>
                             <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
-                                         class="request-labels-well well well-sm"></label-trees>
+                                         class="request-labels-well well well-sm" v-cloak></label-trees>
                         </div>
 
                         <div class="checkbox">
-                            <div v-cloak>
+                            <div>
                                 <label>
                                     <input type="checkbox" id="annotations" v-model="filterAnnotationLabels"
                                            name="clone_annotations" value="1">
                                     Clone annotations
-                                    <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
+                                    <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}" v-cloak>
                                         @if($errors->has('clone_annotations'))
                                             <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
                                         @endif
@@ -141,14 +141,14 @@
                                 </label>
                             </div>
 
-                            <div v-if="filterAnnotationLabels">
-                                <div v-cloak>
+                            <div v-if="filterAnnotationLabels" v-cloak>
+                                <div>
                                     <label>
                                         <input type="checkbox" v-if="filterAnnotationLabels" id="annotationLabel"
                                                v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
                                             v-text="selectedAnnotationLabelsCount"></span> labels selected)
                                         <div
-                                            class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}">
+                                            class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}" v-cloak>
                                             @if($errors->has('only_annotation_labels'))
                                                 <span
                                                     class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
@@ -164,7 +164,7 @@
                                              :trees="annotationLabelTrees"
                                              :multiselect="true"
                                              :allow-select-siblings="true" :allow-select-children="true"
-                                             class="request-labels-well well well-sm"></label-trees>
+                                             class="request-labels-well well well-sm" v-cloak></label-trees>
                             </div>
                         </div>
                     </div>
