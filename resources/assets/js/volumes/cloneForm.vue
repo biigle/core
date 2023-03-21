@@ -84,6 +84,7 @@ export default {
             }
 
             this.startLoading();
+            this.noFilesFoundByPattern = false;
             let promise1 = VolumeApi.queryFilenames({id: this.id});
             let promise2 = VolumeApi.queryFilesWithFilename({
                 id: this.id,
