@@ -41,7 +41,7 @@ class VolumeCloneControllerTest extends ApiTestCase
         $response = $this->get("volumes/clone/{$id}");
         $response->assertStatus(200);
 
-        $response = $this->get('volumes/clone/999');
+        $response = $this->get('volumes/clone/0');
         $response->assertStatus(404);
     }
 
