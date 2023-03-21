@@ -52,7 +52,7 @@
 
                     <div class="checkbox" v-cloak>
                         <label><input type="checkbox" id="files" v-model="filterFiles">
-                            <span>Filter file(s)</span>
+                            <span>Filter files</span>
                             <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
                                 @if($errors->has('clone_files'))
                                     <span class="help-block">{{ $errors->first('clone_files') }}</span>
@@ -70,14 +70,17 @@
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
                                 <div class="form-group">
-                                    <label v-text="getFileType(true)+'(s):'"></label>
-                                    <input v-if="isImageVolume" type="text" class="form-control" id="files"
-                                           placeholder="img*.jpg" v-model="filePattern" required
-                                           v-on:keydown.enter="loadFilesMatchingPattern">
-
-                                    <input v-else type="text" class="form-control" id="files"
-                                           placeholder="video*.mp4" v-model="filePattern" required
-                                           v-on:keydown.enter="loadFilesMatchingPattern">
+                                    @if ($volume->isImageVolume())
+                                        <label>Image(s):</label>
+                                        <input type="text" class="form-control" id="files"
+                                               placeholder="img*.jpg" v-model="filePattern" required
+                                               v-on:keydown.enter="loadFilesMatchingPattern">
+                                    @else
+                                        <label>Video(s):</label>
+                                        <input type="text" class="form-control" id="files"
+                                               placeholder="video*.mp4" v-model="filePattern" required
+                                               v-on:keydown.enter="loadFilesMatchingPattern">
+                                    @endif
                                 </div>
                             </div>
                             <div class="panel-body">

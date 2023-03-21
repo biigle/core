@@ -158,12 +158,6 @@ export default {
                     })
             }
         },
-        getFileType(capital) {
-            if (this.isImageVolume) {
-                return capital ? 'Image' : 'image';
-            }
-            return capital ? 'Video' : 'video';
-        }
     },
     watch: {
         filterAnnotationLabels(newState) {
