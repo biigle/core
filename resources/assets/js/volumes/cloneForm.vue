@@ -166,16 +166,13 @@ export default {
         }
     },
     watch: {
-        cloneAnnotations(newState) {
+        cloneAnnotationLabels(newState) {
             if (!newState) {
                 this.restrictAnnotationLabels = false;
             }
         },
-        cloneFiles(newState) {
+        filterFiles(newState) {
             if (!newState) {
-                this.restrictFileLabels = false;
-                this.cloneAnnotationLabels = false;
-                this.restrictAnnotationLabels = false;
                 this.noFilesFoundByPattern = false;
             }
         },
