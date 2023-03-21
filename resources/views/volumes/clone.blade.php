@@ -52,13 +52,12 @@
 
                     <div class="checkbox" v-cloak>
                         <label><input type="checkbox" id="files" v-model="filterFiles">
-                            <span v-text="'Filter '+getFileType(false)+'s'"></span>
+                            <span>Filter file(s)</span>
                             <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}">
                                 @if($errors->has('clone_files'))
                                     <span class="help-block">{{ $errors->first('clone_files') }}</span>
                                 @else
-                                    <span class="help-block"
-                                          v-text="'Check, if only filtered '+getFileType(false)+'s should be cloned'">                                    </span>
+                                    <span class="help-block">Clone only a subset of the files</span>
                                     <span v-if="filterFiles" class="help-block">
                                         Filter by using a pattern that matches specific file names.<BR>
                                         A pattern may contain the wildcard character * that matches any string of zero or more characters
@@ -96,14 +95,10 @@
                             <div v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="fileLabels"
                                               v-model="cloneFileLabels" name="clone_file_labels" value="1">
-                                    <span v-text="'Clone '+getFileType(false)+' labels'"></span>
+                                    <span>Clone file labels</span>
                                     <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('clone_file_labels'))
                                             <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
-                                        @else
-                                            <span class="help-block"
-                                                  v-text="'Check, if '+getFileType(false)+' labels should be cloned too'">
-                                    </span>
                                         @endif
                                     </div>
                                 </label>
@@ -112,12 +107,13 @@
                             <div v-if="cloneFileLabels" v-cloak>
                                 <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
                                               v-model="restrictFileLabels">
-                                    <span v-text="'Restrict '+getFileType(false)+' labels '+'('+selectedFileLabelsCount+' labels selected)'"></span>
+                                    <span
+                                        v-text="'Restrict file labels '+'('+selectedFileLabelsCount+' labels selected)'"></span>
                                     <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}">
                                         @if($errors->has('only_file_labels'))
                                             <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
                                         @else
-                                            <span v-if="cloneFileLabels" class="help-block" v-text="'Check, if '+getFileType(false)+' labels should be restricted'"></span>
+                                            <span v-if="cloneFileLabels" class="help-block">Clone only a subset of the file labels</span>
                                         @endif
                                     </div>
 
@@ -137,10 +133,6 @@
                                     <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
                                         @if($errors->has('clone_annotations'))
                                             <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
-                                        @else
-                                            <span class="help-block">
-                                        Check, if annotation labels should be cloned too
-                                    </span>
                                         @endif
                                     </div>
                                 </label>
@@ -159,7 +151,7 @@
                                                     class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
                                             @else
                                                 <span v-if="cloneAnnotationLabels" class="help-block">
-                                        Check, if annotation labels should be restricted
+                                        Clone only a subset of the annotations
                                     </span>
                                             @endif
                                         </div>
@@ -183,7 +175,8 @@
                     <input v-if="restrictAnnotationLabels" v-for="id in selectedAnnotationLabelIds" type="hidden"
                            name="only_annotation_labels[]"
                            v-bind:value="id">
-                    <input v-if="restrictFileLabels" v-for="id in selectedFileLabelIds" type="hidden" name="only_file_labels[]"
+                    <input v-if="restrictFileLabels" v-for="id in selectedFileLabelIds" type="hidden"
+                           name="only_file_labels[]"
                            v-bind:value="id">
                     <input v-if="filterFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
                            v-bind:value="file.id">
