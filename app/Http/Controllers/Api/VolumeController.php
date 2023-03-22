@@ -185,22 +185,30 @@ class VolumeController extends Controller
      **/
     public function clone(CloneVolume $request)
     {
-        return DB::transaction(function () use ($request) {
+        $copy = DB::transaction(function () use ($request) {
 
-            $project = $request->project;
             $volume = $request->volume;
+            $project = $request->project;
 
-            $job = new CloneImagesOrVideos($request);
+            $copy = $volume->replicate();
+            $copy->name = $request->input('name', $volume->name);
+            $copy->creating_async = true;
+            $copy->save();
+            $project->addVolumeId($copy->id);
+
+            $job = new CloneImagesOrVideos($request, $copy);
             Queue::pushOn('high', $job);
 
-
-            if ($this->isAutomatedRequest()) {
-                return $volume;
-            }
-
-            return $this->fuzzyRedirect('project', $project->id)
-                ->with('message', 'The volume was cloned');
+            return $copy;
         });
+
+        if ($this->isAutomatedRequest()) {
+            return $copy;
+        }
+
+        return redirect()->route('volume', $copy->id)
+            ->with('message', "Volume cloned")
+            ->with('messageType', 'success');
 
     }
 }

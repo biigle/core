@@ -36,7 +36,8 @@ export default {
             showVideoVolumes: true,
             currentSorting: SORTING.DATE_DOWN,
             showModal: false,
-            statisticsData: {}
+            statisticsData: {},
+            volumeUrlTemplate: ""
         };
     },
     components: {
@@ -163,7 +164,7 @@ export default {
         },
         showStatistics(dat) {
             // handle case of empty php-object (which is returned as an array)
-            if(Array.isArray(dat.sourceTargetLabels)) {
+            if (Array.isArray(dat.sourceTargetLabels)) {
                 dat.sourceTargetLabels = {};
             }
             this.statisticsData = dat;
@@ -262,6 +263,7 @@ export default {
         if (sorting) {
             this.currentSorting = sorting;
         }
+        this.volumeUrlTemplate = biigle.$require('projects.volumeUrlTemplate');
     },
 };
 </script>

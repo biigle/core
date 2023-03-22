@@ -243,7 +243,7 @@ class VolumeControllerTest extends ApiTestCase
         Queue::fake();
 
         $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
-            ->assertStatus(200);
+            ->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
 
         // The target project.
@@ -253,7 +253,7 @@ class VolumeControllerTest extends ApiTestCase
         $project->addUserId($this->admin()->id, Role::adminId());
 
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
     }
 

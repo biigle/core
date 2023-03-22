@@ -68,6 +68,8 @@
             Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-chart-bar"></i></button> button in order to see some charts of this volume, such as the per-user contribution of annotations, the ratio of annotated vs. not-annotated files, or the abundance of annotation labels. For further details, have a look at the Charts section below.
         </p>
 
+        <p> Clone a volume by using the button <button class="btn btn-default btn-xs"><i class="fa fa-clone"></i></button>, which is located next to the volume charts button. Restrict files by using a pattern that matches specific filenames. Select checkboxes to copy labels and restrict them by using the label tree. By default, the cloned volumes are saved in their source projects.</p>
+
         <p>
             If a project has lots of volumes, filtering the volumes can help to find a particular volume. To filter the volumes in the project overview, type part of the name of the volume in the input field on the top left of the volumes tab. The volumes list will update as you type. You can also show only image volumes or video volumes with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-image"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-film"></i></button> buttons, respectively.
         </p>
