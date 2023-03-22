@@ -26,10 +26,10 @@ export default {
             destinationProjects: [],
             selectedProjectId: 0,
             filterFiles: false,
+            cloneFileLabels: false,
             filterFileLabels: false,
-            restrictFileLabels: false,
-            filterAnnotationLabels: false,
-            restrictAnnotationLabels: false,
+            cloneAnnotations: false,
+            filterAnnotations: false,
             filePattern: "",
             selectedFiles: [],
             volumeFilenames: [],
@@ -70,7 +70,7 @@ export default {
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
         },
-        defaultProjectName() {
+        selectedProjectName() {
             return this.destinationProjects.find(p => p.id === this.selectedProjectId).name;
         },
     },
@@ -137,13 +137,13 @@ export default {
             this.annotationLabelIds = annotationLabelIds;
 
             if (this.fileLabelIds.length > 0) {
+                this.cloneFileLabels = true;
                 this.filterFileLabels = true;
-                this.restrictFileLabels = true;
             }
 
             if (this.annotationLabelIds.length > 0) {
-                this.filterAnnotationLabels = true;
-                this.restrictAnnotationLabels = true;
+                this.cloneAnnotations = true;
+                this.filterAnnotations = true;
             }
         },
         initializeFileList(ids) {
@@ -161,9 +161,9 @@ export default {
         },
     },
     watch: {
-        filterAnnotationLabels(newState) {
+        cloneAnnotations(newState) {
             if (!newState) {
-                this.restrictAnnotationLabels = false;
+                this.filterAnnotations = false;
             }
         },
         filterFiles(newState) {
@@ -171,9 +171,9 @@ export default {
                 this.noFilesFoundByPattern = false;
             }
         },
-        filterFileLabels(newState) {
+        cloneFileLabels(newState) {
             if (!newState) {
-                this.restrictFileLabels = false;
+                this.filterFileLabels = false;
             }
         },
     },
@@ -185,8 +185,8 @@ export default {
         this.destinationProjects = biigle.$require('destinationProjects');
         this.cloneUrlTemplate = biigle.$require('cloneUrlTemplate');
         this.selectedProjectId = Number(UrlParams.get('project'));
-        this.filterFileLabels = biigle.$require('filterFileLabels');
-        this.filterAnnotationLabels = biigle.$require('cloneAnnotations');
+        this.cloneFileLabels = biigle.$require('cloneFileLabels');
+        this.cloneAnnotations = biigle.$require('cloneAnnotations');
         let fileLabelTrees = biigle.$require('fileLabelTrees');
         let annotationLabelTrees = biigle.$require('annotationLabelTrees');
         let ids = biigle.$require('selectedFilesIds');

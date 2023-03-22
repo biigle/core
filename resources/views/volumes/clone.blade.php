@@ -12,7 +12,7 @@
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files',[])) !!});
         biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels',[])) !!});
         biigle.$declare('annotationLabelTrees', {!!$labelTrees!!});
-        biigle.$declare('filterFileLabels', {{old('clone_file_labels',false)}});
+        biigle.$declare('cloneFileLabels', {{old('clone_file_labels',false)}});
         biigle.$declare('cloneAnnotations', {{old('clone_annotations',false)}});
         biigle.$declare('annotationLabelIds', {!! collect(old('only_annotation_labels', [])) !!});
         biigle.$declare('cloneUrlTemplate', "{{ url("api/v1/volumes/{$volume->id}/clone-to/:pid") }}")
@@ -29,13 +29,11 @@
             <form id="clone-volume-form" class="clearfix" role="form" method="POST" :action="getCloneUrl"
                   enctype="multipart/form-data" v-on:submit="startLoading">
                 <div class="row">
-                    <div class="form-group">
+                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <label>New volume name</label>
                         <input type="text" class="form-control" name="name" id="name" v-model="name"
                                placeholder="My new volume name" ref="nameInput" value="{{old('name')}}" required
                                autofocus minlength="1" maxlength="512">
-                    </div>
-                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}" v-cloak>
                         @if($errors->has('name'))
                             <span class="help-block">{{ $errors->first('name') }}</span>
                         @endif
@@ -43,33 +41,34 @@
 
                     <div class="form-group">
                         <label>New volume destination project</label>
+                        <input class="form-control" type="text" name="" v-if="false">
                         <typeahead class="typeahead--block" :items="getProjects"
                                    placeholder="Select destination project"
                                    title="Select project to clone volume to"
                                    v-on:select="setProject" :clear-on-select="false"
-                                   :value="defaultProjectName" required></typeahead>
+                                   :value="selectedProjectName" required></typeahead>
                     </div>
 
-                    <div class="checkbox">
-                        <label><input type="checkbox" id="files" v-model="filterFiles">
-                            <span>Filter files</span>
-                            <div class="form-group{{ $errors->has('clone_files') ? ' has-error' : '' }}" v-cloak>
-                                @if($errors->has('clone_files'))
-                                    <span class="help-block">{{ $errors->first('clone_files') }}</span>
-                                @else
-                                    <span class="help-block">Clone only a subset of the files</span>
-                                    <span v-if="filterFiles" class="help-block">
-                                        Filter by using a pattern that matches specific file names.<BR>
-                                        A pattern may contain the wildcard character * that matches any string of zero or more characters
-                                    </span>
-                                @endif
-                            </div>
-                        </label>
+                    <div class="{{ $errors->has('clone_files') ? ' has-error' : '' }}">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="files" v-model="filterFiles">
+                                <span>Filter files</span>
+                            </label>
+                            @if($errors->has('clone_files'))
+                                <span class="help-block">{{ $errors->first('clone_files') }}</span>
+                            @else
+                                <span class="help-block">Clone only a subset of the files</span>
+                                <span v-if="filterFiles" class="help-block" v-cloak>
+                                    Filter by using a pattern that matches specific file names.<br>
+                                    A pattern may contain the wildcard character * that matches any string of zero or more characters
+                                </span>
+                            @endif
+                        </div>
                     </div>
                     <div v-if="filterFiles" v-cloak>
                         <div id="file-panel" class="panel panel-default volume-files-panel">
                             <div class="panel-heading">
-                                <div class="form-group" v-cloak>
+                                <div class="form-group">
                                     @if ($volume->isImageVolume())
                                         <label>Image(s):</label>
                                         <input type="text" class="form-control" id="files"
@@ -93,97 +92,83 @@
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}">
                         <div class="checkbox">
-                            <div>
-                                <label><input type="checkbox" class="checkbox" id="fileLabels"
-                                              v-model="filterFileLabels" name="clone_file_labels" value="1">
-                                    <span>Clone file labels</span>
-                                    <div class="form-group{{ $errors->has('clone_file_labels') ? ' has-error' : '' }}" v-cloak>
-                                        @if($errors->has('clone_file_labels'))
-                                            <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
-                                        @endif
-                                    </div>
-                                </label>
-                            </div>
+                            <label><input type="checkbox" class="checkbox" id="fileLabels"
+                                          v-model="cloneFileLabels" name="clone_file_labels" value="1">
+                                <span>Clone file labels</span>
+                            </label>
+                            @if($errors->has('clone_file_labels'))
+                                <span class="help-block">{{ $errors->first('clone_file_labels') }}</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div v-if="cloneFileLabels" class="{{ $errors->has('only_file_labels') ? ' has-error' : '' }}" v-cloak>
+                        <div class="checkbox">
+                            <label><input type="checkbox" class="checkbox" id="filterFileLabels"
+                                          v-model="filterFileLabels">
+                                Filter file labels (<span v-text="selectedFileLabelsCount"></span> labels selected)
+                            </label>
+                            @if($errors->has('only_file_labels'))
+                                <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
+                            @else
+                                <span v-if="cloneFileLabels" class="help-block">Clone only a subset of the file labels</span>
+                            @endif
+                            <label-trees v-if="filterFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                                         :allow-select-siblings="true" :allow-select-children="true"
+                                         class="request-labels-well well well-sm"></label-trees>
+                        </div>
+                    </div>
+                    <div class="{{ $errors->has('clone_annotations') ? ' has-error' : '' }}">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="annotations" v-model="cloneAnnotations"
+                                       name="clone_annotations" value="1">
+                                Clone annotations
+                            </label>
+                            @if($errors->has('clone_annotations'))
+                                <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
+                            @endif
+                        </div>
+                    </div>
 
-                            <div v-if="filterFileLabels" v-cloak>
-                                <label><input type="checkbox" class="checkbox" id="restrictFileLabels"
-                                              v-model="restrictFileLabels">
-                                    <span
-                                        v-text="'Restrict file labels '+'('+selectedFileLabelsCount+' labels selected)'"></span>
-                                    <div class="form-group{{ $errors->has('only_file_labels') ? ' has-error' : '' }}" v-cloak>
-                                        @if($errors->has('only_file_labels'))
-                                            <span class="help-block">{{ $errors->first('only_file_labels') }}</span>
-                                        @else
-                                            <span v-if="filterFileLabels" class="help-block">Clone only a subset of the file labels</span>
-                                        @endif
-                                    </div>
-
-                                </label>
-                            </div>
-                            <label-trees v-if="restrictFileLabels" :trees="fileLabelTrees" :multiselect="true"
+                    <div v-if="cloneAnnotations" class="{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}" v-cloak>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-if="cloneAnnotations" id="annotationLabel"
+                                       v-model="filterAnnotations"> Filter annotations (<span
+                                    v-text="selectedAnnotationLabelsCount"></span> labels selected)
+                            </label>
+                            @if($errors->has('only_annotation_labels'))
+                                <span class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
+                            @else
+                                <span class="help-block">
+                                    Clone only a subset of the annotations
+                                </span>
+                            @endif
+                            <label-trees v-if="cloneAnnotations && filterAnnotations"
+                                         :trees="annotationLabelTrees"
+                                         :multiselect="true"
                                          :allow-select-siblings="true" :allow-select-children="true"
                                          class="request-labels-well well well-sm" v-cloak></label-trees>
                         </div>
-
-                        <div class="checkbox">
-                            <div>
-                                <label>
-                                    <input type="checkbox" id="annotations" v-model="filterAnnotationLabels"
-                                           name="clone_annotations" value="1">
-                                    Clone annotations
-                                    <div class="form-group{{ $errors->has('clone_annotations') ? ' has-error' : '' }}" v-cloak>
-                                        @if($errors->has('clone_annotations'))
-                                            <span class="help-block">{{ $errors->first('clone_annotations') }}</span>
-                                        @endif
-                                    </div>
-                                </label>
-                            </div>
-
-                            <div v-if="filterAnnotationLabels" v-cloak>
-                                <div>
-                                    <label>
-                                        <input type="checkbox" v-if="filterAnnotationLabels" id="annotationLabel"
-                                               v-model="restrictAnnotationLabels"> Restrict annotation labels (<span
-                                            v-text="selectedAnnotationLabelsCount"></span> labels selected)
-                                        <div
-                                            class="form-group{{ $errors->has('only_annotation_labels') ? ' has-error' : '' }}" v-cloak>
-                                            @if($errors->has('only_annotation_labels'))
-                                                <span
-                                                    class="help-block">{{ $errors->first('only_annotation_labels') }}</span>
-                                            @else
-                                                <span v-if="filterAnnotationLabels" class="help-block">
-                                        Clone only a subset of the annotations
-                                    </span>
-                                            @endif
-                                        </div>
-                                    </label>
-                                </div>
-                                <label-trees v-if="filterAnnotationLabels && restrictAnnotationLabels"
-                                             :trees="annotationLabelTrees"
-                                             :multiselect="true"
-                                             :allow-select-siblings="true" :allow-select-children="true"
-                                             class="request-labels-well well well-sm" v-cloak></label-trees>
-                            </div>
-                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <span class="pull-right">
-                        <a class="btn btn-default" :disabled="loading" type="button"
-                           href="{{URL::previous()}}">Cancel</a>
-                    <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
-                    </span>
-                    <input v-if="restrictAnnotationLabels" v-for="id in selectedAnnotationLabelIds" type="hidden"
-                           name="only_annotation_labels[]"
-                           v-bind:value="id">
-                    <input v-if="restrictFileLabels" v-for="id in selectedFileLabelIds" type="hidden"
-                           name="only_file_labels[]"
-                           v-bind:value="id">
-                    <input v-if="filterFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
-                           v-bind:value="file.id">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <span class="pull-right">
+                            <a class="btn btn-default" :disabled="loading" type="button"
+                               href="{{URL::previous()}}">Cancel</a>
+                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
+                        </span>
+                        <input v-if="filterAnnotations" v-for="id in selectedAnnotationLabelIds" type="hidden"
+                               name="only_annotation_labels[]"
+                               v-bind:value="id">
+                        <input v-if="filterFileLabels" v-for="id in selectedFileLabelIds" type="hidden"
+                               name="only_file_labels[]"
+                               v-bind:value="id">
+                        <input v-if="filterFiles" v-for="file in selectedFiles" type="hidden" name="only_files[]"
+                               v-bind:value="file.id">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    </div>
                 </div>
             </form>
         </div>
