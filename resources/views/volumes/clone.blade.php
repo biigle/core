@@ -58,31 +58,24 @@
                                 <span class="help-block">{{ $errors->first('clone_files') }}</span>
                             @else
                                 <span class="help-block">Clone only a subset of the files</span>
-                                <span v-if="filterFiles" class="help-block" v-cloak>
-                                    Filter by using a pattern that matches specific file names.<br>
-                                    A pattern may contain the wildcard character * that matches any string of zero or more characters
-                                </span>
                             @endif
                         </div>
-                    </div>
-                    <div v-if="filterFiles" v-cloak>
-                        <div id="file-panel" class="panel panel-default volume-files-panel">
-                            <div class="panel-heading">
-                                <div class="form-group">
-                                    @if ($volume->isImageVolume())
-                                        <label>Image(s):</label>
-                                        <input type="text" class="form-control" id="files"
-                                               placeholder="img*.jpg" v-model="filePattern" required
-                                               v-on:keydown.enter="loadFilesMatchingPattern">
-                                    @else
-                                        <label>Video(s):</label>
-                                        <input type="text" class="form-control" id="files"
-                                               placeholder="video*.mp4" v-model="filePattern" required
-                                               v-on:keydown.enter="loadFilesMatchingPattern">
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="panel-body">
+                        <div v-if="filterFiles" class="form-group" v-cloak>
+                            @if ($volume->isImageVolume())
+                                <label>Image(s):</label>
+                                <input type="text" class="form-control" id="files"
+                                       placeholder="img*.jpg" v-model="filePattern" required
+                                       v-on:keydown.enter="loadFilesMatchingPattern">
+                            @else
+                                <label>Video(s):</label>
+                                <input type="text" class="form-control" id="files"
+                                       placeholder="video*.mp4" v-model="filePattern" required
+                                       v-on:keydown.enter="loadFilesMatchingPattern">
+                            @endif
+                            <span class="help-block">
+                                Filter by using a pattern that matches specific file names. A pattern may contain the wildcard character * that matches any string of zero or more characters
+                            </span>
+                            <div class="volume-files-panel">
                                 <ul class="list-group files-list">
                                     <li v-for="file in selectedFiles" class="list-group-item"><span
                                             class="text-muted">#<span v-text="file.id"></span></span> <span
