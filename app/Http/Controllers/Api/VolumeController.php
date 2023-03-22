@@ -2,18 +2,26 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\CloneVolume;
 use Biigle\Http\Requests\UpdateVolume;
+use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\Project;
 use Biigle\Volume;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Queue;
 
 class VolumeController extends Controller
 {
+
+
     /**
      * Shows all volumes the user has access to.
      *
+     * @param Request $request
+     * @return Response
      * @api {get} volumes Get accessible volumes
      * @apiGroup Volumes
      * @apiName IndexVolumes
@@ -39,8 +47,6 @@ class VolumeController extends Controller
      *    }
      * ]
      *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
@@ -52,7 +58,7 @@ class VolumeController extends Controller
                     return $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
                         ->where('project_user.user_id', $user->id);
                 })
-                ->select('projects.id', 'projects.name', 'projects.description');
+                    ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
@@ -62,6 +68,9 @@ class VolumeController extends Controller
     /**
      * Displays the specified volume.
      *
+     * @param Request $request
+     * @param int $id
+     * @return Volume
      * @api {get} volumes/:id Get a volume
      * @apiGroup Volumes
      * @apiName ShowVolumes
@@ -87,9 +96,6 @@ class VolumeController extends Controller
      *    ]
      * }
      *
-     * @param Request $request
-     * @param  int  $id
-     * @return Volume
      */
     public function show(Request $request, $id)
     {
@@ -107,6 +113,8 @@ class VolumeController extends Controller
     /**
      * Updates the attributes of the specified volume.
      *
+     * @param UpdateVolume $request
+     * @return Response
      * @api {put} volumes/:id Update a volume
      * @apiGroup Volumes
      * @apiName UpdateVolumes
@@ -118,8 +126,6 @@ class VolumeController extends Controller
      * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
      * @apiParam (Attributes that can be updated) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      *
-     * @param UpdateVolume $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateVolume $request)
     {
@@ -143,5 +149,66 @@ class VolumeController extends Controller
                 ->with('saved', $isDirty)
                 ->with('reread', $shouldReread);
         }
+    }
+
+
+    /**
+     * Clones volume to destination project.
+     *
+     * @param CloneVolume $request
+     * @return Response
+     * @api {post} volumes/:id/clone-to/:project_id Clones a volume
+     * @apiGroup Volumes
+     * @apiName CloneVolume
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The volume id.
+     * @apiParam {Number} project_id The target project id.
+     * @apiParam {string} name volume name of cloned volume.
+     * @apiParam (file ids) {Array} only_files ids of files which should be cloned. If empty all files are cloned.
+     * @apiParam {bool} clone_annotations Set to `true` to also clone annotations
+     * @apiParam (annotation label ids) {Array} only_annotation_labels Label IDs to filter cloned annotations. If empty, all annotations are cloned. Only has an effect if `clone_annotations` is `true`.
+     * @apiParam {bool} clone_file_labels Set to `true` to also clone image/video labels.
+     * @apiParam (file label ids) {Array} only_file_labels Label IDs to filter cloned file labels. If empty, all file labels are cloned. Only has an effect if `clone_file_labels` is `true`.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     * "name": "Kulas Group",
+     * "media_type_id": 3,
+     * "creator_id": 5,
+     * "url": "test://files",
+     * "handle": null,
+     * "created_at": "2022-11-25T13:10:12.000000Z",
+     * "updated_at": "2022-11-25T13:10:12.000000Z",
+     * "id": 4
+     * }
+     **/
+    public function clone(CloneVolume $request)
+    {
+        $copy = DB::transaction(function () use ($request) {
+
+            $volume = $request->volume;
+            $project = $request->project;
+
+            $copy = $volume->replicate();
+            $copy->name = $request->input('name', $volume->name);
+            $copy->creating_async = true;
+            $copy->save();
+            $project->addVolumeId($copy->id);
+
+            $job = new CloneImagesOrVideos($request, $copy);
+            Queue::pushOn('high', $job);
+
+            return $copy;
+        });
+
+        if ($this->isAutomatedRequest()) {
+            return $copy;
+        }
+
+        return redirect()->route('volume', $copy->id)
+            ->with('message', "Volume cloned")
+            ->with('messageType', 'success');
+
     }
 }
