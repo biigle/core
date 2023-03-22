@@ -7,7 +7,7 @@
         :disabled="disabled"
         :placeholder="placeholder"
         @focus="emitFocus"
-        @blue="emitBlur"
+        @blur="emitBlur"
         >
     <typeahead
         v-model="internalValue"
