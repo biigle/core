@@ -47,8 +47,7 @@ jobs:
         with:
           context: .
           file: .docker/app.dockerfile
-          build-args:
-              - BIIGLE_VERSION=${{ github.event.release.tag_name }}
+          build-args: BIIGLE_VERSION=${{ github.event.release.tag_name }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -81,8 +80,7 @@ jobs:
         with:
           context: .
           file: .docker/worker.dockerfile
-          build-args:
-              - BIIGLE_VERSION=${{ github.event.release.tag_name }}
+          build-args: BIIGLE_VERSION=${{ github.event.release.tag_name }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -115,8 +113,7 @@ jobs:
         with:
           context: .
           file: .docker/web.dockerfile
-          build-args:
-              - BIIGLE_VERSION=${{ github.event.release.tag_name }}
+          build-args: BIIGLE_VERSION=${{ github.event.release.tag_name }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
