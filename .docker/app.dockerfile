@@ -47,21 +47,20 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
 
 RUN apk add --no-cache ffmpeg
 
-COPY composer.lock composer.json /var/www/
-
-COPY database /var/www/database
-
 WORKDIR /var/www
 
-ENV COMPOSER_NO_INTERACTION 1
-ENV COMPOSER_ALLOW_SUPERUSER 1
+COPY composer.lock composer.json /var/www/
+
+ARG COMPOSER_NO_INTERACTION=1
+ARG COMPOSER_ALLOW_SUPERUSER=1
+ARG COMPOSER_HOME=/tmp/composer
 # Install Composer based on the trusted commit:
 # https://github.com/composer/getcomposer.org/commit/ce25411cc528444e8c3c60775bde77e01921a1ef
 # Ignore platform reqs because the app image is stripped down to the essentials
-# and doens't meet some of the requirements.
+# and doesn't meet some of the requirements.
 RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/ce25411cc528444e8c3c60775bde77e01921a1ef/web/installer | php -- \
     && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
-    && rm -r ~/.composer
+    && rm -r $COMPOSER_HOME
 
 COPY . /var/www
 
