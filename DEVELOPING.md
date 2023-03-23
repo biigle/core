@@ -132,10 +132,6 @@ Once you are finished with your implementation and want to propose it to be merg
 
 Learn more on module development and how to create a new module in the [biigle/module](https://github.com/biigle/module) template repository.
 
-## Publishing the Docker images
+## Building and publishing the Docker images
 
-**This can be done only by collaborators of this repository.**
-
-To publish a new version of the `biigle/app`, `biigle/web` and `biigle/worker` Docker images, create a new version as Git tag, first. This can be done on GitHub, too. Pull the new version tag with `git pull --tags`. If you do not set a version tag, only the `latest` Docker images will be built.
-
-To build the Docker images, run `./build.sh`. The script asks you if you want to publish the new images to the GitHub container registry. Before you can do this, you have to [configure Docker](https://docs.github.com/en/free-pro-team@latest/packages/managing-container-images-with-github-container-registry/pushing-and-pulling-docker-images#authenticating-to-github-container-registry) to use the container registry and you obviously need package write permissions in this organization.
+New Docker images are automatically built and released by the [release action](.github/workflows/release.yml) whenever a new (stable) release is published on GitHub.
