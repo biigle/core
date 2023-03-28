@@ -242,9 +242,14 @@ class RegisterControllerTest extends TestCase
             'affiliation' => 'something',
             'homepage' => 'honeypotvalue',
         ]);
-
-        Notification::assertSentTo(new AnonymousNotifiable, RegistrationConfirmation::class);
         $user = User::where('email', 'e@ma.il')->first();
+
+        Notification::assertSentTo(new AnonymousNotifiable, RegistrationConfirmation::class, function ($notification) use ($user) {
+            $this->assertEquals($user->id, $notification->user->id);
+            $this->assertEquals($user->email, $notification->toMail(null)->replyTo[0][0]);
+
+            return true;
+        });
         $this->assertNotNull($user);
         $this->assertEquals(Role::guestId(), $user->role_id);
     }

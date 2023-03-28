@@ -19,7 +19,7 @@ class RegistrationConfirmation extends Notification implements ShouldQueue
      *
      * @var User
      */
-    protected $user;
+    public $user;
 
     /**
      * Create a new notification instance.
@@ -52,6 +52,7 @@ class RegistrationConfirmation extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('New user registration')
+            ->replyTo($this->user->email, "{$this->user->firstname} {$this->user->lastname}")
             ->markdown('notifications.emails.registration-confirmation', [
                 'newUser' => $this->user,
                 'duplicateUsers' => $this->getDuplicateUsers(),
