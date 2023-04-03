@@ -1,5 +1,3 @@
-FROM ghcr.io/biigle/app as intermediate
-
 # PHP 8.1.13
 #FROM php:8.1-alpine
 FROM php@sha256:f9e31f22bdd89c1334a03db5c8800a5f3b1e1fe042d470adccf58a29672c6202
@@ -120,15 +118,26 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
-# Just copy from intermediate biigle/app so the installation of dependencies with
-# Composer doesn't have to run twice.
-COPY --from=intermediate /var/www /var/www
-
 WORKDIR /var/www
 
-# This is required to run php artisan tinker in the worker container. Do this for
-# debugging purposes.
-RUN mkdir -p /.config/psysh && chmod o+w /.config/psysh
+COPY composer.lock composer.json /var/www/
+
+ARG COMPOSER_NO_INTERACTION=1
+ARG COMPOSER_ALLOW_SUPERUSER=1
+ARG COMPOSER_HOME=/tmp/composer
+# Install Composer based on the trusted commit:
+# https://github.com/composer/getcomposer.org/commit/ce25411cc528444e8c3c60775bde77e01921a1ef
+RUN curl https://raw.githubusercontent.com/composer/getcomposer.org/ce25411cc528444e8c3c60775bde77e01921a1ef/web/installer | php -- \
+    && php composer.phar install --no-dev --no-scripts \
+    && rm -r $COMPOSER_HOME
+
+COPY . /var/www
+
+# This is required so the artisan optimize command does not fail.
+RUN mkdir -p /var/www/storage/framework/views
+
+RUN php composer.phar dump-autoload -o \
+    && rm composer.phar
 
 ARG BIIGLE_VERSION
 ENV BIIGLE_VERSION=${BIIGLE_VERSION}

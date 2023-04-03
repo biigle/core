@@ -1,5 +1,3 @@
-FROM ghcr.io/biigle/app as intermediate
-
 # FROM nginx:1.21-alpine
 FROM nginx@sha256:5a0df7fb7c8c03e4158ae9974bfbd6a15da2bdfdeded4fb694367ec812325d31
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
@@ -17,7 +15,7 @@ ADD .docker/ssl.include /etc/nginx/conf.d/ssl.include.special
 ADD .docker/vhost-no-ssl.conf /etc/nginx/conf.d/vhost-no-ssl.conf.alternative
 RUN sed -e 's!include /etc/nginx/conf.d/\*.conf!include /etc/nginx/conf.d/vhost-no-ssl.conf.alternative!' /etc/nginx/nginx.conf > /etc/nginx/nginx-no-ssl.conf
 
-COPY --from=intermediate /var/www/public /var/www/public
+COPY public /var/www/public
 
 ARG BIIGLE_VERSION
 ENV BIIGLE_VERSION=${BIIGLE_VERSION}

@@ -3,13 +3,18 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
+use Biigle\Role;
 use Biigle\Tests\ProjectTest;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Queue;
+use Illuminate\Support\Facades\Storage;
 
 class VolumeControllerTest extends ApiTestCase
 {
+
     public function testIndex()
     {
         $project = ProjectTest::create();
@@ -142,20 +147,20 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->expectsJobs(ProcessNewVolumeFiles::class);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'admin-test://volumes',
-            ])->assertStatus(422);
+            'url' => 'admin-test://volumes',
+        ])->assertStatus(422);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'editor-test://volumes',
-            ])->assertStatus(200);
+            'url' => 'editor-test://volumes',
+        ])->assertStatus(200);
         $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'editor-test://volumes',
-            ])->assertStatus(422);
+            'url' => 'editor-test://volumes',
+        ])->assertStatus(422);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'admin-test://volumes',
-            ])->assertStatus(200);
+            'url' => 'admin-test://volumes',
+        ])->assertStatus(200);
         $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
     }
 
@@ -211,4 +216,45 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
     }
+
+    public function testCloneVolume()
+    {
+        $volume = $this->volume(
+            ['created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',])->fresh();
+        $project = ProjectTest::create();
+
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+
+        $this->be($project->creator);
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            // No update permissions in the source project.
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        $this->postJSon("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            // No update permissions in the target project.
+            ->assertStatus(403);
+
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        Cache::flush();
+
+        Queue::fake();
+
+        $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
+            ->assertStatus(201);
+        Queue::assertPushed(CloneImagesOrVideos::class);
+
+        // The target project.
+        $project = ProjectTest::create();
+
+        $this->beAdmin();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
+        $response->assertStatus(201);
+        Queue::assertPushed(CloneImagesOrVideos::class);
+    }
+
 }
