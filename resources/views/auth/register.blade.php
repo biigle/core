@@ -111,6 +111,10 @@
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-success btn-block" value="Sign up" onclick="this.disabled=true;this.form.submit();">
 
+                @if (!empty(app('modules')->getViewMixins('registerButton')))
+                    <hr>
+                    @mixin('registerButton')
+                @endif
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>

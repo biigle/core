@@ -40,6 +40,10 @@
                 </div>
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-success btn-block" value="Log in">
+                @if (!empty(app('modules')->getViewMixins('loginButton')))
+                    <hr>
+                    @mixin('loginButton')
+                @endif
             </form>
             <p class="clearfix">
                 <a href="{{ url('password/reset') }}" class="">{{ trans('auth.forgotpw') }}</a>
