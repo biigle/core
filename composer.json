@@ -24,6 +24,7 @@
         "ext-vips": "*",
         "ext-yaml": "*",
         "biigle/ananas": "dev-master",
+        "biigle/auth-lslogin": "dev-master",
         "biigle/color-sort": "dev-master",
         "biigle/demo": "dev-master",
         "biigle/denbi-service": "dev-master",
