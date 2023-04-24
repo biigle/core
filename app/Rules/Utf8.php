@@ -10,12 +10,12 @@ class Utf8 implements Rule
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
-     * @param  mixed  $file
+     * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $file)
+    public function passes($attribute, $value)
     {
-        return mb_detect_encoding($file->get(), 'UTF-8', true) !== false;
+        return mb_detect_encoding($value->get(), 'UTF-8', true) !== false;
     }
 
     /**

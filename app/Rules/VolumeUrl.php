@@ -11,8 +11,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use Storage;
 
 class VolumeUrl implements Rule
 {

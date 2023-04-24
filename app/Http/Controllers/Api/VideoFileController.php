@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use \Illuminate\Support\Facades\Storage;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
 use Exception;
@@ -9,7 +10,6 @@ use FileCache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use RuntimeException;
-use Storage;
 
 class VideoFileController extends Controller
 {
