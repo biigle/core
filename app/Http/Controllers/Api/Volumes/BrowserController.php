@@ -7,8 +7,8 @@ use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
-use Storage;
 
 class BrowserController extends Controller
 {

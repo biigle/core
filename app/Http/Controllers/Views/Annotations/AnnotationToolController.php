@@ -10,7 +10,7 @@ use Biigle\Role;
 use Biigle\Shape;
 use DB;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class AnnotationToolController extends Controller
 {

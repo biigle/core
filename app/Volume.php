@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many

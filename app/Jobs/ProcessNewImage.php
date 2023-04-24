@@ -12,8 +12,8 @@ use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 use Log;
-use Storage;
 use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue

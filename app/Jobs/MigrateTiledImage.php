@@ -4,7 +4,7 @@ namespace Biigle\Jobs;
 
 use Biigle\Image;
 use File;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 class MigrateTiledImage extends TileSingleImage
