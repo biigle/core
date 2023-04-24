@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Rules\ImageMetadata;
+use Biigle\Rules\Utf8;
 use Biigle\Rules\VideoMetadata;
 use Biigle\Traits\ParsesMetadata;
 use Biigle\Volume;
@@ -38,7 +39,12 @@ class StoreVolumeMetadata extends FormRequest
     public function rules()
     {
         return [
-            'metadata_csv' => 'required_without_all:metadata_text,ifdo_file|file|mimetypes:text/plain,text/csv,application/csv',
+            'metadata_csv' => [
+                'required_without_all:metadata_text,ifdo_file',
+                'file',
+                'mimetypes:text/plain,text/csv,application/csv',
+                new Utf8,
+            ],
             'metadata_text' => 'required_without_all:metadata_csv,ifdo_file',
             'ifdo_file' => 'required_without_all:metadata_csv,metadata_text|file',
             'metadata' => 'filled',

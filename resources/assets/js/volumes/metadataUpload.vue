@@ -37,7 +37,7 @@ export default {
         },
         handleError(response) {
             this.success = false;
-            let knownError = response.body.errors.metadata || response.body.errors.ifdo_file || response.body.errors.file;
+            let knownError = response.body.errors && (response.body.errors.metadata || response.body.errors.ifdo_file || response.body.errors.file);
             if (knownError) {
                 if (Array.isArray(knownError)) {
                     this.error = knownError[0];

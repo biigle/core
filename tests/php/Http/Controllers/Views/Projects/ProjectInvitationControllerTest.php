@@ -22,6 +22,8 @@ class ProjectInvitationControllerTest extends TestCase
 
     public function testShowNotLoggedInSignUpDisabled()
     {
+        config(['biigle.user_registration' => false]);
+
         $invitation = ProjectInvitation::factory()->create();
         $this->get("project-invitations/{$invitation->uuid}")
             ->assertRedirect('login')

@@ -364,6 +364,24 @@ TEXT;
         $this->assertSame([0, 1], $video->metadata['area']);
     }
 
+    public function testStoreVideoMetadataIncorrectEncoding()
+    {
+        $id = $this->volume()->id;
+        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->save();
+
+        $video = VideoTest::create([
+            'filename' => 'my-video.mp4',
+            'volume_id' => $id,
+        ]);
+
+        $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata-incorrect-encoding.csv", 'metadata.csv', 'text/csv', null, true);
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+            ->assertStatus(422);
+    }
+
     public function testStoreImageIfdoFile()
     {
         $id = $this->volume()->id;
