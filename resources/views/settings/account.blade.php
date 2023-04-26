@@ -30,49 +30,9 @@
         </form>
     @endcan
 @endif
-<div class="panel panel-default">
-    <div class="panel-heading">Change password</div>
-    <div class="panel-body">
-        <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
-
-            <div class="form-group{{ $errors->has('auth_password') && $origin === 'password'  ? ' has-error' : '' }}">
-                <label for="auth_password">Old password</label>
-                <input type="password" class="form-control" name="auth_password" id="auth_password" required="required">
-                @if($errors->has('auth_password') && $origin === 'password')
-                    <span class="help-block">{{ $errors->first('auth_password') }}</span>
-                @endif
-            </div>
-
-            <div class="form-group{{ $errors->has('password') && $origin === 'password' ? ' has-error' : '' }}">
-                <label for="password">New password</label>
-                <input type="password" class="form-control" name="password" id="password" required="required">
-                @if($errors->has('password') && $origin === 'password')
-                    <span class="help-block">{{ $errors->first('password') }}</span>
-                @endif
-            </div>
-
-            <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                <label for="password_confirmation">Confirm new password</label>
-                <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" required="required">
-                @if($errors->has('password_confirmation'))
-                    <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
-                @endif
-            </div>
-
-            @if ($saved && $origin === 'password')
-                <div class="alert alert-success" role="alert">
-                    Your password was successfully updated.
-                </div>
-            @endif
-
-            <input type="hidden" name="_origin" value="password">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="submit" class="btn btn-success" value="Update password">
-        </form>
-    </div>
-</div>
-
+<p>
+    Looking to change your password? Go to the <a href="{{route('settings-authentication')}}">authentication</a> tab.
+</p>
 <div class="panel panel-default">
     <div class="panel-heading">Change email</div>
     <div class="panel-body">
