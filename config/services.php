@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'lifesciencelogin' => [
+       'client_id' => env('LSLOGIN_CLIENT_ID'),
+       'client_secret' => env('LSLOGIN_CLIENT_SECRET'),
+       'redirect' => '/auth/lslogin/callback',
+    ],
+
 ];
