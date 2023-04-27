@@ -118,7 +118,7 @@
         <p class="text-danger">
             <strong>Deleting your account cannot be undone!</strong>
         </p>
-        <form role="form" method="POST" action="{{ url('api/v1/users/my') }}" onsubmit="return confirm('Do you really want to delete your account?')">
+        <form role="form" method="POST" action="{{ url('api/v1/users/my') }}" onsubmit="return prompt('Do you really want to delete your account? Please type \'delete\' to continue.').toLowerCase() === 'delete'">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
