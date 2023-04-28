@@ -46,8 +46,6 @@ services:
       - SOKETI_SHUTDOWN_GRACE_PERIOD=3000
       - SOKETI_METRICS_ENABLED=0
       # - SOKETI_DEBUG=1
-    ports:
-      - 6001:6001
 
   # The web server
   web:
