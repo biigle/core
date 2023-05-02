@@ -87,6 +87,10 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'settings-account',
             'uses' => 'SettingsController@account',
         ]);
+        $router->get('authentication', [
+            'as' => 'settings-authentication',
+            'uses' => 'SettingsController@authentication',
+        ]);
         $router->get('tokens', [
             'as' => 'settings-tokens',
             'uses' => 'SettingsController@tokens',
