@@ -46,7 +46,7 @@ class RegisterControllerTest extends TestCase
     {
         $this->post('register', [
             '_token'    => Session::token(),
-            'email'     => 'e@ma.il',
+            'email'     => 'E@ma.il', // Should be converted to lowercase
             'password'  => 'password',
             'firstname' => 'a',
             'lastname'  => 'b',
