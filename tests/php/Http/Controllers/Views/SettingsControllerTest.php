@@ -23,7 +23,7 @@ class SettingsControllerTest extends TestCase
 
     public function testPagesWhenNotLoggedIn()
     {
-        foreach (['profile', 'account', 'tokens'] as $page) {
+        foreach (['profile', 'account', 'authentication', 'tokens'] as $page) {
             $this->get("settings/$page")->assertRedirect('login');
         }
     }
@@ -32,7 +32,7 @@ class SettingsControllerTest extends TestCase
     {
         $this->be(UserTest::create());
 
-        foreach (['profile', 'account', 'tokens'] as $page) {
+        foreach (['profile', 'account', 'authentication', 'tokens'] as $page) {
             $this->get("settings/$page")->assertStatus(200);
         }
     }

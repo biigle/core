@@ -45,6 +45,19 @@ class SettingsController extends Controller
     }
 
     /**
+     * Shows the authentication settings.
+     *
+     * @param Guard $auth
+     * @return \Illuminate\Http\Response
+     */
+    public function authentication(Guard $auth)
+    {
+        return view('settings.authentication')
+            ->withUser($auth->user())
+            ->withSaved(session('saved'));
+    }
+
+    /**
      * Shows the tokens settings.
      *
      * @param Guard $auth
