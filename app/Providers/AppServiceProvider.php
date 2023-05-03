@@ -4,8 +4,10 @@ namespace Biigle\Providers;
 
 use Auth;
 use Biigle\Announcement;
+use Biigle\Support\FilesystemManager;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('vips-image', function () {
             return new \Jcupitt\Vips\Image(null);
         });
+
+        // The custom implementation allows "config resolvers" which are required by
+        // the user-storage and user-disks modules, for example.
+        Storage::swap(new FilesystemManager($this->app));
     }
 
     /**
