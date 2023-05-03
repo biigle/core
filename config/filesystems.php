@@ -26,6 +26,8 @@ return [
     | may even configure multiple disks of the same driver. Defaults have
     | been setup for each driver as an example of the required options.
     |
+    | Note: Disks with the name "user-[number]" or "disk-[number]" may be reserved
+    | for the biigle/user-storage and biigle/user-disks modules.
     */
 
     'disks' => [
