@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a47f193015b25462be231852e3177933",
+    "content-hash": "70e6725e5e4ad6c309af2cae2cd6facf",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -864,6 +864,56 @@
                 "source": "https://github.com/biigle/sync"
             },
             "time": "2023-01-09T12:08:11+00:00"
+        },
+        {
+            "name": "biigle/user-disks",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/user-disks.git",
+                "reference": "c03b38a1581edd8573e1eedfa575216a2b79c478"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/user-disks/zipball/c03b38a1581edd8573e1eedfa575216a2b79c478",
+                "reference": "c03b38a1581edd8573e1eedfa575216a2b79c478",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\UserDisks\\UserDisksServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\UserDisks\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to offer private storage disks for users.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/user-disks/issues",
+                "source": "https://github.com/biigle/user-disks"
+            },
+            "time": "2023-05-02T13:56:57+00:00"
         },
         {
             "name": "biigle/user-storage",
@@ -12843,6 +12893,7 @@
         "biigle/newsletter": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
+        "biigle/user-disks": 20,
         "biigle/user-storage": 20
     },
     "prefer-stable": true,
