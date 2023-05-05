@@ -3,12 +3,12 @@
 @section('title', 'Access tokens')
 
 @section('settings-content')
+<h2>API Tokens</h2>
+<p>
+    An API token can be used to authenticate external (automated) REST API requests. Learn more about the API in the <a href="{{url('doc/api/index.html')}}">documentation</a>.
+</p>
 <div class="panel panel-default">
-    <div class="panel-heading">API tokens</div>
     <div class="panel-body">
-        <p>
-            An API token can be used to authenticate external (automated) REST API requests. Learn more about the API in the <a href="{{url('doc/api/index.html')}}">documentation</a>.
-        </p>
         @if ($token)
             <div class="alert alert-success" role="alert">
                 <p>
@@ -24,9 +24,6 @@
                 Your API token was successfully revoked.
             </div>
         @endif
-
-        <h4>Your tokens</h4>
-
 
         @if ($tokens->isEmpty())
             <p>
