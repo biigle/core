@@ -12,6 +12,7 @@
                 @can('create', \Biigle\ApiToken::class)
                     <li role="presentation"@if(Request::is('settings/tokens')) class="active" @endif><a href="{{route('settings-tokens')}}">Tokens</a></li>
                 @endcan
+                @mixin('userSettingsMenu')
             </ul>
         </div>
         <div class="col-sm-8 col-md-7 col-lg-6">
