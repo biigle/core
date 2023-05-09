@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
+use Biigle\Modules\UserDisks\UserDisk;
 use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\Project;
 use Biigle\Role;
@@ -46,6 +47,15 @@ class VolumeController extends Controller
             $userDisk = "user-{$user->id}";
         } else {
             $userDisk = null;
+        }
+
+        if (class_exists(UserDisk::class)) {
+            $userDisks = UserDisk::where('user_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => "disk-{$id}")
+                ->toArray();
+
+            array_push($disks, ...$userDisks);
         }
 
         return view('volumes.create', [
