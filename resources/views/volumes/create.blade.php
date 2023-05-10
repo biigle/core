@@ -10,7 +10,7 @@
       biigle.$declare('volumes.handle', `{!! old('handle') !!}`);
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.filenames', '{{ $filenames }}');
-      biigle.$declare('volumes.disks', {!! $disks !!});
+      biigle.$declare('volumes.disks', {!! $disks->keys() !!});
    </script>
 @endpush
 
@@ -128,9 +128,9 @@
                                     <i class="fa fa-database"></i> Storage disk <span class="caret"></span>
                                 </button>
                                 <template slot="dropdown">
-                                    @foreach ($disks as $disk)
+                                    @foreach ($disks as $id => $name)
                                         <li>
-                                             <a title="Choose files from the '{{$disk}}' storage disk" href="#" v-on:click.prevent="selectStorageDisk('{{$disk}}')">{{$disk}}</a>
+                                             <a title="Choose files from the '{{$name}}' storage disk" href="#" v-on:click.prevent="selectStorageDisk('{{$id}}')">{{$name}}</a>
                                         </li>
                                     @endforeach
                                 </template>
@@ -138,8 +138,8 @@
                         </div>
                     @elseif ($disks->count() === 1)
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default" title="Choose files from the '{{$disks[0]}}' storage disk" v-on:click="selectStorageDisk('{{$disks[0]}}')" v-bind:class="{active: isDiskFileSource}">
-                                <i class="fa fa-database"></i> Storage disk
+                            <button type="button" class="btn btn-default volume-storage-disk-btn" title="Choose files from the '{{$disks->values()->first()}}' storage disk" v-on:click="selectStorageDisk('{{$disks->keys()->first()}}')" v-bind:class="{active: isDiskFileSource}">
+                                <i class="fa fa-database"></i> {{$disks->values()->first()}}
                             </button>
                         </div>
                     @endif

@@ -28,16 +28,29 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
 
-        $disks = [];
+        $disks = collect([]);
         $user = $request->user();
 
         if ($user->can('sudo')) {
-            $disks = config('volumes.admin_storage_disks');
+            $disks = $disks->concat(config('volumes.admin_storage_disks'));
         } elseif ($user->role_id === Role::editorId()) {
-            $disks = config('volumes.editor_storage_disks');
+            $disks = $disks->concat(config('volumes.editor_storage_disks'));
         }
 
-        $disks = array_intersect(array_keys(config('filesystems.disks')), $disks);
+        // Limit to disks that actually exist.
+        $disks = $disks->intersect(array_keys(config('filesystems.disks')))->values();
+
+        // Use the disk keys as names, too. UserDisks can have different names
+        // (see below).
+        $disks = $disks->combine($disks)->map(fn ($name) => ucfirst($name));
+
+        if (class_exists(UserDisk::class)) {
+            $userDisks = UserDisk::where('user_id', $user->id)
+                ->pluck('name', 'id')
+                ->mapWithKeys(fn ($name, $id) => ["disk-{$id}" => $name]);
+
+            $disks = $disks->merge($userDisks);
+        }
 
         $mediaType = old('media_type', 'image');
         $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
@@ -49,18 +62,9 @@ class VolumeController extends Controller
             $userDisk = null;
         }
 
-        if (class_exists(UserDisk::class)) {
-            $userDisks = UserDisk::where('user_id', $user->id)
-                ->pluck('id')
-                ->map(fn ($id) => "disk-{$id}")
-                ->toArray();
-
-            array_push($disks, ...$userDisks);
-        }
-
         return view('volumes.create', [
             'project' => $project,
-            'disks' => collect($disks)->values(),
+            'disks' => $disks,
             'hasDisks' => !empty($disks),
             'mediaType' => $mediaType,
             'filenames' => $filenames,
