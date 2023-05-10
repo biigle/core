@@ -9,7 +9,6 @@ use Exception;
 use FileCache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use RuntimeException;
 
 class VideoFileController extends Controller
 {
@@ -45,13 +44,8 @@ class VideoFileController extends Controller
 
         $disk = Storage::disk($disk);
 
-        try {
-            $url = $disk->temporaryUrl("{$path}/{$video->filename}", now()->addDay());
-
-            return redirect($url);
-        } catch (RuntimeException $e) {
-            // Temporary URLs not supported.
-            // Continue with code below.
+        if ($disk->providesTemporaryUrls()) {
+            return redirect($disk->temporaryUrl("{$path}/{$video->filename}", now()->addDay()));
         }
 
         try {
