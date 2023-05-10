@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use \Illuminate\Support\Facades\Storage;
 use Exception;
 use FileCache;
 use Illuminate\Http\Response;
@@ -97,6 +98,13 @@ class Image extends VolumeFile
             return redirect($this->url);
         }
 
+        [$disk, $path] = explode('://', $this->url);
+        $disk = Storage::disk($disk);
+
+        if ($disk->providesTemporaryUrls()) {
+            return redirect($disk->temporaryUrl($path, now()->addHour()));
+        }
+
         try {
             $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
@@ -111,7 +119,7 @@ class Image extends VolumeFile
                 'Content-Disposition' => 'inline',
             ]);
         } catch (Exception $e) {
-            abort(404, $e->getMessage());
+            abort(Response::HTTP_NOT_FOUND, $e->getMessage());
         }
     }
 
