@@ -6,6 +6,7 @@ use \Illuminate\Support\Facades\Storage;
 use Exception;
 use FileCache;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 
 /**
  * This model stores information on an image file in the file system.
@@ -99,7 +100,12 @@ class Image extends VolumeFile
         }
 
         [$disk, $path] = explode('://', $this->url);
-        $disk = Storage::disk($disk);
+
+        try {
+            $disk = Storage::disk($disk);
+        } catch (InvalidArgumentException $e) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
 
         if ($disk->providesTemporaryUrls()) {
             return redirect($disk->temporaryUrl($path, now()->addHour()));

@@ -150,6 +150,13 @@ class ImageTest extends ModelTestCase
         $this->assertEquals('https://example.com', $response->getTargetUrl());
     }
 
+    public function testGetFileDiskNotFound()
+    {
+        $this->model->volume->url = 'abcd://images';
+        $this->expectException(NotFoundHttpException::class);
+        $this->model->getFile();
+    }
+
     public function testImagesDeletedEventOnDelete()
     {
         Event::fake([ImagesDeleted::class]);

@@ -124,4 +124,20 @@ class VideoFileControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("api/v1/videos/{$video->id}/file")->assertStatus(428);
     }
+
+    public function testShowDiskNotFound()
+    {
+        $id = $this->volume([
+            'url' => 'abcd://videos',
+            'media_type_id' => MediaType::videoId(),
+        ])->id;
+        $video = VideoTest::create([
+            'filename' => 'video.mp4',
+            'volume_id' => $id,
+            'attrs' => ['size' => 9],
+        ]);
+
+        $this->beGuest();
+        $this->get("api/v1/videos/{$video->id}/file")->assertStatus(404);
+    }
 }
