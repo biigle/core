@@ -10,7 +10,7 @@ class UserSettingsController extends Controller
     /**
      * Update the own user settings
      *
-     * @api {put} users/my/settings update the own user settings
+     * @api {put} users/my/settings Update the own user settings
      * @apiGroup Users
      * @apiName UpdateSettings
      * @apiPermission user

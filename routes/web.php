@@ -47,6 +47,7 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
     // Redirects for backwards compatibility of deleted or renamed manual articles.
     $router->permanentRedirect('/tutorials/volumes/image-labels', '/manual/tutorials/volumes/file-labels');
     $router->permanentRedirect('/tutorials/volumes/image-metadata', '/manual/tutorials/volumes/file-metadata');
+    $router->permanentRedirect('/tutorials/volumes/remote-volumes', '/manual/tutorials/volumes/remote-locations');
 
     $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
