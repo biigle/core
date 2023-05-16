@@ -354,6 +354,20 @@ export default {
                 );
             });
         },
+        initializeSelectedFilesAfterError(directory, path) {
+            let files = this.filenames.split(',').map(f => f.trim())
+            if (files.length === directory.files.length) {
+                this.selectDirectory(directory, path);
+            } else {
+                // Hack to expand the directory but not select it.
+                directory.selected = true;
+                this.$nextTick(() => directory.selected = false);
+
+                directory.files
+                    .filter(f => files.includes(f.name))
+                    .forEach(f => f.selected = true);
+            }
+        },
         initializeSelectedStorageDiskAfterError(disk, path) {
             this.storageDisk = disk;
             this.fileSource = FILE_SOURCE.DISK;
@@ -364,12 +378,12 @@ export default {
             this.showStorageDiskRoot(disk)
                 .then(root => this.selectedDiskRoot = root)
                 .then(() => this.recurseLoadDirectories(path))
-                .then((dir) => this.selectDirectory(dir, path))
+                .then((dir) => this.initializeSelectedFilesAfterError(dir, path))
                 .finally(() => this.initializingBrowser = false);
         },
         selectFile(file, directory, path, event) {
             let selectedFiles = directory.files.filter(f => f.selected);
-            if (event.ctrlKey && selectedFiles.length > 0) {
+            if (event?.ctrlKey && selectedFiles.length > 0) {
                 selectedFiles.push(file)
                 if (selectedFiles.length === directory.files.length) {
                     this.selectDirectory(directory, path);
@@ -388,7 +402,7 @@ export default {
             }
         },
         unselectFile(file, directory, path, event) {
-            if (event.ctrlKey) {
+            if (event?.ctrlKey) {
                 file.selected = false;
                 let selectedFiles = directory.files.filter(f => f.selected);
                 if (selectedFiles.length > 0) {
