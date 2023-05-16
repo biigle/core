@@ -70,14 +70,6 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">Remote volumes</a>
-            </h4>
-
-            <p>
-                With remote volumes you can use images from your own data source in BIIGLE.
-            </p>
-
-            <h4>
                 <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
             </h4>
 
@@ -100,6 +92,18 @@
             <p>
                 File labels are labels that are attached to whole images or videos.
             </p>
+
+            <h3>Files</h3>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'remote-locations'])}}">Remote locations</a>
+            </h4>
+
+            <p>
+                Remote locations serve volume files from a public web server.
+            </p>
+
+            @mixin('filesManual')
 
             <h3>Image Annotations</h3>
             <h4>

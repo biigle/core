@@ -2,9 +2,11 @@
 
 namespace Biigle;
 
+use \Illuminate\Support\Facades\Storage;
 use Exception;
 use FileCache;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 
 /**
  * This model stores information on an image file in the file system.
@@ -97,6 +99,18 @@ class Image extends VolumeFile
             return redirect($this->url);
         }
 
+        [$disk, $path] = explode('://', $this->url);
+
+        try {
+            $disk = Storage::disk($disk);
+        } catch (InvalidArgumentException $e) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        if ($disk->providesTemporaryUrls()) {
+            return redirect($disk->temporaryUrl($path, now()->addHour()));
+        }
+
         try {
             $stream = FileCache::getStream($this);
             if (!is_resource($stream)) {
@@ -111,7 +125,7 @@ class Image extends VolumeFile
                 'Content-Disposition' => 'inline',
             ]);
         } catch (Exception $e) {
-            abort(404, $e->getMessage());
+            abort(Response::HTTP_NOT_FOUND, $e->getMessage());
         }
     }
 

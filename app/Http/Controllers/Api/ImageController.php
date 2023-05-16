@@ -50,7 +50,7 @@ class ImageController extends Controller
      * @apiGroup Images
      * @apiName ShowImageFiles
      * @apiPermission projectMember
-     * @apiDescription Responds with the original file. If the image is remote, responds with a redirect to the remote location. If the image is tiled, responds with a JSON containing the image `uuid`, `width` and `height`.
+     * @apiDescription Responds with the original file. If the image has remote source, responds with a redirect to the remote URL. If the image is tiled, responds with a JSON containing the image `uuid`, `width` and `height`.
      *
      * @apiParam {Number} id The image ID.
      *

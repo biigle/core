@@ -44,7 +44,14 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Ability to create or update a volume with a certain storage disk.
-        Gate::define('use-disk', function (User $user, $disk) {
+        // Merge with possible logic defined by modules.
+        $abilities = Gate::abilities();
+        $useDiskAbility = $abilities['use-disk'] ?? fn () => false;
+        Gate::define('use-disk', function (User $user, $disk) use ($useDiskAbility) {
+            if ($useDiskAbility($user, $disk) === true) {
+                return true;
+            }
+
             if ($user->role_id === Role::adminId()) {
                 return in_array($disk, config('volumes.admin_storage_disks'));
             } elseif ($user->role_id === Role::editorId()) {
