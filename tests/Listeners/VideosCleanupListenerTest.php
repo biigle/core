@@ -34,9 +34,9 @@ class VideosCleanupListenerTest extends TestCase
 
     public function testHandle()
     {
-        $video = VideoTest::create();
+        $video = VideoTest::create(['filename' => 'a']);
         $a = VideoAnnotationTest::create(['video_id' => $video->id]);
-        $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'a']);
+        $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'b']);
         $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
 
         $this->expectsJobs(RemoveVideoAnnotationPatches::class);
