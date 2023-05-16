@@ -3,8 +3,11 @@
 @section('title', 'Your Profile')
 
 @section('settings-content')
+<h2>Profile</h2>
+<p>
+    This is the information that is visible to other users.
+</p>
 <div class="panel panel-default">
-    <div class="panel-heading">Your profile</div>
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
             <div class="form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">

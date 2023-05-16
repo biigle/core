@@ -3,36 +3,38 @@
 @section('title', 'Account settings')
 
 @section('settings-content')
+<h2 class="clearfix">
+    Account
+    <span class="small pull-right">
+        @if ($user->isGlobalAdmin)
+            @can('sudo')
+                <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
+                    <input type="hidden" name="super_user_mode" value="0">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger active" title="Disable Super User Mode to act like a normal user"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
+                    </div>
+                </form>
+            @else
+                <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
+                    <input type="hidden" name="super_user_mode" value="1">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" title="Enable Super User Mode for your global admin abilities"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
+                    </div>
+                </form>
+            @endcan
+        @endif
+    </span>
+</h2>
 <?php $origin = session('origin'); ?>
 <div class="form-group">
     <label>Your UUID</label>
     <input class="form-control text-mono" type="text" name="uuid" readonly="true" value="{{$user->uuid}}" style="font-family:Menlo,Monaco,Consolas,'Courier New',monospace;">
     <span class="help-block">The UUID is used to identify your user account across different BIIGLE instances.</span>
 </div>
-@if ($user->isGlobalAdmin)
-    @can('sudo')
-        <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
-            <input type="hidden" name="super_user_mode" value="0">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <div class="form-group">
-                <button type="submit" class="btn btn-danger active" title="Disable Super User Mode to act like a normal user"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
-            </div>
-        </form>
-    @else
-        <form method="POST" action="{{ url('api/v1/users/my/settings') }}">
-            <input type="hidden" name="super_user_mode" value="1">
-            <input type="hidden" name="_method" value="PUT">
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <div class="form-group">
-                <button type="submit" class="btn btn-default" title="Enable Super User Mode for your global admin abilities"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
-            </div>
-        </form>
-    @endcan
-@endif
-<p>
-    Looking to change your password? Go to the <a href="{{route('settings-authentication')}}">authentication</a> tab.
-</p>
 <div class="panel panel-default">
     <div class="panel-heading">Change email</div>
     <div class="panel-body">
@@ -99,4 +101,8 @@
         </form>
     </div>
 </div>
+
+<p class="text-muted">
+    Looking to change your password? Go to the <a href="{{route('settings-authentication')}}">authentication</a> tab.
+</p>
 @endsection

@@ -8,8 +8,10 @@ use Biigle\Image;
 use Carbon\Carbon;
 use Event;
 use Illuminate\Database\QueryException;
+use Mockery;
 use ModelTestCase;
 use Response;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImageTest extends ModelTestCase
@@ -135,6 +137,24 @@ class ImageTest extends ModelTestCase
             'tilingInProgress' => false,
         ];
         $this->assertEquals($expect, $this->model->getFile());
+    }
+
+    public function testGetFileTempUrl()
+    {
+        $mock = Mockery::mock();
+        $mock->shouldReceive('providesTemporaryUrls')->once()->andReturn(true);
+        $mock->shouldReceive('temporaryUrl')->once()->andReturn('https://example.com');
+        Storage::shouldReceive('disk')->andReturn($mock);
+
+        $response = $this->model->getFile();
+        $this->assertEquals('https://example.com', $response->getTargetUrl());
+    }
+
+    public function testGetFileDiskNotFound()
+    {
+        $this->model->volume->url = 'abcd://images';
+        $this->expectException(NotFoundHttpException::class);
+        $this->model->getFile();
     }
 
     public function testImagesDeletedEventOnDelete()

@@ -36,6 +36,11 @@ $volume-image-padding: 0.5em;
     }
 }
 
+.volume-storage-disk-btn {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
 @import 'components/image-grid';
 @import 'components/image-grid-image';
 @import 'components/image-grid-progress';

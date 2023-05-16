@@ -3,6 +3,10 @@
 @section('title', 'Account settings')
 
 @section('settings-content')
+<h2>Authentication</h2>
+<p>
+    Here you can configure the way how you can sign in to your account.
+</p>
 <div class="panel panel-default">
     <div class="panel-heading">Change password</div>
     <div class="panel-body">

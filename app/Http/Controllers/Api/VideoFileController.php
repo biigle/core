@@ -2,14 +2,14 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use \Illuminate\Support\Facades\Storage;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
 use Exception;
 use FileCache;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use RuntimeException;
+use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 
 class VideoFileController extends Controller
 {
@@ -43,15 +43,14 @@ class VideoFileController extends Controller
 
         [$disk, $path] = explode('://', $video->volume->url);
 
-        $disk = Storage::disk($disk);
-
         try {
-            $url = $disk->temporaryUrl("{$path}/{$video->filename}", now()->addDay());
+            $disk = Storage::disk($disk);
+        } catch (InvalidArgumentException $e) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
 
-            return redirect($url);
-        } catch (RuntimeException $e) {
-            // Temporary URLs not supported.
-            // Continue with code below.
+        if ($disk->providesTemporaryUrls()) {
+            return redirect($disk->temporaryUrl("{$path}/{$video->filename}", now()->addDay()));
         }
 
         try {
