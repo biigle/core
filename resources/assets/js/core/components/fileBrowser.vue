@@ -66,7 +66,7 @@ export default {
     },
     computed: {
         hasItems() {
-            return Object.keys(this.rootDirectory.directories).length > 0;
+            return Object.keys(this.rootDirectory.directories).length > 0 || this.rootDirectory.files.length > 0;
         },
     },
     methods: {
