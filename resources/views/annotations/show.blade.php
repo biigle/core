@@ -81,6 +81,7 @@
             :show-label-tooltip="showLabelTooltip"
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
+            :user-id="userId"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"
