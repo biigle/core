@@ -1,5 +1,6 @@
 <script>
 import AnnotationCanvas from './components/annotationCanvas';
+import AnnotationCanvasMixins from './stores/annotationCanvasMixins';
 import AnnotationModesTab from './components/annotationModesTab';
 import AnnotationsStore from './stores/annotations';
 import AnnotationsTab from './components/siaAnnotationsTab';
@@ -39,7 +40,16 @@ export default {
         colorAdjustmentTab: ColorAdjustmentTab,
         imageLabelTab: ImageLabelTab,
         settingsTab: SettingsTab,
-        annotationCanvas: AnnotationCanvas,
+        annotationCanvas: function (resolve) {
+            // This enables the addition of mixins to the annotation canvas from modules
+            // at runtime (e.g. by biigle/magic-sam).
+            AnnotationCanvasMixins.forEach(function (mixin) {
+                if (!AnnotationCanvas.mixins.includes(mixin)) {
+                    AnnotationCanvas.mixins.push(mixin);
+                }
+            });
+            resolve(AnnotationCanvas);
+        },
     },
     data() {
         return {
