@@ -199,5 +199,7 @@
         <p>
             Polygons that were drawn with the brush tool are best edited with the polygon eraser and fill tools. Head over to the <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">next manual section</a> to learn more.
         </p>
+
+        @mixin('manualCreatingPolygons')
     </div>
 @endsection

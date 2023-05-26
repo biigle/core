@@ -71,7 +71,6 @@ export default {
     mounted() {
         // Initialize the magic wand interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-        // The magic wand interaction is not available for remote images.
         if (this.canAdd) {
             magicWandInteraction = new MagicWandInteraction({
                 map: this.map,
