@@ -87,6 +87,11 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: Set registry authentication token
+      run: echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
     - name: Install NPM packages
       run: npm install
 
