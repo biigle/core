@@ -16,7 +16,7 @@ class UserRegistrationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('can:sudo');
+        $this->middleware('can:review');
     }
 
     /**

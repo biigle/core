@@ -228,6 +228,36 @@ class UserTest extends ModelTestCase
         $this->assertFalse($this->model->can('sudo'));
     }
 
+    public function testCanReviewAttribute()
+    {
+        $this->assertFalse($this->model->canReview);
+        $this->model->canReview = true;
+        $this->assertTrue($this->model->canReview);
+        $this->assertNotNull($this->model->attrs);
+        $this->model->canReview = false;
+        $this->assertFalse($this->model->canReview);
+        $this->assertNull($this->model->attrs);
+        $this->model->role_id = Role::adminId();
+        $this->assertTrue($this->model->canReview);
+        $this->model->isInSuperUserMode = false;
+        $this->assertFalse($this->model->canReview);
+    }
+
+    public function testReviewAbility()
+    {
+        $this->assertFalse($this->model->can('review'));
+        $this->model->canReview = true;
+        $this->model->save();
+        $this->assertTrue($this->model->can('review'));
+        $this->model->canReview = false;
+        $this->model->role_id = Role::adminId();
+        $this->model->save();
+        $this->assertTrue($this->model->can('review'));
+        $this->model->isInSuperUserMode = false;
+        $this->model->save();
+        $this->assertFalse($this->model->can('review'));
+    }
+
     public function testFederatedSearchModels()
     {
         $model = FederatedSearchModelTest::create();

@@ -22,7 +22,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(403);
 
-        $this->beGlobalAdmin();
+        $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(200);
         $this->assertEquals(Role::editorId(), $user->fresh()->role_id);
@@ -36,7 +36,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         config(['biigle.user_registration_confirmation' => false]);
         $user = UserTest::create(['role_id' => Role::guestId()]);
-        $this->beGlobalAdmin();
+        $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);
     }
@@ -52,7 +52,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(403);
 
-        $this->beGlobalAdmin();
+        $this->beGlobalReviewer();
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(404);
 
@@ -68,7 +68,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         config(['biigle.user_registration_confirmation' => false]);
         $user = UserTest::create(['role_id' => Role::guestId()]);
-        $this->beGlobalAdmin();
+        $this->beGlobalReviewer();
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(404);
     }

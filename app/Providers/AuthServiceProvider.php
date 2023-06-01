@@ -43,6 +43,11 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isInSuperUserMode;
         });
 
+        // Ability of a reviewer (e.g. for new registrations).
+        Gate::define('review', function (User $user) {
+            return $user->canReview;
+        });
+
         // Ability to create or update a volume with a certain storage disk.
         // Merge with possible logic defined by modules.
         $abilities = Gate::abilities();

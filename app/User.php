@@ -188,4 +188,25 @@ class User extends Authenticatable
             $this->setSettings(['super_user_mode' => (bool) $value]);
         }
     }
+
+    /**
+     * Determines if the user can review e.g. new user registrations (without being
+     * super user).
+     *
+     * @return bool
+     */
+    public function getCanReviewAttribute()
+    {
+        return $this->isInSuperUserMode || $this->getSettings('can_review', false);
+    }
+
+    /**
+     * Enables or disables the ability to review.
+     *
+     * @param bool $value
+     */
+    public function setCanReviewAttribute($value)
+    {
+        $this->setSettings(['can_review' => boolval($value) ? true : null]);
+    }
 }

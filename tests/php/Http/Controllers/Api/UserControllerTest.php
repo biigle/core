@@ -302,6 +302,28 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals(Role::adminId(), $user->fresh()->role_id);
     }
 
+    public function testUpdateCanReview()
+    {
+        $user = $this->guest();
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+        $this->assertFalse($user->canReview);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'can_review' => '1',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertTrue($user->fresh()->canReview);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'can_review' => '0',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertFalse($user->fresh()->canReview);
+    }
+
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route

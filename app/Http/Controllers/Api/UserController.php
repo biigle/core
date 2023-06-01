@@ -225,6 +225,9 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->affiliation = $request->input('affiliation', $user->affiliation);
+        if ($request->filled('can_review')) {
+            $user->canReview = (bool) $request->input('can_review');
+        }
         $user->save();
 
         if (!$this->isAutomatedRequest()) {

@@ -20,7 +20,7 @@
             @endif
         </div>
 
-        <div class="col-sm-6 form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
+        <div class="col-sm-3 form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
             <label for="role_id">Role*</label>
             <select class="form-control" name="role_id" id="role_id" required>
                 @foreach ($roles as $role)
@@ -29,6 +29,16 @@
             </select>
             @if($errors->has('role_id'))
                 <span class="help-block">{{ $errors->first('role_id') }}</span>
+            @endif
+        </div>
+        <div class="col-sm-3 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
+            <label for="can_review">Can review</label>
+            <select class="form-control" name="can_review" id="can_review" required>
+                <option value="1" @selected($affectedUser->can_review)>Yes</option>
+                <option value="0" @selected(!$affectedUser->can_review)>No</option>
+            </select>
+            @if($errors->has('can_review'))
+                <span class="help-block">{{ $errors->first('can_review') }}</span>
             @endif
         </div>
 

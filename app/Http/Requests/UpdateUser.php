@@ -50,6 +50,7 @@ class UpdateUser extends FormRequest
             'auth_password' => 'required_with:role_id,password,email|current_password',
             'affiliation' => 'nullable|max:255',
             'super_user_mode' => 'filled|bool',
+            'can_review' => 'filled|bool',
         ];
     }
 
