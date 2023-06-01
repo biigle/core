@@ -32,6 +32,26 @@ class UserRegistrationControllerTest extends ApiTestCase
         Notification::assertSentTo($user, RegistrationAccepted::class);
     }
 
+    public function testAcceptRedirectReviewer()
+    {
+        Notification::fake();
+        config(['biigle.user_registration_confirmation' => true]);
+        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $this->beGlobalReviewer();
+        $this->get("/api/v1/accept-user-registration/{$user->id}")
+            ->assertRedirectToRoute('home');
+    }
+
+    public function testAcceptRedirectAdmin()
+    {
+        Notification::fake();
+        config(['biigle.user_registration_confirmation' => true]);
+        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $this->beGlobalAdmin();
+        $this->get("/api/v1/accept-user-registration/{$user->id}")
+            ->assertRedirectToRoute('admin-users-show', $user->id);
+    }
+
     public function testAcceptRegistrationDisabled()
     {
         config(['biigle.user_registration_confirmation' => false]);
@@ -62,6 +82,26 @@ class UserRegistrationControllerTest extends ApiTestCase
             ->assertStatus(200);
         $this->assertNull($user->fresh());
         Notification::assertSentTo($user, RegistrationRejected::class);
+    }
+
+    public function testRejectRedirectReviewer()
+    {
+        Notification::fake();
+        config(['biigle.user_registration_confirmation' => true]);
+        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $this->beGlobalReviewer();
+        $this->get("/api/v1/reject-user-registration/{$user->id}")
+            ->assertRedirectToRoute('home');
+    }
+
+    public function testRejectRedirectAdmin()
+    {
+        Notification::fake();
+        config(['biigle.user_registration_confirmation' => true]);
+        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $this->beGlobalAdmin();
+        $this->get("/api/v1/reject-user-registration/{$user->id}")
+            ->assertRedirectToRoute('admin-users');
     }
 
     public function testRejectRegistrationDisabled()

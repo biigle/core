@@ -6,6 +6,7 @@ use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
 use Biigle\Role;
 use Biigle\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
@@ -31,9 +32,10 @@ class UserRegistrationController extends Controller
      * @apiParam {Number} id The user ID.
      *
      * @param int $id User ID
+     * @param Request $request
      * @return mixed
      */
-    public function accept($id)
+    public function accept($id, Request $request)
     {
         if (!$this->isAdminConfirmationEnabled()) {
             abort(Response::HTTP_NOT_FOUND);
@@ -46,7 +48,13 @@ class UserRegistrationController extends Controller
         $user->notify(new RegistrationAccepted);
 
         if (!$this->isAutomatedRequest()) {
-            return redirect()->route('admin-users-show', $user->id)
+            if ($request->user()->can('sudo')) {
+                $response = redirect()->route('admin-users-show', $user->id);
+            } else {
+                $response = redirect()->route('home');
+            }
+
+            return $response
                 ->with('messageType', 'success')
                 ->with('message', 'The user has been accepted as editor');
         }
@@ -64,9 +72,10 @@ class UserRegistrationController extends Controller
      * @apiParam {Number} id The user ID.
      *
      * @param int $id
+     * @param Request $request
      * @return mixed
      */
-    public function reject($id)
+    public function reject($id, Request $request)
     {
         if (!$this->isAdminConfirmationEnabled()) {
             abort(Response::HTTP_NOT_FOUND);
@@ -77,7 +86,13 @@ class UserRegistrationController extends Controller
         $user->delete();
 
         if (!$this->isAutomatedRequest()) {
-            return redirect()->route('admin-users')
+            if ($request->user()->can('sudo')) {
+                $response = redirect()->route('admin-users');
+            } else {
+                $response = redirect()->route('home');
+            }
+
+            return $response
                 ->with('messageType', 'success')
                 ->with('message', 'The user has been deleted');
         }
