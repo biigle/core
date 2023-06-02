@@ -440,6 +440,64 @@
             "time": "2022-12-02T10:28:56+00:00"
         },
         {
+            "name": "biigle/flysystem-aruna",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/flysystem-aruna.git",
+                "reference": "e4054484ddbff20474f7d8e697454bb1d63016b2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/flysystem-aruna/zipball/e4054484ddbff20474f7d8e697454bb1d63016b2",
+                "reference": "e4054484ddbff20474f7d8e697454bb1d63016b2",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0|^7.3",
+                "league/flysystem": "^3.0",
+                "league/flysystem-aws-s3-v3": "^3.0",
+                "league/mime-type-detection": "^1.0"
+            },
+            "require-dev": {
+                "league/flysystem-adapter-test-utilities": "^3.15",
+                "mockery/mockery": "^1.4",
+                "phpunit/phpunit": "^9.5",
+                "symfony/var-dumper": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Flysystem\\Aruna\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Flysystem adapter for the Aruna Object Storage.",
+            "keywords": [
+                "Flysystem",
+                "aruna",
+                "biigle",
+                "files",
+                "filesystem",
+                "filesystems",
+                "storage"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/flysystem-aruna/issues",
+                "source": "https://github.com/biigle/flysystem-aruna/tree/v1.0"
+            },
+            "time": "2023-05-17T13:45:56+00:00"
+        },
+        {
             "name": "biigle/geo",
             "version": "dev-master",
             "source": {
@@ -481,6 +539,55 @@
                 "source": "https://github.com/biigle/geo"
             },
             "time": "2023-03-15T09:55:34+00:00"
+        },
+        {
+            "name": "biigle/laravel-aruna-driver",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-aruna-driver.git",
+                "reference": "7638e7f95896236f84a20487b5a462d1638cf283"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-aruna-driver/zipball/7638e7f95896236f84a20487b5a462d1638cf283",
+                "reference": "7638e7f95896236f84a20487b5a462d1638cf283",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/flysystem-aruna": "^1.0",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Filesystem\\Aruna\\ArunaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Filesystem\\Aruna\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Aruna object Storage storage driver for Laravel/Lumen.",
+            "support": {
+                "issues": "https://github.com/biigle/laravel-aruna-driver/issues",
+                "source": "https://github.com/biigle/laravel-aruna-driver/tree/v1.1"
+            },
+            "time": "2023-05-17T14:41:01+00:00"
         },
         {
             "name": "biigle/laravel-file-cache",
@@ -546,12 +653,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "054f1dfc416a8825718f458decc1299c79fcc9b8"
+                "reference": "12283aabac9538e13d49a91fda3fa65bf7da7d9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/054f1dfc416a8825718f458decc1299c79fcc9b8",
-                "reference": "054f1dfc416a8825718f458decc1299c79fcc9b8",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/12283aabac9538e13d49a91fda3fa65bf7da7d9c",
+                "reference": "12283aabac9538e13d49a91fda3fa65bf7da7d9c",
                 "shasum": ""
             },
             "require": {
@@ -587,7 +694,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2023-03-15T09:54:52+00:00"
+            "time": "2023-05-16T07:23:22+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -641,12 +748,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "c2d9e9205bf740052f70a7535935f6cd86662c51"
+                "reference": "e6bb111590ff55c95bb4401aab6948730e353b00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/c2d9e9205bf740052f70a7535935f6cd86662c51",
-                "reference": "c2d9e9205bf740052f70a7535935f6cd86662c51",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/e6bb111590ff55c95bb4401aab6948730e353b00",
+                "reference": "e6bb111590ff55c95bb4401aab6948730e353b00",
                 "shasum": ""
             },
             "require": {
@@ -680,7 +787,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2023-03-15T09:55:43+00:00"
+            "time": "2023-05-30T14:34:20+00:00"
         },
         {
             "name": "biigle/module",
@@ -731,12 +838,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/newsletter.git",
-                "reference": "08deb4c076796e8d28d1d4c8f6cc5fcce4f1811b"
+                "reference": "739766e9e4a15743f1b8a6b223e3dded1005de31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/newsletter/zipball/08deb4c076796e8d28d1d4c8f6cc5fcce4f1811b",
-                "reference": "08deb4c076796e8d28d1d4c8f6cc5fcce4f1811b",
+                "url": "https://api.github.com/repos/biigle/newsletter/zipball/739766e9e4a15743f1b8a6b223e3dded1005de31",
+                "reference": "739766e9e4a15743f1b8a6b223e3dded1005de31",
                 "shasum": ""
             },
             "require": {
@@ -769,7 +876,7 @@
                 "issues": "https://github.com/biigle/newsletter/issues",
                 "source": "https://github.com/biigle/newsletter"
             },
-            "time": "2023-03-15T09:56:04+00:00"
+            "time": "2023-06-02T09:19:05+00:00"
         },
         {
             "name": "biigle/reports",
@@ -871,15 +978,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-disks.git",
-                "reference": "33075b77181769013e43f71589b44c0b28fb4585"
+                "reference": "0b425ef618a4f8525a39b9dec7652f369558ef5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-disks/zipball/33075b77181769013e43f71589b44c0b28fb4585",
-                "reference": "33075b77181769013e43f71589b44c0b28fb4585",
+                "url": "https://api.github.com/repos/biigle/user-disks/zipball/0b425ef618a4f8525a39b9dec7652f369558ef5b",
+                "reference": "0b425ef618a4f8525a39b9dec7652f369558ef5b",
                 "shasum": ""
             },
             "require": {
+                "biigle/laravel-aruna-driver": "^1.0",
                 "league/flysystem-aws-s3-v3": "^3.12",
                 "league/flysystem-read-only": "^3.3"
             },
@@ -917,7 +1025,7 @@
                 "issues": "https://github.com/biigle/user-disks/issues",
                 "source": "https://github.com/biigle/user-disks"
             },
-            "time": "2023-05-09T14:27:42+00:00"
+            "time": "2023-05-26T11:42:56+00:00"
         },
         {
             "name": "biigle/user-storage",
@@ -925,12 +1033,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-storage.git",
-                "reference": "014ba634ff58742838fc61070a0690c53157d47c"
+                "reference": "583946dcc87bcb2514a13f8a6abea0855c54e2e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-storage/zipball/014ba634ff58742838fc61070a0690c53157d47c",
-                "reference": "014ba634ff58742838fc61070a0690c53157d47c",
+                "url": "https://api.github.com/repos/biigle/user-storage/zipball/583946dcc87bcb2514a13f8a6abea0855c54e2e7",
+                "reference": "583946dcc87bcb2514a13f8a6abea0855c54e2e7",
                 "shasum": ""
             },
             "default-branch": true,
@@ -963,7 +1071,7 @@
                 "issues": "https://github.com/biigle/user-storage/issues",
                 "source": "https://github.com/biigle/user-storage"
             },
-            "time": "2023-04-03T13:37:36+00:00"
+            "time": "2023-06-02T07:58:16+00:00"
         },
         {
             "name": "brick/math",
