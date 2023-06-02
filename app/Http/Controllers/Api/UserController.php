@@ -191,6 +191,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
      * @apiParam (Attributes that can be updated) {Number} role_id Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
+     * @apiParam (Attributes that can be updated) {Boolean} can_review Determine if the user can review e.g. new user registrations even if they are no global admin. This can only be set for users with the editor role.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -225,9 +226,12 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->affiliation = $request->input('affiliation', $user->affiliation);
-        if ($request->filled('can_review')) {
+        if ($request->filled('can_review') && $user->role_id === Role::editorId()) {
             $user->canReview = (bool) $request->input('can_review');
+        } else {
+            $user->canReview = false;
         }
+
         $user->save();
 
         if (!$this->isAutomatedRequest()) {

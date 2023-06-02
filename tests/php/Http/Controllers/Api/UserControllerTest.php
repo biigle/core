@@ -304,20 +304,56 @@ class UserControllerTest extends ApiTestCase
 
     public function testUpdateCanReview()
     {
-        $user = $this->guest();
         // 'adminpassword'
         $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
+
+        $user = $this->guest();
+        $this->putJson("api/v1/users/{$user->id}", [
+                'can_review' => '1',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        // Ignored because it is a guest.
+        $this->assertFalse($user->canReview);
+
+        $user = $this->user();
         $this->assertFalse($user->canReview);
         $this->putJson("api/v1/users/{$user->id}", [
                 'can_review' => '1',
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
+
         $this->assertTrue($user->fresh()->canReview);
         $this->putJson("api/v1/users/{$user->id}", [
                 'can_review' => '0',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertFalse($user->fresh()->canReview);
+    }
+
+    public function testDowngradeRoleWithCanReview()
+    {
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+        $user = $this->user();
+        $user->canReview = true;
+        $user->save();
+
+        // This sets canReview to false, too.
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::guestId(),
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::editorId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);

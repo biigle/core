@@ -197,7 +197,9 @@ class User extends Authenticatable
      */
     public function getCanReviewAttribute()
     {
-        return $this->isInSuperUserMode || $this->getSettings('can_review', false);
+        return $this->isInSuperUserMode ||
+            ($this->role_id === Role::editorId() &&
+                $this->getSettings('can_review', false));
     }
 
     /**

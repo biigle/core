@@ -33,7 +33,7 @@
         </div>
         <div class="col-sm-3 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
             <label for="can_review">Can review</label>
-            <select class="form-control" name="can_review" id="can_review" required>
+            <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role_id === \Biigle\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected($affectedUser->can_review)>Yes</option>
                 <option value="0" @selected(!$affectedUser->can_review)>No</option>
             </select>

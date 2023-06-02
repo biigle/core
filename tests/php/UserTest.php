@@ -230,14 +230,20 @@ class UserTest extends ModelTestCase
 
     public function testCanReviewAttribute()
     {
+        $this->model->role_id = Role::guestId();
         $this->assertFalse($this->model->canReview);
         $this->model->canReview = true;
+        $this->assertFalse($this->model->canReview);
+
+        $this->model->role_id = Role::editorId();
         $this->assertTrue($this->model->canReview);
         $this->assertNotNull($this->model->attrs);
         $this->model->canReview = false;
         $this->assertFalse($this->model->canReview);
         $this->assertNull($this->model->attrs);
+
         $this->model->role_id = Role::adminId();
+        $this->model->canReview = false;
         $this->assertTrue($this->model->canReview);
         $this->model->isInSuperUserMode = false;
         $this->assertFalse($this->model->canReview);
