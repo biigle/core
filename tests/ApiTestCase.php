@@ -20,15 +20,16 @@ class ApiTestCase extends TestCase
     private $user;
 
     private $globalGuest;
+    private $globalReviewer;
     private $globalAdmin;
 
     private $labelTree;
     private $labelRoot;
     private $labelChild;
 
-    private function newUser($role = null)
+    private function newUser($role = null, $attrs = [])
     {
-        $user = UserTest::make();
+        $user = UserTest::make($attrs);
         $user->role()->associate($role ? $role : Role::editor());
         $user->save();
 
@@ -146,6 +147,22 @@ class ApiTestCase extends TestCase
     protected function beGlobalGuest()
     {
         $this->be($this->globalGuest());
+    }
+
+    protected function globalReviewer()
+    {
+        if ($this->globalReviewer) {
+            return $this->globalReviewer;
+        }
+
+        return $this->globalReviewer = $this->newUser(Role::editor(), [
+            'attrs' => ['settings' => ['can_review' => true]],
+        ]);
+    }
+
+    protected function beGlobalReviewer()
+    {
+        $this->be($this->globalReviewer());
     }
 
     protected function globalAdmin()
