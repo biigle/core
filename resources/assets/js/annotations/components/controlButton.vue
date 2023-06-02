@@ -8,7 +8,8 @@
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
         >
-        <i :class="iconClass" aria-hidden="true"></i>
+        <loader v-if="loading" :active="true"></loader>
+        <i v-else :class="iconClass" aria-hidden="true"></i>
         <span
             v-if="hasSubControls"
             @click.stop class="control-button__sub-controls btn-group"
@@ -19,6 +20,8 @@
 </template>
 
 <script>
+import Loader from '../../core/components/loader';
+
 /**
  * A generic control button of the annotation canvas
  *
@@ -52,6 +55,13 @@ export default {
             type: Boolean,
             default: false,
         },
+        loading: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    components: {
+        Loader,
     },
     data() {
         return {

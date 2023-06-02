@@ -90,6 +90,7 @@
                     <td><kbd>t</kbd></td>
                     <td>Select the polygon fill tool</td>
                 </tr>
+                @mixin('manualAnnotationShortcutsPolygon')
                 <tr>
                     <td><kbd>m</kbd></td>
                     <td>Select the tool to move selected annotations</td>

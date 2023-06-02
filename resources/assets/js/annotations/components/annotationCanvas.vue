@@ -132,6 +132,10 @@ export default {
             type: String,
             default: 'default',
         },
+        userId: {
+            type: Number,
+            required: true,
+        },
     },
     data() {
         return {
