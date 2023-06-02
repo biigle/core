@@ -11,6 +11,9 @@
     <small>
         {{$shownUser->email}}
         <span class="label label-{{$roleClass}}">{{ucfirst($shownUser->role->name)}}</span>
+        @if ($shownUser->canReview)
+            <span class="label label-warning" title="This user can review">R</span>
+        @endif
     </small>
 </h2>
 <p class="col-xs-12 clearfix">
