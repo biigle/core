@@ -30,8 +30,10 @@
 
 @section('navbar')
 <div class="navbar-text">
-    <div class="annotations-breadcrumb">
+    <div class="annotations-project-dd">
         @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+    </div>
+    <div class="annotations-breadcrumb">
         <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
         <span id="annotations-navbar">
             <breadcrumb
