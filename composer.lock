@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "70e6725e5e4ad6c309af2cae2cd6facf",
+    "content-hash": "101147a0765af22051b9bf65672ad114",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -791,16 +791,16 @@
         },
         {
             "name": "biigle/module",
-            "version": "dev-master",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/module.git",
-                "reference": "ad3c0de09b29d548a903701767703c61c6be890c"
+                "reference": "d06353eac68598a6c058a7b77a2ad54773f74a0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/module/zipball/ad3c0de09b29d548a903701767703c61c6be890c",
-                "reference": "ad3c0de09b29d548a903701767703c61c6be890c",
+                "url": "https://api.github.com/repos/biigle/module/zipball/d06353eac68598a6c058a7b77a2ad54773f74a0f",
+                "reference": "d06353eac68598a6c058a7b77a2ad54773f74a0f",
                 "shasum": ""
             },
             "default-branch": true,
@@ -830,7 +830,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2023-05-02T13:36:06+00:00"
+            "time": "2023-05-02T13:57:09+00:00"
         },
         {
             "name": "biigle/newsletter",
