@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use SoapFault;
 
 class LabelSourceController extends Controller
@@ -32,8 +33,7 @@ class LabelSourceController extends Controller
         try {
             $result = $source->getAdapter()->find($request);
         } catch (SoapFault $sf) {
-            $errCode = 503;
-            $result = response(['errors' => ["SoapFault" => ["WoRMS is currently unavailable."]]], $errCode);
+            $result = response(['errors' => ["SoapFault" => ["WoRMS is currently unavailable."]]], Response::HTTP_SERVICE_UNAVAILABLE);
         }
         return $result;
     }
