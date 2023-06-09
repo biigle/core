@@ -49,7 +49,7 @@ let store = new Vue({
             let data = response.body;
 
             if (data) {
-                if ((response.status === 422 || response.status === 503) && data.errors) {
+                if (response.status === 422 && data.errors) {
                     // validation response
                     for (let key in data.errors) {
                         this.danger(data.errors[key][0]);
