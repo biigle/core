@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
+use SoapFault;
 
 class LabelSourceController extends Controller
 {
@@ -27,6 +28,13 @@ class LabelSourceController extends Controller
         $source = LabelSource::findOrFail($id);
         $this->validate($request, ['query' => 'required']);
 
-        return $source->getAdapter()->find($request);
+        // Catch SoapFault exception, if WoRMS server is not available due to maintenance, etc...
+        try {
+            $result = $source->getAdapter()->find($request);
+        } catch (SoapFault $sf) {
+            $errCode = 503;
+            $result = response(['errors' => ["SoapFault" => ["WoRMS is currently unavailable."]]], $errCode);
+        }
+        return $result;
     }
 }
