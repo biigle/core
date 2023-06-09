@@ -33,7 +33,7 @@ class LabelSourceController extends Controller
         try {
             $result = $source->getAdapter()->find($request);
         } catch (SoapFault $sf) {
-            $result = response(['message' => 'WoRMS is currently unavailable.'], Response::HTTP_SERVICE_UNAVAILABLE);
+            $result = response(['message' => 'The label source is currently unavailable.'], Response::HTTP_SERVICE_UNAVAILABLE);
         }
         return $result;
     }
