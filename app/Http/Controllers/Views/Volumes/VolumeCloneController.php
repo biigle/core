@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use \Illuminate\Contracts\View\View;
@@ -29,13 +30,15 @@ class VolumeCloneController extends Controller
         if ($user->can('sudo')) {
             // Global admins have no restrictions.
             $projectIds = $volume->projects()->pluck('id');
+            $destProjectQuery = Project::getQuery();
         } else {
             // Array of all project IDs that the user and the volume have in common.
             $projectIds = Project::inCommon($user, $volume->id)->pluck('id');
+            $destProjectQuery = $user->projects()->where('project_role_id', Role::adminId());
         }
 
         // Collection of projects where cloned volume can be copied to.
-        $destProjects = $user->projects()->where('project_role_id', \Biigle\Role::adminId())->get();
+        $destProjects = $destProjectQuery->select('name', 'id')->get();
 
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')
