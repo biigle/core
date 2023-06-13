@@ -6,6 +6,8 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\DestroyVideoAnnotationLabel;
 use Biigle\Http\Requests\StoreVideoAnnotationLabel;
 use Biigle\VideoAnnotationLabel;
+use Illuminate\Database\QueryException;
+use Str;
 
 class VideoAnnotationLabelController extends Controller
 {
