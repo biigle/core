@@ -44,11 +44,34 @@ class VideoAnnotationLabelController extends Controller
      */
     public function store(StoreVideoAnnotationLabel $request)
     {
-        return VideoAnnotationLabel::create([
-            'label_id' => $request->label->id,
-            'user_id' => $request->user()->id,
-            'annotation_id' => $request->annotation->id,
-        ])->load('label', 'user');
+
+        $annotationLabel = new VideoAnnotationLabel;
+        $annotationLabel->user()->associate($request->user());
+        $annotationLabel->label()->associate($request->label);
+        $annotationLabel->annotation()->associate($request->annotation);
+
+        $exists = VideoAnnotationLabel::where('user_id', $annotationLabel->user_id)
+            ->where('label_id', $annotationLabel->label_id)
+            ->where('annotation_id', $annotationLabel->annotation_id)
+            ->exists();
+
+        if ($exists) {
+            abort(400, 'The user already attached this label to the annotation.');
+        }
+
+        try {
+            $annotationLabel->save();
+            // should not be returned
+            unset($annotationLabel->annotation);
+
+            return response($annotationLabel, 201);
+        } catch (QueryException $e) {
+            // Although we check for existence above, this error happened some time.
+            // I suspect some kind of race condition between PHP FPM workers.
+            if (!Str::contains($e->getMessage(), 'Unique violation')) {
+                throw $e;
+            }
+        }
     }
 
     /**
