@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Largo\Jobs;
 
 use Biigle\Contracts\Annotation;
+use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Jobs\Job;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
@@ -10,6 +11,7 @@ use Biigle\VolumeFile;
 use Exception;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Jcupitt\Vips\Image;
@@ -19,6 +21,13 @@ use Str;
 abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 {
     use SerializesModels, InteractsWithQueue;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
 
     /**
      * The the annotation to generate a patch for.
@@ -40,6 +49,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      * @var bool
      */
     protected $deleteWhenMissingModels = true;
+
 
     /**
      * Create a new job instance.
@@ -65,7 +75,16 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
     public function handle()
     {
         try {
-            FileCache::get($this->annotation->getFile(), [$this, 'handleFile']);
+            FileCache::get($this->annotation->getFile(), [$this, 'handleFile'], true);
+        } catch (FileLockedException $e) {
+            // Retry this job without increasing the attempts if the file is currently
+            // written by another worker. This worker can process other jobs in the
+            // meantime.
+            // See: https://github.com/laravel/ideas/issues/735
+            static::dispatch($this->annotation, $this->targetDisk)
+                ->onConnection($this->connection)
+                ->onQueue($this->queue)
+                ->delay(60);
         } catch (Exception $e) {
             if ($this->shouldRetryAfterException($e)) {
                 // Exponential backoff for retry after 10 and then 20 minutes.
@@ -118,7 +137,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
     protected function shouldRetryAfterException(Exception $e)
     {
         $message = $e->getMessage();
-        return $this->attempts() < 3 && (
+        return $this->attempts() < $this->tries && (
             // The remote source might be available again after a while.
             Str::contains($message, 'The source resource could not be established') ||
             // This error presumably occurs due to worker concurrency.
