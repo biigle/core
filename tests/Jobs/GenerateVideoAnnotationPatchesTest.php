@@ -2,10 +2,12 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\VideoAnnotation;
+use Bus;
 use Exception;
 use FFMpeg\Media\Video;
 use File;
@@ -296,6 +298,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $annotation = VideoAnnotationTest::create();
         $job = new GenerateVideoAnnotationPatch($annotation);
         $job->handle();
+    }
+
+    public function testFileLockedError()
+    {
+        Bus::fake();
+        FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+
+        $annotation = VideoAnnotationTest::create();
+        $job = new GenerateVideoAnnotationPatch($annotation);
+        $job->handle();
+        Bus::assertDispatched(GenerateVideoAnnotationPatch::class);
     }
 
     protected function getFrameMock($times = 1)

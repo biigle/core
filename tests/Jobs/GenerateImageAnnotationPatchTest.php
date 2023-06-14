@@ -2,9 +2,11 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
+use Bus;
 use Exception;
 use File;
 use FileCache;
@@ -229,6 +231,17 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $annotation = ImageAnnotationTest::create();
         $job = new GenerateImageAnnotationPatch($annotation);
         $job->handle();
+    }
+
+    public function testFileLockedError()
+    {
+        Bus::fake();
+        FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new GenerateImageAnnotationPatch($annotation);
+        $job->handle();
+        Bus::assertDispatched(GenerateImageAnnotationPatch::class);
     }
 
     protected function getImageMock($times = 1)
