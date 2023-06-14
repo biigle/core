@@ -71,7 +71,7 @@ export default {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
         },
         selectedProjectName() {
-            return this.destinationProjects.find(p => p.id === this.selectedProjectId).name;
+            return this.destinationProjects.find(p => p.id === this.selectedProjectId)?.name || '';
         },
     },
     methods: {
