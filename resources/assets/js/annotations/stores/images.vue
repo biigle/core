@@ -180,14 +180,27 @@ export default new Vue({
             // check if it's an image or a JSON. If this is a cross origin request,
             // the preflight request is automatically performed. If CORS is blocked,
             // the catch() block below handles fallback loading of images.
-            return Vue.http.get(this.imageFileUri.replace(':id', id), {responseType: 'blob'})
-                .then((response) => {
+            //
+            // Use fetch() instead of Vue.http.get() because Laravel Echo automatically
+            // adds an interceptor that adds an additional header whcih could cause
+            // problems with CORS.
+            //
+            // See: https://github.com/laravel/echo/issues/152
+            let url = this.imageFileUri.replace(':id', id);
+
+            return fetch(url).then((response) => {
+                    if (!response.ok) {
+                        throw new Error();
+                    }
+
                     let type = response.headers.get('content-type');
                     if (type === 'application/json') {
-                        let uuid = response.body.uuid;
-                        response.body.url = this.tilesUri.replace(':uuid', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
+                        return response.json().then((body) => {
+                            let uuid = body.uuid;
+                            body.url = this.tilesUri.replace(':uuid', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
 
-                        return response.body;
+                            return body;
+                        });
                     }
 
                     response.blob().then(function (blob) {
@@ -197,15 +210,14 @@ export default new Vue({
 
                     return promise;
                 })
-                .catch(function (response) {
-                    // I could not find any reliable way to detect a failure due to
-                    // blocking of CORS. But the status seemed to be always 0.
+                .catch((error) => {
+                    // fetch() will throw a TypeError if CORS is not allowed. Retry with
+                    // the plain img fallback.
                     // Remote image without CORS support will be dropped in a future
                     // release. See: https://github.com/biigle/core/issues/351
-                    if (response.status === 0) {
+                    if (error instanceof TypeError) {
                         imageWrapper.crossOrigin = true;
-                        img.src = response.url;
-                        // throw new CrossOriginError();
+                        img.src = url;
 
                         return promise;
                     }

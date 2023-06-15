@@ -51,7 +51,6 @@
         </p>
 <pre>
 Access-Control-Allow-Origin "*"
-Access-Control-Allow-Headers "x-requested-with"
 </pre>
         <p>
             In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the files.
