@@ -13,6 +13,7 @@ use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Log;
 
 /**
@@ -23,6 +24,13 @@ use Log;
 class TrackObject extends Job implements ShouldQueue
 {
     use SerializesModels;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
 
     /**
      * The annotation that defines the initial object to track.
@@ -46,11 +54,16 @@ class TrackObject extends Job implements ShouldQueue
     protected $deleteWhenMissingModels = true;
 
     /**
-     * The number of times the job may be attempted.
+     * Return the cache key to store the number of concurrent jobs for each user.
      *
-     * @var int
+     * @param User $user
+     *
+     * @return string
      */
-    public $tries = 1;
+    public static function getRateLimitCacheKey(User $user)
+    {
+        return "object-tracking-jobs-{$user->id}";
+    }
 
     /**
      * Create a new instance.
@@ -77,9 +90,7 @@ class TrackObject extends Job implements ShouldQueue
             $points = $this->annotation->points;
 
             if (empty($keyframes)) {
-                ObjectTrackingFailed::dispatch($this->annotation, $this->user);
-
-                return;
+                throw new Exception("Empty keyframes.");
             }
 
             foreach ($keyframes as $keyframe) {
@@ -97,6 +108,11 @@ class TrackObject extends Job implements ShouldQueue
         } catch (Exception $e) {
             Log::warning("Could not track object for video {$this->annotation->video->id}: {$e->getMessage()}");
             ObjectTrackingFailed::dispatch($this->annotation, $this->user);
+        } finally {
+            $count = Cache::decrement(static::getRateLimitCacheKey($this->user));
+            if ($count <= 0) {
+                Cache::forget(static::getRateLimitCacheKey($this->user));
+            }
         }
     }
 

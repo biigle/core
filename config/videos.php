@@ -46,4 +46,10 @@ return [
     'process_new_video_queue' => env('VIDEOS_PROCESS_NEW_VIDEO_QUEUE', 'default'),
     'track_object_queue' => env('VIDEOS_TRACK_OBJECT_QUEUE', 'high'),
 
+    /*
+     | Specifies the maximum number of running object tracking jobs per user. If the user
+     | requests more jobs, the requests will be rejected.
+     */
+    'track_object_max_jobs_per_user' => env('VIDEOS_TRACK_OBJECT_MAX_JOBS_PER_USER', 10),
+
 ];

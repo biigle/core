@@ -10,11 +10,13 @@ use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
+use Cache;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Queue;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VideoAnnotationController extends Controller
 {
@@ -192,6 +194,15 @@ class VideoAnnotationController extends Controller
      */
     public function store(StoreVideoAnnotation $request)
     {
+        if ($request->shouldTrack()) {
+            $maxJobs = config('videos.track_object_max_jobs_per_user');
+            $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
+
+            if ($currentJobs >= $maxJobs) {
+                throw new TooManyRequestsHttpException(message: "You already have {$currentJobs} object tracking jobs running. Please wait for one to finish until you submit a new one.");
+            }
+        }
+
         // from a JSON request, the array may already be decoded
         $points = $request->input('points', []);
 
@@ -229,6 +240,7 @@ class VideoAnnotationController extends Controller
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
             Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
+            Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
         }
 
         $annotation->load('labels.label', 'labels.user');

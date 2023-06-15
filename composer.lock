@@ -596,20 +596,20 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v4.1.0",
+            "version": "v4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "9603c318195872e2a1324be4dbc8f2a3fb4b09a2"
+                "reference": "d807f4d0dec4b1ae04fce4ebdca0b0c01e9c1b89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/9603c318195872e2a1324be4dbc8f2a3fb4b09a2",
-                "reference": "9603c318195872e2a1324be4dbc8f2a3fb4b09a2",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d807f4d0dec4b1ae04fce4ebdca0b0c01e9c1b89",
+                "reference": "d807f4d0dec4b1ae04fce4ebdca0b0c01e9c1b89",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^7.7",
+                "guzzlehttp/guzzle": "^7.0",
                 "illuminate/console": "^9.0",
                 "illuminate/filesystem": "^9.0",
                 "illuminate/support": "^9.0",
@@ -649,9 +649,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v4.1.0"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v4.1.1"
             },
-            "time": "2023-06-14T12:58:34+00:00"
+            "time": "2023-06-15T13:22:51+00:00"
         },
         {
             "name": "biigle/largo",

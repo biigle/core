@@ -14,7 +14,7 @@ class FilesystemManagerTest extends TestCase
             if ($name === 'mydisk') {
                 return [
                     'driver' => 'local',
-                    'root' => 'abc',
+                    'root' => storage_path('framework/testing/disks/abc'),
                 ];
             }
 
