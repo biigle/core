@@ -50,7 +50,7 @@
             To set up CORS for the files of your remote source, you have to update the configuration of the webserver that serves the files. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for a file:
         </p>
 <pre>
-Access-Control-Allow-Origin "*"
+Access-Control-Allow-Origin "{{url('/')}}"
 </pre>
         <p>
             In addition to that, you have to use a secure HTTP connection (<code>https://</code>) to access the files.
