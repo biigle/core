@@ -8,6 +8,7 @@ use Biigle\Tests\LabelSourceTest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Mockery;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class LabelSourceControllerTest extends ApiTestCase
 {
@@ -40,14 +41,14 @@ class LabelSourceControllerTest extends ApiTestCase
         $response->assertExactJson([['name' => 'My Query Label']]);
     }
 
-    public function testFindWithException()
+    public function testFindThrowException()
     {
         $source = LabelSourceTest::create(['name' => 'my_source']);
 
         $mock = Mockery::mock();
         $mock->shouldReceive('find')
             ->once()
-            ->andThrow(new \SoapFault('test', 'test')); // faultcode and faultstring parameter must to be set
+            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
 
         App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
             return $mock;
@@ -59,8 +60,7 @@ class LabelSourceControllerTest extends ApiTestCase
             'query' => 'my query',
         ]);
         $response->assertStatus(Response::HTTP_SERVICE_UNAVAILABLE);
-
-
+        $response->assertContent('{"message":"test"}');
 
     }
 }
