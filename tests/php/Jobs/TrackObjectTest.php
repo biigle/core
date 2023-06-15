@@ -6,12 +6,13 @@ use Biigle\Events\ObjectTrackingFailed;
 use Biigle\Events\ObjectTrackingSucceeded;
 use Biigle\Jobs\TrackObject;
 use Biigle\Shape;
-use Biigle\User;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Biigle\User;
 use Biigle\VideoAnnotation;
 use Exception;
 use File;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Log;
 use Storage;
@@ -49,6 +50,46 @@ class TrackObjectTest extends TestCase
         foreach ($job->paths as $path) {
             $this->assertFalse(File::exists($path));
         }
+    }
+
+    public function testHandleCacheKeyOne()
+    {
+        config(['videos.keyframe_distance' => 123]);
+
+        $user = User::factory()->create();
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'frames' => [0.5],
+            'points' => [[0, 0]],
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
+        ]);
+
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user), 1);
+
+        $job = new TrackObjectStub($annotation, $user);
+        $job->handle();
+
+        $this->assertFalse(Cache::has(TrackObjectStub::getRateLimitCacheKey($user)));
+    }
+
+    public function testHandleCacheKeyMany()
+    {
+        config(['videos.keyframe_distance' => 123]);
+
+        $user = User::factory()->create();
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'frames' => [0.5],
+            'points' => [[0, 0]],
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
+        ]);
+
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user), 2);
+
+        $job = new TrackObjectStub($annotation, $user);
+        $job->handle();
+
+        $this->assertEquals(1, Cache::get(TrackObjectStub::getRateLimitCacheKey($user)));
     }
 
     public function testHandlePoint()
@@ -136,6 +177,7 @@ class TrackObjectTest extends TestCase
     public function testHandleEmpty()
     {
         Event::fake();
+        Log::shouldReceive('warning')->once();
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
             'shape_id' => Shape::circleId(),

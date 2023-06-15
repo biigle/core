@@ -57,6 +57,12 @@
             The result of the automatic object tracking may not always be perfect. Sometimes the tracked object may be lost and the annotation "wanders off" if the object moves too quickly. Or sometimes the tracked object becomes too small or indistinguishable from the background. If the annotation clip produced by the object tracking is only partly wrong, you can <a href="{{route('manual-tutorials', ['videos', 'editing-video-annotations'])}}">edit it</a> afterwards. If the object tracking does not work at all, you might have to fall back to the fully manual creation of annotation clips.
         </p>
 
+        <div class="panel panel-info">
+            <div class="panel-body text-info">
+                You can only create up to {{config('videos.track_object_max_jobs_per_user')}} object tracking jobs at once. Then you have to wait until one of the jobs is finished.
+            </div>
+        </div>
+
         <h3><a name="whole-frame-annotations"></a>Whole Frame Annotations</h3>
 
         <p>
