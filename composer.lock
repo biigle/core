@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "101147a0765af22051b9bf65672ad114",
+    "content-hash": "07267876b3461a9fe1f8704076c281ef",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -747,6 +747,55 @@
                 "source": "https://github.com/biigle/laserpoints"
             },
             "time": "2023-03-15T09:55:20+00:00"
+        },
+        {
+            "name": "biigle/magic-sam",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/magic-sam.git",
+                "reference": "e3a7518e0dd256b569ae506758f6ab871cb10e9d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/e3a7518e0dd256b569ae506758f6ab871cb10e9d",
+                "reference": "e3a7518e0dd256b569ae506758f6ab871cb10e9d",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\MagicSam\\MagicSamServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\MagicSam\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module for the Magic SAM image annotation instrument .",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/module/issues",
+                "source": "https://github.com/biigle/module"
+            },
+            "time": "2023-06-06T07:39:37+00:00"
         },
         {
             "name": "biigle/maia",
