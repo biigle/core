@@ -7,9 +7,11 @@ use Biigle\Services\LabelSourceAdapters\WormsAdapter;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Mockery;
 use SoapClient;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use TestCase;
 
 class WormsAdapterTest extends TestCase
@@ -119,6 +121,28 @@ class WormsAdapterTest extends TestCase
         $this->assertEquals([], $results);
     }
 
+    public function testFindThrowException()
+    {
+
+        $mock = Mockery::mock(SoapClient::class);
+        $mock->shouldReceive('getAphiaRecords')
+            ->once()
+            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
+
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
+
+        $request = new Request;
+        $request->merge(['query' => 'Kolga']);
+
+        try {
+            $adapter->find($request);
+        } catch(ServiceUnavailableHttpException $e) {
+            $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
+            $this->assertEquals('test', $e->getMessage());
+        }
+    }
+
     public function testCreateNormal()
     {
         $tree = LabelTreeTest::create();
@@ -168,6 +192,30 @@ class WormsAdapterTest extends TestCase
         $this->assertEquals($label->id, $labels[0]->parent_id);
         $this->assertEquals($tree->id, $labels[0]->label_tree_id);
         $this->assertNotNull($labels[0]->uuid);
+    }
+
+    public function testCreateThrowException()
+    {
+        $tree = LabelTreeTest::create();
+
+        $mock = Mockery::mock(SoapClient::class);
+        $mock->shouldReceive('getAphiaNameByID')
+            ->once()
+            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
+
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
+
+        $request = new Request;
+        $request->merge(['query' => 'Kolga',
+                        'source_id' => 124731000,]);
+
+        try {
+            $adapter->create($tree->id, $request);
+        } catch(ServiceUnavailableHttpException $e) {
+            $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
+            $this->assertEquals('test', $e->getMessage());
+        }
     }
 
     public function testCreateRoot()
