@@ -271,6 +271,18 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreValidatePointsArray()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [null],
+                'frames' => [0.0],
+            ])
+            ->assertStatus(422);
+    }
+
     public function testStoreValidateFrames()
     {
         $this->beEditor();
