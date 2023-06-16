@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\LabelSourceAdapters;
 
+use \Illuminate\Http\Response;
 use Arr;
 use Biigle\Contracts\LabelSourceAdapterContract;
 use Biigle\Label;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Uuid;
 use SoapClient;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 /**
  * WoRMS label source adapter.
@@ -77,24 +79,31 @@ class WormsAdapter implements LabelSourceAdapterContract
             return [];
         }
 
-        $client = $this->getSoapClient();
+        try {
+            $client = $this->getSoapClient();
 
-        // WoRMS returns a maximum of 50 results per request. We use a loop to get more
-        // results but take care to stop it if it runs too often.
-        do {
-            // Method signature is:
-            // string $like Add a '%'-sign added after the ScientificName (SQL LIKE function). Default=true
-            // bool $like (deprecated)
-            // bool $fuzzy (deprecated)
-            // bool $marine_only Limit to marine taxa. Default=true
-            // int $offset Starting recordnumber, when retrieving next chunk of (50) records. Default=1
-            $currentResults = $client->getAphiaRecords("%{$query}%", null, null, true, $offset);
-            if (!is_array($currentResults)) {
-                break;
-            }
-            $results = array_merge($results, $currentResults);
-            $offset += 50;
-        } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
+            // WoRMS returns a maximum of 50 results per request. We use a loop to get more
+            // results but take care to stop it if it runs too often.
+            do {
+                // Method signature is:
+                // string $like Add a '%'-sign added after the ScientificName (SQL LIKE function). Default=true
+                // bool $like (deprecated)
+                // bool $fuzzy (deprecated)
+                // bool $marine_only Limit to marine taxa. Default=true
+                // int $offset Starting recordnumber, when retrieving next chunk of (50) records. Default=1
+            
+                $currentResults = $client->getAphiaRecords("%{$query}%", null, null, true, $offset);
+            
+                if (!is_array($currentResults)) {
+                    break;
+                }
+                $results = array_merge($results, $currentResults);
+                $offset += 50;
+            } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
+
+        } catch (\SoapFault $sf) {
+            throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
+        }
 
         if (!$request->input('unaccepted', false)) {
             // use array_values because array_filter retains the keys and this might
@@ -137,24 +146,30 @@ class WormsAdapter implements LabelSourceAdapterContract
 
         $attributes['parent_id'] = $request->input('parent_id');
         $attributes['label_tree_id'] = $id;
-        $client = $this->getSoapClient();
 
-        if ($client->getAphiaNameByID($attributes['source_id']) === null) {
-            throw ValidationException::withMessages([
-                'source_id' => ['The AphiaID does not exist.'],
-            ]);
-        }
-
-        $recursive = $request->input('recursive', 'false');
-
-        if ($recursive === 'true') {
-            if ($request->has('parent_id')) {
+        try {
+            $client = $this->getSoapClient();
+        
+            if ($client->getAphiaNameByID($attributes['source_id']) === null) {
                 throw ValidationException::withMessages([
-                    'parent_id' => ['The label must not have a parent if it should be created recursively.'],
+                    'source_id' => ['The AphiaID does not exist.'],
                 ]);
             }
 
-            return $this->createRecursiveLabels($attributes);
+            $recursive = $request->input('recursive', 'false');
+
+            if ($recursive === 'true') {
+                if ($request->has('parent_id')) {
+                    throw ValidationException::withMessages([
+                        'parent_id' => ['The label must not have a parent if it should be created recursively.'],
+                    ]);
+                }
+
+                return $this->createRecursiveLabels($attributes);
+            }
+
+        } catch (\SoapFault $sf) {
+            throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
         }
 
         return [$this->createSingleLabel($attributes)];
