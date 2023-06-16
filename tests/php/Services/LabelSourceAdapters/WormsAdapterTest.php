@@ -127,7 +127,7 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaRecords')
             ->once()
-            ->andThrow(new \SoapFault(code: Response::HTTP_SERVICE_UNAVAILABLE, string: 'test'));
+            ->andThrow(new \SoapFault(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
@@ -137,8 +137,8 @@ class WormsAdapterTest extends TestCase
 
         try {
             $adapter->find($request);
+            $this->assertFalse(true);
         } catch (ServiceUnavailableHttpException $e) {
-            $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
             $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
@@ -201,19 +201,19 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
-            ->andThrow(new \SoapFault(code: Response::HTTP_SERVICE_UNAVAILABLE, string: 'test'));
+            ->andThrow(new \SoapFault(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
 
         $request = new Request;
         $request->merge(['query' => 'Kolga',
-                        'source_id' => 124731000]);
+            'source_id' => 124731000]);
 
         try {
             $adapter->create($tree->id, $request);
+            $this->assertFalse(true);
         } catch (ServiceUnavailableHttpException $e) {
-            $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
             $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
