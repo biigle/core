@@ -101,17 +101,17 @@ class WormsAdapter implements LabelSourceAdapterContract
                 $offset += 50;
             } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
 
-        } catch(\SoapFault $sf) {
+        } catch (\SoapFault $sf) {
             throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
         }
 
-            if (!$request->input('unaccepted', false)) {
-                // use array_values because array_filter retains the keys and this might
-                // produce a JSON object output and no array output in the HTTP response
-                $results = array_values(array_filter($results, [$this, 'filterUnaccepted']));
-            }
+        if (!$request->input('unaccepted', false)) {
+            // use array_values because array_filter retains the keys and this might
+            // produce a JSON object output and no array output in the HTTP response
+            $results = array_values(array_filter($results, [$this, 'filterUnaccepted']));
+        }
 
-            return array_map([$this, 'parseItem'], $results);
+        return array_map([$this, 'parseItem'], $results);
     }
 
     /**
@@ -168,11 +168,11 @@ class WormsAdapter implements LabelSourceAdapterContract
                 return $this->createRecursiveLabels($attributes);
             }
 
-        } catch(\SoapFault $sf) {
+        } catch (\SoapFault $sf) {
             throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
         }
 
-            return [$this->createSingleLabel($attributes)];
+        return [$this->createSingleLabel($attributes)];
     
     }
 
