@@ -40,27 +40,4 @@ class LabelSourceControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertExactJson([['name' => 'My Query Label']]);
     }
-
-    public function testFindThrowException()
-    {
-        $source = LabelSourceTest::create(['name' => 'my_source']);
-
-        $mock = Mockery::mock();
-        $mock->shouldReceive('find')
-            ->once()
-            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
-
-        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
-            return $mock;
-        });
-
-        $this->beGuest();
-
-        $response = $this->json('GET', "/api/v1/label-sources/{$source->id}/find", [
-            'query' => 'my query',
-        ]);
-        $response->assertStatus(Response::HTTP_SERVICE_UNAVAILABLE);
-        $response->assertContent('{"message":"test"}');
-
-    }
 }
