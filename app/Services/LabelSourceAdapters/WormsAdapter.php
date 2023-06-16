@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\LabelSourceAdapters;
 
+use \Illuminate\Http\Response;
 use Arr;
 use Biigle\Contracts\LabelSourceAdapterContract;
 use Biigle\Label;
@@ -10,7 +11,6 @@ use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Uuid;
 use SoapClient;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
-use \Illuminate\Http\Response;
 
 /**
  * WoRMS label source adapter.
@@ -102,7 +102,7 @@ class WormsAdapter implements LabelSourceAdapterContract
             } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
 
         } catch(\SoapFault $sf) {
-            throw new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE,'The label source WoRMS is currently unavailable.');
+            throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
         }
 
             if (!$request->input('unaccepted', false)) {
@@ -169,7 +169,7 @@ class WormsAdapter implements LabelSourceAdapterContract
             }
 
         } catch(\SoapFault $sf) {
-            throw new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE,'The label source WoRMS is currently unavailable.');
+            throw new ServiceUnavailableHttpException(message: 'The WoRMS server is currently unavailable.');
         }
 
             return [$this->createSingleLabel($attributes)];
