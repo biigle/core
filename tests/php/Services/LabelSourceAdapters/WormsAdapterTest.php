@@ -127,7 +127,7 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaRecords')
             ->once()
-            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
+            ->andThrow(new \SoapFault(code: Response::HTTP_SERVICE_UNAVAILABLE, string: 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
@@ -137,9 +137,9 @@ class WormsAdapterTest extends TestCase
 
         try {
             $adapter->find($request);
-        } catch(ServiceUnavailableHttpException $e) {
+        } catch (ServiceUnavailableHttpException $e) {
             $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
-            $this->assertEquals('test', $e->getMessage());
+            $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
 
@@ -201,20 +201,20 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
-            ->andThrow(new ServiceUnavailableHttpException(Response::HTTP_SERVICE_UNAVAILABLE, 'test'));
+            ->andThrow(new \SoapFault(code: Response::HTTP_SERVICE_UNAVAILABLE, string: 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
 
         $request = new Request;
         $request->merge(['query' => 'Kolga',
-                        'source_id' => 124731000,]);
+                        'source_id' => 124731000]);
 
         try {
             $adapter->create($tree->id, $request);
-        } catch(ServiceUnavailableHttpException $e) {
+        } catch (ServiceUnavailableHttpException $e) {
             $this->assertEquals(Response::HTTP_SERVICE_UNAVAILABLE, $e->getStatusCode());
-            $this->assertEquals('test', $e->getMessage());
+            $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
 
