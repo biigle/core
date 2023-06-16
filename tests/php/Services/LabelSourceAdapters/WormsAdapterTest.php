@@ -127,7 +127,7 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaRecords')
             ->once()
-            ->andThrow(new \SoapFault);
+            ->andThrow(new \SoapFault(1, 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
@@ -201,7 +201,7 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
-            ->andThrow(new \SoapFault);
+            ->andThrow(new \SoapFault(1, 'test'));
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
