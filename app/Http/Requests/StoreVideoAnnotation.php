@@ -67,12 +67,19 @@ class StoreVideoAnnotation extends FormRequest
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
             }
 
+            $points = $this->input('points', []);
+            $allArrays = array_reduce($points, fn($c, $i) => $c && is_array($i), true);
+
+            if (!$allArrays) {
+                $validator->errors()->add('points', 'The points must be an array of arrays.');
+            }
+
             if ($this->shouldTrack()) {
                 if ($frameCount !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
-                if (count($this->input('points', [])) !== 1) {
+                if (count($points) !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
