@@ -8,7 +8,6 @@ use Biigle\Tests\LabelSourceTest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Mockery;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class LabelSourceControllerTest extends ApiTestCase
 {

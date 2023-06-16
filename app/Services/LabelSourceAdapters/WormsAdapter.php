@@ -173,7 +173,6 @@ class WormsAdapter implements LabelSourceAdapterContract
         }
 
         return [$this->createSingleLabel($attributes)];
-    
     }
 
     /**
