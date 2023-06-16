@@ -4,8 +4,6 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
-use \Illuminate\Http\Response;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 class LabelSourceController extends Controller
 {
@@ -29,14 +27,7 @@ class LabelSourceController extends Controller
         $source = LabelSource::findOrFail($id);
         $this->validate($request, ['query' => 'required']);
 
-        try{
-        $response = $source->getAdapter()->find($request);
-        } catch(ServiceUnavailableHttpException $suhe){
-            // getMessage() is not implemented for Symfony ServiceUnavailableHttpException
-            $message = $suhe->getHeaders()['Retry-After'];
-            $response = response(['message' => $suhe->getMessage()], Response::HTTP_SERVICE_UNAVAILABLE);
+        return $source->getAdapter()->find($request);
 
-        }
-        return $response;
     }
 }
