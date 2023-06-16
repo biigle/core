@@ -56,6 +56,11 @@ class StoreVideoAnnotation extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+            if ($validator->messages()->isNotEmpty()) {
+                // Skip additional validation rules if the regular rules above failed.
+                return;
+            }
+
             $frameCount = count($this->input('frames', []));
 
             if ($this->input('shape_id') === Shape::wholeFrameId() && $frameCount > 2) {
