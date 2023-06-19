@@ -86,6 +86,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            showImage: true
         };
     },
     computed: {
@@ -545,6 +546,7 @@ export default {
             if (message instanceof CrossOriginError) {
                 this.crossOriginError = true;
             } else {
+                this.showImage = false;
                 Messages.danger(message);
             }
         },
@@ -577,6 +579,7 @@ export default {
     watch: {
         imageId(id) {
             if (id) {
+                this.showImage = true;
                 this.startLoading();
                 this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))

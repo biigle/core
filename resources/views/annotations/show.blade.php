@@ -63,6 +63,7 @@
                 <button type="button" class="btn btn-default" v-on:click="dismissCrossOriginError">Continue at own risk</button>
             </div>
         </message-curtain>
+        <div v-show="showImage">
         <annotation-canvas
             :can-add="isEditor"
             :can-modify="isEditor"
@@ -99,6 +100,7 @@
             inline-template>
             @include('annotations.show.annotationCanvas')
         </annotation-canvas>
+    </div>
     </div>
     <sidebar
         ref="sidebar"
