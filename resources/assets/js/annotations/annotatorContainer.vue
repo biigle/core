@@ -86,6 +86,8 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            // Toggles the annotation container view for images that could not be loaded,
+            // see https://github.com/biigle/core/issues/558.
             showImage: true
         };
     },
