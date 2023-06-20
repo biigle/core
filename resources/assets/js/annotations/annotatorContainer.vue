@@ -88,7 +88,7 @@ export default {
             crossOriginError: false,
             // Toggles the annotation container view for images that could not be loaded,
             // see https://github.com/biigle/core/issues/558.
-            showImage: true
+            imageLoadingError: false
         };
     },
     computed: {
@@ -548,7 +548,7 @@ export default {
             if (message instanceof CrossOriginError) {
                 this.crossOriginError = true;
             } else {
-                this.showImage = false;
+                this.imageLoadingError = true;
                 Messages.danger(message);
             }
         },
@@ -581,7 +581,7 @@ export default {
     watch: {
         imageId(id) {
             if (id) {
-                this.showImage = true;
+                this.imageLoadingError = false;
                 this.startLoading();
                 this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
