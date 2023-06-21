@@ -129,11 +129,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'UsersController@delete',
         ]);
 
-        $router->get('users/{id}', [
-            'as' => 'admin-users-show',
-            'uses' => 'UsersController@show',
-        ]);
-
         $router->get('announcements', [
             'as' => 'admin-announcements',
             'uses' => 'AnnouncementsController@index',
@@ -164,6 +159,14 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'FederatedSearchController@index',
         ]);
     });
+
+    // This is special because reviewer users should be able to access it, too. They need
+    // access to check possible duplicate users.
+    $router->get('admin/users/{id}', [
+        'as' => 'admin-users-show',
+        'uses' => 'Admin\UsersController@show',
+        'middleware' => 'can:review',
+    ]);
 
     $router->group(['namespace' => 'LabelTrees', 'prefix' => 'label-trees'], function ($router) {
         $router->get('/', [
