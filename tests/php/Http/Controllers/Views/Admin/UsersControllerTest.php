@@ -176,4 +176,14 @@ class UsersControllerTest extends TestCase
         $this->be($admin);
         $this->get("admin/users/{$user->id}")->assertStatus(200);
     }
+
+    public function testShowWhenReviewer()
+    {
+        $id = UserTest::create()->id;
+        $user = UserTest::create();
+        $user->canReview = true;
+        $user->save();
+        $this->be($user);
+        $this->get("admin/users/{$id}")->assertStatus(200);
+    }
 }

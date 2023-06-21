@@ -4,7 +4,7 @@
 
 @section('admin-content')
 <h2 class="col-xs-12 no-margin">
-    @if ($user->id !== $shownUser->id)
+    @if ($user->can('sudo') && $user->id !== $shownUser->id)
         <a class="btn btn-default pull-right" href="{{route('admin-users-edit', $shownUser->id)}}" title="Edit {{$shownUser->firstname}} {{$shownUser->lastname}}">Edit</a>
     @endif
     {{$shownUser->firstname}} {{$shownUser->lastname}}
