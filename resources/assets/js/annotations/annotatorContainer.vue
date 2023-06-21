@@ -166,6 +166,7 @@ export default {
             if (args) {
                 this.image = args[0];
                 this.annotations = args[1];
+                this.imageLoadingError = false;
             } else {
                 // This might happen if there was an error loading the image or the
                 // annotations.
@@ -581,7 +582,6 @@ export default {
     watch: {
         imageId(id) {
             if (id) {
-                this.imageLoadingError = false;
                 this.startLoading();
                 this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
