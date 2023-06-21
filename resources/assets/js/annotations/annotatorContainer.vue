@@ -156,6 +156,9 @@ export default {
         },
     },
     methods: {
+        getImageLoadingError(){
+            return this.imageLoadingError;
+        },
         getImageAndAnnotationsPromises(id) {
             return [
                 ImagesStore.fetchAndDrawImage(id),
@@ -587,15 +590,16 @@ export default {
                 this.crossOriginError = false;
                 Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
                     .then(this.setCurrentImageAndAnnotations)
-                    .then(this.updateUrlSlug)
                     .then(this.maybeUpdateAnnotationMode)
-                    .then(this.emitImageChanged)
                     .then(this.maybeShowTilingInProgressMessage)
-                    // When everything is loaded, pre-fetch the data of the next and
-                    // previous images so they can be switched fast.
-                    .then(this.cachePreviousAndNext)
                     .catch(this.handleLoadingError)
-                    .finally(this.finishLoading);
+                    .finally(() => {
+                        this.updateUrlSlug();
+                        this.emitImageChanged();
+                        // When everything is loaded, pre-fetch the data of the next and
+                        // previous images so they can be switched fast.
+                        this.cachePreviousAndNext();
+                        this.finishLoading()});
             }
         },
         cachedImagesCount() {
