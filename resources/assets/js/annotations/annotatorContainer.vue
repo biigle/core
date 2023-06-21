@@ -92,6 +92,15 @@ export default {
         };
     },
     computed: {
+        canAdd(){
+            return this.isEditor && !this.imageLoadingError;
+        },
+        canModify(){
+            return this.canAdd;
+        },
+        canDelete(){
+            return this.canAdd;
+        },
         imageId() {
             return this.imagesIds[this.imageIndex];
         },

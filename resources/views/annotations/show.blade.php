@@ -64,9 +64,9 @@
             </div>
         </message-curtain>
         <annotation-canvas
-            :can-add="isEditor"
-            :can-modify="isEditor"
-            :can-delete="isEditor"
+            :can-add="canAdd"
+            :can-modify="canModify"
+            :can-delete="canDelete"
             :image="!imageLoadingError ? image : null"
             :annotations="filteredAnnotations"
             :selected-annotations="selectedAnnotations"
