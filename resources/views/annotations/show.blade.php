@@ -64,11 +64,10 @@
             </div>
         </message-curtain>
         <annotation-canvas
-            v-show="!imageLoadingError"
             :can-add="isEditor"
             :can-modify="isEditor"
             :can-delete="isEditor"
-            :image="image"
+            :image="!imageLoadingError ? image : null"
             :annotations="filteredAnnotations"
             :selected-annotations="selectedAnnotations"
             :last-created-annotation="lastCreatedAnnotation"
