@@ -30,6 +30,7 @@
         "biigle/denbi-service": "dev-master",
         "biigle/geo": "dev-master",
         "biigle/laravel-file-cache": "^4.0",
+        "biigle/laravel-queue-alert": "^1.0",
         "biigle/largo": "dev-master",
         "biigle/laserpoints": "dev-master",
         "biigle/magic-sam": "^1.0",

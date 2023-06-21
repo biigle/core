@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07267876b3461a9fe1f8704076c281ef",
+    "content-hash": "bed9b7a6a54d8c5c975c3e52f2cedb21",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -652,6 +652,61 @@
                 "source": "https://github.com/biigle/laravel-file-cache/tree/v4.2.0"
             },
             "time": "2023-06-21T08:43:58+00:00"
+        },
+        {
+            "name": "biigle/laravel-queue-alert",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-queue-alert.git",
+                "reference": "ba6da4d1f5bd35dbe2917745451235c570bb220a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-queue-alert/zipball/ba6da4d1f5bd35dbe2917745451235c570bb220a",
+                "reference": "ba6da4d1f5bd35dbe2917745451235c570bb220a",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^9.0",
+                "illuminate/console": "^9.0",
+                "illuminate/queue": "^9.0",
+                "illuminate/support": "^9.0",
+                "nesbot/carbon": "^2.67"
+            },
+            "require-dev": {
+                "laravel/laravel": "^9.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\QueueAlert\\QueueAlertServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\QueueAlert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A package to send alert emails if a Laravel queue is very busy",
+            "support": {
+                "issues": "https://github.com/biigle/laravel-queue-alert/issues",
+                "source": "https://github.com/biigle/laravel-queue-alert/tree/v1.0.0"
+            },
+            "time": "2023-06-16T15:00:27+00:00"
         },
         {
             "name": "biigle/largo",
