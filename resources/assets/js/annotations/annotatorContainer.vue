@@ -550,6 +550,7 @@ export default {
                 this.crossOriginError = true;
             } else {
                 this.imageLoadingError = true;
+                this.annotations = [];
                 Messages.danger(message);
             }
         },
