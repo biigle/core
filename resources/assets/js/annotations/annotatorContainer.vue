@@ -168,18 +168,6 @@ export default {
                 AnnotationsStore.fetchAnnotations(id),
             ];
         },
-        setCurrentImageAndAnnotations(args) {
-            if (args) {
-                this.image = args[0];
-                this.annotations = args[1];
-                this.imageLoadingError = false;
-            } else {
-                // This might happen if there was an error loading the image or the
-                // annotations.
-                this.image = null;
-                this.annotations = [];
-            }
-        },
         updateUrlSlug() {
             UrlParams.setSlug(this.imageId, -2);
         },
