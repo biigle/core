@@ -86,19 +86,16 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            // Toggles the annotation container view for images that could not be loaded,
-            // see https://github.com/biigle/core/issues/558.
-            imageLoadingError: false
         };
     },
     computed: {
-        canAdd(){
-            return this.isEditor && !this.imageLoadingError;
+        canAdd() {
+            return this.isEditor && (this.image !== null);
         },
-        canModify(){
+        canModify() {
             return this.canAdd;
         },
-        canDelete(){
+        canDelete() {
             return this.canAdd;
         },
         imageId() {

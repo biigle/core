@@ -67,7 +67,7 @@
             :can-add="canAdd"
             :can-modify="canModify"
             :can-delete="canDelete"
-            :image="!imageLoadingError ? image : null"
+            :image="image"
             :annotations="filteredAnnotations"
             :selected-annotations="selectedAnnotations"
             :last-created-annotation="lastCreatedAnnotation"
