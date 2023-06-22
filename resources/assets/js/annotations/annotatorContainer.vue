@@ -554,15 +554,6 @@ export default {
         handleClosedTab() {
             Settings.delete('openTab');
         },
-        handleLoadingError(message) {
-            if (message instanceof CrossOriginError) {
-                this.crossOriginError = true;
-            } else {
-                this.imageLoadingError = true;
-                this.annotations = [];
-                Messages.danger(message);
-            }
-        },
         createSampledAnnotation() {
             this.$refs.canvas.createSampledAnnotation();
         },
@@ -590,22 +581,37 @@ export default {
         },
     },
     watch: {
-        imageId(id) {
-            if (id) {
-                this.startLoading();
-                this.crossOriginError = false;
-                Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
-                    .then(this.setCurrentImageAndAnnotations)
-                    .then(this.maybeUpdateAnnotationMode)
-                    .then(this.maybeShowTilingInProgressMessage)
-                    .catch(this.handleLoadingError)
-                    .finally(() => {
-                        this.updateUrlSlug();
-                        this.emitImageChanged();
-                        // When everything is loaded, pre-fetch the data of the next and
-                        // previous images so they can be switched fast.
-                        this.cachePreviousAndNext();
-                        this.finishLoading()});
+        async imageId(id) {
+            if (!id) {
+                return;
+            }
+
+            this.startLoading();
+            this.crossOriginError = image?.crossOrigin;
+
+            try {
+                let [image, annotations] = await Vue.Promise.all(this.getImageAndAnnotationsPromises(id));
+                this.imageLoadingError = false;
+                this.image = image;
+                this.annotations = annotations;
+                this.maybeUpdateAnnotationMode();
+                this.maybeShowTilingInProgressMessage();
+            } catch (e) {
+                if (e instanceof CrossOriginError) {
+                    this.crossOriginError = true;
+                } else {
+                    this.imageLoadingError = true;
+                    this.image = null;
+                    this.annotations = [];
+                    Messages.danger(e);
+                }
+            } finally {
+                this.updateUrlSlug();
+                this.emitImageChanged();
+                // When everything is loaded, pre-fetch the data of the next and
+                // previous images so they can be switched fast.
+                this.cachePreviousAndNext();
+                this.finishLoading();
             }
         },
         cachedImagesCount() {
