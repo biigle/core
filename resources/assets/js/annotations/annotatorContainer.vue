@@ -635,7 +635,7 @@ export default {
             this.annotationFilters[1].annotations = annotations;
         },
         image(image) {
-            this.crossOriginError = image.crossOrigin;
+            this.crossOriginError = image?.crossOrigin;
         },
     },
     created() {
