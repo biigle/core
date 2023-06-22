@@ -165,9 +165,6 @@ export default {
         },
     },
     methods: {
-        getImageLoadingError(){
-            return this.imageLoadingError;
-        },
         getImageAndAnnotationsPromises(id) {
             return [
                 ImagesStore.fetchAndDrawImage(id),
