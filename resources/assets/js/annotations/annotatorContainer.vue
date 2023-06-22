@@ -576,7 +576,6 @@ export default {
 
             try {
                 let [image, annotations] = await Vue.Promise.all(this.getImageAndAnnotationsPromises(id));
-                this.imageLoadingError = false;
                 this.image = image;
                 this.annotations = annotations;
                 this.maybeUpdateAnnotationMode();
@@ -585,7 +584,6 @@ export default {
                 if (e instanceof CrossOriginError) {
                     this.crossOriginError = true;
                 } else {
-                    this.imageLoadingError = true;
                     this.image = null;
                     this.annotations = [];
                     Messages.danger(e);
