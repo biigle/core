@@ -52,7 +52,7 @@
                 <control-button v-else-if="canDelete" icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="modifyInProgress||!hasSelectedAnnotations" v-on:click="deleteSelectedAnnotations"></control-button>
             </div>
 
-            <div class="btn-group drawing-controls" v-if="!canAdd & image" @cannot('add-annotation') v-cloak @endcannot>
+            <div class="btn-group drawing-controls" v-if="!canAdd && image" @cannot('add-annotation') v-cloak @endcannot>
                 <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
             </div>
         
