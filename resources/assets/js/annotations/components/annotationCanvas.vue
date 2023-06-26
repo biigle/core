@@ -304,7 +304,7 @@ export default {
                 multi: true
             });
 
-            if (this.canModify) {
+            // if (this.canModify) {
                 // Map to detect which features were changed between modifystart and
                 // modifyend events of the modify interaction.
                 this.featureRevisionMap = {};
@@ -317,7 +317,7 @@ export default {
                         return shiftKeyOnlyCondition(event) && singleClickCondition(event);
                     },
                 });
-            }
+            // }
         },
         updateMapSize() {
             this.mapSize = this.map.getSize();
@@ -715,6 +715,24 @@ export default {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
+        canModify(state){
+            if(state){
+                this.modifyInteraction.setActive(true);
+            }
+            else{
+                this.modifyInteraction.setActive(false);
+            }
+        },
+        canDelete(state){
+            if(state){
+                Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            }
+            else{
+                Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            }
+        }
     },
     created() {
         this.declareNonReactiveProperties();
@@ -746,16 +764,10 @@ export default {
         Keyboard.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
-        if (this.canModify) {
-            this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
-            this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
-            this.map.addInteraction(this.modifyInteraction);
-        }
-
-        if (this.canDelete) {
-            Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-            Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-        }
+        this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+        this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+        this.map.addInteraction(this.modifyInteraction);
+        this.modifyInteraction.setActive(false);
     },
     mounted() {
         this.map.setTarget(this.$el);

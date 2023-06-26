@@ -100,17 +100,27 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        canAdd(state){
+            if(state){
+                Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
+                Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
+                Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
+                Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
+                Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
+                Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
+            }
+            else{
+                Keyboard.off('a', this.drawPoint, 0, this.listenerSet);
+                Keyboard.off('s', this.drawRectangle, 0, this.listenerSet);
+                Keyboard.off('d', this.drawCircle, 0, this.listenerSet);
+                Keyboard.off('Shift+d', this.drawEllipse, 0, this.listenerSet);
+                Keyboard.off('f', this.drawLineString, 0, this.listenerSet);
+                Keyboard.off('g', this.drawPolygon, 0, this.listenerSet);
+            }
+        }
     },
     created() {
-        if (this.canAdd) {
-            Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
-            Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
-            Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
-            Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
-            Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
-            Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
-        }
     },
 };
 </script>

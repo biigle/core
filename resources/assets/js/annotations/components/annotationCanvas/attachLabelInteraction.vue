@@ -64,30 +64,39 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        canAdd(state){
+            if(state){
+                attachLabelInteraction.setActive(true);
+                swapLabelInteraction.setActive(true);
+                Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
+                Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
+            }
+            else{
+                attachLabelInteraction.setActive(false);
+                swapLabelInteraction.setActive(false);
+                Keyboard.off('l', this.toggleAttaching, 0, this.listenerSet);
+                Keyboard.off('Shift+l', this.toggleSwapping, 0, this.listenerSet);
+            }
+        }
     },
     mounted() {
         // Initialize the attach interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-        if (this.canAdd) {
-            attachLabelInteraction = new AttachLabelInteraction({
-                features: this.annotationFeatures,
-                map: this.map,
-            });
-            attachLabelInteraction.setActive(false);
-            attachLabelInteraction.on('attach', this.handleAttachLabel);
-            this.map.addInteraction(attachLabelInteraction);
+        attachLabelInteraction = new AttachLabelInteraction({
+            features: this.annotationFeatures,
+            map: this.map,
+        });
+        attachLabelInteraction.setActive(false);
+        attachLabelInteraction.on('attach', this.handleAttachLabel);
+        this.map.addInteraction(attachLabelInteraction);
 
-            swapLabelInteraction = new AttachLabelInteraction({
-                features: this.annotationFeatures,
-                map: this.map,
-            });
-            swapLabelInteraction.setActive(false);
-            swapLabelInteraction.on('attach', this.handleSwapLabel);
-            this.map.addInteraction(swapLabelInteraction);
-
-            Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
-            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
-        }
+        swapLabelInteraction = new AttachLabelInteraction({
+            features: this.annotationFeatures,
+            map: this.map,
+        });
+        swapLabelInteraction.setActive(false);
+        swapLabelInteraction.on('attach', this.handleSwapLabel);
+        this.map.addInteraction(swapLabelInteraction);
     },
 };
 </script>
