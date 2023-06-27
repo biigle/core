@@ -120,6 +120,7 @@ export default {
                 Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
             }
             else {
+                shiftClickSelectInteraction.setActive(false);
                 Keyboard.off('r', this.togglePolygonEraser, 0, this.listenerSet);
                 Keyboard.off('t', this.togglePolygonFill, 0, this.listenerSet);
             }
