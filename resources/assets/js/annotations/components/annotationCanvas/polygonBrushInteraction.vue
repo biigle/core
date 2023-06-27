@@ -100,33 +100,43 @@ export default {
             }
         },
     },
-    created() {
-        if (this.canAdd) {
-            Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
-        }
-
-        if (this.canModify) {
-            Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
-            Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
-        }
-
-        if (this.canAdd || this.canModify) {
-            this.$watch('interactionMode', this.toggleCurrentInteraction);
+    watch: {
+        interactionMode(mode) {
+            if (this.canAdd || this.canModify) {
+                this.toggleCurrentInteraction(mode);
+            }
+        },
+        canAdd(state) {
+            if (state) {
+                Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('e', this.togglePolygonBrush, 0, this.listenerSet);
+            }
+        },
+        canModify(state) {
+            if (state) {
+                Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
+                Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('r', this.togglePolygonEraser, 0, this.listenerSet);
+                Keyboard.off('t', this.togglePolygonFill, 0, this.listenerSet);
+            }
         }
     },
     mounted() {
-        if (this.canModify) {
-            shiftClickSelectInteraction = new SelectInteraction({
-                condition(e) {
-                    return click(e) && shiftKeyOnly(e);
-                },
-                style: Styles.highlight,
-                layers: [this.annotationLayer],
-                features: this.selectInteraction.getFeatures(),
-                multi: true,
-            });
-            shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
-        }
+        shiftClickSelectInteraction = new SelectInteraction({
+            condition(e) {
+                return click(e) && shiftKeyOnly(e);
+            },
+            style: Styles.highlight,
+            layers: [this.annotationLayer],
+            features: this.selectInteraction.getFeatures(),
+            multi: true,
+        });
+        shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
+        shiftClickSelectInteraction.setActive(false);
     },
 };
 </script>
