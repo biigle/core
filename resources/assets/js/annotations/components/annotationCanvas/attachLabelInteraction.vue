@@ -66,8 +66,6 @@ export default {
         },
         canAdd(state){
             if(state){
-                attachLabelInteraction.setActive(true);
-                swapLabelInteraction.setActive(true);
                 Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
                 Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
             }

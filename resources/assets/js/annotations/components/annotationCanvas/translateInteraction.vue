@@ -32,7 +32,6 @@ export default {
         },
         canModify(state){
             if(state){
-                translateInteraction.setActive(true);
                 Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
             }
             else{

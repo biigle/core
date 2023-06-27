@@ -716,10 +716,7 @@ export default {
             }
         },
         canModify(state){
-            if(state){
-                this.modifyInteraction.setActive(true);
-            }
-            else{
+            if(!state){
                 this.modifyInteraction.setActive(false);
             }
         },
