@@ -60,18 +60,30 @@ export default {
             }
         }
     },
+    watch:{
+        isMagicWanding(isMagicWanding) {
+            if (this.canAdd) {
+                this.toggleMagicWandInteraction(isMagicWanding);
+            }
+        },
+        canAdd(state){
+            if(state){
+                Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+            }
+            else{
+                magicWandInteraction.setActive(false);
+                Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+            }
+        }
+    },
     created() {
-        if (this.canAdd) {
-            Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
             this.$watch('image', this.maybeUpdateMagicWandSnapshot);
             this.$watch('image', this.maybeSetMagicWandLayer);
-            this.$watch('isMagicWanding', this.toggleMagicWandInteraction);
-        }
     },
     mounted() {
         // Initialize the magic wand interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-        if (this.canAdd) {
+        // if (this.canAdd) {
             magicWandInteraction = new MagicWandInteraction({
                 map: this.map,
                 source: this.annotationSource,
@@ -83,7 +95,7 @@ export default {
             magicWandInteraction.on('drawend', this.handleNewFeature);
             magicWandInteraction.setActive(false);
             this.map.addInteraction(magicWandInteraction);
-        }
+        // }
     },
 };
 </script>
