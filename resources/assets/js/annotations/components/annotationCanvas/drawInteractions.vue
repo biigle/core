@@ -100,8 +100,13 @@ export default {
                 this.resetInteractionMode();
             }
         },
-        canAdd(state){
-            if(state){
+        interactionMode(mode) {
+            if (this.canAdd) {
+                this.maybeUpdateDrawInteractionMode(mode)
+            }
+        },
+        canAdd(state) {
+            if (state) {
                 Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
                 Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
                 Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
@@ -109,7 +114,7 @@ export default {
                 Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
                 Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
             }
-            else{
+            else {
                 Keyboard.off('a', this.drawPoint, 0, this.listenerSet);
                 Keyboard.off('s', this.drawRectangle, 0, this.listenerSet);
                 Keyboard.off('d', this.drawCircle, 0, this.listenerSet);
@@ -118,9 +123,6 @@ export default {
                 Keyboard.off('g', this.drawPolygon, 0, this.listenerSet);
             }
         }
-    },
-    created() {
-            this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
     },
 };
 </script>
