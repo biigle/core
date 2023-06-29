@@ -12,7 +12,7 @@ class FilterImageAnnotationsByLabelController extends Controller
     /**
      * Show all image annotations of the project that have a specific label attached.
      *
-     * @api {get} projects/:tid/image-annotations/filter/label/:lid Get image annotations with a label
+     * @api {get} projects/:pid/image-annotations/filter/label/:lid Get image annotations with a label
      * @apiGroup Projects
      * @apiName ShowProjectsImageAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID
