@@ -23,7 +23,7 @@ export default {
         toggleMagicWand() {
             if (this.isMagicWanding) {
                 this.resetInteractionMode();
-            } else if (magicWandInteraction) {
+            } else if (magicWandInteraction && this.canAdd) {
                 this.interactionMode = 'magicWand';
             }
         },
