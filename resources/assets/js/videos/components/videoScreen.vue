@@ -452,10 +452,18 @@ export default {
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
-        handleFeatureSelect(e) {
+        handleFeatureSelect() {
+            // Don't use event.deselected because is not updated for certain cases,
+            // see https://github.com/biigle/core/issues/552
+
+            // New selected annotations
+            let selected = this.selectInteraction.getFeatures().getArray().map(this.extractAnnotationFromFeature);
+            // Old selected annotations
+            let deselected = this.annotations.filter((a) => {return a.selected;})
+                                             .filter((a) => {return !selected.includes(a)});
             this.$emit('select',
-                e.selected.map(this.extractAnnotationFromFeature),
-                e.deselected.map(this.extractAnnotationFromFeature),
+                selected,
+                deselected,
                 this.video.currentTime
             );
         },
