@@ -453,7 +453,7 @@ export default {
             return feature.get('annotation');
         },
         handleFeatureSelect() {
-            // Don't use event.deselected because is not updated for certain cases,
+            // Don't use event.deselected here because it uses selections in current frame only,
             // see https://github.com/biigle/core/issues/552
 
             // New selected annotations
