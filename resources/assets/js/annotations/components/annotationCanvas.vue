@@ -715,17 +715,16 @@ export default {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
-        canModify(state){
-            if(!state){
-                this.modifyInteraction.setActive(false);
-            }
+        canModify(state) {
+            this.modifyInteraction.setActive(state && this.isDefaultInteractionMode);
+
         },
-        canDelete(state){
-            if(state){
+        canDelete(state) {
+            if (state) {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
-            else{
+            else {
                 Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
