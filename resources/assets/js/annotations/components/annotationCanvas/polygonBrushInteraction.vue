@@ -4,7 +4,7 @@ import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonB
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../stores/styles';
-import {never, noModifierKeys, click, shiftKeyOnly, altKeyOnly} from '@biigle/ol/events/condition';
+import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -102,29 +102,8 @@ export default {
     },
     watch: {
         interactionMode(mode) {
-            if (this.canAdd || this.canModify) {
-                this.toggleCurrentInteraction(mode);
-            }
+            this.toggleCurrentInteraction(mode);
         },
-        canAdd(state) {
-            if (state) {
-                Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
-            }
-            else {
-                Keyboard.off('e', this.togglePolygonBrush, 0, this.listenerSet);
-            }
-        },
-        canModify(state) {
-            if (state) {
-                Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
-                Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
-            }
-            else {
-                shiftClickSelectInteraction.setActive(false);
-                Keyboard.off('r', this.togglePolygonEraser, 0, this.listenerSet);
-                Keyboard.off('t', this.togglePolygonFill, 0, this.listenerSet);
-            }
-        }
     },
     mounted() {
         shiftClickSelectInteraction = new SelectInteraction({
@@ -138,6 +117,9 @@ export default {
         });
         shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         shiftClickSelectInteraction.setActive(false);
+        Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
+        Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
+        Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
     },
 };
 </script>
