@@ -304,7 +304,6 @@ export default {
                 multi: true
             });
 
-            // if (this.canModify) {
                 // Map to detect which features were changed between modifystart and
                 // modifyend events of the modify interaction.
                 this.featureRevisionMap = {};
@@ -317,7 +316,6 @@ export default {
                         return shiftKeyOnlyCondition(event) && singleClickCondition(event);
                     },
                 });
-            // }
         },
         updateMapSize() {
             this.mapSize = this.map.getSize();
