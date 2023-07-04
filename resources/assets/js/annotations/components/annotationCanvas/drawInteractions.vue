@@ -115,13 +115,7 @@ export default {
                 Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
             }
             else {
-                drawInteraction?.setActive(false);
-                Keyboard.off('a', this.drawPoint, 0, this.listenerSet);
-                Keyboard.off('s', this.drawRectangle, 0, this.listenerSet);
-                Keyboard.off('d', this.drawCircle, 0, this.listenerSet);
-                Keyboard.off('Shift+d', this.drawEllipse, 0, this.listenerSet);
-                Keyboard.off('f', this.drawLineString, 0, this.listenerSet);
-                Keyboard.off('g', this.drawPolygon, 0, this.listenerSet);
+                this.resetInteractionMode();
             }
         }
     },
