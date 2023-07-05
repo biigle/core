@@ -30,20 +30,11 @@ export default {
                 translateInteraction.setActive(translating);
             }
         },
-        canModify(state){
-            if(state){
-                Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
-            }
-            else{
-                translateInteraction.setActive(false);
-                Keyboard.off('m', this.toggleTranslating, 0, this.listenerSet);
-            }
-        }
     },
     mounted() {
         // Initialize the translate interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-            translateInteraction = new TranslateInteraction({
+        translateInteraction = new TranslateInteraction({
             features: this.selectInteraction.getFeatures(),
             map: this.map,
         });
@@ -51,6 +42,7 @@ export default {
         translateInteraction.on('translatestart', this.handleFeatureModifyStart);
         translateInteraction.on('translateend', this.handleFeatureModifyEnd);
         this.map.addInteraction(translateInteraction);
+        Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
     },
 };
 </script>
