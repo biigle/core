@@ -25,13 +25,13 @@ export default {
         },
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
-        },
+        }
     },
     methods: {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel) {
+            } else if (!this.hasSelectedLabel && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'polygonBrush';
@@ -99,10 +99,18 @@ export default {
                 this.map.addInteraction(shiftClickSelectInteraction);
             }
         },
+        toggleShiftClickSelectInteraction(mode) {
+            let canUsePolygonBrush = this.canAdd && (mode === 'polygonBrush');
+            let canUsePolygonTools = this.canModify && (mode === 'polygonEraser' || mode === 'polygonFill');
+
+            shiftClickSelectInteraction.setActive(canUsePolygonBrush || canUsePolygonTools);
+        }
     },
     watch: {
         interactionMode(mode) {
+            this.toggleShiftClickSelectInteraction(mode);
             this.toggleCurrentInteraction(mode);
+
         },
     },
     mounted() {
