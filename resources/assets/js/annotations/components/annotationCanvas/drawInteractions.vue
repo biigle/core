@@ -82,7 +82,7 @@ export default {
                 drawInteraction = undefined;
             }
 
-            if (this.isDrawing) {
+            if (this.isDrawing && this.canAdd) {
                 drawInteraction = new DrawInteraction({
                     source: this.annotationSource,
                     type: mode.slice(4), // remove 'draw' prefix
@@ -101,10 +101,17 @@ export default {
             }
         },
         interactionMode(mode) {
-            if (this.canAdd) {
-                this.maybeUpdateDrawInteractionMode(mode)
-            }
+            this.maybeUpdateDrawInteractionMode(mode)
+
         },
+        canAdd: {
+            handler(state) {
+                if (!state) {
+                    this.resetInteractionMode();
+                }
+            },
+            immediate: true
+        }
     },
     mounted() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
