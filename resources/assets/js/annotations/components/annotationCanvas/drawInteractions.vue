@@ -52,7 +52,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel) {
+            } else if (!this.hasSelectedLabel && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -105,19 +105,14 @@ export default {
                 this.maybeUpdateDrawInteractionMode(mode)
             }
         },
-        canAdd(state) {
-            if (state) {
-                Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
-                Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
-                Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
-                Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
-                Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
-                Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
-            }
-            else {
-                this.resetInteractionMode();
-            }
-        }
     },
+    mounted() {
+        Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
+        Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
+        Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
+        Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
+        Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
+        Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
+    }
 };
 </script>
