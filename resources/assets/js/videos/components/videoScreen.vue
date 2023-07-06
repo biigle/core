@@ -453,11 +453,23 @@ export default {
             return feature.get('annotation');
         },
         handleFeatureSelect(e) {
-            this.$emit('select',
-                e.selected.map(this.extractAnnotationFromFeature),
-                e.deselected.map(this.extractAnnotationFromFeature),
-                this.video.currentTime
-            );
+            let selected = this.selectInteraction.getFeatures()
+                .getArray()
+                .map(this.extractAnnotationFromFeature);
+
+            let deselected;
+
+            if (e.mapBrowserEvent.originalEvent.shiftKey) {
+                deselected = e.deselected.map(this.extractAnnotationFromFeature);
+            } else {
+                // This must also include annotations from different frames.
+                // See: https://github.com/biigle/core/issues/552.
+                deselected = this.annotations
+                    .filter(a => a.isSelected)
+                    .filter(a => !selected.includes(a));
+            }
+
+            this.$emit('select', selected, deselected, this.video.currentTime);
         },
         updateMousePosition(e) {
             this.mousePosition = e.coordinate;
