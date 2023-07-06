@@ -100,10 +100,7 @@ export default {
             }
         },
         toggleShiftClickSelectInteraction(mode) {
-            let canUsePolygonBrush = this.canAdd && (mode === 'polygonBrush');
-            let canUsePolygonTools = this.canModify && (mode === 'polygonEraser' || mode === 'polygonFill');
-
-            shiftClickSelectInteraction.setActive(canUsePolygonBrush || canUsePolygonTools);
+            shiftClickSelectInteraction.setActive(this.canModify && (mode === 'polygonEraser' || mode === 'polygonFill'));
         }
     },
     watch: {
