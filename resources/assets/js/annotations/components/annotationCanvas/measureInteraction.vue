@@ -30,7 +30,7 @@ export default {
         toggleMeasuring() {
             if (this.isMeasuring) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canModify){
                 this.interactionMode = 'measure';
             }
         },
