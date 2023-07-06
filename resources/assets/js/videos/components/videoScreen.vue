@@ -453,14 +453,14 @@ export default {
             return feature.get('annotation');
         },
         handleFeatureSelect() {
-            // Don't use event.deselected here because it uses selections in current frame only,
-            // see https://github.com/biigle/core/issues/552
-
             // New selected annotations
+            // Don't use event.selected here because then shift select won't work in current frame.
             let selected = this.selectInteraction.getFeatures().getArray().map(this.extractAnnotationFromFeature);
             // Old selected annotations
-            let deselected = this.annotations.filter((a) => {return a.selected;})
-                                             .filter((a) => {return !selected.includes(a)});
+            // Don't use event.deselected here because it uses selections in current frame only,
+            // see https://github.com/biigle/core/issues/552.
+            let deselected = this.annotations.filter(a => a.selected)
+                .filter(a => !selected.includes(a));
             this.$emit('select',
                 selected,
                 deselected,
