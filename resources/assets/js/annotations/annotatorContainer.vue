@@ -572,7 +572,7 @@ export default {
             }
 
             this.startLoading();
-            this.crossOriginError = this.image?.crossOrigin;
+            this.crossOriginError = false;
 
             try {
                 let [image, annotations] = await Vue.Promise.all(this.getImageAndAnnotationsPromises(id));
