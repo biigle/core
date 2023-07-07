@@ -25,7 +25,7 @@ export default {
         },
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
-        }
+        },
     },
     methods: {
         togglePolygonBrush() {
@@ -51,63 +51,74 @@ export default {
                 this.interactionMode = 'polygonFill';
             }
         },
-        toggleCurrentInteraction(mode) {
+        togglePolygonBrushInteraction() {
+            currentInteraction = new PolygonBrushInteraction({
+                map: this.map,
+                source: this.annotationSource,
+                style: Styles.editing,
+                brushRadius: brushRadius,
+                resizeCondition: altKeyOnly,
+            });
+            currentInteraction.on('drawend', this.handleNewFeature);
+            this.map.addInteraction(currentInteraction);
+        },
+        togglePolygonEraserInteraction() {
+            currentInteraction = new ModifyPolygonBrushInteraction({
+                map: this.map,
+                features: this.selectInteraction.getFeatures(),
+                style: Styles.editing,
+                brushRadius: brushRadius,
+                allowRemove: false,
+                addCondition: never,
+                subtractCondition: noModifierKeys,
+                resizeCondition: altKeyOnly,
+            });
+            currentInteraction.on('modifystart', this.handleFeatureModifyStart);
+            currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
+            this.map.addInteraction(currentInteraction);
+        },
+        togglePolygonFillInteraction() {
+            currentInteraction = new ModifyPolygonBrushInteraction({
+                map: this.map,
+                features: this.selectInteraction.getFeatures(),
+                style: Styles.editing,
+                brushRadius: brushRadius,
+                addCondition: noModifierKeys,
+                subtractCondition: never,
+                resizeCondition: altKeyOnly,
+            });
+            currentInteraction.on('modifystart', this.handleFeatureModifyStart);
+            currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
+            this.map.addInteraction(currentInteraction);
+        },
+        toggleCurrentInteraction() {
             if (currentInteraction) {
                 brushRadius = currentInteraction.getBrushRadius();
                 this.map.removeInteraction(currentInteraction);
                 currentInteraction = null;
             }
-
-            if (this.canAdd && mode === 'polygonBrush') {
-                currentInteraction = new PolygonBrushInteraction({
-                    map: this.map,
-                    source: this.annotationSource,
-                    style: Styles.editing,
-                    brushRadius: brushRadius,
-                    resizeCondition: altKeyOnly,
-                });
-                currentInteraction.on('drawend', this.handleNewFeature);
-                this.map.addInteraction(currentInteraction);
-            } else if (this.canModify && mode === 'polygonEraser') {
-                currentInteraction = new ModifyPolygonBrushInteraction({
-                    map: this.map,
-                    features: this.selectInteraction.getFeatures(),
-                    style: Styles.editing,
-                    brushRadius: brushRadius,
-                    allowRemove: false,
-                    addCondition: never,
-                    subtractCondition: noModifierKeys,
-                    resizeCondition: altKeyOnly,
-                });
-                currentInteraction.on('modifystart', this.handleFeatureModifyStart);
-                currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
-                this.map.addInteraction(currentInteraction);
-                this.map.addInteraction(shiftClickSelectInteraction);
-            } else if (this.canModify && mode === 'polygonFill') {
-                currentInteraction = new ModifyPolygonBrushInteraction({
-                    map: this.map,
-                    features: this.selectInteraction.getFeatures(),
-                    style: Styles.editing,
-                    brushRadius: brushRadius,
-                    addCondition: noModifierKeys,
-                    subtractCondition: never,
-                    resizeCondition: altKeyOnly,
-                });
-                currentInteraction.on('modifystart', this.handleFeatureModifyStart);
-                currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
-                this.map.addInteraction(currentInteraction);
-                this.map.addInteraction(shiftClickSelectInteraction);
-            }
+            shiftClickSelectInteraction.setActive(this.canModify
+                && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
-        toggleShiftClickSelectInteraction(mode) {
-            shiftClickSelectInteraction.setActive(this.canModify && (mode === 'polygonEraser' || mode === 'polygonFill'));
-        }
     },
     watch: {
-        interactionMode(mode) {
-            this.toggleShiftClickSelectInteraction(mode);
-            this.toggleCurrentInteraction(mode);
-
+        interactionMode() {
+            this.toggleCurrentInteraction();
+        },
+        isUsingPolygonBrush(state) {
+            if (state && this.canAdd) {
+                this.togglePolygonBrushInteraction();
+            }
+        },
+        isUsingPolygonEraser(state) {
+            if (state && this.canModify) {
+                this.togglePolygonEraserInteraction();
+            }
+        },
+        isUsingPolygonFill(state) {
+            if (state && this.canModify) {
+                this.togglePolygonFillInteraction();
+            }
         },
     },
     mounted() {
@@ -122,6 +133,7 @@ export default {
         });
         shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         shiftClickSelectInteraction.setActive(false);
+        this.map.addInteraction(shiftClickSelectInteraction);
         Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
         Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
         Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
