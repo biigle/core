@@ -68,8 +68,6 @@ export default {
     created() {
         this.$watch('image', this.maybeUpdateMagicWandSnapshot);
         this.$watch('image', this.maybeSetMagicWandLayer);
-    },
-    created() {
         Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
     mounted() {
