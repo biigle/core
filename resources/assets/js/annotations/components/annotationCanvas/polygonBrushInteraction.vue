@@ -51,8 +51,9 @@ export default {
                 this.interactionMode = 'polygonFill';
             }
         },
-        togglePolygonBrushInteraction() {
-            currentInteraction = new PolygonBrushInteraction({
+        togglePolygonBrushInteraction(state) {
+            if (state && this.canAdd) { 
+                currentInteraction = new PolygonBrushInteraction({
                 map: this.map,
                 source: this.annotationSource,
                 style: Styles.editing,
@@ -60,7 +61,7 @@ export default {
                 resizeCondition: altKeyOnly,
             });
             currentInteraction.on('drawend', this.handleNewFeature);
-            this.map.addInteraction(currentInteraction);
+            this.map.addInteraction(currentInteraction);}
         },
         togglePolygonEraserInteraction() {
             currentInteraction = new ModifyPolygonBrushInteraction({
@@ -91,31 +92,35 @@ export default {
             currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
             this.map.addInteraction(currentInteraction);
         },
-        toggleCurrentInteraction() {
+        resetCurrentInteraction() {
             if (currentInteraction) {
                 brushRadius = currentInteraction.getBrushRadius();
                 this.map.removeInteraction(currentInteraction);
                 currentInteraction = null;
             }
+        },
+        toggleShiftClickSelectInteraction() {
             shiftClickSelectInteraction.setActive(this.canModify
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
     },
     watch: {
-        interactionMode() {
-            this.toggleCurrentInteraction();
-        },
         isUsingPolygonBrush(state) {
+            this.resetCurrentInteraction();
             if (state && this.canAdd) {
                 this.togglePolygonBrushInteraction();
             }
         },
         isUsingPolygonEraser(state) {
+            this.resetCurrentInteraction();
+            this.toggleShiftClickSelectInteraction();
             if (state && this.canModify) {
                 this.togglePolygonEraserInteraction();
             }
         },
         isUsingPolygonFill(state) {
+            this.resetCurrentInteraction();
+            this.toggleShiftClickSelectInteraction();
             if (state && this.canModify) {
                 this.togglePolygonFillInteraction();
             }
