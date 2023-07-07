@@ -105,7 +105,7 @@ export default {
 
         },
     },
-    mounted() {
+    created() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
         Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
         Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
