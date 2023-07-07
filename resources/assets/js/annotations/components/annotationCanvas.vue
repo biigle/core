@@ -304,18 +304,18 @@ export default {
                 multi: true
             });
 
-                // Map to detect which features were changed between modifystart and
-                // modifyend events of the modify interaction.
-                this.featureRevisionMap = {};
-                this.modifyInteraction = new ModifyInteraction({
-                    features: this.selectInteraction.getFeatures(),
-                    // The Shift key must be pressed to delete vertices, so that new
-                    // vertices can be drawn at the same position of existing
-                    // vertices.
-                    deleteCondition: function (event) {
-                        return shiftKeyOnlyCondition(event) && singleClickCondition(event);
-                    },
-                });
+            // Map to detect which features were changed between modifystart and
+            // modifyend events of the modify interaction.
+            this.featureRevisionMap = {};
+            this.modifyInteraction = new ModifyInteraction({
+                features: this.selectInteraction.getFeatures(),
+                // The Shift key must be pressed to delete vertices, so that new
+                // vertices can be drawn at the same position of existing
+                // vertices.
+                deleteCondition: function (event) {
+                    return shiftKeyOnlyCondition(event) && singleClickCondition(event);
+                },
+            });
         },
         updateMapSize() {
             this.mapSize = this.map.getSize();
@@ -715,14 +715,12 @@ export default {
         },
         canModify(state) {
             this.modifyInteraction.setActive(state && this.isDefaultInteractionMode);
-
         },
         canDelete(state) {
             if (state) {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-            }
-            else {
+            } else {
                 Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
