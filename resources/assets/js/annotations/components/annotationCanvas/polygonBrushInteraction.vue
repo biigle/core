@@ -121,6 +121,11 @@ export default {
             }
         },
     },
+    created() {
+        Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
+        Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
+        Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
+    },
     mounted() {
         shiftClickSelectInteraction = new SelectInteraction({
             condition(e) {
@@ -134,9 +139,6 @@ export default {
         shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         shiftClickSelectInteraction.setActive(false);
         this.map.addInteraction(shiftClickSelectInteraction);
-        Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
-        Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
-        Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
     },
 };
 </script>
