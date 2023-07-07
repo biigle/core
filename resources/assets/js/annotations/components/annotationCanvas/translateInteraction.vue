@@ -19,16 +19,14 @@ export default {
         toggleTranslating() {
             if (this.isTranslating) {
                 this.resetInteractionMode();
-            } else if (!this.modifyInProgress) {
+            } else if (!this.modifyInProgress && this.canModify) {
                 this.interactionMode = 'translate';
             }
         },
     },
     watch: {
         isTranslating(translating) {
-            if (this.canModify) {
-                translateInteraction.setActive(translating);
-            }
+            translateInteraction.setActive(translating);
         },
     },
     created() {
