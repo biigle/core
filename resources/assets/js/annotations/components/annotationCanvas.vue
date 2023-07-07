@@ -713,16 +713,24 @@ export default {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
+        canAdd(state) {
+            if (!state) {
+                this.resetInteractionMode();
+            }
+        },
         canModify(state) {
-            this.modifyInteraction.setActive(state && this.isDefaultInteractionMode);
+            if (!state) {
+                this.resetInteractionMode();
+            } else {
+                this.modifyInteraction.setActive(state && this.isDefaultInteractionMode);
+            }
         },
         canDelete(state) {
-            if (state) {
+            if (!state) {
+                this.resetInteractionMode();
+            } else {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-            } else {
-                Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-                Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         }
     },

@@ -104,14 +104,6 @@ export default {
             this.maybeUpdateDrawInteractionMode(mode)
 
         },
-        canAdd: {
-            handler(state) {
-                if (!state) {
-                    this.resetInteractionMode();
-                }
-            },
-            immediate: true
-        }
     },
     mounted() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
