@@ -69,6 +69,9 @@ export default {
         this.$watch('image', this.maybeUpdateMagicWandSnapshot);
         this.$watch('image', this.maybeSetMagicWandLayer);
     },
+    created() {
+        Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+    },
     mounted() {
         // Initialize the magic wand interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
@@ -83,7 +86,6 @@ export default {
         magicWandInteraction.on('drawend', this.handleNewFeature);
         magicWandInteraction.setActive(false);
         this.map.addInteraction(magicWandInteraction);
-        Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
 };
 </script>
