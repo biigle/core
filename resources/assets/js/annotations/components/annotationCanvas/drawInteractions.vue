@@ -82,7 +82,7 @@ export default {
                 drawInteraction = undefined;
             }
 
-            if (this.isDrawing && this.canAdd) {
+            if (this.isDrawing) {
                 drawInteraction = new DrawInteraction({
                     source: this.annotationSource,
                     type: mode.slice(4), // remove 'draw' prefix
