@@ -638,6 +638,7 @@ export default {
             if (!image) {
                 this.map.removeLayer(this.tiledImageLayer);
                 this.map.removeLayer(this.imageLayer);
+                this.resetInteractionMode();
             } else if (image.tiled === true) {
                 if (!oldImage || oldImage.tiled !== true) {
                     this.map.removeLayer(this.imageLayer);
