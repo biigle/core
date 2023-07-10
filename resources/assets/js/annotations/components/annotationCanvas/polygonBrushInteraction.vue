@@ -64,7 +64,7 @@ export default {
                 this.map.addInteraction(currentInteraction);
             }
         },
-        togglePolygonEraserInteraction() {
+        togglePolygonEraserInteraction(state) {
             if (state && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
@@ -81,7 +81,7 @@ export default {
                 this.map.addInteraction(currentInteraction);
             }
         },
-        togglePolygonFillInteraction() {
+        togglePolygonFillInteraction(state) {
             if (state && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
