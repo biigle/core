@@ -19,32 +19,30 @@ export default {
         toggleTranslating() {
             if (this.isTranslating) {
                 this.resetInteractionMode();
-            } else if (!this.modifyInProgress) {
+            } else if (!this.modifyInProgress && this.canModify) {
                 this.interactionMode = 'translate';
             }
         },
     },
     watch: {
         isTranslating(translating) {
-            if (this.canModify) {
-                translateInteraction.setActive(translating);
-            }
+            translateInteraction.setActive(translating);
         },
+    },
+    created() {
+        Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
     },
     mounted() {
         // Initialize the translate interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-        if (this.canModify) {
-            translateInteraction = new TranslateInteraction({
-                features: this.selectInteraction.getFeatures(),
-                map: this.map,
-            });
-            translateInteraction.setActive(false);
-            translateInteraction.on('translatestart', this.handleFeatureModifyStart);
-            translateInteraction.on('translateend', this.handleFeatureModifyEnd);
-            this.map.addInteraction(translateInteraction);
-            Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
-        }
+        translateInteraction = new TranslateInteraction({
+            features: this.selectInteraction.getFeatures(),
+            map: this.map,
+        });
+        translateInteraction.setActive(false);
+        translateInteraction.on('translatestart', this.handleFeatureModifyStart);
+        translateInteraction.on('translateend', this.handleFeatureModifyEnd);
+        this.map.addInteraction(translateInteraction);
     },
 };
 </script>

@@ -89,6 +89,15 @@ export default {
         };
     },
     computed: {
+        canAdd() {
+            return this.isEditor && (this.image !== null);
+        },
+        canModify() {
+            return this.canAdd;
+        },
+        canDelete() {
+            return this.canAdd;
+        },
         imageId() {
             return this.imagesIds[this.imageIndex];
         },
@@ -158,17 +167,6 @@ export default {
                 ImagesStore.fetchAndDrawImage(id),
                 AnnotationsStore.fetchAnnotations(id),
             ];
-        },
-        setCurrentImageAndAnnotations(args) {
-            if (args) {
-                this.image = args[0];
-                this.annotations = args[1];
-            } else {
-                // This might happen if there was an error loading the image or the
-                // annotations.
-                this.image = null;
-                this.annotations = [];
-            }
         },
         updateUrlSlug() {
             UrlParams.setSlug(this.imageId, -2);
@@ -541,13 +539,6 @@ export default {
         handleClosedTab() {
             Settings.delete('openTab');
         },
-        handleLoadingError(message) {
-            if (message instanceof CrossOriginError) {
-                this.crossOriginError = true;
-            } else {
-                Messages.danger(message);
-            }
-        },
         createSampledAnnotation() {
             this.$refs.canvas.createSampledAnnotation();
         },
@@ -575,21 +566,35 @@ export default {
         },
     },
     watch: {
-        imageId(id) {
-            if (id) {
-                this.startLoading();
-                this.crossOriginError = false;
-                Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
-                    .then(this.setCurrentImageAndAnnotations)
-                    .then(this.updateUrlSlug)
-                    .then(this.maybeUpdateAnnotationMode)
-                    .then(this.emitImageChanged)
-                    .then(this.maybeShowTilingInProgressMessage)
-                    // When everything is loaded, pre-fetch the data of the next and
-                    // previous images so they can be switched fast.
-                    .then(this.cachePreviousAndNext)
-                    .catch(this.handleLoadingError)
-                    .finally(this.finishLoading);
+        async imageId(id) {
+            if (!id) {
+                return;
+            }
+
+            this.startLoading();
+            this.crossOriginError = false;
+
+            try {
+                let [image, annotations] = await Vue.Promise.all(this.getImageAndAnnotationsPromises(id));
+                this.image = image;
+                this.annotations = annotations;
+                this.maybeUpdateAnnotationMode();
+                this.maybeShowTilingInProgressMessage();
+            } catch (e) {
+                if (e instanceof CrossOriginError) {
+                    this.crossOriginError = true;
+                } else {
+                    this.image = null;
+                    this.annotations = [];
+                    Messages.danger(e);
+                }
+            } finally {
+                this.updateUrlSlug();
+                this.emitImageChanged();
+                // When everything is loaded, pre-fetch the data of the next and
+                // previous images so they can be switched fast.
+                this.cachePreviousAndNext();
+                this.finishLoading();
             }
         },
         cachedImagesCount() {
@@ -628,7 +633,7 @@ export default {
             this.annotationFilters[1].annotations = annotations;
         },
         image(image) {
-            this.crossOriginError = image.crossOrigin;
+            this.crossOriginError = image?.crossOrigin;
         },
     },
     created() {

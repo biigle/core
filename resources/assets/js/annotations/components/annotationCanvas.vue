@@ -304,20 +304,18 @@ export default {
                 multi: true
             });
 
-            if (this.canModify) {
-                // Map to detect which features were changed between modifystart and
-                // modifyend events of the modify interaction.
-                this.featureRevisionMap = {};
-                this.modifyInteraction = new ModifyInteraction({
-                    features: this.selectInteraction.getFeatures(),
-                    // The Shift key must be pressed to delete vertices, so that new
-                    // vertices can be drawn at the same position of existing
-                    // vertices.
-                    deleteCondition: function (event) {
-                        return shiftKeyOnlyCondition(event) && singleClickCondition(event);
-                    },
-                });
-            }
+            // Map to detect which features were changed between modifystart and
+            // modifyend events of the modify interaction.
+            this.featureRevisionMap = {};
+            this.modifyInteraction = new ModifyInteraction({
+                features: this.selectInteraction.getFeatures(),
+                // The Shift key must be pressed to delete vertices, so that new
+                // vertices can be drawn at the same position of existing
+                // vertices.
+                deleteCondition: function (event) {
+                    return shiftKeyOnlyCondition(event) && singleClickCondition(event);
+                },
+            });
         },
         updateMapSize() {
             this.mapSize = this.map.getSize();
@@ -640,6 +638,7 @@ export default {
             if (!image) {
                 this.map.removeLayer(this.tiledImageLayer);
                 this.map.removeLayer(this.imageLayer);
+                this.resetInteractionMode();
             } else if (image.tiled === true) {
                 if (!oldImage || oldImage.tiled !== true) {
                     this.map.removeLayer(this.imageLayer);
@@ -715,6 +714,34 @@ export default {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
+        canAdd(state) {
+            if (!state) {
+                this.resetInteractionMode();
+            }
+        },
+        canModify: {
+            handler(state) {
+                if (!state) {
+                    this.resetInteractionMode();
+                } else {
+                    this.modifyInteraction.setActive(this.isDefaultInteractionMode);
+                }
+            },
+            immediate: true
+        },
+        canDelete: {
+            handler(state) {
+                if (!state) {
+                    this.resetInteractionMode();
+                    Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                    Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+                } else {
+                    Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                    Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+                }
+            },
+            immediate: true
+        }
     },
     created() {
         this.declareNonReactiveProperties();
@@ -746,16 +773,10 @@ export default {
         Keyboard.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
-        if (this.canModify) {
-            this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
-            this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
-            this.map.addInteraction(this.modifyInteraction);
-        }
-
-        if (this.canDelete) {
-            Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-            Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-        }
+        this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+        this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+        this.map.addInteraction(this.modifyInteraction);
+        this.modifyInteraction.setActive(false);
     },
     mounted() {
         this.map.setTarget(this.$el);

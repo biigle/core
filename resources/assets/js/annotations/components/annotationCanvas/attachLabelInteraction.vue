@@ -22,14 +22,14 @@ export default {
         toggleAttaching() {
             if (this.isAttaching) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canAdd) {
                 this.interactionMode = 'attach';
             }
         },
         toggleSwapping() {
             if (this.isSwapping) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canAdd){
                 this.interactionMode = 'swap';
             }
         },
@@ -42,22 +42,20 @@ export default {
     },
     watch: {
         isAttaching(attaching) {
-            if (this.canAdd) {
-                if (attaching && !this.hasSelectedLabel) {
-                    this.requireSelectedLabel();
-                } else {
-                    attachLabelInteraction.setActive(attaching);
-                }
+            if (attaching && !this.hasSelectedLabel) {
+                this.requireSelectedLabel();
+            } else {
+                attachLabelInteraction.setActive(attaching);
             }
+
         },
         isSwapping(swapping) {
-            if (this.canAdd) {
-                if (swapping && !this.hasSelectedLabel) {
-                    this.requireSelectedLabel();
-                } else {
-                    swapLabelInteraction.setActive(swapping);
-                }
+            if (swapping && !this.hasSelectedLabel) {
+                this.requireSelectedLabel();
+            } else {
+                swapLabelInteraction.setActive(swapping);
             }
+
         },
         selectedLabel(label) {
             if (!label && (this.isAttaching || this.isSwapping)) {
@@ -68,26 +66,24 @@ export default {
     mounted() {
         // Initialize the attach interaction here because we have to wait for
         // the non-reactive properties of annotationCanvas to be initialized.
-        if (this.canAdd) {
-            attachLabelInteraction = new AttachLabelInteraction({
-                features: this.annotationFeatures,
-                map: this.map,
-            });
-            attachLabelInteraction.setActive(false);
-            attachLabelInteraction.on('attach', this.handleAttachLabel);
-            this.map.addInteraction(attachLabelInteraction);
+        attachLabelInteraction = new AttachLabelInteraction({
+            features: this.annotationFeatures,
+            map: this.map,
+        });
+        attachLabelInteraction.setActive(false);
+        attachLabelInteraction.on('attach', this.handleAttachLabel);
+        this.map.addInteraction(attachLabelInteraction);
 
-            swapLabelInteraction = new AttachLabelInteraction({
-                features: this.annotationFeatures,
-                map: this.map,
-            });
-            swapLabelInteraction.setActive(false);
-            swapLabelInteraction.on('attach', this.handleSwapLabel);
-            this.map.addInteraction(swapLabelInteraction);
+        swapLabelInteraction = new AttachLabelInteraction({
+            features: this.annotationFeatures,
+            map: this.map,
+        });
+        swapLabelInteraction.setActive(false);
+        swapLabelInteraction.on('attach', this.handleSwapLabel);
+        this.map.addInteraction(swapLabelInteraction);
 
-            Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
-            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
-        }
+        Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
+        Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
     },
 };
 </script>
