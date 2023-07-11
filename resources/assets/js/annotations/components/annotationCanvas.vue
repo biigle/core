@@ -729,6 +729,8 @@ export default {
         canDelete(state) {
             if (!state) {
                 this.resetInteractionMode();
+                Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             } else {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
