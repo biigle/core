@@ -723,7 +723,7 @@ export default {
             if (!state) {
                 this.resetInteractionMode();
             } else {
-                this.modifyInteraction.setActive(state && this.isDefaultInteractionMode);
+                this.modifyInteraction.setActive(this.isDefaultInteractionMode);
             }
         },
         canDelete(state) {
