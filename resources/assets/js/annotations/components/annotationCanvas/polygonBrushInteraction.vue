@@ -51,8 +51,8 @@ export default {
                 this.interactionMode = 'polygonFill';
             }
         },
-        togglePolygonBrushInteraction(state) {
-            if (state && this.canAdd) {
+        togglePolygonBrushInteraction() {
+            if (this.isUsingPolygonBrush && this.canAdd) {
                 currentInteraction = new PolygonBrushInteraction({
                     map: this.map,
                     source: this.annotationSource,
@@ -64,8 +64,8 @@ export default {
                 this.map.addInteraction(currentInteraction);
             }
         },
-        togglePolygonEraserInteraction(state) {
-            if (state && this.canModify) {
+        togglePolygonEraserInteraction() {
+            if (this.isUsingPolygonEraser && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
                     features: this.selectInteraction.getFeatures(),
@@ -81,8 +81,8 @@ export default {
                 this.map.addInteraction(currentInteraction);
             }
         },
-        togglePolygonFillInteraction(state) {
-            if (state && this.canModify) {
+        togglePolygonFillInteraction() {
+            if (this.isUsingPolygonFill && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
                     features: this.selectInteraction.getFeatures(),
@@ -110,19 +110,19 @@ export default {
         },
     },
     watch: {
-        isUsingPolygonBrush(state) {
+        isUsingPolygonBrush() {
             this.resetCurrentInteraction();
-            this.togglePolygonBrushInteraction(state);
+            this.togglePolygonBrushInteraction();
         },
-        isUsingPolygonEraser(state) {
+        isUsingPolygonEraser() {
             this.resetCurrentInteraction();
             this.toggleShiftClickSelectInteraction();
-            this.togglePolygonEraserInteraction(state);
+            this.togglePolygonEraserInteraction();
         },
-        isUsingPolygonFill(state) {
+        isUsingPolygonFill() {
             this.resetCurrentInteraction();
             this.toggleShiftClickSelectInteraction();
-            this.togglePolygonFillInteraction(state);
+            this.togglePolygonFillInteraction();
         },
     },
     created() {
