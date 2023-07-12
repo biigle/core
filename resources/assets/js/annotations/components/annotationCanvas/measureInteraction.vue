@@ -30,7 +30,7 @@ export default {
         toggleMeasuring() {
             if (this.isMeasuring) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.image) {
                 this.interactionMode = 'measure';
             }
         },
@@ -84,7 +84,7 @@ export default {
             }
         },
         image() {
-            if (this.isMeasuring) {
+            if (this.isMeasuring && this.image) {
                 // Wait for the new image to be propagated down to the measureTooltip
                 // then update it. We have to do this manually since we don't want to
                 // process the OpenLayers features reactively (see below).

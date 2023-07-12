@@ -4,7 +4,7 @@ import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonB
 import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../stores/styles';
-import {never, noModifierKeys, click, shiftKeyOnly, altKeyOnly} from '@biigle/ol/events/condition';
+import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -31,7 +31,7 @@ export default {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel) {
+            } else if (!this.hasSelectedLabel && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'polygonBrush';
@@ -51,14 +51,8 @@ export default {
                 this.interactionMode = 'polygonFill';
             }
         },
-        toggleCurrentInteraction(mode) {
-            if (currentInteraction) {
-                brushRadius = currentInteraction.getBrushRadius();
-                this.map.removeInteraction(currentInteraction);
-                currentInteraction = null;
-            }
-
-            if (this.canAdd && mode === 'polygonBrush') {
+        togglePolygonBrushInteraction() {
+            if (this.isUsingPolygonBrush && this.canAdd) {
                 currentInteraction = new PolygonBrushInteraction({
                     map: this.map,
                     source: this.annotationSource,
@@ -68,7 +62,10 @@ export default {
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
-            } else if (this.canModify && mode === 'polygonEraser') {
+            }
+        },
+        togglePolygonEraserInteraction() {
+            if (this.isUsingPolygonEraser && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
                     features: this.selectInteraction.getFeatures(),
@@ -82,8 +79,10 @@ export default {
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
                 this.map.addInteraction(currentInteraction);
-                this.map.addInteraction(shiftClickSelectInteraction);
-            } else if (this.canModify && mode === 'polygonFill') {
+            }
+        },
+        togglePolygonFillInteraction() {
+            if (this.isUsingPolygonFill && this.canModify) {
                 currentInteraction = new ModifyPolygonBrushInteraction({
                     map: this.map,
                     features: this.selectInteraction.getFeatures(),
@@ -96,37 +95,54 @@ export default {
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
                 this.map.addInteraction(currentInteraction);
-                this.map.addInteraction(shiftClickSelectInteraction);
             }
+        },
+        resetCurrentInteraction() {
+            if (currentInteraction) {
+                brushRadius = currentInteraction.getBrushRadius();
+                this.map.removeInteraction(currentInteraction);
+                currentInteraction = null;
+            }
+        },
+        toggleShiftClickSelectInteraction() {
+            shiftClickSelectInteraction.setActive(this.canModify
+                && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
+        },
+    },
+    watch: {
+        isUsingPolygonBrush() {
+            this.resetCurrentInteraction();
+            this.togglePolygonBrushInteraction();
+        },
+        isUsingPolygonEraser() {
+            this.resetCurrentInteraction();
+            this.toggleShiftClickSelectInteraction();
+            this.togglePolygonEraserInteraction();
+        },
+        isUsingPolygonFill() {
+            this.resetCurrentInteraction();
+            this.toggleShiftClickSelectInteraction();
+            this.togglePolygonFillInteraction();
         },
     },
     created() {
-        if (this.canAdd) {
-            Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
-        }
-
-        if (this.canModify) {
-            Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
-            Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
-        }
-
-        if (this.canAdd || this.canModify) {
-            this.$watch('interactionMode', this.toggleCurrentInteraction);
-        }
+        Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
+        Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
+        Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
     },
     mounted() {
-        if (this.canModify) {
-            shiftClickSelectInteraction = new SelectInteraction({
-                condition(e) {
-                    return click(e) && shiftKeyOnly(e);
-                },
-                style: Styles.highlight,
-                layers: [this.annotationLayer],
-                features: this.selectInteraction.getFeatures(),
-                multi: true,
-            });
-            shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
-        }
+        shiftClickSelectInteraction = new SelectInteraction({
+            condition(e) {
+                return click(e) && shiftKeyOnly(e);
+            },
+            style: Styles.highlight,
+            layers: [this.annotationLayer],
+            features: this.selectInteraction.getFeatures(),
+            multi: true,
+        });
+        shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
+        shiftClickSelectInteraction.setActive(false);
+        this.map.addInteraction(shiftClickSelectInteraction);
     },
 };
 </script>

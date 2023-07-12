@@ -24,8 +24,7 @@
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious" :disabled="modifyInProgress"></control-button>
             <control-button icon="fa-step-forward" :title="nextButtonTitle + ' 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄/𝗦𝗽𝗮𝗰𝗲'" v-on:click="handleNext" :disabled="modifyInProgress"></control-button>
         </div>
-        @can('add-annotation', $image)
-            <div class="btn-group drawing-controls">
+            <div class="btn-group drawing-controls" v-if="canAdd" @cannot('add-annotation') v-cloak @endcannot>
                 <control-button icon="icon-point" title="Set a point 𝗔" :active="isDrawingPoint" v-on:click="drawPoint"></control-button>
                 <control-button icon="icon-rectangle" title="Draw a rectangle 𝗦" :active="isDrawingRectangle" v-on:click="drawRectangle"></control-button>
                 <control-button icon="icon-circle" title="Draw a circle 𝗗" :active="isDrawingCircle" v-on:click="drawCircle">
@@ -44,18 +43,18 @@
                     @mixin('imageAnnotationPolygonTools')
                 </control-button>
             </div>
-            <div class="btn-group edit-controls">
-                <control-button icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching">
+            <div class="btn-group edit-controls" v-if="canModify || canDelete" @cannot('add-annotation') v-cloak @endcannot>
+                <control-button v-if="canModify" icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching">
                     <control-button icon="fa-sync-alt" title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟" :active="isSwapping" v-on:click="toggleSwapping"></control-button>
                 </control-button>
-                <control-button icon="fa-arrows-alt" title="Move selected annotations 𝗠" :active="isTranslating" v-on:click="toggleTranslating" :disabled="modifyInProgress"></control-button>
-                <control-button v-if="hasLastCreatedAnnotation" icon="fa-undo" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" v-on:click="deleteLastCreatedAnnotation"></control-button>
-                <control-button v-else icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="modifyInProgress||!hasSelectedAnnotations" v-on:click="deleteSelectedAnnotations"></control-button>
+                <control-button v-if="canModify" icon="fa-arrows-alt" title="Move selected annotations 𝗠" :active="isTranslating" v-on:click="toggleTranslating" :disabled="modifyInProgress"></control-button>
+                <control-button v-if="hasLastCreatedAnnotation && canDelete" icon="fa-undo" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" v-on:click="deleteLastCreatedAnnotation"></control-button>
+                <control-button v-else-if="canDelete" icon="fa-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="modifyInProgress||!hasSelectedAnnotations" v-on:click="deleteSelectedAnnotations"></control-button>
             </div>
-        @else
-            <div class="btn-group drawing-controls">
+
+            <div class="btn-group drawing-controls" v-if="!canAdd && image" @cannot('add-annotation') v-cloak @endcannot>
                 <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
             </div>
-        @endcan
+        
     </div>
 </div>
