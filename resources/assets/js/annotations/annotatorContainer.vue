@@ -689,7 +689,11 @@ export default {
                 let annotations = this.annotations;
                 for (let i = annotations.length - 1; i >= 0; i--) {
                     if (annotations[i].id === id) {
-                        this.selectAndFocusAnnotation(annotations[i]);
+                        // Use $nextTick so the annotationCanvas component has time to
+                        // render the image.
+                        this.$nextTick(
+                            () => this.selectAndFocusAnnotation(annotations[i])
+                        );
                         return;
                     }
                 }
