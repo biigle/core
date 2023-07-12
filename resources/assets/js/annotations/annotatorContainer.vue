@@ -353,10 +353,10 @@ export default {
         handleDetachAnnotationLabel(annotation, annotationLabel) {
             if (this.isEditor) {
                 if (annotation.labels.length > 1) {
-                    AnnotationsStore.detachLabel(annotation, annotationLabel)
+                    return AnnotationsStore.detachLabel(annotation, annotationLabel)
                         .catch(handleErrorResponse);
                 } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
-                    this.handleDeleteAnnotation(annotation);
+                    return this.handleDeleteAnnotation(annotation);
                 }
             }
         },
@@ -370,7 +370,7 @@ export default {
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             Vue.set(annotation, 'markedForDeletion', true);
-            AnnotationsStore.delete(annotation)
+            return AnnotationsStore.delete(annotation)
                 .catch(function (response) {
                     annotation.markedForDeletion = false;
                     handleErrorResponse(response);
@@ -443,11 +443,17 @@ export default {
                 this.handleAttachLabel(annotation, label)
                     .then(() => {
                         if (lastLabel) {
-                            this.handleDetachAnnotationLabel(annotation, lastLabel);
+                            this.handleDetachAnnotationLabel(annotation, lastLabel)
+                                .then(() => {
+                                    this.refreshAnnotation(annotation);
+                                });
                         }
                     })
                     .catch(handleErrorResponse);
             }
+        },
+        refreshAnnotation(annotation){
+            this.$refs.canvas.refreshAnnotation(annotation);
         },
         handleAttachAllSelected() {
             this.selectedAnnotations.forEach(this.handleAttachLabel);
