@@ -7,6 +7,7 @@ import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import {getRoundToPrecision} from '../../utils';
+import Events from '../../../core/events';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.
@@ -125,6 +126,15 @@ export default {
                 this.updateGeometry(feature, time);
             });
         },
+        refreshAnnotation(annotation) {
+            let source = this.annotationSource;
+
+            let newFeature = this.createFeature(annotation);
+            let oldFeature = source.getFeatureById(annotation.id)
+            
+            source.removeFeature(oldFeature);
+            source.addFeature(newFeature);
+        },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
@@ -226,6 +236,7 @@ export default {
         },
     },
     created() {
+        Events.$on('video.swap', this.refreshAnnotation);
         this.$on('refresh', this.refreshAnnotations);
         this.$once('map-ready', () => {
             this.$watch('annotationsRevision', () => {

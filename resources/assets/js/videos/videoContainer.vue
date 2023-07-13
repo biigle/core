@@ -402,10 +402,10 @@ export default {
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
-                annotation.detachAnnotationLabel(annotationLabel)
+                return annotation.detachAnnotationLabel(annotationLabel)
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
-                annotation.delete()
+                return annotation.delete()
                     .then(() => this.removeAnnotation(annotation))
                     .catch(handleErrorResponse);
             }
@@ -425,7 +425,9 @@ export default {
             this.attachAnnotationLabel(annotation)
                 .then(() => {
                     if (lastLabel) {
-                        this.detachAnnotationLabel(annotation, lastLabel);
+                        this.detachAnnotationLabel(annotation, lastLabel)
+                            .then(Events.$emit('video.swap', annotation));
+
                     }
                 })
                 .catch(handleErrorResponse);
