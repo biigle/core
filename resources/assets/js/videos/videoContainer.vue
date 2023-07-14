@@ -432,7 +432,7 @@ export default {
                 .catch(handleErrorResponse);
         },
         refreshSingleAnnotation(annotation) {
-            this.$refs.videoScreen.refreshAnnotation(annotation);
+            this.$refs.videoScreen.refreshSingleAnnotation(annotation);
         },
         initAnnotationFilters() {
             let reverseShapes = {};

@@ -597,7 +597,7 @@ export default {
         updateMousePosition(e) {
             this.mousePosition = e.coordinate;
         },
-        refreshAnnotation(annotation) {
+        refreshSingleAnnotation(annotation) {
             let source = this.annotationSource;
 
             let newFeature = this.createFeature(annotation);

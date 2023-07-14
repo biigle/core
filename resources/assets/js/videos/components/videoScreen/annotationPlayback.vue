@@ -49,7 +49,7 @@ export default {
         },
     },
     methods: {
-        refreshAnnotations(time) {
+        refreshAllAnnotations(time) {
             let source = this.annotationSource;
             let selected = this.selectedFeatures;
             let annotations = this.annotationsPreparedToRender;
@@ -126,7 +126,7 @@ export default {
                 this.updateGeometry(feature, time);
             });
         },
-        refreshAnnotation(annotation) {
+        refreshSingleAnnotation(annotation) {
             let source = this.annotationSource;
 
             let newFeature = this.createFeature(annotation);
@@ -237,10 +237,10 @@ export default {
     },
     created() {
         Events.$on('video.swap', this.refreshAnnotation);
-        this.$on('refresh', this.refreshAnnotations);
+        this.$on('refresh', this.refreshAllAnnotations);
         this.$once('map-ready', () => {
             this.$watch('annotationsRevision', () => {
-                this.refreshAnnotations(this.video.currentTime);
+                this.refreshAllAnnotations(this.video.currentTime);
             });
         });
     },
