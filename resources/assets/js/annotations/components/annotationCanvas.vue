@@ -605,8 +605,6 @@ export default {
             
             source.removeFeature(oldFeature);
             source.addFeature(newFeature);
-            
-        
         },
         refreshAnnotationSource(annotations, source) {
             let annotationsMap = {};
