@@ -402,10 +402,11 @@ export default {
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
-                return annotation.detachAnnotationLabel(annotationLabel)
+                annotation.detachAnnotationLabel(annotationLabel)
+                    .then(() => this.refreshSingleAnnotation(annotation))
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
-                return annotation.delete()
+                annotation.delete()
                     .then(() => this.removeAnnotation(annotation))
                     .catch(handleErrorResponse);
             }
@@ -425,12 +426,13 @@ export default {
             this.attachAnnotationLabel(annotation)
                 .then(() => {
                     if (lastLabel) {
-                        this.detachAnnotationLabel(annotation, lastLabel)
-                            .then(Events.$emit('video.swap', annotation));
-
+                        this.detachAnnotationLabel(annotation, lastLabel);
                     }
                 })
                 .catch(handleErrorResponse);
+        },
+        refreshSingleAnnotation(annotation) {
+            this.$refs.videoScreen.refreshAnnotation(annotation);
         },
         initAnnotationFilters() {
             let reverseShapes = {};
