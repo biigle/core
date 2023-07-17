@@ -30,7 +30,9 @@ export default {
                 allowedSplitShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
         },
         cannotLinkAnnotations() {
-            return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
+            return this.selectedAnnotations.length !== 2 
+            || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
+            || this.selectedAnnotations[0].labels[0].label_id !== this.selectedAnnotations[1].labels[0].label_id;
         },
         isAttaching() {
             return this.interactionMode === 'attachLabel';
