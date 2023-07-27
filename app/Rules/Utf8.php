@@ -15,7 +15,8 @@ class Utf8 implements Rule
      */
     public function passes($attribute, $value)
     {
-        return mb_detect_encoding($value->get(), 'UTF-8', true) !== false;
+        $value = is_string($value) ? $value : $value->get();
+        return mb_detect_encoding($value, 'UTF-8', true) !== false;
     }
 
     /**
