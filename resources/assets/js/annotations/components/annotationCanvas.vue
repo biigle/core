@@ -510,7 +510,9 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (this.hasSelectedLabel) {
+            let validDrawing = this.hasValidPoints(e);
+
+            if (this.hasSelectedLabel && validDrawing) {
                 let geometry = e.feature.getGeometry();
                 e.feature.set('color', this.selectedLabel.color);
 
@@ -529,9 +531,36 @@ export default {
                     shape: geometry.getType(),
                     points: this.getPoints(geometry),
                 }, removeCallback);
-            } else {
+            } else if (validDrawing) {
                 this.annotationSource.removeFeature(e.feature);
+            } else {
+                let source = this.annotationSource;
+                source.on('change', (evtChange) => {
+                    if (evtChange.target.getState() === 'ready' && source.hasFeature(e.feature)) {
+                        source.removeFeature(e.feature);
+                        this.$emit('has-invalid-shape', e.feature.getGeometry().getType());
+                    }
+
+                });
             }
+        },
+        hasValidPoints(e) {
+            let geometry = e.feature.getGeometry();
+            let points = geometry.getCoordinates();
+
+            switch (geometry.getType()) {
+                case 'LineString':
+                    return this.getEntrySetSize(points) >= 2;
+                case 'Rectangle':
+                    return this.getEntrySetSize(points[0]) === 4;
+                case 'Polygon':
+                    return this.getEntrySetSize(points[0]) >= 3;
+                default:
+                    return true;
+            }
+        },
+        getEntrySetSize(points){
+            return new Set(points.map(xy => String(xy))).size;
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
