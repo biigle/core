@@ -550,16 +550,16 @@ export default {
 
             switch (geometry.getType()) {
                 case 'LineString':
-                    return this.getEntrySetSize(points) >= 2;
+                    return this.getShapeCoordinateSetSize(points) >= 2;
                 case 'Rectangle':
-                    return this.getEntrySetSize(points[0]) === 4;
+                    return this.getShapeCoordinateSetSize(points[0]) === 4;
                 case 'Polygon':
-                    return this.getEntrySetSize(points[0]) >= 3;
+                    return this.getShapeCoordinateSetSize(points[0]) >= 3;
                 default:
                     return true;
             }
         },
-        getEntrySetSize(points){
+        getShapeCoordinateSetSize(points){
             return new Set(points.map(xy => String(xy))).size;
         },
         deleteSelectedAnnotations() {
