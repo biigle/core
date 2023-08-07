@@ -200,9 +200,15 @@ export default {
             this.$emit('delete', label);
         },
         conditionSelectSiblings(e) {
+            if (!e) {
+                return false;
+            }
             return this.allowSelectSiblings && e.altKey;
         },
         conditionSelectChildren(e) {
+            if (!e) {
+                return false;
+            }
             return this.allowSelectChildren && e.ctrlKey;
         },
         selectLabel(label, e) {
