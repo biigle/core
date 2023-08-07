@@ -8,7 +8,7 @@
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"
-        @keyup.enter="emitInternalValue()"
+        @keyup.enter="emitInternalValue"
         >
     <typeahead
         v-model="internalValue"
@@ -20,7 +20,7 @@
         >
         <template slot="item" slot-scope="props">
             <typeahead-item
-                @click.native="emitInternalValue()"
+                @click.native="emitInternalValue"
                 v-for="(item, index) in props.items"
                 :key="index"
                 :props="props"
