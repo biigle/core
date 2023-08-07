@@ -7,7 +7,6 @@ import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import {getRoundToPrecision} from '../../utils';
-import Events from '../../../core/events';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.
@@ -236,7 +235,6 @@ export default {
         },
     },
     created() {
-        Events.$on('video.swap', this.refreshAnnotation);
         this.$on('refresh', this.refreshAllAnnotations);
         this.$once('map-ready', () => {
             this.$watch('annotationsRevision', () => {
