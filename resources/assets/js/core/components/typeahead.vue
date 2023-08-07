@@ -8,6 +8,7 @@
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"
+        @keyup.enter="emitInternalValue"
         >
     <typeahead
         v-model="internalValue"
@@ -19,6 +20,7 @@
         >
         <template slot="item" slot-scope="props">
             <typeahead-item
+                @click.native="emitInternalValue"
                 v-for="(item, index) in props.items"
                 :key="index"
                 :props="props"
@@ -93,17 +95,17 @@ export default {
         emitBlur(e) {
             this.$emit('blur', e);
         },
-    },
-    watch: {
-        internalValue(value) {
-            if (typeof value === 'object') {
-                this.$emit('input', value);
-                this.$emit('select', value);
+        emitInternalValue() {
+            if (typeof this.internalValue === 'object') {
+                this.$emit('input', this.internalValue);
+                this.$emit('select', this.internalValue);
                 if (this.clearOnSelect) {
                     this.clear();
                 }
             }
         },
+    },
+    watch: {
         value(value) {
             this.internalValue = value;
         },
