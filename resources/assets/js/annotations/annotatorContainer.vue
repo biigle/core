@@ -354,6 +354,7 @@ export default {
             if (this.isEditor) {
                 if (annotation.labels.length > 1) {
                     AnnotationsStore.detachLabel(annotation, annotationLabel)
+                        .then(() => this.refreshSingleAnnotation(annotation))
                         .catch(handleErrorResponse);
                 } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
                     this.handleDeleteAnnotation(annotation);
@@ -448,6 +449,9 @@ export default {
                     })
                     .catch(handleErrorResponse);
             }
+        },
+        refreshSingleAnnotation(annotation){
+            this.$refs.canvas.refreshSingleAnnotation(annotation);
         },
         handleAttachAllSelected() {
             this.selectedAnnotations.forEach(this.handleAttachLabel);

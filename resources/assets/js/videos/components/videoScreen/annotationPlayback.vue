@@ -48,7 +48,7 @@ export default {
         },
     },
     methods: {
-        refreshAnnotations(time) {
+        refreshAllAnnotations(time) {
             let source = this.annotationSource;
             let selected = this.selectedFeatures;
             let annotations = this.annotationsPreparedToRender;
@@ -124,6 +124,15 @@ export default {
             Object.values(newRendered).forEach((feature) => {
                 this.updateGeometry(feature, time);
             });
+        },
+        refreshSingleAnnotation(annotation) {
+            let source = this.annotationSource;
+
+            let newFeature = this.createFeature(annotation);
+            let oldFeature = source.getFeatureById(annotation.id)
+            
+            source.removeFeature(oldFeature);
+            source.addFeature(newFeature);
         },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
@@ -226,10 +235,10 @@ export default {
         },
     },
     created() {
-        this.$on('refresh', this.refreshAnnotations);
+        this.$on('refresh', this.refreshAllAnnotations);
         this.$once('map-ready', () => {
             this.$watch('annotationsRevision', () => {
-                this.refreshAnnotations(this.video.currentTime);
+                this.refreshAllAnnotations(this.video.currentTime);
             });
         });
     },
