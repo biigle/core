@@ -30,9 +30,10 @@ export default {
                 allowedSplitShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
         },
         cannotLinkAnnotations() {
-            return this.selectedAnnotations.length !== 2 
-            || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
-            || this.selectedAnnotations[0].labels[0].label_id !== this.selectedAnnotations[1].labels[0].label_id;
+            return this.selectedAnnotations.length !== 2
+                || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
+                || this.selectedAnnotations[0].labels.length !== this.selectedAnnotations[1].labels.length
+                || !this.getAnnotationLabelIds(0).every(labelId => this.getAnnotationLabelIds(1).includes(labelId));
         },
         isAttaching() {
             return this.interactionMode === 'attachLabel';
@@ -42,6 +43,9 @@ export default {
         },
     },
     methods: {
+        getAnnotationLabelIds(index){
+            return this.selectedAnnotations[index].labels.map(l => l.label_id);
+        },
         initModifyInteraction(map) {
             // Map to detect which features were changed between modifystart and
             // modifyend events of the modify interaction.
