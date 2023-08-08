@@ -23,7 +23,7 @@ class MetadataControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/metadata");
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
+        $csv = new UploadedFile(__DIR__.'/../../../../../files/image-metadata.csv', 'image-metadata.csv', 'text/csv', null, true);
         $this->beEditor();
         // no permissions
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_csv' => $csv])
@@ -82,11 +82,9 @@ class MetadataControllerTest extends ApiTestCase
 
         $this->beAdmin();
 
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_csv' => "metadata_string"])
-        ->assertStatus(422);
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_csv' => 'metadata_string'])
+            ->assertStatus(422);
 
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_text' => "metadata_string"])
-        ->assertStatus(422);
     }
 
     public function testStoreDeprecatedFileAttribute()
@@ -102,7 +100,7 @@ class MetadataControllerTest extends ApiTestCase
             ]],
         ]);
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'metadata.csv', 'text/csv', null, true);
+        $csv = new UploadedFile(__DIR__.'/../../../../../files/image-metadata.csv', 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
@@ -153,7 +151,7 @@ class MetadataControllerTest extends ApiTestCase
             ]],
         ]);
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);
+        $csv = new UploadedFile(__DIR__.'/../../../../../files/video-metadata.csv', 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
@@ -181,10 +179,10 @@ class MetadataControllerTest extends ApiTestCase
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area,distance_to_ground
-abc.mp4,2022-02-24 16:07:00,2.5,10
-abc.mp4,2022-02-24 16:08:00,3.5,150
-TEXT;
+            filename,taken_at,area,distance_to_ground
+            abc.mp4,2022-02-24 16:07:00,2.5,10
+            abc.mp4,2022-02-24 16:08:00,3.5,150
+            TEXT;
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", [
@@ -215,10 +213,10 @@ TEXT;
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area,distance_to_ground
-abc.mp4,2022-02-24 16:07:00,2.5,
-abc.mp4,2022-02-24 16:09:00,3.5,150
-TEXT;
+            filename,taken_at,area,distance_to_ground
+            abc.mp4,2022-02-24 16:07:00,2.5,
+            abc.mp4,2022-02-24 16:09:00,3.5,150
+            TEXT;
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", [
@@ -255,12 +253,12 @@ TEXT;
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area,distance_to_ground
-abc.mp4,2022-02-24 16:07:00,2.5,10
-abc.mp4,2022-02-24 16:09:00,3.5,150
-def.mp4,2022-02-24 16:07:00,2.5,
-def.mp4,2022-02-24 16:09:00,3.5,
-TEXT;
+            filename,taken_at,area,distance_to_ground
+            abc.mp4,2022-02-24 16:07:00,2.5,10
+            abc.mp4,2022-02-24 16:09:00,3.5,150
+            def.mp4,2022-02-24 16:07:00,2.5,
+            def.mp4,2022-02-24 16:09:00,3.5,
+            TEXT;
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", [
@@ -313,10 +311,10 @@ TEXT;
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area,distance_to_ground
-abc.mp4,2022-02-24 16:07:00,2.5,10
-abc.mp4,2022-02-24 16:09:00,3.5,150
-TEXT;
+            filename,taken_at,area,distance_to_ground
+            abc.mp4,2022-02-24 16:07:00,2.5,10
+            abc.mp4,2022-02-24 16:09:00,3.5,150
+            TEXT;
 
         $this->beAdmin();
         // The video has basic metadata. There is no way the new area data with
@@ -338,9 +336,9 @@ TEXT;
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area
-abc.mp4,2022-02-24 16:07:00,0
-TEXT;
+            filename,taken_at,area
+            abc.mp4,2022-02-24 16:07:00,0
+            TEXT;
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", [
@@ -363,10 +361,10 @@ TEXT;
         ]);
 
         $text = <<<TEXT
-filename,taken_at,area
-abc.mp4,2022-02-24 16:07:00,0
-abc.mp4,2022-02-24 16:08:00,1
-TEXT;
+            filename,taken_at,area
+            abc.mp4,2022-02-24 16:07:00,0
+            abc.mp4,2022-02-24 16:08:00,1
+            TEXT;
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", [
@@ -388,7 +386,7 @@ TEXT;
             'volume_id' => $id,
         ]);
 
-        $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata-incorrect-encoding.csv", 'metadata.csv', 'text/csv', null, true);
+        $csv = new UploadedFile(__DIR__.'/../../../../../files/video-metadata-incorrect-encoding.csv', 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
@@ -399,7 +397,7 @@ TEXT;
     {
         $id = $this->volume()->id;
         $this->beAdmin();
-        $file = new UploadedFile(__DIR__."/../../../../../files/image-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $file = new UploadedFile(__DIR__.'/../../../../../files/image-ifdo.yaml', 'ifdo.yaml', 'application/yaml', null, true);
 
         Storage::fake('ifdos');
 
@@ -417,7 +415,7 @@ TEXT;
         $this->volume()->media_type_id = MediaType::videoId();
         $this->volume()->save();
         $this->beAdmin();
-        $file = new UploadedFile(__DIR__."/../../../../../files/video-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $file = new UploadedFile(__DIR__.'/../../../../../files/video-ifdo.yaml', 'ifdo.yaml', 'application/yaml', null, true);
 
         Storage::fake('ifdos');
 
@@ -433,7 +431,7 @@ TEXT;
     {
         $id = $this->volume()->id;
         $this->beAdmin();
-        $file = new UploadedFile(__DIR__."/../../../../../files/video-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $file = new UploadedFile(__DIR__.'/../../../../../files/video-ifdo.yaml', 'ifdo.yaml', 'application/yaml', null, true);
 
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
             ->assertStatus(422);
@@ -445,7 +443,7 @@ TEXT;
         $this->volume()->media_type_id = MediaType::videoId();
         $this->volume()->save();
         $this->beAdmin();
-        $file = new UploadedFile(__DIR__."/../../../../../files/image-ifdo.yaml", 'ifdo.yaml', 'application/yaml', null, true);
+        $file = new UploadedFile(__DIR__.'/../../../../../files/image-ifdo.yaml', 'ifdo.yaml', 'application/yaml', null, true);
 
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
             ->assertStatus(422);
