@@ -531,8 +531,6 @@ export default {
                     shape: geometry.getType(),
                     points: this.getPoints(geometry),
                 }, removeCallback);
-            } else if (validDrawing) {
-                this.annotationSource.removeFeature(e.feature);
             } else {
                 let source = this.annotationSource;
                 source.on('change', (evtChange) => {
