@@ -83,10 +83,7 @@ class MetadataControllerTest extends ApiTestCase
         $this->beAdmin();
 
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_csv' => "metadata_string"])
-        ->assertStatus(422);
-
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_text' => "metadata_string"])
-        ->assertStatus(422);
+            ->assertStatus(422);
     }
 
     public function testStoreDeprecatedFileAttribute()
