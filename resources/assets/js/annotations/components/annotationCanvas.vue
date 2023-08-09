@@ -557,7 +557,7 @@ export default {
             }
         },
         getShapeCoordinateSetSize(points){
-            return new Set(points.map(xy => String(xy))).size;
+            return new Set(points.map(xy => String([xy]))).size;
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
