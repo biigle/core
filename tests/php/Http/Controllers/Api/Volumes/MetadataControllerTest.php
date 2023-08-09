@@ -76,6 +76,16 @@ class MetadataControllerTest extends ApiTestCase
         $this->assertEmpty($png->metadata);
     }
 
+    public function testStoreStringMetadata()
+    {
+        $id = $this->volume()->id;
+
+        $this->beAdmin();
+
+        $this->postJson("/api/v1/volumes/{$id}/metadata", ['metadata_csv' => "metadata_string"])
+            ->assertStatus(422);
+    }
+
     public function testStoreDeprecatedFileAttribute()
     {
         $id = $this->volume()->id;
