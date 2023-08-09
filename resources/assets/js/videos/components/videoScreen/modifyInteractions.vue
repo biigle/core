@@ -33,7 +33,7 @@ export default {
             return this.selectedAnnotations.length !== 2
                 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
                 || this.selectedAnnotations[0].labels.length !== this.selectedAnnotations[1].labels.length
-                || !this.getAnnotationLabelIds(0).every(labelId => this.getAnnotationLabelIds(1).includes(labelId));
+                || !this.labelsAreIdentical(this.selectedAnnotations[0], this.selectedAnnotations[1]);
         },
         isAttaching() {
             return this.interactionMode === 'attachLabel';
@@ -43,8 +43,11 @@ export default {
         },
     },
     methods: {
-        getAnnotationLabelIds(index){
-            return this.selectedAnnotations[index].labels.map(l => l.label_id);
+        labelsAreIdentical(a, b) {
+            let labelIdsA = a.labels.map(l => l.label_id);
+            let labelIdsB = b.labels.map(l => l.label_id);
+
+            return labelIdsA.every(id => labelIdsB.includes(id));
         },
         initModifyInteraction(map) {
             // Map to detect which features were changed between modifystart and
