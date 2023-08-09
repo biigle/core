@@ -533,7 +533,7 @@ export default {
                 }, removeCallback);
             } else {
                 let source = this.annotationSource;
-                source.on('change', (evtChange) => {
+                source.once('change', (evtChange) => {
                     if (evtChange.target.getState() === 'ready' && source.hasFeature(e.feature)) {
                         source.removeFeature(e.feature);
                         this.$emit('has-invalid-shape', e.feature.getGeometry().getType());
