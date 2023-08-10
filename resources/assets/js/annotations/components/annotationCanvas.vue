@@ -514,6 +514,12 @@ export default {
 
             if (this.hasSelectedLabel && validDrawing) {
                 let geometry = e.feature.getGeometry();
+                let dbPoints = this.getPoints(geometry);
+                let dbPointSet = this.removeDuplicatedPoints(dbPoints);
+                if(geometry.getType() === 'Polygon' && dbPoints.length !== dbPointSet.length){
+                    dbPoints = this.connectPolygonEnds(dbPoints);
+                }
+
                 e.feature.set('color', this.selectedLabel.color);
 
                 // This callback is called when saving the annotation succeeded or
@@ -529,7 +535,7 @@ export default {
 
                 this.$emit('new', {
                     shape: geometry.getType(),
-                    points: this.getPoints(geometry),
+                    points: dbPoints,
                 }, removeCallback);
             } else {
                 let source = this.annotationSource;
@@ -547,17 +553,33 @@ export default {
 
             switch (geometry.getType()) {
                 case 'LineString':
-                    return this.getShapeCoordinateSetSize(points) >= 2;
+                    return this.getPointStringSet(points).size >= 2;
                 case 'Rectangle':
-                    return this.getShapeCoordinateSetSize(points[0]) === 4;
+                    return this.getPointStringSet(points[0]).size === 4;
                 case 'Polygon':
-                    return this.getShapeCoordinateSetSize(points[0]) >= 3;
+                    return this.getPointStringSet(points[0]).size >= 3;
                 default:
                     return true;
             }
         },
-        getShapeCoordinateSetSize(points){
-            return new Set(points.map(xy => String([xy]))).size;
+        getPointStringSet(points) {
+            return new Set(points.map(xy => String([xy])));
+        },
+        removeDuplicatedPoints(points) {
+            let pointMultiSet = [];
+            for (let i = 0; i < points.length; i += 2) {
+                pointMultiSet.push([points[i], points[i + 1]]);
+            }
+            let pointStringSet = Array.from(this.getPointStringSet(pointMultiSet));
+            return pointStringSet.map(xy => this.convertStringToPoint(xy)).flat();
+        },
+        convertStringToPoint(xy) {
+            return xy.split(',').map(Number);
+        },
+        connectPolygonEnds(points) {
+            points.push(points[0]);
+            points.push(points[1]);
+            return points;
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
