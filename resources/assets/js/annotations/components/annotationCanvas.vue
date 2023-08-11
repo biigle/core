@@ -732,7 +732,7 @@ export default {
             handler(state) {
                 if (!state) {
                     this.resetInteractionMode();
-                } else {
+                } else if (this.modifyInteraction) {
                     this.modifyInteraction.setActive(this.isDefaultInteractionMode);
                 }
             },
