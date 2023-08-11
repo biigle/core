@@ -403,6 +403,7 @@ export default {
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
                 annotation.detachAnnotationLabel(annotationLabel)
+                    .then(() => this.refreshSingleAnnotation(annotation))
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
                 annotation.delete()
@@ -429,6 +430,9 @@ export default {
                     }
                 })
                 .catch(handleErrorResponse);
+        },
+        refreshSingleAnnotation(annotation) {
+            this.$refs.videoScreen.refreshSingleAnnotation(annotation);
         },
         initAnnotationFilters() {
             let reverseShapes = {};

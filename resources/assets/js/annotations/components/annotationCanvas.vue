@@ -597,6 +597,15 @@ export default {
         updateMousePosition(e) {
             this.mousePosition = e.coordinate;
         },
+        refreshSingleAnnotation(annotation) {
+            let source = this.annotationSource;
+
+            let newFeature = this.createFeature(annotation);
+            let oldFeature = source.getFeatureById(annotation.id)
+            
+            source.removeFeature(oldFeature);
+            source.addFeature(newFeature);
+        },
         refreshAnnotationSource(annotations, source) {
             let annotationsMap = {};
             annotations.forEach(function (annotation) {
@@ -723,7 +732,7 @@ export default {
             handler(state) {
                 if (!state) {
                     this.resetInteractionMode();
-                } else {
+                } else if (this.modifyInteraction) {
                     this.modifyInteraction.setActive(this.isDefaultInteractionMode);
                 }
             },

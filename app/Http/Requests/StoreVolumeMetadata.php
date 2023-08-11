@@ -40,6 +40,7 @@ class StoreVolumeMetadata extends FormRequest
     {
         return [
             'metadata_csv' => [
+                'bail',
                 'required_without_all:metadata_text,ifdo_file',
                 'file',
                 'mimetypes:text/plain,text/csv,application/csv',
