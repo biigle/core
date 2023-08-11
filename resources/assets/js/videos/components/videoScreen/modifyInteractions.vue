@@ -30,7 +30,10 @@ export default {
                 allowedSplitShapes.indexOf(this.selectedAnnotations[0].shape) === -1;
         },
         cannotLinkAnnotations() {
-            return this.selectedAnnotations.length !== 2 || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id;
+            return this.selectedAnnotations.length !== 2
+                || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
+                || this.selectedAnnotations[0].labels.length !== this.selectedAnnotations[1].labels.length
+                || !this.labelsAreIdentical(this.selectedAnnotations[0], this.selectedAnnotations[1]);
         },
         isAttaching() {
             return this.interactionMode === 'attachLabel';
@@ -40,6 +43,12 @@ export default {
         },
     },
     methods: {
+        labelsAreIdentical(a, b) {
+            let labelIdsA = a.labels.map(l => l.label_id);
+            let labelIdsB = b.labels.map(l => l.label_id);
+
+            return labelIdsA.every(id => labelIdsB.includes(id));
+        },
         initModifyInteraction(map) {
             // Map to detect which features were changed between modifystart and
             // modifyend events of the modify interaction.
