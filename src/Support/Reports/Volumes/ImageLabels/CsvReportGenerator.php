@@ -82,7 +82,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     {
         $query = DB::table('image_labels')
             ->join('images', 'image_labels.image_id', '=', 'images.id')
-            ->join('users', 'image_labels.user_id', '=', 'users.id')
+            ->leftJoin('users', 'image_labels.user_id', '=', 'users.id')
             ->join('labels', 'labels.id', '=', 'image_labels.label_id')
             ->select([
                 'image_labels.id as image_label_id',
