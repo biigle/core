@@ -233,4 +233,36 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
         $this->postJson($url, $data)
             ->assertStatus(422);
     }
+
+    public function testStoreLabelIdIsString()
+    {
+        $this->beEditor();
+        $this->postJson('api/v1/annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => strval($this->labelRoot()->id),
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(200);
+
+        $this->assertEquals(2, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreLabelIdIsFloat()
+    {
+        $this->beEditor();
+        $this->postJson('api/v1/annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => 1.5,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(422);
+    }
 }

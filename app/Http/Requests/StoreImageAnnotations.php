@@ -47,16 +47,16 @@ class StoreImageAnnotations extends FormRequest
         $this->imageIds = $input->pluck('image_id')
             ->unique()
             // Filter because the IDs are validated *after* authorization and could be
-            // e.g. floats here.
-            ->filter(fn ($id) => is_int($id));
+            // e.g. random strings here.
+            ->filter(fn ($id) => is_numeric($id));
 
         $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
 
         $labelIds = $input->pluck('label_id')
             ->unique()
             // Filter because the IDs are validated *after* authorization and could be
-            // e.g. floats here.
-            ->filter(fn ($id) => is_int($id));
+            // e.g. random strings here.
+            ->filter(fn ($id) => is_numeric($id));
 
         $this->labels = Label::findMany($labelIds)->keyBy('id');
 
