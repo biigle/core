@@ -14,6 +14,7 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Illuminate\Support\Str;
 use Mockery;
 use TestCase;
 use ZipArchive;
@@ -432,4 +433,108 @@ class CsvReportGeneratorTest extends TestCase
         $this->assertCount(1, $results);
         $this->assertEquals($al3->id, $results[0]->id);
     }
+
+    public function testGenerateReportWithDeletedUser()
+    {
+        $user = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $video = VideoTest::create();
+
+        $volName = Str::slug($video->volume->name);
+
+        $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+        
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id, 
+            'user_id' => null // deleted user
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id, 
+            'user_id' => $user->id
+        ]);
+
+        $this->assertNull($al1->usesr_id);
+        $this->assertEquals($user->id, $al2->user_id);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $al1->label->name,
+                null,
+                null,
+                null,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+                $al1->created_at,
+            ]);
+
+            $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $al2->label->name,
+                $al2->user_id,
+                $al2->user->firstname,
+                $al2->user->lastname,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+                $al2->created_at,
+            ]);
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$video->volume->id}-{$volName}.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CsvReportGenerator;
+        $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
+    }
+
+    
 }
