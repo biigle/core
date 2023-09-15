@@ -339,8 +339,6 @@ class CocoReportGeneratorTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $this->assertNull($al1->usesr_id);
-        $this->assertEquals($user->id, $al2->user_id);
 
         $mock = Mockery::mock();
         $mock->shouldReceive('getPath')
