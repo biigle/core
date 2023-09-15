@@ -208,7 +208,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'video_annotation_labels.created_at',
             ])
             ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
-            ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
+            ->leftJoin('users', 'video_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('video_annotation_labels.id');
 
         return $query;

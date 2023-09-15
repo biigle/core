@@ -93,7 +93,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'images.attrs',
             ])
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
-            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
+            ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
         return $query;

@@ -12,6 +12,7 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
+use Illuminate\Support\Str;
 use Mockery;
 use TestCase;
 use ZipArchive;
@@ -314,5 +315,98 @@ class CocoReportGeneratorTest extends TestCase
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportWithDeletedUser()
+    {
+        $user = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create();
+
+        $volName = Str::slug($image->volume->name);
+
+        $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+        
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id, 
+            'user_id' => null // deleted user
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id, 
+            'user_id' => $user->id
+        ]);
+
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null
+            ]);
+
+            $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null
+            ]);
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$image->volume->id}-{$volName}.json");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CocoReportGenerator();
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    
     }
 }

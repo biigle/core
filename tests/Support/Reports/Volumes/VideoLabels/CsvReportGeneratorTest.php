@@ -11,6 +11,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Illuminate\Support\Str;
 use Mockery;
 use TestCase;
 use ZipArchive;
@@ -307,5 +308,92 @@ class CsvReportGeneratorTest extends TestCase
         $results = $generator->query()->get();
         $this->assertCount(1, $results);
         $this->assertEquals($il1->id, $results[0]->video_label_id);
+    }
+
+    public function testGenerateReportWithDeletedUser()
+    {
+        $user = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $video = VideoTest::create();
+
+        $volName = Str::slug($video->volume->name);
+        
+        $il1 = VideoLabelTest::create([
+            'video_id' => $video->id,
+            'user_id' => null // deleted user
+        ]);
+        $il2 = VideoLabelTest::create([
+            'video_id' => $video->id,
+            'user_id' => $user->id
+        ]);
+
+        $mock = Mockery::mock();
+        
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $il1->id,
+                $video->id,
+                $video->filename,
+                null, 
+                null,
+                null,
+                $il1->label->id,
+                $il1->label->name,
+                $il1->label->name,
+                $il1->created_at,
+            ]);
+
+            $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $il2->id,
+                $video->id,
+                $video->filename,
+                $il2->user_id,
+                $il2->user->firstname,
+                $il2->user->lastname,
+                $il2->label->id,
+                $il2->label->name,
+                $il2->label->name,
+                $il2->created_at,
+            ]);
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$video->volume->id}-{$volName}.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new CsvReportGenerator();
+        $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
     }
 }
