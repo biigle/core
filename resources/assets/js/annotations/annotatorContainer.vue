@@ -564,21 +564,8 @@ export default {
         dismissCrossOriginError() {
             this.crossOriginError = false;
         },
-        handleInvalidShape(shape){
-            let vertexCount;
-            switch(shape){
-                case 'Polygon':
-                    vertexCount = 'at least 3';
-                    break;
-                case 'Rectangle':
-                    vertexCount = '4';
-                    break;
-                case 'LineString':
-                    shape = 'Line';
-                    vertexCount = 'at least 2';
-                    break;
-            }
-            Messages.danger(`Invalid Shape. ${shape} needs ${vertexCount} non-overlapping vertices.`);
+        handleInvalidPolygon(){
+            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
         },
     },
     watch: {
