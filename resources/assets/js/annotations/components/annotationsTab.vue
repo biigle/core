@@ -42,6 +42,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        totalAnnotationCount: {
+            type: Number,
+            default: 0
+        }
     },
     computed: {
         labelItems() {
@@ -79,6 +83,12 @@ export default {
                     };
                 });
         },
+        getTotalAnnotationCount() {
+            return this.totalAnnotationCount;
+        },
+        getFilteredAnnotationCountString() {
+            return this.annotations.length + "/" + this.getTotalAnnotationCount;
+        }
     },
     methods: {
         handleSelect(annotation, shift) {

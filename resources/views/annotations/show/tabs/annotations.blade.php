@@ -1,6 +1,7 @@
 <sidebar-tab name="annotations" icon="map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
     <annotations-tab
         :annotations="filteredAnnotations"
+        :total-annotation-count="getAnnotationCount"
         :selected-annotations="selectedAnnotations"
         :annotation-filters="annotationFilters"
         :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
@@ -26,6 +27,10 @@
                     <div v-if="annotationsHiddenByFilter" class="text-info">
                         Some annotations are hidden by a filter.
                     </div>
+                    <div>Annotation count: 
+                        <b v-if="hasActiveFilter" v-text="getFilteredAnnotationCountString"></b>
+                        <b v-else v-text="getTotalAnnotationCount"></b>
+                    </div>           
                 </div>
                 <ul class="annotations-tab__list list-unstyled" ref="scrollList">
                     <label-item
