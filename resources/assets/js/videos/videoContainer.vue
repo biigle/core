@@ -403,7 +403,12 @@ export default {
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
                 annotation.detachAnnotationLabel(annotationLabel)
-                    .then(() => this.refreshSingleAnnotation(annotation))
+                    .then(() => {
+                        // don't refresh whole frame annotations due to missing shape
+                        if (annotation.points.length > 0) {
+                            this.refreshSingleAnnotation(annotation);
+                        }
+                    })
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
                 annotation.delete()
