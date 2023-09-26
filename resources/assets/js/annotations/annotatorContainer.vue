@@ -601,8 +601,10 @@ export default {
                 this.finishLoading();
             }
         },
-        cachedImagesCount() {
+        cachedImagesCount(count) {
             debounce(this.cachePreviousAndNext, 1000, 'annotations.cached-image-count.update');
+            // Twice the count because the next and previous images are cached.
+            ImagesStore.setMaxCacheSize(count * 2);
         },
         focussedAnnotation(annotation) {
             if (annotation) {
