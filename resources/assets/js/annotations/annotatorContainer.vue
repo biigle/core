@@ -467,7 +467,7 @@ export default {
             let cachedIds = [this.imageId];
             let cachedImagesCount = Math.min(this.cachedImagesCount, this.imagesIds.length);
 
-            for (let x = 1; x <= cachedImagesCount; x++) {
+            for (let x = 0; x < cachedImagesCount; x++) {
                 const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
                 if (!cachedIds.includes(nextId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(nextId));
