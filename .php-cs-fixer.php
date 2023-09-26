@@ -11,8 +11,7 @@ return (new PhpCsFixer\Config())
     ->setRules([
         '@PSR2' => true,
         'ordered_imports' => true,
-        'single_space_after_construct' => true,
-        'single_quote' => true,
+        'single_space_around_construct' => true,
         'array_indentation' => true,
         'array_syntax' => ['syntax' => 'short'],
         'combine_consecutive_unsets' => true,
@@ -21,10 +20,8 @@ return (new PhpCsFixer\Config())
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
         'method_chaining_indentation' => true,
-        'heredoc_indentation' => [
-            'indentation' => 'start_plus_one',
-        ],
-    
+        'use_arrow_functions' => true
     ])
     ->setFinder($finder)
+    ->setRiskyAllowed(true)
     ->setUsingCache(true);
