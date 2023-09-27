@@ -40,8 +40,8 @@ class ImageTest extends ModelTestCase
     public function testHiddenAttributes()
     {
         $json = json_decode((string) $this->model);
-        $this->assertObjectNotHasAttribute('thumbPath', $json);
-        $this->assertObjectNotHasAttribute('url', $json);
+        $this->assertObjectNotHasProperty('thumbPath', $json);
+        $this->assertObjectNotHasProperty('url', $json);
     }
 
     public function testFilenameRequired()

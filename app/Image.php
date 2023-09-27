@@ -44,15 +44,7 @@ class Image extends VolumeFile
         'lat' => 'float',
         'lng' => 'float',
         'tiled' => 'bool',
-    ];
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'taken_at',
+        'taken_at' => 'datetime',
     ];
 
     /**

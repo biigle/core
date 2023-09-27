@@ -27,13 +27,13 @@ class ApiGuardTest extends TestCase
             // 'test_token'
             'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
         ]);
-        $response = $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_tokens',
         ]);
         $response->assertStatus(401);
 
-        $response = $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [
             'PHP_AUTH_USER' => $token->owner->email.'s',
             'PHP_AUTH_PW' => 'test_token',
         ]);
@@ -43,7 +43,7 @@ class ApiGuardTest extends TestCase
     public function testNoToken()
     {
         $user = UserTest::create();
-        $response = $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [
             'PHP_AUTH_USER' => $user->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
@@ -68,7 +68,7 @@ class ApiGuardTest extends TestCase
             'hash' => '$2y$10$bqKeHzuH0hf9gIOUBnzd0ezQkVkUU12faCOu2twnBguONfx8.XhlO',
         ]);
 
-        $response = $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [
             'PHP_AUTH_USER' => $token2->owner->email,
             'PHP_AUTH_PW' => 'test_token2',
         ]);

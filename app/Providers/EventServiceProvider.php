@@ -26,10 +26,8 @@ class EventServiceProvider extends ServiceProvider
 
     /**
      * Register any events for your application.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
         \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
@@ -39,10 +37,8 @@ class EventServiceProvider extends ServiceProvider
 
     /**
      * Determine if events and listeners should be automatically discovered.
-     *
-     * @return bool
      */
-    public function shouldDiscoverEvents()
+    public function shouldDiscoverEvents(): bool
     {
         return false;
     }
