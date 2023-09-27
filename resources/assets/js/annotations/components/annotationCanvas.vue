@@ -602,7 +602,7 @@ export default {
 
             let newFeature = this.createFeature(annotation);
             let oldFeature = source.getFeatureById(annotation.id)
-            
+
             source.removeFeature(oldFeature);
             source.addFeature(newFeature);
         },
@@ -640,6 +640,23 @@ export default {
             }
 
             source.addFeatures(annotations.map(this.createFeature));
+        },
+        updateModifyInteractions() {
+            if (!this.canModify) {
+                this.resetInteractionMode();
+            } else if (this.modifyInteraction) {
+                this.modifyInteraction.setActive(this.isDefaultInteractionMode);
+            }
+        },
+        updateDeleteInteractions() {
+            if (!this.canDelete) {
+                this.resetInteractionMode();
+                Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            } else {
+                Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+                Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            }
         },
     },
     watch: {
@@ -728,29 +745,12 @@ export default {
                 this.resetInteractionMode();
             }
         },
-        canModify: {
-            handler(state) {
-                if (!state) {
-                    this.resetInteractionMode();
-                } else if (this.modifyInteraction) {
-                    this.modifyInteraction.setActive(this.isDefaultInteractionMode);
-                }
-            },
-            immediate: true
+        canModify() {
+            this.updateModifyInteractions();
         },
-        canDelete: {
-            handler(state) {
-                if (!state) {
-                    this.resetInteractionMode();
-                    Keyboard.off('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-                    Keyboard.off('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-                } else {
-                    Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
-                    Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-                }
-            },
-            immediate: true
-        }
+        canDelete() {
+            this.updateDeleteInteractions();
+        },
     },
     created() {
         this.declareNonReactiveProperties();
@@ -786,6 +786,9 @@ export default {
         this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
         this.map.addInteraction(this.modifyInteraction);
         this.modifyInteraction.setActive(false);
+
+        this.updateModifyInteractions();
+        this.updateDeleteInteractions();
     },
     mounted() {
         this.map.setTarget(this.$el);
