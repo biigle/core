@@ -74,8 +74,6 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $this->doesntExpectJobs(ProcessNewVolumeFiles::class);
-
         $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
@@ -97,6 +95,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
         $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        Queue::assertNothingPushed();
     }
 
     public function testUpdateHandle()
@@ -145,7 +144,6 @@ class VolumeControllerTest extends ApiTestCase
         $disk->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
-        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'admin-test://volumes',
         ])->assertStatus(422);
@@ -162,6 +160,7 @@ class VolumeControllerTest extends ApiTestCase
             'url' => 'admin-test://volumes',
         ])->assertStatus(200);
         $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
     public function testUpdateUrlProviderDenylist()
@@ -177,9 +176,9 @@ class VolumeControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         // A request that changes no attributes performed by a global admin triggers
         // a reread.
-        $this->expectsJobs(ProcessNewVolumeFiles::class);
         $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id)
             ->assertStatus(200);
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
     public function testUpdateValidation()

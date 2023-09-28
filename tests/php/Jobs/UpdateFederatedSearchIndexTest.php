@@ -35,7 +35,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
             'users' => [],
         ]);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
 
         $this->assertCount(1, $container);
         $request = $container[0]['request'];
@@ -53,7 +53,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $container = &$this->mockResponse([]);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
 
         $this->assertCount(0, $container);
     }
@@ -66,7 +66,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse(['malformed']);
         $this->expectException(Exception::class);
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
     }
 
     public function testHandleLabelTrees()
@@ -101,7 +101,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
 
         $model = FederatedSearchModel::first();
         $this->assertNotNull($model);
@@ -150,7 +150,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
 
         $model = FederatedSearchModel::first();
         $this->assertNotNull($model);
@@ -206,7 +206,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
         // The user has access to the label tree through the project membership although
         // they are not a member of the label tree.
         $this->assertTrue($user->federatedSearchModels()->labelTrees()->exists());
@@ -256,7 +256,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
         $this->assertTrue($user->federatedSearchModels()->volumes()->exists());
     }
 
@@ -306,7 +306,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
 
         $model = FederatedSearchModel::where('name', 'remote volume')->first();
         $this->assertNotNull($model);
@@ -374,7 +374,7 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->mockResponse($payload);
 
-        UpdateFederatedSearchIndex::dispatchNow($instance);
+        (new UpdateFederatedSearchIndex($instance))->handle();
         $this->assertFalse(FederatedSearchModel::exists());
     }
 
