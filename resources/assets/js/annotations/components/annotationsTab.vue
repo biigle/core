@@ -83,11 +83,10 @@ export default {
                     };
                 });
         },
-        annotationCount() {
+        annotationBadgeCount() {
             if (this.hasActiveFilter) {
                 return this.annotations.length + "/" + this.totalAnnotationCount
-            }
-            else {
+            } else {
                 return this.totalAnnotationCount;
             }
         },

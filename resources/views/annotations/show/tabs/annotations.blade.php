@@ -1,7 +1,7 @@
 <sidebar-tab name="annotations" icon="map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
     <annotations-tab
         :annotations="filteredAnnotations"
-        :total-annotation-count="getAnnotationCount"
+        :total-annotation-count="annotationCount"
         :selected-annotations="selectedAnnotations"
         :annotation-filters="annotationFilters"
         :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
@@ -30,7 +30,7 @@
                     <div class="text-muted">Total
                         <span
                             class="pull-right badge"
-                            v-text="annotationCount"
+                            v-text="annotationBadgeCount"
                         ></span>          
                     </div> 
                 </div>

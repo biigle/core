@@ -162,7 +162,7 @@ export default {
         annotationsHiddenByFilter() {
             return this.annotations.length !== this.filteredAnnotations.length;
         },
-        getAnnotationCount() {
+        annotationCount() {
             return this.annotations.length;
         }
     },
