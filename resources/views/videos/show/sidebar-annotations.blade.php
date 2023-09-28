@@ -32,10 +32,12 @@
                         <div v-if="annotationsHiddenByFilter" class="text-info">
                             Some annotations are hidden by a filter.
                         </div>
-                        <div>Annotation count: 
-                            <b v-if="hasActiveFilter" v-text="getFilteredAnnotationCountString"></b>
-                            <b v-else v-text="getTotalAnnotationCount"></b>
-                        </div>                        
+                        <div class="text-muted">Total 
+                            <span
+                                class="pull-right badge"
+                                v-text="annotationCount"
+                            ></span>          
+                        </div>                       
                     </div>
                     <ul class="annotations-tab__list list-unstyled" ref="scrollList">
                         <label-item
