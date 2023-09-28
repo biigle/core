@@ -83,12 +83,14 @@ export default {
                     };
                 });
         },
-        getTotalAnnotationCount() {
-            return this.totalAnnotationCount;
+        annotationCount() {
+            if (this.hasActiveFilter) {
+                return this.annotations.length + "/" + this.totalAnnotationCount
+            }
+            else {
+                return this.totalAnnotationCount;
+            }
         },
-        getFilteredAnnotationCountString() {
-            return this.annotations.length + "/" + this.getTotalAnnotationCount;
-        }
     },
     methods: {
         handleSelect(annotation, shift) {
