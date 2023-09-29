@@ -74,7 +74,8 @@ class Announcement extends Model
     public function scopeActive($query)
     {
         return $query->where(function ($query) {
-            $query->whereNull('show_until')
+            $query
+                ->whereNull('show_until')
                 ->orWhere('show_until', '>', now());
         });
     }

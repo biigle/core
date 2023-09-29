@@ -3,7 +3,6 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\UpdateUserSettings;
-use Illuminate\Http\Request;
 
 class UserSettingsController extends Controller
 {

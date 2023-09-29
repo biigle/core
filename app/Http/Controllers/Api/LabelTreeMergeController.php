@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreLabelTreeMerge;
 use Biigle\Label;
 use DB;
@@ -69,7 +68,8 @@ class LabelTreeMergeController extends Controller
                 $newIds[] = $l->id;
             }
 
-            $request->tree->labels()
+            $request->tree
+                ->labels()
                 ->whereIn('id', $request->remove)
                 ->delete();
         });

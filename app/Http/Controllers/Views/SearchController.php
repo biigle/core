@@ -67,7 +67,8 @@ class SearchController extends Controller
     {
         $queryBuilder = LabelTree::withoutVersions()->accessibleBy($user);
 
-        $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
+        $queryBuilder
+            ->selectRaw("id, name, description, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('name', 'ilike', "%{$query}%")
@@ -76,7 +77,8 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
-            $queryBuilder2 = $user->federatedSearchModels()
+            $queryBuilder2 = $user
+                ->federatedSearchModels()
                 ->labelTrees()
                 ->selectRaw("id, name, description, updated_at, true as external")
                 ->when($query, function ($q) use ($query) {
@@ -138,7 +140,8 @@ class SearchController extends Controller
             $queryBuilder = Project::accessibleBy($user);
         }
 
-        $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
+        $queryBuilder
+            ->selectRaw("id, name, description, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('name', 'ilike', "%{$query}%")
@@ -147,7 +150,8 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
-            $queryBuilder2 = $user->federatedSearchModels()
+            $queryBuilder2 = $user
+                ->federatedSearchModels()
                 ->projects()
                 ->selectRaw("id, name, description, updated_at, true as external")
                 ->when($query, function ($q) use ($query) {
@@ -205,7 +209,8 @@ class SearchController extends Controller
     {
         $queryBuilder = Volume::accessibleBy($user);
 
-        $queryBuilder->selectRaw("id, name, updated_at, false as external")
+        $queryBuilder
+            ->selectRaw("id, name, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('name', 'ilike', "%{$query}%");
@@ -213,7 +218,8 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
-            $queryBuilder2 = $user->federatedSearchModels()
+            $queryBuilder2 = $user
+                ->federatedSearchModels()
                 ->volumes()
                 ->selectRaw("id, name, updated_at, true as external")
                 ->when($query, function ($q) use ($query) {
@@ -277,7 +283,8 @@ class SearchController extends Controller
                 ->distinct();
         }
 
-        $imageQuery = $imageQuery->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id')
+        $imageQuery = $imageQuery
+            ->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id')
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('images.filename', 'ilike', "%{$query}%");
@@ -318,7 +325,8 @@ class SearchController extends Controller
                 ->distinct();
         }
 
-        $queryBuilder = $queryBuilder->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id')
+        $queryBuilder = $queryBuilder
+            ->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id')
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('videos.filename', 'ilike', "%{$query}%");

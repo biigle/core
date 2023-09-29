@@ -5,8 +5,6 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StoreProjectLabelTree;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Visibility;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 
 class ProjectLabelTreeController extends Controller
@@ -99,7 +97,8 @@ class ProjectLabelTreeController extends Controller
             ->select('id', 'name', 'description', 'version_id')
             ->with('version')
             ->get();
-        $authorized = $project->authorizedLabelTrees()
+        $authorized = $project
+            ->authorizedLabelTrees()
             ->select('id', 'name', 'description', 'version_id')
             ->with('version')
             ->get();

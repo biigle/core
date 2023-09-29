@@ -2,17 +2,16 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use \Illuminate\Contracts\View\View;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use \Illuminate\Contracts\View\View;
 
 class VolumeCloneController extends Controller
 {
-
     /**
      * Shows the volume clone page.
      * @param Request $request
@@ -20,7 +19,7 @@ class VolumeCloneController extends Controller
      *
      * @return View
      **/
-    function clone(Request $request, $id)
+    public function clone(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('update', $volume);
@@ -43,7 +42,8 @@ class VolumeCloneController extends Controller
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')
             ->whereIn('id', function ($query) use ($projectIds) {
-                $query->select('label_tree_id')
+                $query
+                    ->select('label_tree_id')
                     ->from('label_tree_project')
                     ->whereIn('project_id', $projectIds);
             })
@@ -56,5 +56,4 @@ class VolumeCloneController extends Controller
             'labelTrees' => $labelTrees
         ]);
     }
-
 }

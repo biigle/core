@@ -56,7 +56,8 @@ class StoreLabel extends FormRequest
 
         $validator->after(function ($validator) {
             if ($this->filled('parent_id')) {
-                $sameTree = $this->tree->labels()
+                $sameTree = $this->tree
+                    ->labels()
                     ->where('id', $this->input('parent_id'))
                     ->exists();
 

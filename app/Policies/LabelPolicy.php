@@ -23,7 +23,8 @@ class LabelPolicy extends CachedPolicy
     public function update(User $user, Label $label)
     {
         return $this->remember("label-can-update-{$user->id}-{$label->label_tree_id}", function () use ($user, $label) {
-            $sudo = $user->can('sudo') && !LabelTree::where('id', $label->label_tree_id)
+            $sudo = $user
+                ->can('sudo') && !LabelTree::where('id', $label->label_tree_id)
                 ->whereNotNull('version_id')
                 ->exists();
 

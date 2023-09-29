@@ -170,7 +170,7 @@ class ImageAnnotationLabelController extends Controller
         $annotationLabel->label()->associate($request->label);
         $annotationLabel->annotation()->associate($request->annotation);
 
-        $exists = ImageAnnotationLabel::where('user_id', $annotationLabel->user_id)
+        $exists = ImageAnnotationLabel::where('user_id', $annotationLabel->user_id)          
             ->where('label_id', $annotationLabel->label_id)
             ->where('annotation_id', $annotationLabel->annotation_id)
             ->exists();
@@ -229,9 +229,9 @@ class ImageAnnotationLabelController extends Controller
         $this->authorize('update', $annotationLabel);
 
         $annotationLabel->confidence = $request->input(
-            'confidence',
-            $annotationLabel->confidence
-        );
+                'confidence',
+                $annotationLabel->confidence
+            );
 
         $annotationLabel->save();
     }

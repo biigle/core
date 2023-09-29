@@ -3,8 +3,6 @@
 namespace Biigle\Http\Controllers\Views;
 
 use Biigle\Image;
-use Biigle\ImageLabel;
-use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
 use Biigle\Volume;
@@ -57,7 +55,8 @@ class DashboardController extends Controller
             ->sortByDesc('created_at')
             ->take($limit);
 
-        $projects = $user->projects()
+        $projects = $user
+            ->projects()
             ->orderBy('pivot_pinned', 'desc')
             ->orderBy('updated_at', 'desc')
             ->take($items->isEmpty() ? 4 : 3)

@@ -53,7 +53,8 @@ class UsedFileLabelsController extends Controller
                 $table = $relation->getRelated()->getTable();
 
                 // take only labels that are attached to files of this volume
-                $query->select(DB::raw(1))
+                $query
+                    ->select(DB::raw(1))
                     ->from($table)
                     ->join($filesTable, $relation->getQualifiedForeignKeyName(), '=', $relation->getQualifiedParentKeyName())
                     ->where("{$filesTable}.volume_id", $volume->id)

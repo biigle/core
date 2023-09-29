@@ -15,8 +15,6 @@ use Queue;
 
 class VolumeController extends Controller
 {
-
-
     /**
      * Shows all volumes the user has access to.
      *
@@ -102,7 +100,8 @@ class VolumeController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
         $volume->load(['projects' => function ($query) use ($request) {
-            $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+            $query
+                ->join('project_user', 'project_user.project_id', '=', 'projects.id')
                 ->where('project_user.user_id', $request->user()->id)
                 ->select('projects.id', 'projects.name', 'projects.description');
         }]);
@@ -150,7 +149,6 @@ class VolumeController extends Controller
                 ->with('reread', $shouldReread);
         }
     }
-
 
     /**
      * Clones volume to destination project.

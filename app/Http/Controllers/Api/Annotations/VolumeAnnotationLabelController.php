@@ -58,7 +58,8 @@ class VolumeAnnotationLabelController extends Controller
                 $labelsRelation = $model->labels();
                 $labelsForeignKey = $labelsRelation->getRelated()->label()->getQualifiedForeignKeyName();
                 // take only labels that are used in annotations of this volume
-                $query->select(DB::raw(1))
+                $query
+                    ->select(DB::raw(1))
                     ->from($fileRelation->getRelated()->getTable())
                     ->join($model->getTable(), $fileRelation->getQualifiedOwnerKeyName(), '=', $fileRelation->getQualifiedForeignKeyName())
                     ->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())

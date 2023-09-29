@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
@@ -71,7 +70,8 @@ class ProjectsAttachableVolumesController extends Controller
 
         $hidden = ['doi'];
         $volumes->each(function ($item) use ($hidden) {
-            $item->append('thumbnailUrl')
+            $item
+                ->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
         });

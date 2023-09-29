@@ -49,18 +49,21 @@ class VideoController extends Controller
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')
             ->whereIn('id', function ($query) use ($projectIds) {
-                $query->select('label_tree_id')
+                $query
+                    ->select('label_tree_id')
                     ->from('label_tree_project')
                     ->whereIn('project_id', $projectIds);
             })
             ->get();
 
-        $annotationSessions = $volume->annotationSessions()
+        $annotationSessions = $volume
+            ->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')
             ->with('users')
             ->get();
 
-        $videos = $volume->videos()
+        $videos = $volume
+            ->videos()
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 

@@ -125,7 +125,7 @@ class ProjectInvitationController extends Controller
         $invitation = ProjectInvitation::findOrFail($id);
         $this->authorize('access', $invitation);
 
-        $qrCode = QrCode::create(route('project-invitation', $invitation->uuid))
+        $qrCode = QrCode::create(route('project-invitation', $invitation->uuid))   
             ->setEncoding(new Encoding('UTF-8'))
             ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
             ->setSize(300)

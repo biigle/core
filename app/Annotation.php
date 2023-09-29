@@ -60,7 +60,8 @@ abstract class Annotation extends Model implements AnnotationContract
                 ->join($ownerTable, $ownerKeyName, '=', $foreignKeyName)
                 ->join('project_volume', 'project_volume.volume_id', '=', "{$ownerTable}.volume_id")
                 ->whereIn('project_volume.project_id', function ($query) use ($user) {
-                    $query->select('project_id')
+                    $query
+                        ->select('project_id')
                         ->from('project_user')
                         ->where('user_id', $user->id);
                 });
@@ -109,8 +110,9 @@ abstract class Annotation extends Model implements AnnotationContract
                     $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
                     $foreignTable = explode('.', $foreignKeyName)[0];
                     $parentKeyName = $this->labels()->getQualifiedParentKeyName();
-
-                    $query->select(DB::raw(1))
+                    
+                    $query
+                        ->select(DB::raw(1))
                         ->from($foreignTable)
                         ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
                         ->where("{$foreignTable}.user_id", $user->id);
@@ -126,7 +128,8 @@ abstract class Annotation extends Model implements AnnotationContract
                         $foreignTable = explode('.', $foreignKeyName)[0];
                         $parentKeyName = $this->labels()->getQualifiedParentKeyName();
 
-                        $query->select(DB::raw(1))
+                        $query
+                            ->select(DB::raw(1))
                             ->from($foreignTable)
                             ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
                             ->where("{$foreignTable}.user_id", '!=', $user->id);
@@ -140,7 +143,8 @@ abstract class Annotation extends Model implements AnnotationContract
                 $foreignTable = explode('.', $foreignKeyName)[0];
                 $parentKeyName = $this->labels()->getQualifiedParentKeyName();
 
-                $query->select(DB::raw(1))
+                $query
+                    ->select(DB::raw(1))
                     ->from($foreignTable)
                     ->whereRaw("{$foreignKeyName} = {$parentKeyName}")
                     ->where("{$foreignTable}.user_id", $user->id);

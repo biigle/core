@@ -55,10 +55,9 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $query = $this->volume->files()
-            ->when($this->only, function ($query) {
-                return $query->whereIn('id', $this->only);
-            });
+        $query = $this->volume
+            ->files()
+            ->when($this->only, fn ($query) => $query->whereIn('id', $this->only));
 
         if ($this->volume->isImageVolume()) {
             $query->eachById([ProcessNewImage::class, 'dispatch']);

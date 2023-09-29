@@ -34,14 +34,13 @@ class Project extends Model
     public function scopeInCommon($query, User $user, $volumeId, $roles = null)
     {
         return $query->whereExists(function ($query) use ($user, $volumeId, $roles) {
-            $query->select(DB::raw(1))
+            $query
+                ->select(DB::raw(1))
                 ->from('project_user')
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->when(is_array($roles), function ($query) use ($roles) {
-                    return $query->whereIn('project_user.project_role_id', $roles);
-                })
+                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role_id', $roles))
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
@@ -211,7 +210,6 @@ class Project extends Model
         return $this->volumes()->where('media_type_id', MediaType::videoId());
     }
 
-
     /**
      * Adds a volume to this project if it wasn't already.
      *
@@ -310,7 +308,8 @@ class Project extends Model
     public function getThumbnailUrlAttribute()
     {
         return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
-            $volume = $this->volumes()
+            $volume = $this
+                ->volumes()
                 ->select('id', 'media_type_id')
                 ->orderBy('id')
                 ->first();
@@ -336,9 +335,9 @@ class Project extends Model
                     ->from('project_volume')
                     ->where('project_id', $this->id);
             })
-            ->whereNotNull('lng')
-            ->whereNotNull('lat')
-            ->exists();
+                ->whereNotNull('lng')
+                ->whereNotNull('lat')
+                ->exists();
         });
     }
 

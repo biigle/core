@@ -5,14 +5,12 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\DestroyLabelTreeVersion;
 use Biigle\Http\Requests\StoreLabelTreeVersion;
 use Biigle\Http\Requests\UpdateLabelTreeVersion;
-use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
 use DB;
 use Ramsey\Uuid\Uuid;
 
 class LabelTreeVersionController extends Controller
 {
-
     /**
      * Creates a new label tree version.
      *
@@ -57,7 +55,8 @@ class LabelTreeVersionController extends Controller
             }
             $versionTree->save();
 
-            $versionTree->authorizedProjects()
+            $versionTree
+                ->authorizedProjects()
                 ->sync($request->tree->authorizedProjects()->pluck('id'));
 
             $versionTree->replicateLabelsOf($request->tree);

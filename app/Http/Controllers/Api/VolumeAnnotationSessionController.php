@@ -122,7 +122,8 @@ class VolumeAnnotationSessionController extends Controller
     {
         $users = $request->input('users');
         // count users of all attached projects that match the given user IDs
-        $count = $request->volume->users()
+        $count = $request->volume
+            ->users()
             ->whereIn('id', $users)
             ->count();
 

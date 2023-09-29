@@ -2,7 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use Illuminate\Http\Request;
+use \Illuminate\Contracts\Queue\ShouldQueue;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -17,7 +17,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
-use \Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
@@ -94,7 +94,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($request,$copy)
+    public function __construct($request, $copy)
     {
         $this->project = $request->project;
         $this->copy = $copy;
@@ -193,11 +193,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
-        $volume->images()
+        $volume
+            ->images()
             ->orderBy('id')
-            ->when(!empty($selectedImageIds), function ($query) use ($selectedImageIds) {
-                return $query->whereIn('id', $selectedImageIds);
-            })
+            ->when(!empty($selectedImageIds), fn ($query) => $query->whereIn('id', $selectedImageIds))
             ->get()->map(function ($image) use ($copy) {
                 $original = $image->getRawOriginal();
                 $original['volume_id'] = $copy->id;
@@ -224,11 +223,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = ImageAnnotation::join('image_annotation_labels',
-            'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds);
-            })
+        $annotationJoinLabel = ImageAnnotation::join(
+            'image_annotation_labels',
+            'image_annotation_labels.annotation_id',
+            '=',
+            'image_annotations.id'
+        )
+            ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds))
             ->whereIn('image_annotations.image_id', $selectedFileIds);
 
 
@@ -249,20 +250,21 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
         $chunkSize = 100;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
-        $volume->images()
+        $volume
+            ->images()
             ->with([
-                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn($q) => $q->whereIn('label_id', $imageAnnotationLabelIds)->orderBy('id'),
+                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
+                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $imageAnnotationLabelIds)->orderBy('id'),
             ])
-            ->when($volume->images->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
-                return $query->whereIn('id', $selectedFileIds);
-            })
+            ->when($volume->images->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
             ->chunkById($chunkSize, function ($chunk, $page) use (
-                $newImageIds, $chunkSize,
-                $usedAnnotationIds, $selectedLabelIds
+                $newImageIds,
+                $chunkSize,
+                $usedAnnotationIds,
+                $selectedLabelIds
             ) {
                 $insertData = [];
                 $chunkNewImageIds = [];
@@ -313,16 +315,17 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     {
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
 
-        $volume->images()
-            ->when(!empty($selectedFileIds),
-                function ($q) use ($selectedFileIds) {
-                    return $q->whereIn('id', $selectedFileIds);
-                })
-            ->when(!empty($selectedLabelIds),
-                function ($q) use ($selectedLabelIds) {
-                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
-                },
-                fn($q) => $q->with('labels'))
+        $volume
+            ->images()
+            ->when(
+                !empty($selectedFileIds),
+                fn ($q) => $q->whereIn('id', $selectedFileIds)
+            )
+            ->when(
+                !empty($selectedLabelIds),
+                fn ($q) => $q->with(['labels' => fn ($q) => $q->whereIn('label_id', $selectedLabelIds)]),
+                fn ($q) => $q->with('labels')
+            )
             ->orderBy('id')
             ->get()->map(function ($oldImage) use ($newImageIds) {
                 $newImageId = $newImageIds->shift();
@@ -347,11 +350,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
-        $volume->videos()
+        $volume
+            ->videos()
             ->orderBy('id')
-            ->when(!empty($selectedVideoIds), function ($query) use ($selectedVideoIds) {
-                return $query->whereIn('id', $selectedVideoIds);
-            })
+            ->when(!empty($selectedVideoIds), fn ($query) => $query->whereIn('id', $selectedVideoIds))
             ->get()->map(function ($video) use ($copy) {
                 $original = $video->getRawOriginal();
                 $original['volume_id'] = $copy->id;
@@ -378,11 +380,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = VideoAnnotation::join('video_annotation_labels',
-            'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
-            ->when(!empty($selectedLabelIds), function ($query) use ($selectedLabelIds) {
-                return $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds);
-            })
+        $annotationJoinLabel = VideoAnnotation::join(
+            'video_annotation_labels',
+            'video_annotation_labels.annotation_id',
+            '=',
+            'video_annotations.id'
+        )
+            ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds))
             ->whereIn('video_annotations.video_id', $selectedFileIds)
             ->distinct();
 
@@ -403,20 +407,21 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
         $chunkSize = 100;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
-        $volume->videos()
+        $volume
+            ->videos()
             ->with([
-                'annotations' => fn($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn($q) => $q->whereIn('label_id', $videoAnnotationLabelIds)->orderBy('id'),
+                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
+                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $videoAnnotationLabelIds)->orderBy('id'),
             ])
-            ->when($volume->videos->count() !== count($selectedFileIds), function ($query) use ($selectedFileIds) {
-                return $query->whereIn('id', $selectedFileIds);
-            })
+            ->when($volume->videos->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
             // This is an optimized implementation to clone the annotations with only few database
             // queries. There are simpler ways to implement this, but they can be ridiculously inefficient.
             ->chunkById($chunkSize, function ($chunk, $page) use (
-                $newVideoIds, $chunkSize,
-                $usedAnnotationIds, $selectedLabelIds
+                $newVideoIds,
+                $chunkSize,
+                $usedAnnotationIds,
+                $selectedLabelIds
             ) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
@@ -467,16 +472,17 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     {
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
 
-        $volume->videos()
-            ->when(!empty($selectedFileIds),
-                function ($q) use ($selectedFileIds) {
-                    return $q->whereIn('id', $selectedFileIds);
-                })
-            ->when(!empty($selectedLabelIds),
-                function ($q) use ($selectedLabelIds) {
-                    return $q->with(['labels' => fn($q) => $q->whereIn('label_id', $selectedLabelIds)]);
-                },
-                fn($q) => $q->with('labels'))
+        $volume
+            ->videos()
+            ->when(
+                !empty($selectedFileIds),
+                fn ($q) => $q->whereIn('id', $selectedFileIds)
+            )
+            ->when(
+                !empty($selectedLabelIds),
+                fn ($q) => $q->with(['labels' => fn ($q) => $q->whereIn('label_id', $selectedLabelIds)]),
+                fn ($q) => $q->with('labels')
+            )
             ->orderBy('id')
             ->get()->map(function ($oldVideo) use ($newVideoIds) {
                 $newVideoId = $newVideoIds->shift();
@@ -503,5 +509,4 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $copyIFdoFilename = $copyId.".yaml";
         $disk->copy($iFdoFilename, $copyIFdoFilename);
     }
-
 }

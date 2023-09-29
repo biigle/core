@@ -62,10 +62,12 @@ class UpdateVideoMetadata extends Command
 
     public function processVolume(Volume $volume)
     {
-        $query = $volume->videos()
+        $query = $volume
+            ->videos()
             ->where(function ($query) {
-                $query->whereNull('attrs->width')
-                ->orWhereNull('attrs->height');
+                $query
+                    ->whereNull('attrs->width')
+                    ->orWhereNull('attrs->height');
             });
 
         if ($volume->isRemote()) {
@@ -93,7 +95,8 @@ class UpdateVideoMetadata extends Command
         $this->line('Processing '.$video->url);
 
         try {
-            $dimensions = $this->ffprobe->streams($video->url)
+            $dimensions = $this->ffprobe
+                ->streams($video->url)
                 ->videos()
                 ->first()
                 ->getDimensions();

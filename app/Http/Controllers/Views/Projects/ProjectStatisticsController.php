@@ -4,14 +4,11 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
-use Biigle\ImageAnnotation;
 use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Video;
-use Biigle\VideoAnnotation;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ProjectStatisticsController extends Controller
 {
@@ -30,12 +27,14 @@ class ProjectStatisticsController extends Controller
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
         $isPinned = $isMember && $userProject->pivot->pinned;
-        $canPin = $isMember && 3 > $request->user()
+        $canPin = $isMember && 3 > $request
+            ->user()
             ->projects()
             ->wherePivot('pinned', true)
             ->count();
 
-        $volumes = $project->volumes()
+        $volumes = $project
+            ->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
             ->orderBy('created_at', 'desc')
@@ -56,12 +55,14 @@ class ProjectStatisticsController extends Controller
         })->count();
         $videoVolumeStatistics = $this->getVolumeStatistics($project, 'video');
 
-        $volumeNames = $project->volumes()
+        $volumeNames = $project
+            ->volumes()
             ->select('id', 'name')
             ->where('media_type_id', MediaType::imageId())
             ->get();
 
-        $volumeNamesVideo = $project->volumes()
+        $volumeNamesVideo = $project
+            ->volumes()
             ->select('id', 'name')
             ->where('media_type_id', MediaType::videoId())
             ->get();
@@ -113,28 +114,32 @@ class ProjectStatisticsController extends Controller
 
         $annotatedFiles = $baseQuery->clone()->count(DB::raw("DISTINCT {$type}s.id"));
 
-        $annotationTimeSeries = $baseQuery->clone()
+        $annotationTimeSeries = $baseQuery
+            ->clone()
             ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
             ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), EXTRACT(YEAR from {$type}_annotations.created_at)::integer as year")
             ->groupBy("{$type}_annotation_labels.user_id", 'fullname', 'year')
             ->orderBy("{$type}_annotation_labels.user_id")
             ->get();
 
-        $volumeAnnotations = $baseQuery->clone()
+        $volumeAnnotations = $baseQuery
+            ->clone()
             ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
             ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), {$type}s.volume_id")
             ->groupBy("{$type}_annotation_labels.user_id", 'fullname', "{$type}s.volume_id")
             ->orderBy("{$type}_annotation_labels.user_id")
             ->get();
 
-        $annotationLabels = $baseQuery->clone()
+        $annotationLabels = $baseQuery
+            ->clone()
             ->join('labels', 'labels.id', '=', "{$type}_annotation_labels.label_id")
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
             ->groupBy('labels.id')
             ->orderBy('labels.id')
             ->get();
 
-        $sourceTargetLabelsRaw = $baseQuery->clone()
+        $sourceTargetLabelsRaw = $baseQuery
+            ->clone()
             ->select("{$type}s.id", "{$type}_annotation_labels.label_id")
             ->distinct()
             ->get()
