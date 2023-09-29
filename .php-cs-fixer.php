@@ -20,7 +20,8 @@ return (new PhpCsFixer\Config())
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
         'method_chaining_indentation' => true,
-        'use_arrow_functions' => true
+        'use_arrow_functions' => true,
+        'no_unused_imports' => true
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)
