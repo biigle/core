@@ -524,14 +524,6 @@ export default {
                         });
                         return;
                     }
-
-                    let curatedPointSet = this.removeDuplicatedPoints(points);
-                    if (points.length !== curatedPointSet.length) {
-                        points = curatedPointSet;
-                        // link polygon start and end by adding polygon start at the end
-                        points.push(points[0]); // x coordinate
-                        points.push(points[1]); // y coordinate
-                    }
                 }
 
                 e.feature.set('color', this.selectedLabel.color);
@@ -557,23 +549,9 @@ export default {
         },
         isInvalidPolygon(e) {
             let geometry = e.feature.getGeometry();
-            let points = geometry.getCoordinates();
-            return this.getPointStringSet(points[0]).size < 3;
+            let points = geometry.getCoordinates()[0];
+            return (new Set(points.map(xy => String([xy])))).size < 3;
             
-        },
-        removeDuplicatedPoints(points) {
-            let x = points.filter((_,i) => i%2==0);
-            let y = points.filter((_,i) => i%2==1);
-            let coordinates = x.map((xi,i) => {return [xi,y[i]];});
-
-            let pointStringSet = Array.from(this.getPointStringSet(coordinates));
-            return pointStringSet.map(xy => this.convertStringToPoint(xy)).flat();
-        },
-        getPointStringSet(points) {
-            return new Set(points.map(xy => String([xy])));
-        },
-        convertStringToPoint(xy) {
-            return xy.split(',').map(Number);
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {

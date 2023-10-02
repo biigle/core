@@ -195,7 +195,8 @@ class MagicWandInteraction extends PointerInteraction {
         if (this.isShowingCross) {
             this.sketchSource.removeFeature(this.sketchFeature);
         } else {
-            this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
+            this.filterSketchCoordinates();
+            this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
         }
 
         this.sketchFeature = null;
@@ -374,6 +375,78 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchSource.addFeature(this.sketchFeature);
             }
         }
+    }
+
+    /**
+    * Removes duplicated points and dangeling lines
+    */
+    filterSketchCoordinates() {
+        let points = this.sketchFeature.getGeometry().getCoordinates()[0];
+        points = this.removeDuplicatedPoints(points);
+        points = this.removeDangelingLines(points);
+        points.push(points[0]);
+        this.sketchFeature.getGeometry().setCoordinates([points]);
+    }
+
+    /**
+    * Removes duplicated points
+    */
+    removeDuplicatedPoints(points) {
+        let pointStringSet = Array.from(new Set(points.map(xy => String([xy]))));
+        return pointStringSet.map(xy => xy.split(',').map(Number));
+    }
+
+    /*
+    * Removes dangeling lines by deleting middle point of three subsequent points with equal x or y values
+    */
+    removeDangelingLines(coordinates) {
+        // filter by x values
+        let i = 0;
+        let endNotReached = true;
+        while (endNotReached) {
+            try {
+                if (coordinates[i][0] === coordinates[i + 1][0]) {
+                    if (coordinates[i + 1][0] === coordinates[i + 2][0]) {
+                        coordinates.splice(i + 1, 1)
+                        if (coordinates[i + 1][0] !== coordinates[i + 2][0]) {
+                            i++;
+                        }
+                    } else {
+                        i++;
+                    }
+                } else {
+                    i++;
+                }
+            } catch (err) {
+                break;
+            }
+            endNotReached = i < coordinates.length - 2;
+        }
+
+        // filter by y values
+        i = 0;
+        endNotReached = true;
+        while (endNotReached) {
+            try {
+                if (coordinates[i][1] === coordinates[i + 1][1]) {
+                    if (coordinates[i + 1][1] === coordinates[i + 2][1]) {
+                        coordinates.splice(i + 1, 1)
+                        if (coordinates[i + 1][1] !== coordinates[i + 2][1]) {
+                            i++;
+                        }
+                    } else {
+                        i++;
+                    }
+                } else {
+                    i++;
+                }
+            } catch (err) {
+                break;
+            }
+            endNotReached = i < coordinates.length - 2;
+        }
+
+        return coordinates;
     }
 }
 
