@@ -114,7 +114,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libpng-dev \
     && pip3 install --no-cache-dir \
         PyExcelerate==0.6.7 \
-        Pillow==9.3.* \
+        Pillow==10.0.1 \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
