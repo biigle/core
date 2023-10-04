@@ -16,6 +16,7 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use TestCase;
 
 class ApplyLargoSessionTest extends TestCase
@@ -264,7 +265,6 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testDismissImageAnnotations()
     {
-        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
 
@@ -275,11 +275,11 @@ class ApplyLargoSessionTest extends TestCase
         // al1 was dismissed but not changed, should be deleted.
         $this->assertFalse($al1->exists());
         $this->assertFalse($al1->annotation()->exists());
+        Queue::assertPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testDismissVideoAnnotations()
     {
-        $this->expectsJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
 
@@ -290,11 +290,11 @@ class ApplyLargoSessionTest extends TestCase
         // al1 was dismissed but not changed, should be deleted.
         $this->assertFalse($al1->exists());
         $this->assertFalse($al1->annotation()->exists());
+        Queue::assertPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testDismissForceImageAnnotations()
     {
-        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $user2 = UserTest::create();
@@ -305,11 +305,11 @@ class ApplyLargoSessionTest extends TestCase
 
         $this->assertFalse($al1->exists());
         $this->assertFalse($al1->annotation()->exists());
+        Queue::assertPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testDismissForceVideoAnnotations()
     {
-        $this->expectsJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
         $user2 = UserTest::create();
@@ -320,11 +320,11 @@ class ApplyLargoSessionTest extends TestCase
 
         $this->assertFalse($al1->exists());
         $this->assertFalse($al1->annotation()->exists());
+        Queue::assertPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testChangeOwnImageAnnotations()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -338,11 +338,11 @@ class ApplyLargoSessionTest extends TestCase
         // al1 was dismissed and then changed, should have a new annotation label
         $this->assertNull($al1->fresh());
         $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testChangeOwnVideoAnnotations()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -356,11 +356,11 @@ class ApplyLargoSessionTest extends TestCase
         // al1 was dismissed and then changed, should have a new annotation label
         $this->assertNull($al1->fresh());
         $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testChangeOtherImageAnnotations()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -377,11 +377,11 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertNotNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
         $this->assertEquals(2, $annotation->labels()->count());
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testChangeOtherVideoAnnotations()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -398,11 +398,11 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertNotNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
         $this->assertEquals(2, $annotation->labels()->count());
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testChangeOtherForceImageAnnotations()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -417,11 +417,11 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
         $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testChangeOtherForceVideoAnnotations()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -436,11 +436,11 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
         $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testChangeMultipleImageAnnotations()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -469,11 +469,11 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertCount(2, $labels);
         $this->assertContains($l1->id, $labels);
         $this->assertContains($l2->id, $labels);
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testChangeMultipleVideoAnnotations()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         $user = UserTest::create();
         $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
         $annotation = $al1->annotation;
@@ -502,6 +502,7 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertCount(2, $labels);
         $this->assertContains($l1->id, $labels);
         $this->assertContains($l2->id, $labels);
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testRemoveJobIdOnFinishImageAnnotations()
