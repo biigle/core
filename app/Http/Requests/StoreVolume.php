@@ -14,6 +14,7 @@ use Biigle\Volume;
 use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreVolume extends FormRequest
 {

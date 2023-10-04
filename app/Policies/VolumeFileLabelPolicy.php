@@ -31,8 +31,7 @@ class VolumeFileLabelPolicy extends CachedPolicy
             $projectIdsQuery = function ($query) use ($fileLabel) {
                 $fileModel = $fileLabel->file()->getRelated();
                 $fileTable = $fileModel->getTable();
-                $query
-                    ->select('project_volume.project_id')
+                $query->select('project_volume.project_id')
                     ->from('project_volume')
                     ->join($fileTable, 'project_volume.volume_id', '=', $fileModel->volume()->getQualifiedForeignKeyName())
                     ->where("{$fileTable}.id", $fileLabel->file_id);

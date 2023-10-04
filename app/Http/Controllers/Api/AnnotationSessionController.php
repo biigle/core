@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationSession;
 use Biigle\Http\Requests\DestroyAnnotationSession;
 use Biigle\Http\Requests\UpdateAnnotationSession;
 use Biigle\Volume;
@@ -49,8 +50,7 @@ class AnnotationSessionController extends Controller
         $session = $request->session;
 
         if ($request->filled('starts_at')) {
-            $newStartsAt = Carbon::parse($request
-                ->input('starts_at'))
+            $newStartsAt = Carbon::parse($request->input('starts_at'))
                 ->tz(config('app.timezone'));
 
             if (!$request->input('force') && $session->annotations()->where('created_at', '<', $newStartsAt)->exists()) {
@@ -61,8 +61,7 @@ class AnnotationSessionController extends Controller
         }
 
         if ($request->filled('ends_at')) {
-            $newEndsAt = Carbon::parse($request
-                ->input('ends_at'))
+            $newEndsAt = Carbon::parse($request->input('ends_at'))
                 ->tz(config('app.timezone'));
 
             if (!$request->input('force') && $session->annotations()->where('created_at', '>=', $newEndsAt)->exists()) {
@@ -95,18 +94,15 @@ class AnnotationSessionController extends Controller
                 if ($lostUsers->count() > 0) {
                     // Check if there are any annotations of the users that should no
                     // longer belong to the annotation session.
-                    $wouldLooseAnnotations = $session
-                        ->annotations()
+                    $wouldLooseAnnotations = $session->annotations()
                         ->whereExists(function ($query) use ($session, $lostUsers) {
                             // This must work with image annotations and video
                             // annotations.
-                            $labelModel = $session
-                                ->annotations()
+                            $labelModel = $session->annotations()
                                 ->getModel()
                                 ->labels()
                                 ->getRelated();
-                            $query
-                                ->select(DB::raw(1))
+                            $query->select(DB::raw(1))
                                 ->from($labelModel->getTable())
                                 ->whereRaw($labelModel->annotation()->getQualifiedForeignKeyName().' = '.$labelModel->annotation()->getQualifiedOwnerKeyName())
                                 ->whereIn($labelModel->user()->getQualifiedForeignKeyName(), $lostUsers);
@@ -120,8 +116,7 @@ class AnnotationSessionController extends Controller
             }
 
             // count users of all attached projects that match the given user IDs
-            $count = $session->volume
-                ->users()
+            $count = $session->volume->users()
                 ->whereIn('id', $users)
                 ->count();
 

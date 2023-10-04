@@ -4,6 +4,7 @@ namespace Biigle\Jobs;
 
 use Biigle\Events\ObjectTrackingFailed;
 use Biigle\Events\ObjectTrackingSucceeded;
+use Biigle\Jobs\Job;
 use Biigle\Shape;
 use Biigle\User;
 use Biigle\VideoAnnotation;

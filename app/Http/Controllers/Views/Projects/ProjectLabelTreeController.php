@@ -4,7 +4,10 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\Video;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ProjectLabelTreeController extends Controller
 {
@@ -20,8 +23,7 @@ class ProjectLabelTreeController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $labelTrees = $project
-            ->labelTrees()
+        $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'description', 'version_id')
             ->with('version')
             ->get();
@@ -29,8 +31,7 @@ class ProjectLabelTreeController extends Controller
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
         $isPinned = $isMember && $userProject->pivot->pinned;
-        $canPin = $isMember && 3 > $request
-            ->user()
+        $canPin = $isMember && 3 > $request->user()
             ->projects()
             ->wherePivot('pinned', true)
             ->count();

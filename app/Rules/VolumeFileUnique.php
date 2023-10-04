@@ -40,8 +40,7 @@ class VolumeFileUnique implements Rule
      */
     public function passes($attribute, $value)
     {
-        $this->files = $this->volume
-            ->files()
+        $this->files = $this->volume->files()
             ->whereIn('filename', $value)
             ->pluck('filename');
 

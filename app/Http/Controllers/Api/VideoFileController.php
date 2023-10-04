@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Video;
 use Exception;
 use FileCache;

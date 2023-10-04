@@ -4,6 +4,7 @@ namespace Biigle\Console\Commands;
 
 use Biigle\Image;
 use Biigle\Jobs\MigrateTiledImage;
+use Biigle\Volume;
 use Illuminate\Console\Command;
 use Queue;
 

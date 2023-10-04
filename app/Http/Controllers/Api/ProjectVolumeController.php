@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Volume;
 use DB;

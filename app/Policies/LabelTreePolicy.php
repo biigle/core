@@ -148,7 +148,9 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function updateMember(User $user, LabelTree $tree, User $member)
     {
-        return $this->remember("label-tree-can-update-member-{$user->id}-{$tree->id}-{$member->id}", fn () => $user->id !== $member->id && $this->update($user, $tree));
+        return $this->remember("label-tree-can-update-member-{$user->id}-{$tree->id}-{$member->id}", function () use ($user, $tree, $member) {
+            return $user->id !== $member->id && $this->update($user, $tree);
+        });
     }
 
     /**

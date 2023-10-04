@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Rules\ImageMetadata;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
@@ -81,8 +82,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             }
         });
 
-        $newIds = $this->volume
-            ->files()
+        $newIds = $this->volume->files()
             ->orderBy('id', 'desc')
             ->take(count($this->filenames))
             ->pluck('id')
@@ -163,7 +163,9 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
         $columns = $this->metadata[0];
 
         $map = collect(array_slice($this->metadata, 1))
-            ->map(fn ($row) => array_combine($columns, $row))
+            ->map(function ($row) use ($columns) {
+                return array_combine($columns, $row);
+            })
             ->map(function ($row) {
                 if (array_key_exists('taken_at', $row)) {
                     $row['taken_at'] = Carbon::parse($row['taken_at']);
@@ -192,7 +194,9 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
         $columns = $this->metadata[0];
 
         $map = collect(array_slice($this->metadata, 1))
-            ->map(fn ($row) => array_combine($columns, $row))
+            ->map(function ($row) use ($columns) {
+                return array_combine($columns, $row);
+            })
             ->map(function ($row) {
                 if (array_key_exists('taken_at', $row)) {
                     $row['taken_at'] = Carbon::parse($row['taken_at']);
@@ -204,7 +208,9 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             })
             ->sortBy('taken_at')
             ->groupBy('filename')
-            ->map(fn ($entries) => $this->processVideoColumns($entries, $columns));
+            ->map(function ($entries) use ($columns) {
+                return $this->processVideoColumns($entries, $columns);
+            });
 
         return $map;
     }

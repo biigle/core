@@ -100,8 +100,8 @@ class ImageAnnotationBulkController extends Controller
             $annotations->each(function ($annotation) use ($request) {
                 $label = $request->labels[$annotation->label_id];
                 $confidence = $annotation->confidence;
-                unset($annotation->label_id, $annotation->confidence);
-                
+                unset($annotation->label_id);
+                unset($annotation->confidence);
                 $this->authorize('attach-label', [$annotation, $label]);
                 $annotation->save();
 

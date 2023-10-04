@@ -9,6 +9,7 @@ use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -180,13 +181,11 @@ class Volume extends Model
     public function users()
     {
         return User::whereIn('id', function ($query) {
-            $query
-                ->select('user_id')
+            $query->select('user_id')
                 ->distinct()
                 ->from('project_user')
                 ->whereIn('project_id', function ($query) {
-                    $query
-                        ->select('project_id')
+                    $query->select('project_id')
                         ->from('project_volume')
                         ->where('volume_id', $this->id);
                 });
@@ -242,8 +241,7 @@ class Volume extends Model
     {
         return $this->activeAnnotationSession()
             ->whereExists(function ($query) use ($user) {
-                $query
-                    ->select(DB::raw(1))
+                $query->select(DB::raw(1))
                     ->from('annotation_session_user')
                     ->where('annotation_session_user.user_id', $user->id)
                     ->whereRaw('annotation_session_user.annotation_session_id = annotation_sessions.id');
@@ -262,22 +260,21 @@ class Volume extends Model
     public function hasConflictingAnnotationSession(AnnotationSession $session)
     {
         return $this->annotationSessions()
-            ->when(!is_null($session->id), fn ($query) => $query->where('id', '!=', $session->id))
+            ->when(!is_null($session->id), function ($query) use ($session) {
+                return $query->where('id', '!=', $session->id);
+            })
             ->where(function ($query) use ($session) {
                 $query->where(function ($query) use ($session) {
-                    $query
-                        ->where('starts_at', '<=', $session->starts_at)
+                    $query->where('starts_at', '<=', $session->starts_at)
                         ->where('ends_at', '>', $session->starts_at);
                 });
                 $query->orWhere(function ($query) use ($session) {
                     // ends_at is exclusive so it may equal starts_at of another session
-                    $query
-                        ->where('starts_at', '<', $session->ends_at)
+                    $query->where('starts_at', '<', $session->ends_at)
                         ->where('ends_at', '>=', $session->ends_at);
                 });
                 $query->orWhere(function ($query) use ($session) {
-                    $query
-                        ->where('starts_at', '>=', $session->starts_at)
+                    $query->where('starts_at', '>=', $session->starts_at)
                         ->where('ends_at', '<=', $session->ends_at);
                 });
             })
@@ -347,7 +344,9 @@ class Volume extends Model
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl);
+        return $this->thumbnails->map(function ($file) {
+            return $file->thumbnailUrl;
+        });
     }
 
     /**
@@ -365,7 +364,9 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember($this->getGeoInfoCacheKey(), 3600, fn () => $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists());
+        return Cache::remember($this->getGeoInfoCacheKey(), 3600, function () {
+            return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
+        });
     }
 
     /**
@@ -424,7 +425,9 @@ class Volume extends Model
     public function hasTiledImages()
     {
         // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, fn () => $this->images()->where('tiled', true)->exists());
+        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, function () {
+            return $this->images()->where('tiled', true)->exists();
+        });
     }
 
     /**
@@ -469,7 +472,9 @@ class Volume extends Model
     public function hasIfdo($ignoreErrors = false)
     {
         try {
-            return Cache::remember($this->getIfdoCacheKey(), 3600, fn () => Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename()));
+            return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
+                return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
+            });
         } catch (Exception $e) {
             if (!$ignoreErrors) {
                 throw $e;

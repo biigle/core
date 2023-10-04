@@ -4,6 +4,10 @@ namespace Biigle\Http\Controllers\Views\LabelTrees;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
+use Biigle\LabelTreeVersion;
+use Biigle\Project;
+use Biigle\Visibility;
+use DB;
 use Illuminate\Http\Request;
 
 class LabelTreeMergeController extends Controller
@@ -20,7 +24,7 @@ class LabelTreeMergeController extends Controller
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('createLabel', $tree);
-        $mergeCandidates = LabelTree::accessibleBy($request->user())           
+        $mergeCandidates = LabelTree::accessibleBy($request->user())
             ->where('id', '!=', $tree->id)
             ->select('id', 'name', 'description', 'version_id')
             ->with('version')

@@ -2,8 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\DestroyVideo;
+use Biigle\Http\Requests\UpdateVideo;
+use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Video;
+use Queue;
 
 class VideoController extends Controller
 {

@@ -36,7 +36,6 @@ abstract class VolumeFile extends Model implements FileContract
     {
         return $this->url;
     }
-
     /**
      * The volume this video belongs to.
      *

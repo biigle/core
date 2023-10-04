@@ -18,21 +18,19 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule
-            ->command('queue:prune-batches')
+        $schedule->command('queue:prune-batches')
             ->daily()
             ->onOneServer();
 
-        $schedule
-            ->command('prune-notifications')
+        $schedule->command('prune-notifications')
             ->daily()
             ->onOneServer();
 
         $schedule->call(function () {
-            if (FederatedSearchInstance::withLocalToken()->exists()) {
-                GenerateFederatedSearchIndex::dispatch();
-            }
-        })
+                if (FederatedSearchInstance::withLocalToken()->exists()) {
+                    GenerateFederatedSearchIndex::dispatch();
+                }
+            })
             ->name('generate-federated-search-index')
             // The requests to retrieve the federated search index are sent hourly at 05.
             // This should not collide with this job to generate the index.
@@ -40,9 +38,9 @@ class Kernel extends ConsoleKernel
             ->onOneServer();
 
         $schedule->call(function () {
-            FederatedSearchInstance::withRemoteToken()
-                ->eachById([UpdateFederatedSearchIndex::class, 'dispatch']);
-        })
+                FederatedSearchInstance::withRemoteToken()
+                    ->eachById([UpdateFederatedSearchIndex::class, 'dispatch']);
+            })
             ->name('update-federated-search-index')
             // The jobs to generate the federated search index are run hourly at 55.
             // This should not collide with this job to request the index from another

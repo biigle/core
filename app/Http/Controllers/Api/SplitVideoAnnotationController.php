@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\SplitVideoAnnotation;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;

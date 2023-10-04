@@ -65,7 +65,9 @@ class UpdateVolumeUrls extends Command
         $url = $volumes->first();
         $prefix = $this->ask('Please enter the volume URL prefix that you want to replace with a storage disk.', dirname($url));
 
-        $matches = $volumes->filter(fn ($url) => strpos($url, $prefix) === 0);
+        $matches = $volumes->filter(function ($url) use ($prefix) {
+            return strpos($url, $prefix) === 0;
+        });
         $matchesCount = $matches->count();
 
         if ($matchesCount > 0) {

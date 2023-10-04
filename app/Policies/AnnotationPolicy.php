@@ -3,7 +3,9 @@
 namespace Biigle\Policies;
 
 use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Biigle\Label;
+use Biigle\Policies\CachedPolicy;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
@@ -71,8 +73,7 @@ class AnnotationPolicy extends CachedPolicy
             return DB::table('project_user')
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($annotation, $table) {
-                    $query
-                        ->select('project_volume.project_id')
+                    $query->select('project_volume.project_id')
                         ->from('project_volume')
                         ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
                         ->where("{$table}.id", $annotation->file_id);
@@ -108,8 +109,7 @@ class AnnotationPolicy extends CachedPolicy
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($annotation, $table) {
                     // the projects, the annotation belongs to
-                    $query
-                        ->select('project_volume.project_id')
+                    $query->select('project_volume.project_id')
                         ->from('project_volume')
                         ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
                         ->where("{$table}.id", $annotation->file_id);
@@ -145,8 +145,7 @@ class AnnotationPolicy extends CachedPolicy
         return $this->remember("{$table}-annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation, $table) {
             // selects the IDs of the projects, the annotation belongs to
             $projectIdsQuery = function ($query) use ($annotation, $table) {
-                $query
-                    ->select('project_volume.project_id')
+                $query->select('project_volume.project_id')
                     ->from('project_volume')
                     ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
                     ->where("{$table}.id", $annotation->file_id);
@@ -154,8 +153,7 @@ class AnnotationPolicy extends CachedPolicy
 
             // check if there are labels of other users attached to this annotation
             // this also handles the case correctly when *no* label is attached
-            $hasLabelsFromOthers = $annotation
-                ->labels()
+            $hasLabelsFromOthers = $annotation->labels()
                 ->where('user_id', '!=', $user->id)
                 ->exists();
 

@@ -3,8 +3,9 @@
 namespace Biigle\Providers;
 
 use Biigle\Role;
-use Biigle\Services\Auth\ApiGuard;
 use Biigle\User;
+use Biigle\Services\Auth\ApiGuard;
+use Biigle\Services\Auth\FederatedSearchGuard;
 use Illuminate\Auth\TokenGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -38,10 +39,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         // Ability of a global admin.
-        Gate::define('sudo', fn (User $user) => $user->isInSuperUserMode);
+        Gate::define('sudo', function (User $user) {
+            return $user->isInSuperUserMode;
+        });
 
         // Ability of a reviewer (e.g. for new registrations).
-        Gate::define('review', fn (User $user) => $user->canReview);
+        Gate::define('review', function (User $user) {
+            return $user->canReview;
+        });
 
         // Ability to create or update a volume with a certain storage disk.
         // Merge with possible logic defined by modules.

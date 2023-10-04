@@ -44,8 +44,7 @@ class AnnotationToolController extends Controller
             ])->pluck('id');
         }
 
-        $images = $volume
-            ->images()
+        $images = $volume->images()
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 
@@ -53,8 +52,7 @@ class AnnotationToolController extends Controller
         $trees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')
             ->whereIn('id', function ($query) use ($projectIds) {
-                $query
-                    ->select('label_tree_id')
+                $query->select('label_tree_id')
                     ->from('label_tree_project')
                     ->whereIn('project_id', $projectIds);
             })
@@ -62,8 +60,7 @@ class AnnotationToolController extends Controller
 
         $shapes = Shape::pluck('name', 'id');
 
-        $annotationSessions = $image->volume
-            ->annotationSessions()
+        $annotationSessions = $image->volume->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')
             ->with('users')
             ->get();

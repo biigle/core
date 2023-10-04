@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelSource;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\User;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
@@ -94,8 +95,7 @@ class LabelTreesController extends Controller
      */
     protected function showMasterLabelTree(LabelTree $tree, User $user)
     {
-        $labels = $tree
-            ->labels()
+        $labels = $tree->labels()
             ->select('id', 'name', 'parent_id', 'color', 'source_id')
             ->get();
 
@@ -124,8 +124,7 @@ class LabelTreesController extends Controller
      */
     protected function showVersionedLabelTree(LabelTree $tree, User $user)
     {
-        $labels = $tree
-            ->labels()
+        $labels = $tree->labels()
             ->select('id', 'name', 'parent_id', 'color', 'source_id')
             ->get();
 
@@ -134,8 +133,7 @@ class LabelTreesController extends Controller
         } else {
             // All projects of the user that use the label tree version.
             $projects = Project::whereIn('id', function ($query) use ($user, $tree) {
-                $query
-                    ->select('project_user.project_id')
+                $query->select('project_user.project_id')
                     ->from('project_user')
                     ->join('label_tree_project', 'project_user.project_id', '=', 'label_tree_project.project_id')
                     ->where('project_user.user_id', $user->id)

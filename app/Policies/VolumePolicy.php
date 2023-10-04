@@ -37,7 +37,9 @@ class VolumePolicy extends CachedPolicy
      */
     public function access(User $user, Volume $volume)
     {
-        return $this->remember("volume-can-access-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)->exists());
+        return $this->remember("volume-can-access-{$user->id}-{$volume->id}", function () use ($user, $volume) {
+            return $this->getBaseQuery($user, $volume)->exists();
+        });
     }
 
     /**
@@ -116,8 +118,7 @@ class VolumePolicy extends CachedPolicy
     {
         return DB::table('project_user')
             ->whereIn('project_id', function ($query) use ($volume) {
-                $query
-                    ->select('project_id')
+                $query->select('project_id')
                     ->from('project_volume')
                     ->where('volume_id', $volume->id);
             })

@@ -2,8 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Announcement;
 use Biigle\Http\Requests\StoreAnnouncement;
+use Biigle\Announcement;
+use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {

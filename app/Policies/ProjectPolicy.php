@@ -48,7 +48,9 @@ class ProjectPolicy extends CachedPolicy
      */
     public function access(User $user, Project $project)
     {
-        return $this->remember("project-can-access-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)->exists());
+        return $this->remember("project-can-access-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return $this->getBaseQuery($user, $project)->exists();
+        });
     }
 
     /**

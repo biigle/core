@@ -180,8 +180,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         });
 
         $treeIds = $trees->pluck('id')->toArray();
-        $modelIds = $this->instance
-            ->models()
+        $modelIds = $this->instance->models()
             ->orderBy('id', 'asc')
             ->labelTrees()
             ->pluck('id')
@@ -224,8 +223,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         });
 
         $projectIds = $projects->pluck('id')->toArray();
-        $modelIds = $this->instance
-            ->models()
+        $modelIds = $this->instance->models()
             ->orderBy('id', 'asc')
             ->projects()
             ->pluck('id')
@@ -268,8 +266,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         });
 
         $volumeIds = $volumes->pluck('id')->toArray();
-        $modelIds = $this->instance
-            ->models()
+        $modelIds = $this->instance->models()
             ->orderBy('id', 'asc')
             ->volumes()
             ->pluck('id')
@@ -277,6 +274,7 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
 
         return array_combine($volumeIds, $modelIds);
     }
+
 
     /**
      * Update which user may access which federated search model that was created in

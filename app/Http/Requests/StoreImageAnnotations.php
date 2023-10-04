@@ -44,8 +44,7 @@ class StoreImageAnnotations extends FormRequest
     public function authorize()
     {
         $input = collect($this->all());
-        $this->imageIds = $input
-            ->pluck('image_id')
+        $this->imageIds = $input->pluck('image_id')
             ->unique()
             // Filter because the IDs are validated *after* authorization and could be
             // e.g. random strings here.
@@ -53,8 +52,7 @@ class StoreImageAnnotations extends FormRequest
 
         $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
 
-        $labelIds = $input
-            ->pluck('label_id')
+        $labelIds = $input->pluck('label_id')
             ->unique()
             // Filter because the IDs are validated *after* authorization and could be
             // e.g. random strings here.
@@ -62,7 +60,9 @@ class StoreImageAnnotations extends FormRequest
 
         $this->labels = Label::findMany($labelIds)->keyBy('id');
 
-        return $this->images->reduce(fn ($carry, $image) => $carry && $this->user()->can('add-annotation', $image), true);
+        return $this->images->reduce(function ($carry, $image) {
+            return $carry && $this->user()->can('add-annotation', $image);
+        }, true);
     }
 
     /**

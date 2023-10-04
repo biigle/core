@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
@@ -90,14 +91,12 @@ class LabelTree extends Model
         }
 
         return $query->where(function ($query) use ($user) {
-            $query
-                ->where('label_trees.visibility_id', Visibility::publicId())
+            $query->where('label_trees.visibility_id', Visibility::publicId())
                 // Do it like this instead of a join with label_tree_user because
                 // there can be global label trees without any members, too!
                 ->orWhere(function ($query) use ($user) {
                     $query->whereIn('id', function ($query) use ($user) {
-                        $query
-                            ->select('label_tree_id')
+                        $query->select('label_tree_id')
                             ->from('label_tree_user')
                             ->where('user_id', $user->id);
                     });
@@ -107,8 +106,7 @@ class LabelTree extends Model
                 // of the label tree.
                 ->orWhere(function ($query) use ($user) {
                     $query->whereIn('id', function ($query) use ($user) {
-                        $query
-                            ->select('label_tree_project.label_tree_id')
+                        $query->select('label_tree_project.label_tree_id')
                             ->from('label_tree_project')
                             ->join('project_user', 'project_user.project_id', '=', 'label_tree_project.project_id')
                             ->where('project_user.user_id', $user->id);
@@ -204,8 +202,7 @@ class LabelTree extends Model
      */
     public function canBeDeleted()
     {
-        $treeIds = $this
-            ->versions()
+        $treeIds = $this->versions()
             ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
             ->pluck('label_trees.id')
             ->concat([$this->id]);
@@ -293,19 +290,16 @@ class LabelTree extends Model
         // Also detach unauthorized projects of versions of this label tree.
         DB::table('label_tree_project')
             ->where(function ($query) {
-                $query
-                    ->where('label_tree_id', $this->id)
+                $query->where('label_tree_id', $this->id)
                     ->orWhereIn('label_tree_id', function ($query) {
-                        $query
-                            ->select('label_trees.id')
+                        $query->select('label_trees.id')
                             ->from('label_trees')
                             ->join('label_tree_versions', 'label_tree_versions.id', '=', 'label_trees.version_id')
                             ->where('label_tree_versions.label_tree_id', $this->id);
                     });
             })
             ->whereNotIn('project_id', function ($query) {
-                $query
-                    ->select('project_id')
+                $query->select('project_id')
                     ->from('label_tree_authorized_project')
                     ->where('label_tree_id', $this->id);
             })->delete();

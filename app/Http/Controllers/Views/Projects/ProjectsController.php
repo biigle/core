@@ -4,6 +4,8 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
+use Biigle\Role;
+use Biigle\Video;
 use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
@@ -44,15 +46,13 @@ class ProjectsController extends Controller
         $this->authorize('access', $project);
 
         $hidden = ['doi'];
-        $volumes = $project
-            ->volumes()
+        $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
             ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {
-                $item
-                    ->append('thumbnailUrl')
+                $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
                     ->makeHidden($hidden);
             });
@@ -60,8 +60,7 @@ class ProjectsController extends Controller
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
         $isPinned = $isMember && $userProject->pivot->pinned;
-        $canPin = $isMember && 3 > $request
-            ->user()
+        $canPin = $isMember && 3 > $request->user()
             ->projects()
             ->wherePivot('pinned', true)
             ->count();

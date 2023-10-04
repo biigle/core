@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Announcement;
 use Biigle\Http\Controllers\Controller;
+use Biigle\Announcement;
 
 class AnnouncementsController extends Controller
 {

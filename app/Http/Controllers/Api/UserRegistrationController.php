@@ -8,6 +8,7 @@ use Biigle\Role;
 use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class UserRegistrationController extends Controller
 {

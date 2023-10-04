@@ -13,6 +13,7 @@ use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class VolumeController extends Controller
 {
@@ -45,7 +46,6 @@ class VolumeController extends Controller
 
         if (class_exists(UserDisk::class)) {
             $userDisks = UserDisk::where('user_id', $user->id)
-                
                 ->pluck('name', 'id')
                 ->mapWithKeys(fn ($name, $id) => ["disk-{$id}" => $name]);
 
@@ -92,8 +92,7 @@ class VolumeController extends Controller
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')
             ->whereIn('id', function ($query) use ($projects) {
-                $query
-                    ->select('label_tree_id')
+                $query->select('label_tree_id')
                     ->from('label_tree_project')
                     ->whereIn('project_id', $projects->pluck('id'));
             })

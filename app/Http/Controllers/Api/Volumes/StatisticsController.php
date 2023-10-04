@@ -42,32 +42,28 @@ class StatisticsController extends Controller
 
         $annotatedFiles = $baseQuery->clone()->count(DB::raw("DISTINCT {$type}s.id"));
 
-        $annotationTimeSeries = $baseQuery
-            ->clone()
+        $annotationTimeSeries = $baseQuery->clone()
             ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
             ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), EXTRACT(YEAR from {$type}_annotations.created_at)::integer as year")
             ->groupBy("{$type}_annotation_labels.user_id", 'fullname', 'year')
             ->orderBy("{$type}_annotation_labels.user_id")
             ->get();
 
-        $volumeAnnotations = $baseQuery
-            ->clone()
+        $volumeAnnotations = $baseQuery->clone()
             ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
             ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), {$type}s.volume_id")
             ->groupBy("{$type}_annotation_labels.user_id", 'fullname', "{$type}s.volume_id")
             ->orderBy("{$type}_annotation_labels.user_id")
             ->get();
 
-        $annotationLabels = $baseQuery
-            ->clone()
+        $annotationLabels = $baseQuery->clone()
             ->join('labels', 'labels.id', '=', "{$type}_annotation_labels.label_id")
             ->select('labels.id', 'labels.name', DB::raw('count(labels.id)'), 'labels.color')
             ->groupBy('labels.id')
             ->orderBy('labels.id')
             ->get();
 
-        $sourceTargetLabelsRaw = $baseQuery
-            ->clone()
+        $sourceTargetLabelsRaw = $baseQuery->clone()
             ->select("{$type}s.id", "{$type}_annotation_labels.label_id")
             ->distinct()
             ->get()

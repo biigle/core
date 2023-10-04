@@ -52,9 +52,7 @@ class UserPinnedProjectController extends Controller
      */
     public function store(StorePinnedProject $request)
     {
-        $request
-            ->user()
-            ->projects()
+        $request->user()->projects()
             ->updateExistingPivot($request->project->id, ['pinned' => true]);
 
         if (!$this->isAutomatedRequest()) {
@@ -78,9 +76,7 @@ class UserPinnedProjectController extends Controller
      */
     public function destroy(DestroyPinnedProject $request)
     {
-        $request
-            ->user()
-            ->projects()
+        $request->user()->projects()
             ->updateExistingPivot($request->project->id, ['pinned' => false]);
 
         if (!$this->isAutomatedRequest()) {

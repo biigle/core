@@ -6,7 +6,6 @@ use Biigle\Http\Controllers\Controller;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Role;
-use Biigle\Services\Modules;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -14,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Notification;
 use Ramsey\Uuid\Uuid;
+use Biigle\Services\Modules;
 use Validator;
 use View;
 

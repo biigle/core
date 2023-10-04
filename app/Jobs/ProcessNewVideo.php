@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use App;
+use Biigle\Jobs\Job;
 use Biigle\Video;
 use Exception;
 use FFMpeg\Coordinate\Dimension;
@@ -232,8 +233,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             $this->ffmpegVideo = FFMpeg::create()->open($path);
         }
 
-        $buffer = $this->ffmpegVideo
-            ->frame(TimeCode::fromSeconds($time))
+        $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
             ->save(null, false, true);
 
         return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])

@@ -164,6 +164,8 @@ class BrowserController extends Controller
         $prefix = preg_quote($prefix);
         $regex = "!^{$prefix}/?!";
 
-        return array_map(fn ($item) => preg_replace($regex, '', $item), $list);
+        return array_map(function ($item) use ($regex) {
+            return preg_replace($regex, '', $item);
+        }, $list);
     }
 }

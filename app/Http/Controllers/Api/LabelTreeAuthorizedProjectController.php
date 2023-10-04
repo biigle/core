@@ -31,8 +31,7 @@ class LabelTreeAuthorizedProjectController extends Controller
         $tree = $request->tree;
         if (!$tree->authorizedProjects()->where('id', $id)->exists()) {
             DB::transaction(function () use ($tree, $id) {
-                $rows = $tree
-                    ->versions()
+                $rows = $tree->versions()
                     ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
                     ->pluck('label_trees.id')
                     ->concat([$tree->id])
@@ -76,8 +75,7 @@ class LabelTreeAuthorizedProjectController extends Controller
         $this->authorize('update', $tree);
 
         DB::transaction(function () use ($tree, $pid) {
-            $treeIds = $tree
-                ->versions()
+            $treeIds = $tree->versions()
                 ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
                 ->pluck('label_trees.id')
                 ->concat([$tree->id]);

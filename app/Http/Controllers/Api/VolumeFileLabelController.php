@@ -3,6 +3,8 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolumeFileLabel;
+use Biigle\Image;
+use Biigle\ImageLabel;
 use Biigle\Label;
 
 abstract class VolumeFileLabelController extends Controller
@@ -38,8 +40,7 @@ abstract class VolumeFileLabelController extends Controller
         $fileLabel->label()->associate($request->label);
         $fileLabel->file()->associate($request->file);
 
-        $exists = $request->file
-            ->labels()
+        $exists = $request->file->labels()
             ->where('label_id', $fileLabel->label_id)
             ->exists();
 

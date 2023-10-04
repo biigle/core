@@ -2,7 +2,9 @@
 
 namespace Biigle;
 
+use Biigle\User;
 use Carbon\Carbon;
+use DB;
 
 class Video extends VolumeFile
 {
@@ -142,7 +144,9 @@ class Video extends VolumeFile
     public function getThumbnailsAttribute()
     {
         return collect(range(0, config('videos.thumbnail_count') - 1))
-            ->map(fn ($i) => "{$this->uuid}/{$i}");
+            ->map(function ($i) {
+                return "{$this->uuid}/{$i}";
+            });
     }
 
     /**
@@ -152,7 +156,9 @@ class Video extends VolumeFile
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(fn ($item) => thumbnail_url($item, config('videos.thumbnail_storage_disk')));
+        return $this->thumbnails->map(function ($item) {
+            return thumbnail_url($item, config('videos.thumbnail_storage_disk'));
+        });
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\LabelTree;
+use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -38,7 +39,9 @@ class StoreLabelTreeVersion extends FormRequest
             'name' => [
                 'required',
                 'max:256',
-                Rule::unique('label_tree_versions')->where(fn ($query) => $query->where('label_tree_id', $this->tree->id)),
+                Rule::unique('label_tree_versions')->where(function ($query) {
+                    return $query->where('label_tree_id', $this->tree->id);
+                }),
             ],
             'doi' => 'nullable|min:10',
         ];

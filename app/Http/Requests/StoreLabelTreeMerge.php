@@ -2,8 +2,12 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\ImageAnnotationLabel;
+use Biigle\ImageLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\VideoAnnotationLabel;
+use Biigle\VideoLabel;
 use Illuminate\Foundation\Http\FormRequest;
 use Validator;
 

@@ -32,8 +32,8 @@ class AnnotationLabelPolicy extends CachedPolicy
             $projectIdsQuery = function ($query) use ($annotationLabel, $fileTable, $model) {
                 $annotationsTable = $model->getTable();
                 $foreignKeyName = $model->file()->getQualifiedForeignKeyName();
-                $query
-                    ->select('project_volume.project_id')
+
+                $query->select('project_volume.project_id')
                     ->from('project_volume')
                     ->join($fileTable, 'project_volume.volume_id', '=', "{$fileTable}.volume_id")
                     ->join($annotationsTable, $foreignKeyName, '=', "{$fileTable}.id")

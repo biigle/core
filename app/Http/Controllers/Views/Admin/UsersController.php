@@ -5,11 +5,14 @@ namespace Biigle\Http\Controllers\Views\Admin;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
+use Biigle\Video;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -27,8 +30,7 @@ class UsersController extends Controller
             ->when($request->has('q'), function ($query) use ($request) {
                 $q = $request->get('q');
                 $query->where(function ($query) use ($q) {
-                    $query
-                        ->where('firstname', 'ilike', "%$q%")
+                    $query->where('firstname', 'ilike', "%$q%")
                         ->orWhere('lastname', 'ilike', "%$q%")
                         ->orWhere('email', 'ilike', "%$q%");
                 });
@@ -146,7 +148,7 @@ class UsersController extends Controller
     {
         $projectsTotal = Project::count();
 
-        $creatorProjects = Project::where('creator_id', $user->id)      
+        $creatorProjects = Project::where('creator_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->select('id', 'name')
             ->get();
@@ -175,7 +177,7 @@ class UsersController extends Controller
     {
         $volumesTotal = Volume::count();
 
-        $volumes = Volume::where('creator_id', $user->id)           
+        $volumes = Volume::where('creator_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->select('id', 'name')
             ->get();
@@ -208,8 +210,7 @@ class UsersController extends Controller
         if ($totalAnnotations > 0) {
             $relativeAnnotations = $totalAnnotations / ImageAnnotation::count();
 
-            $recentImageAnnotations = $annotationQuery
-                ->orderBy('image_annotation_labels.created_at', 'desc')
+            $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
                 ->select('image_annotation_labels.created_at', 'image_annotations.id')
                 ->get();
@@ -239,8 +240,7 @@ class UsersController extends Controller
         if ($totalVideoAnnotations > 0) {
             $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::count();
 
-            $recentVideoAnnotations = $annotationQuery
-                ->orderBy('video_annotation_labels.created_at', 'desc')
+            $recentVideoAnnotations = $annotationQuery->orderBy('video_annotation_labels.created_at', 'desc')
                 ->take(10)
                 ->select('video_annotation_labels.created_at', 'video_annotations.id')
                 ->get();

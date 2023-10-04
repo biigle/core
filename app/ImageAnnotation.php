@@ -2,6 +2,8 @@
 
 namespace Biigle;
 
+use DB;
+
 /**
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.

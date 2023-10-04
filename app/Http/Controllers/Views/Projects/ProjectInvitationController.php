@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Views\Projects;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\ProjectInvitation;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ProjectInvitationController extends Controller
 {

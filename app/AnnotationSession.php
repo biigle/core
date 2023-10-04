@@ -94,11 +94,10 @@ class AnnotationSession extends Model
                 // wrap this in a where because the default query already has a where
                 $query->where(function ($query) use ($user) {
                     $query->where(function ($query) {
-                        $query
-                            ->where('created_at', '>=', $this->starts_at)
+                        $query->where('created_at', '>=', $this->starts_at)
                             ->where('created_at', '<', $this->ends_at);
                     })
-                        ->orWhere('user_id', '!=', $user->id);
+                    ->orWhere('user_id', '!=', $user->id);
                 });
             }]);
         } else {
@@ -207,27 +206,24 @@ class AnnotationSession extends Model
         return ImageAnnotation::where(function ($query) {
             // all annotations of the associated volume
             return $query->whereIn('image_id', function ($query) {
-                $query
-                    ->select('id')
-                    ->from('images')
-                    ->where('volume_id', $this->volume_id);
+                $query->select('id')
+                        ->from('images')
+                        ->where('volume_id', $this->volume_id);
             })
             // that were created between the start and end date
-                ->where('created_at', '>=', $this->starts_at)
-                ->where('created_at', '<', $this->ends_at)
+            ->where('created_at', '>=', $this->starts_at)
+            ->where('created_at', '<', $this->ends_at)
             // and have a label by one of the members of this session
-                ->whereExists(function ($query) {
-                    $query
-                        ->select(DB::raw(1))
-                        ->from('image_annotation_labels')
-                        ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
-                        ->whereIn('image_annotation_labels.user_id', function ($query) {
-                            $query
-                                ->select('user_id')
-                                ->from('annotation_session_user')
-                                ->where('annotation_session_id', $this->id);
-                        });
-                });
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('image_annotation_labels')
+                    ->whereRaw('image_annotation_labels.annotation_id = image_annotations.id')
+                    ->whereIn('image_annotation_labels.user_id', function ($query) {
+                        $query->select('user_id')
+                            ->from('annotation_session_user')
+                            ->where('annotation_session_id', $this->id);
+                    });
+            });
         });
     }
 
@@ -243,27 +239,24 @@ class AnnotationSession extends Model
         return VideoAnnotation::where(function ($query) {
             // all annotations of the associated volume
             return $query->whereIn('video_id', function ($query) {
-                $query
-                    ->select('id')
-                    ->from('videos')
-                    ->where('volume_id', $this->volume_id);
+                $query->select('id')
+                        ->from('videos')
+                        ->where('volume_id', $this->volume_id);
             })
             // that were created between the start and end date
-                ->where('created_at', '>=', $this->starts_at)
-                ->where('created_at', '<', $this->ends_at)
+            ->where('created_at', '>=', $this->starts_at)
+            ->where('created_at', '<', $this->ends_at)
             // and have a label by one of the members of this session
-                ->whereExists(function ($query) {
-                    $query
-                        ->select(DB::raw(1))
-                        ->from('video_annotation_labels')
-                        ->whereRaw('video_annotation_labels.annotation_id = video_annotations.id')
-                        ->whereIn('video_annotation_labels.user_id', function ($query) {
-                            $query
-                                ->select('user_id')
-                                ->from('annotation_session_user')
-                                ->where('annotation_session_id', $this->id);
-                        });
-                });
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('video_annotation_labels')
+                    ->whereRaw('video_annotation_labels.annotation_id = video_annotations.id')
+                    ->whereIn('video_annotation_labels.user_id', function ($query) {
+                        $query->select('user_id')
+                            ->from('annotation_session_user')
+                            ->where('annotation_session_id', $this->id);
+                    });
+            });
         });
     }
 }

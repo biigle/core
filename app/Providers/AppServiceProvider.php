@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Register any application services.
      *
@@ -21,12 +22,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('modules', fn () => new \Biigle\Services\Modules);
+        $this->app->singleton('modules', function () {
+            return new \Biigle\Services\Modules;
+        });
         // Use the singleton in any instances where the modules service should be used
         // via dependency injection.
         $this->app->alias('modules', \Biigle\Services\Modules::class);
 
-        $this->app->bind('vips-image', fn () => new \Jcupitt\Vips\Image(null));
+        $this->app->bind('vips-image', function () {
+            return new \Jcupitt\Vips\Image(null);
+        });
 
         // The custom implementation allows "config resolvers" which are required by
         // the user-storage and user-disks modules, for example.

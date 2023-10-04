@@ -27,14 +27,13 @@ class ApiGuard extends TokenGuard
         $token = $this->getTokenForRequest();
 
         if (!empty($token)) {
-            $user = $this->provider
-                ->retrieveByCredentials(
-                    ['email' => strtolower($this->request->getUser())]
-                );
+            $user = $this->provider->retrieveByCredentials(
+                ['email' => strtolower($this->request->getUser())]
+            );
         }
 
         if (!empty($user)) {
-            $candidates = ApiToken::where('owner_id', $user->id)  
+            $candidates = ApiToken::where('owner_id', $user->id)
                 ->select('id', 'hash')
                 ->get();
             foreach ($candidates as $candidate) {

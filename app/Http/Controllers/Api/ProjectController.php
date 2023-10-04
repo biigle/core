@@ -6,6 +6,7 @@ use Biigle\Http\Requests\StoreProject;
 use Biigle\Http\Requests\UpdateProject;
 use Biigle\Project;
 use Illuminate\Http\Request;
+use Route;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller

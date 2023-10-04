@@ -16,7 +16,9 @@ trait HasPointsAttribute
     public function validatePoints(array $points)
     {
         // check if all elements are integer
-        $valid = array_reduce($points, fn ($carry, $point) => $carry && (is_float($point) || is_int($point)), true);
+        $valid = array_reduce($points, function ($carry, $point) {
+            return $carry && (is_float($point) || is_int($point));
+        }, true);
 
         if (!$valid) {
             throw new Exception('Point coordinates must be of type float or integer.');
@@ -61,7 +63,9 @@ trait HasPointsAttribute
      */
     public function setPointsAttribute(array $points)
     {
-        $points = array_map(fn ($coordinate) => round($coordinate, 2), $points);
+        $points = array_map(function ($coordinate) {
+            return round($coordinate, 2);
+        }, $points);
 
         $this->attributes['points'] = json_encode($points);
     }

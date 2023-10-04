@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StoreVolumeFile;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Volume;
+use DB;
 
 class VolumeFileController extends Controller
 {
