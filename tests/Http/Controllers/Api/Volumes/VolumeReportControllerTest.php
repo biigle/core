@@ -9,6 +9,7 @@ use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Cache;
+use Queue;
 use Storage;
 
 class VolumeReportControllerTest extends ApiTestCase
@@ -28,20 +29,28 @@ class VolumeReportControllerTest extends ApiTestCase
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
             ->assertStatus(422);
 
-        $this->expectsJobs(GenerateReportJob::class);
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
             ])
             ->assertStatus(201);
 
-        $job = end($this->dispatchedJobs);
-        $this->assertEquals('high', $job->queue);
-        $report = $job->report;
-        $this->assertEquals($typeId, $report->type_id);
-        $this->assertEquals($volumeId, $report->source_id);
-        $this->assertEquals(false, $report->options['exportArea']);
-        $this->assertEquals(false, $report->options['newestLabel']);
-        $response->assertJson(['id' => $report->id]);
+        Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
+            $report = $job->report;
+            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($volumeId, $report->source_id);
+            $this->assertEquals(false, $report->options['exportArea']);
+            $this->assertEquals(false, $report->options['newestLabel']);
+            $response->assertJson(['id' => $report->id]);
+
+            return true;
+        });
+    }
+
+    public function testStoreOptions()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsBasicId();
+        $this->beGuest();
 
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
@@ -50,14 +59,16 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(201);
 
-        $job = end($this->dispatchedJobs);
-        $this->assertEquals('high', $job->queue);
-        $report = $job->report;
-        $this->assertEquals($typeId, $report->type_id);
-        $this->assertEquals($volumeId, $report->source_id);
-        $this->assertEquals(true, $report->options['exportArea']);
-        $this->assertEquals(true, $report->options['newestLabel']);
-        $response->assertJson(['id' => $report->id]);
+        Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
+            $report = $job->report;
+            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($volumeId, $report->source_id);
+            $this->assertEquals(true, $report->options['exportArea']);
+            $this->assertEquals(true, $report->options['newestLabel']);
+            $response->assertJson(['id' => $report->id]);
+
+            return true;
+        });
     }
 
     public function testStoreImageVolumeTypes()
@@ -130,11 +141,11 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $this->expectsJobs(GenerateReportJob::class);
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
             ])
             ->assertStatus(201);
+        Queue::assertPushed(GenerateReportJob::class);
     }
 
 
@@ -293,16 +304,34 @@ class VolumeReportControllerTest extends ApiTestCase
                 'separate_users' => true,
             ])
             ->assertStatus(422);
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
 
-        $this->expectsJobs(GenerateReportJob::class);
+    public function testStoreSeparateLabelTrees()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsBasicId();
+
+        $this->beGuest();
+
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
                 'separate_label_trees' => true,
             ])
             ->assertStatus(201);
 
-        $job = end($this->dispatchedJobs);
-        $this->assertTrue($job->report->options['separateLabelTrees']);
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertTrue($job->report->options['separateLabelTrees']);
+            return true;
+        });
+    }
+
+    public function testStoreSeparateUsers()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsBasicId();
+
+        $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
@@ -310,8 +339,10 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(201);
 
-        $job = end($this->dispatchedJobs);
-        $this->assertTrue($job->report->options['separateUsers']);
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertTrue($job->report->options['separateUsers']);
+            return true;
+        });
     }
 
     public function testStoreImageIfdo()
@@ -330,11 +361,11 @@ class VolumeReportControllerTest extends ApiTestCase
         $disk->put($volumeId.'.yaml', 'abc');
         Cache::flush();
 
-        $this->expectsJobs(GenerateReportJob::class);
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
             ])
             ->assertStatus(201);
+        Queue::assertPushed(GenerateReportJob::class);
     }
 
     public function testStoreVideoIfdo()
@@ -353,10 +384,10 @@ class VolumeReportControllerTest extends ApiTestCase
         $disk->put($volumeId.'.yaml', 'abc');
         Cache::flush();
 
-        $this->expectsJobs(GenerateReportJob::class);
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
             ])
             ->assertStatus(201);
+        Queue::assertPushed(GenerateReportJob::class);
     }
 }
