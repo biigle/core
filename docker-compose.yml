@@ -76,6 +76,21 @@ services:
     ports:
       - "54320:5432"
 
+  vector_database:
+    image: ghcr.io/biigle/pgvector-14
+    build:
+      context: ./
+      dockerfile: .docker/pgvector.dockerfile
+    volumes:
+      - vecdbdata:/var/lib/postgresql/data
+      - ./:/data
+    environment:
+      - "POSTGRES_DB=biigle"
+      - "POSTGRES_USER=biigle"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - "54321:5432"
+
   database_testing:
     image: postgres:14-alpine
     tmpfs:
@@ -85,6 +100,16 @@ services:
       - "POSTGRES_USER=biigle"
       - "POSTGRES_PASSWORD=secret"
 
+  vector_database_testing:
+    image: ghcr.io/biigle/pgvector-14
+    tmpfs:
+      - /var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB=biigle"
+      - "POSTGRES_USER=biigle"
+      - "POSTGRES_PASSWORD=secret"
+
 volumes:
   dbdata:
+  vecdbdata:
 

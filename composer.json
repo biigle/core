@@ -23,6 +23,7 @@
         "ext-soap": "*",
         "ext-vips": "*",
         "ext-yaml": "*",
+        "ankane/pgvector": "^0.1.3",
         "biigle/laravel-file-cache": "^4.0",
         "doctrine/dbal": "^3.0",
         "duncan3dc/bom-string": "^1.1",
