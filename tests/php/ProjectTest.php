@@ -32,7 +32,7 @@ class ProjectTest extends ModelTestCase
     public function testHiddenAttributes()
     {
         $jsonProject = json_decode((string) $this->model);
-        $this->assertObjectNotHasAttribute('pivot', $jsonProject);
+        $this->assertObjectNotHasProperty('pivot', $jsonProject);
     }
 
     public function testNameRequired()

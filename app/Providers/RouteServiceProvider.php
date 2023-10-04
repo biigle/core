@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * The path to the "home" route for your application.
+     * The path to your application's "home" route.
      *
      * This is used by Laravel authentication to redirect users after login.
      *
@@ -32,10 +32,8 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // IDs are integers which can have the maximum value of 2147483647 (10 digits).
         // Regex validation of a 32bit integer is very messy so we only do a rough check
@@ -51,7 +49,21 @@ class RouteServiceProvider extends ServiceProvider
             'uuid' => "\A[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\z",
         ]);
 
-        $this->configureRateLimiting();
+        RateLimiter::for('api', function (Request $request) {
+            // Check User class because a FederatedSearchInstance could be a user here,
+            // too. The relaxeed rate limiting should only apply to actual users.
+            if ($request->user() instanceof User) {
+                if ($request->user()->can('sudo')) {
+                    return Limit::none();
+                }
+
+                // 3 requests per second.
+                return Limit::perHour(10800)->by($request->user()->id);
+            }
+
+            // One request per second.
+            return Limit::perHour(3600)->by($request->ip());
+        });
 
         $this->routes(function () {
             // Web
@@ -70,30 +82,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace.'\Api')
                 ->prefix('api/v1')
                 ->group(base_path('routes/federated-search.php'));
-        });
-    }
-
-    /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
-     */
-    protected function configureRateLimiting()
-    {
-        RateLimiter::for('api', function (Request $request) {
-            // Check User class because a FederatedSearchInstance could be a user here,
-            // too. The relaxeed rate limiting should only apply to actual users.
-            if ($request->user() instanceof User) {
-                if ($request->user()->can('sudo')) {
-                    return Limit::none();
-                }
-
-                // 3 requests per second.
-                return Limit::perHour(10800)->by($request->user()->id);
-            }
-
-            // One request per second.
-            return Limit::perHour(3600)->by($request->ip());
         });
     }
 }

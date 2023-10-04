@@ -31,14 +31,11 @@ class User extends Authenticatable
     protected $casts = [
         'role_id' => 'int',
         'attrs' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'login_at' => 'datetime',
+        'password' => 'hashed',
     ];
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = ['created_at', 'updated_at', 'login_at'];
 
     /**
      * Set the email attribute and transform it to lowercase.

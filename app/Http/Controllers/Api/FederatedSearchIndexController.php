@@ -76,7 +76,7 @@ class FederatedSearchIndexController extends Controller
         if (!Cache::has($key)) {
             // The index should be continuously regenerated with a scheduled job. This is
             // a fallback in case the job wasn't performed for some reason.
-            GenerateFederatedSearchIndex::dispatchNow();
+            GenerateFederatedSearchIndex::dispatchSync();
         }
 
         return Cache::get($key);

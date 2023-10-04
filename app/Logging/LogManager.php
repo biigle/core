@@ -6,9 +6,6 @@ use Carbon\Carbon;
 use File;
 use Illuminate\Log\ParsesLogConfiguration;
 use Illuminate\Support\Facades\Redis;
-use Monolog\Formatter\JsonFormatter;
-use Monolog\Handler\RedisHandler;
-use Monolog\Logger;
 
 class LogManager
 {

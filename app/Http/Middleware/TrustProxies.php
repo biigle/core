@@ -25,16 +25,4 @@ class TrustProxies extends Middleware
         Request::HEADER_X_FORWARDED_PORT |
         Request::HEADER_X_FORWARDED_PROTO |
         Request::HEADER_X_FORWARDED_AWS_ELB;
-
-    /**
-     * Manual fix for: https://github.com/laravel/framework/pull/47844
-     *
-     * TODO: Remove after upgrading to Laravel 10.x.
-     *
-     * @return int
-     */
-    protected function getTrustedHeaderNames()
-    {
-      return $this->headers;
-    }
 }

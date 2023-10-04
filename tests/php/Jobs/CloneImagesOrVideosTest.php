@@ -20,13 +20,15 @@ use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-use Queue;
 
 class CloneImagesOrVideosTest extends \ApiTestCase
 {
     public function testCloneImageVolume()
     {
+        Event::fake();
         $volume = $this->volume(
             ['created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',])->fresh(); // Use fresh() to load even the null fields.
@@ -48,10 +50,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
 
@@ -70,6 +71,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVideoVolume()
     {
+        Event::fake();
         $volume = VolumeTest::create(
             ['created_at' => '2022-01-09 14:37:00',
                 'updated_at' => '2022-01-09 14:37:00',
@@ -91,10 +93,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
 
@@ -103,6 +104,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeImages()
     {
+        Event::fake();
         $volume = $this->volume([
             'media_type_id' => MediaType::imageId(),
             'created_at' => '2022-11-09 14:37:00',
@@ -126,10 +128,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -201,6 +202,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeVideos()
     {
+        Event::fake();
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -224,10 +226,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
@@ -298,6 +299,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeImageAnnotations()
     {
+        Event::fake();
         $volume = $this->volume([
             'media_type_id' => MediaType::imageId(),
             'created_at' => '2022-11-09 14:37:00',
@@ -316,10 +318,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
         $newImage = $copy->images()->first();
@@ -413,6 +414,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeVideoAnnotations()
     {
+        Event::fake();
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
@@ -430,10 +432,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
 
-        Queue::fake();
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
         $newVideo = $copy->videos()->first();
@@ -529,6 +530,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeIfDoFiles()
     {
+        Event::fake();
         $volume = $this->volume([
             'media_type_id' => MediaType::imageId(),
             'created_at' => '2022-11-09 14:37:00',
@@ -549,8 +551,8 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
-        $this->expectsEvents('volume.cloned');
         with(new CloneImagesOrVideos($request, $copy))->handle();
+        Event::assertDispatched('volume.cloned');
         $copy = $project->volumes()->first();
 
         $this->assertNotNull($copy->getIfdo());
