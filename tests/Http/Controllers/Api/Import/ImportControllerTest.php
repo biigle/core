@@ -30,7 +30,7 @@ class ImportControllerTest extends ApiTestCase
         $user = UserTest::create();
         $path = (new UserExport([$user->id]))->getArchive();
 
-        $wrongFile = new UploadedFile($path, 'file.txt', 'text/plain', null, true);
+        $wrongFile = UploadedFile::fake()->create('file.txt', 10, 'text/plain');
         $file = new UploadedFile($path, 'biigle_user_export.zip', 'application/zip', null, true);
 
         $this->doTestApiRoute('POST', '/api/v1/import');
@@ -41,7 +41,7 @@ class ImportControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/import')->assertStatus(422);
 
-        $this->json('POST', '/api/v1/import', [], [], ['archive' => $wrongFile])
+        $this->json('POST', '/api/v1/import', ['archive' => $wrongFile])
             ->assertStatus(422);
 
         $this->call('POST', '/api/v1/import', [], [], ['archive' => $file])
