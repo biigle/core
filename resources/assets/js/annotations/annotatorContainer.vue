@@ -160,6 +160,9 @@ export default {
         annotationsHiddenByFilter() {
             return this.annotations.length !== this.filteredAnnotations.length;
         },
+        annotationCount() {
+            return this.annotations.length;
+        }
     },
     methods: {
         getImageAndAnnotationsPromises(id) {
