@@ -14,6 +14,7 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Queue;
 
 class LargoControllerTest extends ApiTestCase
 {
@@ -133,7 +134,6 @@ class LargoControllerTest extends ApiTestCase
 
     public function testQueueImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
             'dismissed_image_annotations' => [
@@ -141,12 +141,11 @@ class LargoControllerTest extends ApiTestCase
             ],
             'changed_image_annotations' => [],
         ]);
-        $this->assertEquals('default', $this->dispatchedJobs[0]->queue);
+        Queue::assertPushedOn('default', ApplyLargoSession::class);
     }
 
     public function testQueueVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
             'dismissed_video_annotations' => [
@@ -154,12 +153,11 @@ class LargoControllerTest extends ApiTestCase
             ],
             'changed_video_annotations' => [],
         ]);
-        $this->assertEquals('default', $this->dispatchedJobs[0]->queue);
+        Queue::assertPushedOn('default', ApplyLargoSession::class);
     }
 
     public function testDismissImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -168,11 +166,11 @@ class LargoControllerTest extends ApiTestCase
                 'changed_image_annotations' => [],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testDismissVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -181,11 +179,11 @@ class LargoControllerTest extends ApiTestCase
                 'changed_video_annotations' => [],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testDismissForceDenyImageAnnotations()
     {
-        $this->doesntExpectJobs(ApplyLargoSession::class);
         $this->imageAnnotationLabel->user_id = $this->admin()->id;
         $this->imageAnnotationLabel->save();
         $this->beEditor();
@@ -197,11 +195,11 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(403);
+        Queue::assertNotPushed(ApplyLargoSession::class);
     }
 
     public function testDismissForceDenyVideoAnnotations()
     {
-        $this->doesntExpectJobs(ApplyLargoSession::class);
         $this->videoAnnotationLabel->user_id = $this->admin()->id;
         $this->videoAnnotationLabel->save();
         $this->beEditor();
@@ -213,11 +211,11 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(403);
+        Queue::assertNotPushed(ApplyLargoSession::class);
     }
 
     public function testDismissForceImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -227,11 +225,11 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testDismissForceVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -241,11 +239,11 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOwnImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -256,11 +254,11 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOwnVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -271,11 +269,11 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOtherImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beAdmin();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -286,11 +284,11 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOtherVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beAdmin();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -301,11 +299,11 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOtherForceImageAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -317,11 +315,11 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeOtherForceVideoAnnotations()
     {
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -333,6 +331,7 @@ class LargoControllerTest extends ApiTestCase
                 'force' => true,
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeMultipleImageAnnotations()
@@ -342,7 +341,6 @@ class LargoControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_image_annotations' => [
@@ -355,6 +353,7 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChangeMultipleVideoAnnotations()
@@ -364,7 +363,6 @@ class LargoControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->expectsJobs(ApplyLargoSession::class);
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
                 'dismissed_video_annotations' => [
@@ -377,6 +375,7 @@ class LargoControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testStoreSetJobIdImageAnnotations()

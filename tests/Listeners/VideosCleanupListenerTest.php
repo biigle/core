@@ -10,13 +10,14 @@ use Biigle\Tests\VideoTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
 use TestCase;
+use Queue;
 
 class VideosCleanupListenerTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         with(new VideosCleanupListener)->handle(new VideosDeleted([]));
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testHandleMalformed()
@@ -27,9 +28,9 @@ class VideosCleanupListenerTest extends TestCase
 
     public function testNotThere()
     {
-        $this->doesntExpectJobs(RemoveVideoAnnotationPatches::class);
         $faker = Faker::create();
         with(new VideosCleanupListener)->handle(new VideosDeleted([$faker->uuid()]));
+        Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testHandle()
@@ -39,16 +40,18 @@ class VideosCleanupListenerTest extends TestCase
         $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'b']);
         $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
 
-        $this->expectsJobs(RemoveVideoAnnotationPatches::class);
         with(new VideosCleanupListener)->handle(new VideosDeleted([$video->uuid, $video2->uuid]));
-
-        $job = end($this->dispatchedJobs);
 
         $expect = [
             $a->id => $video->uuid,
             $a2->id => $video2->uuid,
         ];
-        $this->assertEquals($expect, $job->annotationIds);
+
+        Queue::assertPushed(function (RemoveVideoAnnotationPatches $job) use ($expect) {
+            $this->assertEquals($expect, $job->annotationIds);
+
+            return true;
+        });
     }
 
     public function testPartial()
@@ -58,14 +61,16 @@ class VideosCleanupListenerTest extends TestCase
         $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'b']);
         $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
 
-        $this->expectsJobs(RemoveVideoAnnotationPatches::class);
         with(new VideosCleanupListener)->handle(new VideosDeleted([$video->uuid]));
-
-        $job = end($this->dispatchedJobs);
 
         $expect = [
             $a->id => $video->uuid,
         ];
-        $this->assertEquals($expect, $job->annotationIds);
+
+        Queue::assertPushed(function (RemoveVideoAnnotationPatches $job) use ($expect) {
+            $this->assertEquals($expect, $job->annotationIds);
+
+            return true;
+        });
     }
 }

@@ -10,13 +10,14 @@ use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
 use TestCase;
+use Queue;
 
 class ImagesCleanupListenerTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([]));
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testHandleMalformed()
@@ -27,9 +28,9 @@ class ImagesCleanupListenerTest extends TestCase
 
     public function testNotThere()
     {
-        $this->doesntExpectJobs(RemoveImageAnnotationPatches::class);
         $faker = Faker::create();
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$faker->uuid()]));
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testHandle()
@@ -39,16 +40,18 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid, $image2->uuid]));
-
-        $job = end($this->dispatchedJobs);
 
         $expect = [
             $a->id => $image->uuid,
             $a2->id => $image2->uuid,
         ];
-        $this->assertEquals($expect, $job->annotationIds);
+
+        Queue::assertPushed(function (RemoveImageAnnotationPatches $job) use ($expect) {
+            $this->assertEquals($expect, $job->annotationIds);
+
+            return true;
+        });
     }
 
     public function testPartial()
@@ -58,14 +61,16 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        $this->expectsJobs(RemoveImageAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid]));
-
-        $job = end($this->dispatchedJobs);
 
         $expect = [
             $a->id => $image->uuid,
         ];
-        $this->assertEquals($expect, $job->annotationIds);
+
+        Queue::assertPushed(function (RemoveImageAnnotationPatches $job) use ($expect) {
+            $this->assertEquals($expect, $job->annotationIds);
+
+            return true;
+        });
     }
 }
