@@ -7,22 +7,23 @@ use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
-use Queue;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use TestCase;
 
 class CreateNewImagesOrVideosTest extends TestCase
 {
     public function testHandleImages()
     {
+        Event::fake();
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
         ]);
         $filenames = ['a.jpg', 'b.jpg'];
 
-        Queue::fake();
-        $this->expectsEvents('images.created');
         with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('images.created');
         $images = $volume->images()->pluck('filename')->toArray();
         $this->assertCount(2, $images);
         $this->assertContains('a.jpg', $images);
@@ -31,15 +32,15 @@ class CreateNewImagesOrVideosTest extends TestCase
 
     public function testHandleVideos()
     {
+        Event::fake();
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
         ]);
         $filenames = ['a.mp4', 'b.mp4'];
 
-        Queue::fake();
-        $this->doesntExpectEvents('images.created');
         with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertNotDispatched('images.created');
         $images = $volume->videos()->pluck('filename')->toArray();
         $this->assertCount(2, $images);
         $this->assertContains('a.mp4', $images);
@@ -56,7 +57,6 @@ class CreateNewImagesOrVideosTest extends TestCase
         ]);
         $filenames = ['a.jpg', 'b.jpg'];
 
-        Queue::fake();
         with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $this->assertFalse($volume->fresh()->creating_async);
     }

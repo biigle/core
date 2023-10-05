@@ -9,6 +9,8 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Exception;
 use FileCache;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Storage;
 
 class VolumeFileControllerTest extends ApiTestCase
@@ -49,6 +51,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
     public function testStoreImage()
     {
+        Event::fake();
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/1.jpg', 'abc');
@@ -72,8 +75,6 @@ class VolumeFileControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/volumes/{$id}/files")->assertStatus(422);
 
         $this->assertEquals(1, $this->volume()->images()->count());
-        $this->expectsJobs(ProcessNewVolumeFiles::class);
-        $this->expectsEvents('images.created');
 
         $this
         ->json('POST', "/api/v1/volumes/{$id}/files", [
@@ -110,6 +111,8 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
         $this->assertEquals(1, $images->where('filename', '2.jpg')->count());
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Event::assertDispatched('images.created');
     }
 
     public function testStoreImageArray()
@@ -174,7 +177,6 @@ class VolumeFileControllerTest extends ApiTestCase
         VideoTest::create(['filename' => 'no.mp4', 'volume_id' => $id]);
 
         $this->assertEquals(1, $this->volume()->videos()->count());
-        $this->expectsJobs(ProcessNewVolumeFiles::class);
 
         $this->beAdmin();
 
@@ -210,6 +212,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $this->assertEquals(1, $files->where('filename', '1.mp4')->count());
         $this->assertEquals(1, $files->where('filename', '2.mp4')->count());
+        Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
     public function testStoreVideoArray()

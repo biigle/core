@@ -42,6 +42,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        totalAnnotationCount: {
+            type: Number,
+            default: 0
+        }
     },
     computed: {
         labelItems() {
@@ -78,6 +82,13 @@ export default {
                         annotations: annotations[label.id],
                     };
                 });
+        },
+        annotationBadgeCount() {
+            if (this.hasActiveFilter) {
+                return this.annotations.length + "/" + this.totalAnnotationCount
+            } else {
+                return this.totalAnnotationCount;
+            }
         },
     },
     methods: {

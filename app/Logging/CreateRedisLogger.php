@@ -18,7 +18,7 @@ class CreateRedisLogger
      * @param  array  $config
      * @return \Monolog\Logger
      */
-    public function __invoke(array $config)
+    public function __invoke(array $config): Logger
     {
         $connection = $config['connection'] ?? null;
         $capSize = $config['capSize'] ?? 1000;

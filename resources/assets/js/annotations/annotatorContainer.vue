@@ -160,6 +160,9 @@ export default {
         annotationsHiddenByFilter() {
             return this.annotations.length !== this.filteredAnnotations.length;
         },
+        annotationCount() {
+            return this.annotations.length;
+        }
     },
     methods: {
         getImageAndAnnotationsPromises(id) {
@@ -467,7 +470,7 @@ export default {
             let cachedIds = [this.imageId];
             let cachedImagesCount = Math.min(this.cachedImagesCount, this.imagesIds.length);
 
-            for (let x = 1; x <= cachedImagesCount; x++) {
+            for (let x = 0; x < cachedImagesCount; x++) {
                 const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
                 if (!cachedIds.includes(nextId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(nextId));
@@ -601,8 +604,10 @@ export default {
                 this.finishLoading();
             }
         },
-        cachedImagesCount() {
+        cachedImagesCount(count) {
             debounce(this.cachePreviousAndNext, 1000, 'annotations.cached-image-count.update');
+            // Twice the count because the next and previous images are cached.
+            ImagesStore.setMaxCacheSize(count * 2);
         },
         focussedAnnotation(annotation) {
             if (annotation) {

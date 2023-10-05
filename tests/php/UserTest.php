@@ -127,9 +127,9 @@ class UserTest extends ModelTestCase
         // API tokens mustn't show up in the JSON
         ApiTokenTest::create(['owner_id' => $this->model->id]);
         $jsonUser = json_decode((string) $this->model->fresh());
-        $this->assertObjectNotHasAttribute('password', $jsonUser);
-        $this->assertObjectNotHasAttribute('remember_token', $jsonUser);
-        $this->assertObjectNotHasAttribute('api_tokens', $jsonUser);
+        $this->assertObjectNotHasProperty('password', $jsonUser);
+        $this->assertObjectNotHasProperty('remember_token', $jsonUser);
+        $this->assertObjectNotHasProperty('api_tokens', $jsonUser);
     }
 
     public function testApiTokens()

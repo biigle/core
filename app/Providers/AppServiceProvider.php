@@ -16,10 +16,8 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->singleton('modules', fn () => new \Biigle\Services\Modules);
         // Use the singleton in any instances where the modules service should be used
@@ -35,10 +33,8 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         View::composer('*', function ($view) {
             // Make some variables available in any view.

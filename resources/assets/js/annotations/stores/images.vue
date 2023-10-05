@@ -12,7 +12,7 @@ export default new Vue({
         initialized: false,
         cache: {},
         cachedIds: [],
-        maxCacheSize: 200,
+        maxCacheSize: 2,
         supportsColorAdjustment: false,
         currentlyDrawnImage: null,
         colorAdjustmentDefaults: {
@@ -323,6 +323,9 @@ export default new Vue({
                 this.drawSimpleImage(this.currentlyDrawnImage);
             }
         },
+        setMaxCacheSize(size) {
+            this.maxCacheSize = size;
+        },
     },
     watch: {
         cachedIds(cachedIds) {
@@ -330,6 +333,12 @@ export default new Vue({
             // resources.
             if (cachedIds.length > this.maxCacheSize) {
                 let id = cachedIds.shift();
+                delete this.cache[id];
+            }
+        },
+        maxCacheSize(size) {
+            while (this.cachedIds.length > size) {
+                let id = this.cachedIds.shift();
                 delete this.cache[id];
             }
         },

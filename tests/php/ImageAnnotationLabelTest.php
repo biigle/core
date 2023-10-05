@@ -27,7 +27,7 @@ class ImageAnnotationLabelTest extends ModelTestCase
     {
         // API key mustn't show up in the JSON
         $json = json_decode((string) self::create());
-        $this->assertObjectHasAttribute('confidence', $json);
+        $this->assertObjectHasProperty('confidence', $json);
     }
 
     public function testAnnotationOnDeleteCascade()
