@@ -22,6 +22,7 @@ services:
     depends_on:
       - app
       - database_testing
+      - vector_database_testing
     build:
       context: ./
       dockerfile: .docker/worker.dockerfile

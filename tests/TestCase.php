@@ -1,18 +1,28 @@
 <?php
 
 use Biigle\Tests\CreatesApplication;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Queue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TestCase extends BaseTestCase
 {
     use CreatesApplication, MockeryPHPUnitIntegration, RefreshDatabase;
+    use RefreshDatabase {
+        refreshTestDatabase as protected originalRefreshTestDatabase;
+    }
 
     public static $cachedPdo;
+    public static $cachedVectorPdo;
 
     protected $baseUrl = 'http://localhost';
+
+    protected $connectionsToTransact = [
+        'pgsql',
+        'pgvector',
+    ];
 
     /**
      * Default preparation for each test.
@@ -44,5 +54,21 @@ class TestCase extends BaseTestCase
         } else {
             static::$cachedPdo = DB::getPdo();
         }
+
+        if (static::$cachedVectorPdo) {
+            DB::connection('pgvector')->setPdo(static::$cachedVectorPdo);
+        } else {
+            static::$cachedVectorPdo = DB::connection('pgvector')->getPdo();
+        }
+    }
+
+    // Custom implementation to wipe the vector database, too.
+    protected function refreshTestDatabase()
+    {
+        if (! RefreshDatabaseState::$migrated) {
+            $this->artisan('db:wipe', ['--database' => 'pgvector']);
+        }
+
+        $this->originalRefreshTestDatabase();
     }
 }
