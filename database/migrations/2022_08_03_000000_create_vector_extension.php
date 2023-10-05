@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down()
     {
-        DB::connection('pgvector')->statement('DROP EXTENSION vector');
+        DB::connection('pgvector')->statement('DROP EXTENSION IF EXISTS vector');
     }
 };
