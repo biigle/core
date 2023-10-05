@@ -28,8 +28,6 @@ class CleanupVideoThumbnailsTest extends TestCase
     {
         $video = VideoTest::create();
         event(new VideosDeleted($video->uuid));
-        Queue::assertPushed(CallQueuedListener::class, function ($job) {
-            return $job->class === CleanupVideoThumbnails::class;
-        });
+        Queue::assertPushed(CallQueuedListener::class, fn ($job) => $job->class === CleanupVideoThumbnails::class);
     }
 }

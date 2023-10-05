@@ -4,12 +4,9 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
-use Cache;
-use Carbon\Carbon;
 
 class ImageAnnotationBulkControllerTest extends ApiTestCase
 {
@@ -38,7 +35,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
 
         $image = ImageTest::create();
         $this->beUser();
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $image->id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -48,7 +46,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ->assertStatus(403);
 
         $this->beEditor();
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $image->id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -57,7 +56,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(403);
 
-        $this->postJson($url, [
+        $this
+            ->postJson($url, [
                 [
                     'image_id' => $image->id,
                     'shape_id' => Shape::pointId(),
@@ -75,7 +75,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ])
             ->assertStatus(403);
 
-        $this->postJson($url, [
+        $this
+            ->postJson($url, [
                 [
                     'image_id' => $this->annotation->image_id,
                     'shape_id' => Shape::pointId(),
@@ -114,7 +115,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
     public function storeValidation($url)
     {
         $this->beEditor();
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => 999,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -123,7 +125,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100],
@@ -132,7 +135,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id,
                 'shape_id' => 999,
                 'points' => [100, 100],
@@ -141,7 +145,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
                 'label_id' => $this->labelRoot()->id,
@@ -149,7 +154,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -158,7 +164,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [
+        $this
+            ->postJson($url, [
                 [
                     'image_id' => $this->annotation->image_id,
                     'shape_id' => Shape::pointId(),
@@ -176,7 +183,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ])
             ->assertStatus(403);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -187,7 +195,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
 
         $this->assertEquals(1, $this->annotation->image->annotations()->count());
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id + 0.9,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -196,7 +205,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->postJson($url, [[
+        $this
+            ->postJson($url, [[
                 'image_id' => $this->annotation->image_id,
                 'shape_id' => Shape::pointId(),
                 'points' => [100, 100],
@@ -237,7 +247,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
     public function testStoreLabelIdIsString()
     {
         $this->beEditor();
-        $this->postJson('api/v1/annotations', [
+        $this
+            ->postJson('api/v1/annotations', [
                 [
                     'image_id' => $this->annotation->image_id,
                     'shape_id' => Shape::pointId(),
@@ -254,7 +265,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
     public function testStoreLabelIdIsFloat()
     {
         $this->beEditor();
-        $this->postJson('api/v1/annotations', [
+        $this
+            ->postJson('api/v1/annotations', [
                 [
                     'image_id' => $this->annotation->image_id,
                     'shape_id' => Shape::pointId(),

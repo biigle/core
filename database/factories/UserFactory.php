@@ -24,9 +24,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'uuid' => $this->faker->unique()->uuid(),
             'affiliation' => $this->faker->company(),
-            'role_id' => function () {
-                return Role::editorId();
-            },
+            'role_id' => fn () => Role::editorId(),
         ];
     }
 }

@@ -3,11 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Image;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Volume;
-use File;
 
 class ImageControllerTest extends ApiTestCase
 {

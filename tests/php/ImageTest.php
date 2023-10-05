@@ -10,7 +10,6 @@ use Event;
 use Illuminate\Database\QueryException;
 use Mockery;
 use ModelTestCase;
-use Response;
 use Storage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -161,9 +160,7 @@ class ImageTest extends ModelTestCase
     {
         Event::fake([ImagesDeleted::class]);
         $this->model->delete();
-        Event::assertDispatched(ImagesDeleted::class, function ($event) {
-            return $event->uuids[0] === $this->model->uuid;
-        });
+        Event::assertDispatched(ImagesDeleted::class, fn ($event) => $event->uuids[0] === $this->model->uuid);
     }
 
     public function testTiledImagesDeletedEventOnDelete()
@@ -172,12 +169,8 @@ class ImageTest extends ModelTestCase
         $this->model->tiled = true;
         $this->model->save();
         $this->model->delete();
-        Event::assertDispatched(ImagesDeleted::class, function ($event) {
-            return $event->uuids[0] === $this->model->uuid;
-        });
-        Event::assertDispatched(TiledImagesDeleted::class, function ($event) {
-            return $event->uuids[0] === $this->model->uuid;
-        });
+        Event::assertDispatched(ImagesDeleted::class, fn ($event) => $event->uuids[0] === $this->model->uuid);
+        Event::assertDispatched(TiledImagesDeleted::class, fn ($event) => $event->uuids[0] === $this->model->uuid);
     }
 
     public function testLabels()

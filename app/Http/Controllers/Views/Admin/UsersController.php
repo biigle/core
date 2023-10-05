@@ -5,14 +5,11 @@ namespace Biigle\Http\Controllers\Views\Admin;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
-use Biigle\ImageAnnotationLabel;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
-use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 

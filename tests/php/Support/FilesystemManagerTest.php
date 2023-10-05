@@ -8,7 +8,7 @@ use TestCase;
 
 class FilesystemManagerTest extends TestCase
 {
-    function testAddConfigResolver()
+    public function testAddConfigResolver()
     {
         Storage::addConfigResolver(function ($name) {
             if ($name === 'mydisk') {

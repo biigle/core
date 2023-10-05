@@ -5,7 +5,6 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Queue;
@@ -152,9 +151,9 @@ class CreateNewImagesOrVideosTest extends TestCase
         ]);
         $filenames = ['a.mp4'];
         $metadata = [
-            ['filename', 'taken_at','gps_altitude', 'distance_to_ground'],
+            ['filename', 'taken_at', 'gps_altitude', 'distance_to_ground'],
             ['a.mp4', '2016-12-19 12:27:00', '-1500', ''],
-            ['a.mp4', '2016-12-19 12:28:00', '', '',],
+            ['a.mp4', '2016-12-19 12:28:00', '', '', ],
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
@@ -170,7 +169,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         ]);
         $filenames = ['a.mp4'];
         $metadata = [
-            ['filename', 'taken_at','distance_to_ground'],
+            ['filename', 'taken_at', 'distance_to_ground'],
             ['a.mp4', '2016-12-19 12:27:00', '0'],
         ];
 
@@ -187,7 +186,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         ]);
         $filenames = ['a.mp4'];
         $metadata = [
-            ['filename', 'taken_at','distance_to_ground'],
+            ['filename', 'taken_at', 'distance_to_ground'],
             ['a.mp4', '2016-12-19 12:27:00', '0'],
             ['a.mp4', '2016-12-19 12:28:00', '1'],
         ];

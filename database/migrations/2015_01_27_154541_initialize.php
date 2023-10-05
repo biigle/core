@@ -63,10 +63,10 @@ class Initialize extends Migration
             $table->integer('role_id')->unsigned();
 
             $table->foreign('role_id')
-                  ->references('id')
-                  ->on('roles')
+                ->references('id')
+                ->on('roles')
                   // dont delete role if it is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             // token for the "stay logged in" session
             $table->rememberToken();
@@ -91,10 +91,10 @@ class Initialize extends Migration
             // the user, this token belongs to
             $table->integer('owner_id')->unsigned();
             $table->foreign('owner_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // delete tokens of a user if they are deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->string('purpose');
             // hashing uses bcrypt so the token hash is always 60 chars long
@@ -118,10 +118,10 @@ class Initialize extends Migration
 
             $table->integer('visibility_id')->unsigned();
             $table->foreign('visibility_id')
-                  ->references('id')
-                  ->on('visibilities')
+                ->references('id')
+                ->on('visibilities')
                   // don't delete a visibility that is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->timestamps();
         });
@@ -134,24 +134,24 @@ class Initialize extends Migration
         Schema::create('label_tree_user', function (Blueprint $table) {
             $table->integer('label_tree_id')->unsigned();
             $table->foreign('label_tree_id')
-                  ->references('id')
-                  ->on('label_trees')
+                ->references('id')
+                ->on('label_trees')
                   // remove the member assignment if the label tree is deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // remove the member if the user is deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('role_id')->unsigned();
             $table->foreign('role_id')
-                  ->references('id')
-                  ->on('roles')
+                ->references('id')
+                ->on('roles')
                   // dont delete role if it is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             // each user must not be added twice as a label tree member
             $table->unique(['label_tree_id', 'user_id']);
@@ -168,10 +168,10 @@ class Initialize extends Migration
             // creator of the project
             $table->integer('creator_id')->unsigned()->nullable();
             $table->foreign('creator_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // if the creator is deleted, the project should still exist
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->timestamps();
         });
@@ -184,17 +184,17 @@ class Initialize extends Migration
         Schema::create('label_tree_project', function (Blueprint $table) {
             $table->integer('label_tree_id')->unsigned();
             $table->foreign('label_tree_id')
-                  ->references('id')
-                  ->on('label_trees')
+                ->references('id')
+                ->on('label_trees')
                   // delete the label tree from the project if the tree is deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
+                ->references('id')
+                ->on('projects')
                   // delete the reference to the label tree if the project was deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             // each project may "use" each label tree only once
             $table->unique(['label_tree_id', 'project_id']);
@@ -207,17 +207,17 @@ class Initialize extends Migration
         Schema::create('label_tree_authorized_project', function (Blueprint $table) {
             $table->integer('label_tree_id')->unsigned();
             $table->foreign('label_tree_id')
-                  ->references('id')
-                  ->on('label_trees')
+                ->references('id')
+                ->on('label_trees')
                   // delete the authorization if the tree is deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
+                ->references('id')
+                ->on('projects')
                   // delete the reference to the label tree if the project was deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             // each project may be authorized only once
             $table->unique(['label_tree_id', 'project_id']);
@@ -230,22 +230,22 @@ class Initialize extends Migration
         Schema::create('project_user', function (Blueprint $table) {
             $table->integer('project_role_id')->unsigned();
             $table->foreign('project_role_id')
-                  ->references('id')
-                  ->on('roles')
+                ->references('id')
+                ->on('roles')
                   // dont delete role if it is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('projects')
+                ->onDelete('cascade');
 
             // users should only have one role per project since roles
             // are hierarchical
@@ -290,18 +290,18 @@ class Initialize extends Migration
             // which kind of data is stored in this transect?
             $table->integer('media_type_id')->unsigned();
             $table->foreign('media_type_id')
-                  ->references('id')
-                  ->on('media_types')
+                ->references('id')
+                ->on('media_types')
                   // media types in use shouldn't be deleted
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             // the creator of the transect
             $table->integer('creator_id')->unsigned()->nullable();
             $table->foreign('creator_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // the transect should still exist if the creator was deleted
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->timestamps();
 
@@ -316,16 +316,16 @@ class Initialize extends Migration
         Schema::create('project_transect', function (Blueprint $table) {
             $table->integer('transect_id')->unsigned();
             $table->foreign('transect_id')
-                  ->references('id')
-                  ->on('transects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('transects')
+                ->onDelete('cascade');
 
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
+                ->references('id')
+                ->on('projects')
                   // projects with transects shouldn't be deleted
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             // each transect may belong to each project only once
             $table->unique(['transect_id', 'project_id']);
@@ -344,9 +344,9 @@ class Initialize extends Migration
             // images are primarily searched by transect, so do index
             $table->integer('transect_id')->unsigned()->index();
             $table->foreign('transect_id')
-                  ->references('id')
-                  ->on('transects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('transects')
+                ->onDelete('cascade');
 
             // filename must be unique for each transect
             $table->unique(['filename', 'transect_id']);
@@ -370,19 +370,19 @@ class Initialize extends Migration
             // children should be deleted as well
             $table->integer('parent_id')->unsigned()->nullable();
             $table->foreign('parent_id')
-                  ->references('id')
-                  ->on('labels')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('labels')
+                ->onDelete('cascade');
 
             // id for the World Register of Marine Species (WoRMS)
             $table->integer('aphia_id')->nullable();
 
             $table->integer('label_tree_id')->unsigned()->nullable();
             $table->foreign('label_tree_id')
-                  ->references('id')
-                  ->on('label_trees')
+                ->references('id')
+                ->on('label_trees')
                   // delete labels of a tree if the tree is deleted
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             // NO timestamps
         });
@@ -399,23 +399,23 @@ class Initialize extends Migration
 
             $table->integer('image_id')->unsigned();
             $table->foreign('image_id')
-                  ->references('id')
-                  ->on('images')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('images')
+                ->onDelete('cascade');
 
             $table->integer('label_id')->unsigned();
             $table->foreign('label_id')
-                  ->references('id')
-                  ->on('labels')
+                ->references('id')
+                ->on('labels')
                   // don't delete labels in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // don't delete labels if the creator is deleted
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->timestamps();
 
@@ -446,17 +446,17 @@ class Initialize extends Migration
             // annotations are primarily searched by image, so do index
             $table->integer('image_id')->unsigned()->index();
             $table->foreign('image_id')
-                  ->references('id')
-                  ->on('images')
+                ->references('id')
+                ->on('images')
                   // delete all annotations of a deleted image
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('shape_id')->unsigned();
             $table->foreign('shape_id')
-                  ->references('id')
-                  ->on('shapes')
+                ->references('id')
+                ->on('shapes')
                   // don't delete shapes that are used
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->timestamps();
         });
@@ -474,23 +474,23 @@ class Initialize extends Migration
 
             $table->integer('annotation_id')->unsigned();
             $table->foreign('annotation_id')
-                  ->references('id')
-                  ->on('annotations')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('annotations')
+                ->onDelete('cascade');
 
             $table->integer('label_id')->unsigned();
             $table->foreign('label_id')
-                  ->references('id')
-                  ->on('labels')
+                ->references('id')
+                ->on('labels')
                   // don't delete labels in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // don't delete labels if the creator is deleted
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->float('confidence');
 

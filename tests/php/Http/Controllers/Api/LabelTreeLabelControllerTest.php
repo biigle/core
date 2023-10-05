@@ -148,9 +148,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             ->once()
             ->andReturn($labels);
 
-        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
-            return $mock;
-        });
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', fn () => $mock);
 
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
@@ -175,9 +173,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             ->once()
             ->andThrow($exception);
 
-        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
-            return $mock;
-        });
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', fn () => $mock);
 
         $this->beEditor();
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
@@ -197,10 +193,11 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/labels", [
-                'name' => 'new label',
-                'color' => 'bada55',
-            ])
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+        ])
             ->assertStatus(403);
     }
 }

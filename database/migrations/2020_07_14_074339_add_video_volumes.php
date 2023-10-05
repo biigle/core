@@ -32,9 +32,9 @@ class AddVideoVolumes extends Migration
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('volume_id')->unsigned()->index()->nullable();
             $table->foreign('volume_id')
-                  ->references('id')
-                  ->on('volumes')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('volumes')
+                ->onDelete('cascade');
 
             $table->string('filename', 512)->nullable();
             $table->unique(['filename', 'volume_id']);
@@ -66,15 +66,15 @@ class AddVideoVolumes extends Migration
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('project_id')->unsigned()->index()->nullable();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('projects')
+                ->onDelete('cascade');
 
             $table->integer('creator_id')->unsigned()->nullable();
             $table->foreign('creator_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('set null');
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null');
 
             $table->integer('volume_id')->nullable(true)->change();
 

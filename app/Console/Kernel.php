@@ -26,7 +26,8 @@ class Kernel extends ConsoleKernel
             ->daily()
             ->onOneServer();
 
-        $schedule->call(function () {
+        $schedule
+            ->call(function () {
                 if (FederatedSearchInstance::withLocalToken()->exists()) {
                     GenerateFederatedSearchIndex::dispatch();
                 }
@@ -37,7 +38,8 @@ class Kernel extends ConsoleKernel
             ->hourlyAt(55)
             ->onOneServer();
 
-        $schedule->call(function () {
+        $schedule
+            ->call(function () {
                 FederatedSearchInstance::withRemoteToken()
                     ->eachById([UpdateFederatedSearchIndex::class, 'dispatch']);
             })

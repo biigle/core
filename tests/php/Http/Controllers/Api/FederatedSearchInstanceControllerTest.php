@@ -26,19 +26,22 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->postJson('/api/v1/federated-search-instances')->assertStatus(403);
 
         $this->beGlobalAdmin();
-        $this->postJson('/api/v1/federated-search-instances', [
+        $this
+            ->postJson('/api/v1/federated-search-instances', [
                 'name' => 'my instance',
             ])
             // url missing
             ->assertStatus(422);
 
-        $this->postJson('/api/v1/federated-search-instances', [
+        $this
+            ->postJson('/api/v1/federated-search-instances', [
                 'url' => 'https://example.com',
             ])
             // name missing
             ->assertStatus(422);
 
-        $this->postJson('/api/v1/federated-search-instances', [
+        $this
+            ->postJson('/api/v1/federated-search-instances', [
                 'name' => 'my instance',
                 'url' => 'https://example.com',
             ])
@@ -52,7 +55,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->assertNull($instance->remote_token);
         $this->assertNull($instance->indexed_at);
 
-        $this->postJson('/api/v1/federated-search-instances', [
+        $this
+            ->postJson('/api/v1/federated-search-instances', [
                 'name' => 'my other instance',
                 'url' => 'https://example.com',
             ])
@@ -74,10 +78,11 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->putJson("/api/v1/federated-search-instances/{$id}")->assertStatus(403);
 
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'name' => 'my updated instance',
-            'url' => 'https://www.example.com',
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'name' => 'my updated instance',
+                'url' => 'https://www.example.com',
+            ])->assertStatus(200);
 
         $instance->refresh();
         $this->assertEquals('my updated instance', $instance->name);
@@ -104,9 +109,10 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         Bus::fake();
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'remote_token' => 'mytoken',
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'remote_token' => 'mytoken',
+            ])->assertStatus(200);
 
         $this->assertEquals('mytoken', $instance->fresh()->remote_token);
         $this->assertCount(1, $container);
@@ -137,9 +143,10 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         Bus::fake();
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'remote_token' => 'mytoken',
-        ])->assertStatus(422);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'remote_token' => 'mytoken',
+            ])->assertStatus(422);
         Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
     }
 
@@ -166,13 +173,15 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         Bus::fake();
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'remote_token' => 'mytoken',
-        ])->assertStatus(422);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'remote_token' => 'mytoken',
+            ])->assertStatus(422);
 
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'remote_token' => 'mytoken',
-        ])->assertStatus(422);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'remote_token' => 'mytoken',
+            ])->assertStatus(422);
         Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
     }
 
@@ -198,9 +207,10 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         Bus::fake();
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'remote_token' => '',
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'remote_token' => '',
+            ])->assertStatus(200);
 
         $this->assertCount(0, $container);
         $this->assertNull($instance->fresh()->remote_token);
@@ -229,9 +239,10 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         Bus::fake();
         $this->beGlobalAdmin();
-        $this->putJson("/api/v1/federated-search-instances/{$id}", [
-            'url' => 'https://www.example.com',
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'url' => 'https://www.example.com',
+            ])->assertStatus(200);
 
         Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
         $this->assertCount(1, $container);
@@ -249,7 +260,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $id = $instance->id;
 
         $this->beGlobalAdmin();
-        $response = $this->putJson("/api/v1/federated-search-instances/{$id}", [
+        $response = $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
                 'local_token' => true,
             ])
             ->assertStatus(200);
@@ -257,7 +269,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->assertNotNull($instance->fresh()->local_token);
         $this->assertStringContainsString('new_local_token', $response->getContent());
 
-        $this->put("/api/v1/federated-search-instances/{$id}", [
+        $this
+            ->put("/api/v1/federated-search-instances/{$id}", [
                 'local_token' => true,
             ])
             ->assertSessionHas('new_local_token');
@@ -271,7 +284,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $id = $instance->id;
 
         $this->beGlobalAdmin();
-        $response = $this->putJson("/api/v1/federated-search-instances/{$id}", [
+        $response = $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
                 'local_token' => false,
             ])
             ->assertStatus(200);

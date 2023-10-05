@@ -90,28 +90,29 @@ class LabelTreeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->get("/api/v1/label-trees/{$tree->id}")
-        ->assertJsonFragment([
-            'id' => $tree->id,
-            'name' => $tree->name,
-            'description' => $tree->description,
-            'created_at' => $tree->created_at->toJson(),
-            'updated_at' => $tree->updated_at->toJson(),
-            'version' => null,
-            'versions' => [],
-        ])
-        ->assertJsonFragment([
-            'id' => $label->id,
-            'name' => $label->name,
-            'parent_id' => $label->parent_id,
-            'label_tree_id' => $tree->id,
-        ])
-        ->assertJsonFragment([
-            'id' => $this->editor()->id,
-            'firstname' => $this->editor()->firstname,
-            'lastname' => $this->editor()->lastname,
-            'role_id' => Role::editorId(),
-        ]);
+        $response = $this
+            ->get("/api/v1/label-trees/{$tree->id}")
+            ->assertJsonFragment([
+                'id' => $tree->id,
+                'name' => $tree->name,
+                'description' => $tree->description,
+                'created_at' => $tree->created_at->toJson(),
+                'updated_at' => $tree->updated_at->toJson(),
+                'version' => null,
+                'versions' => [],
+            ])
+            ->assertJsonFragment([
+                'id' => $label->id,
+                'name' => $label->name,
+                'parent_id' => $label->parent_id,
+                'label_tree_id' => $tree->id,
+            ])
+            ->assertJsonFragment([
+                'id' => $this->editor()->id,
+                'firstname' => $this->editor()->firstname,
+                'lastname' => $this->editor()->lastname,
+                'role_id' => Role::editorId(),
+            ]);
     }
 
     public function testUpdate()
@@ -229,7 +230,8 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $master->addMember($this->admin(), Role::admin());
         $this->beAdmin();
-        $this->putJson("/api/v1/label-trees/{$master->id}", [
+        $this
+            ->putJson("/api/v1/label-trees/{$master->id}", [
                 'visibility_id' => Visibility::publicId(),
             ])
             ->assertStatus(200);
@@ -247,7 +249,8 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $master->addMember($this->admin(), Role::admin());
         $this->beAdmin();
-        $this->putJson("/api/v1/label-trees/{$master->id}", [
+        $this
+            ->putJson("/api/v1/label-trees/{$master->id}", [
                 'name' => 'My Cool Tree',
             ])
             ->assertStatus(200);
@@ -403,7 +406,8 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson('/api/v1/label-trees', [
+        $this
+            ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
                 'visibility_id' => Visibility::publicId(),
@@ -415,7 +419,8 @@ class LabelTreeControllerTest extends ApiTestCase
         $baseTree->addMember($this->editor(), Role::editor());
         Cache::flush();
 
-        $this->postJson('/api/v1/label-trees', [
+        $this
+            ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
                 'visibility_id' => Visibility::publicId(),
@@ -427,7 +432,8 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beGuest();
         $baseTree->visibility_id = Visibility::publicId();
         $baseTree->save();
-        $this->postJson('/api/v1/label-trees', [
+        $this
+            ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
                 'visibility_id' => Visibility::publicId(),

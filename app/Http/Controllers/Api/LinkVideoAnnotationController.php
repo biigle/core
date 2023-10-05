@@ -2,10 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\LinkVideoAnnotation;
 use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
 use DB;
 
 class LinkVideoAnnotationController extends Controller

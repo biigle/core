@@ -3,7 +3,6 @@
 namespace Biigle\Services\LabelSourceAdapters;
 
 use App;
-use Biigle\Services\LabelSourceAdapters\WormsAdapter;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Illuminate\Http\Request;

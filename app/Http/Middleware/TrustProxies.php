@@ -35,6 +35,6 @@ class TrustProxies extends Middleware
      */
     protected function getTrustedHeaderNames()
     {
-      return $this->headers;
+        return $this->headers;
     }
 }

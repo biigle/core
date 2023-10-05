@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Tests\UserTest;
 use Biigle\MediaType;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 
 class StatisticsControllerTest extends ApiTestCase
 {

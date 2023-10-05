@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
 use Biigle\Role;
-use Biigle\Announcement;
 use Biigle\User;
 use TestCase;
 

@@ -46,10 +46,10 @@ class CreateLabelSourcesTable extends Migration
 
             $table->integer('label_source_id')->unsigned()->nullable();
             $table->foreign('label_source_id')
-                  ->references('id')
-                  ->on('label_sources')
+                ->references('id')
+                ->on('label_sources')
                   // don't delete label sources if there are still labels from it
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
         });
 
         Label::whereNotNull('aphia_id')->chunkById(500, function ($labels) use ($wormsSourceId) {

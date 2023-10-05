@@ -16,9 +16,9 @@ class AddVideosCreatorIdColumn extends Migration
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('creator_id')->unsigned()->nullable();
             $table->foreign('creator_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('set null');
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null');
         });
     }
 

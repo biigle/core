@@ -6,7 +6,6 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelSource;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\User;
 use Biigle\Visibility;
 use Illuminate\Http\Request;

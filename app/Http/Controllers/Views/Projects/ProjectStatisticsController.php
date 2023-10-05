@@ -4,14 +4,11 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
-use Biigle\ImageAnnotation;
 use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Video;
-use Biigle\VideoAnnotation;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ProjectStatisticsController extends Controller
 {
