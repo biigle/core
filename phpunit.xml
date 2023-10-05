@@ -25,10 +25,14 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="DB_CONNECTION" value="pgsql"/>
-        <env name="DB_DATABASE" value="biigle"/>
         <env name="DB_HOST" value="database_testing"/>
+        <env name="DB_DATABASE" value="biigle"/>
         <env name="DB_USERNAME" value="biigle"/>
         <env name="DB_PASSWORD" value="secret"/>
+        <env name="VECTOR_DB_HOST" value="vector_database_testing"/>
+        <env name="VECTOR_DB_DATABASE" value="biigle"/>
+        <env name="VECTOR_DB_USERNAME" value="biigle"/>
+        <env name="VECTOR_DB_PASSWORD" value="secret"/>
         <env name="LARGO_PATCH_STORAGE_DISK" value="largo"/>
         <env name="REPORTS_STORAGE_DISK" value="reports"/>
         <env name="MAIA_TRAINING_PROPOSAL_STORAGE_DISK" value="maia-tp"/>

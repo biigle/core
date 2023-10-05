@@ -23,6 +23,7 @@
         "ext-soap": "*",
         "ext-vips": "*",
         "ext-yaml": "*",
+        "ankane/pgvector": "^0.1.3",
         "biigle/ananas": "dev-master",
         "biigle/auth-lslogin": "dev-master",
         "biigle/color-sort": "dev-master",
