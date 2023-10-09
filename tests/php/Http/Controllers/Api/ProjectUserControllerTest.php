@@ -61,8 +61,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         // role does not exist
-        $response = $this->
-        putJson("/api/v1/projects/{$id}/users/".$this->editor()->id, [
+        $response = $this->putJson("/api/v1/projects/{$id}/users/".$this->editor()->id, [
             'project_role_id' => 100,
         ]);
         $response->assertStatus(422);
@@ -96,17 +95,20 @@ class ProjectUserControllerTest extends ApiTestCase
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::editorId(),
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::expertId(),
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::adminId(),
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testAttach()
@@ -155,21 +157,24 @@ class ProjectUserControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::editorId(),
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::expertId(),
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
                 'project_role_id' => Role::adminId(),
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testDestroy()

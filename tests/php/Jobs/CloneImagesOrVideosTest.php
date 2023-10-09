@@ -29,11 +29,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneImageVolume()
     {
         Event::fake();
-        $volume = $this
-          ->volume(
-            ['created_at' => '2022-11-09 14:37:00',
+        $volume = 
+            $this->volume(
+                ['created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',])
-          ->fresh(); // Use fresh() to load even the null fields.
+            ->fresh(); // Use fresh() to load even the null fields.
 
         $copy = $volume->replicate();
         $copy->save();
@@ -41,18 +41,19 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create([
-            'filename' => 'a123.jpg',
-            'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'tiled' => true
+        $oldImage = 
+            ImageTest::create([
+                'filename' => 'a123.jpg',
+                'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'tiled' => true,
             ])
             ->fresh();
-        ImageLabelTest::create(['image_id' => $oldImage->id]);
+        ImageLabelTest::create(['image_id' => $oldImage->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -66,7 +67,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
         $this->assertEmpty($copy->images()->first()->labels()->get());
 
-        $ignore = ['id', 'created_at', 'updated_at'];
+        $ignore = ['id', 'created_at', 'updated_at',];
         $this->assertEquals(
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
@@ -76,10 +77,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVideoVolume()
     {
         Event::fake();
-        $volume = VolumeTest::create(
-            ['created_at' => '2022-01-09 14:37:00',
+        $volume = 
+            VolumeTest::create(
+                ['created_at' => '2022-01-09 14:37:00',
                 'updated_at' => '2022-01-09 14:37:00',
-                'media_type_id' => MediaType::videoId()
+                'media_type_id' => MediaType::videoId(),
             ])
             ->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -88,18 +90,19 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create([
-            'filename' => 'a321123.jpg',
-            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'duration' => 42.42
+        $oldVideo = 
+            VideoTest::create([
+                'filename' => 'a321123.jpg',
+                'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon'),],
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'duration' => 42.42,
             ])
             ->fresh();
-        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        VideoLabelTest::create(['video_id' => $oldVideo->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -113,32 +116,34 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeImages()
     {
         Event::fake();
-        $volume = $this
-            ->volume([
-            'media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            ])
-            ->fresh(); // Use fresh() to load even the null fields.
+        $volume = 
+            $this
+                ->volume([
+                    'media_type_id' => MediaType::imageId(),
+                    'created_at' => '2022-11-09 14:37:00',
+                    'updated_at' => '2022-11-09 14:37:00',
+                ])
+                ->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
         // The target project.
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create([
-            'filename' => 'j.jpg',
-            'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'tiled' => true
+        $oldImage = 
+            ImageTest::create([
+                'filename' => 'j.jpg',
+                'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'tiled' => true,
             ])
             ->fresh();
-        ImageLabelTest::create(['image_id' => $oldImage->id]);
+        ImageLabelTest::create(['image_id' => $oldImage->id,]);
         $oldImageLabel = $oldImage->labels()->first();
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -157,13 +162,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
         $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
 
-        $ignore = ['id', 'volume_id', 'uuid'];
+        $ignore = ['id', 'volume_id', 'uuid',];
         $this->assertEquals(
             $oldImage->makeHidden($ignore)->toArray(),
             $newImage->makeHidden($ignore)->toArray()
         );
 
-        $ignore = ['id', 'image_id'];
+        $ignore = ['id', 'image_id',];
         $this->assertEquals(
             $oldImageLabel->makeHidden($ignore)->toArray(),
             $newImageLabel->makeHidden($ignore)->toArray()
@@ -173,9 +178,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeImagesWithSomeLabels()
     {
 
-        $volume = VolumeTest::create(['media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume = 
+            VolumeTest::create([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -184,24 +191,25 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create([
-            'filename' => 'z.jpg',
-            'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'tiled' => true
+        $oldImage = 
+            ImageTest::create([
+                'filename' => 'z.jpg',
+                'taken_at' => Carbon::now()->setTimezone('Europe/Lisbon'),
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'tiled' => true,
             ])
             ->fresh();
-        ImageLabelTest::create(['image_id' => $oldImage->id]);
+        ImageLabelTest::create(['image_id' => $oldImage->id,]);
         $oldImage->volume_id = $volume->id;
         $oldImage->save();
         // there are three labels in total
-        $l2 = ImageLabelTest::create(['image_id' => $oldImage->id]);
-        $l3 = ImageLabelTest::create(['image_id' => $oldImage->id]);
+        $l2 = ImageLabelTest::create(['image_id' => $oldImage->id,]);
+        $l3 = ImageLabelTest::create(['image_id' => $oldImage->id,]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
-            'only_file_labels' => [$l2->label_id, $l3->label_id]]);
+            'only_file_labels' => [$l2->label_id, $l3->label_id,],]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -217,11 +225,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeVideos()
     {
         Event::fake();
-        $volume = $this
-            ->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::videoId()
+        $volume =
+            $this->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+                'media_type_id' => MediaType::videoId(),
             ])
             ->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -230,19 +238,20 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create([
-            'filename' => 'a.jpg',
-            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'duration' => 42.42
+        $oldVideo = 
+            VideoTest::create([
+                'filename' => 'a.jpg',
+                'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon'),],
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'duration' => 42.42,
             ])
             ->fresh();
-        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        VideoLabelTest::create(['video_id' => $oldVideo->id,]);
         $oldVideoLabel = $oldVideo->labels()->first();
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -261,13 +270,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
         $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
 
-        $ignore = ['id', 'volume_id', 'uuid'];
+        $ignore = ['id', 'volume_id', 'uuid',];
         $this->assertEquals(
             $oldVideo->makeHidden($ignore)->toArray(),
             $newVideo->makeHidden($ignore)->toArray()
         );
 
-        $ignore = ['id', 'video_id'];
+        $ignore = ['id', 'video_id',];
         $this->assertEquals(
             $oldVideoLabel->makeHidden($ignore)->toArray(),
             $newVideoLabel->makeHidden($ignore)->toArray()
@@ -276,9 +285,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeVideosWithSomeLabels()
     {
-        $volume = VolumeTest::create(['created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::videoId()
+        $volume =
+            VolumeTest::create([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+                'media_type_id' => MediaType::videoId(),
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -287,24 +298,25 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create([
-            'filename' => 'y.jpg',
-            'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon')],
-            'volume_id' => $volume->id,
-            'lng' => 1.5,
-            'lat' => 5.3,
-            'duration' => 42.42
+        $oldVideo = 
+            VideoTest::create([
+                'filename' => 'y.jpg',
+                'taken_at' => [Carbon::now()->setTimezone('Europe/Lisbon'),],
+                'volume_id' => $volume->id,
+                'lng' => 1.5,
+                'lat' => 5.3,
+                'duration' => 42.42,
             ])
             ->fresh();
-        VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        VideoLabelTest::create(['video_id' => $oldVideo->id,]);
         $oldVideo->volume_id = $volume->id;
         $oldVideo->save();
         // there are three labels in total
-        $l2 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
-        $l3 = VideoLabelTest::create(['video_id' => $oldVideo->id]);
+        $l2 = VideoLabelTest::create(['video_id' => $oldVideo->id,]);
+        $l3 = VideoLabelTest::create(['video_id' => $oldVideo->id,]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true,
-            'only_file_labels' => [$l2->label_id, $l3->label_id]]);
+            'only_file_labels' => [$l2->label_id, $l3->label_id,],]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -320,11 +332,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeImageAnnotations()
     {
         Event::fake();
-        $volume = $this
-            ->volume([
-            'media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            $this->volume([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -333,12 +345,12 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldImage = ImageTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id,]);
+        $oldAnnotationLabel = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -357,13 +369,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
         $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
-        $ignore = ['id', 'image_id'];
+        $ignore = ['id', 'image_id',];
         $this->assertEquals(
             $oldAnnotation->makeHidden($ignore)->toArray(),
             $newAnnotation->makeHidden($ignore)->toArray()
         );
 
-        $ignore = ['id', 'annotation_id'];
+        $ignore = ['id', 'annotation_id',];
         $this->assertEquals(
             $oldAnnotationLabel->makeHidden($ignore)->toArray(),
             $newAnnotationLabel->makeHidden($ignore)->toArray()
@@ -372,9 +384,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeImageAnnotationsWithSomeLabels()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -383,16 +397,16 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
+        $oldImage = ImageTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id,]);
         $oldImage->volume_id = $volume->id;
         $oldImage->save();
         // there are three labels in total
-        $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-        $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
+        $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
-            'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
+            'only_annotation_labels' => [$l2->label_id, $l3->label_id,],]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -408,9 +422,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeImageWithoutAnnotations()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -419,12 +435,12 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldImage = ImageTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id,]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -437,11 +453,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeVideoAnnotations()
     {
         Event::fake();
-        $volume = $this
-            ->volume([
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::videoId()
+        $volume =
+            $this->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+                'media_type_id' => MediaType::videoId(),
             ])
             ->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -450,11 +466,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id,]);
+        $oldAnnotationLabel = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -473,13 +489,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
         $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
-        $ignore = ['id', 'video_id'];
+        $ignore = ['id', 'video_id',];
         $this->assertEquals(
             $oldAnnotation->makeHidden($ignore)->toArray(),
             $newAnnotation->makeHidden($ignore)->toArray()
         );
 
-        $ignore = ['id', 'annotation_id'];
+        $ignore = ['id', 'annotation_id',];
         $this->assertEquals(
             $oldAnnotationLabel->makeHidden($ignore)->toArray(),
             $newAnnotationLabel->makeHidden($ignore)->toArray()
@@ -489,9 +505,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeVideoAnnotationsWithSomeLabels()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::videoId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -500,16 +518,16 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id,]);
         $oldVideo->volume_id = $volume->id;
         $oldVideo->save();
         // there are three labels in total
-        $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-        $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
+        $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,
-            'only_annotation_labels' => [$l2->label_id, $l3->label_id]]);
+            'only_annotation_labels' => [$l2->label_id, $l3->label_id,],]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -525,9 +543,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
     public function testCloneVolumeVideoWithoutAnnotations()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::videoId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
@@ -536,12 +556,12 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id,]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
 
@@ -553,13 +573,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
     public function testCloneVolumeIfDoFiles()
     {
         Event::fake();
-        $volume = $this
-          ->volume([
-            'media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-          ])
-          ->fresh();
+        $volume =
+            $this->volume([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+            ])
+            ->fresh();
 
         $copy = $volume->replicate();
         $copy->save();
@@ -574,7 +594,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $project = ProjectTest::create();
         $project->addVolumeId($copy->id);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
         Event::assertDispatched('volume.cloned');
@@ -590,17 +610,19 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         // The target project.
         $project = ProjectTest::create();
 
-        $volume = VolumeTest::create(['media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
 
-        ImageTest::create(['volume_id' => $volume->id]);
+        ImageTest::create(['volume_id' => $volume->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume]);
+        $request = new Request(['project' => $project, 'volume' => $volume,]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessNewVolumeFiles::class);
@@ -616,19 +638,21 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         // The target project.
         $project = ProjectTest::create();
 
-        $volume = VolumeTest::create(['media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::imageId(),
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
             ])
             ->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
 
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldImage = ImageTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id,]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         // One job for the creation of the annotation and one job for GenerateImageAnnotationPatch
@@ -645,7 +669,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         // The target project.
         $project = ProjectTest::create();
 
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId(),
+        $volume =
+            VolumeTest::create([
+                'media_type_id' => MediaType::videoId(),
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
             ])
@@ -653,11 +679,11 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy = $volume->replicate();
         $copy->save();
 
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
+        $oldVideo = VideoTest::create(['volume_id' => $volume->id,])->fresh();
+        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id,]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id,]);
 
-        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true]);
+        $request = new Request(['project' => $project, 'volume' => $volume, 'clone_annotations' => true,]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         // One job for the creation of the annotation and one job for GenerateVideoAnnotationPatch

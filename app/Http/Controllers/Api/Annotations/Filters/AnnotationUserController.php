@@ -54,8 +54,7 @@ class AnnotationUserController extends Controller
         $ownerKeyName = $fileRelation->getQualifiedOwnerKeyName();
         $labelsRelation = $model->labels();
 
-        return
-            $query
+        return $query
                 ->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
                 ->where($labelsRelation->getRelated()->user()->getQualifiedForeignKeyName(), $uid)
                 ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)

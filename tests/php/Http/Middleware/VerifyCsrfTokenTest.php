@@ -28,30 +28,30 @@ class VerifyCsrfTokenTest extends ApiTestCase
     public function testHandleWrongToken()
     {
         $this
-        ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
-            'PHP_AUTH_USER' => $this->globalAdmin()->email,
-            'PHP_AUTH_PW' => 'wrong_token',
-        ])
+            ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
+                'PHP_AUTH_USER' => $this->globalAdmin()->email,
+                'PHP_AUTH_PW' => 'wrong_token',
+            ])
             ->assertStatus(419);
     }
 
     public function testHandleWrongEmail()
     {
         $this
-        ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
-            'PHP_AUTH_USER' => 'wrong@email.com',
-            'PHP_AUTH_PW' => 'test_token',
-        ])
+            ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
+                'PHP_AUTH_USER' => 'wrong@email.com',
+                'PHP_AUTH_PW' => 'test_token',
+            ])
             ->assertStatus(419);
     }
 
     public function testHandleCorrect()
     {
         $this
-        ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
-            'PHP_AUTH_USER' => $this->globalAdmin()->email,
-            'PHP_AUTH_PW' => 'test_token',
-        ])
+            ->call('PUT', '/api/v1/users/'.$this->guest()->id, [], [], [], [
+                'PHP_AUTH_USER' => $this->globalAdmin()->email,
+                'PHP_AUTH_PW' => 'test_token',
+            ])
             ->assertStatus(200);
     }
 }

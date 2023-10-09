@@ -180,7 +180,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
 
         $this
             ->json('POST', "/api/v1/projects/{$id}/volumes", [
@@ -189,7 +190,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'handle' => '10.3389/fmars.2017.00083',
-            ])->assertStatus(201);
+            ])
+            ->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
 
@@ -201,7 +203,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'handle' => '10.3389/fmars.2017/00083',
-            ])->assertStatus(201);
+            ])
+            ->assertStatus(201);
 
         // Backwards compatibility.
         $this
@@ -211,7 +214,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'doi' => '10.3389/fmars.2017.00083',
-            ])->assertStatus(201);
+            ])
+            ->assertStatus(201);
 
         $this
             ->json('POST', "/api/v1/projects/{$id}/volumes", [
@@ -220,7 +224,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'handle' => '',
-            ])->assertStatus(201);
+            ])
+            ->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNull($volume->handle);
     }
@@ -329,12 +334,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
         FileCache::shouldReceive('exists')
             ->andThrow(new Exception('Invalid MIME type.'));
 
-        $response = $this->postJson("/api/v1/projects/{$id}/volumes", [
-            'name' => 'my volume no. 1',
-            'url' => 'test://images',
-            'media_type' => 'image',
-            'files' => '1.jpg',
-        ])
+        $response = 
+            $this->postJson("/api/v1/projects/{$id}/volumes", [
+                'name' => 'my volume no. 1',
+                'url' => 'test://images',
+                'media_type' => 'image',
+                'files' => '1.jpg',
+            ])
             ->assertStatus(422);
         $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
     }
@@ -437,7 +443,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'metadata_text' => "",
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
     }
@@ -456,7 +463,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'metadata_text' => "filename,area\n1.jpg,2.5",
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === '1.jpg' && $job->metadata[1][1] === '2.5');
     }
@@ -477,7 +485,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => 'abc.jpg',
                 'metadata_csv' => $file,
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === 'abc.jpg' && $job->metadata[1][6] === '2.6');
     }
@@ -496,7 +505,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => '1.jpg',
                 'metadata_text' => "filename,area\nabc.jpg,2.5",
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testStoreEmptyVideoMetadataText()
@@ -513,7 +523,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => '1.mp4',
                 'metadata_text' => "",
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
     }
@@ -532,7 +543,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => '1.mp4',
                 'metadata_text' => "filename,area\n1.mp4,2.5",
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === '1.mp4' && $job->metadata[1][1] === '2.5');
     }
@@ -553,7 +565,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => 'abc.mp4',
                 'metadata_csv' => $file,
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === 'abc.mp4' && $job->metadata[1][6] === '2.6' && $job->metadata[2][6] === '1.6');
     }
@@ -572,7 +585,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => '1.mp4',
                 'metadata_text' => "filename,area\nabc.mp4,2.5",
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testStoreImageIfdoFile()
@@ -593,7 +607,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => 'abc.jpg',
                 'ifdo_file' => $file,
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertTrue($volume->hasIfdo());
@@ -617,7 +632,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => 'abc.mp4',
                 'ifdo_file' => $file,
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertTrue($volume->hasIfdo());
@@ -639,7 +655,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'video',
                 'files' => 'abc.mp4',
                 'ifdo_file' => $file,
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testStoreImageVolumeWithVideoIfdoFile()
@@ -658,7 +675,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'media_type' => 'image',
                 'files' => 'abc.jpg',
                 'ifdo_file' => $file,
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
     }
 
     public function testStoreProviderDenylist()
@@ -756,7 +774,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this
-            ->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}")->assertStatus(200);
+            ->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}")
+            ->assertStatus(200);
     }
 
     public function testDestroy()

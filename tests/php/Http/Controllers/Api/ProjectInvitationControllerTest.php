@@ -14,27 +14,29 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/projects/{$id}/invitations");
 
         $this->beUser();
-        $this
-        ->postJson("/api/v1/projects/{$id}/invitations")->assertStatus(403);
+        $this->postJson("/api/v1/projects/{$id}/invitations")
+            ->assertStatus(403);
 
         // missing arguments
         $this->beAdmin();
-        $this
-        ->postJson("/api/v1/projects/{$id}/invitations")->assertStatus(422);
+        $this->postJson("/api/v1/projects/{$id}/invitations")
+            ->assertStatus(422);
 
         // Expiration must be in the future.
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => '2022-11-09 15:10:00',
-        ])->assertStatus(422);
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => '2022-11-09 15:10:00',
+            ])
+            ->assertStatus(422);
 
         $this->assertFalse($this->project()->invitations()->exists());
 
         $timestamp = now()->addDay()->startOfDay();
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => $timestamp,
-        ])->assertSuccessful();
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+            ])
+            ->assertSuccessful();
 
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
@@ -53,22 +55,25 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $timestamp = now()->addDay();
         // Invited users may not become admins.
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => $timestamp,
-            'role_id' => Role::adminId(),
-        ])->assertStatus(422);
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'role_id' => Role::adminId(),
+            ])
+            ->assertStatus(422);
 
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => $timestamp,
-            'role_id' => -1,
-        ])->assertStatus(422);
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'role_id' => -1,
+            ])
+            ->assertStatus(422);
 
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => $timestamp,
-            'max_uses' => 0,
-        ])->assertStatus(422);
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'max_uses' => 0,
+            ])
+            ->assertStatus(422);
 
         $this
         ->postJson("/api/v1/projects/{$id}/invitations", [
@@ -115,15 +120,15 @@ class ProjectInvitationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $this
-        ->postJson("/api/v1/project-invitations/{$id}/join", [
-            'token' => 'caa3183e-a7ee-46c9-a744-0fc91d1a1fc4',
-        ])
+            ->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => 'caa3183e-a7ee-46c9-a744-0fc91d1a1fc4',
+            ])
             ->assertStatus(422);
 
         $this
-        ->postJson("/api/v1/project-invitations/{$id}/join", [
-            'token' => $invitation->uuid,
-        ])
+            ->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
             ->assertSuccessful();
 
         $this->assertEquals(0, $invitation->current_uses);
@@ -160,9 +165,9 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this
-        ->postJson("/api/v1/project-invitations/{$id}/join", [
-            'token' => $invitation->uuid,
-        ])
+            ->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
             ->assertStatus(404);
     }
 
@@ -177,9 +182,9 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this
-        ->postJson("/api/v1/project-invitations/{$id}/join", [
-            'token' => $invitation->uuid,
-        ])
+            ->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
             ->assertStatus(404);
     }
 
@@ -192,9 +197,9 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this
-        ->postJson("/api/v1/project-invitations/{$id}/join", [
-            'token' => $invitation->uuid,
-        ])
+            ->postJson("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
             ->assertSuccessful();
 
         $this->assertEquals(0, $invitation->fresh()->current_uses);

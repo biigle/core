@@ -212,7 +212,7 @@ class AnnotationSession extends Model
                         ->from('images')
                         ->where('volume_id', $this->volume_id);
                 })
-            // that were created between the start and end date
+                // that were created between the start and end date
                 ->where('created_at', '>=', $this->starts_at)
                 ->where('created_at', '<', $this->ends_at)
             // and have a label by one of the members of this session

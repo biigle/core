@@ -28,7 +28,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this
-        ->get("/api/v1/volumes/{$id}/files")
+            ->get("/api/v1/volumes/{$id}/files")
             ->assertStatus(200)
             ->assertExactJson([$image->id]);
     }
@@ -77,29 +77,30 @@ class VolumeFileControllerTest extends ApiTestCase
         $this->assertEquals(1, $this->volume()->images()->count());
 
         $this
-        ->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.jpg, 1.jpg',
-        ])
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpg, 1.jpg',
+            ])
             // error because of duplicate image
             ->assertStatus(422);
 
         $this
-        ->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.mp4',
-        ])
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.mp4',
+            ])
             // error because of unsupported image format
             ->assertStatus(422);
 
         // Image filename too long.
         $this
-        ->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
-        ])
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg',
+            ])
             ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.jpg, 2.jpg',
-        ]);
+        $response = 
+            $this->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpg, 2.jpg',
+            ]);
 
         $response->assertStatus(200);
 
@@ -124,7 +125,7 @@ class VolumeFileControllerTest extends ApiTestCase
         $id = $this->volume(['url' => 'test://images'])->id;
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.jpg', '2.jpg']])
+            ->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.jpg', '2.jpg']])
             ->assertSuccessful();
     }
 
@@ -136,7 +137,7 @@ class VolumeFileControllerTest extends ApiTestCase
         $id = $this->volume(['url' => 'test://images'])->id;
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['images' => ['1.jpg']])
+            ->postJson("/api/v1/volumes/{$id}/files", ['images' => ['1.jpg']])
             ->assertSuccessful();
     }
 
@@ -149,7 +150,7 @@ class VolumeFileControllerTest extends ApiTestCase
         ImageTest::create(['filename' => '1.jpg', 'volume_id' => $id]);
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['files' => '1.jpg'])
+            ->postJson("/api/v1/volumes/{$id}/files", ['files' => '1.jpg'])
             // Image already exists.
             ->assertStatus(422);
     }
@@ -159,7 +160,7 @@ class VolumeFileControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['files' => '1.jpg'])
+            ->postJson("/api/v1/volumes/{$id}/files", ['files' => '1.jpg'])
             ->assertStatus(422);
     }
 
@@ -170,37 +171,42 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->put('videos/1.mp4', 'abc');
         Storage::disk('test')->put('videos/2.mp4', 'abc');
 
-        $id = $this->volume([
-            'media_type_id' => MediaType::videoId(),
-            'url' => 'test://videos',
-        ])->id;
+        $id =
+            $this->volume([
+                'media_type_id' => MediaType::videoId(),
+                'url' => 'test://videos',
+            ])->id;
         VideoTest::create(['filename' => 'no.mp4', 'volume_id' => $id]);
 
         $this->assertEquals(1, $this->volume()->videos()->count());
 
         $this->beAdmin();
 
-        $this->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.mp4, 1.mp4',
-        ])
+        $this
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.mp4, 1.mp4',
+            ])
             // error because of duplicate file
             ->assertStatus(422);
 
-        $this->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.jpeg',
-        ])
+        $this
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpeg',
+            ])
             // error because of unsupported file format
             ->assertStatus(422);
 
         // Video filename too long.
-        $this->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp4',
-        ])
+        $this
+            ->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp4',
+            ])
             ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/volumes/{$id}/files", [
-            'files' => '1.mp4, 2.mp4',
-        ]);
+        $response = 
+            $this->json('POST', "/api/v1/volumes/{$id}/files", [
+                'files' => '1.mp4, 2.mp4',
+            ]);
 
         $response->assertStatus(200);
 
@@ -227,7 +233,7 @@ class VolumeFileControllerTest extends ApiTestCase
         ])->id;
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.mp4', '2.mp4']])
+            ->postJson("/api/v1/volumes/{$id}/files", ['files' => ['1.mp4', '2.mp4']])
             ->assertSuccessful();
     }
 
@@ -243,7 +249,7 @@ class VolumeFileControllerTest extends ApiTestCase
         VideoTest::create(['filename' => '1.mp4', 'volume_id' => $id]);
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
+            ->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
             // Video already exists.
             ->assertStatus(422);
     }
@@ -253,7 +259,7 @@ class VolumeFileControllerTest extends ApiTestCase
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $this->beAdmin();
         $this
-        ->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
+            ->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])
             ->assertStatus(422);
     }
 
@@ -264,10 +270,10 @@ class VolumeFileControllerTest extends ApiTestCase
         FileCache::shouldReceive('exists')
             ->andThrow(new Exception('Invalid MIME type.'));
 
-        $response = $this
-        ->postJson("/api/v1/volumes/{$id}/files", [
-            'files' => '1.jpg',
-        ])
+        $response =
+            $this->postJson("/api/v1/volumes/{$id}/files", [
+                'files' => '1.jpg',
+            ])
             ->assertStatus(422);
         $this->assertStringContainsString('Some files could not be accessed. Invalid MIME type.', $response->getContent());
     }

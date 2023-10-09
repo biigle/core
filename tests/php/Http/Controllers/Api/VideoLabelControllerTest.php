@@ -59,19 +59,22 @@ class VideoLabelControllerTest extends ApiTestCase
         $this
             ->post("/api/v1/videos/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
-            ])->assertStatus(403);
+            ])
+            ->assertStatus(403);
 
         $this->beGuest();
         $this
             ->post("/api/v1/videos/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
-            ])->assertStatus(403);
+            ])
+            ->assertStatus(403);
 
         $this->beEditor();
         $this
             ->post("/api/v1/videos/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
-            ])->assertSuccessful();
+            ])
+            ->assertSuccessful();
         $this->assertEquals(1, $this->video->labels()->count());
 
         $this->beAdmin();
@@ -79,7 +82,8 @@ class VideoLabelControllerTest extends ApiTestCase
         $this
             ->post("/api/v1/videos/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
-            ])->assertStatus(400);
+            ])
+            ->assertStatus(400);
         $this->assertEquals(1, $this->video->labels()->count());
 
         $this

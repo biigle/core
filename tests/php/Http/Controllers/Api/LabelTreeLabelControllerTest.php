@@ -195,9 +195,9 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this
             ->postJson("/api/v1/label-trees/{$tree->id}/labels", [
-            'name' => 'new label',
-            'color' => 'bada55',
-        ])
+                'name' => 'new label',
+                'color' => 'bada55',
+            ])
             ->assertStatus(403);
     }
 }

@@ -153,7 +153,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $metadata = [
             ['filename', 'taken_at', 'gps_altitude', 'distance_to_ground'],
             ['a.mp4', '2016-12-19 12:27:00', '-1500', ''],
-            ['a.mp4', '2016-12-19 12:28:00', '', '', ],
+            ['a.mp4', '2016-12-19 12:28:00', '', ''],
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();

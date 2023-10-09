@@ -111,12 +111,14 @@ class VolumeControllerTest extends ApiTestCase
         $this
             ->json('PUT', "/api/v1/volumes/{$id}", [
                 'handle' => 'https://doi.org/10.3389/fmars.2017.00083',
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
 
         $this
             ->json('PUT', "/api/v1/volumes/{$id}", [
                 'handle' => '10.3389/fmars.2017.00083',
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
         $this->volume()->refresh();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
 
@@ -124,18 +126,21 @@ class VolumeControllerTest extends ApiTestCase
         $this
             ->json('PUT', "/api/v1/volumes/{$id}", [
                 'handle' => '10.3389/fmars.2017/00083',
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         // Backwards compatibility.
         $this
             ->json('PUT', "/api/v1/volumes/{$id}", [
                 'doi' => '10.3389/fmars.2017.00083',
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this
             ->json('PUT', "/api/v1/volumes/{$id}", [
                 'handle' => '',
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
         $this->volume()->refresh();
         $this->assertNull($this->volume()->handle);
     }
@@ -156,23 +161,27 @@ class VolumeControllerTest extends ApiTestCase
         $this
           ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'admin-test://volumes',
-            ])->assertStatus(422);
+            ])
+            ->assertStatus(422);
         $this
           ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => 'editor-test://volumes',
-            ])->assertStatus(200);
+            ])
+            ->assertStatus(200);
 
         $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
         $this
             ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'editor-test://volumes',
-            ])->assertStatus(422);
+              'url' => 'editor-test://volumes',
+              ])
+              ->assertStatus(422);
         $this
             ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'admin-test://volumes',
-            ])->assertStatus(200);
+              'url' => 'admin-test://volumes',
+              ])
+              ->assertStatus(200);
         $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
@@ -182,8 +191,9 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this
             ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'https://dropbox.com',
-            ])->assertStatus(422);
+              'url' => 'https://dropbox.com',
+              ])
+              ->assertStatus(422);
     }
 
     public function testUpdateGlobalAdmin()
@@ -234,10 +244,12 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testCloneVolume()
     {
-        $volume = $this->volume(
-            ['created_at' => '2022-11-09 14:37:00',
-                'updated_at' => '2022-11-09 14:37:00', ]
-        )->fresh();
+        $volume = 
+            $this->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+            ])
+            ->fresh();
         $project = ProjectTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");

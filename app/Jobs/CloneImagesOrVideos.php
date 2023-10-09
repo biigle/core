@@ -222,12 +222,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = ImageAnnotation::join(
-            'image_annotation_labels',
-            'image_annotation_labels.annotation_id',
-            '=',
-            'image_annotations.id'
-        )
+        $annotationJoinLabel =
+            ImageAnnotation::join(
+                'image_annotation_labels',
+                'image_annotation_labels.annotation_id',
+                '=',
+                'image_annotations.id'
+            )
             ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds))
             ->whereIn('image_annotations.image_id', $selectedFileIds);
 
@@ -376,12 +377,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel = VideoAnnotation::join(
-            'video_annotation_labels',
-            'video_annotation_labels.annotation_id',
-            '=',
-            'video_annotations.id'
-        )
+        $annotationJoinLabel =
+            VideoAnnotation::join(
+                'video_annotation_labels',
+                'video_annotation_labels.annotation_id',
+                '=',
+                'video_annotations.id'
+            )
             ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds))
             ->whereIn('video_annotations.video_id', $selectedFileIds)
             ->distinct();
