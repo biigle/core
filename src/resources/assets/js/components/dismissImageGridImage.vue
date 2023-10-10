@@ -6,7 +6,7 @@
         <img @click="toggleSelect" :src="srcUrl" @error="showEmptyImage">
         <div v-if="showAnnotationLink" class="image-buttons">
             <a :href="showAnnotationLink" target="_blank" class="image-button" title="Show the annotation in the annotation tool">
-                <span class="fa fa-external-link-square-alt" aria-hidden="true"></span>
+                <span class="fa fa-external-link-square-alt fa-fw" aria-hidden="true"></span>
             </a>
         </div>
     </figure>
