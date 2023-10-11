@@ -76,11 +76,12 @@ class ProjectInvitationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $this
-        ->postJson("/api/v1/projects/{$id}/invitations", [
-            'expires_at' => $timestamp,
-            'role_id' => Role::guestId(),
-            'max_uses' => 10,
-        ])->assertSuccessful();
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'role_id' => Role::guestId(),
+                'max_uses' => 10,
+            ])
+            ->assertSuccessful();
 
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);

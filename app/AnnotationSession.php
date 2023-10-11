@@ -215,7 +215,7 @@ class AnnotationSession extends Model
                 // that were created between the start and end date
                 ->where('created_at', '>=', $this->starts_at)
                 ->where('created_at', '<', $this->ends_at)
-            // and have a label by one of the members of this session
+                // and have a label by one of the members of this session
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('image_annotation_labels')
@@ -246,10 +246,10 @@ class AnnotationSession extends Model
                         ->from('videos')
                         ->where('volume_id', $this->volume_id);
                 })
-            // that were created between the start and end date
+                // that were created between the start and end date
                 ->where('created_at', '>=', $this->starts_at)
                 ->where('created_at', '<', $this->ends_at)
-            // and have a label by one of the members of this session
+                // and have a label by one of the members of this session
                 ->whereExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('video_annotation_labels')
