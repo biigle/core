@@ -3,7 +3,6 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\ProjectInvitation;
-use Biigle\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class JoinProjectInvitation extends FormRequest

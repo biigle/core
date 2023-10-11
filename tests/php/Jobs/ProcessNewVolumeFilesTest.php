@@ -24,13 +24,9 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume))->handle();
 
-        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i1) {
-            return $job->image->id === $i1->id;
-        });
+        Queue::assertPushed(ProcessNewImage::class, fn ($job) => $job->image->id === $i1->id);
 
-        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i2) {
-            return $job->image->id === $i2->id;
-        });
+        Queue::assertPushed(ProcessNewImage::class, fn ($job) => $job->image->id === $i2->id);
     }
 
     public function testHandleImagesWithOnly()
@@ -43,13 +39,9 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume, [$i1->id]))->handle();
 
-        Queue::assertPushed(ProcessNewImage::class, function ($job) use ($i1) {
-            return $job->image->id === $i1->id;
-        });
+        Queue::assertPushed(ProcessNewImage::class, fn ($job) => $job->image->id === $i1->id);
 
-        Queue::assertNotPushed(ProcessNewImage::class, function ($job) use ($i2) {
-            return $job->image->id === $i2->id;
-        });
+        Queue::assertNotPushed(ProcessNewImage::class, fn ($job) => $job->image->id === $i2->id);
     }
 
     public function testHandleVideos()
@@ -62,13 +54,9 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume))->handle();
 
-        Queue::assertPushed(ProcessNewVideo::class, function ($job) use ($v1) {
-            return $job->video->id === $v1->id;
-        });
+        Queue::assertPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v1->id);
 
-        Queue::assertPushed(ProcessNewVideo::class, function ($job) use ($v2) {
-            return $job->video->id === $v2->id;
-        });
+        Queue::assertPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v2->id);
     }
 
     public function testHandleVideosWithOnly()
@@ -81,12 +69,8 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         with(new ProcessNewVolumeFiles($volume, [$v1->id]))->handle();
 
-        Queue::assertPushed(ProcessNewVideo::class, function ($job) use ($v1) {
-            return $job->video->id === $v1->id;
-        });
+        Queue::assertPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v1->id);
 
-        Queue::assertNotPushed(ProcessNewVideo::class, function ($job) use ($v2) {
-            return $job->video->id === $v2->id;
-        });
+        Queue::assertNotPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v2->id);
     }
 }

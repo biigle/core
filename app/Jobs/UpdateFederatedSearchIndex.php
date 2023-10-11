@@ -275,7 +275,6 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
         return array_combine($volumeIds, $modelIds);
     }
 
-
     /**
      * Update which user may access which federated search model that was created in
      * this job.

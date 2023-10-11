@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\AnnotationSession;
 use Biigle\Http\Requests\DestroyAnnotationSession;
 use Biigle\Http\Requests\UpdateAnnotationSession;
 use Biigle\Volume;

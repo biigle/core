@@ -29,8 +29,6 @@ class CleanupImageThumbnailsTest extends TestCase
     {
         $image = ImageTest::create();
         event(new ImagesDeleted($image->uuid));
-        Queue::assertPushed(CallQueuedListener::class, function ($job) {
-            return $job->class === CleanupImageThumbnails::class;
-        });
+        Queue::assertPushed(CallQueuedListener::class, fn ($job) => $job->class === CleanupImageThumbnails::class);
     }
 }

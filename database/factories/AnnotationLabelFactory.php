@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

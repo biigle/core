@@ -65,7 +65,7 @@ class UpdateVideoMetadata extends Command
         $query = $volume->videos()
             ->where(function ($query) {
                 $query->whereNull('attrs->width')
-                ->orWhereNull('attrs->height');
+                    ->orWhereNull('attrs->height');
             });
 
         if ($volume->isRemote()) {

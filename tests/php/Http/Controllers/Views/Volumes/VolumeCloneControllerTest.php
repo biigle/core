@@ -6,7 +6,6 @@ use ApiTestCase;
 
 class VolumeCloneControllerTest extends ApiTestCase
 {
-
     public function testClone()
     {
         $id = $this->volume()->id;
@@ -44,5 +43,4 @@ class VolumeCloneControllerTest extends ApiTestCase
         $response = $this->get('volumes/clone/0');
         $response->assertStatus(404);
     }
-
 }

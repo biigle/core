@@ -44,23 +44,23 @@ class AddFederatedSearchTables extends Migration
 
             $table->unsignedInteger('federated_search_instance_id');
             $table->foreign('federated_search_instance_id')
-                  ->references('id')
-                  ->on('federated_search_instances')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('federated_search_instances')
+                ->onDelete('cascade');
         });
 
         Schema::create('federated_search_model_user', function (Blueprint $table) {
             $table->unsignedBigInteger('federated_search_model_id');
             $table->foreign('federated_search_model_id')
-                  ->references('id')
-                  ->on('federated_search_models')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('federated_search_models')
+                ->onDelete('cascade');
 
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             $table->unique(['federated_search_model_id', 'user_id']);
         });

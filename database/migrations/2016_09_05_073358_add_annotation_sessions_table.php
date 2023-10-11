@@ -32,9 +32,9 @@ class AddAnnotationSessionsTable extends Migration
 
             $table->integer('transect_id')->unsigned();
             $table->foreign('transect_id')
-                  ->references('id')
-                  ->on('transects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('transects')
+                ->onDelete('cascade');
 
             $table->timestamps();
             $table->timestamp('starts_at');
@@ -55,15 +55,15 @@ class AddAnnotationSessionsTable extends Migration
         Schema::create('annotation_session_user', function (Blueprint $table) {
             $table->integer('annotation_session_id')->unsigned();
             $table->foreign('annotation_session_id')
-                  ->references('id')
-                  ->on('annotation_sessions')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('annotation_sessions')
+                ->onDelete('cascade');
 
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             // each user must not be added twice
             $table->unique(['annotation_session_id', 'user_id']);

@@ -3,9 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\Annotation;
-use Biigle\AnnotationLabel;
 use Biigle\Label;
-use Biigle\Policies\CachedPolicy;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;

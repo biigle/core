@@ -44,9 +44,7 @@ trait HasConstantInstances
                 $name = static::INSTANCES[$key];
                 $cacheKey = static::class.'::'.$key;
 
-                $instance = Cache::rememberForever($cacheKey, function () use ($name) {
-                    return static::whereName($name)->first();
-                });
+                $instance = Cache::rememberForever($cacheKey, fn () => static::whereName($name)->first());
 
                 return $wantsId ? $instance->id : $instance;
             }

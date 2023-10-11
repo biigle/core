@@ -37,34 +37,39 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$a1->id}/link");
 
         $this->beUser();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(403);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => 0,
             ])
             // Second annotation ID must exist.
             ->assertStatus(404);
 
         $a2->update(['video_id' => VideoTest::create()->id]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             // Other annotation must belong to the same video.
             ->assertStatus(422);
 
         $a2->update(['video_id' => $this->video->id, 'shape_id' => Shape::circleId()]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             // The shapes must match.
             ->assertStatus(422);
 
         $a2->update(['shape_id' => Shape::pointId()]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200)
@@ -91,43 +96,50 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [0.5, 1.5]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [1.25, 1.75]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [0.5, 2.5]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [0.5, 2.0]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [1.0, 2.5]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
 
         $a2->update(['frames' => [1.0, 2.0]]);
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(422);
@@ -150,7 +162,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200);
@@ -177,7 +190,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200);
@@ -224,7 +238,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200);
@@ -253,7 +268,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200);
@@ -280,7 +296,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             // This is the same than overlapping times of an annotation clip.
@@ -304,7 +321,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$a1->id}/link", [
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
             ])
             ->assertStatus(200);

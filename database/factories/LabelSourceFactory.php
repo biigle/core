@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use Biigle\Volume;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LabelSourceFactory extends Factory

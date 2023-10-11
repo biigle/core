@@ -54,9 +54,7 @@ class ModulesTest extends TestCase
 
     public function testCallControllerMixins()
     {
-        Modules::registerControllerMixin('myModule', 'dashboard', function ($arg) {
-            return ['callable' => true];
-        });
+        Modules::registerControllerMixin('myModule', 'dashboard', fn ($arg) => ['callable' => true]);
         Modules::registerControllerMixin('myModule2', 'dashboard', ControllerMixinStub::class.'@call');
 
         $values = Modules::callControllerMixins('dashboard', ['arg' => 1]);
