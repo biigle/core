@@ -76,7 +76,8 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $version->labelTree->addMember($this->admin(), Role::admin());
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/authorized-projects", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/authorized-projects", [
                 'id' => $this->project()->id,
             ])
             ->assertStatus(403);
@@ -88,7 +89,8 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $version->labelTree->addMember($this->admin(), Role::admin());
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
-        $this->postJson("/api/v1/label-trees/{$version->labelTree->id}/authorized-projects", [
+        $this
+            ->postJson("/api/v1/label-trees/{$version->labelTree->id}/authorized-projects", [
                 'id' => $this->project()->id,
             ])
             ->assertStatus(200);

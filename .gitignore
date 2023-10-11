@@ -19,6 +19,5 @@ npm-debug.log
 yarn-error.log
 /*.sublime-*
 /*.phar
-/*.php_cs.cache
+/*.php-cs-fixer.cache
 /.idea
-/.vscode

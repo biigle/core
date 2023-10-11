@@ -5,10 +5,8 @@ namespace Biigle\Tests;
 use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\Visibility;
-use Exception;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class LabelTreeTest extends ModelTestCase
 {

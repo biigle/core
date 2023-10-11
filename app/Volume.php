@@ -9,7 +9,6 @@ use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -260,9 +259,7 @@ class Volume extends Model
     public function hasConflictingAnnotationSession(AnnotationSession $session)
     {
         return $this->annotationSessions()
-            ->when(!is_null($session->id), function ($query) use ($session) {
-                return $query->where('id', '!=', $session->id);
-            })
+            ->when(!is_null($session->id), fn ($query) => $query->where('id', '!=', $session->id))
             ->where(function ($query) use ($session) {
                 $query->where(function ($query) use ($session) {
                     $query->where('starts_at', '<=', $session->starts_at)
@@ -344,9 +341,7 @@ class Volume extends Model
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(function ($file) {
-            return $file->thumbnailUrl;
-        });
+        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl);
     }
 
     /**
@@ -364,9 +359,7 @@ class Volume extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember($this->getGeoInfoCacheKey(), 3600, function () {
-            return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
-        });
+        return Cache::remember($this->getGeoInfoCacheKey(), 3600, fn () => $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists());
     }
 
     /**
@@ -425,9 +418,7 @@ class Volume extends Model
     public function hasTiledImages()
     {
         // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, function () {
-            return $this->images()->where('tiled', true)->exists();
-        });
+        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 60, fn () => $this->images()->where('tiled', true)->exists());
     }
 
     /**
@@ -472,9 +463,7 @@ class Volume extends Model
     public function hasIfdo($ignoreErrors = false)
     {
         try {
-            return Cache::remember($this->getIfdoCacheKey(), 3600, function () {
-                return Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename());
-            });
+            return Cache::remember($this->getIfdoCacheKey(), 3600, fn () => Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename()));
         } catch (Exception $e) {
             if (!$ignoreErrors) {
                 throw $e;

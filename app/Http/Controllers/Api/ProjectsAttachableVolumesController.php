@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;

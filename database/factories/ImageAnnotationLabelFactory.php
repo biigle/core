@@ -3,8 +3,6 @@
 namespace Database\Factories;
 
 use Biigle\ImageAnnotation;
-use Biigle\Label;
-use Biigle\User;
 
 class ImageAnnotationLabelFactory extends AnnotationLabelFactory
 {

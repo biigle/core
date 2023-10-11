@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -59,10 +58,10 @@ return new class extends Migration
 
             $table->integer('type_id')->unsigned()->nullable();
             $table->foreign('type_id')
-                  ->references('id')
-                  ->on('system_message_types')
+                ->references('id')
+                ->on('system_message_types')
                   // dont delete type if it is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
         });
 
         $importantType = DB::table('system_message_types')

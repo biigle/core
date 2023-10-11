@@ -3,7 +3,6 @@
 namespace Biigle\Rules;
 
 use App;
-use Biigle\User;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;

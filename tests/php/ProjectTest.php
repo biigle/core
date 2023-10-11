@@ -7,7 +7,6 @@ use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\ProjectInvitation;
 use Biigle\Role;
-use Biigle\Video;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Queue;
@@ -185,9 +184,7 @@ class ProjectTest extends ModelTestCase
         // use the force to detach and delete the volume
         Queue::fake();
         $this->model->removeVolume($volume, true);
-        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
-            return $volume->id === $job->volume->id;
-        });
+        Queue::assertPushed(DeleteVolume::class, fn ($job) => $volume->id === $job->volume->id);
         $this->assertFalse($this->model->volumes()->exists());
     }
 
@@ -215,9 +212,7 @@ class ProjectTest extends ModelTestCase
         // use the force to detach and delete the volume
         Queue::fake();
         $this->model->removeAllVolumes(true);
-        Queue::assertPushed(DeleteVolume::class, function ($job) use ($volume) {
-            return $volume->id === $job->volume->id;
-        });
+        Queue::assertPushed(DeleteVolume::class, fn ($job) => $volume->id === $job->volume->id);
         $this->assertFalse($this->model->volumes()->exists());
     }
 

@@ -3,7 +3,6 @@
 namespace Biigle\Jobs;
 
 use App;
-use Biigle\Jobs\Job;
 use Biigle\Video;
 use Exception;
 use FFMpeg\Coordinate\Dimension;

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\Role;
 use Biigle\Announcement;
+use Biigle\Role;
 use Biigle\User;
 use TestCase;
 

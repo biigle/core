@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;

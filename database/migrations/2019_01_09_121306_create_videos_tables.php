@@ -21,9 +21,9 @@ class CreateVideosTables extends Migration
 
             $table->integer('project_id')->unsigned()->index();
             $table->foreign('project_id')
-                  ->references('id')
-                  ->on('projects')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('projects')
+                ->onDelete('cascade');
 
             $table->json('attrs')->nullable();
             $table->timestamps();
@@ -36,17 +36,17 @@ class CreateVideosTables extends Migration
 
             $table->integer('video_id')->unsigned()->index();
             $table->foreign('video_id')
-                  ->references('id')
-                  ->on('videos')
+                ->references('id')
+                ->on('videos')
                   // delete all annotations of a deleted video
-                  ->onDelete('cascade');
+                ->onDelete('cascade');
 
             $table->integer('shape_id')->unsigned();
             $table->foreign('shape_id')
-                  ->references('id')
-                  ->on('shapes')
+                ->references('id')
+                ->on('shapes')
                   // don't delete shapes that are used
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->timestamps();
         });
@@ -55,23 +55,23 @@ class CreateVideosTables extends Migration
             $table->increments('id');
             $table->integer('video_annotation_id')->unsigned();
             $table->foreign('video_annotation_id')
-                  ->references('id')
-                  ->on('video_annotations')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('video_annotations')
+                ->onDelete('cascade');
 
             $table->integer('label_id')->unsigned();
             $table->foreign('label_id')
-                  ->references('id')
-                  ->on('labels')
+                ->references('id')
+                ->on('labels')
                   // don't delete labels in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // don't delete video annotation labels if the creator is deleted
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->timestamps();
 

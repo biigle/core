@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
+use Biigle\ProjectInvitation;
 use Biigle\Role;
 use Biigle\User;
-use Biigle\ProjectInvitation;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

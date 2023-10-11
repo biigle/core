@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
 use Storage;
 
 class BrowserControllerTest extends ApiTestCase

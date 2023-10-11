@@ -39,9 +39,7 @@ class Project extends Model
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->when(is_array($roles), function ($query) use ($roles) {
-                    return $query->whereIn('project_user.project_role_id', $roles);
-                })
+                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role_id', $roles))
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
@@ -211,7 +209,6 @@ class Project extends Model
         return $this->volumes()->where('media_type_id', MediaType::videoId());
     }
 
-
     /**
      * Adds a volume to this project if it wasn't already.
      *
@@ -331,14 +328,10 @@ class Project extends Model
     public function hasGeoInfo()
     {
         return Cache::remember("project-{$this->id}-has-geo-info", 3600, function () {
-            return Image::whereIn('volume_id', function ($query) {
-                return $query->select('volume_id')
-                    ->from('project_volume')
-                    ->where('project_id', $this->id);
-            })
-            ->whereNotNull('lng')
-            ->whereNotNull('lat')
-            ->exists();
+            return Image::whereIn('volume_id', fn ($q) => $q->select('volume_id')->from('project_volume')->where('project_id', $this->id))
+                ->whereNotNull('lng')
+                ->whereNotNull('lat')
+                ->exists();
         });
     }
 

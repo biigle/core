@@ -28,9 +28,7 @@ class CachedPolicyTest extends TestCase
 
     public function testRemember()
     {
-        $callback = function () {
-            return 'abc';
-        };
+        $callback = fn () => 'abc';
         $store = Mockery::mock(\Illuminate\Cache\ArrayStore::class);
         $store->shouldReceive('remember')
             ->once()

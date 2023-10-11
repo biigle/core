@@ -26,6 +26,6 @@ The default development setup of BIIGLE uses the `dev-modules` branch of the cor
 
 BIIGLE uses readable and meaningful commit messages. Please follow [this guide](https://chris.beams.io/posts/git-commit/) for your commits to BIIGLE.
 
-BIIGLE also defines a PHP coding style in [`.php_cs`](.php_cs). Use the [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to apply the coding style to your source code.
+BIIGLE also defines a PHP coding style in [`.php-cs-fixer.php`](.php-cs-fixer.php). Use the [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to apply the coding style to your source code.
 
 All changes or new features that affect the API or backend PHP code should be thoroughly tested.

@@ -18,23 +18,23 @@ class CreateVideoLabelsTable extends Migration
 
             $table->integer('video_id')->unsigned();
             $table->foreign('video_id')
-                  ->references('id')
-                  ->on('videos')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('videos')
+                ->onDelete('cascade');
 
             $table->integer('label_id')->unsigned();
             $table->foreign('label_id')
-                  ->references('id')
-                  ->on('labels')
+                ->references('id')
+                ->on('labels')
                   // don't delete labels in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
+                ->references('id')
+                ->on('users')
                   // don't delete labels if the creator is deleted
-                  ->onDelete('set null');
+                ->onDelete('set null');
 
             $table->timestamps();
 

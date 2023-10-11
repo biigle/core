@@ -17,19 +17,22 @@ class AnnouncementControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
 
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
             ])
             // body required
             ->assertStatus(422);
 
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'body' => 'my body',
             ])
             // title required
             ->assertStatus(422);
 
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
                 'show_until' => '2000-01-01',
@@ -39,7 +42,8 @@ class AnnouncementControllerTest extends ApiTestCase
 
         $this->assertEquals(0, Announcement::count());
 
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
             ])
@@ -49,7 +53,8 @@ class AnnouncementControllerTest extends ApiTestCase
         $this->assertNull($announcement->show_until);
         $announcement->delete();
 
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
                 'show_until' => now()->addDay(),
@@ -64,7 +69,8 @@ class AnnouncementControllerTest extends ApiTestCase
     {
         Announcement::factory()->create(['show_until' => now()->addDay()]);
         $this->beGlobalAdmin();
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
             ])
@@ -75,7 +81,8 @@ class AnnouncementControllerTest extends ApiTestCase
     {
         Announcement::factory()->create();
         $this->beGlobalAdmin();
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
             ])
@@ -86,7 +93,8 @@ class AnnouncementControllerTest extends ApiTestCase
     {
         Announcement::factory()->create(['show_until' => '2022-10-20 16:00:00']);
         $this->beGlobalAdmin();
-        $this->json('POST', '/api/v1/announcements', [
+        $this
+            ->json('POST', '/api/v1/announcements', [
                 'title' => 'my title',
                 'body' => 'my body',
             ])

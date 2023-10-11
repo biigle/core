@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use \Illuminate\Foundation\Http\FormRequest;
 use Biigle\Project;
 use Biigle\Volume;
-use \Illuminate\Foundation\Http\FormRequest;
 
 class CloneVolume extends FormRequest
 {
@@ -73,12 +73,12 @@ class CloneVolume extends FormRequest
             if (!empty($fileIds)) {
                 $intersection = array_intersect($fileIds, $this->volume->files()->pluck('id')->toArray());
                 if (count($intersection) !== count($fileIds)) {
-                    $validator->errors()->add('only_files',
-                        'Cloning volume failed. Unauthorized access to files that do not belong to the volume');
+                    $validator->errors()->add(
+                        'only_files',
+                        'Cloning volume failed. Unauthorized access to files that do not belong to the volume'
+                    );
                 }
             }
         });
     }
-
-
 }
