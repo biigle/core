@@ -4,12 +4,9 @@ namespace Biigle\Tests\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
-use Biigle\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
 use Biigle\Volume;

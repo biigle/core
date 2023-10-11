@@ -3,13 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Video;
-use Illuminate\Http\File;
-use Queue;
-use Storage;
 
 class VideoControllerTest extends ApiTestCase
 {

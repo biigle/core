@@ -2,9 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Project;
 use Biigle\ProjectInvitation;
-use Biigle\Role;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 

@@ -6,10 +6,7 @@ use ApiTestCase;
 use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
-use Biigle\Visibility;
 
 class LabelTreeVersionControllerTest extends ApiTestCase
 {
@@ -36,13 +33,15 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->postJson("/api/v1/label-trees/{$master->id}/versions")
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+        $this
+            ->postJson("/api/v1/label-trees/{$master->id}/versions", [
                 'name' => 'v1.0',
                 'description' => 'First version.',
             ])
             ->assertStatus(200);
 
-        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+        $this
+            ->postJson("/api/v1/label-trees/{$master->id}/versions", [
                 'name' => 'v1.0',
                 'description' => 'Another first version.',
             ])
@@ -76,7 +75,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $master = $this->labelTree();
         $master->addMember($this->admin(), Role::adminId());
         $this->beAdmin();
-        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+        $this
+            ->postJson("/api/v1/label-trees/{$master->id}/versions", [
                 'name' => 'v1.0',
                 'doi' => 'https://doi.org/10.5281/zenodo.xxxxxxx',
             ])
@@ -90,7 +90,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $master = $this->labelTree();
         $master->addMember($this->admin(), Role::adminId());
         $this->beAdmin();
-        $this->postJson("/api/v1/label-trees/{$master->id}/versions", [
+        $this
+            ->postJson("/api/v1/label-trees/{$master->id}/versions", [
                 'name' => 'v1.0',
                 'doi' => '',
             ])
@@ -116,7 +117,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->putJson("/api/v1/label-tree-versions/{$version->id}")
             ->assertStatus(422);
 
-        $this->putJson("/api/v1/label-tree-versions/{$version->id}", [
+        $this
+            ->putJson("/api/v1/label-tree-versions/{$version->id}", [
                 'doi' => 'https://doi.org/10.5281/zenodo.xxxxxxx',
             ])
             ->assertStatus(200);

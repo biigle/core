@@ -384,7 +384,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->putJson("{$url}/{$id}", ['shape_id' => Shape::circleId()])
             ->assertStatus(422);
 
-        $this->putJson("{$url}/{$id}", [
+        $this
+            ->putJson("{$url}/{$id}", [
                 'shape_id' => Shape::circleId(),
                 'points' => [100, 200, 300],
             ])

@@ -5,7 +5,6 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\MediaType;
 use Biigle\Tests\VideoTest;
-use Exception;
 use Mockery;
 use Storage;
 

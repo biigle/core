@@ -4,7 +4,6 @@ namespace Biigle\Http\Requests;
 
 use Biigle\LabelTreeVersion;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateLabelTreeVersion extends FormRequest
 {

@@ -13,7 +13,6 @@ use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class VolumeController extends Controller
 {

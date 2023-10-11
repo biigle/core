@@ -4,10 +4,6 @@ namespace Biigle\Http\Controllers\Views\LabelTrees;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
-use Biigle\LabelTreeVersion;
-use Biigle\Project;
-use Biigle\Visibility;
-use DB;
 use Illuminate\Http\Request;
 
 class LabelTreeMergeController extends Controller

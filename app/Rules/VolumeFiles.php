@@ -82,9 +82,7 @@ class VolumeFiles implements Rule
         $count = count($value);
 
         if ($count !== count(array_unique($value))) {
-            $dupes = array_keys(array_filter(array_count_values($value), function ($v) {
-                return $v > 1;
-            }));
+            $dupes = array_keys(array_filter(array_count_values($value), fn ($v) => $v > 1));
 
 
             $this->message = 'A volume must not have the same file twice. Duplicate files: '.implode(', ', $dupes);
@@ -93,9 +91,7 @@ class VolumeFiles implements Rule
         }
 
         $lengths = array_map('strlen', $value);
-        $tooLong = array_filter($lengths, function ($l) {
-            return $l > self::FILENAME_MAX_LENGTH;
-        });
+        $tooLong = array_filter($lengths, fn ($l) => $l > self::FILENAME_MAX_LENGTH);
 
         if (!empty($tooLong)) {
             $this->message = 'A filename must not be longer than '.self::FILENAME_MAX_LENGTH.' characters.';

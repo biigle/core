@@ -34,31 +34,37 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$annotation->id}/split");
 
         $this->beUser();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split")
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split")
             ->assertStatus(403);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 0.5,
             ])
             ->assertStatus(422);
 
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.0,
             ])
             ->assertStatus(422);
 
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 2.0,
             ])
             ->assertStatus(422);
 
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 2.5,
             ])
             ->assertStatus(422);
 
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200);
@@ -81,7 +87,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -108,7 +115,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         $expect = [5, 0, 15, 0, 15, 10, 5, 10];
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -128,7 +136,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -148,7 +157,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             // Line strings cannot be split because the interpolation is not implemented.
@@ -165,7 +175,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             // Polygons cannot be split because the interpolation is not implemented.
@@ -182,7 +193,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -201,7 +213,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -221,7 +234,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)
@@ -241,7 +255,8 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->postJson("api/v1/video-annotations/{$annotation->id}/split", [
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/split", [
                 'time' => 1.5,
             ])
             ->assertStatus(200)

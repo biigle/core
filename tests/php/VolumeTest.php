@@ -12,13 +12,11 @@ use Cache;
 use Carbon\Carbon;
 use Event;
 use Exception;
-use File;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
 use Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VolumeTest extends ModelTestCase
@@ -149,9 +147,7 @@ class VolumeTest extends ModelTestCase
         $image = ImageTest::create(['volume_id' => $this->model->id]);
         $this->model->delete();
 
-        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
-            return $event->uuids[0] === $image->uuid;
-        });
+        Event::assertDispatched(ImagesDeleted::class, fn ($event) => $event->uuids[0] === $image->uuid);
     }
 
     public function testTiledImagesDeletedEventOnDelete()
@@ -161,12 +157,8 @@ class VolumeTest extends ModelTestCase
         $image = ImageTest::create(['volume_id' => $this->model->id, 'tiled' => true]);
         $this->model->delete();
 
-        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
-            return $event->uuids[0] === $image->uuid;
-        });
-        Event::assertDispatched(TiledImagesDeleted::class, function ($event) use ($image) {
-            return $event->uuids[0] === $image->uuid;
-        });
+        Event::assertDispatched(ImagesDeleted::class, fn ($event) => $event->uuids[0] === $image->uuid);
+        Event::assertDispatched(TiledImagesDeleted::class, fn ($event) => $event->uuids[0] === $image->uuid);
     }
 
     public function testAnnotationSessions()

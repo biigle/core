@@ -16,8 +16,6 @@ class DeleteVolumeTest extends TestCase
         $image = ImageTest::create();
         with(new DeleteVolume($image->volume))->handle();
         $this->assertNull($image->volume->fresh());
-        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
-            return $event->uuids[0] === $image->uuid;
-        });
+        Event::assertDispatched(ImagesDeleted::class, fn ($event) => $event->uuids[0] === $image->uuid);
     }
 }

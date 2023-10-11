@@ -67,7 +67,8 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         // last admin cannot be removed
-        $this->putJson("/api/v1/projects/{$id}/users/".$this->admin()->id, [
+        $this
+            ->putJson("/api/v1/projects/{$id}/users/".$this->admin()->id, [
                 'project_role_id' => Role::guestId(),
             ])
             ->assertStatus(422)
@@ -91,17 +92,23 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->project()->addUserId($id, Role::guestId());
 
         $this->beAdmin();
-        $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::editorId(),
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::editorId(),
+            ])
+            ->assertStatus(200);
 
-        $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::expertId(),
-        ])->assertStatus(200);
+        $this
+            ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::expertId(),
+            ])
+            ->assertStatus(200);
 
-        $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::adminId(),
-        ])->assertStatus(422);
+        $this
+            ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::adminId(),
+            ])
+            ->assertStatus(422);
     }
 
     public function testAttach()
@@ -147,21 +154,27 @@ class ProjectUserControllerTest extends ApiTestCase
         $id = $this->globalGuest()->id;
 
         $this->beAdmin();
-        $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::editorId(),
-        ])->assertStatus(200);
+        $this
+            ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::editorId(),
+            ])
+            ->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
-        $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::expertId(),
-        ])->assertStatus(200);
+        $this
+            ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::expertId(),
+            ])
+            ->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
-        $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::adminId(),
-        ])->assertStatus(422);
+        $this
+            ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
+                'project_role_id' => Role::adminId(),
+            ])
+            ->assertStatus(422);
     }
 
     public function testDestroy()

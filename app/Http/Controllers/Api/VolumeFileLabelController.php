@@ -3,8 +3,6 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolumeFileLabel;
-use Biigle\Image;
-use Biigle\ImageLabel;
 use Biigle\Label;
 
 abstract class VolumeFileLabelController extends Controller

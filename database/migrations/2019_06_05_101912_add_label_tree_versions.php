@@ -19,9 +19,9 @@ class AddLabelTreeVersions extends Migration
 
             $table->integer('label_tree_id')->unsigned()->index();
             $table->foreign('label_tree_id')
-                  ->references('id')
-                  ->on('label_trees')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('label_trees')
+                ->onDelete('cascade');
 
             $table->unique(['name', 'label_tree_id']);
         });
@@ -29,9 +29,9 @@ class AddLabelTreeVersions extends Migration
         Schema::table('label_trees', function (Blueprint $table) {
             $table->integer('version_id')->unsigned()->nullable()->unique();
             $table->foreign('version_id')
-                  ->references('id')
-                  ->on('label_tree_versions')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('label_tree_versions')
+                ->onDelete('cascade');
         });
     }
 

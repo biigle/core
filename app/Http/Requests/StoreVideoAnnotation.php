@@ -68,7 +68,7 @@ class StoreVideoAnnotation extends FormRequest
             }
 
             $points = $this->input('points', []);
-            $allArrays = array_reduce($points, fn($c, $i) => $c && is_array($i), true);
+            $allArrays = array_reduce($points, fn ($c, $i) => $c && is_array($i), true);
 
             if (!$allArrays) {
                 $validator->errors()->add('points', 'The points must be an array of arrays.');

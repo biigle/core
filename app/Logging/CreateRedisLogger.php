@@ -43,5 +43,4 @@ class CreateRedisLogger
     {
         return config('app.env');
     }
-
 }

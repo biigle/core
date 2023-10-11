@@ -42,7 +42,6 @@ class ImageController extends Controller
         return $image;
     }
 
-
     /**
      * Shows the specified image file.
      *
