@@ -334,8 +334,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
         FileCache::shouldReceive('exists')
             ->andThrow(new Exception('Invalid MIME type.'));
 
-        $response = 
-            $this->postJson("/api/v1/projects/{$id}/volumes", [
+        $response = $this
+            ->postJson("/api/v1/projects/{$id}/volumes", [
                 'name' => 'my volume no. 1',
                 'url' => 'test://images',
                 'media_type' => 'image',

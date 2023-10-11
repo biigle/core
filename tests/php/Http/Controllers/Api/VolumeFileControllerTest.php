@@ -97,7 +97,7 @@ class VolumeFileControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $response = 
+        $response =
             $this->json('POST', "/api/v1/volumes/{$id}/files", [
                 'files' => '1.jpg, 2.jpg',
             ]);
@@ -203,7 +203,7 @@ class VolumeFileControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $response = 
+        $response =
             $this->json('POST', "/api/v1/volumes/{$id}/files", [
                 'files' => '1.mp4, 2.mp4',
             ]);
@@ -270,8 +270,8 @@ class VolumeFileControllerTest extends ApiTestCase
         FileCache::shouldReceive('exists')
             ->andThrow(new Exception('Invalid MIME type.'));
 
-        $response =
-            $this->postJson("/api/v1/volumes/{$id}/files", [
+        $response = $this
+            ->postJson("/api/v1/volumes/{$id}/files", [
                 'files' => '1.jpg',
             ])
             ->assertStatus(422);

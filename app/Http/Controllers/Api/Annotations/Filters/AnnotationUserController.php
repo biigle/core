@@ -55,12 +55,12 @@ class AnnotationUserController extends Controller
         $labelsRelation = $model->labels();
 
         return $query
-                ->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
-                ->where($labelsRelation->getRelated()->user()->getQualifiedForeignKeyName(), $uid)
-                ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
-                ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $tid)
-                ->select($ownerKeyName)
-                ->distinct()
-                ->pluck($ownerKeyName);
+            ->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
+            ->where($labelsRelation->getRelated()->user()->getQualifiedForeignKeyName(), $uid)
+            ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
+            ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $tid)
+            ->select($ownerKeyName)
+            ->distinct()
+            ->pluck($ownerKeyName);
     }
 }

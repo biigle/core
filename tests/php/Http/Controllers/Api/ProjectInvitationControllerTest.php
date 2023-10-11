@@ -148,9 +148,10 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $pid = $this->project()->id;
 
         $this->beUser();
-        $this->post("/api/v1/project-invitations/{$id}/join", [
-            'token' => $invitation->uuid,
-        ])
+        $this
+            ->post("/api/v1/project-invitations/{$id}/join", [
+                'token' => $invitation->uuid,
+            ])
             ->assertRedirect("projects/{$pid}");
     }
 

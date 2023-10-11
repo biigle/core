@@ -229,8 +229,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 '=',
                 'image_annotations.id'
             )
-            ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds))
-            ->whereIn('image_annotations.image_id', $selectedFileIds);
+                ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds))
+                ->whereIn('image_annotations.image_id', $selectedFileIds);
 
 
         // use unique ids, because an annotation with multiple labels would be duplicated
@@ -384,9 +384,9 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 '=',
                 'video_annotations.id'
             )
-            ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds))
-            ->whereIn('video_annotations.video_id', $selectedFileIds)
-            ->distinct();
+                ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds))
+                ->whereIn('video_annotations.video_id', $selectedFileIds)
+                ->distinct();
 
         // use unique ids, because an annotation with multiple labels would be duplicated
         $usedAnnotationIds = $annotationJoinLabel
@@ -480,7 +480,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 fn ($q) => $q->with('labels')
             )
             ->orderBy('id')
-            ->get()->map(function ($oldVideo) use ($newVideoIds) {
+            ->get()
+            ->map(function ($oldVideo) use ($newVideoIds) {
                 $newVideoId = $newVideoIds->shift();
                 $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
                     $origin = $oldLabel->getRawOriginal();

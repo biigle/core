@@ -244,8 +244,8 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testCloneVolume()
     {
-        $volume =
-            $this->volume([
+        $volume = $this
+            ->volume([
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
             ])
