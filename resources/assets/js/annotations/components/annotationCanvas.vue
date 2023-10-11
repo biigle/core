@@ -23,6 +23,10 @@ import MousePosition from './annotationCanvas/mousePosition';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
+import MultiPolygon from '@biigle/ol/geom/MultiPolygon';
+import MultiPoint from '@biigle/ol/geom/MultiPoint';
+import LinearRing from '@biigle/ol/geom/LinearRing';
+import MultiLineString from '@biigle/ol/geom/MultiLineString';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
 import Projection from '@biigle/ol/proj/Projection';
 import Rectangle from '@biigle/ol/geom/Rectangle';
@@ -40,11 +44,18 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
-import {click as clickCondition} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction'
-import {getCenter} from '@biigle/ol/extent';
-import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import { click as clickCondition } from '@biigle/ol/events/condition';
+import { defaults as defaultInteractions } from '@biigle/ol/interaction'
+import { getCenter } from '@biigle/ol/extent';
+import { shiftKeyOnly as shiftKeyOnlyCondition } from '@biigle/ol/events/condition';
+import { singleClick as singleClickCondition } from '@biigle/ol/events/condition';
+import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
+import JstsMultiPolygon from 'jsts/org/locationtech/jts/geom/MultiPolygon';
+import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
+import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
+import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
+import Monkey from 'jsts/org/locationtech/jts/monkey';
+import Geometry from '@biigle/ol/geom/Geometry';
 
 
 /**
@@ -512,9 +523,8 @@ export default {
         handleNewFeature(e) {
             if (this.hasSelectedLabel) {
                 let geometry = e.feature.getGeometry();
-                let points = this.getPoints(geometry);
-
                 if (geometry.getType() === 'Polygon') {
+
                     if (this.isInvalidPolygon(e)) {
                         this.$emit('has-invalid-polygon');
                         this.annotationSource.once('change', () => {
@@ -524,6 +534,31 @@ export default {
                         });
                         return;
                     }
+
+                    // Check if polygon is self-intersecting
+                    const parser = new OL3Parser();
+                    parser.inject(
+                        Point,
+                        LineString,
+                        LinearRing,
+                        Polygon,
+                        MultiPoint,
+                        MultiLineString,
+                        MultiPolygon
+                    );
+
+                    // translate ol geometry into jsts geometry
+                    let jstsGeom = parser.read(e.feature.getGeometry());
+                    // divide possibly intersecting polygon at cross points 
+                    // in several smaller polygons
+                    let possiblyMultiGeom = parser.write(this.jstsValidate(jstsGeom));
+
+                    if (possiblyMultiGeom.getCoordinates().length > 1) {
+                        // select biggest part of all polygons
+                        let biggestPolygonCoordinates = this.getGreatestPolygon(possiblyMultiGeom);
+                        geometry.setCoordinates(biggestPolygonCoordinates);
+                    }
+
                 }
 
                 e.feature.set('color', this.selectedLabel.color);
@@ -538,6 +573,7 @@ export default {
                         // Do nothing in this case.
                     }
                 };
+                let points = this.getPoints(geometry);
 
                 this.$emit('new', {
                     shape: geometry.getType(),
@@ -552,6 +588,110 @@ export default {
             let points = geometry.getCoordinates()[0];
             return (new Set(points.map(xy => String([xy])))).size < 3;
             
+        },
+        getGreatestPolygon(multGeom){
+            let coordinateLists = multGeom.getCoordinates();
+            let tmpGeom = multGeom.clone();
+                let areas = coordinateLists.map((l) => {
+                    tmpGeom.setCoordinates([l]);
+                    return tmpGeom.getArea();
+                });
+            let idx = areas.indexOf(Math.max(...areas));
+
+            return coordinateLists[idx];
+
+        },
+        /**
+        * @author Martin Kirk
+        * source: https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+        * 
+        * 
+        *  Get / create a valid version of the geometry given. If the geometry is a polygon or multi polygon, self intersections /
+        * inconsistencies are fixed. Otherwise the geometry is returned.
+        *
+        * @param geom
+        * @return a geometry
+        */
+        jstsValidate(geom) {
+            if (geom instanceof JstsPolygon) {
+                if (geom.isValid()) {
+                    geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
+                    return geom; // If the polygon is valid just return it
+                }
+                var polygonizer = new Polygonizer();
+                this.jstsAddPolygon(geom, polygonizer);
+                return this.jstsToPolygonGeometry(polygonizer.getPolygons(), geom.getFactory());
+            } else {
+                return geom; // In my case, I only care about polygon / multipolygon geometries
+            }
+        },
+
+        /**
+        * @author Martin Kirk
+        * source: https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+        * 
+        * 
+        * Add all line strings from the polygon given to the polygonizer given
+        *
+        * @param polygon polygon from which to extract line strings
+        * @param polygonizer polygonizer
+        */
+        jstsAddPolygon(polygon, polygonizer) {
+            this.jstsAddLineString(polygon.getExteriorRing(), polygonizer);
+
+            for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
+                this.jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
+            }
+        },
+
+        /**
+        * @author Martin Kirk
+        * source: https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+        * 
+        * Add the linestring given to the polygonizer
+        *
+        * @param linestring line string
+        * @param polygonizer polygonizer
+        */
+        jstsAddLineString(lineString, polygonizer) {
+
+            if (lineString instanceof JstsLinearRing) {
+                // LinearRings are treated differently to line strings : we need a LineString NOT a LinearRing
+                lineString = lineString.getFactory().createLineString(lineString.getCoordinateSequence());
+            }
+
+            // unioning the linestring with the point makes any self intersections explicit.
+            var point = lineString.getFactory().createPoint(lineString.getCoordinateN(0));
+            var toAdd = lineString.union(point); //geometry
+
+            //Add result to polygonizer
+            polygonizer.add(toAdd);
+        },
+
+        /**
+        * @author Martin Kirk
+        * source: https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+        * 
+        * Get a geometry from a collection of polygons.
+        *
+        * @param polygons collection
+        * @return null if there were no polygons, the polygon if there was only one, or a MultiPolygon containing all polygons otherwise
+        */
+        jstsToPolygonGeometry(polygons) {
+            switch (polygons.size()) {
+                case 0:
+                    return null; // No valid polygons!
+                case 1:
+                    return polygons.iterator().next(); // single polygon - no need to wrap
+                default:
+                    //polygons may still overlap! Need to sym difference them
+                    var iter = polygons.iterator();
+                    var ret = iter.next();
+                    while (iter.hasNext()) {
+                        ret = ret.symDifference(iter.next());
+                    }
+                    return ret;
+            }
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
