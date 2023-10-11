@@ -56,8 +56,6 @@ class FileLabelsController extends Controller
             ->select('id')
             ->get()
             ->keyBy('id')
-            ->map(function ($image) {
-                return $image->labels;
-            });
+            ->map(fn ($image) => $image->labels);
     }
 }

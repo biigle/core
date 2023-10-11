@@ -15,8 +15,6 @@ use Queue;
 
 class VolumeController extends Controller
 {
-
-
     /**
      * Shows all volumes the user has access to.
      *
@@ -150,7 +148,6 @@ class VolumeController extends Controller
                 ->with('reread', $shouldReread);
         }
     }
-
 
     /**
      * Clones volume to destination project.

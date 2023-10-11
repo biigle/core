@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\DestroyVideoAnnotationLabel;
 use Biigle\Http\Requests\StoreVideoAnnotationLabel;
 use Biigle\VideoAnnotationLabel;

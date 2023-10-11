@@ -38,9 +38,7 @@ class LabelSourceTest extends ModelTestCase
     {
         $mock = Mockery::mock();
 
-        App::singleton('Biigle\Services\LabelSourceAdapters\AbCdAdapter', function () use ($mock) {
-            return $mock;
-        });
+        App::singleton('Biigle\Services\LabelSourceAdapters\AbCdAdapter', fn () => $mock);
 
         $source = self::create(['name' => 'ab_cd']);
 

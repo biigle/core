@@ -11,7 +11,7 @@
         <span v-if="showFilename" class="image-filename" :title="image.filename" v-text="image.filename"></span>
         <div class="image-buttons">
             <a v-if="image.infoUrl" :href="image.infoUrl" class="image-button" title="View image information">
-                <span class="fa fa-info-circle" aria-hidden="true"></span>
+                <span class="fa fa-info-circle fa-fw" aria-hidden="true"></span>
             </a>
         </div>
         <div v-if="showLabels" class="image-labels" @wheel.stop>

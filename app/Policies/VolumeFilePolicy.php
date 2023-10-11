@@ -41,9 +41,7 @@ class VolumeFilePolicy extends CachedPolicy
     public function access(User $user, VolumeFile $file)
     {
         // put this to permanent cache for rapid querying of file thumbnails
-        return Cache::remember("volume-file-can-access-{$user->id}-{$file->volume_id}", 30, function () use ($user, $file) {
-            return Project::inCommon($user, $file->volume_id)->exists();
-        });
+        return Cache::remember("volume-file-can-access-{$user->id}-{$file->volume_id}", 30, fn () => Project::inCommon($user, $file->volume_id)->exists());
     }
 
     /**

@@ -29,8 +29,6 @@ class CleanupImageTilesTest extends TestCase
     {
         $image = ImageTest::create();
         event(new TiledImagesDeleted($image->uuid));
-        Queue::assertPushed(CallQueuedListener::class, function ($job) {
-            return $job->class === CleanupImageTiles::class;
-        });
+        Queue::assertPushed(CallQueuedListener::class, fn ($job) => $job->class === CleanupImageTiles::class);
     }
 }

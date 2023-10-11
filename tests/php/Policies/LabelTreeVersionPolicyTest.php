@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
 use Biigle\Role;
 use Biigle\Tests\LabelTreeVersionTest;

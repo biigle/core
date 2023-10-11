@@ -115,7 +115,7 @@
             "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
         ],
         "fix": [
-            "@php vendor/bin/php-cs-fixer fix --config='.php_cs'"
+            "@php vendor/bin/php-cs-fixer fix --config='.php-cs-fixer.php'"
         ],
         "doc": [
             "rm -rf public/doc/server",

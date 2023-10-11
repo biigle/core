@@ -7,7 +7,6 @@ use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoTest;
 use TestCase;
 
 class VideoAnnotationLabelPolicyTest extends TestCase

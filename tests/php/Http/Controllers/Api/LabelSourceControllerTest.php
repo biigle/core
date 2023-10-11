@@ -6,7 +6,6 @@ use ApiTestCase;
 use App;
 use Biigle\Tests\LabelSourceTest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Mockery;
 
 class LabelSourceControllerTest extends ApiTestCase
@@ -21,9 +20,7 @@ class LabelSourceControllerTest extends ApiTestCase
             ->with(Mockery::type(Request::class))
             ->andReturn([['name' => 'My Query Label']]);
 
-        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
-            return $mock;
-        });
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', fn () => $mock);
 
         $this->doTestApiRoute('GET', "/api/v1/label-sources/{$source->id}/find");
 
@@ -33,9 +30,10 @@ class LabelSourceControllerTest extends ApiTestCase
         // no query parameter
         $response->assertStatus(422);
 
-        $response = $this->json('GET', "/api/v1/label-sources/{$source->id}/find", [
-            'query' => 'my query',
-        ]);
+        $response = $this
+            ->json('GET', "/api/v1/label-sources/{$source->id}/find", [
+                'query' => 'my query',
+            ]);
         $response->assertStatus(200);
         $response->assertExactJson([['name' => 'My Query Label']]);
     }

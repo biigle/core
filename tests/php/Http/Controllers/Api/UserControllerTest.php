@@ -278,23 +278,27 @@ class UserControllerTest extends ApiTestCase
         $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::guestId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::editorId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
         $this->assertEquals(Role::editorId(), $user->fresh()->role_id);
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::expertId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(422);
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::adminId(),
                 'auth_password' => 'adminpassword',
             ])
@@ -310,7 +314,8 @@ class UserControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
 
         $user = $this->guest();
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'can_review' => '1',
                 'auth_password' => 'adminpassword',
             ])
@@ -320,14 +325,16 @@ class UserControllerTest extends ApiTestCase
 
         $user = $this->user();
         $this->assertFalse($user->canReview);
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'can_review' => '1',
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
 
         $this->assertTrue($user->fresh()->canReview);
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'can_review' => '0',
                 'auth_password' => 'adminpassword',
             ])
@@ -346,13 +353,15 @@ class UserControllerTest extends ApiTestCase
         $user->save();
 
         // This sets canReview to false, too.
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::guestId(),
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
 
-        $this->putJson("api/v1/users/{$user->id}", [
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::editorId(),
                 'auth_password' => 'adminpassword',
             ])

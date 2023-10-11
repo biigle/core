@@ -37,9 +37,7 @@ class VolumePolicy extends CachedPolicy
      */
     public function access(User $user, Volume $volume)
     {
-        return $this->remember("volume-can-access-{$user->id}-{$volume->id}", function () use ($user, $volume) {
-            return $this->getBaseQuery($user, $volume)->exists();
-        });
+        return $this->remember("volume-can-access-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)->exists());
     }
 
     /**

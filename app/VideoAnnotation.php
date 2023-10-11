@@ -80,11 +80,7 @@ class VideoAnnotation extends Annotation
      */
     public function setPointsAttribute(array $points)
     {
-        $points = array_map(function ($points) {
-            return array_map(function ($value) {
-                return round($value, 2);
-            }, $points);
-        }, $points);
+        $points = array_map(fn ($points) => array_map(fn ($value) => round($value, 2), $points), $points);
 
         $this->attributes['points'] = json_encode($points);
     }
@@ -209,9 +205,7 @@ class VideoAnnotation extends Annotation
      */
     protected function interpolateNaive($from, $to, $progress)
     {
-        return array_map(function ($index, $value) use ($to, $progress) {
-            return $value + ($to[$index] - $value) * $progress;
-        }, array_keys($from), $from);
+        return array_map(fn ($index, $value) => $value + ($to[$index] - $value) * $progress, array_keys($from), $from);
     }
 
     /**
