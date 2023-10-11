@@ -4,9 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Views\Annotations;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
 
 class AnnotationToolControllerTest extends ApiTestCase
 {

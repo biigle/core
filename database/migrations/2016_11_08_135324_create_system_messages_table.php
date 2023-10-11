@@ -39,10 +39,10 @@ class CreateSystemMessagesTable extends Migration
 
             $table->integer('type_id')->unsigned();
             $table->foreign('type_id')
-                  ->references('id')
-                  ->on('system_message_types')
+                ->references('id')
+                ->on('system_message_types')
                   // dont delete type if it is in use
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
         });
     }
 

@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Rules;
 
 use Biigle\Rules\VideoMetadata;
-use TestCase;
 
 class VideoMetadataTest extends ImageMetadataTest
 {

@@ -8,7 +8,6 @@ use Biigle\Jobs\TileSingleImage;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Jcupitt\Vips\Exception as VipsException;
-use Log;
 use Queue;
 use Storage;
 use TestCase;
@@ -131,9 +130,7 @@ class ProcessNewImageTest extends TestCase
         Queue::fake();
         with(new ProcessNewImageMock($image))->handle();
 
-        Queue::assertPushed(TileSingleImage::class, function ($job) use ($image) {
-            return $job->image->id === $image->id;
-        });
+        Queue::assertPushed(TileSingleImage::class, fn ($job) => $job->image->id === $image->id);
         $image->refresh();
         $this->assertTrue($image->tiled);
         $this->assertTrue($image->tilingInProgress);
@@ -201,6 +198,7 @@ class ImageMock extends \Jcupitt\Vips\Image
 {
     public $width;
     public $height;
+
     public function __construct($width, $height)
     {
         parent::__construct(null);
@@ -212,10 +210,12 @@ class ImageMock extends \Jcupitt\Vips\Image
 class ProcessNewImageMock extends ProcessNewImage
 {
     public $exif = false;
+
     protected function makeThumbnail(Image $image, $path)
     {
         // do nothing
     }
+
     protected function getExif($path)
     {
         if ($this->exif) {

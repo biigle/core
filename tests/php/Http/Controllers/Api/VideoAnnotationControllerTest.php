@@ -49,11 +49,13 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/videos/{$this->video->id}/annotations");
 
         $this->beUser();
-        $this->getJson("/api/v1/videos/{$this->video->id}/annotations")
+        $this
+            ->getJson("/api/v1/videos/{$this->video->id}/annotations")
             ->assertStatus(403);
 
         $this->beGuest();
-        $this->getJson("/api/v1/videos/{$this->video->id}/annotations")
+        $this
+            ->getJson("/api/v1/videos/{$this->video->id}/annotations")
             ->assertStatus(200)
             ->assertJsonFragment(['frames' => [1.0]])
             ->assertJsonFragment(['points' => [[10, 20]]])
@@ -94,7 +96,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->get("/api/v1/videos/{$this->video->id}/annotations")
+        $this
+            ->get("/api/v1/videos/{$this->video->id}/annotations")
             ->assertStatus(200)
             ->assertJsonFragment(['points' => [[10, 20]]])
             ->assertJsonFragment(['points' => [[20, 30]]]);
@@ -102,7 +105,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $session->users()->attach($this->editor());
         Cache::flush();
 
-        $this->get("/api/v1/videos/{$this->video->id}/annotations")
+        $this
+            ->get("/api/v1/videos/{$this->video->id}/annotations")
             ->assertStatus(200)
             ->assertJsonMissing(['points' => [[10, 20]]])
             ->assertJsonFragment(['points' => [[20, 30]]]);
@@ -130,18 +134,19 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/video-annotations/{$annotation->id}");
 
         $this->beUser();
-        $this->getJson("/api/v1/video-annotations/{$annotation->id}")
+        $this
+            ->getJson("/api/v1/video-annotations/{$annotation->id}")
             ->assertStatus(403);
 
         $this->beGuest();
-        $this->getJson("/api/v1/video-annotations/{$annotation->id}")
+        $this
+            ->getJson("/api/v1/video-annotations/{$annotation->id}")
             ->assertStatus(200)
             ->assertJsonFragment(['frames' => [1.0]])
             ->assertJsonFragment(['points' => [[10, 20]]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label']);
     }
-
 
     public function showAnnotationSession()
     {
@@ -161,13 +166,15 @@ class VideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->get("/api/v1/video-annotations/{$this->annotation->id}")
+        $this
+            ->get("/api/v1/video-annotations/{$this->annotation->id}")
             ->assertStatus(200);
 
         $session->users()->attach($this->admin());
         Cache::flush();
 
-        $this->get("/api/v1/video-annotations/{$this->annotation->id}")
+        $this
+            ->get("/api/v1/video-annotations/{$this->annotation->id}")
             ->assertStatus(403);
     }
 
@@ -181,11 +188,13 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         // missing arguments
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations")
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations")
             ->assertStatus(422);
 
         // shape does not exist
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => 99999,
                 'label_id' => $label->id,
                 'points' => [],
@@ -194,7 +203,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         // points is required
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::lineId(),
                 'label_id' => $label->id,
                 'frames' => [],
@@ -202,7 +212,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         // frames is required
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::lineId(),
                 'label_id' => $label->id,
                 'points' => [],
@@ -210,7 +221,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         // at least one point required
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $label->id,
                 'points' => [],
@@ -219,7 +231,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         // number of points and frames does not match
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $label->id,
                 'points' => [[0, 0]],
@@ -228,7 +241,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         // label does not belong to a label tree of the project of the video
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $label->id,
                 'points' => [[0, 0]],
@@ -240,7 +254,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         // policies are cached
         Cache::flush();
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $label->id,
                 'points' => [[10, 11]],
@@ -262,7 +277,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidatePoints()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13]],
@@ -274,7 +290,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidatePointsArray()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [null],
@@ -286,7 +303,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidateFrames()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -298,7 +316,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackPoint()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -308,7 +327,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             // Not a single frame annotation.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11], [20, 21]],
@@ -318,7 +338,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             // Still not a single frame annotation.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -329,7 +350,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         Queue::fake();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -343,7 +365,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackRectangle()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::rectangleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13]],
@@ -357,7 +380,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackCircle()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::circleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12]],
@@ -370,7 +394,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackLineString()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::lineId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13]],
@@ -384,7 +409,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackPolygon()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::polygonId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13, 14, 15]],
@@ -400,7 +426,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         config(['videos.tracking_point_padding' => 10]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[0, 0]],
@@ -413,7 +440,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->video->height = 100;
         $this->video->save();
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[0, 0]],
@@ -422,7 +450,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[100, 100]],
@@ -431,7 +460,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[90, 90]],
@@ -444,7 +474,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackCircleOutsideBoundary()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::circleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[0, 0, 10]],
@@ -457,7 +488,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->video->height = 100;
         $this->video->save();
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::circleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[0, 0, 10]],
@@ -466,7 +498,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::circleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[100, 100, 10]],
@@ -475,7 +508,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::circleId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[90, 90, 10]],
@@ -489,7 +523,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     {
         Queue::fake();
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -506,7 +541,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         config(['videos.track_object_max_jobs_per_user' => 3]);
         Cache::put(TrackObject::getRateLimitCacheKey($this->editor()), 3);
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11]],
@@ -520,7 +556,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrameAnnotation()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[0, 0], [1, 1]],
@@ -529,7 +566,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             // Points must be empty.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [],
@@ -538,7 +576,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             // No more than two frames for a new whole frame annotation.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'frames' => [0.0, 1.5],
@@ -555,7 +594,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrameSingleFrameAnnotation()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'frames' => [0.0],
@@ -572,7 +612,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAndTrackWholeFrameAnnotation()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[10, 11, 12, 13, 14, 15]],
@@ -586,21 +627,24 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testStoreInvalidKeyFrames()
     {
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'frames' => [-1, 1.5],
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'frames' => [0, 2.5],
             ])
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::wholeFrameId(),
                 'label_id' => $this->labelRoot()->id,
                 'frames' => [0, 2.0],
@@ -619,10 +663,12 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', "api/v1/video-annotations/{$annotation->id}");
 
         $this->beUser();
-        $this->putJson("api/v1/video-annotations/{$annotation->id}")->assertStatus(403);
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}")->assertStatus(403);
 
         $this->beAdmin();
-        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
                 'points' => [[10, 20], [30, 40]],
                 'frames' => [1.0, 10.0]
             ])
@@ -644,7 +690,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $this->beAdmin();
         // invalid number of points
-        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
                 'points' => [[10, 15, 20]],
             ])
             ->assertStatus(422);
@@ -660,7 +707,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->putJson("api/v1/video-annotations/{$annotation->id}", [
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
                 'frames' => [1.0, 2.0, null, 3.0, 4.0],
             ])
             ->assertStatus(200);

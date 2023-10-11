@@ -3,8 +3,6 @@
 namespace Biigle\Tests;
 
 use Biigle\Events\VideosDeleted;
-use Biigle\Role;
-use Biigle\Tests\UserTest;
 use Biigle\Video;
 use Carbon\Carbon;
 use Event;
@@ -132,9 +130,7 @@ class VideoTest extends ModelTestCase
     {
         Event::fake([VideosDeleted::class]);
         $this->model->delete();
-        Event::assertDispatched(VideosDeleted::class, function ($event) {
-            return $event->uuids[0] === $this->model->uuid;
-        });
+        Event::assertDispatched(VideosDeleted::class, fn ($event) => $event->uuids[0] === $this->model->uuid);
     }
 
     public function testTakenAt()

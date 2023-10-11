@@ -17,9 +17,7 @@ class VolumeFactory extends Factory
     {
         return [
             'name' => $this->faker->company(),
-            'media_type_id' => function () {
-                return MediaType::imageId();
-            },
+            'media_type_id' => fn () => MediaType::imageId(),
             'creator_id' => User::factory(),
             'url' => 'test://files',
         ];

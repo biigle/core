@@ -53,12 +53,13 @@ class AnnotationLabelController extends Controller
         $ownerKeyName = $fileRelation->getQualifiedOwnerKeyName();
         $labelsRelation = $model->labels();
 
-        return $query->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
-                ->where($labelsRelation->getRelated()->label()->getQualifiedForeignKeyName(), $lid)
-                ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
-                ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $tid)
-                ->select($ownerKeyName)
-                ->distinct()
-                ->pluck($ownerKeyName);
+        return $query
+            ->join($labelsRelation->getRelated()->getTable(), $labelsRelation->getQualifiedParentKeyName(), '=', $labelsRelation->getQualifiedForeignKeyName())
+            ->where($labelsRelation->getRelated()->label()->getQualifiedForeignKeyName(), $lid)
+            ->join($fileRelation->getRelated()->getTable(), $fileRelation->getQualifiedForeignKeyName(), '=', $ownerKeyName)
+            ->where($fileRelation->getRelated()->volume()->getQualifiedForeignKeyName(), $tid)
+            ->select($ownerKeyName)
+            ->distinct()
+            ->pluck($ownerKeyName);
     }
 }

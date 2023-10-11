@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Tests\ImageTest;
 use Illuminate\Http\UploadedFile;
 
 class ParseIfdoControllerTest extends ApiTestCase

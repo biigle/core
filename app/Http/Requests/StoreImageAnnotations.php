@@ -60,9 +60,7 @@ class StoreImageAnnotations extends FormRequest
 
         $this->labels = Label::findMany($labelIds)->keyBy('id');
 
-        return $this->images->reduce(function ($carry, $image) {
-            return $carry && $this->user()->can('add-annotation', $image);
-        }, true);
+        return $this->images->reduce(fn ($carry, $image) => $carry && $this->user()->can('add-annotation', $image), true);
     }
 
     /**

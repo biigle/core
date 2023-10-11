@@ -122,9 +122,7 @@ class MetadataController extends Controller
 
         $columns = collect(array_shift($metadata));
         $rowsByFile = collect($metadata)
-            ->map(function ($row) use ($columns) {
-                return $columns->combine($row);
-            })
+            ->map(fn ($row) => $columns->combine($row))
             ->map(function ($row) {
                 if ($row->has('taken_at')) {
                     $row['taken_at'] = Carbon::parse($row['taken_at']);
@@ -164,25 +162,25 @@ class MetadataController extends Controller
     {
         $metadata = collect();
         // Everything will be indexed by the timestamps below.
-        $origTakenAt = collect($video->taken_at)->map(function ($time) {
-            return $time->getTimestamp();
-        });
-        $newTakenAt = $rows->pluck('taken_at')->filter()->map(function ($time) {
-            return $time->getTimestamp();
-        });
+        $origTakenAt = collect($video->taken_at)->map(fn ($time) => $time->getTimestamp());
+        $newTakenAt = $rows->pluck('taken_at')->filter()->map(fn ($time) => $time->getTimestamp());
 
         if ($origTakenAt->isEmpty() && $this->hasMetadata($video)) {
             if ($rows->count() > 1 || $newTakenAt->isNotEmpty()) {
-                throw ValidationException::withMessages([
-                    'metadata' => ["Metadata of video '{$video->filename}' has no 'taken_at' timestamps and cannot be updated with new metadata that has timestamps."],
-                ]);
+                throw ValidationException::withMessages(
+                    [
+                        'metadata' => ["Metadata of video '{$video->filename}' has no 'taken_at' timestamps and cannot be updated with new metadata that has timestamps."],
+                    ]
+                );
             }
 
             return $rows->first();
         } elseif ($newTakenAt->isEmpty()) {
-            throw ValidationException::withMessages([
+            throw ValidationException::withMessages(
+                [
                     'metadata' => ["Metadata of video '{$video->filename}' has 'taken_at' timestamps and cannot be updated with new metadata that has no timestamps."],
-                ]);
+                ]
+            );
         }
 
         // These are used to fill missing values with null.
@@ -190,14 +188,10 @@ class MetadataController extends Controller
         $newTakenAtNull = $newTakenAt->combine($newTakenAt->map(fn ($x) => null));
 
         $originalAttributes = collect(VideoMetadata::ALLOWED_ATTRIBUTES)
-            ->mapWithKeys(function ($key) use ($video) {
-                return [$key => $video->$key];
-            });
+            ->mapWithKeys(fn ($key) => [$key => $video->$key]);
 
         $originalMetadata = collect(VideoMetadata::ALLOWED_METADATA)
-            ->mapWithKeys(function ($key) use ($video) {
-                return [$key => null];
-            })
+            ->mapWithKeys(fn ($key) => [$key => null])
             ->merge($video->metadata);
 
         $originalData = $originalMetadata->merge($originalAttributes);

@@ -4,7 +4,6 @@ namespace Biigle\Http\Requests;
 
 use Biigle\Image;
 use Biigle\Shape;
-use Illuminate\Foundation\Http\FormRequest;
 
 class StoreImageAnnotation extends StoreImageAnnotationLabel
 {

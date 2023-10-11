@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Rules;
 
-use Biigle\Rules\VolumeUrl;
 use Biigle\Role;
+use Biigle\Rules\VolumeUrl;
 use Biigle\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -105,9 +105,7 @@ class VolumeUrlTest extends TestCase
         $handler = HandlerStack::create($mock);
 
         $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
+        app()->bind(Client::class, fn () => $client);
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
         $this->assertStringContainsString('The remote volume URL does not seem to exist', $validator->message());
@@ -119,9 +117,7 @@ class VolumeUrlTest extends TestCase
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
+        app()->bind(Client::class, fn () => $client);
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'http://localhost'));
         $this->assertStringContainsString('The remote volume URL returned an error response', $validator->message());
@@ -140,9 +136,7 @@ class VolumeUrlTest extends TestCase
         $handler = HandlerStack::create($mock);
         $handler->push($history);
         $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
+        app()->bind(Client::class, fn () => $client);
 
         $validator = new VolumeUrl;
         $this->assertTrue($validator->passes(null, 'http://localhost'));

@@ -8,10 +8,8 @@ use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoLabelTest;
-use Biigle\Visibility;
 
 class LabelTreeMergeControllerTest extends ApiTestCase
 {
@@ -36,7 +34,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Missing arguments.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$existingChild->id],
                 'create' => [
                     [
@@ -87,7 +86,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $otherParent = LabelTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -99,7 +99,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Parent does not exist.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -111,7 +112,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Parent is no ID.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -123,7 +125,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Parent belongs to other tree.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -142,7 +145,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $sameParent = LabelTest::create(['label_tree_id' => $tree->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -152,7 +156,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Color is required.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'color' => 'bada55',
@@ -162,7 +167,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Name is required.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -173,7 +179,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Color is invalid.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -189,7 +196,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             // Child is invalid.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'create' => [
                     [
                         'name' => 'New Label',
@@ -215,13 +223,15 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $otherTree = LabelTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [999],
             ])
             // Does not exist.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$otherTree->id],
             ])
             // Belongs to other tree.
@@ -236,7 +246,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $annotationLabel = ImageAnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             // Cannot be removed.
@@ -248,13 +259,15 @@ class LabelTreeMergeControllerTest extends ApiTestCase
             'parent_id' => $label->id,
         ]);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             // Still cannot be removed.
             ->assertStatus(422);
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id, $child->id],
             ])
             ->assertStatus(200);
@@ -268,7 +281,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $annotationLabel = ImageLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             // Cannot be removed.
@@ -276,7 +290,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
 
         $annotationLabel->delete();
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             ->assertStatus(200);
@@ -290,7 +305,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $annotationLabel = VideoAnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             // Cannot be removed.
@@ -298,7 +314,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
 
         $annotationLabel->delete();
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             ->assertStatus(200);
@@ -312,7 +329,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $annotationLabel = VideoLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             // Cannot be removed.
@@ -320,7 +338,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
 
         $annotationLabel->delete();
 
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
             ])
             ->assertStatus(200);
@@ -333,7 +352,8 @@ class LabelTreeMergeControllerTest extends ApiTestCase
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
 
         $this->beEditor();
-        $this->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
                 'remove' => [$label->id],
                 'create' => [
                     [

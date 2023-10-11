@@ -63,9 +63,7 @@ class LogManager
 
         $logs = File::glob("{$path}/*.log");
 
-        return array_map(function ($path) {
-            return File::name($path);
-        }, $logs);
+        return array_map(fn ($path) => File::name($path), $logs);
     }
 
     /**
@@ -107,12 +105,8 @@ class LogManager
         $client = Redis::connection($connection)->client();
 
         return collect($client->lrange('log', 0, -1))
-            ->map(function ($message) {
-                return json_decode($message, true);
-            })
-            ->filter(function ($message) use ($level) {
-                return $message['level'] >= $level;
-            });
+            ->map(fn ($message) => json_decode($message, true))
+            ->filter(fn ($message) => $message['level'] >= $level);
     }
 
     /**
@@ -136,9 +130,7 @@ class LogManager
             return array_reduce($filenames, function ($carry, $filename) use ($days) {
                 $content = $this->getLogFileContent($filename);
 
-                return array_reduce($days, function ($carry, $day) use ($content) {
-                    return $carry + substr_count($content, "[{$day}");
-                }, $carry);
+                return array_reduce($days, fn ($carry, $day) => $carry + substr_count($content, "[{$day}"), $carry);
             }, 0);
         } elseif ($this->isRedis()) {
             return $this->getRedisLogMessages($level)

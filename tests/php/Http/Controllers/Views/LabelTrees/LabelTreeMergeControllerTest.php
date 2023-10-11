@@ -4,7 +4,6 @@ namespace Biigle\Http\Controllers\Views\LabelTrees;
 
 use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\UserTest;
 use Biigle\Visibility;
 use Cache;

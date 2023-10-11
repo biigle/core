@@ -27,7 +27,8 @@ class VideoLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/videos/{$id}/labels")->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/videos/{$id}/labels")
+        $this
+            ->get("/api/v1/videos/{$id}/labels")
             ->assertStatus(200)
             ->assertJsonFragment([
                 'id' => $il->label->id,
@@ -49,34 +50,44 @@ class VideoLabelControllerTest extends ApiTestCase
 
         // missing arguments
         $this->beEditor();
-        $this->postJson("/api/v1/videos/{$id}/labels")->assertStatus(422);
+        $this
+            ->postJson("/api/v1/videos/{$id}/labels")->assertStatus(422);
 
         $this->assertEquals(0, $this->video->labels()->count());
 
         $this->beUser();
-        $this->post("/api/v1/videos/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
-        ])->assertStatus(403);
+        $this
+            ->post("/api/v1/videos/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/videos/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
-        ])->assertStatus(403);
+        $this
+            ->post("/api/v1/videos/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/videos/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
-        ])->assertSuccessful();
+        $this
+            ->post("/api/v1/videos/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertSuccessful();
         $this->assertEquals(1, $this->video->labels()->count());
 
         $this->beAdmin();
         // the same label cannot be attached twice
-        $this->post("/api/v1/videos/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
-        ])->assertStatus(400);
+        $this
+            ->post("/api/v1/videos/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(400);
         $this->assertEquals(1, $this->video->labels()->count());
 
-        $this->postJson("/api/v1/videos/{$id}/labels", [
+        $this
+            ->postJson("/api/v1/videos/{$id}/labels", [
                 'label_id' => $this->labelChild()->id,
             ])
             ->assertSuccessful()
