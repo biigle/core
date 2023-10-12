@@ -77,5 +77,5 @@ jobs:
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
-    - name: Run PHP-CS Fixer and cs2pr
-      run: composer fix -vvv --dry-run --format=checkstyle | cs2pr
+    - name: Run PHP-CS fixer and cs2pr
+      run: composer fix -- -vvv --dry-run --format=checkstyle | cs2pr
