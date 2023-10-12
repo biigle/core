@@ -78,7 +78,7 @@ services:
       - "54320:5432"
 
   vector_database:
-    image: ghcr.io/biigle/pgvector-14
+    image: ghcr.io/biigle/pgvector
     build:
       context: ./
       dockerfile: .docker/pgvector.dockerfile
