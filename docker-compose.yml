@@ -102,7 +102,7 @@ services:
       - "POSTGRES_PASSWORD=secret"
 
   vector_database_testing:
-    image: ghcr.io/biigle/pgvector-14
+    image: ghcr.io/biigle/pgvector
     tmpfs:
       - /var/lib/postgresql/data
     environment:

@@ -32,6 +32,7 @@ jobs:
       run: |
         docker pull ghcr.io/biigle/app:latest
         docker pull ghcr.io/biigle/worker:latest
+        docker pull ghcr.io/biigle/pgvector:latest
 
     - name: Start test database
       run: docker-compose up -d --no-build database_testing
@@ -71,6 +72,7 @@ jobs:
       run: |
         docker pull ghcr.io/biigle/app:latest
         docker pull ghcr.io/biigle/worker:latest
+        docker pull ghcr.io/biigle/pgvector:latest
 
     - name: Start test database
       run: docker-compose up -d --no-build database_testing
