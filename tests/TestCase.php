@@ -65,7 +65,7 @@ class TestCase extends BaseTestCase
     // Custom implementation to wipe the vector database, too.
     protected function refreshTestDatabase()
     {
-        if (! RefreshDatabaseState::$migrated) {
+        if (!RefreshDatabaseState::$migrated) {
             $this->artisan('db:wipe', ['--database' => 'pgvector']);
         }
 
