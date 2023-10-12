@@ -50,12 +50,10 @@ import { getCenter } from '@biigle/ol/extent';
 import { shiftKeyOnly as shiftKeyOnlyCondition } from '@biigle/ol/events/condition';
 import { singleClick as singleClickCondition } from '@biigle/ol/events/condition';
 import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
-import JstsMultiPolygon from 'jsts/org/locationtech/jts/geom/MultiPolygon';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 import Monkey from 'jsts/org/locationtech/jts/monkey';
-import Geometry from '@biigle/ol/geom/Geometry';
 
 
 /**
