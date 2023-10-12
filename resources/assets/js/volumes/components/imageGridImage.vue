@@ -4,15 +4,22 @@
             <i class="fas" :class="iconClass"></i>
         </div>
         <img @click="toggleSelect" :src="srcUrl" @error="showEmptyImage">
+        <div
+            v-if="pinnable"
+            class="image-buttons"
+            >
+            <button
+                class="image-button image-button__pin"
+                @click="emitPin"
+                >
+                <span class="fa fa-thumbtack fa-fw"></span>
+            </button>
+        </div>
     </figure>
 </template>
 
 <script>
-/**
- * An image of the Largo image grid
- *
- * @type {Object}
- */
+
 export default {
     data() {
         return {
@@ -45,14 +52,23 @@ export default {
             type: Boolean,
             default: false,
         },
+        isPinned: {
+            type: Boolean,
+            default: false,
+        },
+        pinnable: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         classObject() {
             return {
                 'image-grid__image--selected': this.selected,
                 'image-grid__image--selectable': this.selectable,
-                'image-grid__image--fade': this.selectedFade,
-                'image-grid__image--small-icon': this.smallIcon,
+                'image-grid__image--fade': this.selectedFade && !this.isPinned,
+                'image-grid__image--small-icon': this.smallIcon || this.isPinned,
+                'image-grid__image--pinned': this.isPinned,
             };
         },
         selected() {
@@ -88,6 +104,9 @@ export default {
         },
         showEmptyImage() {
             this.thumbnailUrl = null;
+        },
+        emitPin() {
+            this.$emit('pin', this.image);
         },
     },
     created() {

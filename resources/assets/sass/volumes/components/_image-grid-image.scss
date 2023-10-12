@@ -49,6 +49,17 @@
         }
     }
 
+    &.image-grid__image--pinned {
+        border-color: $brand-info;
+        border-width: 6px;
+
+        .image-button__pin {
+            background-color: $brand-info;
+            color: white;
+            opacity: 1;
+        }
+    }
+
     img {
         width: auto;
         height: 100%;

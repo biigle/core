@@ -1,9 +1,43 @@
 <template>
     <div class="image-grid" @wheel.prevent="scroll">
         <div class="image-grid__images" ref="images">
-            <image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" :selectable="selectable" :selected-icon="selectedIcon" @select="emitSelect"></image-grid-image>
+            <image-grid-image
+                v-if="hasPinnedImage"
+                :key="pinnedImage.id"
+                :pinnable="pinnable"
+                :image="pinnedImage"
+                :is-pinned="true"
+                :empty-url="emptyUrl"
+                :selectable="selectable"
+                :selected-icon="selectedIcon"
+                :selected-fade="false"
+                :small-icon="true"
+                @select="emitSelect"
+                @pin="emitPin"
+                ></image-grid-image>
+            <image-grid-image
+                v-for="image in displayedImages"
+                :key="image.id"
+                :pinnable="pinnable"
+                :image="image"
+                :empty-url="emptyUrl"
+                :selectable="selectable"
+                :selected-icon="selectedIcon"
+                @select="emitSelect"
+                @pin="emitPin"
+                ></image-grid-image>
         </div>
-        <image-grid-progress v-if="canScroll" :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>
+        <image-grid-progress
+            v-if="canScroll"
+            :progress="progress"
+            @top="jumpToStart"
+            @prev-page="reversePage"
+            @prev-row="reverseRow"
+            @jump="jumpToPercent"
+            @next-row="advanceRow"
+            @next-page="advancePage"
+            @bottom="jumpToEnd"
+            ></image-grid-progress>
     </div>
 </template>
 
@@ -72,6 +106,14 @@ export default {
             type: String,
             default: 'default',
         },
+        pinnedImage: {
+            type: Object,
+            default: null,
+        },
+        pinnable: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         columns() {
@@ -83,7 +125,14 @@ export default {
             return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
         },
         imagesOffsetEnd() {
-            return this.imagesOffset + this.columns * this.rows;
+            const offset = this.imagesOffset + this.columns * this.rows;
+            // The pinned image is always shown as the first element so we have to show
+            // one other image less on a page.
+            if (this.hasPinnedImage) {
+                return offset - 1;
+            }
+
+            return offset;
         },
         displayedImages() {
             return this.images.slice(this.imagesOffset, this.imagesOffsetEnd);
@@ -93,6 +142,11 @@ export default {
         },
         // Number of the topmost row of the last "page".
         lastRow() {
+            // The pinned image is not included in this.images so we have to add 1 here.
+            if (this.hasPinnedImage) {
+                return Math.max(0, Math.ceil((this.images.length + 1) / this.columns) - this.rows);
+            }
+
             return Math.max(0, Math.ceil(this.images.length / this.columns) - this.rows);
         },
         // The largest possible offset.
@@ -101,6 +155,9 @@ export default {
         },
         canScroll() {
             return this.lastRow > 0;
+        },
+        hasPinnedImage() {
+            return this.pinnedImage !== null;
         },
     },
     methods: {
@@ -153,6 +210,9 @@ export default {
                 this.imagesOffset = this.offset;
             }
         },
+        emitPin(id) {
+            this.$emit('pin', id);
+        },
     },
     watch: {
         lastOffset() {
@@ -161,6 +221,9 @@ export default {
         },
         offset() {
             this.$emit('scroll', this.offset);
+        },
+        pinnedImage() {
+            this.jumpToStart();
         },
     },
     created() {
