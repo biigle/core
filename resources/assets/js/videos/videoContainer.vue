@@ -20,6 +20,9 @@ import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+import PolygonValidator from '../annotations/ol/PolygonValidator';
+import Feature from '@biigle/ol/Feature';
+import Polygon from '@biigle/ol/geom/Polygon';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -274,6 +277,24 @@ export default {
                 shape_id: this.shapes[pendingAnnotation.shape],
                 label_id: this.selectedLabel ? this.selectedLabel.id : 0,
             });
+
+            // Check polygons
+            if (annotation.shape === 'Polygon') {
+                let feature = this.getFeatureFromAnnotation(annotation);
+                let polygonValidator = new PolygonValidator(feature);
+                if (polygonValidator.isInvalidPolygon()) {
+                    // Disallow polygons with less than three non-overlapping points
+                    Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
+                    this.removeAnnotation(tmpAnnotation);
+                    return;
+                }
+
+                // If polygon is self-intersecting, create valid polygon
+                let validPolygon = polygonValidator.getValidPolygon();
+                let twoDimCoords = validPolygon.getGeometry().getCoordinates();
+                annotation.points = [twoDimCoords[0].flat()];
+            }
+
             delete annotation.shape;
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
@@ -284,6 +305,13 @@ export default {
                         this.annotations.splice(index, 1);
                     }
                 });
+        },
+        getFeatureFromAnnotation(annotation){
+            let points = annotation.points;
+            let xValues = points[0].filter((_,i) => {return i%2===0;});
+            let yValues = points[0].filter((_,i) => {return i%2===1;});
+            let coords = xValues.map((x,i) => [x,yValues[i]]);
+            return new Feature({geometry: new Polygon([coords])});
         },
         trackAnnotation(pendingAnnotation) {
             pendingAnnotation.track = true;
