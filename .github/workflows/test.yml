@@ -57,7 +57,7 @@ jobs:
         docker pull ghcr.io/biigle/worker:latest
 
     - name: Start test database
-      run: docker-compose up -d --no-build database_testing
+      run: docker-compose up -d --no-build database_testing vector_database_testing && sleep 5
       working-directory: ../core
 
     - name: Run tests
