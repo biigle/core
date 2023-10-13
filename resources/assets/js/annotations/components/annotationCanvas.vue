@@ -516,7 +516,7 @@ export default {
                 if (geometry.getType() === 'Polygon') {
                     let polygonValidator = new PolygonValidator(e.feature);
                     if (polygonValidator.isInvalidPolygon()) {
-                        this.$emit('has-invalid-polygon');
+                        this.$emit('is-invalid-polygon');
                         this.annotationSource.once('change', () => {
                             if (this.annotationSource.hasFeature(e.feature)) {
                                 this.annotationSource.removeFeature(e.feature);

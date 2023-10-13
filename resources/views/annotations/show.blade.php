@@ -95,7 +95,7 @@
             v-on:delete="handleDeleteAnnotations"
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
-            v-on:has-invalid-polygon="handleInvalidPolygon"
+            v-on:is-invalid-polygon="handleInvalidPolygon"
             ref="canvas"
             inline-template>
             @include('annotations.show.annotationCanvas')
