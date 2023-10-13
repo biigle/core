@@ -32,9 +32,12 @@ jobs:
       run: |
         docker pull ghcr.io/biigle/app:latest
         docker pull ghcr.io/biigle/worker:latest
+        docker pull ghcr.io/biigle/pgvector:latest
 
     - name: Start test database
-      run: docker-compose up -d --no-build database_testing
+      run: |
+        docker-compose up -d --no-build database_testing
+        docker-compose up -d --no-build vector_database_testing
 
     - name: Run tests
       run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order

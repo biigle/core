@@ -97,7 +97,7 @@ services:
       - "54320:5432"
 
   vector_database:
-    image: ghcr.io/biigle/pgvector-14
+    image: ghcr.io/biigle/pgvector
     build:
       context: ./
       dockerfile: .docker/pgvector.dockerfile
@@ -121,7 +121,7 @@ services:
       - "POSTGRES_PASSWORD=secret"
 
   vector_database_testing:
-    image: ghcr.io/biigle/pgvector-14
+    image: ghcr.io/biigle/pgvector
     tmpfs:
       - /var/lib/postgresql/data
     environment:
