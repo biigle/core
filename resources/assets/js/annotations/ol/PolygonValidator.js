@@ -52,7 +52,7 @@ class PolygonValidator {
 
         return this.polygon;
 
-       
+
     }
 
     /**
@@ -149,7 +149,7 @@ class PolygonValidator {
                     let symDiff = ret.symDifference(next);
                     let diff = ret.difference(next);
                     // ignore nested geometry parts
-                    if(symDiff.getCoordinates().length !== diff.getCoordinates().length){
+                    if (symDiff.getCoordinates().length !== diff.getCoordinates().length) {
                         ret = symDiff;
                     }
                 }
