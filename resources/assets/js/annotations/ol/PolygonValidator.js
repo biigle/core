@@ -103,7 +103,7 @@ class PolygonValidator {
     /**
     * @author Martin Kirk
     * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon    * 
+    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon 
     * Add the linestring given to the polygonizer
     *
     * @param linestring line string
@@ -128,7 +128,7 @@ class PolygonValidator {
     /**
     * @author Martin Kirk
     * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon    * 
+    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon 
     * Get a geometry from a collection of polygons.
     *
     * @param polygons collection
@@ -145,7 +145,13 @@ class PolygonValidator {
                 var iter = polygons.iterator();
                 var ret = iter.next();
                 while (iter.hasNext()) {
-                    ret = ret.symDifference(iter.next());
+                    let next = iter.next();
+                    let symDiff = ret.symDifference(next);
+                    let diff = ret.difference(next);
+                    // ignore nested geometry parts
+                    if(symDiff.getCoordinates().length !== diff.getCoordinates().length){
+                        ret = symDiff;
+                    }
                 }
                 return ret;
         }
