@@ -540,11 +540,10 @@ export default {
                         // Do nothing in this case.
                     }
                 };
-                let points = this.getPoints(geometry);
 
                 this.$emit('new', {
                     shape: geometry.getType(),
-                    points: points,
+                    points: this.getPoints(geometry),
                 }, removeCallback);
             } else {
                 this.annotationSource.removeFeature(e.feature);
