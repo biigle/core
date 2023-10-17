@@ -4,6 +4,7 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import PolygonValidator from '../../../annotations/ol/PolygonValidator';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -163,6 +164,23 @@ export default {
             this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
+            // Check polygons
+            if (e.feature.getGeometry().getType() === 'Polygon') {
+                let polygonValidator = new PolygonValidator(e.feature);
+                if (polygonValidator.isInvalidPolygon()) {
+                    // Disallow polygons with less than three non-overlapping points
+                    this.$emit('is-invalid-polygon')
+                    this.removeFeature(e.feature)
+                    return;
+                }
+
+                // If polygon is self-intersecting, create valid polygon
+                let validPolygon = polygonValidator.getValidPolygon();
+                let twoDimCoords = validPolygon.getGeometry().getCoordinates();
+                e.feature.getGeometry().setCoordinates([twoDimCoords[0]]);
+                
+            }
+
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
@@ -181,6 +199,13 @@ export default {
             }
 
             this.$emit('pending-annotation', this.pendingAnnotation);
+        },
+        getFeatureFromAnnotation(annotation){
+            let points = annotation.points;
+            let xValues = points[0].filter((_,i) => {return i%2===0;});
+            let yValues = points[0].filter((_,i) => {return i%2===1;});
+            let coords = xValues.map((x,i) => [x,yValues[i]]);
+            return new Feature({geometry: new Polygon([coords])});
         },
     },
     created() {
