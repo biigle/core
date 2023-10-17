@@ -195,7 +195,6 @@ class MagicWandInteraction extends PointerInteraction {
         if (this.isShowingCross) {
             this.sketchSource.removeFeature(this.sketchFeature);
         } else {
-            this.filterSketchCoordinates();
             this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
         }
 
@@ -375,17 +374,6 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchSource.addFeature(this.sketchFeature);
             }
         }
-    }
-
-    /**
-    * Removes duplicated points and dangeling lines
-    */
-    filterSketchCoordinates() {
-        let points = this.sketchFeature.getGeometry().getCoordinates()[0];
-        points = this.removeDuplicatedPoints(points);
-        points = this.removeDangelingLines(points);
-        points.push(points[0]);
-        this.sketchFeature.getGeometry().setCoordinates([points]);
     }
 
     /**
