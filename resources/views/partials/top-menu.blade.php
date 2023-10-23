@@ -1,5 +1,9 @@
 <li id="top-menu" is="dropdown" ref="dropdown" tag="li">
-    <a href="#" onclick="event.preventDefault()" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" title="Main menu"><i class="fa fa-bars"></i></a>
+    <a href="#" onclick="event.preventDefault()" class="dropdown-toggle navbar-btn-link" role="button" aria-haspopup="true" aria-expanded="false" title="Main menu">
+        <span class="btn btn-default">
+            <i class="fa fa-bars"></i> <span class="caret"></span>
+        </span>
+    </a>
     <template slot="dropdown">
         <li class="dropdown-header">
             Signed in as <strong>{{ $user->firstname }} {{ $user->lastname }}</strong>

@@ -1,5 +1,9 @@
 <li id="help-menu" is="dropdown" ref="dropdown" tag="li">
-    <a href="#" onclick="event.preventDefault()" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" title="Help menu"><i class="fa fa-question-circle"></i></a>
+    <a href="#" onclick="event.preventDefault()" class="dropdown-toggle navbar-btn-link" role="button" aria-haspopup="true" aria-expanded="false" title="Help menu">
+        <span class="btn btn-default">
+            <i class="fa fa-question-circle"></i> <span class="caret"></span>
+        </span>
+    </a>
     <template slot="dropdown">
         <li>
             <a href="{{ route('manual') }}" title="View the manual">Manual</a>

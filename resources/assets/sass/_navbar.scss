@@ -89,3 +89,11 @@
         }
     }
 }
+
+.nav > li > a.navbar-btn-link {
+    padding: 9px 3px;
+}
+
+.nav > li:last-child > a.navbar-btn-link {
+    margin-right: 12px; // 15px space with the 3px padding
+}
