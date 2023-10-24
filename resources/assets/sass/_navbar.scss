@@ -129,6 +129,12 @@
     }
 }
 
+.navbar-btn-link {
+    .btn-default:not(:hover) {
+        background-color: transparent;
+    }
+}
+
 .nav > li > a.navbar-btn-link {
     padding: 9px 3px;
 }
