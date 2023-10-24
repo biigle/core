@@ -20,18 +20,21 @@
                 <ul class="nav navbar-nav">
                     @can('sudo')
                         <li class="sudo-mode-indicator" title="You are in Super User Mode">
-                            <p class="navbar-text">su</p>
+                            <a href="{{route('settings-account')}}" class="navbar-btn-link">
+                                <span class="btn btn-danger">
+                                    su
+                                </span>
+                            </a>
                         </li>
                     @endcan
                     <li>
-                        <a href="{{route('search')}}" title="Search"><i class="fa fa-search"></i></a>
+                        <a href="{{route('search')}}" title="Search" class="navbar-btn-link"><span class="btn btn-default"><i class="fa fa-search"></i></span></a>
                     </li>
                     <li>
-                        <a href="{{route('notifications')}}" class="notifications-icon" @if ($hasNotification) title="You have unread notifications" @else title="Notifications" @endif>
-                            <i class="fa fa-bell"></i>
-                            @if ($hasNotification)
-                                <span class="notifications-icon__count"></span>
-                            @endif
+                        <a href="{{route('notifications')}}" class="notifications-icon navbar-btn-link" @if ($hasNotification) title="You have unread notifications" @else title="Notifications" @endif>
+                            <span class="btn @if ($hasNotification) btn-info @else btn-default @endif">
+                                <i class="fa fa-bell"></i>
+                            </span>
                         </a>
                     </li>
                     @include('partials.help-menu')
