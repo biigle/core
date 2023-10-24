@@ -106,7 +106,7 @@ class LogManager
 
         return collect($client->lrange('log', 0, -1))
             ->map(fn ($message) => json_decode($message, true))
-            ->filter(fn ($message) => $message['level'] >= $level);
+            ->filter(fn ($message) => $message['level'] >= $level->value);
     }
 
     /**
