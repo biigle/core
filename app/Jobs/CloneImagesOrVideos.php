@@ -202,7 +202,9 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $original['uuid'] = (string)Uuid::uuid4();
                 unset($original['id']);
                 return $original;
-            })->chunk(10000)->each(function ($chunk) {
+            })
+            ->chunk(1000)
+            ->each(function ($chunk) {
                 Image::insert($chunk->toArray());
             });
 
@@ -357,7 +359,9 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $original['uuid'] = (string)Uuid::uuid4();
                 unset($original['id']);
                 return $original;
-            })->chunk(10000)->each(function ($chunk) {
+            })
+            ->chunk(1000)
+            ->each(function ($chunk) {
                 Video::insert($chunk->toArray());
             });
 
