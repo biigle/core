@@ -6,6 +6,7 @@ import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
 import MultiLineString from '@biigle/ol/geom/MultiLineString';
 import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
+import JstsMultiPolygon from 'jsts/org/locationtech/jts/geom/MultiPolygon';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
@@ -17,6 +18,11 @@ class PolygonValidator {
         this.polygon = polygon;
     }
 
+    /**
+     * Checks if polygon consists of at least 3 unique points
+     * 
+     * @returns True if coordinates contains at least 3 unique points, otherwise false
+     * **/
     isInvalidPolygon() {
         let geometry = this.polygon.getGeometry();
         let points = geometry.getCoordinates()[0];
@@ -26,7 +32,7 @@ class PolygonValidator {
 
     getValidPolygon() {
         // Check if polygon is self-intersecting
-        const parser = new OL3Parser();
+        let parser = new OL3Parser();
         parser.inject(
             Point,
             LineString,
@@ -37,22 +43,25 @@ class PolygonValidator {
             MultiPolygon
         );
 
-        // translate ol geometry into jsts geometry
+        // Translate ol geometry into jsts geometry
         let jstsGeom = parser.read(this.polygon.getGeometry());
-        // divide possibly intersecting polygon at cross points 
-        // in several smaller polygons
-        let possiblyMultiGeom = parser.write(this.jstsValidate(jstsGeom));
 
-        if (possiblyMultiGeom.getCoordinates().length > 1) {
-            // select biggest part
-            let biggestPolygonCoordinates = this.getGreatestPolygonCoordinates(possiblyMultiGeom);
-            this.polygon.getGeometry().setCoordinates(biggestPolygonCoordinates);
+        if (jstsGeom.isSimple()) {
             return this.polygon;
         }
 
+        // Divide non-simple polygon at cross points into several smaller polygons
+        // and translate back to ol geometry
+        let polygons = this.jstsValidate(jstsGeom)['array'].map(p => parser.write(p));
+
+        if (polygons.length > 1) {
+            // Select biggest part
+            let greatestPolygon = this.getGreatestPolygon(polygons);
+            // Only change coordinates because object references are in use
+            this.polygon.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
+        }
+
         return this.polygon;
-
-
     }
 
     /**
@@ -75,9 +84,9 @@ class PolygonValidator {
             }
             var polygonizer = new Polygonizer();
             this.jstsAddPolygon(geom, polygonizer);
-            return this.jstsToPolygonGeometry(polygonizer.getPolygons(), geom.getFactory());
+            return polygonizer.getPolygons();
         } else {
-            return geom; // In my case, I only care about polygon / multipolygon geometries
+            return geom;
         }
     }
 
@@ -124,49 +133,16 @@ class PolygonValidator {
         polygonizer.add(toAdd);
     }
 
-
     /**
-    * @author Martin Kirk
-    * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon 
-    * Get a geometry from a collection of polygons.
-    *
-    * @param polygons collection
-    * @return null if there were no polygons, the polygon if there was only one, or a MultiPolygon containing all polygons otherwise
-    */
-    jstsToPolygonGeometry(polygons) {
-        switch (polygons.size()) {
-            case 0:
-                return null; // No valid polygons!
-            case 1:
-                return polygons.iterator().next(); // single polygon - no need to wrap
-            default:
-                //polygons may still overlap! Need to sym difference them
-                var iter = polygons.iterator();
-                var ret = iter.next();
-                while (iter.hasNext()) {
-                    let next = iter.next();
-                    let symDiff = ret.symDifference(next);
-                    let diff = ret.difference(next);
-                    // ignore nested geometry parts
-                    if (symDiff.getCoordinates().length !== diff.getCoordinates().length) {
-                        ret = symDiff;
-                    }
-                }
-                return ret;
-        }
-    }
-
-    getGreatestPolygonCoordinates(multGeom) {
-        let coordinateLists = multGeom.getCoordinates();
-        let tmpGeom = multGeom.clone();
-        let areas = coordinateLists.map((l) => {
-            tmpGeom.setCoordinates([l]);
-            return tmpGeom.getArea();
-        });
+     * Determine polygon with largest area
+     * 
+     * @param polygonList List of polygons
+     * @returns Polygon
+     * **/
+    getGreatestPolygon(polygonList) {
+        let areas = polygonList.map(p => p.getArea());
         let idx = areas.indexOf(Math.max(...areas));
-
-        return coordinateLists[idx];
+        return polygonList[idx];
     }
 }
 
