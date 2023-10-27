@@ -375,67 +375,6 @@ class MagicWandInteraction extends PointerInteraction {
             }
         }
     }
-
-    /**
-    * Removes duplicated points
-    */
-    removeDuplicatedPoints(points) {
-        let pointStringSet = Array.from(new Set(points.map(xy => String([xy]))));
-        return pointStringSet.map(xy => xy.split(',').map(Number));
-    }
-
-    /*
-    * Removes dangeling lines by deleting middle point of three subsequent points with equal x or y values
-    */
-    removeDangelingLines(coordinates) {
-        // filter by x values
-        let i = 0;
-        let endNotReached = true;
-        while (endNotReached) {
-            try {
-                if (coordinates[i][0] === coordinates[i + 1][0]) {
-                    if (coordinates[i + 1][0] === coordinates[i + 2][0]) {
-                        coordinates.splice(i + 1, 1)
-                        if (coordinates[i + 1][0] !== coordinates[i + 2][0]) {
-                            i++;
-                        }
-                    } else {
-                        i++;
-                    }
-                } else {
-                    i++;
-                }
-            } catch (err) {
-                break;
-            }
-            endNotReached = i < coordinates.length - 2;
-        }
-
-        // filter by y values
-        i = 0;
-        endNotReached = true;
-        while (endNotReached) {
-            try {
-                if (coordinates[i][1] === coordinates[i + 1][1]) {
-                    if (coordinates[i + 1][1] === coordinates[i + 2][1]) {
-                        coordinates.splice(i + 1, 1)
-                        if (coordinates[i + 1][1] !== coordinates[i + 2][1]) {
-                            i++;
-                        }
-                    } else {
-                        i++;
-                    }
-                } else {
-                    i++;
-                }
-            } catch (err) {
-                break;
-            }
-            endNotReached = i < coordinates.length - 2;
-        }
-
-        return coordinates;
-    }
 }
 
 export default MagicWandInteraction;
