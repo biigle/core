@@ -38,6 +38,7 @@ jobs:
       run: |
         docker-compose up -d --no-build database_testing
         docker-compose up -d --no-build vector_database_testing
+        sleep 5
 
     - name: Run tests
       run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
@@ -80,6 +81,7 @@ jobs:
       run: |
         docker-compose up -d --no-build database_testing
         docker-compose up -d --no-build vector_database_testing
+        sleep 5
 
     - name: Run tests
       run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
