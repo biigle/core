@@ -5,8 +5,6 @@ import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import PolygonValidator from '../../../annotations/ol/PolygonValidator';
-import Feature from '@biigle/ol/Feature';
-import Polygon from '@biigle/ol/geom/Polygon';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -201,13 +199,6 @@ export default {
             }
 
             this.$emit('pending-annotation', this.pendingAnnotation);
-        },
-        getFeatureFromAnnotation(annotation){
-            let points = annotation.points;
-            let xValues = points[0].filter((_,i) => {return i%2===0;});
-            let yValues = points[0].filter((_,i) => {return i%2===1;});
-            let coords = xValues.map((x,i) => [x,yValues[i]]);
-            return new Feature({geometry: new Polygon([coords])});
         },
     },
     created() {
