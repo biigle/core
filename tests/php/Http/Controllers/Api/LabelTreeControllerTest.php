@@ -134,7 +134,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beAdmin();
-        $response = $this->put('/api/v1/label-trees/999');
+        $response = $this->put('/api/v1/label-trees/-1');
         $response->assertStatus(404);
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
