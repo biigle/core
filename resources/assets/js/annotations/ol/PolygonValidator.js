@@ -6,7 +6,6 @@ import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
 import MultiLineString from '@biigle/ol/geom/MultiLineString';
 import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
-import JstsMultiPolygon from 'jsts/org/locationtech/jts/geom/MultiPolygon';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
