@@ -514,8 +514,7 @@ export default {
             if (this.hasSelectedLabel) {
                 let geometry = e.feature.getGeometry();
                 if (geometry.getType() === 'Polygon') {
-                    let polygonValidator = new PolygonValidator(e.feature);
-                    if (polygonValidator.isInvalidPolygon()) {
+                    if (PolygonValidator.isInvalidPolygon(e.feature)) {
                         this.$emit('is-invalid-polygon');
                         this.annotationSource.once('change', () => {
                             if (this.annotationSource.hasFeature(e.feature)) {
@@ -525,7 +524,7 @@ export default {
                         return;
                     }
 
-                    e.feature = polygonValidator.getValidPolygon();
+                    e.feature = PolygonValidator.makePolygonSimple(e.feature);
                 }
 
                 e.feature.set('color', this.selectedLabel.color);

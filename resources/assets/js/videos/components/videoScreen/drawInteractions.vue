@@ -166,8 +166,7 @@ export default {
         extendPendingAnnotation(e) {
             // Check polygons
             if (e.feature.getGeometry().getType() === 'Polygon') {
-                let polygonValidator = new PolygonValidator(e.feature);
-                if (polygonValidator.isInvalidPolygon()) {
+                if (PolygonValidator.isInvalidPolygon(e.feature)) {
                     // Disallow polygons with less than three non-overlapping points
                     this.$emit('is-invalid-polygon')
                     this.removeFeature(e.feature)
@@ -175,9 +174,9 @@ export default {
                 }
 
                 // If polygon is self-intersecting, create valid polygon
-                let validPolygon = polygonValidator.getValidPolygon();
-                let twoDimCoords = validPolygon.getGeometry().getCoordinates();
-                e.feature.getGeometry().setCoordinates([twoDimCoords[0]]);
+                let validPolygon = PolygonValidator.makePolygonSimple(e.feature);
+                let coords = validPolygon.getGeometry().getCoordinates();
+                e.feature.getGeometry().setCoordinates([coords[0]]);
                 
             }
 

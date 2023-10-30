@@ -9,29 +9,32 @@ import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
-import Monkey from 'jsts/org/locationtech/jts/monkey';
+import Monkey from 'jsts/org/locationtech/jts/monkey'; // Needed for isValid(), normalize()
 
 class PolygonValidator {
-
-    constructor(polygon) {
-        this.polygon = polygon;
-    }
 
     /**
      * Checks if polygon consists of at least 3 unique points
      * 
+     * @param feature containing the polygon
      * @returns True if coordinates contains at least 3 unique points, otherwise false
      * **/
-    isInvalidPolygon() {
-        let geometry = this.polygon.getGeometry();
-        let points = geometry.getCoordinates()[0];
+    static isInvalidPolygon(feature) {
+        let polygon = feature.getGeometry();
+        let points = polygon.getCoordinates()[0];
         return (new Set(points.map(xy => String([xy])))).size < 3;
 
     }
 
-    getValidPolygon() {
+    /**
+     * Makes non-simple polygon simple
+     * 
+     * @param feature feature containing the (non-simple) polygon
+     * @returns simple Polygon
+     * **/
+    static makePolygonSimple(feature) {
         // Check if polygon is self-intersecting
-        let parser = new OL3Parser();
+        const parser = new OL3Parser();
         parser.inject(
             Point,
             LineString,
@@ -43,27 +46,30 @@ class PolygonValidator {
         );
 
         // Translate ol geometry into jsts geometry
-        let jstsGeom = parser.read(this.polygon.getGeometry());
+        let jstsPolygon = parser.read(feature.getGeometry());
 
-        if (jstsGeom.isSimple()) {
-            return this.polygon;
+        if (jstsPolygon.isSimple()) {
+            return feature;
         }
 
         // Divide non-simple polygon at cross points into several smaller polygons
         // and translate back to ol geometry
-        let polygons = this.jstsValidate(jstsGeom)['array'].map(p => parser.write(p));
+        let polygons = jstsValidate(jstsPolygon)['array'].map(p => parser.write(p));
 
         if (polygons.length > 1) {
             // Select biggest part
-            let greatestPolygon = this.getGreatestPolygon(polygons);
+            let greatestPolygon = getGreatestPolygon(polygons);
             // Only change coordinates because object references are in use
-            this.polygon.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
+            feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
         }
 
-        return this.polygon;
+        return feature;
     }
+}
 
-    /**
+export default PolygonValidator;
+
+/**
     * @author Martin Kirk
     * 
     * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
@@ -75,74 +81,71 @@ class PolygonValidator {
     * @param geom
     * @return a geometry
     */
-    jstsValidate(geom) {
-        if (geom instanceof JstsPolygon) {
-            if (geom.isValid()) {
-                geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
-                return geom; // If the polygon is valid just return it
-            }
-            var polygonizer = new Polygonizer();
-            this.jstsAddPolygon(geom, polygonizer);
-            return polygonizer.getPolygons();
-        } else {
-            return geom;
+   
+function jstsValidate(geom) {
+    if (geom instanceof JstsPolygon) {
+        if (geom.isValid()) {
+            geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
+            return geom; // If the polygon is valid just return it
         }
-    }
-
-    /**
-    * @author Martin Kirk
-    * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
-    * 
-    * Add all line strings from the polygon given to the polygonizer given
-    *
-    * @param polygon polygon from which to extract line strings
-    * @param polygonizer polygonizer
-    */
-    jstsAddPolygon(polygon, polygonizer) {
-        this.jstsAddLineString(polygon.getExteriorRing(), polygonizer);
-
-        for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
-            this.jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
-        }
-    }
-
-
-    /**
-    * @author Martin Kirk
-    * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon 
-    * Add the linestring given to the polygonizer
-    *
-    * @param linestring line string
-    * @param polygonizer polygonizer
-    */
-    jstsAddLineString(lineString, polygonizer) {
-
-        if (lineString instanceof JstsLinearRing) {
-            // LinearRings are treated differently to line strings : we need a LineString NOT a LinearRing
-            lineString = lineString.getFactory().createLineString(lineString.getCoordinateSequence());
-        }
-
-        // unioning the linestring with the point makes any self intersections explicit.
-        var point = lineString.getFactory().createPoint(lineString.getCoordinateN(0));
-        var toAdd = lineString.union(point); //geometry
-
-        //Add result to polygonizer
-        polygonizer.add(toAdd);
-    }
-
-    /**
-     * Determine polygon with largest area
-     * 
-     * @param polygonList List of polygons
-     * @returns Polygon
-     * **/
-    getGreatestPolygon(polygonList) {
-        let areas = polygonList.map(p => p.getArea());
-        let idx = areas.indexOf(Math.max(...areas));
-        return polygonList[idx];
+        var polygonizer = new Polygonizer();
+        jstsAddPolygon(geom, polygonizer);
+        return polygonizer.getPolygons();
+    } else {
+        return geom;
     }
 }
 
-export default PolygonValidator;
+/**
+* @author Martin Kirk
+* 
+* @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+* 
+* Add all line strings from the polygon given to the polygonizer given
+*
+* @param polygon polygon from which to extract line strings
+* @param polygonizer polygonizer
+*/
+function jstsAddPolygon(polygon, polygonizer) {
+    jstsAddLineString(polygon.getExteriorRing(), polygonizer);
+
+    for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
+        jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
+    }
+}
+
+/**
+* @author Martin Kirk
+* 
+* @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon 
+* Add the linestring given to the polygonizer
+*
+* @param linestring line string
+* @param polygonizer polygonizer
+*/
+function jstsAddLineString(lineString, polygonizer) {
+
+    if (lineString instanceof JstsLinearRing) {
+        // LinearRings are treated differently to line strings : we need a LineString NOT a LinearRing
+        lineString = lineString.getFactory().createLineString(lineString.getCoordinateSequence());
+    }
+
+    // unioning the linestring with the point makes any self intersections explicit.
+    var point = lineString.getFactory().createPoint(lineString.getCoordinateN(0));
+    var toAdd = lineString.union(point); //geometry
+
+    //Add result to polygonizer
+    polygonizer.add(toAdd);
+}
+
+/**
+ * Determine polygon with largest area
+ * 
+ * @param polygonList List of polygons
+ * @returns Polygon
+ * **/
+function getGreatestPolygon(polygonList) {
+    let areas = polygonList.map(p => p.getArea());
+    let idx = areas.indexOf(Math.max(...areas));
+    return polygonList[idx];
+}
