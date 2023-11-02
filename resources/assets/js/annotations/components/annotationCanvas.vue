@@ -524,7 +524,7 @@ export default {
                         return;
                     }
 
-                    e.feature = PolygonValidator.makePolygonSimple(e.feature);
+                    PolygonValidator.makePolygonSimple(e.feature);
                 }
 
                 e.feature.set('color', this.selectedLabel.color);

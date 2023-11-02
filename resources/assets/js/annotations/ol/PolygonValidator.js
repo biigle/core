@@ -30,7 +30,6 @@ class PolygonValidator {
      * Makes non-simple polygon simple
      * 
      * @param feature feature containing the (non-simple) polygon
-     * @returns simple Polygon
      * **/
     static makePolygonSimple(feature) {
         // Check if polygon is self-intersecting
@@ -62,8 +61,6 @@ class PolygonValidator {
             // Only change coordinates because object references are in use
             feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
         }
-
-        return feature;
     }
 }
 
