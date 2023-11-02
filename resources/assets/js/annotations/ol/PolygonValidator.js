@@ -11,7 +11,6 @@ import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 import Monkey from 'jsts/org/locationtech/jts/monkey'; // Needed for isValid(), normalize()
 
-class PolygonValidator {
 
     /**
      * Checks if polygon consists of at least 3 unique points
@@ -19,52 +18,49 @@ class PolygonValidator {
      * @param feature containing the polygon
      * @returns True if coordinates contains at least 3 unique points, otherwise false
      * **/
-    static isInvalidPolygon(feature) {
-        let polygon = feature.getGeometry();
-        let points = polygon.getCoordinates()[0];
-        return (new Set(points.map(xy => String([xy])))).size < 3;
+    export function isInvalidPolygon(feature) {
+    let polygon = feature.getGeometry();
+    let points = polygon.getCoordinates()[0];
+    return (new Set(points.map(xy => String([xy])))).size < 3;
 
-    }
+}
 
     /**
      * Makes non-simple polygon simple
      * 
      * @param feature feature containing the (non-simple) polygon
      * **/
-    static makePolygonSimple(feature) {
-        // Check if polygon is self-intersecting
-        const parser = new OL3Parser();
-        parser.inject(
-            Point,
-            LineString,
-            LinearRing,
-            Polygon,
-            MultiPoint,
-            MultiLineString,
-            MultiPolygon
-        );
+    export function makePolygonSimple(feature) {
+    // Check if polygon is self-intersecting
+    const parser = new OL3Parser();
+    parser.inject(
+        Point,
+        LineString,
+        LinearRing,
+        Polygon,
+        MultiPoint,
+        MultiLineString,
+        MultiPolygon
+    );
 
-        // Translate ol geometry into jsts geometry
-        let jstsPolygon = parser.read(feature.getGeometry());
+    // Translate ol geometry into jsts geometry
+    let jstsPolygon = parser.read(feature.getGeometry());
 
-        if (jstsPolygon.isSimple()) {
-            return feature;
-        }
+    if (jstsPolygon.isSimple()) {
+        return feature;
+    }
 
-        // Divide non-simple polygon at cross points into several smaller polygons
-        // and translate back to ol geometry
-        let polygons = jstsValidate(jstsPolygon)['array'].map(p => parser.write(p));
+    // Divide non-simple polygon at cross points into several smaller polygons
+    // and translate back to ol geometry
+    let polygons = jstsValidate(jstsPolygon)['array'].map(p => parser.write(p));
 
-        if (polygons.length > 1) {
-            // Select biggest part
-            let greatestPolygon = getGreatestPolygon(polygons);
-            // Only change coordinates because object references are in use
-            feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
-        }
+    if (polygons.length > 1) {
+        // Select biggest part
+        let greatestPolygon = getGreatestPolygon(polygons);
+        // Only change coordinates because object references are in use
+        feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
     }
 }
-
-export default PolygonValidator;
 
 /**
     * @author Martin Kirk
@@ -78,7 +74,7 @@ export default PolygonValidator;
     * @param geom
     * @return a geometry
     */
-   
+
 function jstsValidate(geom) {
     if (geom instanceof JstsPolygon) {
         if (geom.isValid()) {

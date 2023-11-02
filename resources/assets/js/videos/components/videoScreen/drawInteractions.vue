@@ -4,8 +4,7 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import PolygonValidator from '../../../annotations/ol/PolygonValidator';
-
+import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
@@ -173,11 +172,8 @@ export default {
                     return;
                 }
 
-                // If polygon is self-intersecting, create valid polygon
-                let validPolygon = PolygonValidator.makePolygonSimple(e.feature);
-                let coords = validPolygon.getGeometry().getCoordinates();
-                e.feature.getGeometry().setCoordinates([coords[0]]);
-                
+                // If polygon is self-intersecting, create simple polygon
+                PolygonValidator.makePolygonSimple(e.feature);
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];

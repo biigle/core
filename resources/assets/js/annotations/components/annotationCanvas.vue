@@ -40,7 +40,7 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
-import PolygonValidator from '../ol/PolygonValidator';
+import * as PolygonValidator from '../ol/PolygonValidator';
 import { click as clickCondition } from '@biigle/ol/events/condition';
 import { defaults as defaultInteractions } from '@biigle/ol/interaction'
 import { getCenter } from '@biigle/ol/extent';
