@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationSession;
 use Biigle\Http\Requests\JoinProjectInvitation;
 use Biigle\Http\Requests\StoreProjectInvitation;
-use Biigle\AnnotationSession;
 use Biigle\ProjectInvitation;
 use Biigle\Role;
 use DB;
