@@ -20,6 +20,7 @@ class ProjectInvitation extends Model
         'max_uses',
         'project_id',
         'role_id',
+        'add_to_sessions',
     ];
 
     /**
@@ -29,6 +30,7 @@ class ProjectInvitation extends Model
      */
     protected $casts = [
         'expires_at' => 'datetime',
+        'add_to_sessions' => 'bool',
     ];
 
     /**

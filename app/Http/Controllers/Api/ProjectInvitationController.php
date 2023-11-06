@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationSession;
 use Biigle\Http\Requests\JoinProjectInvitation;
 use Biigle\Http\Requests\StoreProjectInvitation;
 use Biigle\ProjectInvitation;
@@ -26,9 +27,10 @@ class ProjectInvitationController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {Date} expires_at The date on which the project invitation will expire.
+     * @apiParam (Required attributes) {Number} role_id ID of the user role the new project members should have. Invited usery may not become project admins. Default is "editor".
      *
      * @apiParam (Optional attributes) {Number} max_uses The number of times this project invitation can be used to adda user to the project.
-     * @apiParam (Required attributes) {Number} role_id ID of the user role the new project members should have. Invited usery may not become project admins. Default is "editor".
+     * @apiParam (Optional attributes) {Boolean} add_to_sessions If set to `true`, all users joining the project will automatically be added to all annotation sessions of all volumes that belong to the project.
      *
      * @param StoreProjectInvitation $request
      * @return \Illuminate\Http\Response
@@ -41,6 +43,7 @@ class ProjectInvitationController extends Controller
             'expires_at' => $request->input('expires_at'),
             'role_id' => $request->input('role_id', Role::editorId()),
             'max_uses' => $request->input('max_uses'),
+            'add_to_sessions' => $request->input('add_to_sessions', false),
         ]);
     }
 
@@ -72,9 +75,16 @@ class ProjectInvitationController extends Controller
                 ->findOrFail($id);
 
             $project = $request->invitation->project;
-            if (!$project->users()->where('user_id', $request->user()->id)->exists()) {
-                $project->addUserId($request->user()->id, $request->invitation->role_id);
+            $userId = $request->user()->id;
+            if (!$project->users()->where('user_id', $userId)->exists()) {
+                $project->addUserId($userId, $request->invitation->role_id);
                 $invitation->increment('current_uses');
+
+                if ($invitation->add_to_sessions) {
+                    AnnotationSession::join('project_volume', 'annotation_sessions.volume_id', '=', 'project_volume.volume_id')
+                        ->where('project_volume.project_id', $project->id)
+                        ->eachById(fn ($session) => $session->users()->attach($userId));
+                }
             }
 
             return $invitation;
