@@ -35,6 +35,15 @@
                 v-model="maxUses"
                 >
         </div>
+        <div class="form-group">
+            <label>
+                <input
+                    type="checkbox"
+                    v-model="addToSessions"
+                    >
+                Add to annotation sessions
+            </label>
+        </div>
         <button
             class="btn btn-success btn-block"
             type="submit"
@@ -75,6 +84,7 @@ export default {
             expiresAt: null,
             roleId: null,
             maxUses: null,
+            addToSessions: false,
         };
     },
     computed: {
@@ -106,6 +116,7 @@ export default {
             let payload = {
                 expires_at: isoExpiresAt,
                 role_id: this.roleId,
+                add_to_sessions: this.addToSessions,
             };
 
             if (this.maxUses > 0) {
