@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationSession;
 use Biigle\ProjectInvitation;
 use Biigle\Role;
 
@@ -44,6 +45,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertEquals(0, $invitation->current_uses);
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
+        $this->assertFalse($invitation->add_to_sessions);
         $this->assertEquals(Role::editorId(), $invitation->role_id);
     }
 
@@ -78,15 +80,41 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/projects/{$id}/invitations", [
                 'expires_at' => $timestamp,
-                'role_id' => Role::guestId(),
+                'add_to_sessions' => 123,
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'role_id' => Role::editorId(),
                 'max_uses' => 10,
+                'add_to_sessions' => true,
             ])
             ->assertSuccessful();
 
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertEquals(10, $invitation->max_uses);
-        $this->assertEquals(Role::guestId(), $invitation->role_id);
+        $this->assertEquals(Role::editorId(), $invitation->role_id);
+        $this->assertTrue($invitation->add_to_sessions);
+    }
+
+    public function testStoreAddToSessionsRoleConflict()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+
+        $timestamp = now()->addDay();
+
+        // It makes no sense to add guests to annotation sessions, as they can't annotate.
+        $this
+            ->postJson("/api/v1/projects/{$id}/invitations", [
+                'expires_at' => $timestamp,
+                'role_id' => Role::guestId(),
+                'add_to_sessions' => true,
+            ])
+            ->assertStatus(422);
     }
 
     public function testDestroy()
@@ -205,6 +233,30 @@ class ProjectInvitationControllerTest extends ApiTestCase
             ->assertSuccessful();
 
         $this->assertEquals(0, $invitation->fresh()->current_uses);
+    }
+
+    public function testJoinAddToSessions()
+    {
+        $session = AnnotationSession::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => '2023-11-04',
+            'ends_at' => '2023-11-05',
+        ]);
+
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+            'role_id' => Role::editorId(),
+            'add_to_sessions' => true,
+        ]);
+
+        $this->beUser();
+        $this
+            ->postJson("/api/v1/project-invitations/{$invitation->id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertSuccessful();
+
+        $this->assertNotNull($session->users()->find($this->user()->id));
     }
 
     public function testShowQrCode()

@@ -44,7 +44,23 @@ class StoreProjectInvitation extends FormRequest
             'expires_at' => "required|date|after:today",
             'role_id' => "in:{$roles}",
             'max_uses' => "integer|min:1",
+            'add_to_sessions' => "boolean",
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('add_to_sessions') && intval($this->input('role_id')) === Role::guestId()) {
+                $validator->errors()->add('add_to_sessions', 'Project guests cannot be added to annotation sessions. Use a different role.');
+            }
+        });
     }
 
     /**
