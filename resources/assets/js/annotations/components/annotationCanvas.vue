@@ -1,4 +1,5 @@
 <script>
+import * as PolygonValidator from '../ol/PolygonValidator';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
 import CanvasSource from '@biigle/ol/source/Canvas';
@@ -40,12 +41,11 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
-import * as PolygonValidator from '../ol/PolygonValidator';
-import { click as clickCondition } from '@biigle/ol/events/condition';
-import { defaults as defaultInteractions } from '@biigle/ol/interaction'
-import { getCenter } from '@biigle/ol/extent';
-import { shiftKeyOnly as shiftKeyOnlyCondition } from '@biigle/ol/events/condition';
-import { singleClick as singleClickCondition } from '@biigle/ol/events/condition';
+import {click as clickCondition} from '@biigle/ol/events/condition';
+import {defaults as defaultInteractions} from '@biigle/ol/interaction'
+import {getCenter} from '@biigle/ol/extent';
+import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
 
 /**
@@ -516,6 +516,8 @@ export default {
                 if (geometry.getType() === 'Polygon') {
                     if (PolygonValidator.isInvalidPolygon(e.feature)) {
                         this.$emit('is-invalid-polygon');
+                        // This must be done in the change event handler.
+                        // Not exactly sure why.
                         this.annotationSource.once('change', () => {
                             if (this.annotationSource.hasFeature(e.feature)) {
                                 this.annotationSource.removeFeature(e.feature);

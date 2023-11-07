@@ -195,7 +195,7 @@ class MagicWandInteraction extends PointerInteraction {
         if (this.isShowingCross) {
             this.sketchSource.removeFeature(this.sketchFeature);
         } else {
-            this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
+            this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
         }
 
         this.sketchFeature = null;

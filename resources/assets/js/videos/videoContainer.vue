@@ -613,9 +613,9 @@ export default {
                 annotation.failTracking();
             }
         },
-        handleInvalidPolygon(){
+        handleInvalidPolygon() {
             Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
-        }
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {

@@ -1,36 +1,35 @@
-import Point from '@biigle/ol/geom/Point';
-import Polygon from '@biigle/ol/geom/Polygon';
-import MultiPolygon from '@biigle/ol/geom/MultiPolygon';
-import MultiPoint from '@biigle/ol/geom/MultiPoint';
+import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
+import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
 import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
-import MultiLineString from '@biigle/ol/geom/MultiLineString';
-import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
-import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
-import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 import Monkey from 'jsts/org/locationtech/jts/monkey'; // Needed for isValid(), normalize()
+import MultiLineString from '@biigle/ol/geom/MultiLineString';
+import MultiPoint from '@biigle/ol/geom/MultiPoint';
+import MultiPolygon from '@biigle/ol/geom/MultiPolygon';
+import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
+import Point from '@biigle/ol/geom/Point';
+import Polygon from '@biigle/ol/geom/Polygon';
+import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 
-
-    /**
-     * Checks if polygon consists of at least 3 unique points
-     * 
-     * @param feature containing the polygon
-     * @returns True if coordinates contains at least 3 unique points, otherwise false
-     * **/
-    export function isInvalidPolygon(feature) {
+/**
+ * Checks if polygon consists of at least 3 unique points
+ *
+ * @param feature containing the polygon
+ * @returns True if coordinates contains at least 3 unique points, otherwise false
+ */
+export function isInvalidPolygon(feature) {
     let polygon = feature.getGeometry();
     let points = polygon.getCoordinates()[0];
     return (new Set(points.map(xy => String([xy])))).size < 3;
 
 }
 
-    /**
-     * Makes non-simple polygon simple
-     * 
-     * @param feature feature containing the (non-simple) polygon
-     * **/
-    export function makePolygonSimple(feature) {
+/**
+ * Makes non-simple polygon simple
+ *
+ * @param feature feature containing the (non-simple) polygon
+ */
+export function makePolygonSimple(feature) {
     // Check if polygon is self-intersecting
     const parser = new OL3Parser();
     parser.inject(
@@ -63,18 +62,17 @@ import Monkey from 'jsts/org/locationtech/jts/monkey'; // Needed for isValid(), 
 }
 
 /**
-    * @author Martin Kirk
-    * 
-    * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
-    * 
-    * 
-    *  Get / create a valid version of the geometry given. If the geometry is a polygon or multi polygon, self intersections /
-    * inconsistencies are fixed. Otherwise the geometry is returned.
-    *
-    * @param geom
-    * @return a geometry
-    */
-
+ * @author Martin Kirk
+ *
+ * @link https://stackoverflow.com/questions/36118883/using-jsts-buffer-to-identify-a-self-intersecting-polygon
+ *
+ *
+ *  Get / create a valid version of the geometry given. If the geometry is a polygon or multi polygon, self intersections /
+ * inconsistencies are fixed. Otherwise the geometry is returned.
+ *
+ * @param geom
+ * @return a geometry
+ */
 function jstsValidate(geom) {
     if (geom instanceof JstsPolygon) {
         if (geom.isValid()) {

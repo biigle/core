@@ -1,10 +1,10 @@
 <script>
+import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
@@ -168,7 +168,10 @@ export default {
                 if (PolygonValidator.isInvalidPolygon(e.feature)) {
                     // Disallow polygons with less than three non-overlapping points
                     this.$emit('is-invalid-polygon')
-                    this.removeFeature(e.feature)
+                    // Wait for this feature to be added to the source, then clear.
+                    this.pendingAnnotationSource.once('addfeature', () => {
+                        this.resetPendingAnnotation();
+                    });
                     return;
                 }
 
@@ -188,6 +191,9 @@ export default {
                     this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
                 }
             } else {
+                // If the pending annotation (time) is invalid, remove it again.
+                // We have to wait for this feature to be added to the source to be able
+                // to remove it.
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
