@@ -1,8 +1,8 @@
+import 'jsts/org/locationtech/jts/monkey'; // This monkey patches jsts prototypes.
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
 import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
-import Monkey from 'jsts/org/locationtech/jts/monkey'; // Needed for isValid(), normalize()
 import MultiLineString from '@biigle/ol/geom/MultiLineString';
 import MultiPoint from '@biigle/ol/geom/MultiPoint';
 import MultiPolygon from '@biigle/ol/geom/MultiPolygon';
@@ -20,8 +20,8 @@ import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygoni
 export function isInvalidPolygon(feature) {
     let polygon = feature.getGeometry();
     let points = polygon.getCoordinates()[0];
-    return (new Set(points.map(xy => String([xy])))).size < 3;
 
+    return (new Set(points.map(xy => String([xy])))).size < 3;
 }
 
 /**
@@ -30,6 +30,10 @@ export function isInvalidPolygon(feature) {
  * @param feature feature containing the (non-simple) polygon
  */
 export function makePolygonSimple(feature) {
+    if (feature.getGeometry().getType() !== 'Polygon') {
+        throw new Error("Only polygon geometries are supported.");
+    }
+
     // Check if polygon is self-intersecting
     const parser = new OL3Parser();
     parser.inject(
@@ -81,6 +85,7 @@ function jstsValidate(geom) {
         }
         var polygonizer = new Polygonizer();
         jstsAddPolygon(geom, polygonizer);
+
         return polygonizer.getPolygons();
     } else {
         return geom;
@@ -138,5 +143,6 @@ function jstsAddLineString(lineString, polygonizer) {
 function getGreatestPolygon(polygonList) {
     let areas = polygonList.map(p => p.getArea());
     let idx = areas.indexOf(Math.max(...areas));
+
     return polygonList[idx];
 }
