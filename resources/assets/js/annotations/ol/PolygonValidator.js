@@ -1,6 +1,5 @@
 import 'jsts/org/locationtech/jts/monkey'; // This monkey patches jsts prototypes.
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
-import JstsPolygon from 'jsts/org/locationtech/jts/geom/Polygon';
 import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
 import MultiLineString from '@biigle/ol/geom/MultiLineString';
@@ -78,18 +77,14 @@ export function makePolygonSimple(feature) {
  * @return a geometry
  */
 function jstsValidate(geom) {
-    if (geom instanceof JstsPolygon) {
-        if (geom.isValid()) {
-            geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
-            return geom; // If the polygon is valid just return it
-        }
-        var polygonizer = new Polygonizer();
-        jstsAddPolygon(geom, polygonizer);
-
-        return polygonizer.getPolygons();
-    } else {
-        return geom;
+    if (geom.isValid()) {
+        geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
+        return geom; // If the polygon is valid just return it
     }
+    var polygonizer = new Polygonizer();
+    jstsAddPolygon(geom, polygonizer);
+
+    return polygonizer.getPolygons();
 }
 
 /**
