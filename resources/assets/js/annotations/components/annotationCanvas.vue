@@ -412,6 +412,7 @@ export default {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
                 .map((feature) => {
+                    PolygonValidator.makePolygonSimple(feature);
                     return {
                         id: feature.getId(),
                         image_id: feature.get('annotation').image_id,

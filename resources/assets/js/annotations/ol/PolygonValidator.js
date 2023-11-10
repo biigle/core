@@ -28,7 +28,7 @@ export function isInvalidPolygon(feature) {
  *
  * @param feature feature containing the (non-simple) polygon
  */
-export function makePolygonSimple(feature) {
+export function simplifyPolygon(feature) {
     if (feature.getGeometry().getType() !== 'Polygon') {
         throw new Error("Only polygon geometries are supported.");
     }
@@ -52,9 +52,9 @@ export function makePolygonSimple(feature) {
         return feature;
     }
 
-    // Divide non-simple polygon at cross points into several smaller polygons
-    // and translate back to ol geometry
-    let polygons = jstsValidate(jstsPolygon)['array'].map(p => parser.write(p));
+    // Divide non-simple polygon at cross points into several smaller polygons,
+    // translate back to ol geometry and polish them
+    let polygons = polishPolygons(jstsValidate(jstsPolygon).array.map(p => parser.write(p)));
 
     if (polygons.length > 1) {
         // Select biggest part
@@ -101,6 +101,7 @@ function jstsAddPolygon(polygon, polygonizer) {
     jstsAddLineString(polygon.getExteriorRing(), polygonizer);
 
     for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
+        n = polygon.getNumInteriorRing() === 1 ? 0 : n;
         jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
     }
 }
@@ -127,6 +128,52 @@ function jstsAddLineString(lineString, polygonizer) {
 
     //Add result to polygonizer
     polygonizer.add(toAdd);
+}
+
+/**
+ * Removes duplicated subpolygon's coordinates which can be still included in some polygons.
+ *
+ * @param polygons List of (multi)polygons
+ * @returns List of separated polygons
+ *
+ * **/
+function polishPolygons(polygons) {
+    let multiPolygons = polygons.filter(p => p.getCoordinates().length > 1);
+
+    if (multiPolygons.length === 0) {
+        return polygons;
+    }
+
+    multiPolygons.forEach(p => {
+        let pCoords = p.getCoordinates();
+        for (let i = 0; i < polygons.length; i++) {
+            let otherP = polygons[i]
+            if (p !== otherP) {
+                let subCoords = pCoords.filter(coords => areEqual(coords, otherP.getCoordinates()[0]));
+                // if subpolygon's coordinates are duplicates, remove them
+                if (subCoords.length > 0) {
+                    pCoords.splice(pCoords.indexOf(subCoords[0]), 1);
+                    p.setCoordinates(pCoords);
+                }
+            }
+        }
+    });
+    return polygons;
+}
+
+/**
+ * Check if two arrays have equal content
+ * 
+ * @param a1 first array
+ * @param a2 second array
+ * 
+ * @returns True if arrays have equal content otherwise false 
+ * 
+ * **/
+function areEqual(a1, a2) {
+    let a1Strings = a1.map(xy => JSON.stringify(xy));
+    let a2Strings = a2.map(xy => JSON.stringify(xy));
+    return a1Strings.every(xy => a2Strings.includes(xy));
 }
 
 /**
