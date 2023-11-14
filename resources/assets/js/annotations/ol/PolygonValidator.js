@@ -138,6 +138,7 @@ function jstsAddLineString(lineString, polygonizer) {
  *
  * **/
 function polishPolygons(polygons) {
+    // Filter all multipolygons that contain two or more coordinate lists
     let multiPolygons = polygons.filter(p => p.getCoordinates().length > 1);
 
     if (multiPolygons.length === 0) {
@@ -149,8 +150,9 @@ function polishPolygons(polygons) {
         for (let i = 0; i < polygons.length; i++) {
             let otherP = polygons[i]
             if (p !== otherP) {
+                // subCoords can contain only one coordinate list
                 let subCoords = pCoords.filter(coords => areEqual(coords, otherP.getCoordinates()[0]));
-                // if subpolygon's coordinates are duplicates, remove them
+                // If subpolygon's coordinates are duplicates, remove them
                 if (subCoords.length > 0) {
                     pCoords.splice(pCoords.indexOf(subCoords[0]), 1);
                     p.setCoordinates(pCoords);
