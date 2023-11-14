@@ -412,7 +412,7 @@ export default {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
                 .map((feature) => {
-                    PolygonValidator.makePolygonSimple(feature);
+                    PolygonValidator.simplifyPolygon(feature);
                     return {
                         id: feature.getId(),
                         image_id: feature.get('annotation').image_id,
@@ -527,7 +527,7 @@ export default {
                         return;
                     }
 
-                    PolygonValidator.makePolygonSimple(e.feature);
+                    PolygonValidator.simplifyPolygon(e.feature);
                 }
 
                 e.feature.set('color', this.selectedLabel.color);

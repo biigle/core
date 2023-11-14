@@ -176,7 +176,7 @@ export default {
                 }
 
                 // If polygon is self-intersecting, create simple polygon
-                PolygonValidator.makePolygonSimple(e.feature);
+                PolygonValidator.simplifyPolygon(e.feature);
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
