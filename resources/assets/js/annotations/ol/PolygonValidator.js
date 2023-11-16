@@ -53,7 +53,7 @@ export function simplifyPolygon(feature) {
     }
 
     // Divide non-simple polygon at cross points into several smaller polygons,
-    // translate back to ol geometry and remove dupliate coordinate sets (polish)
+    // translate back to ol geometry and remove duplicated coordinate sets (polish)
     let polygons = polishPolygons(jstsValidate(jstsPolygon).array.map(p => parser.write(p)));
 
     if (polygons.length > 1) {
@@ -108,7 +108,7 @@ function jstsAddPolygon(polygon, polygonizer) {
         for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
             jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
         }
-}
+    }
 }
 
 /**
@@ -136,8 +136,8 @@ function jstsAddLineString(lineString, polygonizer) {
 }
 
 /**
- * Removes duplicated subpolygon's coordinate set which can be still included in some polygons.
- * These polygons need to be "cleaned up", otherwise polygons are still intersecting.
+ * Removes duplicated subpolygon's coordinate sets which can be still included in some polygons (from magic wand tool).
+ * These polygons need to be "cleaned up", otherwise polygons can still have intersections.
  * 
  * Example: 
  * pg1 = [ [[1,0],[1,1],[1,2]], [[1,3],[1,4]] ]
@@ -147,14 +147,14 @@ function jstsAddLineString(lineString, polygonizer) {
  * pg2 = [ [1,3],[1,4] ]
  *
  * @param polygons List of polygons
- * @returns List of polygons with unique coordinate sets
+ * @returns List of polygons with coordinate sets ocurring only once
  *
  * **/
 function polishPolygons(polygons) {
-    // Filter all polygons that contain two or more coordinate lists
+    // Filter all polygons that contain two or more coordinate sets
     let multipleCoordSetPolygon = polygons.filter(p => p.getCoordinates().length > 1);
 
-    // If all coordinate sets ocurring once, return polygons
+    // If all coordinate sets ocurring once, return polygons unchanged
     if (multipleCoordSetPolygon.length === 0) {
         return polygons;
     }
