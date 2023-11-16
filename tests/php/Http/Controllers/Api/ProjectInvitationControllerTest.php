@@ -259,6 +259,35 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertNotNull($session->users()->find($this->user()->id));
     }
 
+    public function testJoinAddToSessionsAlreadyExist()
+    {
+        $session = AnnotationSession::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => '2023-11-04',
+            'ends_at' => '2023-11-05',
+        ]);
+
+        $invitation = ProjectInvitation::factory()->create([
+            'project_id' => $this->project()->id,
+            'role_id' => Role::editorId(),
+            'add_to_sessions' => true,
+        ]);
+
+        $session->users()->attach($this->user());
+        $session->users()->attach($this->expert());
+
+        $this->beUser();
+        $this
+            ->postJson("/api/v1/project-invitations/{$invitation->id}/join", [
+                'token' => $invitation->uuid,
+            ])
+            ->assertSuccessful();
+
+        $this->assertNotNull($session->users()->find($this->user()->id));
+        // The expert should not be detached by this.
+        $this->assertNotNull($session->users()->find($this->expert()->id));
+    }
+
     public function testShowQrCode()
     {
         $invitation = ProjectInvitation::factory()->create([
