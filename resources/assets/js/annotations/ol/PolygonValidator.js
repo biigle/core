@@ -100,10 +100,15 @@ function jstsValidate(geom) {
 function jstsAddPolygon(polygon, polygonizer) {
     jstsAddLineString(polygon.getExteriorRing(), polygonizer);
 
-    for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
-        n = polygon.getNumInteriorRing() === 1 ? 0 : n;
-        jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
-    }
+    // If only one interior ring exists, access ring directly.
+    // Otherwise loop will cause out of bounds error
+    if (polygon.getNumInteriorRing() === 1) {
+        jstsAddLineString(polygon.getInteriorRingN(0), polygonizer);
+    } else {
+        for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
+            jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
+        }
+}
 }
 
 /**
