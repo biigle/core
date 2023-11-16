@@ -53,7 +53,7 @@ export function simplifyPolygon(feature) {
     }
 
     // Divide non-simple polygon at cross points into several smaller polygons,
-    // translate back to ol geometry and polish them
+    // translate back to ol geometry and remove dupliate coordinate sets (polish)
     let polygons = polishPolygons(jstsValidate(jstsPolygon).array.map(p => parser.write(p)));
 
     if (polygons.length > 1) {
@@ -131,26 +131,36 @@ function jstsAddLineString(lineString, polygonizer) {
 }
 
 /**
- * Removes duplicated subpolygon's coordinates which can be still included in some polygons.
+ * Removes duplicated subpolygon's coordinate set which can be still included in some polygons.
+ * These polygons need to be "cleaned up", otherwise polygons are still intersecting.
+ * 
+ * Example: 
+ * pg1 = [ [[1,0],[1,1],[1,2]], [[1,3],[1,4]] ]
+ * pg2 = [ [1,3],[1,4] ]
+ * => 
+ * pg1 = [ [[1,0],[1,1],[1,2]] ]
+ * pg2 = [ [1,3],[1,4] ]
  *
- * @param polygons List of (multi)polygons
- * @returns List of separated polygons
+ * @param polygons List of polygons
+ * @returns List of polygons with unique coordinate sets
  *
  * **/
 function polishPolygons(polygons) {
-    // Filter all multipolygons that contain two or more coordinate lists
-    let multiPolygons = polygons.filter(p => p.getCoordinates().length > 1);
+    // Filter all polygons that contain two or more coordinate lists
+    let multipleCoordSetPolygon = polygons.filter(p => p.getCoordinates().length > 1);
 
-    if (multiPolygons.length === 0) {
+    // If all coordinate sets ocurring once, return polygons
+    if (multipleCoordSetPolygon.length === 0) {
         return polygons;
     }
 
-    multiPolygons.forEach(p => {
+    // For each polygon with more than one coordinate set, check if a coordinate set occurs several times
+    multipleCoordSetPolygon.forEach(p => {
         let pCoords = p.getCoordinates();
         for (let i = 0; i < polygons.length; i++) {
             let otherP = polygons[i]
             if (p !== otherP) {
-                // subCoords can contain only one coordinate list
+                // subCoords can contain only one coordinate list that is equal
                 let subCoords = pCoords.filter(coords => areEqual(coords, otherP.getCoordinates()[0]));
                 // If subpolygon's coordinates are duplicates, remove them
                 if (subCoords.length > 0) {
@@ -160,6 +170,7 @@ function polishPolygons(polygons) {
             }
         }
     });
+
     return polygons;
 }
 
