@@ -52,16 +52,11 @@ export function simplifyPolygon(feature) {
         return feature;
     }
 
-    // Divide non-simple polygon at cross points into several smaller polygons,
-    // translate back to ol geometry and remove duplicated coordinate sets (polish)
-    let polygons = polishPolygons(jstsValidate(jstsPolygon).array.map(p => parser.write(p)));
-
-    if (polygons.length > 1) {
-        // Select biggest part
-        let greatestPolygon = getGreatestPolygon(polygons);
-        // Only change coordinates because object references are in use
-        feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
-    }
+    let simplePolygons = jstsSimplify(jstsPolygon);
+    let greatestPolygon = getGreatestPolygon(simplePolygons);
+    // Convert back to OL geometry.
+    greatestPolygon = parser.write(greatestPolygon);
+    feature.getGeometry().setCoordinates(greatestPolygon.getCoordinates());
 }
 
 /**
@@ -76,15 +71,22 @@ export function simplifyPolygon(feature) {
  * @param geom
  * @return a geometry
  */
-function jstsValidate(geom) {
+function jstsSimplify(geom) {
     if (geom.isValid()) {
         geom.normalize(); // validate does not pick up rings in the wrong order - this will fix that
         return geom; // If the polygon is valid just return it
     }
-    var polygonizer = new Polygonizer();
+
+    let polygonizer = new Polygonizer();
     jstsAddPolygon(geom, polygonizer);
 
-    return polygonizer.getPolygons();
+    let polygons = polygonizer.getPolygons().array
+        // Remove holes by using the exterior ring.
+        .map(p => p.getExteriorRing())
+        // Convert (exterior) LinearRing to Polygon.
+        .map(r => geom.getFactory().createPolygon(r));
+
+    return polygons;
 }
 
 /**
@@ -99,16 +101,6 @@ function jstsValidate(geom) {
 */
 function jstsAddPolygon(polygon, polygonizer) {
     jstsAddLineString(polygon.getExteriorRing(), polygonizer);
-
-    // If only one interior ring exists, access ring directly.
-    // Otherwise loop will cause out of bounds error
-    if (polygon.getNumInteriorRing() === 1) {
-        jstsAddLineString(polygon.getInteriorRingN(0), polygonizer);
-    } else {
-        for (var n = polygon.getNumInteriorRing(); n > 0; n--) {
-            jstsAddLineString(polygon.getInteriorRingN(n), polygonizer);
-        }
-    }
 }
 
 /**
@@ -133,65 +125,6 @@ function jstsAddLineString(lineString, polygonizer) {
 
     //Add result to polygonizer
     polygonizer.add(toAdd);
-}
-
-/**
- * Removes duplicated subpolygon's coordinate sets which can be still included in some polygons (from magic wand tool).
- * These polygons need to be "cleaned up", otherwise polygons can still have intersections.
- * 
- * Example: 
- * pg1 = [ [[1,0],[1,1],[1,2]], [[1,3],[1,4]] ]
- * pg2 = [ [1,3],[1,4] ]
- * => 
- * pg1 = [ [[1,0],[1,1],[1,2]] ]
- * pg2 = [ [1,3],[1,4] ]
- *
- * @param polygons List of polygons
- * @returns List of polygons with coordinate sets ocurring only once
- *
- * **/
-function polishPolygons(polygons) {
-    // Filter all polygons that contain two or more coordinate sets
-    let multipleCoordSetPolygon = polygons.filter(p => p.getCoordinates().length > 1);
-
-    // If all coordinate sets ocurring once, return polygons unchanged
-    if (multipleCoordSetPolygon.length === 0) {
-        return polygons;
-    }
-
-    // For each polygon with more than one coordinate set, check if a coordinate set occurs several times
-    multipleCoordSetPolygon.forEach(p => {
-        let pCoords = p.getCoordinates();
-        for (let i = 0; i < polygons.length; i++) {
-            let otherP = polygons[i]
-            if (p !== otherP) {
-                // subCoords can contain only one coordinate list that is equal
-                let subCoords = pCoords.filter(coords => areEqual(coords, otherP.getCoordinates()[0]));
-                // If subpolygon's coordinates are duplicates, remove them
-                if (subCoords.length > 0) {
-                    pCoords.splice(pCoords.indexOf(subCoords[0]), 1);
-                    p.setCoordinates(pCoords);
-                }
-            }
-        }
-    });
-
-    return polygons;
-}
-
-/**
- * Check if two arrays have equal content
- * 
- * @param a1 first array
- * @param a2 second array
- * 
- * @returns True if arrays have equal content otherwise false 
- * 
- * **/
-function areEqual(a1, a2) {
-    let a1Strings = a1.map(xy => JSON.stringify(xy));
-    let a2Strings = a2.map(xy => JSON.stringify(xy));
-    return a1Strings.every(xy => a2Strings.includes(xy));
 }
 
 /**
