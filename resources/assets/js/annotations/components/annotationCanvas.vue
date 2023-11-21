@@ -412,7 +412,10 @@ export default {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
                 .map((feature) => {
-                    PolygonValidator.simplifyPolygon(feature);
+                    if (feature.getGeometry().getType() === 'Polygon') {
+                        PolygonValidator.simplifyPolygon(feature);
+                    }
+
                     return {
                         id: feature.getId(),
                         image_id: feature.get('annotation').image_id,
