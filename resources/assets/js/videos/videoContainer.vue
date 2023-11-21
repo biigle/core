@@ -277,6 +277,7 @@ export default {
                 shape_id: this.shapes[pendingAnnotation.shape],
                 label_id: this.selectedLabel ? this.selectedLabel.id : 0,
             });
+
             delete annotation.shape;
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
@@ -623,6 +624,9 @@ export default {
             if (annotation) {
                 annotation.failTracking();
             }
+        },
+        handleInvalidPolygon() {
+            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
         },
     },
     watch: {

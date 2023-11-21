@@ -571,6 +571,9 @@ export default {
         dismissCrossOriginError() {
             this.crossOriginError = false;
         },
+        handleInvalidPolygon() {
+            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
+        },
     },
     watch: {
         async imageId(id) {
