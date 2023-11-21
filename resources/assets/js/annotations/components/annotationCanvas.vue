@@ -1,4 +1,5 @@
 <script>
+import * as PolygonValidator from '../ol/PolygonValidator';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
 import CanvasSource from '@biigle/ol/source/Canvas';
@@ -411,6 +412,7 @@ export default {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
                 .map((feature) => {
+                    PolygonValidator.simplifyPolygon(feature);
                     return {
                         id: feature.getId(),
                         image_id: feature.get('annotation').image_id,
@@ -512,6 +514,22 @@ export default {
         handleNewFeature(e) {
             if (this.hasSelectedLabel) {
                 let geometry = e.feature.getGeometry();
+                if (geometry.getType() === 'Polygon') {
+                    if (PolygonValidator.isInvalidPolygon(e.feature)) {
+                        this.$emit('is-invalid-polygon');
+                        // This must be done in the change event handler.
+                        // Not exactly sure why.
+                        this.annotationSource.once('change', () => {
+                            if (this.annotationSource.hasFeature(e.feature)) {
+                                this.annotationSource.removeFeature(e.feature);
+                            }
+                        });
+                        return;
+                    }
+
+                    PolygonValidator.simplifyPolygon(e.feature);
+                }
+
                 e.feature.set('color', this.selectedLabel.color);
 
                 // This callback is called when saving the annotation succeeded or

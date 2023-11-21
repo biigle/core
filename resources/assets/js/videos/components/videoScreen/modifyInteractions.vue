@@ -5,6 +5,7 @@ import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
 
 const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
 
@@ -79,6 +80,17 @@ export default {
                     return this.featureRevisionMap[feature.getId()] !== feature.getRevision();
                 })
                 .map((feature) => {
+                    // Check polygons
+                    if (feature.getGeometry().getType() === 'Polygon') {
+                        if (PolygonValidator.isInvalidPolygon(feature)) {
+                            // Disallow polygons with less than three non-overlapping points
+                            this.$emit('is-invalid-polygon')
+                            return;
+                        }
+                        
+                        // If polygon is self-intersecting, create simple polygon
+                        PolygonValidator.simplifyPolygon(feature);
+                    }
                     return {
                         annotation: feature.get('annotation'),
                         points: this.getPointsFromGeometry(feature.getGeometry()),
