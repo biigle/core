@@ -129,6 +129,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('user-storage'),
         ],
+
+        'magic-sam' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/magic-sam'),
+            'url' => env('APP_URL').'/storage/magic-sam',
+            'visibility' => 'public',
+        ],
     ],
 
     /*
