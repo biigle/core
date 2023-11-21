@@ -1,4 +1,5 @@
 import 'jsts/org/locationtech/jts/monkey'; // This monkey patches jsts prototypes.
+import GeometryCollection from '@biigle/ol/geom/GeometryCollection';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
 import LinearRing from '@biigle/ol/geom/LinearRing';
 import LineString from '@biigle/ol/geom/LineString';
@@ -42,11 +43,16 @@ export function simplifyPolygon(feature) {
         Polygon,
         MultiPoint,
         MultiLineString,
-        MultiPolygon
+        MultiPolygon,
+        GeometryCollection
     );
 
-    // Translate ol geometry into jsts geometry
-    let jstsPolygon = parser.read(feature.getGeometry());
+    // Use convertFromPolygon() instead of write() because:
+    //   1. Only Polygons are possible here
+    //   2. Some BIIGLE modules (e.g. magic-sam) import OpenLayers again and create
+    //      geometry from there, so the "module Polygon" does not equal the "core Polygon"
+    //      in the instanceof check of write().
+    let jstsPolygon = parser.convertFromPolygon(feature.getGeometry());
 
     if (jstsPolygon.isSimple()) {
         return feature;
