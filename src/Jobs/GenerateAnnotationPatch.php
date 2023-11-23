@@ -2,21 +2,28 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Contracts\Annotation;
-use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Jobs\Job;
-use Biigle\Shape;
-use Biigle\VideoAnnotation;
-use Biigle\VolumeFile;
-use Exception;
-use FileCache;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Jcupitt\Vips\Image;
+use Biigle\Facades\VipsImage;
 use Log;
 use Str;
+use SVG\Nodes\Shapes\SVGEllipse;
+use SVG\Nodes\Shapes\SVGLine;
+use SVG\Nodes\Shapes\SVGPolygon;
+use \SVG\SVG;
+use Exception;
+use FileCache;
+use Biigle\Shape;
+use Biigle\Jobs\Job;
+use Biigle\VolumeFile;
+use Jcupitt\Vips\Image;
+use Biigle\VideoAnnotation;
+use SVG\Nodes\Shapes\SVGRect;
+use \SVG\Nodes\Shapes\SVGCircle;
+use Biigle\Contracts\Annotation;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Biigle\FileCache\Exceptions\FileLockedException;
 
 abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 {
@@ -247,17 +254,17 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      *
      * @return array
      */
-    protected function makeRectContained($rect, $image)
+    protected function makeRectContained($rect, $width, $height)
     {
         // Order of min max is importans so the point gets no negative coordinates.
-        $rect['left'] = min($image->width - $rect['width'], $rect['left']);
+        $rect['left'] = min($width - $rect['width'], $rect['left']);
         $rect['left'] = max(0, $rect['left']);
-        $rect['top'] = min($image->height - $rect['height'], $rect['top']);
+        $rect['top'] = min($height - $rect['height'], $rect['top']);
         $rect['top'] = max(0, $rect['top']);
 
         // Adjust dimensions of rect if it is larger than the image.
-        $rect['width'] = min($image->width, $rect['width']);
-        $rect['height'] = min($image->height, $rect['height']);
+        $rect['width'] = min($width, $rect['width']);
+        $rect['height'] = min($height, $rect['height']);
 
         return $rect;
     }
@@ -280,7 +287,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
             $image = $image->resize(floatval($thumbWidth) / $image->width);
         } else {
             $rect = $this->getPatchRect($points, $shape, $thumbWidth, $thumbHeight);
-            $rect = $this->makeRectContained($rect, $image);
+            $rect = $this->makeRectContained($rect, $image->width, $image->height);
 
             $image = $image->crop(
                     $rect['left'],
@@ -290,10 +297,172 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 )
                 ->resize(floatval($thumbWidth) / $rect['width']);
         }
-
+    
         return $image->writeToBuffer('.'.config('largo.patch_format'), [
             'Q' => 85,
             'strip' => true,
         ]);
+    }
+
+    /**
+     * Creates transparent SVG thumbnail with annotation
+     * 
+     * @param int $width of original image
+     * @param int $height of original image
+     * @param Shape $shape shape of given annotation
+     * @param array $points one dimensional array filled with coordinates of annotation
+     * 
+     * @return mixed SVG image with annotation
+     * **/
+    protected function getSVGAnnotationPatch($width, $height, $points, $shape){
+
+        $thumbWidth = config('thumbnails.width');
+        $thumbHeight = config('thumbnails.height');
+            
+        $image = new SVG($thumbWidth, $thumbHeight); 
+        $doc = $image->getDocument();
+    
+        $annotation = $this->getSVGAnnotation($shape->id, $points);
+    
+        // Set annotaion styling
+        $annotation->setStyle('fill', 'none')
+            ->setStyle('stroke', '#0000ff')
+            ->setStyle('stroke-width', '4px')
+            ->setStyle('stroke-opacity', '1.0');   
+    
+        // Crop and resize image
+        $rect = $this->getPatchRect($points, $shape, $thumbWidth, $thumbHeight);
+        $rect = $this->makeRectContained($rect, $width, $height);
+    
+        // Set viewbox to show annotation
+        $doc->setAttribute('viewBox',$rect['left'].' '.$rect['top'].' '.$rect['width'].' '.$rect['height']);
+    
+        $doc->addChild($annotation);
+        
+        return $image;
+        }
+    
+    
+    /**
+     * Draw annotation as SVG
+     * 
+     * @param int $shapeId shape of given annotation
+     * @param array $points one dimensional array filled with coordinates of annotation
+     * 
+     * @return mixed annotation as SVG
+     * 
+     * **/
+    protected function getSVGAnnotation($shapeId,$points){
+        $tuples = [];
+        if ($shapeId !== Shape::circleId()) {
+            for ($i=0;$i<sizeof($points)-1;$i=$i+2) {
+                $tuples[] = [$points[$i], $points[$i+1]];
+            }
+        }
+
+        switch ($shapeId){
+            case Shape::pointId():
+                $radius = 1;
+                return new SVGCircle($points[0],$points[1],$radius);
+            case Shape::circleId():
+                return new SVGCircle($points[0],$points[1],$points[2]);
+            case Shape::polygonId():
+                return new SVGPolygon($tuples);
+            case Shape::lineId():
+                return new SVGLine($points[0],$points[1],$points[2],$points[3]);
+            case Shape::rectangleId():
+                $sortedCoords = $this->getOrientedCoordinates($tuples,Shape::rectangleId());
+
+                $upperLeft = $sortedCoords['UL'];
+                $width = sqrt(pow($sortedCoords['UR'][0]-$upperLeft[0],2)+pow($sortedCoords['UR'][1]-$upperLeft[1],2));
+                $height = sqrt(pow($upperLeft[0]-$sortedCoords['LL'][0],2)+pow($upperLeft[1]-$sortedCoords['LL'][1],2));
+                $rect = new SVGRect($upperLeft[0],$upperLeft[1],$width,$height);
+
+                // Add rotation
+                $vecLR = [$sortedCoords['UR'][0]-$upperLeft[0],$sortedCoords['UR'][1]-$upperLeft[1]];
+                $u = [$width,0];
+                $cos = $this->computeRotationAngle($vecLR,$u);
+                $rect->setAttribute('transform','rotate('.$cos.','.$upperLeft[0].','.$upperLeft[1].')');
+
+                return $rect;
+            case Shape::ellipseId():
+                $sortedCoords = $this->getOrientedCoordinates($tuples,Shape::ellipseId());
+
+                $vecLR = [$sortedCoords['R'][0]-$sortedCoords['L'][0],$sortedCoords['R'][1]-$sortedCoords['L'][1]];
+                $vecUD = [$sortedCoords['D'][0]-$sortedCoords['U'][0],$sortedCoords['D'][1]-$sortedCoords['U'][1]];
+                $radiusX = sqrt(pow($vecLR[0],2) + pow($vecLR[1],2))/2.0;
+                $radiusY = sqrt(pow($vecUD[0],2) + pow($vecUD[1],2))/2.0;
+                $center = [0.5*$vecLR[0]+$sortedCoords['L'][0],0.5*$vecLR[1]+$sortedCoords['L'][1]];
+                $elps = new SVGEllipse($center[0],$center[1],$radiusX,$radiusY);
+
+                // Add rotation
+                $v = [$sortedCoords['R'][0]-$sortedCoords['L'][0],$sortedCoords['R'][1]-$sortedCoords['L'][1]];
+                $u = [$center[0],0];
+                $cos = $this->computeRotationAngle($v,$u);
+
+                $elps->setAttribute('transform','rotate('.$cos.','.$center[0].','.$center[1].')');
+                return $elps;
+        }
+    }
+
+    /**
+     * Computes angle between two vectors
+     * 
+     * @param array $v first vector
+     * @param array $u second vector
+     * @return float rotation angle in degree
+     * **/
+    function computeRotationAngle($v,$u){
+        // If upper left and upper right coordinate have equal y coordinate, then there is no rotation
+        if($v[1] === 0){
+            return 0;
+        }
+
+        // Compute angle
+        $scalarProd = 0;
+        $vNorm = 0;
+        $uNorm = 0;
+        for($i = 0;$i<sizeof($v);$i++){
+            $scalarProd += $v[$i]*$u[$i];
+            $vNorm += pow($v[$i],2);
+            $uNorm += pow($u[$i],2);
+        }
+        $rad = acos($scalarProd/(sqrt($vNorm)*sqrt($uNorm)));
+        $deg = (($rad*180)/pi());
+
+        // Use opposite angle, if rotation is needed in counter clock wise direction
+        return $v[1] > 0 ? $deg : 360 - $deg;
+    }
+
+    /**
+     * Determines position of coordinate
+     * 
+     * @param array $tuples coordinates array
+     * @param int $shapeId shapeId of given annotation
+     * 
+     * @return array with coordinates assigned to their position on the plane
+     * 
+     * **/
+    function getOrientedCoordinates($tuples,$shapeId){
+        $assigned = [];
+
+        // Sort x values in ascending order
+        usort($tuples, fn($a,$b) => $a[0] <=> $b[0]);
+        
+        // Note: y-axis is inverted
+        if($shapeId === Shape::rectangleId()){
+            $assigned['LL'] = $tuples[0][1] > $tuples[1][1] ? $tuples[0] : $tuples[1];
+            $assigned['UL'] = $tuples[0][1] < $tuples[1][1] ? $tuples[0] : $tuples[1];
+            $assigned['LR'] = $tuples[2][1] > $tuples[3][1] ? $tuples[2] : $tuples[3];
+            $assigned['UR'] = $tuples[2][1] < $tuples[3][1] ? $tuples[2] : $tuples[3];
+        }
+        if ($shapeId === Shape::ellipseId()) {
+            $assigned['L'] = $tuples[0];
+            $assigned['R'] = end($tuples);
+            $assigned['U'] = $tuples[1][1] < $tuples[2][1] ? $tuples[1] : $tuples[2];
+            $assigned['D'] = $tuples[1][1] > $tuples[2][1] ? $tuples[1] : $tuples[2];
+        }
+
+        return $assigned;
     }
 }
