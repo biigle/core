@@ -430,8 +430,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
             $vNorm += pow($v[$i], 2);
             $uNorm += pow($u[$i], 2);
         }
-        $rad = acos($scalarProd / (sqrt($vNorm) * sqrt($uNorm)));
-        $deg = (($rad * 180) / pi());
+        $deg = rad2deg(acos($scalarProd / (sqrt($vNorm) * sqrt($uNorm))));
 
         // Use opposite angle, if rotation is needed in counter clock wise direction
         return $v[1] > 0 ? $deg : 360 - $deg;
