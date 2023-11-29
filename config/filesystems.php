@@ -64,6 +64,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('ifdos'),
         ],
+
+        'pending-metadata' => [
+            'driver' => 'local',
+            'root' => storage_path('pending-metadata'),
+        ],
     ],
 
     /*

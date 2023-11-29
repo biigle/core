@@ -20,4 +20,10 @@ return [
     | Storage disk for iFDO metadata files linked with volumes.
     */
     'ifdo_storage_disk' => env('VOLUME_IFDO_STORAGE_DISK', 'ifdos'),
+
+
+    /*
+    | Storage disk for metadata files of pending volumes.
+    */
+    'pending_metadata_storage_disk' => env('VOLUME_PENDING_METADATA_STORAGE_DISK', 'pending-metadata'),
 ];
