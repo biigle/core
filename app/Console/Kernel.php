@@ -30,13 +30,14 @@ class Kernel extends ConsoleKernel
         $schedule
             ->call(function () {
                 if (FederatedSearchInstance::withLocalToken()->exists()) {
-                    GenerateFederatedSearchIndex::dispatch();
+                    GenerateFederatedSearchIndex::dispatch()
+                        ->onQueue(config('biigle.federated_search.index_queue'));
                 }
             })
             ->name('generate-federated-search-index')
             // The requests to retrieve the federated search index are sent hourly at 05.
             // This should not collide with this job to generate the index.
-            ->hourlyAt(55)
+            ->hourlyAt(35)
             ->onOneServer();
 
         $schedule

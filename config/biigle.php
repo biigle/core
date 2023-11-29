@@ -44,6 +44,11 @@ return [
         | Cache key to use for the federated search index.
         */
         'cache_key' => env('BIIGLE_FEDERATED_SEARCH_CACHE_KEY', 'federated_search_index'),
+
+        /*
+        | The queue to submit the "generate federated search index" job to.
+        */
+        'index_queue' => env('BIIGLE_FEDERATED_SEARCH_INDEX_QUEUE', 'default'),
     ],
 
 ];
