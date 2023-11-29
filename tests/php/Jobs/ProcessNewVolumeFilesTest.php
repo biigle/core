@@ -73,4 +73,16 @@ class ProcessNewVolumeFilesTest extends TestCase
 
         Queue::assertNotPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v2->id);
     }
+
+    public function testHandleVideosQueue()
+    {
+        config(['videos.process_new_video_queue' => 'low']);
+        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
+
+        Queue::fake();
+        with(new ProcessNewVolumeFiles($volume))->handle();
+
+        Queue::assertPushedOn('low', ProcessNewVideo::class, fn ($job) => $job->video->id === $v1->id);
+    }
 }
