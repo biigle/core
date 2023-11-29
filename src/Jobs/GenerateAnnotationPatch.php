@@ -325,12 +325,6 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         $annotation = $this->getSVGAnnotation($shape->id, $points);
 
-        // Set annotaion styling
-        $annotation->setStyle('fill', 'none')
-            ->setStyle('stroke', '#0000ff')
-            ->setStyle('stroke-width', '4px')
-            ->setStyle('stroke-opacity', '1.0');
-
         // Crop and resize image
         $rect = $this->getPatchRect($points, $shape, $thumbWidth, $thumbHeight);
         $rect = $this->makeRectContained($rect, $width, $height);
