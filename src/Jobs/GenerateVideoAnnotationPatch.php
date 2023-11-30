@@ -2,12 +2,13 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\VolumeFile;
-use FFMpeg\Coordinate\TimeCode;
-use FFMpeg\FFMpeg;
-use FFMpeg\Media\Video;
 use Storage;
 use VipsImage;
+use Biigle\Shape;
+use FFMpeg\FFMpeg;
+use Biigle\VolumeFile;
+use FFMpeg\Media\Video;
+use FFMpeg\Coordinate\TimeCode;
 
 class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
 {
@@ -31,12 +32,13 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
         $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);
         $buffer = $this->getAnnotationPatch($frame, $points, $this->annotation->shape);
 
-
-        $svgTargetPath = str_replace(config('largo.patch_format'), 'svg', $targetPath);
-        $svgAnnotation = $this->getSVGAnnotationPatch($frame->width, $frame->height, $points, $this->annotation->shape);
-
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
-        Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
+        
+        if ($this->annotation->shape->id !== Shape::wholeFrameId()) {
+            $svgTargetPath = str_replace(config('largo.patch_format'), 'svg', $targetPath);
+            $svgAnnotation = $this->getSVGAnnotationPatch($frame->width, $frame->height, $points, $this->annotation->shape);
+            Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
+        }
     }
 
     /**
