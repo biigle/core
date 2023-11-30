@@ -155,6 +155,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
                 $disk->put("{$fragment}/{$index}.{$format}", $buffer);
             }
+            // generate sprites
+            $this->generateSprites($path, $this->video->duration, $disk, $fragment);
         } catch (Exception $e) {
             // The video seems to be fine if it passed the previous checks. There may be
             // errors in the actual video data but we can ignore that and skip generating
@@ -270,5 +272,59 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
 
         return $range;
+    }
+
+    /**
+     * Generate sprites from a video file and save them to a storage disk.
+     *
+     * This function takes a video file path, its duration, a storage disk instance,
+     * and a fragment identifier to generate sprites from the video at specified intervals.
+     * Sprites are created as thumbnails of frames and organized into sprite sheets.
+     *
+     * @param string $path path to the video file.
+     * @param float $duration duration of the video in seconds.
+     * @param mixed $disk storage disk instance (e.g., Laravel's Storage).
+     * @param string $fragment fragment identifier for organizing the sprites.
+     * 
+     */
+    protected function generateSprites($path, $duration, $disk, $fragment)
+    {
+        // Cache the video instance.
+        if (!isset($this->ffmpegVideo)) {
+            $this->ffmpegVideo = FFMpeg::create()->open($path);
+        }
+
+        $MAX_FRAMES = 1500;
+        $MIN_FRAMES = 5;
+        $FRAMES_PER_SPRITE = 25;
+
+        $durationRounded = round($duration);
+        $estimatedFrames = $durationRounded / 10;
+        // Adjust the frame time based on the number of generated frames
+        $seconds = ($estimatedFrames > $MAX_FRAMES) ? $durationRounded / $MAX_FRAMES : (($estimatedFrames < $MIN_FRAMES) ? $durationRounded / $MIN_FRAMES : 10);
+
+        $frames = [];
+        for ($time = 0; $time <= $duration; $time += $seconds) {
+            // Capture a frame at the current time, save it to buffer
+            $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))->save(null, false, true);
+            // Create a thumbnail of the frame
+            $vipsImg = VipsImage::thumbnail_buffer($buffer, 240, ['height' => 138]);
+            // Add the VipsImage to the frames array
+            $frames[] = $vipsImg;
+
+            if (count($frames) % $FRAMES_PER_SPRITE === 0 || $time > ($duration - $seconds)) {
+                // Join the frames into a 5x5 sprite
+                $sprite = VipsImage::arrayjoin($frames, ['across' => 5]);
+                // Write the sprite to buffer with quality 85 and stripped metadata
+                $spriteBuffer = $sprite->writeToBuffer(".jpg", [
+                    'Q' => 85,
+                    'strip' => true,
+                ]);
+                $spritePath = "{$fragment}/sprite_{$time}.jpg";
+                $disk->put($spritePath, $spriteBuffer);
+
+                $frames = [];
+            }
+        }
     }
 }
