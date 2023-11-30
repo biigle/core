@@ -2,15 +2,11 @@
 
 namespace Biigle\Tests;
 
-use Biigle\MediaType;
 use Biigle\PendingVolume;
-use Biigle\Role;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
 use Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PendingVolumeTest extends ModelTestCase
 {

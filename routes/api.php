@@ -168,6 +168,11 @@ $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
 ]);
 
+$router->resource('projects.pending-volumes', 'ProjectPendingVolumeController', [
+    'only' => ['store'],
+    'parameters' => ['projects' => 'id'],
+]);
+
 $router->get(
     'projects/pinned',
     'UserPinnedProjectController@index'
