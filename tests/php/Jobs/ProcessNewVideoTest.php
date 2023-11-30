@@ -31,6 +31,22 @@ class ProcessNewVideoTest extends TestCase
         $this->assertTrue($disk->exists("{$fragment}/2.jpg"));
     }
 
+    public function testGenerateSprites()
+    {
+        Storage::fake('video-thumbs');
+        config(['videos.thumbnail_count' => 1]);
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->duration = 10;
+
+        $job->handle();
+        $this->assertEquals(10, $video->fresh()->duration);
+
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertTrue($disk->exists("{$fragment}/sprite_10.jpg"));
+    }
+
     public function testHandleNotFound()
     {
         $video = VideoTest::create(['filename' => 'abc.mp4']);

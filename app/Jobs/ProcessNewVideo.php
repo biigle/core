@@ -285,7 +285,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @param float $duration duration of the video in seconds.
      * @param mixed $disk storage disk instance (e.g., Laravel's Storage).
      * @param string $fragment fragment identifier for organizing the sprites.
-     * 
+     *
      */
     protected function generateSprites($path, $duration, $disk, $fragment)
     {
