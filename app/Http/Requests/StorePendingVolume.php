@@ -3,7 +3,6 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\MediaType;
-use Biigle\PendingVolume;
 use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -45,7 +44,7 @@ class StorePendingVolume extends FormRequest
         }
 
         $validator->after(function ($validator) {
-            $exists = PendingVolume::where('project_id', $this->project->id)
+            $exists = $this->project->pendingVolumes()
                 ->where('user_id', $this->user()->id)
                 ->exists();
             if ($exists) {

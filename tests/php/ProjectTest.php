@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
+use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\ProjectInvitation;
 use Biigle\Role;
@@ -338,5 +339,12 @@ class ProjectTest extends ModelTestCase
         $this->assertFalse($this->model->invitations()->exists());
         ProjectInvitation::factory(['project_id' => $this->model->id])->create();
         $this->assertTrue($this->model->invitations()->exists());
+    }
+
+    public function testPendingVolumes()
+    {
+        $this->assertFalse($this->model->pendingVolumes()->exists());
+        PendingVolume::factory(['project_id' => $this->model->id])->create();
+        $this->assertTrue($this->model->pendingVolumes()->exists());
     }
 }

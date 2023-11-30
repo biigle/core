@@ -210,6 +210,16 @@ class Project extends Model
     }
 
     /**
+     * The pending volumes of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function pendingVolumes()
+    {
+        return $this->hasMany(PendingVolume::class);
+    }
+
+    /**
      * Adds a volume to this project if it wasn't already.
      *
      * @deprecated Use `$project->volumes()->attach($id)` instead.

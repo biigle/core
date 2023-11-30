@@ -3,11 +3,9 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StorePendingVolume;
-use Biigle\PendingVolume;
 
 class ProjectPendingVolumeController extends Controller
 {
-
     /**
      * Creates a new pending volume associated to the specified project.
      *
@@ -22,9 +20,8 @@ class ProjectPendingVolumeController extends Controller
      */
     public function store(StorePendingVolume $request)
     {
-        return PendingVolume::create([
+        return $request->project->pendingVolumes()->create([
             'media_type_id' => $request->input('media_type_id'),
-            'project_id' => $request->project->id,
             'user_id' => $request->user()->id,
         ]);
     }
