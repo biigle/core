@@ -29,6 +29,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create();
+        $annotation->shape_id = Shape::pointId();
         $job = new GenerateImageAnnotationPatchStub($annotation);
         $job->mock = $image;
 
@@ -51,6 +52,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Storage::fake('test2');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create();
+        $annotation->shape_id = Shape::pointId();
         $job = new GenerateImageAnnotationPatchStub($annotation, 'test2');
         $job->mock = $image;
 
@@ -229,6 +231,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Log::shouldReceive('warning')->once();
 
         $annotation = ImageAnnotationTest::create();
+        $annotation->shape_id = Shape::pointId();
         $job = new GenerateImageAnnotationPatch($annotation);
         $job->handle();
     }
@@ -239,6 +242,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
 
         $annotation = ImageAnnotationTest::create();
+        $annotation->shape_id = Shape::pointId();
         $job = new GenerateImageAnnotationPatch($annotation);
         $job->handle();
         Bus::assertDispatched(GenerateImageAnnotationPatch::class);
