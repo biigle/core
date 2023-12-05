@@ -162,12 +162,15 @@ export default {
             return null;
         },
         equalityCheck(itemData, ruleData) {
-            if(itemData instanceof Array) {
-                return itemData.length === ruleData.length &&
-                    itemData.every((val, index) => val === ruleData[index]);
-            } else {
-                return item.data === rule.data;
+            // handle Array
+            if(itemData !== null && ruleData !== null) {
+                if(itemData instanceof Array) {
+                    return itemData.length === ruleData.length &&
+                        itemData.every((val, index) => val === ruleData[index]);
+                }
             }
+            // handle all other types (Objects, null)
+            return itemData === ruleData;
         },
         hasRule(rule) {
             return this.rules.findIndex(function (item) {
@@ -184,7 +187,7 @@ export default {
                 data: data,
                 negate: this.negate,
             };
-
+            
             if (this.hasRule(rule)) return;
 
             this.startLoading();
