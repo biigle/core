@@ -18,16 +18,31 @@ export default {
             type: Object,
             required: true,
         },
+        type: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
             name: this.rule.id,
         };
     },
+    methods: {
+        createFileCount(rule) {
+            let typeForm = rule.sequence.length === 1 ? `${this.type}` : `${this.type}s`;
+            return `(${rule.sequence.length} ${typeForm})`;
+        },
+    },
     computed: {
         dataName() {
             if (this.rule.data) {
-                return this.rule.data.name;
+                let fileCount = this.createFileCount(this.rule);
+                if(this.rule.data.name) {
+                    return `${this.rule.data.name} ${fileCount}`;
+                } else {
+                    return fileCount;
+                }
             }
 
             return '';
