@@ -2,7 +2,7 @@
     <li class="list-group-item invitation-list-item">
         <h4 class="list-group-item-heading">
             <span :class="classObject">
-                Invitation
+                Invitation for role <span v-text="role.name"></span>
             </span>
             <small v-if="expired">
                 (expired)
@@ -37,7 +37,7 @@
             </span>
         </h4>
         <p class="list-group-item-text text-muted">
-            Role: <span v-text="role.name"></span>.
+            <span v-if="invitation.add_to_sessions">Add to annotation sessions.</span>
             <span>
                 Used: <span v-text="uses"></span><span v-if="invitation.max_uses"> of <span v-text="invitation.max_uses"></span></span> times.
             </span>

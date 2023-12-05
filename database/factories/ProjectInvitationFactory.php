@@ -24,6 +24,7 @@ class ProjectInvitationFactory extends Factory
             'project_id' => Project::factory(),
             'role_id' => Role::editorId(),
             'current_uses' => 0,
+            'add_to_sessions' => false,
         ];
     }
 }

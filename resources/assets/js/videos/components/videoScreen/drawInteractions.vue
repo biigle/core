@@ -1,10 +1,10 @@
 <script>
+import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
@@ -163,6 +163,22 @@ export default {
             this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
+            // Check polygons
+            if (e.feature.getGeometry().getType() === 'Polygon') {
+                if (PolygonValidator.isInvalidPolygon(e.feature)) {
+                    // Disallow polygons with less than three non-overlapping points
+                    this.$emit('is-invalid-polygon')
+                    // Wait for this feature to be added to the source, then clear.
+                    this.pendingAnnotationSource.once('addfeature', () => {
+                        this.resetPendingAnnotation();
+                    });
+                    return;
+                }
+
+                // If polygon is self-intersecting, create simple polygon
+                PolygonValidator.simplifyPolygon(e.feature);
+            }
+
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
@@ -175,6 +191,9 @@ export default {
                     this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
                 }
             } else {
+                // If the pending annotation (time) is invalid, remove it again.
+                // We have to wait for this feature to be added to the source to be able
+                // to remove it.
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
