@@ -161,12 +161,20 @@ export default {
 
             return null;
         },
+        equalityCheck(itemData, ruleData) {
+            if(itemData instanceof Array) {
+                return itemData.length === ruleData.length &&
+                    itemData.every((val, index) => val === ruleData[index]);
+            } else {
+                return item.data === rule.data;
+            }
+        },
         hasRule(rule) {
             return this.rules.findIndex(function (item) {
                 return item.id === rule.id &&
                     item.negate === rule.negate &&
-                    item.data === rule.data;
-            }) !== -1;
+                    this.equalityCheck(item.data, rule.data);
+            }.bind(this)) !== -1;
         },
         addRule(data) {
             if (!this.selectedFilter) return;
