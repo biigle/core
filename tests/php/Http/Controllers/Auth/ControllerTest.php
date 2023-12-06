@@ -56,8 +56,8 @@ class ControllerTest extends TestCase
     {
         $user = UserTest::create([
             'email' => 'test@test.com',
-            // 'password'
-            'password' => '$2y$10$EEcVvtsqcG3cscQC9UE5.uLkWRM7IrsqPBiSPhtbslfnx9KdJtVMG',
+            // 'password', hashed with 4 rounds as defined in phpunit.xml
+            'password' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
         ]);
         // login_at attribute should be null after creation
         $this->assertNull($user->login_at);
@@ -78,8 +78,8 @@ class ControllerTest extends TestCase
     {
         $user = UserTest::create([
             'email' => 'test@test.com',
-            // 'password'
-            'password' => '$2y$10$EEcVvtsqcG3cscQC9UE5.uLkWRM7IrsqPBiSPhtbslfnx9KdJtVMG',
+            // 'password', hashed with 4 rounds as defined in phpunit.xml
+            'password' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
         ]);
 
         $response = $response = $this->post('/login', [
