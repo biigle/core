@@ -2,10 +2,11 @@
 
 namespace Biigle\Services\MetadataParsers;
 
+use duncan3dc\Bom\Util;
 use SplFileObject;
 use Symfony\Component\HttpFoundation\File\File;
 
-class CsvParser extends MetadataParser
+class ImageCsvParser extends MetadataParser
 {
     /**
      * {@inheritdoc}
@@ -19,6 +20,9 @@ class CsvParser extends MetadataParser
         }
 
         $line = array_map('strtolower', $line);
+        if (!empty($line[0])) {
+            $line[0] = Util::removeBom($line[0]);
+        }
 
         if (!in_array('filename', $line, true) && !in_array('file', $line, true)) {
             return false;
@@ -30,9 +34,9 @@ class CsvParser extends MetadataParser
     /**
      * {@inheritdoc}
      */
-    public function validateFile(): void
+    public function getMetadata(): VolumeMetadata;
     {
-        //
+
     }
 
     protected function getFileObject(): SplFileObject

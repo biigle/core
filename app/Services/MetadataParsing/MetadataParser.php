@@ -20,9 +20,9 @@ abstract class MetadataParser
     abstract public function recognizesFile(): bool;
 
     /**
-     * @throws ValidationException
+     * Get a filled VolumeMetadata object based on the file.
      */
-    abstract public function validateFile(): void;
+    abstract public function getMetadata(): VolumeMetadata;
 
     protected function getFileObject(): SplFileObject
     {
