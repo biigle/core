@@ -30,8 +30,8 @@ class ApiTokenControllerTest extends ApiTestCase
     public function testStoreWithToken()
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
         $response = $this->call('POST', '/api/v1/api-tokens', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
@@ -46,8 +46,8 @@ class ApiTokenControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/api-tokens');
 
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
 
         $this->be($token->owner);
