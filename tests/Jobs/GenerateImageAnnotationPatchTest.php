@@ -223,6 +223,52 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $job->handleFile($annotation->image, 'abc');
     }
 
+    public function testHandleContainedNegativeProblematic()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $image->width = 25;
+        $image->height = 25;
+        $annotation = ImageAnnotationTest::create([
+            'points' => [10, 10, 15],
+            'shape_id' => Shape::circleId(),
+        ]);
+        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(0, 0, 25, 25)
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handleFile($annotation->image, 'abc');
+    }
+
+    public function testHandleContainedPositiveProblematic()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $image->width = 25;
+        $image->height = 25;
+        $annotation = ImageAnnotationTest::create([
+            'points' => [15, 15, 15],
+            'shape_id' => Shape::circleId(),
+        ]);
+        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(0, 0, 25, 25)
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handleFile($annotation->image, 'abc');
+    }
+
     public function testHandleError()
     {
         FileCache::shouldReceive('get')->andThrow(new Exception('error'));

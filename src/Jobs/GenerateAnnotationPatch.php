@@ -180,14 +180,12 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $right = -INF;
                 $top = INF;
                 $bottom = -INF;
-                foreach ($points as $index => $value) {
-                    if ($index % 2 === 0) {
-                        $left = min($left, $value);
-                        $right = max($right, $value);
-                    } else {
-                        $top = min($top, $value);
-                        $bottom = max($bottom, $value);
-                    }
+                $pointCount = count($points);
+                for ($i = 0; $i < $pointCount; $i += 2) {
+                    $left = min($left, $points[$i]);
+                    $top = min($top, $points[$i + 1]);
+                    $right = max($right, $points[$i]);
+                    $bottom = max($bottom, $points[$i + 1]);
                 }
         }
 
