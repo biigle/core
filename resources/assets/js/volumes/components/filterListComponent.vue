@@ -2,7 +2,7 @@
     <span>
         <strong>with<span v-if="rule.negate">out</span></strong>
         <span v-text="name"></span>
-        <strong v-if="dataName" v-text="dataName"></strong>
+        <strong v-if="dataSpecs" v-text="dataSpecs"></strong>
     </span>
 </template>
 
@@ -28,24 +28,21 @@ export default {
             name: this.rule.id,
         };
     },
-    methods: {
-        createFileCount(rule) {
-            let typeForm = rule.sequence.length === 1 ? `${this.type}` : `${this.type}s`;
-            return `(${rule.sequence.length} ${typeForm})`;
-        },
-    },
     computed: {
-        dataName() {
+        createFileCount() {
+            let typeForm = this.rule.sequence.length === 1 ? `${this.type}` : `${this.type}s`;
+            return `(${this.rule.sequence.length} ${typeForm})`;
+        },
+        dataSpecs() {
+            let fileCount = this.createFileCount;
+            // if present, combine rule-name and filecount
             if (this.rule.data) {
-                let fileCount = this.createFileCount(this.rule);
                 if(this.rule.data.name) {
                     return `${this.rule.data.name} ${fileCount}`;
-                } else {
-                    return fileCount;
                 }
             }
 
-            return '';
+            return fileCount;
         },
     },
 };
