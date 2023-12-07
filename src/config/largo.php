@@ -14,6 +14,11 @@ return [
     'patch_format' => 'jpg',
 
     /*
+    | Annotation shape file format
+    */
+    'annotation_format' => 'svg',
+
+    /*
     | Padding to add to each patch in x and y direction (in px).
     */
     'patch_padding' => 10,
