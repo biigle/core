@@ -163,8 +163,8 @@ export default {
         },
         equalityCheck(itemData, ruleData) {
             // handle Array
-            if(itemData !== null && ruleData !== null) {
-                if(itemData instanceof Array) {
+            if (itemData !== null && ruleData !== null) {
+                if (itemData instanceof Array) {
                     return itemData.length === ruleData.length &&
                         itemData.every((val, index) => val === ruleData[index]);
                 }
@@ -187,7 +187,6 @@ export default {
                 data: data,
                 negate: this.negate,
             };
-            
             if (this.hasRule(rule)) return;
 
             this.startLoading();
