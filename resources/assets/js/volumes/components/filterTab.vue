@@ -161,7 +161,7 @@ export default {
 
             return null;
         },
-        equalityCheck(itemData, ruleData) {
+        itemsAreEqual(itemData, ruleData) {
             // handle Array
             if (itemData !== null && ruleData !== null) {
                 if (itemData instanceof Array) {
@@ -173,11 +173,11 @@ export default {
             return itemData === ruleData;
         },
         hasRule(rule) {
-            return this.rules.findIndex(function (item) {
+            return this.rules.findIndex((item) => {
                 return item.id === rule.id &&
                     item.negate === rule.negate &&
-                    this.equalityCheck(item.data, rule.data);
-            }.bind(this)) !== -1;
+                    this.itemsAreEqual(item.data, rule.data);
+            }) !== -1;
         },
         addRule(data) {
             if (!this.selectedFilter) return;
