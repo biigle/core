@@ -135,11 +135,12 @@ export default {
                 .map(function (id) {
                     return {
                         id: id,
-                        uuid: annotations[id],
+                        uuid: annotations[id][0],
                         label_id: label.id,
                         dismissed: false,
                         newLabel: null,
                         type: type,
+                        svg: annotations[id].length > 1 ? annotations[id][1] : ''
                     };
                 });
         },

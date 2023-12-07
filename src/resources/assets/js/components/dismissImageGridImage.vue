@@ -3,7 +3,7 @@
         <div v-if="selectable" class="image-icon">
             <i class="fas" :class="iconClass"></i>
         </div>
-        <img @click="toggleSelect" :src="srcUrl" @error="showEmptyImage">
+        <AnnotationImage :srcUrl="srcUrl" :svg="this.image.svg" :toggleSelect="toggleSelect" :showEmptyImage="showEmptyImage"/>
         <div v-if="showAnnotationLink" class="image-buttons">
             <a :href="showAnnotationLink" target="_blank" class="image-button" title="Show the annotation in the annotation tool">
                 <span class="fa fa-external-link-square-alt fa-fw" aria-hidden="true"></span>
@@ -15,6 +15,7 @@
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
 import {ImageGridImage} from '../import';
+import AnnotationImage from './annotationImage';
 
 /**
  * A variant of the image grid image used for the dismiss step of Largo
@@ -26,6 +27,7 @@ export default {
         ImageGridImage,
         AnnotationPatch,
     ],
+    components: {AnnotationImage},
     data() {
         return {
             showAnnotationRoute: null,
