@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Services\MetadataParsers;
+namespace Biigle\Services\MetadataParsing;
 
 use Symfony\Component\HttpFoundation\File\File;
 

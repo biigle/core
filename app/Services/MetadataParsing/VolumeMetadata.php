@@ -3,10 +3,11 @@
 namespace Biigle\Services\MetadataParsing;
 
 use Biigle\MediaType;
+use Illuminate\Support\Collection;
 
 class VolumeMetadata
 {
-    public array $files;
+    public Collection $files;
 
     public function __construct(
         public ?MediaType $type = null,
@@ -15,7 +16,7 @@ class VolumeMetadata
         public ?string $handle = null
     )
     {
-        $this->files = [];
+        $this->files = collect([]);
     }
 
     public function addFile(FileMetadata $file)
@@ -23,8 +24,8 @@ class VolumeMetadata
         $this->files[$file->name] = $file;
     }
 
-    public function getFiles(): array
+    public function getFiles(): Collection
     {
-        return array_values($this->files);
+        return $this->files->values();
     }
 }
