@@ -38,15 +38,15 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid, $a1->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid], $a1->id => [$image->uuid]]);
 
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l3->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a3->id => $image->uuid]);
+            ->assertExactJson([$a3->id => [$image->uuid]]);
 
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?take=1")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid]]);
     }
 
     public function testIndexDuplicate()
@@ -72,6 +72,6 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id => $image->uuid]);
+            ->assertExactJson([$a1->id => [$image->uuid]]);
     }
 }

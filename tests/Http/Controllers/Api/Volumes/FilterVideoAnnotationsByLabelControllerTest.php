@@ -40,15 +40,15 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $video->uuid, $a1->id => $video->uuid]);
+            ->assertExactJson([$a2->id => [$video->uuid], $a1->id => [$video->uuid]]);
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l3->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a3->id => $video->uuid]);
+            ->assertExactJson([$a3->id => [$video->uuid]]);
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?take=1")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $video->uuid]);
+            ->assertExactJson([$a2->id => [$video->uuid]]);
     }
 
     public function testIndexAnnotationSession()
@@ -103,7 +103,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $video->uuid, $a3->id => $video->uuid]);
+            ->assertExactJson([$a2->id => [$video->uuid], $a3->id => [$video->uuid]]);
 
         // test hide other
         $session->hide_own_annotations = false;
@@ -112,7 +112,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid]);
+            ->assertExactJson([$a1->id => [$video->uuid], $a2->id => [$video->uuid]]);
 
         // test hide both
         $session->hide_own_annotations = true;
@@ -120,16 +120,16 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $video->uuid]);
+            ->assertExactJson([$a2->id => [$video->uuid]]);
 
         $session->users()->detach($this->editor());
 
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
             ->assertExactJson([
-                $a1->id => $video->uuid,
-                $a2->id => $video->uuid,
-                $a3->id => $video->uuid,
+                $a1->id => [$video->uuid],
+                $a2->id => [$video->uuid],
+                $a3->id => [$video->uuid],
             ]);
     }
 
@@ -186,6 +186,6 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id => $video->uuid]);
+            ->assertExactJson([$a1->id => [$video->uuid]]);
     }
 }

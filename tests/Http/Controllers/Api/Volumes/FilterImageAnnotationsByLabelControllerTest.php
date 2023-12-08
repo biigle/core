@@ -40,15 +40,15 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid, $a1->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid], $a1->id => [$image->uuid]]);
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l3->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a3->id => $image->uuid]);
+            ->assertExactJson([$a3->id => [$image->uuid]]);
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?take=1")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid]]);
     }
 
     public function testIndexAnnotationSession()
@@ -103,7 +103,7 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid, $a3->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid], $a3->id => [$image->uuid]]);
 
         // test hide other
         $session->hide_own_annotations = false;
@@ -112,7 +112,7 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid]);
+            ->assertExactJson([$a1->id => [$image->uuid], $a2->id => [$image->uuid]]);
 
         // test hide both
         $session->hide_own_annotations = true;
@@ -120,16 +120,16 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a2->id => $image->uuid]);
+            ->assertExactJson([$a2->id => [$image->uuid]]);
 
         $session->users()->detach($this->editor());
 
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
             ->assertExactJson([
-                $a1->id => $image->uuid,
-                $a2->id => $image->uuid,
-                $a3->id => $image->uuid,
+                $a1->id => [$image->uuid],
+                $a2->id => [$image->uuid],
+                $a3->id => [$image->uuid],
             ]);
     }
 
@@ -186,6 +186,6 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}")
             ->assertStatus(200)
-            ->assertExactJson([$a1->id => $image->uuid]);
+            ->assertExactJson([$a1->id => [$image->uuid]]);
     }
 }
