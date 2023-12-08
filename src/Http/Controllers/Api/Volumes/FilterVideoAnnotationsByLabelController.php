@@ -2,10 +2,13 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Biigle\Http\Controllers\Api\Controller;
-use Biigle\VideoAnnotation;
 use Biigle\Volume;
+use Biigle\VideoAnnotation;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Biigle\Http\Controllers\Api\Controller;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -41,7 +44,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             $query = VideoAnnotation::query();
         }
 
-        return $query->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+        $res = $query->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->where('videos.volume_id', $vid)
             ->where('video_annotation_labels.label_id', $lid)
@@ -57,5 +60,31 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
+
+            $uuids = $res->values()->unique()->all();
+            $annotationIds = $res->keys();
+    
+        foreach($uuids as $uuid){
+            $dir = fragment_uuid_path($uuid);
+            $allFiles = Storage::disk(config('largo.patch_storage_disk'))->files($dir);
+            $files = Arr::where($allFiles, fn($path, $id) => Str::endsWith($path, config('largo.annotation_format')));
+    
+            if(sizeof($files) > 0){
+                $files = collect(Arr::flatten($files));
+                foreach ($files as $file) {
+                    $id = (Str::of($file))->match('/([0-9]*).'.config('largo.annotation_format').'/')->toInteger();
+                    if($annotationIds->contains($id)){
+                        $xml = Storage::disk(config('largo.patch_storage_disk'))->get($file);
+                        $res[$id] = [$uuid,$xml];
+                    }
+                };
+            } else {
+                foreach($res as $id => $uuid) {
+                    $res[$id] = [$uuid];
+                }
+            }
+        }
+
+        return $res;
     }
 }
