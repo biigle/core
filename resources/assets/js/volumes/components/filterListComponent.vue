@@ -40,6 +40,8 @@ export default {
                     return this.rule.data.name;
                 }
             }
+            
+            return '';
         },
     },
 };
