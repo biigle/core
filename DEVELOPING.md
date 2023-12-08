@@ -34,7 +34,7 @@ composer create-project biigle/core:dev-dev-modules \
 
 Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
 
-This will set up the project in the `dev-modules` branch of this repository. The `dev-modules` branch is configured with all BIIGLE modules which makes it easy to start module development. If you want to develop a feature directly in `biigle/core`, please switch to the `master` branch (or create your own branch based on `master`).
+This will set up the project in the `dev-modules` branch of this repository. The `dev-modules` branch is configured with all BIIGLE modules which makes it easy to start module development. If you want to develop a feature directly in `biigle/core`, please switch to the `master` branch (or create your own branch based on `master`). Pull requests from a `dev-modules`-based branch will not be accepted.
 
 ### 2. Build and run the application
 
