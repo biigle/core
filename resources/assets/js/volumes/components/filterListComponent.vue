@@ -3,7 +3,7 @@
         <strong>with<span v-if="rule.negate">out</span></strong>
         <span v-text="name"></span>
         <strong v-if="dataName" v-text="dataName"></strong>
-        <span v-if="fileCount" class="text-muted" v-text="fileCount"></span>
+        <span class="text-muted" v-text="fileCount"></span>
     </span>
 </template>
 
