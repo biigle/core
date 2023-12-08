@@ -12,6 +12,7 @@ trait ComputesAnnotationBox
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
+        // This results in the 224x224 expected by ExtractFeatures.py.
         int $pointPadding = 112,
         int $boxPadding = 0
     ): array
