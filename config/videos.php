@@ -15,7 +15,7 @@ return [
     /*
     | Path to the object tracking script.
     */
-    'object_tracker_script' => __DIR__.'/../resources/scripts/ObjectTracker.py',
+    'object_tracker_script' => __DIR__ . '/../resources/scripts/ObjectTracker.py',
 
     /*
     | Distance in pixels between the annotation center positions or circle radii of two
@@ -52,4 +52,36 @@ return [
      */
     'track_object_max_jobs_per_user' => env('VIDEOS_TRACK_OBJECT_MAX_JOBS_PER_USER', 10),
 
+    /*
+    | Number of max frames to generate for sprites.
+    */
+    'sprites_max_frames' => 1500,
+
+    /*
+    | Number of min frames to generate for sprites.
+    */
+    'sprites_min_frames' => 5,
+
+    /*
+    | Number of frames per sprite. Default 5x5 = 25.
+    | The square root of the number must be an integer.
+    */
+    'frames_per_sprite' => 25,
+
+    /*
+    | Dimensions of the thumbnail images to create in sprites.
+    */
+    'sprites_thumbnail_width' => 240,
+    'sprites_thumbnail_height' => 138,
+
+    /*
+    | Sprite file format.
+    */
+    'sprites_format' => 'webp',
+
+    /*
+    | Standard time interval at which thumbnails should be sampled when generating sprites.
+    | It will be adjusted dynamically during the process.
+    */
+    'sprites_interval_seconds' => 10,
 ];
