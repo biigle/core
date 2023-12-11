@@ -71,7 +71,9 @@ class ImageCsvParser extends MetadataParser
             return $column;
         }, $keys);
 
+        // This will remove duplicate columns and retain the "last" one.
         $keyMap = array_flip($keys);
+
         $getValue = fn ($row, $key) => $row[$keyMap[$key] ?? null] ?? null;
         $maybeCast = fn ($value) => (is_null($value) || $value === '') ? null : floatval($value);
 

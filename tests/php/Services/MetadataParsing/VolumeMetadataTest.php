@@ -5,6 +5,7 @@ namespace Biigle\Tests\Services\MetadataParsing;
 use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Services\MetadataParsing\FileMetadata;
+use Biigle\Services\MetadataParsing\ImageMetadata;
 use TestCase;
 
 class VolumeMetadataTest extends TestCase
@@ -27,5 +28,17 @@ class VolumeMetadataTest extends TestCase
         $this->assertEquals($file, $metadata->getFiles()[0]);
         $metadata->addFile($file);
         $this->assertCount(1, $metadata->getFiles());
+    }
+
+    public function testIsEmpty()
+    {
+        $metadata = new VolumeMetadata();
+        $this->assertTrue($metadata->isEmpty());
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $this->assertTrue($metadata->isEmpty());
+        $file = new ImageMetadata('filename', area: 100);
+        $metadata->addFile($file);
+        $this->assertFalse($metadata->isEmpty());
     }
 }

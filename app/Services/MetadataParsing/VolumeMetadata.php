@@ -28,4 +28,18 @@ class VolumeMetadata
     {
         return $this->files->values();
     }
+
+    /**
+     * Determine if there is any file metadata.
+     */
+    public function isEmpty(): bool
+    {
+        foreach ($this->files as $file) {
+            if (!$file->isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

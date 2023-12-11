@@ -8,4 +8,9 @@ class FileMetadata
     {
         //
     }
+
+    public function isEmpty(): bool
+    {
+        return true;
+    }
 }
