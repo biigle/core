@@ -7,7 +7,7 @@ class VideoMetadata extends ImageMetadata
     /**
      * {@inheritdoc}
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
         $passes = parent::passes($attribute, $value);
 

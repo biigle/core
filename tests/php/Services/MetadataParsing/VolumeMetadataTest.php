@@ -30,6 +30,15 @@ class VolumeMetadataTest extends TestCase
         $this->assertCount(1, $metadata->getFiles());
     }
 
+    public function testGetFile()
+    {
+        $metadata = new VolumeMetadata();
+        $this->assertNull($metadata->getFile('filename'));
+        $file = new FileMetadata('filename');
+        $metadata->addFile($file);
+        $this->assertEquals($file, $metadata->getFile('filename'));
+    }
+
     public function testIsEmpty()
     {
         $metadata = new VolumeMetadata();

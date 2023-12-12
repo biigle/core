@@ -29,6 +29,11 @@ class VolumeMetadata
         return $this->files->values();
     }
 
+    public function getFile(string $name): ?FileMetadata
+    {
+        return $this->files->get($name);
+    }
+
     /**
      * Determine if there is any file metadata.
      */
