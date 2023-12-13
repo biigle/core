@@ -78,21 +78,6 @@ return [
             'sslmode' => 'prefer',
         ],
 
-        'pgvector' => [
-            'driver' => 'pgsql',
-            'url' => env('VECTOR_DATABASE_URL'),
-            'host' => env('VECTOR_DB_HOST', 'localhost'),
-            'port' => env('VECTOR_DB_PORT', '5432'),
-            'database' => env('VECTOR_DB_DATABASE', 'forge'),
-            'username' => env('VECTOR_DB_USERNAME', 'forge'),
-            'password' => env('VECTOR_DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'prefer',
-        ],
-
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

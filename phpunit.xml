@@ -29,9 +29,5 @@
         <env name="DB_DATABASE" value="biigle"/>
         <env name="DB_USERNAME" value="biigle"/>
         <env name="DB_PASSWORD" value="secret"/>
-        <env name="VECTOR_DB_HOST" value="vector_database_testing"/>
-        <env name="VECTOR_DB_DATABASE" value="biigle"/>
-        <env name="VECTOR_DB_USERNAME" value="biigle"/>
-        <env name="VECTOR_DB_PASSWORD" value="secret"/>
     </php>
 </phpunit>

@@ -3,6 +3,7 @@
         <strong>with<span v-if="rule.negate">out</span></strong>
         <span v-text="name"></span>
         <strong v-if="dataName" v-text="dataName"></strong>
+        <span class="text-muted" v-text="fileCount"></span>
     </span>
 </template>
 
@@ -18,6 +19,10 @@ export default {
             type: Object,
             required: true,
         },
+        type: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
@@ -25,11 +30,17 @@ export default {
         };
     },
     computed: {
+        fileCount() {
+            let typeForm = this.rule.sequence.length === 1 ? `${this.type}` : `${this.type}s`;
+            return `(${this.rule.sequence.length} ${typeForm})`;
+        },
         dataName() {
             if (this.rule.data) {
-                return this.rule.data.name;
+                if(this.rule.data.name) {
+                    return this.rule.data.name;
+                }
             }
-
+            
             return '';
         },
     },
