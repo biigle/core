@@ -11,7 +11,14 @@ return new class extends Migration {
      */
     public function up()
     {
-        DB::connection('pgvector')->statement('CREATE EXTENSION IF NOT EXISTS vector');
+        // The pgvector connection was removed later so it may not always be present.
+        // There is a second migration that enables pgvector for the default connection.
+        // See: https://github.com/biigle/maia/pull/150
+        if (!is_null(config('database.connections-pgvector'))) {
+            DB::connection('pgvector')
+                ->statement('CREATE EXTENSION IF NOT EXISTS vector');
+
+        }
     }
 
     /**
@@ -21,6 +28,10 @@ return new class extends Migration {
      */
     public function down()
     {
-        DB::connection('pgvector')->statement('DROP EXTENSION IF EXISTS vector');
+        if (!is_null(config('database.connections-pgvector'))) {
+            DB::connection('pgvector')
+                ->statement('DROP EXTENSION IF NOT EXISTS vector');
+
+        }
     }
 };
