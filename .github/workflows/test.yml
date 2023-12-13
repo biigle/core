@@ -37,7 +37,6 @@ jobs:
     - name: Start test database
       run: |
         docker-compose up -d --no-build database_testing
-        docker-compose up -d --no-build vector_database_testing
         sleep 5
 
     - name: Run tests
