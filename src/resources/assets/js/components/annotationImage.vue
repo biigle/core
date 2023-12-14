@@ -1,9 +1,7 @@
 <template>
     <svg v-if="hasSVG" xmlns="http://www.w3.org/2000/svg" :width="width" :height="height" @click="toggleSelect">
-    <image :href="srcUrl" @error="showEmptyImage"/>
-        <svg width="100%" height="100%" :viewBox="viewBox">
-            <component :is="component" :svgXML="svgXML"></component>
-        </svg>
+        <image :href="srcUrl" @error="showEmptyImage" />
+        <component :is="component" :svgXML="svgXML" :labelColor="labelColor" :viewBox="viewBox"></component>
     </svg>
     <img v-else :src="srcUrl" @click="toggleSelect" @error="showEmptyImage">
 </template>
@@ -15,7 +13,7 @@ import EllipseSVG from './annotationShapes/ellipse';
 import LineSVG from './annotationShapes/line';
 import PolygonSVG from './annotationShapes/polygon';
 
-export default{
+export default {
     components: {
         RectangleSVG,
         CircleSVG,
@@ -23,8 +21,9 @@ export default{
         LineSVG,
         PolygonSVG,
     },
-    data() { return {
-        svgXML : SVGSVGElement,
+    data() {
+        return {
+            svgXML: SVGSVGElement,
         }
     },
     props: {
@@ -32,32 +31,34 @@ export default{
         srcUrl: String,
         toggleSelect: Function,
         showEmptyImage: Function,
+        labelColor: String,
     },
     computed: {
-        width(){
+        width() {
             return this.svgXML.getAttribute('width');
         },
-        height(){
+        height() {
             return this.svgXML.getAttribute('height');
         },
-        viewBox(){
+        viewBox() {
             return this.svgXML.getAttribute('viewBox');
         },
-        hasSVG(){
+        hasSVG() {
             return this.svg.length > 0;
         },
-        component(){
+        component() {
             let shape2comp = new Object({
-                'rect': 'RectangleSVG', 
-                'circle': 'CircleSVG', 
-                'ellipse': 'EllipseSVG', 
+                'rect': 'RectangleSVG',
+                'circle': 'CircleSVG',
+                'ellipse': 'EllipseSVG',
                 'line': 'LineSVG',
-                'polygon': 'PolygonSVG'});
+                'polygon': 'PolygonSVG'
+            });
             return shape2comp[this.svgXML.childNodes[0].nodeName];
         },
     },
-    created(){
-        if(this.hasSVG){
+    created() {
+        if (this.hasSVG) {
             this.svgXML = new DOMParser().parseFromString(this.svg, "text/xml").documentElement;
         }
     }

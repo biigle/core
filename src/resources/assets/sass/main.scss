@@ -94,3 +94,23 @@
         margin-bottom: 0;
     }
 }
+
+.label-color{
+    stroke: var(--color);
+    stroke-opacity: 1;
+    fill: none;
+    stroke-linejoin: round;
+}
+
+.point{
+    stroke: var(--color);
+    fill: var(--color);
+}
+
+.outline{
+    stroke-width: 4px;
+}
+
+.innerline{
+    stroke-width: 3px;
+}

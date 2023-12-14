@@ -1,51 +1,51 @@
 <script>
-export default{
+export default {
     computed: {
-        x(){
+        x() {
             return this.svgXML.childNodes[0].getAttribute('x');
         },
-        y(){
+        y() {
             return this.svgXML.childNodes[0].getAttribute('y');
         },
-        width(){
+        width() {
             return this.svgXML.childNodes[0].getAttribute('width');
         },
-        height(){
+        height() {
             return this.svgXML.childNodes[0].getAttribute('height');
         },
-        transform(){
+        transform() {
             return this.svgXML.childNodes[0].getAttribute('transform');
         },
-        cx(){
+        cx() {
             return this.svgXML.childNodes[0].getAttribute('cx');
         },
-        cy(){
+        cy() {
             return this.svgXML.childNodes[0].getAttribute('cy');
         },
-        rx(){
+        rx() {
             return this.svgXML.childNodes[0].getAttribute('rx');
         },
-        ry(){
+        ry() {
             return this.svgXML.childNodes[0].getAttribute('ry');
         },
-        r(){
+        r() {
             return this.svgXML.childNodes[0].getAttribute('r');
         },
-        x1(){
+        x1() {
             return this.svgXML.childNodes[0].getAttribute('x1');
         },
-        x2(){
+        x2() {
             return this.svgXML.childNodes[0].getAttribute('x2');
         },
-        y1(){
+        y1() {
             return this.svgXML.childNodes[0].getAttribute('y1');
         },
-        y2(){
+        y2() {
             return this.svgXML.childNodes[0].getAttribute('y2');
         },
-        points(){
+        points() {
             return this.svgXML.childNodes[0].getAttribute('points');
-        }
+        },
     },
 }
 </script>
