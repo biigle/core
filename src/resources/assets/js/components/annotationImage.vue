@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import RectangleSVG from './annotationShapes/Rectangle';
-import CircleSVG from './annotationShapes/Circle';
-import EllipseSVG from './annotationShapes/Ellipse';
-import LineSVG from './annotationShapes/Line';
-import PolygonSVG from './annotationShapes/Polygon';
+import RectangleSVG from './annotationShapes/rectangle';
+import CircleSVG from './annotationShapes/circle';
+import EllipseSVG from './annotationShapes/ellipse';
+import LineSVG from './annotationShapes/line';
+import PolygonSVG from './annotationShapes/polygon';
 
 export default{
     components: {
