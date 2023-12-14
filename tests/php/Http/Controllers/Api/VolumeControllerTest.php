@@ -2,15 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use ApiTestCase;
-use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
-use Biigle\Role;
-use Biigle\Tests\ProjectTest;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Queue;
+use ApiTestCase;
+use Biigle\Role;
+use Biigle\MediaType;
+use Biigle\Tests\ProjectTest;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Illuminate\Support\Facades\Cache;
+use Biigle\Jobs\ProcessNewVolumeFiles;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -184,6 +185,24 @@ class VolumeControllerTest extends ApiTestCase
             ->assertStatus(200);
         $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
         Queue::assertPushed(ProcessNewVolumeFiles::class);
+    }
+
+    public function testUpdateInvalidUrl(){
+        $volume = $this->volume();
+        
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        $disk = Storage::fake('admin-test');
+        $disk->put('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/file.txt', 'abc');
+
+        $this->beGlobalAdmin();
+        
+        // // invalid url (>256 characters)
+        $response = $this->json('PUT','/api/v1/volumes/'.$volume->id,[
+            'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        ])->assertStatus(422);
+        
+        $this->assertEquals('The url must not be greater than 256 characters.',$response->exception->getMessage());
+        Queue::assertNothingPushed();
     }
 
     public function testUpdateUrlProviderDenylist()
