@@ -28,6 +28,7 @@ class LargoServiceProvider extends ServiceProvider
     public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'largo');
+        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
 
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/largo'),
