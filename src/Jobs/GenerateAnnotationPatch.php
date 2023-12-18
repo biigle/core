@@ -2,12 +2,7 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Facades\VipsImage;
-use Log;
 use Str;
-use SVG\Nodes\Shapes\SVGEllipse;
-use SVG\Nodes\Shapes\SVGLine;
-use SVG\Nodes\Shapes\SVGPolygon;
 use \SVG\SVG;
 use Exception;
 use FileCache;
@@ -16,9 +11,13 @@ use Biigle\Jobs\Job;
 use Biigle\VolumeFile;
 use Jcupitt\Vips\Image;
 use Biigle\VideoAnnotation;
+use SVG\Nodes\Shapes\SVGLine;
 use SVG\Nodes\Shapes\SVGRect;
 use \SVG\Nodes\Shapes\SVGCircle;
 use Biigle\Contracts\Annotation;
+use SVG\Nodes\Shapes\SVGEllipse;
+use SVG\Nodes\Shapes\SVGPolygon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -331,8 +330,10 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         // Set viewbox to show annotation
         $doc->setAttribute('viewBox', $rect['left'] . ' ' . $rect['top'] . ' ' . $rect['width'] . ' ' . $rect['height']);
-
-        $doc->addChild($annotation);
+        
+        foreach($annotation as $annotation){
+            $doc->addChild($annotation);
+        }
 
         return $image;
     }
@@ -359,13 +360,17 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         switch ($shapeId) {
             case Shape::pointId():
                 $radius = 1;
-                return new SVGCircle($points[0], $points[1], $radius);
+                return [new SVGCircle($points[0], $points[1], $radius)];
             case Shape::circleId():
-                return new SVGCircle($points[0], $points[1], $points[2]);
+                return [new SVGCircle($points[0], $points[1], $points[2])];
             case Shape::polygonId():
-                return new SVGPolygon($tuples);
+                return [new SVGPolygon($tuples)];
             case Shape::lineId():
-                return new SVGLine($points[0], $points[1], $points[2], $points[3]);
+                $lines = [];
+                for ($i = 0; $i < sizeof($points)-2; $i+=2) {
+                    $lines[] = new SVGLine($points[$i + 0], $points[$i + 1], $points[$i + 2], $points[$i + 3]);
+                }
+                return $lines;
             case Shape::rectangleId():
                 $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangleId());
 
@@ -380,7 +385,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $cos = $this->computeRotationAngle($vecLR, $u);
                 $rect->setAttribute('transform', 'rotate(' . $cos . ',' . $upperLeft[0] . ',' . $upperLeft[1] . ')');
 
-                return $rect;
+                return [$rect];
             case Shape::ellipseId():
                 $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipseId());
 
@@ -397,7 +402,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $cos = $this->computeRotationAngle($v, $u);
 
                 $elps->setAttribute('transform', 'rotate(' . $cos . ',' . $center[0] . ',' . $center[1] . ')');
-                return $elps;
+                return [$elps];
         }
     }
 
