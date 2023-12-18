@@ -2,13 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Biigle\VideoAnnotation;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Biigle\Http\Controllers\Api\Controller;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -36,7 +33,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
-        $res =  VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+        return VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->whereIn('videos.volume_id', function ($query) use ($pid) {
                 $query->select('volume_id')
@@ -51,26 +48,5 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
-    
-        //TODO: replace string svg by constant
-        $uuids = $res->values()->unique()->all();
-        $annotationIds = $res->keys();
-
-        foreach($uuids as $uuid){
-            $dir = fragment_uuid_path($uuid);
-            $allFiles = Storage::disk(config('largo.patch_storage_disk'))->files($dir);
-            $files = Arr::where($allFiles, fn($path, $id) => Str::endsWith($path, 'svg'));
-    
-            $files = collect(Arr::flatten($files));
-            foreach ($files as $file) {
-                $id = (Str::of($file))->match('/([0-9]*).svg/')->toInteger();
-                if($annotationIds->contains($id)){
-                    $xml = Storage::disk(config('largo.patch_storage_disk'))->get($file);
-                    $res[$id] = [$uuid,$xml];
-                }
-            };
-        }
-
-        return $res;
     }
 }
