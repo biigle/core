@@ -38,10 +38,10 @@ export default{
             return this.svgXML.childNodes[0].getAttribute('x2');
         },
         y1(){
-            return this.svgXML.childNodes[0].getAttribute('y1');
+            return this.svgXML.childNodes[0].getAttribute('x1');
         },
         y2(){
-            return this.svgXML.childNodes[0].getAttribute('y2');
+            return this.svgXML.childNodes[0].getAttribute('x2');
         },
         points(){
             return this.svgXML.childNodes[0].getAttribute('points');
