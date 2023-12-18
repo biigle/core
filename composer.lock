@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca56d5f114fc956ac8efe6bcdefe8180",
+    "content-hash": "b05cc8ab987e8f1b7189e566cdef4962",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1257,6 +1257,61 @@
                 }
             ],
             "time": "2023-10-12T05:21:21+00:00"
+        },
+        {
+            "name": "fylax/forceutf8",
+            "version": "v3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Fylax/forceutf8.git",
+                "reference": "efaa4ec353ce35931ef469632fece63df4c5a301"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Fylax/forceutf8/zipball/efaa4ec353ce35931ef469632fece63df4c5a301",
+                "reference": "efaa4ec353ce35931ef469632fece63df4c5a301",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6"
+            },
+            "suggest": {
+                "ext-iconv": "To convert non-UTF-8 strings to UTF-8",
+                "ext-mbstring": "To convert non-UTF-8 strings to UTF-8"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "name": "neitanod/forceutf8",
+                    "url": "https://github.com/neitanod/forceutf8"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ForceUTF8\\": "ForceUTF8"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nico Caprioli",
+                    "email": "nico.caprioli@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP Class Encoding featuring popular Encoding::toUTF8() function --formerly known as forceUTF8()-- that fixes mixed encoded strings.",
+            "homepage": "https://github.com/Fylax/forceutf8",
+            "support": {
+                "issues": "https://github.com/Fylax/forceutf8/issues",
+                "source": "https://github.com/Fylax/forceutf8/tree/v3.0.3"
+            },
+            "time": "2023-06-06T09:49:33+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -2635,6 +2690,79 @@
                 }
             ],
             "time": "2023-10-17T14:13:20+00:00"
+        },
+        {
+            "name": "lychee-org/php-exif",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LycheeOrg/php-exif.git",
+                "reference": "12c4976d2dea44fc4eb3b9dd33428b95ba7461c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/12c4976d2dea44fc4eb3b9dd33428b95ba7461c0",
+                "reference": "12c4976d2dea44fc4eb3b9dd33428b95ba7461c0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "fylax/forceutf8": "^3.0.1",
+                "php": "^8.1",
+                "php-ffmpeg/php-ffmpeg": "^1.0",
+                "thecodingmachine/safe": "^2.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "infection/infection": "^0.26.13",
+                "lychee-org/phpstan-lychee": "^1.0.1",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpmd/phpmd": "^2.9",
+                "phpunit/phpunit": "^9.5.10",
+                "squizlabs/php_codesniffer": "^3.5",
+                "thecodingmachine/phpstan-safe-rule": "^1.2"
+            },
+            "suggest": {
+                "FFmpeg": "Use FFmpeg/FFprobe as adapter",
+                "ext-exif": "Use exif PHP extension as adapter",
+                "ext-imagick": "Use ImageMagick as adapter",
+                "ext-mbstring": "Support UTC-16 characters in EXIF data with exif PHP extension",
+                "lib-exiftool": "Use perl lib exiftool as adapter"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExif": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tom Van Herreweghe",
+                    "homepage": "http://theanalogguy.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Object-Oriented EXIF parsing",
+            "keywords": [
+                "IPTC",
+                "ImageMagick",
+                "exif",
+                "exiftool",
+                "ffmpeg",
+                "ffprobe",
+                "imagick",
+                "jpeg",
+                "tiff"
+            ],
+            "support": {
+                "issues": "https://github.com/LycheeOrg/php-exif/issues",
+                "source": "https://github.com/LycheeOrg/php-exif/tree/v1.0.2"
+            },
+            "time": "2023-04-11T11:03:27+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -7007,6 +7135,145 @@
                 }
             ],
             "time": "2023-11-30T10:32:10+00:00"
+        },
+        {
+            "name": "thecodingmachine/safe",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thecodingmachine/safe.git",
+                "reference": "3115ecd6b4391662b4931daac4eba6b07a2ac1f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/3115ecd6b4391662b4931daac4eba6b07a2ac1f0",
+                "reference": "3115ecd6b4391662b4931daac4eba6b07a2ac1f0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.5",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "^3.2",
+                "thecodingmachine/phpstan-strict-rules": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "deprecated/apc.php",
+                    "deprecated/array.php",
+                    "deprecated/datetime.php",
+                    "deprecated/libevent.php",
+                    "deprecated/misc.php",
+                    "deprecated/password.php",
+                    "deprecated/mssql.php",
+                    "deprecated/stats.php",
+                    "deprecated/strings.php",
+                    "lib/special_cases.php",
+                    "deprecated/mysqli.php",
+                    "generated/apache.php",
+                    "generated/apcu.php",
+                    "generated/array.php",
+                    "generated/bzip2.php",
+                    "generated/calendar.php",
+                    "generated/classobj.php",
+                    "generated/com.php",
+                    "generated/cubrid.php",
+                    "generated/curl.php",
+                    "generated/datetime.php",
+                    "generated/dir.php",
+                    "generated/eio.php",
+                    "generated/errorfunc.php",
+                    "generated/exec.php",
+                    "generated/fileinfo.php",
+                    "generated/filesystem.php",
+                    "generated/filter.php",
+                    "generated/fpm.php",
+                    "generated/ftp.php",
+                    "generated/funchand.php",
+                    "generated/gettext.php",
+                    "generated/gmp.php",
+                    "generated/gnupg.php",
+                    "generated/hash.php",
+                    "generated/ibase.php",
+                    "generated/ibmDb2.php",
+                    "generated/iconv.php",
+                    "generated/image.php",
+                    "generated/imap.php",
+                    "generated/info.php",
+                    "generated/inotify.php",
+                    "generated/json.php",
+                    "generated/ldap.php",
+                    "generated/libxml.php",
+                    "generated/lzf.php",
+                    "generated/mailparse.php",
+                    "generated/mbstring.php",
+                    "generated/misc.php",
+                    "generated/mysql.php",
+                    "generated/network.php",
+                    "generated/oci8.php",
+                    "generated/opcache.php",
+                    "generated/openssl.php",
+                    "generated/outcontrol.php",
+                    "generated/pcntl.php",
+                    "generated/pcre.php",
+                    "generated/pgsql.php",
+                    "generated/posix.php",
+                    "generated/ps.php",
+                    "generated/pspell.php",
+                    "generated/readline.php",
+                    "generated/rpminfo.php",
+                    "generated/rrd.php",
+                    "generated/sem.php",
+                    "generated/session.php",
+                    "generated/shmop.php",
+                    "generated/sockets.php",
+                    "generated/sodium.php",
+                    "generated/solr.php",
+                    "generated/spl.php",
+                    "generated/sqlsrv.php",
+                    "generated/ssdeep.php",
+                    "generated/ssh2.php",
+                    "generated/stream.php",
+                    "generated/strings.php",
+                    "generated/swoole.php",
+                    "generated/uodbc.php",
+                    "generated/uopz.php",
+                    "generated/url.php",
+                    "generated/var.php",
+                    "generated/xdiff.php",
+                    "generated/xml.php",
+                    "generated/xmlrpc.php",
+                    "generated/yaml.php",
+                    "generated/yaz.php",
+                    "generated/zip.php",
+                    "generated/zlib.php"
+                ],
+                "classmap": [
+                    "lib/DateTime.php",
+                    "lib/DateTimeImmutable.php",
+                    "lib/Exceptions/",
+                    "deprecated/Exceptions/",
+                    "generated/Exceptions/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP core functions that throw exceptions instead of returning FALSE on error",
+            "support": {
+                "issues": "https://github.com/thecodingmachine/safe/issues",
+                "source": "https://github.com/thecodingmachine/safe/tree/v2.5.0"
+            },
+            "time": "2023-04-05T11:54:14+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
