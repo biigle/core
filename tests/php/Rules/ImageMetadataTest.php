@@ -99,12 +99,15 @@ class ImageMetadataTest extends TestCase
     {
         $validator = new ImageMetadataRule(['abc.jpg']);
         $metadata = new VolumeMetadata;
-        $metadata->addFile(new ImageMetadata(
-            name: 'abc.jpg'
-        ));
-        $metadata->addFile(new ImageMetadata(
-            name: ''
-        ));
+        $metadata->addFile(new ImageMetadata(name: ''));
+        $this->assertFalse($validator->passes(null, $metadata));
+    }
+
+    public function testEmpty()
+    {
+        $validator = new ImageMetadataRule(['abc.jpg']);
+        $metadata = new VolumeMetadata;
+        $metadata->addFile(new ImageMetadata(name: 'abc.jpg'));
         $this->assertFalse($validator->passes(null, $metadata));
     }
 }
