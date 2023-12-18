@@ -32,7 +32,6 @@
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.0",
-        "league/flysystem-aws-s3-v3": "^3.12",
         "lychee-org/php-exif": "^1.0",
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
