@@ -24,14 +24,14 @@ export default{
         PolygonSVG,
     },
     data() { return {
-        svgXML : SVGSVGElement,
+        svgXML : null,
         }
     },
     props: {
-        svg: String,
-        srcUrl: String,
-        toggleSelect: Function,
-        showEmptyImage: Function,
+        svg: null,
+        srcUrl: '',
+        toggleSelect: null,
+        showEmptyImage: null,
     },
     computed: {
         width(){
@@ -54,7 +54,7 @@ export default{
                 'line': 'LineSVG',
                 'polygon': 'PolygonSVG'});
             return shape2comp[this.svgXML.childNodes[0].nodeName];
-        },
+        }
     },
     created(){
         if(this.hasSVG){

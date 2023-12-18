@@ -8,7 +8,7 @@ import Shape from './mixins/Shape.vue';
 export default{
     mixins: [Shape],
     props: {
-        svgXML: SVGSVGElement 
+        svgXML: null
     },
 }
 </script>
