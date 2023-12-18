@@ -53,28 +53,25 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
 
+
+
+        //TODO: replace string svg by constant
         $uuids = $res->values()->unique()->all();
         $annotationIds = $res->keys();
-        
+
         foreach($uuids as $uuid){
             $dir = fragment_uuid_path($uuid);
             $allFiles = Storage::disk(config('largo.patch_storage_disk'))->files($dir);
-            $files = Arr::where($allFiles, fn($path, $id) => Str::endsWith($path, config('largo.annotation_format')));
+            $files = Arr::where($allFiles, fn($path, $id) => Str::endsWith($path, 'svg'));
     
-            if(sizeof($files) > 0){
-                $files = collect(Arr::flatten($files));
-                foreach ($files as $file) {
-                    $id = (Str::of($file))->match('/([0-9]*).'.config('largo.annotation_format').'/')->toInteger();
-                    if($annotationIds->contains($id)){
-                        $xml = Storage::disk(config('largo.patch_storage_disk'))->get($file);
-                        $res[$id] = [$uuid,$xml];
-                    }
-                };
-            } else {
-                foreach($res as $id => $uuid) {
-                    $res[$id] = [$uuid];
+            $files = collect(Arr::flatten($files));
+            foreach ($files as $file) {
+                $id = (Str::of($file))->match('/([0-9]*).svg/')->toInteger();
+                if($annotationIds->contains($id)){
+                    $xml = Storage::disk(config('largo.patch_storage_disk'))->get($file);
+                    $res[$id] = [$uuid,$xml];
                 }
-            }
+            };
         }
 
         return $res;
