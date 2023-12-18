@@ -61,41 +61,27 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
 
-        $uuids = $res->values()->unique()->all();
-        $annotationIds = $res->keys();
-
-        // read all file paths from storage
-        $allFilePaths = array_map(fn($uuid) => Storage::disk(config('largo.patch_storage_disk'))->files(fragment_uuid_path($uuid)),$uuids);
-        $allFilePaths = Arr::flatten($allFilePaths);
-
-        if(sizeof($allFilePaths) === 0){
-            // return object of arrays to maintain consistency
-            foreach($annotationIds as $id){
-                $res[$id] = [$res[$id]];
-            }
-            return $res;
-        }
-
-        // filter requested annotation svgs
-        $filePaths = Arr::where($allFilePaths, fn($path) => $annotationIds->contains((Str::of($path))
-                                                            ->match('/([0-9]*).'.config('largo.annotation_format').'/')
-                                                            ->toInteger()));
-
-        // group file paths by annotation id
-        $id2paths = [];
-        foreach($filePaths as $path){
-            $id = (Str::of($path))->match('/([0-9]*)\./')->toInteger();
-            $id2paths[$id] = $path;
-        }
-
-        // handle whole frame video annotations without svgs
-        foreach($annotationIds as $id){
-            $uuid = $res[$id];
-            if(array_key_exists($id, $id2paths)) {
-                $xml = Storage::disk(config('largo.patch_storage_disk'))->get($id2paths[$id]);
-                $res[$id] = [$uuid,$xml];
+            $uuids = $res->values()->unique()->all();
+            $annotationIds = $res->keys();
+    
+        foreach($uuids as $uuid){
+            $dir = fragment_uuid_path($uuid);
+            $allFiles = Storage::disk(config('largo.patch_storage_disk'))->files($dir);
+            $files = Arr::where($allFiles, fn($path, $id) => Str::endsWith($path, config('largo.annotation_format')));
+    
+            if(sizeof($files) > 0){
+                $files = collect(Arr::flatten($files));
+                foreach ($files as $file) {
+                    $id = (Str::of($file))->match('/([0-9]*).'.config('largo.annotation_format').'/')->toInteger();
+                    if($annotationIds->contains($id)){
+                        $xml = Storage::disk(config('largo.patch_storage_disk'))->get($file);
+                        $res[$id] = [$uuid,$xml];
+                    }
+                };
             } else {
-                $res[$id] = [$uuid];
+                foreach($res as $id => $uuid) {
+                    $res[$id] = [$uuid];
+                }
             }
         }
 
