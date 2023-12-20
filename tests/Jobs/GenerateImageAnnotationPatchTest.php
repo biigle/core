@@ -3,8 +3,10 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
 use Biigle\Shape;
+use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Bus;
 use Exception;
@@ -290,6 +292,79 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Bus::assertDispatched(GenerateImageAnnotationPatch::class);
     }
 
+    public function testGenerateFeatureVectorNew()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job->mock = $image;
+        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
+        $job->handleFile($annotation->image, 'abc');
+
+        $input = $job->input;
+        $this->assertCount(1, $input);
+        $filename = array_keys($input)[0];
+        $this->assertArrayHasKey($annotation->id, $input[$filename]);
+        $box = $input[$filename][$annotation->id];
+        $this->assertEquals([88, 88, 312, 312], $box);
+
+        $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
+        $this->assertCount(1, $vectors);
+        $this->assertEquals($annotationLabel->id, $vectors[0]->id);
+        $this->assertEquals($annotationLabel->label_id, $vectors[0]->label_id);
+        $this->assertEquals($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
+        $this->assertEquals($annotation->image->volume_id, $vectors[0]->volume_id);
+        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+    }
+
+    public function testGenerateFeatureVectorUpdate()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $iafv = ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $annotationLabel->id,
+            'annotation_id' => $annotation->id,
+            'vector' => range(0, 383),
+        ]);
+
+        $annotationLabel2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $iafv2 = ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $annotationLabel2->id,
+            'annotation_id' => $annotation->id,
+            'vector' => range(0, 383),
+        ]);
+
+        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job->mock = $image;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->handleFile($annotation->image, 'abc');
+
+        $count = ImageAnnotationLabelFeatureVector::count();
+        $this->assertEquals(2, $count);
+        $this->assertEquals(range(1, 384), $iafv->fresh()->vector->toArray());
+        $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
+    }
+
     protected function getImageMock($times = 1)
     {
         $image = Mockery::mock();
@@ -305,8 +380,20 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
 class GenerateImageAnnotationPatchStub extends GenerateImageAnnotationPatch
 {
+    public $input;
+    public $outputPath;
+    public $output = [];
+
     public function getVipsImage($path)
     {
         return $this->mock;
+    }
+
+    protected function python(string $inputPath, string $outputPath)
+    {
+        $this->input = json_decode(File::get($inputPath), true);
+        $this->outputPath = $outputPath;
+        $csv = implode("\n", array_map(fn ($row) => implode(',', $row), $this->output));
+        File::put($outputPath, $csv);
     }
 }

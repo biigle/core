@@ -2,11 +2,14 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\VolumeFile;
 use Exception;
 use FileCache;
-use Storage;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use VipsImage;
 
 class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
@@ -28,6 +31,24 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
         $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
 
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+
+        $this->generateFeatureVector($file, $path);
+    }
+
+    /**
+     * Get a query for the feature vectors associated with the annotation of this job.
+     */
+    protected function getFeatureVectorQuery(): Builder
+    {
+        return ImageAnnotationLabelFeatureVector::where('annotation_id', $this->annotation->id);
+    }
+
+    /**
+     * Create a new feature vector model for the annotation of this job.
+     */
+    protected function createFeatureVector(array $attributes): void
+    {
+        ImageAnnotationLabelFeatureVector::create($attributes);
     }
 
     /**

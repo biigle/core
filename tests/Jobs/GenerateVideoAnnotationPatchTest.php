@@ -4,7 +4,9 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
+use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\VideoAnnotation;
 use Bus;
@@ -17,7 +19,7 @@ use Mockery;
 use Storage;
 use TestCase;
 
-class GenerateVideoAnnotationPatchesTest extends TestCase
+class GenerateVideoAnnotationPatchTest extends TestCase
 {
     public function setUp(): void
     {
@@ -311,6 +313,81 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         Bus::assertDispatched(GenerateVideoAnnotationPatch::class);
     }
 
+    public function testGenerateFeatureVectorNew()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
+        $job->handleFile($annotation->video, 'abc');
+
+        $input = $job->input;
+        $this->assertCount(1, $input);
+        $filename = array_keys($input)[0];
+        $this->assertArrayHasKey($annotation->id, $input[$filename]);
+        $box = $input[$filename][$annotation->id];
+        $this->assertEquals([88, 88, 312, 312], $box);
+
+        $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
+        $this->assertCount(1, $vectors);
+        $this->assertEquals($annotationLabel->id, $vectors[0]->id);
+        $this->assertEquals($annotationLabel->label_id, $vectors[0]->label_id);
+        $this->assertEquals($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
+        $this->assertEquals($annotation->video->volume_id, $vectors[0]->volume_id);
+        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+    }
+
+    public function testGenerateFeatureVectorUpdate()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $iafv = VideoAnnotationLabelFeatureVector::factory()->create([
+            'id' => $annotationLabel->id,
+            'annotation_id' => $annotation->id,
+            'vector' => range(0, 383),
+        ]);
+
+        $annotationLabel2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $iafv2 = VideoAnnotationLabelFeatureVector::factory()->create([
+            'id' => $annotationLabel2->id,
+            'annotation_id' => $annotation->id,
+            'vector' => range(0, 383),
+        ]);
+
+        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->handleFile($annotation->video, 'abc');
+
+        $count = VideoAnnotationLabelFeatureVector::count();
+        $this->assertEquals(2, $count);
+        $this->assertEquals(range(1, 384), $iafv->fresh()->vector->toArray());
+        $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
@@ -319,6 +396,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('resize')
             ->times($times)
             ->andReturn($video);
+        $video->shouldReceive('writeToFile');
 
         return $video;
     }
@@ -327,6 +405,9 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 class GenerateVideoAnnotationPatchStub extends GenerateVideoAnnotationPatch
 {
     public $times = [];
+    public $input;
+    public $outputPath;
+    public $output = [];
 
     public function getVideo($path)
     {
@@ -338,5 +419,13 @@ class GenerateVideoAnnotationPatchStub extends GenerateVideoAnnotationPatch
         $this->times[] = $time;
 
         return $this->mock;
+    }
+
+    protected function python(string $inputPath, string $outputPath)
+    {
+        $this->input = json_decode(File::get($inputPath), true);
+        $this->outputPath = $outputPath;
+        $csv = implode("\n", array_map(fn ($row) => implode(',', $row), $this->output));
+        File::put($outputPath, $csv);
     }
 }

@@ -2,11 +2,14 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
-use Storage;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use VipsImage;
 
 class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
@@ -31,6 +34,32 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
         $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);
         $buffer = $this->getAnnotationPatch($frame, $points, $this->annotation->shape);
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+
+
+        $framePath = tempnam(sys_get_temp_dir(), 'largo_video_frame').'.png';
+
+        try {
+            $frame->writeToFile($framePath);
+            $this->generateFeatureVector($file, $framePath);
+        } finally {
+            File::delete($framePath);
+        }
+    }
+
+    /**
+     * Get a query for the feature vectors associated with the annotation of this job.
+     */
+    protected function getFeatureVectorQuery(): Builder
+    {
+        return VideoAnnotationLabelFeatureVector::where('annotation_id', $this->annotation->id);
+    }
+
+    /**
+     * Create a new feature vector model for the annotation of this job.
+     */
+    protected function createFeatureVector(array $attributes): void
+    {
+        VideoAnnotationLabelFeatureVector::create($attributes);
     }
 
     /**
@@ -51,7 +80,7 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
      * @param Video $video
      * @param float $time
      *
-     * @return \Jcupitt\Vips\Image
+     * @return \Jcupitt\Vips\Video
      */
     protected function getVideoFrame(Video $video, $time)
     {

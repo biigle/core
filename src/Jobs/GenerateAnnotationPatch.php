@@ -4,7 +4,6 @@ namespace Biigle\Modules\Largo\Jobs;
 
 use Biigle\Contracts\Annotation;
 use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Jobs\Job;
 use Biigle\Modules\Largo\Traits\ComputesAnnotationBox;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
@@ -12,16 +11,18 @@ use Biigle\VolumeFile;
 use Exception;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Jcupitt\Vips\Image;
-use Log;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Str;
+use Jcupitt\Vips\Image;
 
-abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
+abstract class GenerateAnnotationPatch extends GenerateFeatureVectors
 {
-    use SerializesModels, InteractsWithQueue, ComputesAnnotationBox;
+    use SerializesModels, InteractsWithQueue;
 
     /**
      * The number of times the job may be attempted.
@@ -178,4 +179,64 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
             'strip' => true,
         ]);
     }
+
+    /**
+     * Generates a feature vector for the annotation of this job and either creates a new
+     * feature vector model or updates the existing ones for the annotation.
+     */
+    protected function generateFeatureVector(VolumeFile $file, string $path): void
+    {
+        $boxes = $this->generateFileInput($file, collect([$this->annotation]));
+        if (empty($boxes)) {
+            return;
+        }
+
+        // shm is available because this will only be executed in a Docker container.
+        // The files are small here so this should be a fast way for communication.
+        // Input/output files are used to also allow larger use cases with thousands of
+        // feature vectors (e.g. in biigle/maia).
+        $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
+        $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
+
+        try {
+            File::put($inputPath, json_encode([$path => $boxes]));
+            $this->python($inputPath, $outputPath);
+            $output = $this->readOuputCsv($outputPath)->current();
+
+            $shouldUpdate = $this->getFeatureVectorQuery()->exists();
+            if ($shouldUpdate) {
+                $this->getFeatureVectorQuery()->update(['vector' => $output[1]]);
+            } else {
+                $annotationLabel = $this->annotation
+                    ->labels()
+                    ->orderBy('id', 'asc')
+                    ->with('label')
+                    ->first();
+
+                if (!is_null($annotationLabel)) {
+                    $this->createFeatureVector([
+                        'id' => $annotationLabel->id,
+                        'annotation_id' => $this->annotation->id,
+                        'label_id' => $annotationLabel->label_id,
+                        'label_tree_id' => $annotationLabel->label->label_tree_id,
+                        'volume_id' => $file->volume_id,
+                        'vector' => $output[1],
+                    ]);
+                }
+            }
+        } finally {
+            File::delete($outputPath);
+            File::delete($inputPath);
+        }
+    }
+
+    /**
+     * Get a query for the feature vectors associated with the annotation of this job.
+     */
+    abstract protected function getFeatureVectorQuery(): Builder;
+
+    /**
+     * Create a new feature vector model for the annotation of this job.
+     */
+    abstract protected function createFeatureVector(array $attributes): void;
 }
