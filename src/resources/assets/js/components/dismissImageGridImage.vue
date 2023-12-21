@@ -68,7 +68,7 @@ export default {
     },
     methods: {
         svgSrcUrl(){
-            return this.srcUrl.replace(/\.[A-Za-z]*$/,'\.svg');
+            return this.srcUrl.replace(/.[A-Za-z]*$/,'.svg');
         },
         async fetchSVG() {
             await fetch(this.svgSrcUrl()).then(res => res.text()).then(data => {
