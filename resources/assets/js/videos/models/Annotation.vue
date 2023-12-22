@@ -282,6 +282,12 @@ export default Vue.extend({
                 this.frames.splice(index, 1);
                 this.points.splice(index, 1);
 
+                // Remove null (gap filler) as last element to prevent validation errors
+                if (this.frames.at(-1) === null) {
+                    this.frames.pop();
+                    this.points.pop();
+                }
+
                 return VideoAnnotationApi.update({id: this.id}, {
                     frames: this.frames,
                     points: this.points
