@@ -90,10 +90,13 @@ export default {
                     toCreate.push(annotation.self);
                 }
             }
-
+            
             if (hasRenderedFeatures) {
                 Object.values(oldRendered).forEach(function (feature) {
-                    source.removeFeature(feature);
+                    // source.hasFeature(feature) does not work here, because it is always true
+                    if (source.getFeatures().includes(feature)) {
+                        source.removeFeature(feature);
+                    }
                     selected.remove(feature);
                 });
             } else {
