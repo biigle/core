@@ -2,7 +2,7 @@
     position: relative;
 
     &.image-grid__image--selected {
-        &:before {
+        &:after {
             position: absolute;
             content: '';
             top: $padding-base-horizontal;
