@@ -167,7 +167,7 @@ export default {
         this.dummyCanvas.height = 1;
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
-        this.video.addEventListener('timeupdate', this.handleSeeked);
+        this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
         let mapPromise = new Vue.Promise((resolve) => {

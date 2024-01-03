@@ -227,10 +227,11 @@ export default {
         },
     },
     created() {
-        this.video.addEventListener('timeupdate', this.updateCurrentTime);
+        // this.video.addEventListener('timeupdate', this.updateCurrentTime);
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
         this.video.addEventListener('loadedmetadata', this.setDuration);
+        this.video.addEventListener('seeked', this.updateCurrentTime);
     },
 };
 </script>

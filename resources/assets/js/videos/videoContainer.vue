@@ -189,7 +189,7 @@ export default {
             }
 
             let promise = new Vue.Promise((resolve, reject) => {
-                this.video.addEventListener('timeupdate', resolve);
+                this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
             });
             this.seeking = true;
@@ -676,9 +676,9 @@ export default {
                 Messages.danger('Error while loading video file.');
             }
         });
-        this.video.addEventListener('timeupdate', this.handleVideoSeeked);
+        this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
-        this.video.addEventListener('timeupdate', this.updateVideoUrlParams);
+        this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
