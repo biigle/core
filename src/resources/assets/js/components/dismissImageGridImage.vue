@@ -48,8 +48,7 @@ export default {
     data() {
         return {
             showAnnotationRoute: null,
-            xml: null,
-            isPoint: false
+            svg: null,
         };
     },
     computed: {
@@ -62,38 +61,22 @@ export default {
         title() {
             return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
         },
-        svg() {
-            return this.xml !== null ? new XMLSerializer().serializeToString(this.xml) : '';
-        },
+        isPoint() {
+            return this.svg !== null ? this.svg.includes('r="1"') : false;
+        }
     },
     methods: {
         svgSrcUrl() {
+            // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
         async fetchSVG() {
-            await fetch(this.svgSrcUrl()).then(res => res.text()).then(data => {
-                this.setXML(data);
-                // prevent stroke to scale
-                this.addAttributeToShape("vector-effect", "non-scaling-stroke");
-                this.identifyPoints(); // needed for styling
-
-            });
-        },
-        setXML(xml) {
-            this.xml = new DOMParser().parseFromString(xml, "image/svg+xml");
-        },
-        identifyPoints() {
-            this.isPoint = this.svg.includes('r="1"');
-        },
-        addAttributeToShape(attribute, value) {
-            Object.keys(this.xml.childNodes[0].childNodes).forEach((key) => {
-                this.xml.childNodes[0].childNodes[key].setAttribute(attribute, value);
-            })
+            await fetch(this.svgSrcUrl()).then(res => res.text()).then(data => { this.svg = data; });
         },
         getSVGStyle(isOutline) {
             return isOutline ? '--color: white; --width: 5px;'
                 : '--color: #' + this.image.label_color + '; --width: 3px;';
-        },
+        }
     },
     created() {
         this.fetchSVG();

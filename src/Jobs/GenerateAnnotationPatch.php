@@ -331,8 +331,9 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         // Set viewbox to show annotation
         $doc->setAttribute('viewBox', $rect['left'] . ' ' . $rect['top'] . ' ' . $rect['width'] . ' ' . $rect['height']);
-        
-        foreach($annotation as $annotation){
+
+        foreach($annotation as $annotation) {
+            $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
             $doc->addChild($annotation);
         }
 
