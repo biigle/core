@@ -5,12 +5,16 @@ namespace Biigle\Modules\Largo;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\VideosDeleted;
 use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Modules\Largo\Listeners\VideosCleanupListener;
 use Biigle\Modules\Largo\Observers\ImageAnnotationObserver;
+use Biigle\Modules\Largo\Observers\ImageAnnotationLabelObserver;
 use Biigle\Modules\Largo\Observers\VideoAnnotationObserver;
+use Biigle\Modules\Largo\Observers\VideoAnnotationLabelObserver;
 use Biigle\Services\Modules;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Event;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -46,7 +50,9 @@ class LargoServiceProvider extends ServiceProvider
         });
 
         ImageAnnotation::observe(new ImageAnnotationObserver);
+        ImageAnnotationLabel::observe(new ImageAnnotationLabelObserver);
         VideoAnnotation::observe(new VideoAnnotationObserver);
+        VideoAnnotationLabel::observe(new VideoAnnotationLabelObserver);
         Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
         Event::listen(VideosDeleted::class, VideosCleanupListener::class);
 
