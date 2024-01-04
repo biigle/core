@@ -8,6 +8,8 @@ use Biigle\Jobs\Job;
 use Biigle\Label;
 use Biigle\Modules\Largo\Events\LargoSessionFailed;
 use Biigle\Modules\Largo\Events\LargoSessionSaved;
+use Biigle\Modules\Largo\Jobs\CopyImageAnnotationFeatureVector;
+use Biigle\Modules\Largo\Jobs\CopyVideoAnnotationFeatureVector;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\User;
@@ -144,8 +146,11 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedImageAnnotations, $this->changedImageAnnotations);
 
-        $this->applyDismissedLabels($this->user, $dismissed, $this->force, ImageAnnotationLabel::class);
+        // Change labels first, then dismiss to keep the opportunity to copy feature
+        // vectors. If labels are deleted first, the feature vectors will be immediately
+        // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, ImageAnnotation::class, ImageAnnotationLabel::class);
+        $this->applyDismissedLabels($this->user, $dismissed, $this->force, ImageAnnotationLabel::class);
         $this->deleteDanglingAnnotations($dismissed, $changed, ImageAnnotation::class);
     }
 
@@ -156,8 +161,11 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedVideoAnnotations, $this->changedVideoAnnotations);
 
-        $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
+        // Change labels first, then dismiss to keep the opportunity to copy feature
+        // vectors. If labels are deleted first, the feature vectors will be immediately
+        // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, VideoAnnotation::class, VideoAnnotationLabel::class);
+        $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
         $this->deleteDanglingAnnotations($dismissed, $changed, VideoAnnotation::class);
     }
 
@@ -286,6 +294,10 @@ class ApplyLargoSession extends Job implements ShouldQueue
             }
         }
 
+        // Store the ID so we can efficiently loop over the models later. This is only
+        // possible because all this happens inside a DB transaction (see above).
+        $startId = $labelModel::orderBy('id', 'desc')->select('id')->first()->id;
+
         collect($newAnnotationLabels)
             ->when($labelModel === ImageAnnotationLabel::class, function ($labels) {
                 return $labels->map(function ($item) {
@@ -300,6 +312,18 @@ class ApplyLargoSession extends Job implements ShouldQueue
             ->chunk(5000)
             ->each(function ($chunk) use ($labelModel) {
                 $labelModel::insert($chunk->toArray());
+            });
+
+        $labelModel::where('id', '>', $startId)
+            ->eachById(function ($annotationLabel) use ($labelModel) {
+                // Execute the jobs synchronously because after this method the
+                // old annotation labels may be deleted and there will be nothing
+                // to copy any more.
+                if ($labelModel === ImageAnnotationLabel::class) {
+                    (new CopyImageAnnotationFeatureVector($annotationLabel))->handle();
+                } else {
+                    (new CopyVideoAnnotationFeatureVector($annotationLabel))->handle();
+                }
             });
     }
 

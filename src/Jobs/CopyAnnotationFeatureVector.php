@@ -37,14 +37,16 @@ abstract class CopyAnnotationFeatureVector extends Job
     public function handle()
     {
         $vector = $this->getFeatureVectorQuery()->first();
-        $this->updateOrCreateFeatureVector([
-            'id' => $this->annotationLabel->id,
-            'annotation_id' => $this->annotationLabel->annotation_id,
-            'label_id' => $this->annotationLabel->label_id,
-            'label_tree_id' => $this->annotationLabel->label->label_tree_id,
-            'volume_id' => $vector->volume_id,
-            'vector' => $vector->vector,
-        ]);
+        if (!is_null($vector)) {
+            $this->updateOrCreateFeatureVector([
+                'id' => $this->annotationLabel->id,
+                'annotation_id' => $this->annotationLabel->annotation_id,
+                'label_id' => $this->annotationLabel->label_id,
+                'label_tree_id' => $this->annotationLabel->label->label_tree_id,
+                'volume_id' => $vector->volume_id,
+                'vector' => $vector->vector,
+            ]);
+        }
     }
 
     /**
