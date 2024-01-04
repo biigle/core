@@ -17,6 +17,7 @@ use \SVG\Nodes\Shapes\SVGCircle;
 use Biigle\Contracts\Annotation;
 use SVG\Nodes\Shapes\SVGEllipse;
 use SVG\Nodes\Shapes\SVGPolygon;
+use SVG\Nodes\Shapes\SVGPolyline;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -366,11 +367,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
             case Shape::polygonId():
                 return [new SVGPolygon($tuples)];
             case Shape::lineId():
-                $lines = [];
-                for ($i = 0; $i < sizeof($points)-2; $i+=2) {
-                    $lines[] = new SVGLine($points[$i + 0], $points[$i + 1], $points[$i + 2], $points[$i + 3]);
-                }
-                return $lines;
+                return [new SVGPolyline($tuples)];
             case Shape::rectangleId():
                 $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangleId());
 
