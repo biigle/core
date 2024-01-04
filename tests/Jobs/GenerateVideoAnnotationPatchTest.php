@@ -348,6 +348,39 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorManyLabels()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $annotationLabel1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $annotationLabel2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
+        $job->handleFile($annotation->video, 'abc');
+
+        $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
+        $this->assertCount(2, $vectors);
+        $this->assertEquals($annotationLabel1->id, $vectors[0]->id);
+        $this->assertEquals($annotationLabel1->label_id, $vectors[0]->label_id);
+        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+
+        $this->assertEquals($annotationLabel2->id, $vectors[1]->id);
+        $this->assertEquals($annotationLabel2->label_id, $vectors[1]->label_id);
+        $this->assertEquals(range(0, 383), $vectors[1]->vector->toArray());
+    }
+
     public function testGenerateFeatureVectorUpdate()
     {
         Storage::fake('test');

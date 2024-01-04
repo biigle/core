@@ -207,13 +207,13 @@ abstract class GenerateAnnotationPatch extends GenerateFeatureVectors
             if ($shouldUpdate) {
                 $this->getFeatureVectorQuery()->update(['vector' => $output[1]]);
             } else {
-                $annotationLabel = $this->annotation
+                $annotationLabels = $this->annotation
                     ->labels()
                     ->orderBy('id', 'asc')
                     ->with('label')
-                    ->first();
+                    ->get();
 
-                if (!is_null($annotationLabel)) {
+                foreach ($annotationLabels as $annotationLabel) {
                     $this->createFeatureVector([
                         'id' => $annotationLabel->id,
                         'annotation_id' => $this->annotation->id,
