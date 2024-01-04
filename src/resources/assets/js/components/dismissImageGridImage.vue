@@ -33,7 +33,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
-import { ImageGridImage } from '../import';
+import { ImageGridImage, Messages, handleErrorResponse } from '../import';
 
 /**
  * A variant of the image grid image used for the dismiss step of Largo
@@ -63,15 +63,26 @@ export default {
         },
         isPoint() {
             return this.svg !== null ? this.svg.includes('r="1"') : false;
-        }
-    },
-    methods: {
+        },
         svgSrcUrl() {
             // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
+    },
+    methods: {
         async fetchSVG() {
-            await fetch(this.svgSrcUrl()).then(res => res.text()).then(data => { this.svg = data; });
+            this.label_id = this.image.label_id;
+            let response = await fetch(this.svgSrcUrl);
+
+            if (!response.ok) {
+                if (Messages.all.length === 0) {
+                    Messages.warning('Annotation(s) cannot be displayed.');
+                }
+
+                return;
+            }
+
+            this.svg = await response.text();
         },
         getSVGStyle(isOutline) {
             return isOutline ? '--color: white; --width: 5px;'
@@ -79,6 +90,7 @@ export default {
         }
     },
     created() {
+        Messages.close(Messages.all[0]?.id);
         this.fetchSVG();
     }
 };
