@@ -68,6 +68,12 @@ return new class extends Migration
 
                 // For Largo queries.
                 $table->index(['label_id', 'volume_id']);
+
+                // For create/update queries.
+                $table->index('annotation_id');
+
+                // Ensure consistency and speed up updateOrCreate queries.
+                $table->primary('id');
             });
 
         Schema::create('video_annotation_label_feature_vectors', function (Blueprint $table) {
@@ -100,6 +106,12 @@ return new class extends Migration
 
                 // For Largo queries.
                 $table->index(['label_id', 'volume_id']);
+
+                // For create/update queries.
+                $table->index('annotation_id');
+
+                // Ensure consistency and speed up updateOrCreate queries.
+                $table->primary('id');
             });
     }
 
@@ -110,9 +122,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('pgvector')
-            ->dropIfExists('image_annotation_label_feature_vectors');
-        Schema::connection('pgvector')
-            ->dropIfExists('video_annotation_label_feature_vectors');
+        Schema::dropIfExists('image_annotation_label_feature_vectors');
+        Schema::dropIfExists('video_annotation_label_feature_vectors');
     }
 };
