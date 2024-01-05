@@ -33,7 +33,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
-import { ImageGridImage, Messages, handleErrorResponse } from '../import';
+import { ImageGridImage, Messages } from '../import';
 
 /**
  * A variant of the image grid image used for the dismiss step of Largo
@@ -62,7 +62,7 @@ export default {
             return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
         },
         isPoint() {
-            return this.svg !== null ? this.svg.includes('r="1"') : false;
+            return this.svg !== null ? this.svg.includes('r="3"') : false;
         },
         svgSrcUrl() {
             // Replace file extension by svg file format

@@ -361,7 +361,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         switch ($shapeId) {
             case Shape::pointId():
-                $radius = 1;
+                $radius = 3;
                 return [new SVGCircle($points[0], $points[1], $radius)];
             case Shape::circleId():
                 return [new SVGCircle($points[0], $points[1], $points[2])];
