@@ -8,6 +8,7 @@ use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotation;
 use Bus;
 use Exception;
@@ -419,6 +420,38 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         $this->assertEquals(2, $count);
         $this->assertEquals(range(1, 384), $iafv->fresh()->vector->toArray());
         $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
+    }
+
+    public function testGenerateFeatureVectorWholeFrame()
+    {
+        Storage::fake('test');
+        $videoMock = $this->getFrameMock();
+        $videoMock->shouldReceive('crop')->andReturn($videoMock);
+        $videoMock->shouldReceive('writeToBuffer')->andReturn('abc123');
+
+        $video = VideoModel::factory()->create([
+            'attrs' => ['width' => 1000, 'height' => 750],
+        ]);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [],
+            'frames' => [1],
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $video->id,
+        ]);
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job->mock = $videoMock;
+        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
+        $job->handleFile($video, 'abc');
+
+        $input = $job->input;
+        $this->assertCount(1, $input);
+        $filename = array_keys($input)[0];
+        $this->assertArrayHasKey($annotation->id, $input[$filename]);
+        $box = $input[$filename][$annotation->id];
+        $this->assertEquals([0, 0, 1000, 750], $box);
     }
 
     protected function getFrameMock($times = 1)

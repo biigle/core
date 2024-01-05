@@ -207,12 +207,17 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     {
         $boxes = [];
         foreach ($annotations as $a) {
-            $points = $a->points;
-            if (($a instanceof VideoAnnotation) && !empty($points)) {
-                $points = $points[0];
+            if ($a->shape_id === Shape::wholeFrameId()) {
+                $box = [0, 0, $file->width ?: 0, $file->height ?: 0];
+            } else {
+                $points = $a->points;
+                if (($a instanceof VideoAnnotation) && !empty($points)) {
+                    $points = $points[0];
+                }
+                $box = $this->getAnnotationBoundingBox($points, $a->shape, self::POINT_PADDING);
+                $box = $this->makeBoxContained($box, $file->width, $file->height);
             }
-            $box = $this->getAnnotationBoundingBox($points, $a->shape, self::POINT_PADDING);
-            $box = $this->makeBoxContained($box, $file->width, $file->height);
+
             $zeroSize = $box[2] === 0 && $box[3] === 0;
 
             if (!$zeroSize) {
