@@ -6,11 +6,9 @@ use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationTest;
-use Biigle\VideoAnnotation;
 use Bus;
 use Exception;
 use FFMpeg\Media\Video;
-use File;
 use FileCache;
 use Log;
 use Mockery;
@@ -47,6 +45,10 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+
+        // SVG annotations are not generated for whole video frame annotations
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $this->assertEquals(null, $content);
     }
 
     public function testHandleStorageConfigurableDisk()
@@ -71,6 +73,11 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $content = Storage::disk('test2')->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+
+        // SVG annotations are not generated for whole video frame annotations
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $this->assertEquals(null, $content);
+
     }
 
     public function testHandlePoint()
@@ -98,6 +105,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
+                . '<circle cx="100.4" cy="100.4" r="4" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleCircle()
@@ -126,6 +140,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"'
+               .'><circle cx="300" cy="300" r="200" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleOther()
@@ -156,6 +177,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"'
+               .'><polygon points="100,100 150,200 200,100 100,100" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleSingleFrame()
@@ -182,6 +210,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"'
+               .'><circle cx="100" cy="100" r="4" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -208,6 +243,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 148 148"'
+               .'><circle cx="0" cy="0" r="4" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedPositive()
@@ -234,6 +276,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="852 602 148 148"'
+               .'><circle cx="1000" cy="750" r="4" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedTooLarge()
@@ -263,6 +312,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100"'
+               .'><circle cx="50" cy="50" r="4" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleMinDimension()
@@ -288,6 +344,13 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="10 10 100 100"'
+               .'><circle cx="60" cy="60" r="10" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleError()
@@ -298,6 +361,10 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $annotation = VideoAnnotationTest::create();
         $job = new GenerateVideoAnnotationPatch($annotation);
         $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $this->assertEquals(null, $content);
     }
 
     public function testFileLockedError()
@@ -309,6 +376,10 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $job = new GenerateVideoAnnotationPatch($annotation);
         $job->handle();
         Bus::assertDispatched(GenerateVideoAnnotationPatch::class);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $this->assertEquals(null, $content);
     }
 
     protected function getFrameMock($times = 1)
