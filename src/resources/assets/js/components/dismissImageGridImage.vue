@@ -33,7 +33,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
-import { ImageGridImage, Messages } from '../import';
+import { ImageGridImage } from '../import';
 
 /**
  * A variant of the image grid image used for the dismiss step of Largo
@@ -75,10 +75,6 @@ export default {
             let response = await fetch(this.svgSrcUrl);
 
             if (!response.ok) {
-                if (Messages.all.length === 0) {
-                    Messages.warning('Annotation(s) cannot be displayed.');
-                }
-
                 return;
             }
 
@@ -90,7 +86,6 @@ export default {
         }
     },
     created() {
-        Messages.close(Messages.all[0]?.id);
         this.fetchSVG();
     }
 };
