@@ -28,8 +28,9 @@ class GenerateImageAnnotationPatchTest extends TestCase
     {
         Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create();
-        $annotation->shape_id = Shape::pointId();
+        $annotation = ImageAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+        ]);
         $job = new GenerateImageAnnotationPatchStub($annotation);
         $job->mock = $image;
 
@@ -51,8 +52,9 @@ class GenerateImageAnnotationPatchTest extends TestCase
     {
         Storage::fake('test2');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create();
-        $annotation->shape_id = Shape::pointId();
+        $annotation = ImageAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+        ]);
         $job = new GenerateImageAnnotationPatchStub($annotation, 'test2');
         $job->mock = $image;
 
