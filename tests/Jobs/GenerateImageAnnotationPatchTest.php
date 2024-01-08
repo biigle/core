@@ -48,7 +48,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 .'xmlns:xlink="http://www.w3.org/1999/xlink" width="180" height="135" viewBox="0 0 197 148">'
-                .'<circle cx="0" cy="0" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -78,7 +78,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 .'xmlns:xlink="http://www.w3.org/1999/xlink" width="180" height="135" viewBox="0 0 197 148">'
-                .'<circle cx="0" cy="0" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -106,7 +106,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
-                .'<circle cx="100" cy="100" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="100" cy="100" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -195,7 +195,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 148 148">'
-                .'<circle cx="0" cy="0" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -223,7 +223,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="852 602 148 148">'
-                .'<circle cx="1000" cy="750" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="1000" cy="750" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -254,7 +254,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100">'
-                .'<circle cx="50" cy="50" r="4" vector-effect="non-scaling-stroke" /></svg>';
+                .'<circle cx="50" cy="50" r="3" vector-effect="non-scaling-stroke" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
