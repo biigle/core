@@ -332,10 +332,8 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         // Set viewbox to show annotation
         $doc->setAttribute('viewBox', $rect['left'] . ' ' . $rect['top'] . ' ' . $rect['width'] . ' ' . $rect['height']);
 
-        foreach($annotation as $annotation) {
-            $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
-            $doc->addChild($annotation);
-        }
+        $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
+        $doc->addChild($annotation);
 
         return $image;
     }
@@ -362,13 +360,13 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         switch ($shapeId) {
             case Shape::pointId():
                 $radius = 3;
-                return [new SVGCircle($points[0], $points[1], $radius)];
+                return new SVGCircle($points[0], $points[1], $radius);
             case Shape::circleId():
-                return [new SVGCircle($points[0], $points[1], $points[2])];
+                return new SVGCircle($points[0], $points[1], $points[2]);
             case Shape::polygonId():
-                return [new SVGPolygon($tuples)];
+                return new SVGPolygon($tuples);
             case Shape::lineId():
-                return [new SVGPolyline($tuples)];
+                return new SVGPolyline($tuples);
             case Shape::rectangleId():
                 $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangleId());
 
@@ -383,7 +381,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $cos = $this->computeRotationAngle($vecLR, $u);
                 $rect->setAttribute('transform', 'rotate(' . $cos . ',' . $upperLeft[0] . ',' . $upperLeft[1] . ')');
 
-                return [$rect];
+                return $rect;
             case Shape::ellipseId():
                 $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipseId());
 
@@ -400,7 +398,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $cos = $this->computeRotationAngle($v, $u);
 
                 $elps->setAttribute('transform', 'rotate(' . $cos . ',' . $center[0] . ',' . $center[1] . ')');
-                return [$elps];
+                return $elps;
         }
     }
 
