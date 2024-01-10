@@ -1,6 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
+import SortingTab from '../components/sortingTab';
 import {Echo} from '../import';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
@@ -11,6 +12,7 @@ import {Messages} from '../import';
 import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
+import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
 
 /**
  * Mixin for largo view models
@@ -24,6 +26,7 @@ export default {
         powerToggle: PowerToggle,
         dismissImageGrid: DismissImageGrid,
         relabelImageGrid: RelabelImageGrid,
+        sortingTab: SortingTab,
     },
     data() {
         return {
@@ -35,6 +38,12 @@ export default {
             lastSelectedImage: null,
             forceChange: false,
             waitForSessionId: null,
+            // The cache is nested in two levels. The first level key is the label ID.
+            // The second level key is the sorting key. The cached value is an array
+            // of annotation IDs sorted in ascending order.
+            sortingSequenceCache: {},
+            sortingDirection: SORT_DIRECTION.ASCENDING,
+            sortingKey: SORT_KEY.ANNOTATION_ID,
         };
     },
     computed: {
@@ -50,6 +59,23 @@ export default {
             }
 
             return [];
+        },
+        sortedAnnotations() {
+            let annotations = this.annotations.slice();
+
+            // This will always be missing for the default sorting.
+            const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
+            if (sequence) {
+                const map = {};
+                squence.forEach((id, idx) => map[id] = idx);
+                annotations.sort((a, b) => map[a.id] - map[b.id]);
+            }
+
+            if (this.sortingDirection === SORT_DIRECTION.DESCENDING) {
+                return annotations.reverse();
+            }
+
+            return annotations;
         },
         allAnnotations() {
             let annotations = [];
@@ -307,6 +333,14 @@ export default {
             Echo.getInstance().private(`user-${this.user.id}`)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
+        },
+        updateSortDirection(direction) {
+            this.sortingDirection = direction;
+        },
+        updateSortKey(key) {
+            // TODO: fetch sorting sequence if missing from cache and then set the key to
+            // update the displayed annotations.
+            this.sortingKey = key;
         },
     },
     watch: {
