@@ -24,6 +24,7 @@
     stroke-width: var(--width);
     fill: none;
     stroke-linejoin: round;
+    opacity: var(--opacity);
 }
 
 .fill ::v-deep svg circle {
@@ -81,8 +82,9 @@ export default {
             this.svg = await response.text();
         },
         getSVGStyle(isOutline) {
-            return isOutline ? '--color: white; --width: 5px;'
-                : `--color: #${this.image.label_color}; --width: 3px;`;
+            let opacity = this.selected ? 0.25 : 1;
+            return isOutline ? `--color: white; --width: 5px; --opacity: ${opacity}`
+                : `--color: #${this.image.label_color}; --width: 3px; --opacity: ${opacity}`;
         }
     },
     created() {
