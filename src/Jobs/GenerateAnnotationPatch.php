@@ -333,6 +333,12 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         $doc->setAttribute('viewBox', $rect['left'] . ' ' . $rect['top'] . ' ' . $rect['width'] . ' ' . $rect['height']);
 
         $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
+
+        // Add attribute to distinguish circles from points in the frontend
+        if ($shape->id == Shape::pointId()) {
+            $annotation->setAttribute('isPoint', 'true');
+        }
+        
         $doc->addChild($annotation);
 
         return $image;

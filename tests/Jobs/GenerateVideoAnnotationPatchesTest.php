@@ -110,7 +110,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
-                . '<circle cx="100.4" cy="100.4" r="3" vector-effect="non-scaling-stroke" /></svg>';
+                . '<circle cx="100.4" cy="100.4" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -215,7 +215,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"'
-               .'><circle cx="100" cy="100" r="3" vector-effect="non-scaling-stroke" /></svg>';
+               .'><circle cx="100" cy="100" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -248,7 +248,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 148 148"'
-               .'><circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" /></svg>';
+               .'><circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -281,7 +281,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="852 602 148 148"'
-               .'><circle cx="1000" cy="750" r="3" vector-effect="non-scaling-stroke" /></svg>';
+               .'><circle cx="1000" cy="750" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -317,7 +317,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
                 . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100"'
-               .'><circle cx="50" cy="50" r="3" vector-effect="non-scaling-stroke" /></svg>';
+               .'><circle cx="50" cy="50" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -363,8 +363,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         $job->handle();
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
-        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
-        $this->assertEquals(null, $content);
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testFileLockedError()
@@ -378,8 +377,7 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         Bus::assertDispatched(GenerateVideoAnnotationPatch::class);
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
-        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
-        $this->assertEquals(null, $content);
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     protected function getFrameMock($times = 1)
