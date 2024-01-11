@@ -44,8 +44,8 @@ class SortAnnotationsByOutliersControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertExactJson([
                 $l3->annotation_id,
-                $l1->annotation_id,
                 $l2->annotation_id,
+                $l1->annotation_id,
             ]);
 
         $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$l4->label_id}")
@@ -106,8 +106,8 @@ class SortAnnotationsByOutliersControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertExactJson([
                 $l3->annotation_id,
-                $l1->annotation_id,
                 $l2->annotation_id,
+                $l1->annotation_id,
             ]);
 
         $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$l4->label_id}")

@@ -33,6 +33,10 @@ $router->group([
         'uses' => 'Labels\VideoAnnotationsController@index',
     ]);
 
+    $router->get('projects/{id}/annotations/sort/outliers/{id2}', [
+        'uses' => 'Projects\SortAnnotationsByOutliersController@index',
+    ]);
+
     $router->get('projects/{id}/image-annotations/filter/label/{id2}', [
         'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
     ]);
