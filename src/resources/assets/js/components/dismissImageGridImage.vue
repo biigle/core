@@ -3,14 +3,11 @@
         <div v-if="selectable" class="image-icon">
             <i class="fas" :class="iconClass"></i>
         </div>
-        <div class="overlay svg">
-            <img v-if="this.svg === null" :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
-            <div v-else @click="toggleSelect">
-                <img :src="srcUrl" @error="showEmptyImage">
-                <span v-html="this.svg" class="stroke" :style="this.getSVGStyle(true)"></span>
-                <span v-if="this.isPoint" v-html="this.svg" class="stroke fill" :style="this.getSVGStyle(false)"></span>
-                <span v-else v-html="this.svg" class="stroke" :style="this.getSVGStyle(false)"></span>
-            </div>
+        <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
+        <div v-if="this.svg !== null" class="overlay svg">
+            <span v-html="this.svg" class="stroke" :style="this.getSVGStyle(true)"></span>
+            <span v-if="this.isPoint" v-html="this.svg" class="stroke fill" :style="this.getSVGStyle(false)"></span>
+            <span v-else v-html="this.svg" class="stroke" :style="this.getSVGStyle(false)"></span>
         </div>
         <div v-if="showAnnotationLink" class="image-buttons">
             <a :href="showAnnotationLink" target="_blank" class="image-button"
