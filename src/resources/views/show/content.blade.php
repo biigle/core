@@ -34,7 +34,7 @@
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
-    <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches">
+    <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
         <sorting-tab
             v-on:change-direction="updateSortDirection"
             v-on:change-key="updateSortKey"
