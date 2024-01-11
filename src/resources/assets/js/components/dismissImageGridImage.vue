@@ -82,7 +82,7 @@ export default {
         },
         getSVGStyle(isOutline) {
             return isOutline ? '--color: white; --width: 5px;'
-                : '--color: #' + this.image.label_color + '; --width: 3px;';
+                : `--color: #${this.image.label_color}; --width: 3px;`;
         }
     },
     created() {
