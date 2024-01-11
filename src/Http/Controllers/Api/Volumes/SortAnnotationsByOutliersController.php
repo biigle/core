@@ -32,11 +32,11 @@ class SortAnnotationsByOutliersController extends Controller
         if ($volume->isVideoVolume()) {
             $query = VideoAnnotationLabelFeatureVector::where('volume_id', $vid)
                 ->where('label_id', $lid)
-                ->orderByRaw('vector <=> (SELECT avg(vector) FROM video_annotation_label_feature_vectors WHERE volume_id = ? AND label_id = ?) DESC, annotation_id ASC', [$vid, $lid]);
+                ->orderByRaw('vector <=> (SELECT avg(vector) FROM video_annotation_label_feature_vectors WHERE volume_id = ? AND label_id = ?) DESC, annotation_id DESC', [$vid, $lid]);
         } else {
             $query = ImageAnnotationLabelFeatureVector::where('volume_id', $vid)
                 ->where('label_id', $lid)
-                ->orderByRaw('vector <=> (SELECT avg(vector) FROM image_annotation_label_feature_vectors WHERE volume_id = ? AND label_id = ?) DESC, annotation_id ASC', [$vid, $lid]);
+                ->orderByRaw('vector <=> (SELECT avg(vector) FROM image_annotation_label_feature_vectors WHERE volume_id = ? AND label_id = ?) DESC, annotation_id DESC', [$vid, $lid]);
         }
 
         return $query->pluck('annotation_id')

@@ -31,6 +31,9 @@ export default {
         performSave(payload) {
             return VolumesApi.save({id: this.volumeId}, payload);
         },
+        querySortByOutlier(labelId) {
+            return VolumesApi.sortAnnotationsByOutlier({id: this.volumeId, label_id: labelId});
+        },
     },
     created() {
         this.volumeId = biigle.$require('largo.volumeId');

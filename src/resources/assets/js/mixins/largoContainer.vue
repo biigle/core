@@ -2,7 +2,6 @@
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import SortingTab from '../components/sortingTab';
-import VolumesApi from '../api/volumes';
 import {Echo} from '../import';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
@@ -43,7 +42,7 @@ export default {
             // The second level key is the sorting key. The cached value is an array
             // of annotation IDs sorted in ascending order.
             sortingSequenceCache: {},
-            sortingDirection: SORT_DIRECTION.ASCENDING,
+            sortingDirection: SORT_DIRECTION.DESCENDING,
             sortingKey: SORT_KEY.ANNOTATION_ID,
         };
     },
@@ -66,13 +65,14 @@ export default {
 
             // This will always be missing for the default sorting.
             const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
+            // TODO Handle mix of image and video annotations.
             if (sequence) {
                 const map = {};
                 sequence.forEach((id, idx) => map[id] = idx);
                 annotations.sort((a, b) => map[a.id] - map[b.id]);
             }
 
-            if (this.sortingDirection === SORT_DIRECTION.DESCENDING) {
+            if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
                 return annotations.reverse();
             }
 
@@ -126,7 +126,7 @@ export default {
             return this.forceChange ? 'btn-danger' : 'btn-success';
         },
         sortingIsActive() {
-            return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.ASCENDING);
+            return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.DESCENDING);
         },
     },
     methods: {
@@ -364,10 +364,8 @@ export default {
         fetchSortingSequence(key, labelId) {
             let promise;
             if (key === SORT_KEY.OUTLIER) {
-                promise = VolumesApi.sortAnnotationsByOutlier({
-                    id: this.volumeId,
-                    label_id: labelId,
-                }).then(response => response.body);
+                promise = this.querySortByOutlier(labelId)
+                    .then(response => response.body);
             } else {
                 promise = Vue.Promise.resolve([]);
             }

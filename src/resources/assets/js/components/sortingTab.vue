@@ -5,20 +5,20 @@
                 <button
                     type="button"
                     class="btn btn-default"
-                    title="Sort ascending"
-                    :class="{active: sortedAscending}"
-                    @click="sortAscending"
-                        >
-                        <span class="fa fa-sort-amount-up"></span>
-                    </button>
-                <button
-                    type="button"
-                    class="btn btn-default"
                     title="Sort descending"
                     :class="{active: sortedDescending}"
                     @click="sortDescending"
                         >
                         <span class="fa fa-sort-amount-down"></span>
+                    </button>
+                <button
+                    type="button"
+                    class="btn btn-default"
+                    title="Sort ascending"
+                    :class="{active: sortedAscending}"
+                    @click="sortAscending"
+                        >
+                        <span class="fa fa-sort-amount-up"></span>
                     </button>
             </div>
             <div class="btn-group pull-right" role="group">
@@ -36,7 +36,7 @@
         <div class="list-group sorter-list-group">
             <button
                 class="list-group-item"
-                title="Sort by annotation ID (lower is older)"
+                title="Sort by annotation ID (higher is newer)"
                 :class="{active: sortingByAnnotationId}"
                 @click="sortByAnnotationId"
                 >
@@ -44,7 +44,7 @@
             </button>
             <button
                 class="list-group-item"
-                title="Sort by outliers (lower is more dissimilar)"
+                title="Sort by outliers (higher is more dissimilar)"
                 :class="{active: sortingByOutlier}"
                 @click="sortByOutlier"
                 >
@@ -69,7 +69,7 @@ export const SORT_KEY = {
 export default {
     data() {
         return {
-            sortDirection: SORT_DIRECTION.ASCENDING,
+            sortDirection: SORT_DIRECTION.DESCENDING,
             sortKey: SORT_KEY.ANNOTATION_ID,
         };
     },
@@ -95,7 +95,7 @@ export default {
             this.sortDirection = SORT_DIRECTION.DESCENDING;
         },
         reset() {
-            this.sortAscending();
+            this.sortDescending();
             this.sortByAnnotationId();
         },
         sortByAnnotationId() {
