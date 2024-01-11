@@ -63,7 +63,7 @@ export default {
             return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
         },
         isPoint() {
-            return this.svg !== null ? this.svg.includes('r="3"') : false;
+            return this.svg !== null ? this.svg.includes('isPoint="true"') : false;
         },
         svgSrcUrl() {
             // Replace file extension by svg file format
