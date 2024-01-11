@@ -500,8 +500,8 @@ export default {
         emitNext() {
             this.$emit('next');
         },
-        reset() {
-            this.setPaused();
+        reset(dontSeek = false) {
+            this.setPaused(dontSeek);
             this.resetInteractionMode();
         },
     },
