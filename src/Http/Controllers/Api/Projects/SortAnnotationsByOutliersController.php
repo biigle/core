@@ -19,7 +19,7 @@ class SortAnnotationsByOutliersController extends Controller
      * @apiParam {Number} pid The project ID
      * @apiParam {Number} lid The Label ID
      * @apiPermission projectMember
-     * @apiDescription Returns a list of image/video annotation IDs with the outliers first.
+     * @apiDescription Returns a list of image/video annotation IDs with the outliers first. Image annotation IDs are prefixed with `i` (e.g. `i123`) and video annotation IDs are prefixed with `v` (e.g. `v456`).
      *
      * @param  int  $pid Project ID
      * @param int $lid Label ID

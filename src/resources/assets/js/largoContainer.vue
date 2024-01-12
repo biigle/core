@@ -32,7 +32,14 @@ export default {
             return VolumesApi.save({id: this.volumeId}, payload);
         },
         querySortByOutlier(labelId) {
-            return VolumesApi.sortAnnotationsByOutlier({id: this.volumeId, label_id: labelId});
+            return VolumesApi.sortAnnotationsByOutlier({id: this.volumeId, label_id: labelId})
+                .then(function (response) {
+                    // The sorting expects image annotation IDs prefixed with 'i' so it
+                    // can work with mixed image and video annotations.
+                    response.body = response.body.map(id => 'i' + id);
+
+                    return response;
+                });
         },
     },
     created() {

@@ -65,11 +65,17 @@ export default {
 
             // This will always be missing for the default sorting.
             const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
-            // TODO Handle mix of image and video annotations.
+
             if (sequence) {
                 const map = {};
                 sequence.forEach((id, idx) => map[id] = idx);
-                annotations.sort((a, b) => map[a.id] - map[b.id]);
+
+                // Image annotation IDs are prefixed with 'i', video annotations with
+                // 'v' to avoid duplicate IDs whe sorting both types of annotations.
+                annotations.sort((a, b) =>
+                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] -
+                    map[b.type === VIDEO_ANNOTATION ? ('v' + b.id) : ('i' + b.id)]
+                );
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
