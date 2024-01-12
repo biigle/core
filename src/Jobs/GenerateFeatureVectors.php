@@ -29,8 +29,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
-        // This results in the 224x224 expected by ExtractFeatures.py.
-        int $pointPadding = 112,
+        int $pointPadding = self::POINT_PADDING,
         int $boxPadding = 0
     ): array
     {
@@ -250,7 +249,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     /**
      * Generator to read the output CSV row by row.
      */
-    protected function readOuputCsv(string $path): \Generator
+    protected function readOutputCsv(string $path): \Generator
     {
         $file = new SplFileObject($path);
         while (!$file->eof()) {

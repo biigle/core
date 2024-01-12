@@ -28,7 +28,7 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
         }
 
         $points = $this->annotation->points[0] ?? null;
-        $targetPath = $this->getTargetPath($this->annotation);
+        $targetPath = self::getTargetPath($this->annotation);
 
         $video = $this->getVideo($path);
         $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);

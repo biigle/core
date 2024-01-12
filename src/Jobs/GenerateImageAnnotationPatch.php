@@ -25,7 +25,7 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
         // Do not get the path in the constructor because that would require fetching all
         // the images of the annotations. This would be really slow when lots of
         // annotation patchs should be generated.
-        $targetPath = $this->getTargetPath($this->annotation);
+        $targetPath = self::getTargetPath($this->annotation);
         $image = $this->getVipsImage($path);
 
         $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
