@@ -501,7 +501,7 @@ export default {
             this.$emit('next');
         },
         reset() {
-            this.setPaused();
+            this.setPaused(true);
             this.resetInteractionMode();
         },
     },
