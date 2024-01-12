@@ -581,7 +581,7 @@ export default {
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
-            this.$refs.videoScreen.reset(true);
+            this.$refs.videoScreen.reset();
         },
         initVideoIds(ids) {
             // Look for a sequence of video IDs in local storage. This sequence is

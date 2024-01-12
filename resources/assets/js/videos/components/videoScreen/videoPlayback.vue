@@ -118,7 +118,7 @@ export default {
                 this.startRenderLoop();
             }
         },
-        setPaused(dontSeek) {
+        setPaused(dontSeek = false) {
             this.playing = false;
             this.stopRenderLoop();
             // Force render the video frame that belongs to currentTime. This is a
