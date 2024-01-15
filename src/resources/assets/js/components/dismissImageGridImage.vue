@@ -19,6 +19,12 @@
 </template>
 
 <style scoped>
+.overlay ::v-deep svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+ }
 .stroke ::v-deep svg * {
     stroke: var(--color);
     stroke-width: var(--width);
