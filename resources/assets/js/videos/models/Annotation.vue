@@ -283,14 +283,12 @@ export default Vue.extend({
                 this.points.splice(index, 1);
 
                 // Remove null (gap filler) as first/last element to prevent validation errors
-                // Multiple consecutive 'null' can occur after removing elements of linked anntations
-                // in specific order
-                while (this.frames[0] === null) {
+                if (this.frames[0] === null) {
                     this.frames.shift();
                     this.points.shift();
                 }
 
-                while (this.frames.at(-1) === null) {
+                if (this.frames.at(-1) === null) {
                     this.frames.pop();
                     this.points.pop();
                 }
