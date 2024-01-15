@@ -102,6 +102,11 @@ class LargoServiceProvider extends ServiceProvider
             return new \Biigle\Modules\Largo\Console\Commands\MigratePatchStorage;
         });
         $this->commands('command.largo.migrate-patch-storage');
+
+        $this->app->singleton('command.largo.initialize-feature-vectors', function ($app) {
+            return new \Biigle\Modules\Largo\Console\Commands\InitializeFeatureVectors;
+        });
+        $this->commands('command.largo.initialize-feature-vectors');
     }
 
     /**
@@ -116,6 +121,7 @@ class LargoServiceProvider extends ServiceProvider
             'command.largo.config',
             'command.largo.generate-missing',
             'command.largo.migrate-patch-storage',
+            'command.largo.initialize-feature-vectors',
         ];
     }
 }
