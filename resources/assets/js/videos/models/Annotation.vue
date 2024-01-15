@@ -282,15 +282,14 @@ export default Vue.extend({
                 this.frames.splice(index, 1);
                 this.points.splice(index, 1);
 
-                // Remove null (gap filler) as first/last element to prevent validation errors
-                if (this.frames[0] === null) {
-                    this.frames.shift();
-                    this.points.shift();
-                }
-
-                if (this.frames.at(-1) === null) {
-                    this.frames.pop();
-                    this.points.pop();
+                // Remove "null" elements of adjacent gaps to
+                // avoid multiple consecutive "null"s.
+                if (index === 0 && this.frames[0] === null) {
+                    this.frames.splice(0, 1);
+                    this.points.splice(0, 1);
+                } else if (this.frames[index - 1] === null) {
+                    this.frames.splice(index - 1, 1);
+                    this.points.splice(index - 1, 1);
                 }
 
                 return VideoAnnotationApi.update({id: this.id}, {
