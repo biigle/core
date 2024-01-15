@@ -26,22 +26,49 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
     public function handle()
     {
+        $skipIds = ImageAnnotationLabelFeatureVector::whereIn('annotation_id', $this->imageAnnotationIds)
+            ->distinct()
+            ->pluck('annotation_id')
+            ->toArray();
+
+        $ids = array_diff($this->imageAnnotationIds, $skipIds);
+        $models = ImageAnnotation::whereIn('id', $ids)
+            ->with('file', 'labels.label')
+            ->get()
+            ->keyBy('id');
+
+        // Chunk to avoid maximum insert parameter limit.
+        $this->getInsertData($models)->chunk(10000)->each(fn ($chunk) =>
+            ImageAnnotationLabelFeatureVector::insert($chunk->toArray())
+        );
+
+        $skipIds = VideoAnnotationLabelFeatureVector::whereIn('annotation_id', $this->videoAnnotationIds)
+            ->distinct()
+            ->pluck('annotation_id')
+            ->toArray();
+
+        $ids = array_diff($this->videoAnnotationIds, $skipIds);
+        $models = VideoAnnotation::whereIn('id', $ids)
+            ->with('file', 'labels.label')
+            ->get()
+            ->keyBy('id');
+
+        // Chunk to avoid maximum insert parameter limit.
+        $this->getInsertData($models)->chunk(10000)->each(fn ($chunk) =>
+            VideoAnnotationLabelFeatureVector::insert($chunk->toArray())
+        );
+    }
+
+    /**
+     * Get the array to insert new feature vector models into the DB.
+     */
+    public function getInsertData(Collection $models): Collection
+    {
+        $insert = collect([]);
+
         $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
 
         try {
-            $skipIds = ImageAnnotationLabelFeatureVector::whereIn('annotation_id', $this->imageAnnotationIds)
-                ->distinct()
-                ->pluck('annotation_id')
-                ->toArray();
-
-            $ids = array_diff($this->imageAnnotationIds, $skipIds);
-            $models = ImageAnnotation::whereIn('id', $ids)
-                ->with('image', 'labels.label')
-                ->get()
-                ->keyBy('id');
-
-            $insert = collect([]);
-
             foreach ($this->getFeatureVectors($models, $outputPath) as $row) {
                 $annotation = $models->get($row[0]);
                 $vector = $row[1];
@@ -51,53 +78,16 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
                         'annotation_id' => $annotation->id,
                         'label_id' => $annotationLabel->label_id,
                         'label_tree_id' => $annotationLabel->label->label_tree_id,
-                        'volume_id' => $annotation->image->volume_id,
+                        'volume_id' => $annotation->file->volume_id,
                         'vector' => $vector,
                     ]);
                 $insert = $insert->concat($i);
             }
-
-            // Chunk to avoid maximum insert parameter limit.
-            $insert->chunk(10000)->each(fn ($chunk) =>
-                ImageAnnotationLabelFeatureVector::insert($chunk->toArray())
-            );
-
-
-            $skipIds = VideoAnnotationLabelFeatureVector::whereIn('annotation_id', $this->videoAnnotationIds)
-                ->distinct()
-                ->pluck('annotation_id')
-                ->toArray();
-
-            $ids = array_diff($this->videoAnnotationIds, $skipIds);
-            $models = VideoAnnotation::whereIn('id', $ids)
-                ->with('video', 'labels.label')
-                ->get()
-                ->keyBy('id');
-
-            $insert = collect([]);
-
-            foreach ($this->getFeatureVectors($models, $outputPath) as $row) {
-                $annotation = $models->get($row[0]);
-                $vector = $row[1];
-                $i = $annotation->labels
-                    ->map(fn ($annotationLabel) => [
-                        'id' => $annotationLabel->id,
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $annotationLabel->label_id,
-                        'label_tree_id' => $annotationLabel->label->label_tree_id,
-                        'volume_id' => $annotation->video->volume_id,
-                        'vector' => $vector,
-                    ]);
-                $insert = $insert->concat($i);
-            }
-
-            // Chunk to avoid maximum insert parameter limit.
-            $insert->chunk(10000)->each(fn ($chunk) =>
-                VideoAnnotationLabelFeatureVector::insert($chunk->toArray())
-            );
         } finally {
             File::delete($outputPath);
         }
+
+        return $insert;
     }
 
     /**
