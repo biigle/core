@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Largo\Jobs;
 
 use Str;
-use \SVG\SVG;
+use SVG\SVG;
 use Exception;
 use FileCache;
 use Biigle\Shape;
@@ -13,7 +13,7 @@ use Jcupitt\Vips\Image;
 use Biigle\VideoAnnotation;
 use SVG\Nodes\Shapes\SVGLine;
 use SVG\Nodes\Shapes\SVGRect;
-use \SVG\Nodes\Shapes\SVGCircle;
+use SVG\Nodes\Shapes\SVGCircle;
 use Biigle\Contracts\Annotation;
 use SVG\Nodes\Shapes\SVGEllipse;
 use SVG\Nodes\Shapes\SVGPolygon;
