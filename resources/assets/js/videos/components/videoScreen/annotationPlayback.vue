@@ -63,6 +63,7 @@ export default {
             // a seek was performed to the exact annotation time. Hence, we  round the
             // time here to the maximum of 4 decimals, too.
             time = rtp(time);
+
             for (let i = 0, length = annotations.length; i < length; i++) {
                 // We can skip ahead and break early because of the sorting in the
                 // annotationsPreparedToRender array.
@@ -89,13 +90,13 @@ export default {
                     toCreate.push(annotation.self);
                 }
             }
+            
             if (hasRenderedFeatures) {
                 Object.values(oldRendered).forEach(function (feature) {
-                    // The annotation source uses featureChangeKeys method with featureKey as parameter.
-                    // Feature and oldFeature do not have the same key, 
-                    // which is why featureChangeKeys returns undefined in removeFeature(feature).
-                    let oldFeature = source.getFeatureById(feature.getId());
-                    source.removeFeature(oldFeature);
+                    // source.hasFeature(feature) does not work here, because it is always true
+                    if (source.getFeatures().includes(feature)) {
+                        source.removeFeature(feature);
+                    }
                     selected.remove(feature);
                 });
             } else {
@@ -109,7 +110,8 @@ export default {
                     selected.clear();
                 }
             }
-            
+
+
             let features = toCreate.map(this.createFeature);
             features.forEach(function (feature) {
                 newRendered[feature.getId()] = feature;
@@ -136,13 +138,7 @@ export default {
             source.addFeature(newFeature);
         },
         createFeature(annotation) {
-            // Use feature from annotationSource if it exists, 
-            // otherwise annotations are not updated on video after label-swap and deletion.
-            let feature = this.annotationSource.getFeatureById(annotation.id);
-
-            if (feature === null){
-                feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
-            }
+            let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
