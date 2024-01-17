@@ -35,6 +35,7 @@ export default {
             lastSelectedImage: null,
             forceChange: false,
             waitForSessionId: null,
+            showAnnotationOutlines: true,
         };
     },
     computed: {
@@ -98,6 +99,9 @@ export default {
         saveButtonClass() {
             return this.forceChange ? 'btn-danger' : 'btn-success';
         },
+        annotationOutlines(){
+            return this.showAnnotationOutlines;
+        }
     },
     methods: {
         getAnnotations(label) {
@@ -309,6 +313,12 @@ export default {
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
         },
+        enableShowingOutlines(){
+            this.showAnnotationOutlines = true;
+        },
+        disableShowingOutlines(){
+            this.showAnnotationOutlines = false;
+        },
     },
     watch: {
         annotations(annotations) {
@@ -325,6 +335,9 @@ export default {
                 this.$refs.dismissGrid.setOffset(0);
             }
         },
+        showAnnotationOutlines(show){
+            Events.$emit('show-annotation-outlines', show);
+        }
     },
     created() {
         this.user = biigle.$require('largo.user');

@@ -4,7 +4,7 @@
             <i class="fas" :class="iconClass"></i>
         </div>
         <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
-        <div v-if="this.svg !== null" class="overlay svg">
+        <div v-if="this.annotationOutlines" class="overlay svg">
             <span v-html="this.svg" class="stroke" :style="this.getSVGStyle(true)"></span>
             <span v-if="this.isPoint" v-html="this.svg" class="stroke fill" :style="this.getSVGStyle(false)"></span>
             <span v-else v-html="this.svg" class="stroke" :style="this.getSVGStyle(false)"></span>
@@ -40,7 +40,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
-import { ImageGridImage } from '../import';
+import { Events, ImageGridImage } from '../import';
 
 /**
  * A variant of the image grid image used for the dismiss step of Largo
@@ -56,6 +56,7 @@ export default {
         return {
             showAnnotationRoute: null,
             svg: null,
+            showAnnotationOutlines: true,
         };
     },
     computed: {
@@ -75,6 +76,9 @@ export default {
             // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
+        annotationOutlines(){
+           return this.svg !== null && this.showAnnotationOutlines;
+        }
     },
     methods: {
         async fetchSVG() {
@@ -91,10 +95,11 @@ export default {
             let opacity = this.selected ? 0.25 : 1;
             return isOutline ? `--color: white; --width: 5px; --opacity: ${opacity}`
                 : `--color: #${this.image.label_color}; --width: 3px; --opacity: ${opacity}`;
-        }
+        },
     },
     created() {
         this.fetchSVG();
+        Events.$on('show-annotation-outlines',(show) => {this.showAnnotationOutlines = show;});
     }
 };
 </script>
