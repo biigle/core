@@ -338,6 +338,10 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         if ($shape->id == Shape::pointId()) {
             $annotation->setAttribute('isPoint', 'true');
         }
+
+        if ($shape->id == Shape::lineId()) {
+            $annotation->setAttribute('stroke-linecap', 'round');
+        }
         
         $doc->addChild($annotation);
 
