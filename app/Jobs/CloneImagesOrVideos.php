@@ -162,18 +162,26 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     {
         ProcessNewVolumeFiles::dispatch($volume);
 
+        // Give the ProcessNewVolumeFiles job a head start so the file thumbnails are
+        // generated (mostly) before the annotation thumbnails.
+        $delay = now()->addSeconds(30);
+
         if (class_exists(ProcessAnnotatedImage::class)) {
-            $volume->images()->whereHas('annotations')->eachById(function ($image) {
-                ProcessAnnotatedImage::dispatch($image)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
-            });
+            $volume->images()->whereHas('annotations')
+                ->eachById(function ($image) use ($delay) {
+                    ProcessAnnotatedImage::dispatch($image)
+                        ->delay($delay)
+                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                });
         }
 
         if (class_exists(ProcessAnnotatedVideo::class)) {
-            $volume->videos()->whereHas('annotations')->eachById(function ($video) {
-                ProcessAnnotatedVideo::dispatch($video)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
-            });
+            $volume->videos()
+                ->whereHas('annotations')->eachById(function ($video) use ($delay) {
+                    ProcessAnnotatedVideo::dispatch($video)
+                        ->delay($delay)
+                        ->onQueue(config('largo.generate_annotation_patch_queue'));
+                });
         }
     }
 
