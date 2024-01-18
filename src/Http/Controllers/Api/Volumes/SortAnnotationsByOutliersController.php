@@ -43,6 +43,7 @@ class SortAnnotationsByOutliersController extends Controller
             // Use distinct/unique *after* fetchig from the DB because otherwise the
             // vector would need to be selected, too (order by expressions must appear in
             // the select list). But we don't want to get the huge vectors.
-            ->unique();
+            ->unique()
+            ->values();
     }
 }
