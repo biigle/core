@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Largo\Observers;
 
 use Biigle\Annotation;
-use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
 
 class VideoAnnotationObserver extends AnnotationObserver
@@ -11,9 +11,9 @@ class VideoAnnotationObserver extends AnnotationObserver
     /**
      * {@inheritdoc}
      */
-    protected function getSavedDispatch(Annotation $annotation)
+    protected function getSavedDispatch(Annotation $a)
     {
-        return GenerateVideoAnnotationPatch::dispatch($annotation);
+        return ProcessAnnotatedVideo::dispatch($a->video, only: [$a->id]);
     }
 
     /**

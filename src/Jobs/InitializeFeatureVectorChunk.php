@@ -108,7 +108,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
         try {
             $input = $models->mapWithKeys(function (Annotation $a) use ($disk, $rect, &$paths) {
-                $srcPath = GenerateAnnotationPatch::getTargetPath($a);
+                $srcPath = ProcessAnnotatedFile::getTargetPath($a);
                 $tmpPath = tempnam(sys_get_temp_dir(), '');
 
                 $thumbnail = $disk->get($srcPath);

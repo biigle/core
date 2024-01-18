@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -20,7 +20,7 @@ use Mockery;
 use Storage;
 use TestCase;
 
-class GenerateVideoAnnotationPatchTest extends TestCase
+class ProcessAnnotatedVideoTest extends TestCase
 {
     public function setUp(): void
     {
@@ -37,7 +37,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [0, 10],
             'shape_id' => Shape::wholeFrameId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('writeToBuffer')
@@ -61,7 +61,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [0, 10],
             'shape_id' => Shape::wholeFrameId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation, 'test2');
+        $job = new ProcessAnnotatedVideoStub($annotation->video, targetDisk: 'test2');
         $job->mock = $video;
 
         $video->shouldReceive('writeToBuffer')
@@ -90,7 +90,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -118,7 +118,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -149,7 +149,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::polygonId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -174,7 +174,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -200,7 +200,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -226,7 +226,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -255,7 +255,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -281,7 +281,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -299,7 +299,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         Log::shouldReceive('warning')->once();
 
         $annotation = VideoAnnotationTest::create();
-        $job = new GenerateVideoAnnotationPatch($annotation);
+        $job = new ProcessAnnotatedVideo($annotation->video);
         $job->handle();
     }
 
@@ -309,9 +309,9 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
 
         $annotation = VideoAnnotationTest::create();
-        $job = new GenerateVideoAnnotationPatch($annotation);
+        $job = new ProcessAnnotatedVideo($annotation->video);
         $job->handle();
-        Bus::assertDispatched(GenerateVideoAnnotationPatch::class);
+        Bus::assertDispatched(ProcessAnnotatedVideo::class);
     }
 
     public function testGenerateFeatureVectorNew()
@@ -328,7 +328,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         $annotationLabel = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($annotation->video, 'abc');
@@ -366,7 +366,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         $annotationLabel2 = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($annotation->video, 'abc');
@@ -411,7 +411,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
             'vector' => range(0, 383),
         ]);
 
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
         $job->handleFile($annotation->video, 'abc');
@@ -441,7 +441,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
         $annotationLabel = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $videoMock;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($video, 'abc');
@@ -468,7 +468,7 @@ class GenerateVideoAnnotationPatchTest extends TestCase
     }
 }
 
-class GenerateVideoAnnotationPatchStub extends GenerateVideoAnnotationPatch
+class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 {
     public $times = [];
     public $input;

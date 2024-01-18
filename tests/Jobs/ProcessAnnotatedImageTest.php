@@ -4,7 +4,7 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
-use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -18,7 +18,7 @@ use Mockery;
 use Storage;
 use TestCase;
 
-class GenerateImageAnnotationPatchTest extends TestCase
+class ProcessAnnotatedImageTest extends TestCase
 {
     public function setUp(): void
     {
@@ -31,7 +31,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create();
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -53,7 +53,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Storage::fake('test2');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create();
-        $job = new GenerateImageAnnotationPatchStub($annotation, 'test2');
+        $job = new ProcessAnnotatedImageStub($annotation->image, targetDisk: 'test2');
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -79,7 +79,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [100, 100],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -103,7 +103,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [300.4, 300.4, 200],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -126,7 +126,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
             'shape_id' => Shape::rectangleId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -147,7 +147,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [0, 0],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -168,7 +168,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [1000, 750],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -192,7 +192,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [50, 50],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -213,7 +213,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [60, 60, 10],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -236,7 +236,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [10, 10, 15],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -259,7 +259,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'points' => [15, 15, 15],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -277,7 +277,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         Log::shouldReceive('warning')->once();
 
         $annotation = ImageAnnotationTest::create();
-        $job = new GenerateImageAnnotationPatch($annotation);
+        $job = new ProcessAnnotatedImage($annotation->image);
         $job->handle();
     }
 
@@ -287,9 +287,9 @@ class GenerateImageAnnotationPatchTest extends TestCase
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
 
         $annotation = ImageAnnotationTest::create();
-        $job = new GenerateImageAnnotationPatch($annotation);
+        $job = new ProcessAnnotatedImage($annotation->image);
         $job->handle();
-        Bus::assertDispatched(GenerateImageAnnotationPatch::class);
+        Bus::assertDispatched(ProcessAnnotatedImage::class);
     }
 
     public function testGenerateFeatureVectorNew()
@@ -305,7 +305,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $annotationLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($annotation->image, 'abc');
@@ -342,7 +342,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $annotationLabel2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($annotation->image, 'abc');
@@ -386,7 +386,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
             'vector' => range(0, 383),
         ]);
 
-        $job = new GenerateImageAnnotationPatchStub($annotation);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
         $job->handleFile($annotation->image, 'abc');
@@ -410,7 +410,7 @@ class GenerateImageAnnotationPatchTest extends TestCase
     }
 }
 
-class GenerateImageAnnotationPatchStub extends GenerateImageAnnotationPatch
+class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
 {
     public $input;
     public $outputPath;

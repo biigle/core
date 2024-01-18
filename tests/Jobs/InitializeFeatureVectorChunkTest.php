@@ -4,12 +4,12 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\ImageAnnotationLabel;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
-use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 use Biigle\Modules\Largo\Jobs\InitializeFeatureVectorChunk;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedFile;
 use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotationLabel;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use TestCase;
 
 class InitializeFeatureVectorChunkTest extends TestCase
@@ -18,7 +18,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $al = ImageAnnotationLabel::factory()->create();
-        $disk->put(GenerateAnnotationPatch::getTargetPath($al->annotation), 'abc');
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
@@ -47,7 +47,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $al = VideoAnnotationLabel::factory()->create();
-        $disk->put(GenerateAnnotationPatch::getTargetPath($al->annotation), 'abc');
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([], [$al->annotation_id]);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
@@ -66,7 +66,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $al = ImageAnnotationLabel::factory()->create();
-        $disk->put(GenerateAnnotationPatch::getTargetPath($al->annotation), 'abc');
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $al->delete();
@@ -107,7 +107,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al2 = ImageAnnotationLabel::factory()->create([
             'annotation_id' => $al->annotation_id,
         ]);
-        $disk->put(GenerateAnnotationPatch::getTargetPath($al->annotation), 'abc');
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
