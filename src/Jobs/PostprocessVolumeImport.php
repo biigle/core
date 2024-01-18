@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Sync\Jobs;
 
-use Biigle\ImageAnnotation;
+use Biigle\Image;
 use Biigle\Jobs\Job;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
-use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
-use Biigle\VideoAnnotation;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
+use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -47,24 +47,22 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
             ProcessNewVolumeFiles::dispatch($volume);
         });
 
-        if (class_exists(GenerateImageAnnotationPatch::class)) {
-            ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
-                ->whereIn('images.volume_id', $this->ids)
-                ->select('image_annotations.id')
-                ->eachById(function ($annotation) {
-                    GenerateImageAnnotationPatch::dispatch($annotation)
+        if (class_exists(ProcessAnnotatedImage::class)) {
+            Image::whereIn('images.volume_id', $this->ids)
+                ->whereHas('annotations')
+                ->eachById(function ($image) {
+                    ProcessAnnotatedImage::dispatch($image)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000, 'image_annotations.id', 'id');
+                }, 1000);
         }
 
-        if (class_exists(GenerateVideoAnnotationPatch::class)) {
-            VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
-                ->whereIn('videos.volume_id', $this->ids)
-                ->select('video_annotations.id')
-                ->eachById(function ($annotation) {
-                    GenerateVideoAnnotationPatch::dispatch($annotation)
+        if (class_exists(ProcessAnnotatedVideo::class)) {
+            Video::whereIn('videos.volume_id', $this->ids)
+                ->whereHas('annotations')
+                ->eachById(function ($video) {
+                    ProcessAnnotatedVideo::dispatch($video)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000, 'video_annotations.id', 'id');
+                }, 1000);
         }
     }
 }
