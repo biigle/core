@@ -454,6 +454,120 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertEquals([0, 0, 1000, 750], $box);
     }
 
+    public function testHandlePatchOnly()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video, skipFeatureVectors: true);
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handleFile($annotation->video, 'abc');
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation->id}.jpg");
+        $this->assertEquals(0, VideoAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleFeatureVectorOnly()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video, skipPatches: true);
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handleFile($annotation->video, 'abc');
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
+        $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleMultipleAnnotations()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(2);
+        $annotation1 = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
+        $annotation2 = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+            'video_id' => $annotation1->video_id,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
+
+        $job = new ProcessAnnotatedVideoStub($annotation1->video);
+        $job->output = [
+            [$annotation1->id, '"'.json_encode(range(1, 384)).'"'],
+            [$annotation2->id, '"'.json_encode(range(1, 384)).'"'],
+        ];
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->twice()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->twice()->andReturn('abc123');
+        $job->handleFile($annotation1->video, 'abc');
+        $prefix = fragment_uuid_path($annotation1->video->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
+        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation2->id}.jpg");
+        $this->assertEquals(2, VideoAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleOnlyAnnotations()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(1);
+        $annotation1 = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
+        $annotation2 = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+            'video_id' => $annotation1->video_id,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
+
+        $job = new ProcessAnnotatedVideoStub($annotation1->video, only: [$annotation1->id]);
+        $job->output = [[$annotation1->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handleFile($annotation1->video, 'abc');
+        $prefix = fragment_uuid_path($annotation1->video->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
+        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation2->id}.jpg");
+        $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();

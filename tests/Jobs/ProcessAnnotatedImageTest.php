@@ -397,6 +397,112 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
     }
 
+    public function testHandlePatchOnly()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock();
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape_id' => Shape::pointId(),
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedImageStub($annotation->image, skipFeatureVectors: true);
+        $job->mock = $image;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handleFile($annotation->image, 'abc');
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/{$annotation->id}.jpg");
+        $this->assertEquals(0, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleFeatureVectorOnly()
+    {
+        Storage::fake('test');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape_id' => Shape::pointId(),
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedImageStub($annotation->image, skipPatches: true);
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handleFile($annotation->image, 'abc');
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.jpg");
+        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleMultipleAnnotations()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(2);
+        $annotation1 = ImageAnnotationTest::create([
+            'points' => [100, 100],
+            'shape_id' => Shape::pointId(),
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
+        $annotation2 = ImageAnnotationTest::create([
+            'points' => [120, 120],
+            'shape_id' => Shape::pointId(),
+            'image_id' => $annotation1->image_id,
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
+
+        $job = new ProcessAnnotatedImageStub($annotation1->image);
+        $job->output = [
+            [$annotation1->id, '"'.json_encode(range(1, 384)).'"'],
+            [$annotation2->id, '"'.json_encode(range(1, 384)).'"'],
+        ];
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->twice()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->twice()->andReturn('abc123');
+        $job->handleFile($annotation1->image, 'abc');
+        $prefix = fragment_uuid_path($annotation1->image->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/{$annotation1->id}.jpg");
+        Storage::disk('test')->assertExists("{$prefix}/{$annotation2->id}.jpg");
+        $this->assertEquals(2, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleOnlyAnnotations()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(1);
+        $annotation1 = ImageAnnotationTest::create([
+            'points' => [100, 100],
+            'shape_id' => Shape::pointId(),
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
+        $annotation2 = ImageAnnotationTest::create([
+            'points' => [120, 120],
+            'shape_id' => Shape::pointId(),
+            'image_id' => $annotation1->image_id,
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
+
+        $job = new ProcessAnnotatedImageStub($annotation1->image, only: [$annotation1->id]);
+        $job->output = [[$annotation1->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handleFile($annotation1->image, 'abc');
+        $prefix = fragment_uuid_path($annotation1->image->uuid);
+        Storage::disk('test')->assertExists("{$prefix}/{$annotation1->id}.jpg");
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation2->id}.jpg");
+        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+    }
+
     protected function getImageMock($times = 1)
     {
         $image = Mockery::mock();

@@ -45,8 +45,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @param VolumeFile $file The file to process.
      * @param array $only If filled with `\Biigle\Annotation` IDs belonging to the
      * file, only the annotations will be processed.
-     * @param bool|boolean $generatePatches Enable generation of annotation patches.
-     * @param bool|boolean $generateFeatureVectors Enable generation of annotation
+     * @param bool|boolean $skipPatches Disable generation of annotation patches.
+     * @param bool|boolean $skipFeatureVectors Disable generation of annotation
      * feature vectors.
      * @param ?string $targetDisk The storage disk to store annotation patches to (
      * default is the configured `largo.patch_storage_disk`).
@@ -54,17 +54,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     public function __construct(
         public VolumeFile $file,
         public array $only = [],
-        public bool $generatePatches = true,
-        public bool $generateFeatureVectors = true,
+        public bool $skipPatches = false,
+        public bool $skipFeatureVectors = false,
         public ?string $targetDisk = null
     )
     {
         $this->targetDisk = $targetDisk ?: config('largo.patch_storage_disk');
-        // TODO: Validate that $only annotations belong to the file.
-        // TODO: Implement/test flags to generate patches, FV
-        // TODO: Test multiple annotations
-        // TODO: Test $only annotations
-        // TODO: Implement chunking of annotations, as a file can have a lot.
     }
 
     /**
@@ -106,8 +101,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             static::dispatch(
                     $this->file,
                     $this->only,
-                    $this->generatePatches,
-                    $this->generateFeatureVectors,
+                    $this->skipPatches,
+                    $this->skipFeatureVectors,
                     $this->targetDisk
                 )
                 ->onConnection($this->connection)

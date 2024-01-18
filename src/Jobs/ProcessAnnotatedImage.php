@@ -23,16 +23,31 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
      */
     public function handleFile(VolumeFile $file, $path)
     {
-        $annotations = ImageAnnotation::where('image_id', $file->id)->get();
+        if (!$this->skipPatches) {
+            $image = $this->getVipsImage($path);
+        } else {
+            $image = null;
+        }
 
-        $image = $this->getVipsImage($path);
-        $annotations->each(function ($a) use ($image) {
-            $buffer = $this->getAnnotationPatch($image, $a->getPoints(), $a->getShape());
-            $targetPath = self::getTargetPath($a);
-            Storage::disk($this->targetDisk)->put($targetPath, $buffer);
-        });
+        ImageAnnotation::where('image_id', $file->id)
+            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
+            ->chunkById(1000, function ($annotations) use ($image, $path) {
+                if (!$this->skipPatches) {
+                    $annotations->each(function ($a) use ($image) {
+                        $buffer = $this->getAnnotationPatch(
+                            $image,
+                            $a->getPoints(),
+                            $a->getShape()
+                        );
+                        $targetPath = self::getTargetPath($a);
+                        Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+                    });
+                }
 
-        $this->generateFeatureVectors($annotations, $path);
+                if (!$this->skipFeatureVectors) {
+                    $this->generateFeatureVectors($annotations, $path);
+                }
+            });
     }
 
     /**
@@ -52,6 +67,7 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
      */
     protected function getVipsImage($path)
     {
-        return VipsImage::newFromFile($path, ['access' => 'sequential']);
+        // Must not use sequential access because multiple patches could be extracted.
+        return VipsImage::newFromFile($path);
     }
 }

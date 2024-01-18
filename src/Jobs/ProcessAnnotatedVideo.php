@@ -9,6 +9,7 @@ use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use VipsImage;
@@ -23,34 +24,47 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      */
     public function handleFile(VolumeFile $file, $path)
     {
-        $annotations = VideoAnnotation::where('video_id', $file->id)->get();
-
         $video = $this->getVideo($path);
 
+        VideoAnnotation::where('video_id', $file->id)
+            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
+            ->chunkById(1000, fn ($a) => $this->processAnnotationChunk($a, $video));
+    }
+
+    /**
+     * Process a chunk of annotations of this job's file.
+     */
+    protected function processAnnotationChunk(Collection $annotations, Video $video): void
+    {
         $frameFiles = [];
 
         try {
-            $annotations->each(function ($a) use ($video, &$frameFiles) {
+            foreach ($annotations as $a) {
                 $points = $a->points[0] ?? null;
                 $frame = $a->frames[0];
                 $videoFrame = $this->getVideoFrame($video, $frame);
-                $buffer = $this->getAnnotationPatch($videoFrame, $points, $a->shape);
-                $targetPath = self::getTargetPath($a);
-                Storage::disk($this->targetDisk)->put($targetPath, $buffer);
 
-                if (!array_key_exists($frame, $frameFiles)) {
+                if (!$this->skipPatches) {
+                    $buffer = $this->getAnnotationPatch($videoFrame, $points, $a->shape);
+                    $targetPath = self::getTargetPath($a);
+                    Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+                }
+
+                if (!$this->skipFeatureVectors && !array_key_exists($frame, $frameFiles)) {
                     $framePath = tempnam(sys_get_temp_dir(), 'largo_video_frame').'.png';
                     $videoFrame->writeToFile($framePath);
                     $frameFiles[$frame] = $framePath;
                 }
-            });
+            }
 
-            $annotationFrames = $annotations->mapWithKeys(
-                    fn ($a) => [$a->id => $frameFiles[$a->frames[0]]]
-                )
-                ->toArray();
+            if (!$this->skipFeatureVectors) {
+                $annotationFrames = $annotations->mapWithKeys(
+                        fn ($a) => [$a->id => $frameFiles[$a->frames[0]]]
+                    )
+                    ->toArray();
 
-            $this->generateFeatureVectors($annotations, $annotationFrames);
+                $this->generateFeatureVectors($annotations, $annotationFrames);
+            }
         } finally {
             File::delete(array_values($frameFiles));
         }
