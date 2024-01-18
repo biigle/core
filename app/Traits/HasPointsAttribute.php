@@ -15,11 +15,6 @@ trait HasPointsAttribute
      */
     public function validatePoints(array $points)
     {
-        // Gaps are represented as empty arrays
-        if (empty($points)) {
-            return;
-        }
-
         // check if all elements are integer
         $valid = array_reduce($points, fn ($carry, $point) => $carry && (is_float($point) || is_int($point)), true);
 
