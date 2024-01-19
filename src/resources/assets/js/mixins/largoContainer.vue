@@ -316,11 +316,8 @@ export default {
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
         },
-        enableShowingOutlines(){
-            this.showAnnotationOutlines = true;
-        },
-        disableShowingOutlines(){
-            this.showAnnotationOutlines = false;
+        showingOutlines(show){
+            this.showAnnotationOutlines = show;
         },
     },
     watch: {
