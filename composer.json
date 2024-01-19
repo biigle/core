@@ -36,7 +36,6 @@
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
         "php-ffmpeg/php-ffmpeg": "^1.0",
-        "proj4php/proj4php": "^2.0",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.0",
         "ramsey/uuid-doctrine": "^1.8"
