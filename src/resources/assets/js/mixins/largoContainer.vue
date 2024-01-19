@@ -101,7 +101,10 @@ export default {
         },
         annotationOutlines(){
             return this.showAnnotationOutlines;
-        }
+        },
+        disableShowingOutlines(){
+            return this.loading || !this.selectedLabel;
+        },
     },
     methods: {
         getAnnotations(label) {

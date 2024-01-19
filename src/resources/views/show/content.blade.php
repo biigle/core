@@ -17,7 +17,7 @@
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div v-cloak class="largo-tab__button">
             <div class="largo-tab__button">
-                <power-toggle :disabled="loading" :active="showAnnotationOutlines" v-on:on="enableShowingOutlines" v-on:off="disableShowingOutlines">Show annotation outlines</power-toggle>
+                <power-toggle :disabled="disableShowingOutlines" :active="showAnnotationOutlines" v-on:on="enableShowingOutlines" v-on:off="disableShowingOutlines">Show annotation outlines</power-toggle>
             </div>
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the re-labelling step" v-on:click="goToRelabel">Continue</button>
             <div v-cloak v-else class="btn-group btn-group-justified">
