@@ -43,7 +43,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * Create a new job instance.
      *
      * @param VolumeFile $file The file to process.
-     * @param array $only If filled with `\Biigle\Annotation` IDs belonging to the
+     * @param array $only If filled with annotation IDs belonging to the
      * file, only the annotations will be processed.
      * @param bool|boolean $skipPatches Disable generation of annotation patches.
      * @param bool|boolean $skipFeatureVectors Disable generation of annotation
@@ -194,8 +194,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             return;
         }
 
-        $annotations = $annotations->load('labels.label')->keyBy('id');
-
         $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
         $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
 
@@ -216,24 +214,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
             File::put($inputPath, json_encode($input));
             $this->python($inputPath, $outputPath);
-
-            foreach ($this->readOutputCsv($outputPath) as $row) {
-                $annotation = $annotations->get($row[0]);
-
-                foreach ($annotation->labels as $al) {
-                    $this->updateOrCreateFeatureVector(
-                        ['id' => $al->id],
-                        [
-                            'annotation_id' => $annotation->id,
-                            'label_id' => $al->label_id,
-                            'label_tree_id' => $al->label->label_tree_id,
-                            'volume_id' => $this->file->volume_id,
-                            'vector' => $row[1],
-                        ]
-                    );
-                }
-            }
-
+            $output = $this->readOutputCsv($outputPath);
+            $this->updateOrCreateFeatureVectors($annotations, $output);
         } finally {
             File::delete($outputPath);
             File::delete($inputPath);
@@ -241,7 +223,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     }
 
     /**
-     * Updates or creates a new feature vector model for the annotation of this job.
+     * Create the feature vectors based on the Python script output.
      */
-    abstract protected function updateOrCreateFeatureVector(array $id, array $attributes): void;
+    abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
 }

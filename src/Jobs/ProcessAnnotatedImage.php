@@ -9,6 +9,7 @@ use Biigle\VolumeFile;
 use Exception;
 use FileCache;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use VipsImage;
@@ -29,7 +30,7 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             $image = null;
         }
 
-        ImageAnnotation::where('image_id', $file->id)
+        $this->getAnnotationQuery($file)
             ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
             ->chunkById(1000, function ($annotations) use ($image, $path) {
                 if (!$this->skipPatches) {
@@ -51,11 +52,27 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     }
 
     /**
-     * Create a new feature vector model for the annotation of this job.
+     * Create the feature vectors based on the Python script output.
      */
-    protected function updateOrCreateFeatureVector(array $id, array $attributes): void
+    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
     {
-        ImageAnnotationLabelFeatureVector::updateOrCreate($id, $attributes);
+        $annotations = $annotations->load('labels.label')->keyBy('id');
+        foreach ($output as $row) {
+            $annotation = $annotations->get($row[0]);
+
+            foreach ($annotation->labels as $al) {
+                ImageAnnotationLabelFeatureVector::updateOrCreate(
+                    ['id' => $al->id],
+                    [
+                        'annotation_id' => $annotation->id,
+                        'label_id' => $al->label_id,
+                        'label_tree_id' => $al->label->label_tree_id,
+                        'volume_id' => $this->file->volume_id,
+                        'vector' => $row[1],
+                    ]
+                );
+            }
+        }
     }
 
     /**
@@ -69,5 +86,16 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     {
         // Must not use sequential access because multiple patches could be extracted.
         return VipsImage::newFromFile($path);
+    }
+
+    /**
+     * Get the query builder for the annotations.
+     *
+     * This can be used to extend this class and process different models than image
+     * annotations.
+     */
+    protected function getAnnotationQuery(VolumeFile $file): Builder
+    {
+        return ImageAnnotation::where('image_id', $file->id);
     }
 }
