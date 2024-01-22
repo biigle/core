@@ -99,11 +99,7 @@ export default {
     },
     created() {
         this.fetchSVG();
-        Events.$on('show-annotation-outlines',(show) => {this.showAnnotationOutlines = show});
-    },
-    mounted() {
-        // Emit when component mounted to be able to listen to 'show-annotation-outlines' event
-        Events.$emit('dismiss-image-grid-image-mounted');
+        Events.$on('show-annotation-outlines',(show) => {this.showAnnotationOutlines = show;});
     }
 };
 </script>

@@ -104,7 +104,7 @@ export default {
         },
         disableShowingOutlines(){
             return this.loading || !this.selectedLabel;
-        }
+        },
     },
     methods: {
         getAnnotations(label) {
@@ -319,9 +319,6 @@ export default {
         showingOutlines(show){
             this.showAnnotationOutlines = show;
         },
-        emitShowOutlines(show){
-            Events.$emit('show-annotation-outlines', show);
-        }
     },
     watch: {
         annotations(annotations) {
@@ -339,7 +336,7 @@ export default {
             }
         },
         showAnnotationOutlines(show){
-            this.emitShowOutlines(show)
+            Events.$emit('show-annotation-outlines', show);
         }
     },
     created() {
@@ -355,8 +352,6 @@ export default {
         });
 
         this.initializeEcho();
-
-        Events.$on('dismiss-image-grid-image-mounted',() => this.emitShowOutlines(this.showAnnotationOutlines));
     },
 };
 </script>
