@@ -38,6 +38,17 @@ export default {
             showAnnotationOutlines: true,
         };
     },
+    provide() {
+        const appData = {}
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "showAnnotationOutlines", {
+            get: () => this.showAnnotationOutlines,
+        })
+
+        return { 'outlines': appData };
+    },
     computed: {
         isInDismissStep() {
             return this.step === 0;
@@ -335,9 +346,6 @@ export default {
                 this.$refs.dismissGrid.setOffset(0);
             }
         },
-        showAnnotationOutlines(show){
-            Events.$emit('show-annotation-outlines', show);
-        }
     },
     created() {
         this.user = biigle.$require('largo.user');
