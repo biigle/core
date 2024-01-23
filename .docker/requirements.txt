@@ -1,6 +1,6 @@
 # Torch is included in the base Docker image.
-#torch==2.0.*
-#torchvision==0.15.*
+#torch==2.1.*
+#torchvision==0.16.*
 
 mmcv==2.1.*
 # Update CUDA Version if necessary.
@@ -11,5 +11,5 @@ albumentations
 scikit-learn
 scikit-image
 numpy==1.22.*
-Pillow==10.0.1
+Pillow==10.2.0
 git+https://github.com/facebookresearch/segment-anything.git
