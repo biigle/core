@@ -33,7 +33,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
         $ids = array_diff($this->imageAnnotationIds, $skipIds);
         $models = ImageAnnotation::whereIn('id', $ids)
-            ->with('file', 'labels.label')
+            ->with('file', 'labels.label', 'shape')
             ->get()
             ->keyBy('id');
 
@@ -119,7 +119,37 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
                 File::put($tmpPath, $thumbnail);
                 $paths[] = $tmpPath;
 
-                return [$tmpPath => [$a->id => $rect]];
+                // TODO: Whole Frame
+
+                $padding = config('largo.patch_padding');
+                $pointPadding = config('largo.point_padding');
+                $thumbWidth = config('thumbnails.width');
+                $thumbHeight = config('thumbnails.height');
+
+                $box = $this->getAnnotationBoundingBox($a->points, $a->shape, $pointPadding, $padding);
+                $box = $this->ensureBoxAspectRatio($box, $thumbWidth, $thumbHeight);
+                $box = $this->makeBoxContained($box, $a->file->width, $a->file->height);
+                $x = $box[0];
+                $y = $box[1];
+                $scale = floatval($thumbWidth) / $box[2];
+
+                $box = $this->getAnnotationBoundingBox($a->points, $a->shape, $pointPadding, $padding);
+                $box = $this->makeBoxContained($box, $a->file->width, $a->file->height);
+                $box[0] -= $x;
+                $box[1] -= $y;
+                $box = array_map(fn ($v) => $v * $scale, $box);
+
+                $zeroSize = $box[2] === 0 && $box[3] === 0;
+
+                if (!$zeroSize) {
+                    // Convert width and height to "right" and "bottom" coordinates.
+                    $box[2] = $box[0] + $box[2];
+                    $box[3] = $box[1] + $box[3];
+
+                    return [$tmpPath => [$a->id => $box]];
+                }
+
+                return [];
             });
 
             if ($input->isEmpty()) {
