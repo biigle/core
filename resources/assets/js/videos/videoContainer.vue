@@ -553,7 +553,11 @@ export default {
                 .then(this.handleVideoInformationResponse)
                 .then(this.fetchVideoContent)
                 .catch(this.handleVideoError)
-                .finally(this.finishLoading);
+                .finally(() => {
+                    this.finishLoading();
+                    // Avoid spinning wheel continuing to be displayed after moving fast through videos
+                    this.seeking = false;
+                });
 
             return promise;
         },

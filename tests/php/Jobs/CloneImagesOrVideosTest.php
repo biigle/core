@@ -32,6 +32,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
+            'attrs' => [
+                'creating_async' => true,
+            ],
         ])->fresh(); // Use fresh() to load even the null fields.
 
         $copy = $volume->replicate();
@@ -63,6 +66,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($volume->created_at, $copy->created_at);
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
         $this->assertEmpty($copy->images()->first()->labels()->get());
+        $this->assertFalse($copy->creating_async);
 
         $ignore = ['id', 'created_at', 'updated_at'];
         $this->assertEquals(
@@ -78,6 +82,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             'created_at' => '2022-01-09 14:37:00',
             'updated_at' => '2022-01-09 14:37:00',
             'media_type_id' => MediaType::videoId(),
+            'attrs' => [
+                'creating_async' => true,
+            ],
         ])->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
@@ -104,6 +111,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy = $project->volumes()->first();
 
         $this->assertEmpty($copy->videos()->first()->labels()->get());
+        $this->assertFalse($copy->creating_async);
     }
 
     public function testCloneVolumeImages()
