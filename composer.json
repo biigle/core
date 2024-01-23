@@ -26,7 +26,7 @@
         "biigle/laravel-file-cache": "^4.0",
         "doctrine/dbal": "^3.0",
         "duncan3dc/bom-string": "^1.1",
-        "endroid/qr-code": "^4.6",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
         "jcupitt/vips": "^1.0",
         "laravel/framework": "^10.0",
