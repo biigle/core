@@ -30,7 +30,7 @@
     "jsts": "^2.11.0",
     "magic-wand-tool": "^1.1.4",
     "polymorph-js": "^0.2.4",
-    "uiv": "^1.2.4",
+    "uiv": "^1.4.3",
     "vue": "^2.0.5",
     "vue-echarts": "^6.0.3",
     "vue-resource": "^1.0.3"
