@@ -28,7 +28,7 @@
         "duncan3dc/bom-string": "^1.1",
         "endroid/qr-code": "^4.6",
         "guzzlehttp/guzzle": "^7.2",
-        "jcupitt/vips": "^1.0",
+        "jcupitt/vips": "^2.3",
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.0",
