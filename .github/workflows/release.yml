@@ -35,7 +35,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4.3.0
+        uses: docker/metadata-action@v5.5.0
         with:
           images: ${{ env.REGISTRY }}/biigle/app
 
@@ -73,7 +73,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4.3.0
+        uses: docker/metadata-action@v5.5.0
         with:
           images: ${{ env.REGISTRY }}/biigle/worker
 
@@ -111,7 +111,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4.3.0
+        uses: docker/metadata-action@v5.5.0
         with:
           images: ${{ env.REGISTRY }}/biigle/web
 
