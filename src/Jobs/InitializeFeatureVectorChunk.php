@@ -6,6 +6,7 @@ use Biigle\Annotation;
 use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
+use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
@@ -107,52 +108,68 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
         $paths = [];
 
         try {
-            $input = $models->mapWithKeys(function (Annotation $a) use ($disk, $rect, &$paths) {
+            $input = [];
+            foreach ($models as $a) {
                 $srcPath = ProcessAnnotatedFile::getTargetPath($a);
                 $tmpPath = tempnam(sys_get_temp_dir(), '');
 
                 $thumbnail = $disk->get($srcPath);
                 if (is_null($thumbnail)) {
-                    return [];
+                    continue;
                 }
 
                 File::put($tmpPath, $thumbnail);
                 $paths[] = $tmpPath;
 
-                // TODO: Whole Frame
-
+                // Compute the annotation outlines in "thumbnail space".
                 $padding = config('largo.patch_padding');
                 $pointPadding = config('largo.point_padding');
                 $thumbWidth = config('thumbnails.width');
                 $thumbHeight = config('thumbnails.height');
 
-                $box = $this->getAnnotationBoundingBox($a->points, $a->shape, $pointPadding, $padding);
+                if ($a->shape_id === Shape::wholeFrameId()) {
+                    $input[$tmpPath] = [$a->id => [0, 0, $thumbWidth, $thumbHeight]];
+                    continue;
+                }
+
+                if ($a instanceof VideoAnnotation) {
+                    $points = $a->points[0];
+                } else {
+                    $points = $a->points;
+                }
+
+                // First determine the box of the thumbnail to get the position and scale
+                // factor.
+                $box = $this->getAnnotationBoundingBox($points, $a->shape, $pointPadding, $padding);
                 $box = $this->ensureBoxAspectRatio($box, $thumbWidth, $thumbHeight);
                 $box = $this->makeBoxContained($box, $a->file->width, $a->file->height);
                 $x = $box[0];
                 $y = $box[1];
                 $scale = floatval($thumbWidth) / $box[2];
 
-                $box = $this->getAnnotationBoundingBox($a->points, $a->shape, $pointPadding, $padding);
+                // The get the box of the annotation.
+                $box = $this->getAnnotationBoundingBox($points, $a->shape, $pointPadding, $padding);
                 $box = $this->makeBoxContained($box, $a->file->width, $a->file->height);
+                // Make coordinates relative to thumbnail box.
                 $box[0] -= $x;
                 $box[1] -= $y;
+                // Than scale coordinates to "thumbnail space".
                 $box = array_map(fn ($v) => $v * $scale, $box);
+                $box = $this->makeBoxIntegers($box);
 
                 $zeroSize = $box[2] === 0 && $box[3] === 0;
 
-                if (!$zeroSize) {
-                    // Convert width and height to "right" and "bottom" coordinates.
-                    $box[2] = $box[0] + $box[2];
-                    $box[3] = $box[1] + $box[3];
-
-                    return [$tmpPath => [$a->id => $box]];
+                if ($zeroSize) {
+                    continue;
                 }
+                // Convert width and height to "right" and "bottom" coordinates.
+                $box[2] = $box[0] + $box[2];
+                $box[3] = $box[1] + $box[3];
 
-                return [];
-            });
+                $input[$tmpPath] = [$a->id => $box];
+            }
 
-            if ($input->isEmpty()) {
+            if (empty($input)) {
                 return (fn () => yield from [])();
             }
 

@@ -2,11 +2,15 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
+use Biigle\Image;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\Jobs\InitializeFeatureVectorChunk;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedFile;
 use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
+use Biigle\Shape;
+use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -29,9 +33,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $this->assertFalse(File::exists($path));
         $item = $input[$path];
         $this->assertArrayHasKey($al->annotation_id, $item);
-        $width = config('thumbnails.width');
-        $height = config('thumbnails.height');
-        $this->assertEquals([0, 0, $width, $height], $item[$al->annotation_id]);
 
         $model = ImageAnnotationLabelFeatureVector::find($al->id);
         $this->assertNotNull($model);
@@ -46,7 +47,8 @@ class InitializeFeatureVectorChunkTest extends TestCase
     public function testHandleVideos()
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
-        $al = VideoAnnotationLabel::factory()->create();
+        $a = VideoAnnotation::factory()->create(['points' => [[10, 10]]]);
+        $al = VideoAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([], [$al->annotation_id]);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
@@ -129,6 +131,97 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $this->assertEquals($al2->label->label_tree_id, $model->label_tree_id);
         $this->assertEquals($al2->annotation->image->volume_id, $model->volume_id);
         $this->assertEquals(range(0, 383), $model->vector->toArray());
+    }
+
+    public function testHandlePoint()
+    {
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 200, 'height' => 200],
+        ]);
+        $a = ImageAnnotation::factory()->create([
+            'shape_id' => Shape::pointId(),
+            'points' => [100, 100],
+            'image_id' => $image->id,
+        ]);
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
+        $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
+        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
+        $job->handle();
+
+        $input = $job->input;
+        $path = array_keys($input)[0];
+        $item = $input[$path];
+        $this->assertEquals([23, 0, 158, 135], $item[$a->id]);
+    }
+
+    public function testHandleCircle()
+    {
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 200, 'height' => 200],
+        ]);
+        $a = ImageAnnotation::factory()->create([
+            'shape_id' => Shape::circleId(),
+            'points' => [100, 100, 10],
+            'image_id' => $image->id,
+        ]);
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
+        $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
+        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
+        $job->handle();
+
+        $input = $job->input;
+        $path = array_keys($input)[0];
+        $item = $input[$path];
+        $this->assertEquals([70, 47, 110, 87], $item[$a->id]);
+    }
+
+    public function testHandlePolygon()
+    {
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 200, 'height' => 200],
+        ]);
+        $a = ImageAnnotation::factory()->create([
+            'shape_id' => Shape::polygonId(),
+            'points' => [100, 90, 110, 100, 100, 110, 90, 100],
+            'image_id' => $image->id,
+        ]);
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
+        $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
+        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
+        $job->handle();
+
+        $input = $job->input;
+        $path = array_keys($input)[0];
+        $item = $input[$path];
+        $this->assertEquals([70, 47, 110, 87], $item[$a->id]);
+    }
+
+    public function testHandleWholeFrame()
+    {
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 200, 'height' => 200],
+        ]);
+        $a = ImageAnnotation::factory()->create([
+            'shape_id' => Shape::wholeFrameId(),
+            'image_id' => $image->id,
+        ]);
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+        $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
+        $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
+        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
+        $job->handle();
+
+        $input = $job->input;
+        $path = array_keys($input)[0];
+        $item = $input[$path];
+        $this->assertEquals([0, 0, 180, 135], $item[$a->id]);
     }
 }
 
