@@ -40,7 +40,7 @@ jobs:
           images: ${{ env.REGISTRY }}/biigle/app
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v5.1.0
         with:
           context: .
           file: .docker/app.dockerfile
@@ -78,7 +78,7 @@ jobs:
           images: ${{ env.REGISTRY }}/biigle/worker
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v5.1.0
         with:
           context: .
           file: .docker/worker.dockerfile
@@ -116,7 +116,7 @@ jobs:
           images: ${{ env.REGISTRY }}/biigle/web
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@v5.1.0
         with:
           context: .
           file: .docker/web.dockerfile
