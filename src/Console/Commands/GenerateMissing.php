@@ -2,13 +2,15 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
+use Biigle\Image;
 use Biigle\ImageAnnotation;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedFile;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\VideoAnnotation;
 use Carbon\Carbon;
-use File;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Storage;
 
 class GenerateMissing extends Command
@@ -35,60 +37,25 @@ class GenerateMissing extends Command
     protected $description = 'Generate missing patches for annotations.';
 
     /**
-     * Number of annotations with missing patches.
-     *
-     * @var int
-     */
-    protected $count;
-
-    /**
-     * Number of jobs that were submitted.
-     *
-     * @var int
-     */
-    protected $jobCount;
-
-    /**
-     * Create a new command instance.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->count = 0;
-        $this->jobCount = 0;
-    }
-
-    /**
      * Execute the command.
      *
      * @return void
      */
     public function handle()
     {
-        $pushToQueue = !$this->option('dry-run');
-        $storage = Storage::disk(config('largo.patch_storage_disk'));
-        $queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
-
         if (!$this->option('no-image-annotations')) {
-            $this->handleImageAnnotations($storage, $pushToQueue, $queue);
+            $this->handleImageAnnotations();
         }
 
-        $this->count = 0;
-        $this->jobCount = 0;
-
         if (!$this->option('no-video-annotations')) {
-            $this->handleVideoAnnotations($storage, $pushToQueue, $queue);
+            $this->handleVideoAnnotations();
         }
     }
 
     /**
      * Check image annnotation patches
-     *
-     * @param \Illuminate\Filesystem\FilesystemAdapter $storage
-     * @param bool $pushToQueue
-     * @param string $queue
      */
-    protected function handleImageAnnotations($storage, $pushToQueue, $queue)
+    protected function handleImageAnnotations(): void
     {
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             // Order by image ID first because we want to submit the annotations in
@@ -105,67 +72,16 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('image_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->with('image')
             ->select('image_annotations.id', 'image_annotations.image_id');
 
-        $total = $annotations->count();
-        $progress = $this->output->createProgressBar($total);
-        $this->info("Checking {$total} image annotations...");
-
-        $currentImage = null;
-        $currentAnnotationBatch = [];
-
-        // lazy() is crucial as we can't load all annotations at once!
-        foreach ($annotations->lazy() as $annotation) {
-            if (!$storage->exists(ProcessAnnotatedImage::getTargetPath($annotation))) {
-                $this->count++;
-                if (!$currentImage || $currentImage->id !== $annotation->image_id) {
-                    if (!empty($currentAnnotationBatch) && $pushToQueue) {
-                        $this->jobCount++;
-                        ProcessAnnotatedImage::dispatch($currentImage,
-                                only: $currentAnnotationBatch
-                            )
-                            ->onQueue($queue);
-                    }
-
-                    $currentImage = $annotation->image;
-                    $currentAnnotationBatch = [];
-                }
-
-                $currentAnnotationBatch[] = $annotation->id;
-            }
-            $progress->advance();
-        }
-
-        // Push final job.
-        if (!empty($currentAnnotationBatch) && $pushToQueue) {
-            $this->jobCount++;
-            ProcessAnnotatedImage::dispatch($currentImage, only: $currentAnnotationBatch)
-                ->onQueue($queue);
-        }
-
-        $progress->finish();
-
-        if($total === 0) {
-            $this->info("\n");
-            return;
-        }
-
-        $percent = round($this->count / $total * 100, 2);
-        $this->info("\nFound {$this->count} image annotations with missing patches ({$percent} %).");
-        if ($pushToQueue) {
-            $this->info("Pushed {$this->jobCount} jobs to queue {$queue}.");
-        }
+        $this->line("Image annotations");
+        $this->handleAnnotations($annotations);
     }
 
     /**
      * Check video annnotation patches
-     *
-     * @param \Illuminate\Filesystem\FilesystemAdapter $storage
-     * @param bool $pushToQueue
-     * @param string $queue
      */
-    protected function handleVideoAnnotations($storage, $pushToQueue, $queue)
+    protected function handleVideoAnnotations(): void
     {
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             // Order by video ID first because we want to submit the annotations in
@@ -182,43 +98,73 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('video_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->with('video')
             ->select('video_annotations.id', 'video_annotations.video_id');
 
+        $this->line("Video annotations");
+        $this->handleAnnotations($annotations);
+    }
+
+    protected function handleAnnotations(Builder $annotations): void
+    {
+        $pushToQueue = !$this->option('dry-run');
+        $storage = Storage::disk(config('largo.patch_storage_disk'));
+        $queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
+
+        $count = 0;
+        $jobCount = 0;
         $total = $annotations->count();
         $progress = $this->output->createProgressBar($total);
-        $this->info("Checking {$total} video annotations...");
+        $this->info("Checking {$total} annotations...");
 
-        $currentVideo = null;
+        $currentFile = null;
         $currentAnnotationBatch = [];
 
         // lazy() is crucial as we can't load all annotations at once!
-        foreach ($annotations->lazy() as $annotation) {
-            if (!$storage->exists(ProcessAnnotatedVideo::getTargetPath($annotation))) {
-                $this->count++;
-                if (!$currentVideo || $currentVideo->id !== $annotation->video_id) {
-                    if (!empty($currentAnnotationBatch) && $pushToQueue) {
-                        $this->jobCount++;
-                        ProcessAnnotatedVideo::dispatch($currentVideo,
+        foreach ($annotations->with('file')->lazy() as $annotation) {
+            $progress->advance();
+            if ($storage->exists(ProcessAnnotatedFile::getTargetPath($annotation))) {
+                continue;
+            }
+
+            $count++;
+
+            if (!$currentFile || $currentFile->id !== $annotation->file->id) {
+                if (!empty($currentAnnotationBatch) && $pushToQueue) {
+                    $jobCount++;
+                    if ($currentFile instanceof Image) {
+                        ProcessAnnotatedImage::dispatch($currentFile,
+                                only: $currentAnnotationBatch
+                            )
+                            ->onQueue($queue);
+                    } else {
+                        ProcessAnnotatedVideo::dispatch($currentFile,
                                 only: $currentAnnotationBatch
                             )
                             ->onQueue($queue);
                     }
-
-                    $currentVideo = $annotation->video;
-                    $currentAnnotationBatch = [];
                 }
 
-                $currentAnnotationBatch[] = $annotation->id;
+                $currentFile = $annotation->file;
+                $currentAnnotationBatch = [];
             }
-            $progress->advance();
+
+            $currentAnnotationBatch[] = $annotation->id;
         }
 
         // Push final job.
         if (!empty($currentAnnotationBatch) && $pushToQueue) {
-            $this->jobCount++;
-            ProcessAnnotatedVideo::dispatch($currentVideo, only: $currentAnnotationBatch)
-                ->onQueue($queue);
+            $jobCount++;
+            if ($currentFile instanceof Image) {
+                ProcessAnnotatedImage::dispatch($currentFile,
+                        only: $currentAnnotationBatch
+                    )
+                    ->onQueue($queue);
+            } else {
+                ProcessAnnotatedVideo::dispatch($currentFile,
+                        only: $currentAnnotationBatch
+                    )
+                    ->onQueue($queue);
+            }
         }
 
         $progress->finish();
@@ -228,10 +174,10 @@ class GenerateMissing extends Command
             return;
         }
 
-        $percent = round($this->count / $total * 100, 2);
-        $this->info("\nFound {$this->count} video annotations with missing patches ({$percent} %).");
+        $percent = round($count / $total * 100, 2);
+        $this->info("\nFound {$count} annotations with missing patches ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$this->jobCount} jobs to queue {$queue}.");
+            $this->info("Pushed {$jobCount} jobs to queue {$queue}.");
         }
     }
 }
