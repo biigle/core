@@ -2,14 +2,17 @@
 
 namespace Biigle\Modules\Largo\Console\Commands;
 
+use Biigle\Annotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedFile;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\VideoAnnotation;
+use Biigle\VolumeFile;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Storage;
 
@@ -21,20 +24,37 @@ class GenerateMissing extends Command
      * @var string
      */
     protected $signature = 'largo:generate-missing
-        {--dry-run}
-        {--volume=}
-        {--no-image-annotations}
-        {--no-video-annotations}
-        {--queue=}
-        {--newer-than=}
-        {--older-than=}';
+        {--dry-run : Do not submit processing jobs to the queue}
+        {--volume= : Check only this volume}
+        {--skip-images : Do not check image annotations}
+        {--skip-videos : Do not check video annotations}
+        {--skip-vectors : Do not check feature vectors}
+        {--skip-patches : Do not check annotation patches}
+        {--queue= : Submit processing jobs to this queue}
+        {--newer-than= : Only check annotations newer than this date}
+        {--older-than= : Only check annotations older than this date}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate missing patches for annotations.';
+    protected $description = 'Generate missing data for annotations.';
+
+    /**
+     * Queue to push process jobs to.
+     */
+    protected string $queue;
+
+    /**
+     * Whether to skip checking for missing patches.
+     */
+    protected bool $skipPatches;
+
+    /**
+     * Whether to skip checking for missing feature vectors.
+     */
+    protected bool $skipVectors;
 
     /**
      * Execute the command.
@@ -43,11 +63,15 @@ class GenerateMissing extends Command
      */
     public function handle()
     {
-        if (!$this->option('no-image-annotations')) {
+        $this->queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
+        $this->skipPatches = $this->option('skip-patches');
+        $this->skipVectors = $this->option('skip-vectors');
+
+        if (!$this->option('skip-images')) {
             $this->handleImageAnnotations();
         }
 
-        if (!$this->option('no-video-annotations')) {
+        if (!$this->option('skip-videos')) {
             $this->handleVideoAnnotations();
         }
     }
@@ -63,6 +87,7 @@ class GenerateMissing extends Command
             ->orderBy('image_annotations.image_id')
             // Order by annotation ID second to ensure a deterministic order for lazy().
             ->orderBy('image_annotations.id')
+            ->select('image_annotations.id', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('images.volume_id', $this->option('volume'));
             })
@@ -72,7 +97,10 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('image_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->select('image_annotations.id', 'image_annotations.image_id');
+            ->when(!$this->skipVectors, function ($query) {
+                $query->leftJoin('image_annotation_label_feature_vectors', 'image_annotation_label_feature_vectors.annotation_id', '=', 'image_annotations.id')
+                    ->addSelect('image_annotation_label_feature_vectors.id as vector_id');
+            });
 
         $this->line("Image annotations");
         $this->handleAnnotations($annotations);
@@ -89,6 +117,7 @@ class GenerateMissing extends Command
             ->orderBy('video_annotations.video_id')
             // Order by annotation ID second to ensure a deterministic order for lazy().
             ->orderBy('video_annotations.id')
+            ->select('video_annotations.id', 'video_annotations.video_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('videos.volume_id', $this->option('volume'));
             })
@@ -98,7 +127,10 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('video_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->select('video_annotations.id', 'video_annotations.video_id');
+            ->when(!$this->skipVectors, function ($query) {
+                $query->leftJoin('video_annotation_label_feature_vectors', 'video_annotation_label_feature_vectors.annotation_id', '=', 'video_annotations.id')
+                    ->addSelect('video_annotation_label_feature_vectors.id as vector_id');
+            });
 
         $this->line("Video annotations");
         $this->handleAnnotations($annotations);
@@ -108,7 +140,6 @@ class GenerateMissing extends Command
     {
         $pushToQueue = !$this->option('dry-run');
         $storage = Storage::disk(config('largo.patch_storage_disk'));
-        $queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
 
         $count = 0;
         $jobCount = 0;
@@ -122,7 +153,18 @@ class GenerateMissing extends Command
         // lazy() is crucial as we can't load all annotations at once!
         foreach ($annotations->with('file')->lazy() as $annotation) {
             $progress->advance();
-            if ($storage->exists(ProcessAnnotatedFile::getTargetPath($annotation))) {
+
+            if ($this->skipPatches) {
+                $needsPatch = false;
+            } else {
+                $needsPatch = !$storage->exists(
+                    ProcessAnnotatedFile::getTargetPath($annotation)
+                );
+            }
+
+            $needsVector = !$this->skipVectors && is_null($annotation->vector_id);
+
+            if (!$needsPatch && !$needsVector) {
                 continue;
             }
 
@@ -131,17 +173,7 @@ class GenerateMissing extends Command
             if (!$currentFile || $currentFile->id !== $annotation->file->id) {
                 if (!empty($currentAnnotationBatch) && $pushToQueue) {
                     $jobCount++;
-                    if ($currentFile instanceof Image) {
-                        ProcessAnnotatedImage::dispatch($currentFile,
-                                only: $currentAnnotationBatch
-                            )
-                            ->onQueue($queue);
-                    } else {
-                        ProcessAnnotatedVideo::dispatch($currentFile,
-                                only: $currentAnnotationBatch
-                            )
-                            ->onQueue($queue);
-                    }
+                    $this->dispatcheProcessJob($currentFile, $currentAnnotationBatch);
                 }
 
                 $currentFile = $annotation->file;
@@ -154,17 +186,7 @@ class GenerateMissing extends Command
         // Push final job.
         if (!empty($currentAnnotationBatch) && $pushToQueue) {
             $jobCount++;
-            if ($currentFile instanceof Image) {
-                ProcessAnnotatedImage::dispatch($currentFile,
-                        only: $currentAnnotationBatch
-                    )
-                    ->onQueue($queue);
-            } else {
-                ProcessAnnotatedVideo::dispatch($currentFile,
-                        only: $currentAnnotationBatch
-                    )
-                    ->onQueue($queue);
-            }
+            $this->dispatcheProcessJob($currentFile, $currentAnnotationBatch);
         }
 
         $progress->finish();
@@ -177,7 +199,26 @@ class GenerateMissing extends Command
         $percent = round($count / $total * 100, 2);
         $this->info("\nFound {$count} annotations with missing patches ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$jobCount} jobs to queue {$queue}.");
+            $this->info("Pushed {$jobCount} jobs to queue {$this->queue}.");
+        }
+    }
+
+    protected function dispatcheProcessJob(VolumeFile $file, array $ids)
+    {
+        if ($file instanceof Image) {
+            ProcessAnnotatedImage::dispatch($file,
+                    only: $ids,
+                    skipPatches: $this->skipPatches,
+                    skipFeatureVectors: $this->skipVectors
+                )
+                ->onQueue($this->queue);
+        } else {
+            ProcessAnnotatedVideo::dispatch($file,
+                    only: $ids,
+                    skipPatches: $this->skipPatches,
+                    skipFeatureVectors: $this->skipVectors
+                )
+                ->onQueue($this->queue);
         }
     }
 }
