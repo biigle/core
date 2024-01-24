@@ -114,6 +114,11 @@ class GenerateMissing extends Command
         $annotations->eachById($handleAnnotation, 10000, 'image_annotations.id', 'id');
 
         $progress->finish();
+        
+        if($total === 0) {
+            $this->info("\n");
+            return;
+        }
 
         $percent = round($this->count / $total * 100, 2);
         $this->info("\nFound {$this->count} image annotations with missing patches ({$percent} %).");
@@ -159,6 +164,11 @@ class GenerateMissing extends Command
         $annotations->eachById($handleAnnotation, 10000, 'video_annotations.id', 'id');
 
         $progress->finish();
+
+        if($total === 0) {
+            $this->info("\n");
+            return;
+        }
 
         $percent = round($this->count / $total * 100, 2);
         $this->info("\nFound {$this->count} video annotations with missing patches ({$percent} %).");
