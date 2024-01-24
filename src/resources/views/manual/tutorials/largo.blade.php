@@ -16,7 +16,17 @@
             Largo allows you to view annotations with the same label in a regular grid. The annotations can belong to a single volume or an entire project. You can quickly select annotations to change their labels, attach new labels or delete them.
         </p>
 
-        <h3>How to use Largo</h3>
+        <p>
+            Contents:
+        </p>
+
+        <ol>
+            <li><a href="#how-to-use-largo">How to use Largo</a></li>
+            <li><a href="#advanced-usage">Advanced usage</a></li>
+            <li><a href="#example-use-cases">Example use cases</a></li>
+        </ol>
+
+        <h3><a name="how-to-use-largo"></a>How to use Largo</h3>
 
         <p>
             There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of a volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
@@ -44,7 +54,7 @@
         </p>
 
         <p>
-            Also displayed on hover is the big <span class="fa fa-times" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to differen labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
+            Also displayed on hover is the big <span class="fa fa-times" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to different labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
         </p>
 
         <p>
@@ -86,7 +96,36 @@
         </p>
 
 
-        <h3>Example use cases</h3>
+        <h3><a name="advanced-usage"></a>Advanced usage</h3>
+
+        <p>
+            Largo offers some features that go beyond the basic usage. Depending on the use case (see <a href="#example-use-cases">below</a>), these features can help to accelerate the annotation review process.
+        </p>
+
+        <h4>Sorting</h4>
+
+        <p>
+            By default, the annotation patches displayed by Largo are displayed with the newest annotations at the top and the oldest at the bottom. You can change the sorting with a click on the sorting tab (<i class="fa fa-exchange-alt fa-rotate-90"></i>) of the sidebar. Each sorting can be shown in descending (<i class="fa fa-sort-amount-down"></i>) or ascending (<i class="fa fa-sort-amount-up"></i>) order. The following sorting options are available:
+        </p>
+
+        <ul>
+            <li>
+                <p>
+                    <strong>Created</strong>: Sorts the annotation patches by timestamp. In descending order, the newest annotations are shown first. In ascending order, the oldest annotations are shown first.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <strong>Outliers</strong>: Sort the annotation patches by unusual objects. In descending order, the annotation patches are shown first that look most "unusual" compared to all the other patches that are currently shown. In ascending order, the most "common" patches are shown first.
+                </p>
+                <p>
+                    Sorting by unusual annotation patches can help you to quickly identify errors. If most of the patches show objects with a similar visual appearance, those patches that show different objects will be shown at the top and you can quickly select them.
+                </p>
+            </li>
+        </ul>
+
+
+        <h3><a name="example-use-cases"></a>Example use cases</h3>
 
         <p>
             Now that you know how to use Largo, here are some use cases for what you can do.

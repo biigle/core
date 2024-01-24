@@ -36,11 +36,11 @@
         <div class="list-group sorter-list-group">
             <button
                 class="list-group-item"
-                title="Sort by annotation ID (higher is newer)"
+                title="Sort by annotation timestamp (higher is newer)"
                 :class="{active: sortingByAnnotationId}"
                 @click="sortByAnnotationId"
                 >
-                ID
+                Created
             </button>
             <button
                 class="list-group-item"
