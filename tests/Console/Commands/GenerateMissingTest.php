@@ -27,9 +27,40 @@ class GenerateMissingTest extends TestCase
         });
     }
 
+    public function testHandleImageAnnotationsSkipExisting()
+    {
+        $a = ImageAnnotation::factory()->create();
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a), 'abc');
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing');
+        Bus::assertNotDispatched(ProcessAnnotatedImage::class);
+    }
+
     public function testHandleVideoAnnotations()
     {
-        //
+        $a = VideoAnnotation::factory()->create();
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing');
+        Bus::assertDispatched(ProcessAnnotatedVideo::class, function ($job) use ($a) {
+            $this->assertEquals($a->video_id, $job->file->id);
+            $this->assertEquals([$a->id], $job->only);
+
+            return true;
+        });
+    }
+
+    public function testHandleVideoAnnotationsSkipExisting()
+    {
+        $a = VideoAnnotation::factory()->create();
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $disk->put(ProcessAnnotatedVideo::getTargetPath($a), 'abc');
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing');
+        Bus::assertNotDispatched(ProcessAnnotatedVideo::class);
     }
 
     public function testHandleBatching()
@@ -74,7 +105,18 @@ class GenerateMissingTest extends TestCase
 
     public function testHandleNoImageAnnotations()
     {
-        //
+        $a1 = ImageAnnotation::factory()->create();
+        $a2 = VideoAnnotation::factory()->create();
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --no-image-annotations');
+        Bus::assertDispatched(ProcessAnnotatedVideo::class, function ($job) use ($a2) {
+            $this->assertEquals($a2->video, $job->file);
+
+            return true;
+        });
+
+        Bus::assertNotDispatched(ProcessAnnotatedImage::class);
     }
 
     public function testHandleNoVideoAnnotations()
@@ -89,6 +131,8 @@ class GenerateMissingTest extends TestCase
 
             return true;
         });
+
+        Bus::assertNotDispatched(ProcessAnnotatedVideo::class);
     }
 
     public function testHandleQueue()
@@ -106,11 +150,43 @@ class GenerateMissingTest extends TestCase
 
     public function testHandleNewerThan()
     {
-        //
+        $a1 = ImageAnnotation::factory()->create([
+            'created_at' => '2024-01-24',
+        ]);
+
+        $a2 = ImageAnnotation::factory()->create([
+            'created_at' => '2024-01-20',
+            'image_id' => $a1->image_id,
+        ]);
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --newer-than=2024-01-23');
+        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1) {
+            $this->assertEquals($a1->image_id, $job->file->id);
+            $this->assertEquals([$a1->id], $job->only);
+
+            return true;
+        });
     }
 
     public function testHandleOlderThan()
     {
-        //
+        $a1 = ImageAnnotation::factory()->create([
+            'created_at' => '2024-01-24',
+        ]);
+
+        $a2 = ImageAnnotation::factory()->create([
+            'created_at' => '2024-01-20',
+            'image_id' => $a1->image_id,
+        ]);
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --older-than=2024-01-23');
+        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
+            $this->assertEquals($a2->image_id, $job->file->id);
+            $this->assertEquals([$a2->id], $job->only);
+
+            return true;
+        });
     }
 }

@@ -35,13 +35,6 @@ class GenerateMissing extends Command
     protected $description = 'Generate missing patches for annotations.';
 
     /**
-     * Largo patch storage file format.
-     *
-     * @var string
-     */
-    protected $format;
-
-    /**
      * Number of annotations with missing patches.
      *
      * @var int
@@ -61,7 +54,6 @@ class GenerateMissing extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->format = config('largo.patch_format');
         $this->count = 0;
         $this->jobCount = 0;
     }
@@ -125,8 +117,7 @@ class GenerateMissing extends Command
 
         // lazy() is crucial as we can't load all annotations at once!
         foreach ($annotations->lazy() as $annotation) {
-            $prefix = fragment_uuid_path($annotation->image->uuid);
-            if (!$storage->exists("{$prefix}/{$annotation->id}.{$this->format}")) {
+            if (!$storage->exists(ProcessAnnotatedImage::getTargetPath($annotation))) {
                 $this->count++;
                 if (!$currentImage || $currentImage->id !== $annotation->image_id) {
                     if (!empty($currentAnnotationBatch) && $pushToQueue) {
@@ -177,31 +168,58 @@ class GenerateMissing extends Command
     protected function handleVideoAnnotations($storage, $pushToQueue, $queue)
     {
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            // Order by video ID first because we want to submit the annotations in
+            // batches for each video.
+            ->orderBy('video_annotations.video_id')
+            // Order by annotation ID second to ensure a deterministic order for lazy().
+            ->orderBy('video_annotations.id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('videos.volume_id', $this->option('volume'));
             })
             ->when($this->option('newer-than'), function ($query) {
                 $query->where('video_annotations.created_at', '>', new Carbon($this->option('newer-than')));
             })
-            ->select('video_annotations.id', 'videos.uuid as uuid');
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('video_annotations.created_at', '<', new Carbon($this->option('older-than')));
+            })
+            ->with('video')
+            ->select('video_annotations.id', 'video_annotations.video_id');
 
         $total = $annotations->count();
         $progress = $this->output->createProgressBar($total);
         $this->info("Checking {$total} video annotations...");
 
-        $handleAnnotation = function ($annotation) use ($progress, $pushToQueue, $storage, $queue) {
-            $prefix = fragment_uuid_path($annotation->uuid);
-            if (!$storage->exists("{$prefix}/v-{$annotation->id}.{$this->format}")) {
+        $currentVideo = null;
+        $currentAnnotationBatch = [];
+
+        // lazy() is crucial as we can't load all annotations at once!
+        foreach ($annotations->lazy() as $annotation) {
+            if (!$storage->exists(ProcessAnnotatedVideo::getTargetPath($annotation))) {
                 $this->count++;
-                if ($pushToQueue) {
-                    GenerateVideoAnnotationPatch::dispatch($annotation)
-                        ->onQueue($queue);
+                if (!$currentVideo || $currentVideo->id !== $annotation->video_id) {
+                    if (!empty($currentAnnotationBatch) && $pushToQueue) {
+                        $this->jobCount++;
+                        ProcessAnnotatedVideo::dispatch($currentVideo,
+                                only: $currentAnnotationBatch
+                            )
+                            ->onQueue($queue);
+                    }
+
+                    $currentVideo = $annotation->video;
+                    $currentAnnotationBatch = [];
                 }
+
+                $currentAnnotationBatch[] = $annotation->id;
             }
             $progress->advance();
-        };
+        }
 
-        $annotations->eachById($handleAnnotation, 10000, 'video_annotations.id', 'id');
+        // Push final job.
+        if (!empty($currentAnnotationBatch) && $pushToQueue) {
+            $this->jobCount++;
+            ProcessAnnotatedVideo::dispatch($currentVideo, only: $currentAnnotationBatch)
+                ->onQueue($queue);
+        }
 
         $progress->finish();
 
@@ -213,7 +231,7 @@ class GenerateMissing extends Command
         $percent = round($this->count / $total * 100, 2);
         $this->info("\nFound {$this->count} video annotations with missing patches ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$this->count} jobs to queue {$queue}.");
+            $this->info("Pushed {$this->jobCount} jobs to queue {$queue}.");
         }
     }
 }
