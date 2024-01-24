@@ -10,7 +10,7 @@ use Biigle\VolumeFile;
 use FFMpeg\Media\Video;
 use FFMpeg\Coordinate\TimeCode;
 
-class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
+class GenerateVideoAnnotationSVGPatch extends GenerateAnnotationPatch
 {
     /**
      * Handle a single image.
@@ -26,13 +26,15 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
         }
 
         $points = $this->annotation->points[0] ?? null;
-        $targetPath = $this->getTargetPath($this->annotation);
-
         $video = $this->getVideo($path);
-        $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);
-        $buffer = $this->getAnnotationPatch($frame, $points, $this->annotation->shape);
+        $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);;
 
-        Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+        
+        if ($this->annotation->shape->id !== Shape::wholeFrameId()) {
+            $svgTargetPath = str_replace(config('largo.patch_format'), 'svg', $this->getTargetPath($this->annotation));
+            $svgAnnotation = $this->getSVGAnnotationPatch($frame->width, $frame->height, $points, $this->annotation->shape);
+            Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
+        }
     }
 
     /**
