@@ -68,6 +68,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libjpeg-turbo-dev \
         libpng-dev \
         tiff-dev \
+        librsvg-dev \
     && apk add --no-cache \
         expat \
         glib \
@@ -75,6 +76,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libjpeg-turbo \
         libpng \
         tiff \
+        librsvg \
     && cd /tmp \
     && curl -L https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz -o vips-${LIBVIPS_VERSION}.tar.gz \
     && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
