@@ -94,7 +94,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         python3-pip \
     && pip3 install --no-cache-dir --break-system-packages \
         PyExcelerate==0.6.7 \
-        Pillow==10.0.1 \
+        Pillow==10.2.0 \
     && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
         torch==2.0.* \
         torchvision==0.15.* \
