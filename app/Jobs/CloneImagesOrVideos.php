@@ -8,8 +8,8 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
-use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
-use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Project;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
@@ -162,24 +162,26 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     {
         ProcessNewVolumeFiles::dispatch($volume);
 
-        if (class_exists(GenerateImageAnnotationPatch::class)) {
-            ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
-                ->where('images.volume_id', "=", $volume->id)
-                ->select('image_annotations.id')
-                ->eachById(function ($annotation) {
-                    GenerateImageAnnotationPatch::dispatch($annotation)
+        // Give the ProcessNewVolumeFiles job a head start so the file thumbnails are
+        // generated (mostly) before the annotation thumbnails.
+        $delay = now()->addSeconds(30);
+
+        if (class_exists(ProcessAnnotatedImage::class)) {
+            $volume->images()->whereHas('annotations')
+                ->eachById(function ($image) use ($delay) {
+                    ProcessAnnotatedImage::dispatch($image)
+                        ->delay($delay)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000, 'image_annotations.id', 'id');
+                });
         }
 
-        if (class_exists(GenerateVideoAnnotationPatch::class)) {
-            VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
-                ->where('videos.volume_id', "=", $volume->id)
-                ->select('video_annotations.id')
-                ->eachById(function ($annotation) {
-                    GenerateVideoAnnotationPatch::dispatch($annotation)
+        if (class_exists(ProcessAnnotatedVideo::class)) {
+            $volume->videos()
+                ->whereHas('annotations')->eachById(function ($video) use ($delay) {
+                    ProcessAnnotatedVideo::dispatch($video)
+                        ->delay($delay)
                         ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000, 'video_annotations.id', 'id');
+                });
         }
     }
 

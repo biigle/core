@@ -3,11 +3,13 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Events\AnnotationLabelAttached;
 use Biigle\MediaType;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Illuminate\Support\Facades\Event;
 
 class VideoAnnotationLabelControllerTest extends ApiTestCase
 {
@@ -20,6 +22,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
 
     public function testStore()
     {
+        Event::fake();
         $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
         $id = $annotation->id;
 
@@ -51,6 +54,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         $this->assertNotNull($label);
         $this->assertEquals($this->labelRoot()->id, $label->label_id);
         $this->assertEquals($this->editor()->id, $label->user_id);
+        Event::assertDispatched(AnnotationLabelAttached::class);
 
         $this
             ->postJson("api/v1/video-annotations/{$id}/labels", [

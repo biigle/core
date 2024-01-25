@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Events\AnnotationLabelAttached;
 use Biigle\Http\Requests\StoreImageAnnotationLabel;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
@@ -183,6 +184,8 @@ class ImageAnnotationLabelController extends Controller
             $annotationLabel->save();
             // should not be returned
             unset($annotationLabel->annotation);
+
+            AnnotationLabelAttached::dispatch($annotationLabel);
 
             return response($annotationLabel, 201);
         } catch (QueryException $e) {

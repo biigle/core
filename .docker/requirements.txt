@@ -1,15 +1,21 @@
-# Torch is included in the base Docker image.
+numpy==1.24.*
+opencv-contrib-python-headless==4.6.0.*
+scipy==1.10.*
+scikit-learn==1.2.*
+matplotlib==3.6.*
+PyExcelerate==0.6.7
+Pillow==10.2.0
+Shapely==1.8.1
+# Torch is included in the gpu-worker Docker image.
 #torch==2.1.*
 #torchvision==0.16.*
 
+# Special gpu-worker requirements.
 mmcv==2.1.*
 # Update CUDA Version if necessary.
 # See: https://mmcv.readthedocs.io/en/latest/get_started/installation.html#install-with-pip
 -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
 mmdet==3.1.*
 albumentations
-scikit-learn
 scikit-image
-numpy==1.22.*
-Pillow==10.2.0
 git+https://github.com/facebookresearch/segment-anything.git
