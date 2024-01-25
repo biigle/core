@@ -2,7 +2,10 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Biigle\Shape;
 use Biigle\VolumeFile;
+use Exception;
+use FileCache;
 use Storage;
 use VipsImage;
 
@@ -24,7 +27,13 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
 
         $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
 
+        $svgTargetPath = str_replace(config('largo.patch_format'),'svg',$targetPath);
+        $svgAnnotation = $this->getSVGAnnotationPatch($image->width,$image->height,
+                                        $this->annotation->getPoints(), $this->annotation->getShape());
+        
+        
         Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+        Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
     }
 
     /**
