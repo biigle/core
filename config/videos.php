@@ -53,20 +53,20 @@ return [
     'track_object_max_jobs_per_user' => env('VIDEOS_TRACK_OBJECT_MAX_JOBS_PER_USER', 10),
 
     /*
-    | Number of max frames to generate for sprites.
+    | Number of max thumbnails to generate for sprites.
     */
-    'sprites_max_frames' => 1500,
+    'sprites_max_thumbnails' => 1500,
 
     /*
-    | Number of min frames to generate for sprites.
+    | Number of min thumbnails to generate for sprites.
     */
-    'sprites_min_frames' => 5,
+    'sprites_min_thumbnails' => 5,
 
     /*
-    | Number of frames per sprite. Default 5x5 = 25.
+    | Number of thumbnails per sprite. Default 5x5 = 25.
     | The square root of the number must be an integer.
     */
-    'frames_per_sprite' => 25,
+    'sprites_thumbnails_per_sprite' => 25,
 
     /*
     | Dimensions of the thumbnail images to create in sprites.
@@ -83,5 +83,5 @@ return [
     | Standard time interval at which thumbnails should be sampled when generating sprites.
     | It will be adjusted dynamically during the process.
     */
-    'sprites_interval_seconds' => 10,
+    'sprites_thumbnail_interval' => 2.5,
 ];
