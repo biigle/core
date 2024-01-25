@@ -96,8 +96,8 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         PyExcelerate==0.6.7 \
         Pillow==10.2.0 \
     && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.0.* \
-        torchvision==0.15.* \
+        torch==2.1.* \
+        torchvision==0.16.* \
     && apt-get purge -y \
         python3-pip \
     && apt-get -y autoremove \
