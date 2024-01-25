@@ -4,6 +4,7 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationSVGPatch;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationTest;
 use Bus;
@@ -15,7 +16,7 @@ use Mockery;
 use Storage;
 use TestCase;
 
-class GenerateVideoAnnotationPatchesTest extends TestCase
+class GenerateVideoAnnotationSVGPatchesTest extends TestCase
 {
     public function setUp(): void
     {
@@ -32,19 +33,14 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [0, 10],
             'shape_id' => Shape::wholeFrameId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
-
-        $video->shouldReceive('writeToBuffer')
-            ->with('.jpg', ['Q' => 85, 'strip' => true])
-            ->once()
-            ->andReturn('abc123');
 
         $job->handleFile($annotation->video, 'abc');
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        // SVG annotations are not generated for whole video frame annotations
+        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
     public function testHandleStorageConfigurableDisk()
@@ -56,19 +52,14 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [0, 10],
             'shape_id' => Shape::wholeFrameId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation, 'test2');
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation, 'test2');
         $job->mock = $video;
-
-        $video->shouldReceive('writeToBuffer')
-            ->with('.jpg', ['Q' => 85, 'strip' => true])
-            ->once()
-            ->andReturn('abc123');
 
         $job->handleFile($annotation->video, 'abc');
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test2')->get("{$prefix}/v-{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        // SVG annotations are not generated for whole video frame annotations
+        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation->id}.svg");
 
     }
 
@@ -86,17 +77,18 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
+                . '<circle cx="100.4" cy="100.4" r="1" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        Log::info($content);
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleCircle()
@@ -114,17 +106,43 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(90, 90, 420, 420)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"'
+                . '><circle cx="300" cy="300" r="200" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleLine()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[1, 2, 2, 3, 3, 4], [1, 2, 2, 3, 3, 4]],
+            'frames' => [1, 2],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
+        $job->mock = $video;
+
+        $job->handleFile($annotation->video, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100"'
+                . '><polyline points="1,2 2,3 3,4" vector-effect="non-scaling-stroke" stroke-linecap="round" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleOther()
@@ -145,16 +163,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1, 2],
             'shape_id' => Shape::polygonId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(90, 90, 120, 120)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"'
+                . '><polygon points="100,100 150,200 200,100 100,100" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleSingleFrame()
@@ -170,17 +189,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"'
+                . '><circle cx="100" cy="100" r="1" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -196,17 +215,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(0, 0, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 148 148"'
+                . '><circle cx="0" cy="0" r="1" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedPositive()
@@ -222,17 +241,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(852, 602, 148, 148)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="852 602 148 148"'
+                . '><circle cx="1000" cy="750" r="1" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedTooLarge()
@@ -251,17 +270,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->once()
-            ->with(0, 0, 100, 100)
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
-        $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100"'
+                . '><circle cx="50" cy="50" r="1" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleMinDimension()
@@ -277,16 +296,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [1],
             'shape_id' => Shape::circleId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation);
+        $job = new GenerateVideoAnnotationSVGPatchStub($annotation);
         $job->mock = $video;
 
-        $video->shouldReceive('crop')
-            ->with(10, 10, 100, 100)
-            ->once()
-            ->andReturn($video);
-
-        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->video, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="10 10 100 100"'
+                . '><circle cx="60" cy="60" r="10" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleError()
@@ -316,20 +336,17 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
         Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
-    protected function getFrameMock($times = 1)
+    protected function getFrameMock()
     {
         $video = Mockery::mock();
         $video->width = 1000;
         $video->height = 750;
-        $video->shouldReceive('resize')
-            ->times($times)
-            ->andReturn($video);
 
         return $video;
     }
 }
 
-class GenerateVideoAnnotationPatchStub extends GenerateVideoAnnotationPatch
+class GenerateVideoAnnotationSVGPatchStub extends GenerateVideoAnnotationSVGPatch
 {
     public $times = [];
 
