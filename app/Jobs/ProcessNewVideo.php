@@ -240,7 +240,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
             ->save(null, false, true);
 
-        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
+        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height, 'size' => 'force'])
         ;
     }
 
@@ -290,29 +290,29 @@ class ProcessNewVideo extends Job implements ShouldQueue
     protected function generateSprites($path, $duration, $disk, $fragment)
     {
 
-        $maxFrames = config('videos.sprites_max_frames');
-        $minFrames = config('videos.sprites_min_frames');
-        $framesPerSprite = config('videos.frames_per_sprite');
-        $thumbsPerRow = sqrt($framesPerSprite);
+        $maxThumbnails = config('videos.sprites_max_thumbnails');
+        $minThumbnails = config('videos.sprites_min_thumbnails');
+        $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
+        $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
         $thumbnailWidth = config('videos.sprites_thumbnail_width');
         $thumbnailHeight = config('videos.sprites_thumbnail_height');
         $spriteFormat = config('videos.sprites_format');
-        $intervalSeconds = config('videos.sprites_interval_seconds');
+        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
         $durationRounded = floor($duration * 10) / 10;
-        $estimatedFrames = $durationRounded / $intervalSeconds;
-        // Adjust the frame time based on the number of estimated frames
-        $intervalSeconds = ($estimatedFrames > $maxFrames) ? $durationRounded / $maxFrames
-            : (($estimatedFrames < $minFrames) ? $durationRounded / $minFrames : 10);
+        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        // Adjust the frame time based on the number of estimated thumbnails
+        $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
+            : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
 
         $thumbnails = [];
         $spritesCounter = 0;
-        for ($time = 0.0; $time < $durationRounded && $durationRounded > 0; $time += $intervalSeconds) {
+        for ($time = 0.0; $time < $durationRounded && $durationRounded > 0; $time += $thumbnailInterval) {
             $time = round($time, 1);
             // Create a thumbnail from the video at the specified time and add it to the thumbnails array.
             $thumbnails[] = $this->generateVideoThumbnail($path, $time, $thumbnailWidth, $thumbnailHeight);
-            if (count($thumbnails) === $framesPerSprite || $time >= abs($durationRounded - $intervalSeconds)) {
+            if (count($thumbnails) === $thumbnailsPerSprite || $time >= abs($durationRounded - $thumbnailInterval)) {
                 // Join the thumbnails into a NxN sprite
-                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbsPerRow]);
+                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
                 // Write the sprite to buffer with quality 75 and stripped metadata
                 $spriteBuffer = $sprite->writeToBuffer(".{$spriteFormat}", [
                     'Q' => 75,
