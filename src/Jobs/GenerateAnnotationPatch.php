@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Largo\Jobs;
 
 use Str;
+use SVG\Nodes\Shapes\SVGPolyline;
 use SVG\SVG;
 use Exception;
 use FileCache;
@@ -11,13 +12,11 @@ use Biigle\Jobs\Job;
 use Biigle\VolumeFile;
 use Jcupitt\Vips\Image;
 use Biigle\VideoAnnotation;
-use SVG\Nodes\Shapes\SVGLine;
 use SVG\Nodes\Shapes\SVGRect;
 use SVG\Nodes\Shapes\SVGCircle;
 use Biigle\Contracts\Annotation;
 use SVG\Nodes\Shapes\SVGEllipse;
 use SVG\Nodes\Shapes\SVGPolygon;
-use SVG\Nodes\Shapes\SVGPolyline;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -57,6 +56,16 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     protected $deleteWhenMissingModels = true;
 
+    /**
+     * Bool to create SVG
+     * 
+     * 0 = Create no SVG
+     * 1 = Create SVG
+     * 2 = Create SVG only
+     * 
+     * **/
+    protected $createSVG = 1;
+
 
     /**
      * Create a new job instance.
@@ -66,12 +75,13 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Annotation $annotation, $targetDisk = null)
+    public function __construct(Annotation $annotation, $createSVG = 1, $targetDisk = null)
     {
         $this->annotation = $annotation;
         $this->targetDisk = $targetDisk !== null
             ? $targetDisk
             : config('largo.patch_storage_disk');
+        $this->createSVG = $createSVG;
     }
 
     /**
@@ -342,7 +352,7 @@ abstract class GenerateAnnotationPatch extends Job implements ShouldQueue
         if ($shape->id == Shape::lineId()) {
             $annotation->setAttribute('stroke-linecap', 'round');
         }
-        
+
         $doc->addChild($annotation);
 
         return $image;

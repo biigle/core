@@ -30,11 +30,13 @@ class GenerateVideoAnnotationPatch extends GenerateAnnotationPatch
 
         $video = $this->getVideo($path);
         $frame = $this->getVideoFrame($video, $this->annotation->frames[0]);
-        $buffer = $this->getAnnotationPatch($frame, $points, $this->annotation->shape);
 
-        Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+        if ($this->createSVG !== 2) {
+            $buffer = $this->getAnnotationPatch($frame, $points, $this->annotation->shape);
+            Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+        }
         
-        if ($this->annotation->shape->id !== Shape::wholeFrameId()) {
+        if ($this->annotation->shape->id !== Shape::wholeFrameId() && $this->createSVG) {
             $svgTargetPath = str_replace(config('largo.patch_format'), 'svg', $targetPath);
             $svgAnnotation = $this->getSVGAnnotationPatch($frame->width, $frame->height, $points, $this->annotation->shape);
             Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);

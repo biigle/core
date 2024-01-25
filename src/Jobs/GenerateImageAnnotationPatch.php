@@ -2,12 +2,12 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Biigle\Shape;
-use Biigle\VolumeFile;
+use Storage;
 use Exception;
 use FileCache;
-use Storage;
 use VipsImage;
+use Biigle\Shape;
+use Biigle\VolumeFile;
 
 class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
 {
@@ -25,15 +25,17 @@ class GenerateImageAnnotationPatch extends GenerateAnnotationPatch
         $targetPath = $this->getTargetPath($this->annotation);
         $image = $this->getVipsImage($path);
 
-        $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
+        if ($this->createSVG !== 2) {
+            $buffer = $this->getAnnotationPatch($image, $this->annotation->getPoints(), $this->annotation->getShape());
+            Storage::disk($this->targetDisk)->put($targetPath, $buffer);
+        }
 
-        $svgTargetPath = str_replace(config('largo.patch_format'),'svg',$targetPath);
-        $svgAnnotation = $this->getSVGAnnotationPatch($image->width,$image->height,
-                                        $this->annotation->getPoints(), $this->annotation->getShape());
-        
-        
-        Storage::disk($this->targetDisk)->put($targetPath, $buffer);
-        Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
+        if ($this->createSVG) {
+            $svgTargetPath = str_replace(config('largo.patch_format'), 'svg', $targetPath);
+            $svgAnnotation = $this->getSVGAnnotationPatch($image->width, $image->height, $this->annotation->getPoints(),
+                $this->annotation->getShape());
+            Storage::disk($this->targetDisk)->put($svgTargetPath, $svgAnnotation);
+        }
     }
 
     /**
