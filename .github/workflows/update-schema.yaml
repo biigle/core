@@ -1,0 +1,22 @@
+name: Update Schema
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/Database/migrations/**'
+
+jobs:
+  update-schema:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Trigger schema update
+      run: |
+        curl -X POST --fail \
+          -H "Authorization: token ${{ secrets.BIIGLE_SCHEMA_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"event_type": "build_application"}' \
+          https://api.github.com/repos/biigle/schema/dispatches

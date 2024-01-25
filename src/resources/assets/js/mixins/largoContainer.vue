@@ -1,6 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
+import SortingTab from '../components/sortingTab';
 import {Echo} from '../import';
 import {Events} from '../import';
 import {handleErrorResponse} from '../import';
@@ -11,6 +12,7 @@ import {Messages} from '../import';
 import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
+import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
 
 /**
  * Mixin for largo view models
@@ -24,6 +26,7 @@ export default {
         powerToggle: PowerToggle,
         dismissImageGrid: DismissImageGrid,
         relabelImageGrid: RelabelImageGrid,
+        sortingTab: SortingTab,
     },
     data() {
         return {
@@ -35,6 +38,12 @@ export default {
             lastSelectedImage: null,
             forceChange: false,
             waitForSessionId: null,
+            // The cache is nested in two levels. The first level key is the label ID.
+            // The second level key is the sorting key. The cached value is an array
+            // of annotation IDs sorted in ascending order.
+            sortingSequenceCache: {},
+            sortingDirection: SORT_DIRECTION.DESCENDING,
+            sortingKey: SORT_KEY.ANNOTATION_ID,
         };
     },
     computed: {
@@ -50,6 +59,30 @@ export default {
             }
 
             return [];
+        },
+        sortedAnnotations() {
+            let annotations = this.annotations.slice();
+
+            // This will always be missing for the default sorting.
+            const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
+
+            if (sequence) {
+                const map = {};
+                sequence.forEach((id, idx) => map[id] = idx);
+
+                // Image annotation IDs are prefixed with 'i', video annotations with
+                // 'v' to avoid duplicate IDs whe sorting both types of annotations.
+                annotations.sort((a, b) =>
+                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] -
+                    map[b.type === VIDEO_ANNOTATION ? ('v' + b.id) : ('i' + b.id)]
+                );
+            }
+
+            if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
+                return annotations.reverse();
+            }
+
+            return annotations;
         },
         allAnnotations() {
             let annotations = [];
@@ -98,17 +131,36 @@ export default {
         saveButtonClass() {
             return this.forceChange ? 'btn-danger' : 'btn-success';
         },
+        sortingIsActive() {
+            return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.DESCENDING);
+        },
     },
     methods: {
         getAnnotations(label) {
+            let promise1;
+            let promise2;
+
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
-                // Load only once
                 Vue.set(this.annotationsCache, label.id, []);
                 this.startLoading();
-                this.queryAnnotations(label)
+                promise1 = this.queryAnnotations(label)
                     .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
-                    .finally(this.finishLoading);
+            } else {
+                promise1 = Vue.Promise.resolve();
             }
+
+            const sequence = this.sortingSequenceCache?.[label.id]?.[this.sortingKey];
+            if (this.sortingIsActive && !sequence) {
+                if (!this.loading) {
+                    this.startLoading();
+                }
+                promise2 = this.fetchSortingSequence(this.sortingKey, label.id)
+                    .catch(handleErrorResponse);
+            } else {
+                promise2 = Vue.Promise.resolve();
+            }
+
+            Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
             let imageAnnotations = response[0].data;
@@ -235,6 +287,10 @@ export default {
                     if (!this.annotationsCache.hasOwnProperty(key)) continue;
                     delete this.annotationsCache[key];
                 }
+                for (let key in this.sortingSequenceCache) {
+                    if (!this.sortingSequenceCache.hasOwnProperty(key)) continue;
+                    delete this.sortingSequenceCache[key];
+                }
                 this.handleSelectedLabel(this.selectedLabel);
             }
         },
@@ -307,6 +363,40 @@ export default {
             Echo.getInstance().private(`user-${this.user.id}`)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
+        },
+        updateSortDirection(direction) {
+            this.sortingDirection = direction;
+        },
+        fetchSortingSequence(key, labelId) {
+            let promise;
+            if (key === SORT_KEY.OUTLIER) {
+                promise = this.querySortByOutlier(labelId)
+                    .then(response => response.body);
+            } else {
+                promise = Vue.Promise.resolve([]);
+            }
+
+            return promise.then(ids => this.putSortingSequenceToCache(key, labelId, ids));
+        },
+        putSortingSequenceToCache(key, labelId, sequence) {
+            if (!this.sortingSequenceCache[labelId]) {
+                Vue.set(this.sortingSequenceCache, labelId, {});
+            }
+
+            this.sortingSequenceCache[labelId][key] = sequence;
+        },
+        updateSortKey(key) {
+            const labelId = this.selectedLabel?.id;
+            const sequence = this.sortingSequenceCache?.[labelId]?.[key];
+            if (labelId && !sequence) {
+                this.startLoading();
+                this.fetchSortingSequence(key, labelId)
+                    .then(() => this.sortingKey = key)
+                    .catch(handleErrorResponse)
+                    .finally(this.finishLoading);
+            } else {
+                this.sortingKey = key;
+            }
         },
     },
     watch: {

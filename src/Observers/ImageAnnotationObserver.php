@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Largo\Observers;
 
 use Biigle\Annotation;
-use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 
 class ImageAnnotationObserver extends AnnotationObserver
@@ -11,9 +11,9 @@ class ImageAnnotationObserver extends AnnotationObserver
     /**
      * {@inheritdoc}
      */
-    protected function getSavedDispatch(Annotation $annotation)
+    protected function getSavedDispatch(Annotation $a)
     {
-        return GenerateImageAnnotationPatch::dispatch($annotation);
+        return ProcessAnnotatedImage::dispatch($a->image, only: [$a->id]);
     }
 
     /**

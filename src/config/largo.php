@@ -39,4 +39,19 @@ return [
      | Specifies which queue should be used for the job to save a Largo session.
      */
     'apply_session_queue' => env('LARGO_APPLY_SESSION_QUEUE', 'default'),
+
+    /*
+    | Path to the extract features script.
+    */
+    'extract_features_script' => __DIR__.'/../resources/scripts/ExtractFeatures.py',
+
+    /*
+    | Path to the directory to use as Torch Hub cache.
+    */
+    'torch_hub_path' => storage_path('largo_cache'),
+
+    /*
+    | Path to the Python executable.
+    */
+    'python' => env('LARGO_PYTHON', '/usr/bin/python3'),
 ];
