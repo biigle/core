@@ -44,6 +44,12 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="180" height="135" viewBox="0 0 197 148">'
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleStorageConfigurableDisk()
@@ -68,6 +74,12 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+
+        $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="180" height="135" viewBox="0 0 197 148">'
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandlePoint()
@@ -89,6 +101,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
+                .'<circle cx="100" cy="100" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleCircle()
@@ -113,6 +132,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420">'
+                .'<circle cx="300.4" cy="300.4" r="200" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleOther()
@@ -136,6 +162,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220">'
+                .'<rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -157,6 +190,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 148 148">'
+                .'<circle cx="0" cy="0" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedPositive()
@@ -178,6 +218,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="852 602 148 148">'
+                .'<circle cx="1000" cy="750" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedTooLarge()
@@ -202,6 +249,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100">'
+                .'<circle cx="50" cy="50" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleMinDimension()
@@ -223,6 +277,13 @@ class GenerateImageAnnotationPatchTest extends TestCase
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handleFile($annotation->image, 'abc');
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
+                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="10 10 100 100">'
+                .'<circle cx="60" cy="60" r="10" vector-effect="non-scaling-stroke" /></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleError()
@@ -234,6 +295,9 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $annotation->shape_id = Shape::pointId();
         $job = new GenerateImageAnnotationPatch($annotation);
         $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testFileLockedError()
@@ -246,6 +310,9 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $job = new GenerateImageAnnotationPatch($annotation);
         $job->handle();
         Bus::assertDispatched(GenerateImageAnnotationPatch::class);
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     protected function getImageMock($times = 1)
