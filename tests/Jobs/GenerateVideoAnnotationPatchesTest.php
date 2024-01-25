@@ -60,7 +60,8 @@ class GenerateVideoAnnotationPatchesTest extends TestCase
             'frames' => [0, 10],
             'shape_id' => Shape::wholeFrameId(),
         ]);
-        $job = new GenerateVideoAnnotationPatchStub($annotation, 'test2');
+        $createSVG = 1;
+        $job = new GenerateVideoAnnotationPatchStub($annotation, $createSVG, 'test2');
         $job->mock = $video;
 
         $video->shouldReceive('writeToBuffer')

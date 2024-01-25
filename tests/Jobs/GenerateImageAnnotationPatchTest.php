@@ -59,7 +59,8 @@ class GenerateImageAnnotationPatchTest extends TestCase
         $annotation = ImageAnnotationTest::create([
             'shape_id' => Shape::pointId(),
         ]);
-        $job = new GenerateImageAnnotationPatchStub($annotation, 'test2');
+        $createSVG = 1;
+        $job = new GenerateImageAnnotationPatchStub($annotation, $createSVG, 'test2');
         $job->mock = $image;
 
         $image->shouldReceive('crop')
