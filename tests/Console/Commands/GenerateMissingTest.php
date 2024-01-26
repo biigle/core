@@ -79,6 +79,23 @@ class GenerateMissingTest extends TestCase
         Bus::assertNotDispatched(ProcessAnnotatedVideo::class);
     }
 
+    public function testHandleForce()
+    {
+        $a = ImageAnnotation::factory()->create();
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a), 'abc');
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a, format: 'svg'), 'abc');
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $al->id,
+            'annotation_id' => $a,
+        ]);
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --force');
+        Bus::assertDispatched(ProcessAnnotatedImage::class);
+    }
+
     public function testHandleBatching()
     {
         $a1 = ImageAnnotation::factory()->create();
@@ -296,6 +313,28 @@ class GenerateMissingTest extends TestCase
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1, $a2, $a3) {
             $this->assertEquals($a1->image_id, $job->file->id);
             $this->assertEquals([$a1->id, $a2->id, $a3->id], $job->only);
+
+            return true;
+        });
+    }
+
+    public function testHandleForceWithVectors()
+    {
+        $a1 = ImageAnnotation::factory()->create();
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a1->id]);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $al->id,
+            'annotation_id' => $a1,
+        ]);
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --skip-svgs --skip-patches --force');
+        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1) {
+            $this->assertEquals($a1->image_id, $job->file->id);
+            $this->assertEquals([$a1->id], $job->only);
+            $this->assertFalse($job->skipFeatureVectors);
+            $this->assertTrue($job->skipPatches);
+            $this->assertTrue($job->skipSvgs);
 
             return true;
         });

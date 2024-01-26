@@ -31,6 +31,7 @@ class GenerateMissing extends Command
         {--skip-vectors : Do not check feature vectors}
         {--skip-patches : Do not check annotation patches}
         {--skip-svgs : Do not check annotation SVGs}
+        {--force : Do not check for missing data first}
         {--queue= : Submit processing jobs to this queue}
         {--newer-than= : Only check annotations newer than this date}
         {--older-than= : Only check annotations older than this date}';
@@ -63,6 +64,11 @@ class GenerateMissing extends Command
     protected bool $skipSvgs;
 
     /**
+     * Regenerate data without checking if it is missing.
+     */
+    protected bool $force;
+
+    /**
      * Execute the command.
      *
      * @return void
@@ -73,6 +79,7 @@ class GenerateMissing extends Command
         $this->skipPatches = $this->option('skip-patches');
         $this->skipVectors = $this->option('skip-vectors');
         $this->skipSvgs = $this->option('skip-svgs');
+        $this->force = $this->option('force');
 
         if (!$this->option('skip-images')) {
             $this->handleImageAnnotations();
@@ -105,7 +112,9 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('image_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->when(!$this->skipVectors, function ($query) {
+            // Don't include this if force===true. This will make the job regenerate the
+            // feature vector later.
+            ->when(!$this->skipVectors && !$this->force, function ($query) {
                 $query->leftJoin('image_annotation_label_feature_vectors', 'image_annotation_label_feature_vectors.annotation_id', '=', 'image_annotations.id')
                     ->addSelect('image_annotation_label_feature_vectors.id as vector_id');
             });
@@ -135,7 +144,9 @@ class GenerateMissing extends Command
             ->when($this->option('older-than'), function ($query) {
                 $query->where('video_annotations.created_at', '<', new Carbon($this->option('older-than')));
             })
-            ->when(!$this->skipVectors, function ($query) {
+            // Don't include this if force===true. This will make the job regenerate the
+            // feature vector later.
+            ->when(!$this->skipVectors && !$this->force, function ($query) {
                 $query->leftJoin('video_annotation_label_feature_vectors', 'video_annotation_label_feature_vectors.annotation_id', '=', 'video_annotations.id')
                     ->addSelect('video_annotation_label_feature_vectors.id as vector_id');
             });
@@ -165,17 +176,21 @@ class GenerateMissing extends Command
             if ($this->skipPatches) {
                 $needsPatch = false;
             } else {
-                $needsPatch = !$storage->exists(
+                $needsPatch = $this->force || !$storage->exists(
                     ProcessAnnotatedFile::getTargetPath($annotation)
                 );
             }
 
-            $needsVector = !$this->skipVectors && is_null($annotation->vector_id);
+            if ($this->skipVectors) {
+                $needsVector = false;
+            } else {
+                $needsVector = is_null($annotation->vector_id);
+            }
 
             if ($this->skipSvgs) {
                 $needsSvg = false;
             } else {
-                $needsSvg = !$storage->exists(
+                $needsSvg = $this->force || !$storage->exists(
                     ProcessAnnotatedFile::getTargetPath($annotation, format: 'svg')
                 );
             }
