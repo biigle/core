@@ -24,7 +24,7 @@ class TileSingleImage extends Job implements ShouldQueue
      *
      * @var Image
      */
-    public $image;
+    public $file;
 
     /**
      * Path to the temporary storage file for the tiles.
@@ -32,6 +32,20 @@ class TileSingleImage extends Job implements ShouldQueue
      * @var string
      */
     public $tempPath;
+
+    /**
+     * The name of the permanent storage-disk where the tiles should be stored.
+     *
+     * @var string
+     */
+    public $storage;
+
+    /**
+     * Path to the tiles within the permanent storage-disk.
+     *
+     * @var string
+     */
+    public $fragment;
 
     /**
      * Ignore this job if the image does not exist any more.
@@ -43,14 +57,17 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Image $image The image to generate tiles for.
+     * @param Image $file The image to generate tiles for.
      *
      * @return void
      */
-    public function __construct(Image $image)
+    public function __construct(Image $file)
     {
-        $this->image = $image;
-        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
+        $this->file = $file;
+        $this->tempPath = config('image.tiles.tmp_dir')."/{$file->uuid}";
+        // for uploadToStorage method
+        $this->storage = 'image.tiles.disk';
+        $this->fragment = fragment_uuid_path($file->uuid);
     }
 
     /**
@@ -61,10 +78,10 @@ class TileSingleImage extends Job implements ShouldQueue
     public function handle()
     {
         try {
-            FileCache::getOnce($this->image, [$this, 'generateTiles']);
+            FileCache::getOnce($this->file, [$this, 'generateTiles']);
             $this->uploadToStorage();
-            $this->image->tilingInProgress = false;
-            $this->image->save();
+            $this->file->tilingInProgress = false;
+            $this->file->save();
         } finally {
             File::deleteDirectory($this->tempPath);
         }
@@ -73,10 +90,10 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Generate tiles for the image and put them to temporary storage.
      *
-     * @param Image $image
+     * @param Image $file
      * @param string $path Path to the cached image file.
      */
-    public function generateTiles(Image $image, $path)
+    public function generateTiles($file, $path)
     {
         $this->getVipsImage($path)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
@@ -93,14 +110,13 @@ class TileSingleImage extends Job implements ShouldQueue
         // +1 for the connecting slash.
         $prefixLength = strlen($this->tempPath) + 1;
         $iterator = $this->getIterator($this->tempPath);
-        $disk = Storage::disk(config('image.tiles.disk'));
-        $fragment = fragment_uuid_path($this->image->uuid);
+        $disk = Storage::disk(config($this->storage));
         try {
             foreach ($iterator as $pathname => $fileInfo) {
-                $disk->putFileAs($fragment, $fileInfo, substr($pathname, $prefixLength));
+                $disk->putFileAs($this->fragment, $fileInfo, substr($pathname, $prefixLength));
             }
         } catch (Exception $e) {
-            $disk->deleteDirectory($fragment);
+            $disk->deleteDirectory($this->fragment);
             throw $e;
         }
     }
