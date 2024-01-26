@@ -33,6 +33,7 @@ class GenerateMissing extends Command
         {--skip-svgs : Do not check annotation SVGs}
         {--force : Do not check for missing data first}
         {--queue= : Submit processing jobs to this queue}
+        {--chunk-size=10000 : Number of annotations to fetch at a single time during the loop}
         {--newer-than= : Only check annotations newer than this date}
         {--older-than= : Only check annotations older than this date}';
 
@@ -99,9 +100,8 @@ class GenerateMissing extends Command
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             // Order by image ID first because we want to submit the annotations in
             // batches for each image.
+            // Order by annotation ID is appended automatically by lazyById below.
             ->orderBy('image_annotations.image_id')
-            // Order by annotation ID second to ensure a deterministic order for lazy().
-            ->orderBy('image_annotations.id')
             ->select('image_annotations.id', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('images.volume_id', $this->option('volume'));
@@ -131,9 +131,8 @@ class GenerateMissing extends Command
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             // Order by video ID first because we want to submit the annotations in
             // batches for each video.
+            // Order by annotation ID is appended automatically by lazyById below.
             ->orderBy('video_annotations.video_id')
-            // Order by annotation ID second to ensure a deterministic order for lazy().
-            ->orderBy('video_annotations.id')
             ->select('video_annotations.id', 'video_annotations.video_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('videos.volume_id', $this->option('volume'));
@@ -169,8 +168,10 @@ class GenerateMissing extends Command
         $currentFile = null;
         $currentAnnotationBatch = [];
 
-        // lazy() is crucial as we can't load all annotations at once!
-        foreach ($annotations->with('file')->lazy() as $annotation) {
+        $chunkSize = (int) $this->option('chunk-size', 10000);
+
+        // lazyById() is crucial as we can't load all annotations at once!
+        foreach ($annotations->with('file')->lazyById($chunkSize) as $annotation) {
             $progress->advance();
 
             if ($this->skipPatches) {
