@@ -120,7 +120,7 @@ class GenerateMissing extends Command
             });
 
         $this->line("Image annotations");
-        $this->handleAnnotations($annotations);
+        $this->handleAnnotations($annotations, 'image_annotations.id');
     }
 
     /**
@@ -151,10 +151,10 @@ class GenerateMissing extends Command
             });
 
         $this->line("Video annotations");
-        $this->handleAnnotations($annotations);
+        $this->handleAnnotations($annotations, 'video_annotations.id');
     }
 
-    protected function handleAnnotations(Builder $annotations): void
+    protected function handleAnnotations(Builder $annotations, string $idColumn): void
     {
         $pushToQueue = !$this->option('dry-run');
         $storage = Storage::disk(config('largo.patch_storage_disk'));
@@ -171,7 +171,8 @@ class GenerateMissing extends Command
         $chunkSize = (int) $this->option('chunk-size', 10000);
 
         // lazyById() is crucial as we can't load all annotations at once!
-        foreach ($annotations->with('file')->lazyById($chunkSize) as $annotation) {
+        $generator = $annotations->with('file')->lazyById($chunkSize, $idColumn);
+        foreach ($generator as $annotation) {
             $progress->advance();
 
             if ($this->skipPatches) {
