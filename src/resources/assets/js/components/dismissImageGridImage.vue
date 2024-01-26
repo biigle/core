@@ -1,14 +1,10 @@
 <template>
-    <figure class="image-grid__image" :class="classObject" :title="title">
+    <figure class="image-grid__image image-grid__image--largo" :class="classObject" :title="title">
         <div v-if="selectable" class="image-icon">
             <i class="fas" :class="iconClass"></i>
         </div>
         <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
-        <div v-if="this.showAnnotationOutlines" class="overlay svg">
-            <span v-html="this.svg" class="stroke" :style="this.getSVGStyle(true)"></span>
-            <span v-if="this.isPoint" v-html="this.svg" class="stroke fill" :style="this.getSVGStyle(false)"></span>
-            <span v-else v-html="this.svg" class="stroke" :style="this.getSVGStyle(false)"></span>
-        </div>
+        <img v-if="this.showAnnotationOutlines" v-show="overlayIsLoaded" :src="svgSrcUrl" @error="handleOverlayError" @load="handleOverlayLoad" class="outlines">
         <div v-if="showAnnotationLink" class="image-buttons">
             <a :href="showAnnotationLink" target="_blank" class="image-button"
                 title="Show the annotation in the annotation tool">
@@ -17,26 +13,6 @@
         </div>
     </figure>
 </template>
-
-<style scoped>
-.overlay ::v-deep svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
- }
-.stroke ::v-deep svg * {
-    stroke: var(--color);
-    stroke-width: var(--width);
-    fill: none;
-    stroke-linejoin: round;
-    opacity: var(--opacity);
-}
-
-.fill ::v-deep svg circle {
-    fill: var(--color);
-}
-</style>
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch';
@@ -55,7 +31,8 @@ export default {
     data() {
         return {
             showAnnotationRoute: null,
-            svg: null,
+            overlayIsLoaded: false,
+            overlayHasError: false,
         };
     },
     inject: ['outlines'],
@@ -69,36 +46,21 @@ export default {
         title() {
             return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
         },
-        isPoint() {
-            return this.svg !== null ? this.svg.includes('isPoint="true"') : false;
-        },
         svgSrcUrl() {
             // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
         showAnnotationOutlines(){
-           return this.svg !== null && this.outlines.showAnnotationOutlines;
-        }
+           return !this.overlayHasError && this.outlines.showAnnotationOutlines;
+        },
     },
     methods: {
-        async fetchSVG() {
-            this.label_id = this.image.label_id;
-            let response = await fetch(this.svgSrcUrl);
-
-            if (!response.ok) {
-                return;
-            }
-
-            this.svg = await response.text();
+        handleOverlayLoad() {
+            this.overlayIsLoaded = true;
         },
-        getSVGStyle(isOutline) {
-            let opacity = this.selected ? 0.25 : 1;
-            return isOutline ? `--color: white; --width: 5px; --opacity: ${opacity}`
-                : `--color: #${this.image.label_color}; --width: 3px; --opacity: ${opacity}`;
+        handleOverlayError() {
+            this.overlayHasError = true;
         },
     },
-    created() {
-        this.fetchSVG();
-    }
 };
 </script>

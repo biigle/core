@@ -109,9 +109,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
-                .'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148">'
-                .'<circle cx="100.4" cy="100.4" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100.4" cy="100.4" r="6" fill="#fff" /><circle cx="100.4" cy="100.4" r="5" fill="#666" /></g></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -144,9 +142,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
-                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"'
-               .'><circle cx="300" cy="300" r="200" vector-effect="non-scaling-stroke" /></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -181,9 +177,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
-                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"'
-               .'><polygon points="100,100 150,200 200,100 100,100" vector-effect="non-scaling-stroke" /></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertEquals($svg, $content);
     }
 
@@ -214,9 +208,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" '
-                . 'xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"'
-               .'><circle cx="100" cy="100" r="3" vector-effect="non-scaling-stroke" isPoint="true" /></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
         $this->assertEquals($svg, $content);
     }
 

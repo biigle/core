@@ -25,6 +25,7 @@ use SVG\Nodes\Shapes\SVGEllipse;
 use SVG\Nodes\Shapes\SVGPolygon;
 use SVG\Nodes\Shapes\SVGPolyline;
 use SVG\Nodes\Shapes\SVGRect;
+use SVG\Nodes\Structures\SVGGroup;
 use SVG\Nodes\SVGNodeContainer;
 use SVG\SVG;
 
@@ -192,8 +193,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         }
         $shape = $annotation->getShape();
 
-        $svgAnnotation = $this->getSVGAnnotation($points, $shape);
-
         $box = $this->getAnnotationBoundingBox($points, $shape, $pointPadding, $padding);
         $box = $this->ensureBoxAspectRatio($box, $thumbWidth, $thumbHeight);
         $box = $this->makeBoxContained($box, $this->file->width, $this->file->height);
@@ -201,17 +200,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         // Set viewbox to show svgAnnotation
         $doc->setAttribute('viewBox', implode(' ', $box));
 
-        $svgAnnotation->setAttribute('vector-effect', 'non-scaling-stroke');
-
-        // Add attribute to distinguish circles from points in the frontend
-        if ($shape->id == Shape::pointId()) {
-            $svgAnnotation->setAttribute('isPoint', 'true');
-        }
-
-        if ($shape->id == Shape::lineId()) {
-            $svgAnnotation->setAttribute('stroke-linecap', 'round');
-        }
-
+        $svgAnnotation = $this->getSVGAnnotation($points, $shape);
         $doc->addChild($svgAnnotation);
 
         $path = self::getTargetPath($annotation, format: 'svg');
@@ -324,49 +313,91 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             }
         }
 
-        switch ($shape->id) {
-            case Shape::pointId():
-                $radius = 3;
-                return new SVGCircle($points[0], $points[1], $radius);
-            case Shape::circleId():
-                return new SVGCircle($points[0], $points[1], $points[2]);
-            case Shape::polygonId():
-                return new SVGPolygon($tuples);
-            case Shape::lineId():
-                return new SVGPolyline($tuples);
-            case Shape::rectangleId():
-                $sortedCoords = $this->getOrientedCoordinates($tuples, $shape);
+        $annotation = match ($shape->id) {
+            Shape::pointId() => new SVGCircle($points[0], $points[1], 5),
+            Shape::circleId() => new SVGCircle($points[0], $points[1], $points[2]),
+            Shape::polygonId() => new SVGPolygon($tuples),
+            Shape::lineId() => new SVGPolyline($tuples),
+            Shape::rectangleId() => $this->getRectangleSvgAnnotation($tuples),
+            Shape::ellipseId() => $this->getEllipseSvgAnnotation($tuples),
+        };
 
-                $upperLeft = $sortedCoords['UL'];
-                $width = sqrt(pow($sortedCoords['UR'][0] - $upperLeft[0], 2) + pow($sortedCoords['UR'][1] - $upperLeft[1], 2));
-                $height = sqrt(pow($upperLeft[0] - $sortedCoords['LL'][0], 2) + pow($upperLeft[1] - $sortedCoords['LL'][1], 2));
-                $rect = new SVGRect($upperLeft[0], $upperLeft[1], $width, $height);
-
-                // Add rotation
-                $vecLR = [$sortedCoords['UR'][0] - $upperLeft[0], $sortedCoords['UR'][1] - $upperLeft[1]];
-                $u = [$width, 0];
-                $cos = $this->computeRotationAngle($vecLR, $u);
-                $rect->setAttribute('transform', 'rotate(' . $cos . ',' . $upperLeft[0] . ',' . $upperLeft[1] . ')');
-
-                return $rect;
-            case Shape::ellipseId():
-                $sortedCoords = $this->getOrientedCoordinates($tuples, $shape);
-
-                $vecLR = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
-                $vecUD = [$sortedCoords['D'][0] - $sortedCoords['U'][0], $sortedCoords['D'][1] - $sortedCoords['U'][1]];
-                $radiusX = sqrt(pow($vecLR[0], 2) + pow($vecLR[1], 2)) / 2.0;
-                $radiusY = sqrt(pow($vecUD[0], 2) + pow($vecUD[1], 2)) / 2.0;
-                $center = [0.5 * $vecLR[0] + $sortedCoords['L'][0], 0.5 * $vecLR[1] + $sortedCoords['L'][1]];
-                $elps = new SVGEllipse($center[0], $center[1], $radiusX, $radiusY);
-
-                // Add rotation
-                $v = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
-                $u = [$center[0], 0];
-                $cos = $this->computeRotationAngle($v, $u);
-
-                $elps->setAttribute('transform', 'rotate(' . $cos . ',' . $center[0] . ',' . $center[1] . ')');
-                return $elps;
+        if ($shape->id !== Shape::pointId()) {
+            $annotation->setAttribute('fill', 'none');
+            $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
         }
+
+        if ($annotation instanceof SVGPolyline) {
+            $annotation->setAttribute('stroke-linecap', 'round');
+        }
+
+        if (!($annotation instanceof SVGCircle)) {
+            $annotation->setAttribute('stroke-linejoin', 'round');
+        }
+
+        $outline = clone $annotation;
+
+        if ($shape->id === Shape::pointId()) {
+            $outline->setAttribute('r', 6);
+            $outline->setAttribute('fill', '#fff');
+            $annotation->setAttribute('fill', '#666');
+        } else {
+            $outline->setAttribute('stroke', '#fff');
+            $outline->setAttribute('stroke-width', '5px');
+            $annotation->setAttribute('stroke', '#666');
+            $annotation->setAttribute('stroke-width', '3px');
+        }
+
+        $group = new SVGGroup;
+        $group->addChild($outline);
+        $group->addChild($annotation);
+
+        return $group;
+    }
+
+    /**
+     * Get an SVG rectangle element.
+     */
+    protected function getRectangleSvgAnnotation(array $tuples): SVGRect
+    {
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangle());
+
+        $upperLeft = $sortedCoords['UL'];
+        $width = sqrt(pow($sortedCoords['UR'][0] - $upperLeft[0], 2) + pow($sortedCoords['UR'][1] - $upperLeft[1], 2));
+        $height = sqrt(pow($upperLeft[0] - $sortedCoords['LL'][0], 2) + pow($upperLeft[1] - $sortedCoords['LL'][1], 2));
+        $rect = new SVGRect($upperLeft[0], $upperLeft[1], $width, $height);
+
+        // Add rotation
+        $vecLR = [$sortedCoords['UR'][0] - $upperLeft[0], $sortedCoords['UR'][1] - $upperLeft[1]];
+        $u = [$width, 0];
+        $cos = $this->computeRotationAngle($vecLR, $u);
+        $rect->setAttribute('transform', 'rotate(' . $cos . ',' . $upperLeft[0] . ',' . $upperLeft[1] . ')');
+
+        return $rect;
+    }
+
+    /**
+     * Get an SVG ellipse element.
+     */
+    protected function getEllipseSvgAnnotation(array $tuples): SVGEllipse
+    {
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipse());
+
+        $vecLR = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
+        $vecUD = [$sortedCoords['D'][0] - $sortedCoords['U'][0], $sortedCoords['D'][1] - $sortedCoords['U'][1]];
+        $radiusX = sqrt(pow($vecLR[0], 2) + pow($vecLR[1], 2)) / 2.0;
+        $radiusY = sqrt(pow($vecUD[0], 2) + pow($vecUD[1], 2)) / 2.0;
+        $center = [0.5 * $vecLR[0] + $sortedCoords['L'][0], 0.5 * $vecLR[1] + $sortedCoords['L'][1]];
+        $elps = new SVGEllipse($center[0], $center[1], $radiusX, $radiusY);
+
+        // Add rotation
+        $v = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
+        $u = [$center[0], 0];
+        $cos = $this->computeRotationAngle($v, $u);
+
+        $elps->setAttribute('transform', 'rotate(' . $cos . ',' . $center[0] . ',' . $center[1] . ')');
+
+        return $elps;
     }
 
     /**

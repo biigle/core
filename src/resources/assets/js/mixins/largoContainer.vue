@@ -206,7 +206,6 @@ export default {
                         dismissed: false,
                         newLabel: null,
                         type: type,
-                        label_color: label.color,
                     };
                 });
         },

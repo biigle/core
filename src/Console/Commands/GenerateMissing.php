@@ -213,7 +213,7 @@ class GenerateMissing extends Command
         }
 
         $percent = round($count / $total * 100, 2);
-        $this->info("\nFound {$count} annotations with missing patches ({$percent} %).");
+        $this->info("\nFound {$count} annotations with missing data ({$percent} %).");
         if ($pushToQueue) {
             $this->info("Pushed {$jobCount} jobs to queue {$this->queue}.");
         }
