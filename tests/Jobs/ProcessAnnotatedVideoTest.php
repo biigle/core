@@ -146,7 +146,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertEquals($svg, $content);
     }
 
-    public function testHandleOther()
+    public function testHandlePolygon()
     {
         config([
             'thumbnails.height' => 100,
@@ -178,6 +178,99 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleLineString()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [
+                [100, 100, 150, 200, 200, 100],
+                [200, 200, 250, 300, 300, 200],
+            ],
+            'frames' => [1, 2],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 120, 120)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleRectangle()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::rectangleId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 220, 220)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleEllipse()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::ellipseId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 220, 220)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertEquals($svg, $content);
     }
 
