@@ -39,6 +39,18 @@
     }
 }
 
+.image-grid__image--largo {
+    .outlines {
+        position: absolute;
+        /*  2px is the figure padding  */
+        top: 2px;
+        left: 2px;
+        pointer-events: none;
+        width: calc(100% - 4px);
+        height: calc(100% - 4px);
+    }
+}
+
 .image-grid__image--catalog {
     > a {
         width: 100%;

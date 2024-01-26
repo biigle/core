@@ -17,18 +17,15 @@ use VipsImage;
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
     /**
-     * Handle a single image.
-     *
-     * @param VolumeFile $file
-     * @param string $path Path to the cached image file.
+     * {@inheritdoc}
      */
     public function handleFile(VolumeFile $file, $path)
     {
         $video = $this->getVideo($path);
-
-        VideoAnnotation::where('video_id', $file->id)
-            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
-            ->chunkById(1000, fn ($a) => $this->processAnnotationChunk($a, $video));
+        $this->getAnnotationQuery($file)->chunkById(
+            1000,
+            fn ($a) => $this->processAnnotationChunk($a, $video)
+        );
     }
 
     /**
@@ -119,5 +116,16 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         $buffer = $video->frame(TimeCode::fromSeconds($time))->save(null, false, true);
 
         return VipsImage::newFromBuffer($buffer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAnnotationQuery(VolumeFile $file): Builder
+    {
+        return VideoAnnotation::where('video_id', $file->id)->when(
+            !empty($this->only),
+            fn ($q) => $q->whereIn('id', $this->only)
+        );;
     }
 }

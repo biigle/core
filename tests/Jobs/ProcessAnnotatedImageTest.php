@@ -24,13 +24,14 @@ class ProcessAnnotatedImageTest extends TestCase
     {
         parent::setUp();
         config(['largo.patch_storage_disk' => 'test']);
+        FileCache::fake();
     }
 
     public function testHandleStorage()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create();
+        $annotation = ImageAnnotationTest::create(['shape_id' => Shape::pointId()]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
@@ -42,17 +43,18 @@ class ProcessAnnotatedImageTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        $content = Storage::disk('test')->get("{$prefix}/{$annotation->id}.jpg");
+        $content = $disk->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+        $disk->assertExists("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testHandleStorageConfigurableDisk()
     {
-        Storage::fake('test2');
+        $disk = Storage::fake('test2');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create();
+        $annotation = ImageAnnotationTest::create(['shape_id' => Shape::pointId()]);
         $job = new ProcessAnnotatedImageStub($annotation->image, targetDisk: 'test2');
         $job->mock = $image;
 
@@ -64,16 +66,17 @@ class ProcessAnnotatedImageTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        $content = Storage::disk('test2')->get("{$prefix}/{$annotation->id}.jpg");
+        $content = $disk->get("{$prefix}/{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+        $disk->assertExists("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testHandlePoint()
     {
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [100, 100],
@@ -88,13 +91,18 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleCircle()
     {
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             // Should handle floats correctly.
@@ -112,16 +120,73 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
-    public function testHandleOther()
+    public function testHandlePolygon()
     {
         config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
-            // Make the polygon large enough so the crop is not affected by the minimum
+            'points' => [300, 300, 200, 200, 300, 200, 300, 300],
+            'shape_id' => Shape::polygonId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(190, 190, 120, 120)
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleLineString()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = ImageAnnotationTest::create([
+            'points' => [300, 300, 200, 200, 300, 200],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(190, 190, 120, 120)
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleRectangle()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = ImageAnnotationTest::create([
+            // Make the rectangle large enough so the crop is not affected by the minimum
             // dimension.
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
             'shape_id' => Shape::rectangleId(),
@@ -135,7 +200,38 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleEllipse()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = ImageAnnotationTest::create([
+            'points' => [100, 100, 100, 300, 300, 300, 300, 100],
+            'shape_id' => Shape::ellipseId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->with(90, 90, 220, 220)
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $content = $disk->get("{$prefix}/{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -156,7 +252,7 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleContainedPositive()
@@ -177,7 +273,7 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleContainedTooLarge()
@@ -201,7 +297,7 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleMinDimension()
@@ -222,7 +318,7 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleContainedNegativeProblematic()
@@ -245,7 +341,7 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleContainedPositiveProblematic()
@@ -268,21 +364,26 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
     }
 
     public function testHandleError()
     {
+        $disk = Storage::fake('test');
         FileCache::shouldReceive('get')->andThrow(new Exception('error'));
         Log::shouldReceive('warning')->once();
 
         $annotation = ImageAnnotationTest::create();
         $job = new ProcessAnnotatedImage($annotation->image);
         $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testFileLockedError()
     {
+        $disk = Storage::fake('test');
         Bus::fake();
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
 
@@ -290,6 +391,9 @@ class ProcessAnnotatedImageTest extends TestCase
         $job = new ProcessAnnotatedImage($annotation->image);
         $job->handle();
         Bus::assertDispatched(ProcessAnnotatedImage::class);
+
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testGenerateFeatureVectorNew()
@@ -308,7 +412,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
 
         $input = $job->input;
         $this->assertCount(1, $input);
@@ -345,7 +449,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
 
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(2, $vectors);
@@ -389,7 +493,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
 
         $count = ImageAnnotationLabelFeatureVector::count();
         $this->assertEquals(2, $count);
@@ -399,7 +503,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
     public function testHandlePatchOnly()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $image->shouldReceive('crop')->andReturn($image);
         $image->shouldReceive('writeToBuffer')->andReturn('abc123');
@@ -409,36 +513,67 @@ class ProcessAnnotatedImageTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($annotation->image, skipFeatureVectors: true);
+        $job = new ProcessAnnotatedImageStub($annotation->image,
+            skipFeatureVectors: true,
+            skipSvgs: true
+        );
         $job->mock = $image;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/{$annotation->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
         $this->assertEquals(0, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleFeatureVectorOnly()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
             'shape_id' => Shape::pointId(),
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($annotation->image, skipPatches: true);
+        $job = new ProcessAnnotatedImageStub($annotation->image,
+            skipPatches: true,
+            skipSvgs: true
+        );
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
-        $job->handleFile($annotation->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        Storage::disk('test')->assertMissing("{$prefix}/{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
         $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleSvgOnly()
+    {
+        FileCache::shouldReceive('get')->never();
+        $disk = Storage::fake('test');
+
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape_id' => Shape::pointId(),
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedImageStub($annotation->image,
+            skipFeatureVectors: true,
+            skipPatches: true
+        );
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation->id}.svg");
+        $this->assertEquals(0, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleMultipleAnnotations()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock(2);
         $annotation1 = ImageAnnotationTest::create([
             'points' => [100, 100],
@@ -464,16 +599,18 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->twice()->andReturn('abc123');
-        $job->handleFile($annotation1->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation1->image->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/{$annotation1->id}.jpg");
-        Storage::disk('test')->assertExists("{$prefix}/{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation1->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation1->id}.svg");
+        $disk->assertExists("{$prefix}/{$annotation2->id}.svg");
         $this->assertEquals(2, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleOnlyAnnotations()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $image = $this->getImageMock(1);
         $annotation1 = ImageAnnotationTest::create([
             'points' => [100, 100],
@@ -496,10 +633,12 @@ class ProcessAnnotatedImageTest extends TestCase
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation1->image, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation1->image->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/{$annotation1->id}.jpg");
-        Storage::disk('test')->assertMissing("{$prefix}/{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation1->id}.jpg");
+        $disk->assertExists("{$prefix}/{$annotation1->id}.svg");
+        $disk->assertMissing("{$prefix}/{$annotation2->id}.jpg");
+        $disk->assertMissing("{$prefix}/{$annotation2->id}.svg");
         $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
     }
 

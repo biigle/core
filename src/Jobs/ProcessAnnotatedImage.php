@@ -17,10 +17,7 @@ use VipsImage;
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
 {
     /**
-     * Handle a single image.
-     *
-     * @param VolumeFile $file
-     * @param string $path Path to the cached image file.
+     * {@inheritdoc}
      */
     public function handleFile(VolumeFile $file, $path)
     {
@@ -31,7 +28,6 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
         }
 
         $this->getAnnotationQuery($file)
-            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
             ->chunkById(1000, function ($annotations) use ($image, $path) {
                 if (!$this->skipPatches) {
                     $annotations->each(function ($a) use ($image) {
@@ -89,13 +85,13 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     }
 
     /**
-     * Get the query builder for the annotations.
-     *
-     * This can be used to extend this class and process different models than image
-     * annotations.
+     * {@inheritdoc}
      */
     protected function getAnnotationQuery(VolumeFile $file): Builder
     {
-        return ImageAnnotation::where('image_id', $file->id);
+        return ImageAnnotation::where('image_id', $file->id)->when(
+            !empty($this->only),
+            fn ($q) => $q->whereIn('id', $this->only)
+        );
     }
 }

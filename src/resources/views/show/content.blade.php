@@ -40,4 +40,9 @@
             v-on:change-key="updateSortKey"
             ></sorting-tab>
     </sidebar-tab>
+    <sidebar-tab name="settings" icon="cog" title="Settings">
+        <settings-tab
+            v-on:change-outlines="updateShowOutlines"
+            ></settings-tab>
+    </sidebar-tab>
 </sidebar>

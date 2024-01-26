@@ -26,11 +26,12 @@ class ProcessAnnotatedVideoTest extends TestCase
     {
         parent::setUp();
         config(['largo.patch_storage_disk' => 'test']);
+        FileCache::fake();
     }
 
     public function testHandleStorage()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [],
@@ -45,16 +46,18 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test')->get("{$prefix}/v-{$annotation->id}.jpg");
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+        // SVGs are not generated for whole frame annotations.
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
     public function testHandleStorageConfigurableDisk()
     {
-        Storage::fake('test2');
+        $disk = Storage::fake('test2');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [],
@@ -69,11 +72,13 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->once()
             ->andReturn('abc123');
 
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
-        $content = Storage::disk('test2')->get("{$prefix}/v-{$annotation->id}.jpg");
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.jpg");
         $this->assertEquals('abc123', $content);
+        // SVGs are not generated for whole frame annotations.
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
     public function testHandlePoint()
@@ -82,7 +87,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
         ]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Should handle floats correctly.
@@ -99,8 +104,13 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100.4" cy="100.4" r="6" fill="#fff" /><circle cx="100.4" cy="100.4" r="5" fill="#666" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleCircle()
@@ -109,7 +119,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
         ]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Make the circle large enough so the crop is not affected by the minimum
@@ -127,17 +137,22 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
-    public function testHandleOther()
+    public function testHandlePolygon()
     {
         config([
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
         ]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             // Make the polygon large enough so the crop is not affected by the minimum
@@ -158,7 +173,105 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleLineString()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [
+                [100, 100, 150, 200, 200, 100],
+                [200, 200, 250, 300, 300, 200],
+            ],
+            'frames' => [1, 2],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 120, 120)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleRectangle()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::rectangleId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 220, 220)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
+    }
+
+    public function testHandleEllipse()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::ellipseId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->with(90, 90, 220, 220)
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+        $job->handle();
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleSingleFrame()
@@ -167,7 +280,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             'thumbnails.height' => 100,
             'thumbnails.width' => 100,
         ]);
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
@@ -183,8 +296,13 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
+
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
+        $this->assertEquals($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -209,7 +327,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
     }
 
@@ -235,7 +353,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
     }
 
@@ -264,7 +382,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $this->assertEquals([1], $job->times);
     }
 
@@ -290,21 +408,25 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
     }
 
     public function testHandleError()
     {
+        $disk = Storage::fake('test');
         FileCache::shouldReceive('get')->andThrow(new Exception('error'));
         Log::shouldReceive('warning')->once();
 
         $annotation = VideoAnnotationTest::create();
         $job = new ProcessAnnotatedVideo($annotation->video);
         $job->handle();
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
     public function testFileLockedError()
     {
+        $disk = Storage::fake('test');
         Bus::fake();
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
 
@@ -312,6 +434,8 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job = new ProcessAnnotatedVideo($annotation->video);
         $job->handle();
         Bus::assertDispatched(ProcessAnnotatedVideo::class);
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
     public function testGenerateFeatureVectorNew()
@@ -331,7 +455,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
 
         $input = $job->input;
         $this->assertCount(1, $input);
@@ -369,7 +493,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
 
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(2, $vectors);
@@ -414,7 +538,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
 
         $count = VideoAnnotationLabelFeatureVector::count();
         $this->assertEquals(2, $count);
@@ -456,7 +580,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
     public function testHandlePatchOnly()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $video->shouldReceive('crop')->andReturn($video);
         $video->shouldReceive('writeToBuffer')->andReturn('abc123');
@@ -467,19 +591,23 @@ class ProcessAnnotatedVideoTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video, skipFeatureVectors: true);
+        $job = new ProcessAnnotatedVideoStub($annotation->video,
+            skipFeatureVectors: true,
+            skipSvgs: true
+        );
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
         $this->assertEquals(0, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleFeatureVectorOnly()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock(0);
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
@@ -487,19 +615,48 @@ class ProcessAnnotatedVideoTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video, skipPatches: true);
+        $job = new ProcessAnnotatedVideoStub($annotation->video,
+            skipPatches: true,
+            skipSvgs: true
+        );
         $job->mock = $video;
         $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
-        $job->handleFile($annotation->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
-        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
         $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
+    }
+
+    public function testHandleSvgOnly()
+    {
+        FileCache::shouldReceive('get')->never();
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video,
+            skipFeatureVectors: true,
+            skipPatches: true
+        );
+        $job->mock = $video;
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation->id}.svg");
+        $this->assertEquals(0, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleMultipleAnnotations()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock(2);
         $annotation1 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
@@ -527,16 +684,18 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->twice()->andReturn('abc123');
-        $job->handleFile($annotation1->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation1->video->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
-        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation1->id}.svg");
+        $disk->assertExists("{$prefix}/v-{$annotation2->id}.svg");
         $this->assertEquals(2, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleOnlyAnnotations()
     {
-        Storage::fake('test');
+        $disk = Storage::fake('test');
         $video = $this->getFrameMock(1);
         $annotation1 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
@@ -561,10 +720,12 @@ class ProcessAnnotatedVideoTest extends TestCase
             ->andReturn($video);
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
-        $job->handleFile($annotation1->video, 'abc');
+        $job->handle();
         $prefix = fragment_uuid_path($annotation1->video->uuid);
-        Storage::disk('test')->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
-        Storage::disk('test')->assertMissing("{$prefix}/v-{$annotation2->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation1->id}.jpg");
+        $disk->assertExists("{$prefix}/v-{$annotation1->id}.svg");
+        $disk->assertMissing("{$prefix}/v-{$annotation2->id}.jpg");
+        $disk->assertMissing("{$prefix}/v-{$annotation2->id}.svg");
         $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
     }
 

@@ -36,6 +36,7 @@ class GenerateMissingTest extends TestCase
         $a = ImageAnnotation::factory()->create();
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $disk->put(ProcessAnnotatedImage::getTargetPath($a), 'abc');
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a, format: 'svg'), 'abc');
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         ImageAnnotationLabelFeatureVector::factory()->create([
             'id' => $al->id,
@@ -66,6 +67,7 @@ class GenerateMissingTest extends TestCase
         $a = VideoAnnotation::factory()->create();
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $disk->put(ProcessAnnotatedVideo::getTargetPath($a), 'abc');
+        $disk->put(ProcessAnnotatedVideo::getTargetPath($a, format: 'svg'), 'abc');
         $al = VideoAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         VideoAnnotationLabelFeatureVector::factory()->create([
             'id' => $al->id,
@@ -210,6 +212,7 @@ class GenerateMissingTest extends TestCase
         $a2 = ImageAnnotation::factory()->create(['image_id' => $a1->image_id]);
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $disk->put(ProcessAnnotatedImage::getTargetPath($a1), 'abc');
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a1, format: 'svg'), 'abc');
 
         Bus::fake();
         $this->artisan('largo:generate-missing --skip-vectors');
@@ -218,6 +221,7 @@ class GenerateMissingTest extends TestCase
             $this->assertEquals([$a2->id], $job->only);
             $this->assertTrue($job->skipFeatureVectors);
             $this->assertFalse($job->skipPatches);
+            $this->assertFalse($job->skipSvgs);
 
             return true;
         });
@@ -228,6 +232,8 @@ class GenerateMissingTest extends TestCase
         $a1 = ImageAnnotation::factory()->create();
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a1->id]);
         $a2 = ImageAnnotation::factory()->create(['image_id' => $a1->image_id]);
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a1, format: 'svg'), 'abc');
         ImageAnnotationLabelFeatureVector::factory()->create([
             'id' => $al->id,
             'annotation_id' => $a1,
@@ -240,6 +246,32 @@ class GenerateMissingTest extends TestCase
             $this->assertEquals([$a2->id], $job->only);
             $this->assertFalse($job->skipFeatureVectors);
             $this->assertTrue($job->skipPatches);
+            $this->assertFalse($job->skipSvgs);
+
+            return true;
+        });
+    }
+
+    public function testHandleSkipSvgs()
+    {
+        $a1 = ImageAnnotation::factory()->create();
+        $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a1->id]);
+        $a2 = ImageAnnotation::factory()->create(['image_id' => $a1->image_id]);
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a1), 'abc');
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $al->id,
+            'annotation_id' => $a1,
+        ]);
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --skip-svgs');
+        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
+            $this->assertEquals($a2->image_id, $job->file->id);
+            $this->assertEquals([$a2->id], $job->only);
+            $this->assertFalse($job->skipFeatureVectors);
+            $this->assertFalse($job->skipPatches);
+            $this->assertTrue($job->skipSvgs);
 
             return true;
         });
@@ -250,18 +282,20 @@ class GenerateMissingTest extends TestCase
         $a1 = ImageAnnotation::factory()->create();
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a1->id]);
         $a2 = ImageAnnotation::factory()->create(['image_id' => $a1->image_id]);
+        $a3 = ImageAnnotation::factory()->create(['image_id' => $a1->image_id]);
         ImageAnnotationLabelFeatureVector::factory()->create([
             'id' => $al->id,
             'annotation_id' => $a1,
         ]);
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $disk->put(ProcessAnnotatedImage::getTargetPath($a2), 'abc');
+        $disk->put(ProcessAnnotatedImage::getTargetPath($a3, format: 'svg'), 'abc');
 
         Bus::fake();
         $this->artisan('largo:generate-missing');
-        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1, $a2) {
+        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1, $a2, $a3) {
             $this->assertEquals($a1->image_id, $job->file->id);
-            $this->assertEquals([$a1->id, $a2->id], $job->only);
+            $this->assertEquals([$a1->id, $a2->id, $a3->id], $job->only);
 
             return true;
         });

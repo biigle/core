@@ -4,7 +4,6 @@ namespace Biigle\Modules\Largo\Jobs;
 
 use Biigle\Contracts\Annotation;
 use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Modules\Largo\Traits\ComputesAnnotationBox;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
@@ -18,8 +17,17 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
 use Str;
+use SVG\Nodes\Shapes\SVGCircle;
+use SVG\Nodes\Shapes\SVGEllipse;
+use SVG\Nodes\Shapes\SVGPolygon;
+use SVG\Nodes\Shapes\SVGPolyline;
+use SVG\Nodes\Shapes\SVGRect;
+use SVG\Nodes\Structures\SVGGroup;
+use SVG\Nodes\SVGNodeContainer;
+use SVG\SVG;
 
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
@@ -48,6 +56,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @param bool|boolean $skipPatches Disable generation of annotation patches.
      * @param bool|boolean $skipFeatureVectors Disable generation of annotation
      * feature vectors.
+     * @param bool|boolean $skipSvgs Disable generation of annotation SVGs.
      * @param ?string $targetDisk The storage disk to store annotation patches to (
      * default is the configured `largo.patch_storage_disk`).
      */
@@ -56,6 +65,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         public array $only = [],
         public bool $skipPatches = false,
         public bool $skipFeatureVectors = false,
+        public bool $skipSvgs = false,
         public ?string $targetDisk = null
     )
     {
@@ -69,10 +79,10 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      *
      * @return string
      */
-    public static function getTargetPath(Annotation $annotation): string
+    public static function getTargetPath(Annotation $annotation, ?string $format = null): string
     {
         $prefix = fragment_uuid_path($annotation->getFile()->uuid);
-        $format = config('largo.patch_format');
+        $format = $format ?: config('largo.patch_format');
 
         return match($annotation::class) {
             // Add "v-" to make absolutely sure that no collisions (same UUID, same ID)
@@ -92,7 +102,14 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     public function handle()
     {
         try {
-            FileCache::get($this->file, [$this, 'handleFile'], true);
+            // Don't load the file if it is not needed.
+            if (!$this->skipPatches || !$this->skipFeatureVectors) {
+                FileCache::get($this->file, [$this, 'handleFile'], true);
+            }
+
+            if (!$this->skipSvgs) {
+                $this->createSvgs();
+            }
         } catch (FileLockedException $e) {
             // Retry this job without increasing the attempts if the file is currently
             // written by another worker. This worker can process other jobs in the
@@ -103,6 +120,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                     $this->only,
                     $this->skipPatches,
                     $this->skipFeatureVectors,
+                    $this->skipSvgs,
                     $this->targetDisk
                 )
                 ->onConnection($this->connection)
@@ -143,6 +161,51 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             // This error presumably occurs due to worker concurrency.
             Str::contains($message, 'Impossible to create the root directory')
         );
+    }
+
+    /**
+     * Generate and upload annotation SVGs for the file.
+     */
+    public function createSvgs(): void
+    {
+        $this->getAnnotationQuery($this->file)
+            // No SVGs should be generated for whole frame annotations.
+            ->where('shape_id', '!=', Shape::wholeFrameId())
+            ->eachById(fn ($a) => $this->createSvg($a));
+    }
+
+    /**
+     * Generate and upload an SVG for the annotation.
+     */
+    protected function createSvg(Annotation $annotation): void
+    {
+        $thumbWidth = config('thumbnails.width');
+        $thumbHeight = config('thumbnails.height');
+        $padding = config('largo.patch_padding');
+        $pointPadding = config('largo.point_padding');
+
+        $svg = new SVG($thumbWidth, $thumbHeight);
+        $doc = $svg->getDocument();
+
+        $points = $annotation->getPoints();
+        if (is_array($points[0])) {
+            $points = $points[0];
+        }
+        $shape = $annotation->getShape();
+
+        $box = $this->getAnnotationBoundingBox($points, $shape, $pointPadding, $padding);
+        $box = $this->ensureBoxAspectRatio($box, $thumbWidth, $thumbHeight);
+        $box = $this->makeBoxContained($box, $this->file->width, $this->file->height);
+
+        // Set viewbox to show svgAnnotation
+        $doc->setAttribute('viewBox', implode(' ', $box));
+
+        $svgAnnotation = $this->getSVGAnnotation($points, $shape);
+        $doc->addChild($svgAnnotation);
+
+        $path = self::getTargetPath($annotation, format: 'svg');
+
+        Storage::disk($this->targetDisk)->put($path, $svg);
     }
 
     /**
@@ -226,4 +289,175 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * Create the feature vectors based on the Python script output.
      */
     abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
+
+    /**
+     * Get the query builder for the annotations (maybe filtered by IDs).
+     */
+    abstract protected function getAnnotationQuery(VolumeFile $file): Builder;
+
+    /**
+     * Draw annotation as SVG
+     *
+     * @param int $shapeId shape of given annotation
+     * @param array $points one dimensional array filled with coordinates of annotation
+     *
+     * @return SVGNodeContainer annotation as SVG
+     *
+     * **/
+    protected function getSVGAnnotation(array $points, Shape $shape): SVGNodeContainer
+    {
+        $tuples = [];
+        if ($shape->id !== Shape::circleId()) {
+            for ($i = 0; $i < sizeof($points) - 1; $i = $i + 2) {
+                $tuples[] = [$points[$i], $points[$i + 1]];
+            }
+        }
+
+        $annotation = match ($shape->id) {
+            Shape::pointId() => new SVGCircle($points[0], $points[1], 5),
+            Shape::circleId() => new SVGCircle($points[0], $points[1], $points[2]),
+            Shape::polygonId() => new SVGPolygon($tuples),
+            Shape::lineId() => new SVGPolyline($tuples),
+            Shape::rectangleId() => $this->getRectangleSvgAnnotation($tuples),
+            Shape::ellipseId() => $this->getEllipseSvgAnnotation($tuples),
+        };
+
+        if ($shape->id !== Shape::pointId()) {
+            $annotation->setAttribute('fill', 'none');
+            $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
+        }
+
+        if ($annotation instanceof SVGPolyline) {
+            $annotation->setAttribute('stroke-linecap', 'round');
+        }
+
+        if (!($annotation instanceof SVGCircle)) {
+            $annotation->setAttribute('stroke-linejoin', 'round');
+        }
+
+        $outline = clone $annotation;
+
+        if ($shape->id === Shape::pointId()) {
+            $outline->setAttribute('r', 6);
+            $outline->setAttribute('fill', '#fff');
+            $annotation->setAttribute('fill', '#666');
+        } else {
+            $outline->setAttribute('stroke', '#fff');
+            $outline->setAttribute('stroke-width', '5px');
+            $annotation->setAttribute('stroke', '#666');
+            $annotation->setAttribute('stroke-width', '3px');
+        }
+
+        $group = new SVGGroup;
+        $group->addChild($outline);
+        $group->addChild($annotation);
+
+        return $group;
+    }
+
+    /**
+     * Get an SVG rectangle element.
+     */
+    protected function getRectangleSvgAnnotation(array $tuples): SVGRect
+    {
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangle());
+
+        $upperLeft = $sortedCoords['UL'];
+        $width = sqrt(pow($sortedCoords['UR'][0] - $upperLeft[0], 2) + pow($sortedCoords['UR'][1] - $upperLeft[1], 2));
+        $height = sqrt(pow($upperLeft[0] - $sortedCoords['LL'][0], 2) + pow($upperLeft[1] - $sortedCoords['LL'][1], 2));
+        $rect = new SVGRect($upperLeft[0], $upperLeft[1], $width, $height);
+
+        // Add rotation
+        $vecLR = [$sortedCoords['UR'][0] - $upperLeft[0], $sortedCoords['UR'][1] - $upperLeft[1]];
+        $u = [$width, 0];
+        $cos = $this->computeRotationAngle($vecLR, $u);
+        $rect->setAttribute('transform', 'rotate(' . $cos . ',' . $upperLeft[0] . ',' . $upperLeft[1] . ')');
+
+        return $rect;
+    }
+
+    /**
+     * Get an SVG ellipse element.
+     */
+    protected function getEllipseSvgAnnotation(array $tuples): SVGEllipse
+    {
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipse());
+
+        $vecLR = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
+        $vecUD = [$sortedCoords['D'][0] - $sortedCoords['U'][0], $sortedCoords['D'][1] - $sortedCoords['U'][1]];
+        $radiusX = sqrt(pow($vecLR[0], 2) + pow($vecLR[1], 2)) / 2.0;
+        $radiusY = sqrt(pow($vecUD[0], 2) + pow($vecUD[1], 2)) / 2.0;
+        $center = [0.5 * $vecLR[0] + $sortedCoords['L'][0], 0.5 * $vecLR[1] + $sortedCoords['L'][1]];
+        $elps = new SVGEllipse($center[0], $center[1], $radiusX, $radiusY);
+
+        // Add rotation
+        $v = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
+        $u = [$center[0], 0];
+        $cos = $this->computeRotationAngle($v, $u);
+
+        $elps->setAttribute('transform', 'rotate(' . $cos . ',' . $center[0] . ',' . $center[1] . ')');
+
+        return $elps;
+    }
+
+    /**
+     * Computes angle between two vectors
+     *
+     * @param array $v first vector
+     * @param array $u second vector
+     * @return float rotation angle in degree
+     * **/
+    protected function computeRotationAngle(array $v, array $u): float
+    {
+        // If (upper) left and (upper) right coordinate have equal y coordinate, then there is no rotation
+        if ($v[1] === 0) {
+            return 0;
+        }
+
+        // Compute angle
+        $scalarProd = 0;
+        $vNorm = 0;
+        $uNorm = 0;
+        for ($i = 0; $i < sizeof($v); $i++) {
+            $scalarProd += $v[$i] * $u[$i];
+            $vNorm += pow($v[$i], 2);
+            $uNorm += pow($u[$i], 2);
+        }
+        $deg = rad2deg(acos($scalarProd / (sqrt($vNorm) * sqrt($uNorm))));
+
+        // Use opposite angle, if rotation is needed in counter clock wise direction
+        return $v[1] > 0 ? $deg : 360 - $deg;
+    }
+
+    /**
+     * Determines position of coordinate
+     *
+     * @param array $tuples coordinates array
+     * @param int $shapeId shapeId of given annotation
+     *
+     * @return array with coordinates assigned to their position on the plane
+     *
+     * **/
+    protected function getOrientedCoordinates(array $tuples, Shape $shape): array
+    {
+        $assigned = [];
+
+        // Sort x values in ascending order
+        usort($tuples, fn($a, $b) => $a[0] <=> $b[0]);
+
+        // Note: y-axis is inverted
+        if ($shape->id === Shape::rectangleId()) {
+            $assigned['LL'] = $tuples[0][1] > $tuples[1][1] ? $tuples[0] : $tuples[1];
+            $assigned['UL'] = $tuples[0][1] < $tuples[1][1] ? $tuples[0] : $tuples[1];
+            $assigned['LR'] = $tuples[2][1] > $tuples[3][1] ? $tuples[2] : $tuples[3];
+            $assigned['UR'] = $tuples[2][1] < $tuples[3][1] ? $tuples[2] : $tuples[3];
+        } else if ($shape->id === Shape::ellipseId()) {
+            $assigned['L'] = $tuples[0];
+            $assigned['R'] = end($tuples);
+            $assigned['U'] = $tuples[1][1] < $tuples[2][1] ? $tuples[1] : $tuples[2];
+            $assigned['D'] = $tuples[1][1] > $tuples[2][1] ? $tuples[1] : $tuples[2];
+        }
+
+        return $assigned;
+    }
 }

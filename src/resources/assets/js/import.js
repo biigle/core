@@ -8,6 +8,7 @@ export let LabelTrees = biigle.$require('labelTrees.components.labelTrees');
 export let LoaderMixin = biigle.$require('core.mixins.loader');
 export let Messages = biigle.$require('messages');
 export let PowerToggle = biigle.$require('core.components.powerToggle');
+export let Settings = biigle.$require('core.models.Settings');
 export let SettingsTabPlugins = biigle.$require('annotations.components.settingsTabPlugins');
 export let Sidebar = biigle.$require('core.components.sidebar');
 export let SidebarTab = biigle.$require('core.components.sidebarTab');

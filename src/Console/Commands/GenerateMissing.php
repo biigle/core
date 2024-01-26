@@ -30,6 +30,7 @@ class GenerateMissing extends Command
         {--skip-videos : Do not check video annotations}
         {--skip-vectors : Do not check feature vectors}
         {--skip-patches : Do not check annotation patches}
+        {--skip-svgs : Do not check annotation SVGs}
         {--queue= : Submit processing jobs to this queue}
         {--newer-than= : Only check annotations newer than this date}
         {--older-than= : Only check annotations older than this date}';
@@ -57,6 +58,11 @@ class GenerateMissing extends Command
     protected bool $skipVectors;
 
     /**
+     * Whether to skip checking for missing SVGs.
+     */
+    protected bool $skipSvgs;
+
+    /**
      * Execute the command.
      *
      * @return void
@@ -66,6 +72,7 @@ class GenerateMissing extends Command
         $this->queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
         $this->skipPatches = $this->option('skip-patches');
         $this->skipVectors = $this->option('skip-vectors');
+        $this->skipSvgs = $this->option('skip-svgs');
 
         if (!$this->option('skip-images')) {
             $this->handleImageAnnotations();
@@ -74,6 +81,7 @@ class GenerateMissing extends Command
         if (!$this->option('skip-videos')) {
             $this->handleVideoAnnotations();
         }
+
     }
 
     /**
@@ -164,7 +172,15 @@ class GenerateMissing extends Command
 
             $needsVector = !$this->skipVectors && is_null($annotation->vector_id);
 
-            if (!$needsPatch && !$needsVector) {
+            if ($this->skipSvgs) {
+                $needsSvg = false;
+            } else {
+                $needsSvg = !$storage->exists(
+                    ProcessAnnotatedFile::getTargetPath($annotation, format: 'svg')
+                );
+            }
+
+            if (!$needsPatch && !$needsVector && !$needsSvg) {
                 continue;
             }
 
@@ -191,13 +207,13 @@ class GenerateMissing extends Command
 
         $progress->finish();
 
-        if($total === 0) {
+        if ($total === 0) {
             $this->info("\n");
             return;
         }
 
         $percent = round($count / $total * 100, 2);
-        $this->info("\nFound {$count} annotations with missing patches ({$percent} %).");
+        $this->info("\nFound {$count} annotations with missing data ({$percent} %).");
         if ($pushToQueue) {
             $this->info("Pushed {$jobCount} jobs to queue {$this->queue}.");
         }
@@ -209,14 +225,16 @@ class GenerateMissing extends Command
             ProcessAnnotatedImage::dispatch($file,
                     only: $ids,
                     skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors
+                    skipFeatureVectors: $this->skipVectors,
+                    skipSvgs: $this->skipSvgs
                 )
                 ->onQueue($this->queue);
         } else {
             ProcessAnnotatedVideo::dispatch($file,
                     only: $ids,
                     skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors
+                    skipFeatureVectors: $this->skipVectors,
+                    skipSvgs: $this->skipSvgs
                 )
                 ->onQueue($this->queue);
         }

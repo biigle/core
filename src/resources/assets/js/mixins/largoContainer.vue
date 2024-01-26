@@ -1,6 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
+import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
 import {Echo} from '../import';
 import {Events} from '../import';
@@ -26,6 +27,7 @@ export default {
         powerToggle: PowerToggle,
         dismissImageGrid: DismissImageGrid,
         relabelImageGrid: RelabelImageGrid,
+        settingsTab: SettingsTab,
         sortingTab: SortingTab,
     },
     data() {
@@ -38,6 +40,7 @@ export default {
             lastSelectedImage: null,
             forceChange: false,
             waitForSessionId: null,
+            showAnnotationOutlines: true,
             // The cache is nested in two levels. The first level key is the label ID.
             // The second level key is the sorting key. The cached value is an array
             // of annotation IDs sorted in ascending order.
@@ -45,6 +48,17 @@ export default {
             sortingDirection: SORT_DIRECTION.DESCENDING,
             sortingKey: SORT_KEY.ANNOTATION_ID,
         };
+    },
+    provide() {
+        const appData = {}
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "showAnnotationOutlines", {
+            get: () => this.showAnnotationOutlines,
+        })
+
+        return { 'outlines': appData };
     },
     computed: {
         isInDismissStep() {
@@ -363,6 +377,9 @@ export default {
             Echo.getInstance().private(`user-${this.user.id}`)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
+        },
+        updateShowOutlines(show) {
+            this.showAnnotationOutlines = show;
         },
         updateSortDirection(direction) {
             this.sortingDirection = direction;
