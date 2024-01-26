@@ -124,6 +124,16 @@
             </li>
         </ul>
 
+        <h4>Settings</h4>
+
+        <p>
+            Some features of Largo can be configured in the settings tab (<i class="fa fa-cog"></i>) of the sidebar.
+        </p>
+
+        <dl>
+            <dt>Show annotation outlines</dt>
+            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default).</dd>
+        </dl>
 
         <h3><a name="example-use-cases"></a>Example use cases</h3>
 
