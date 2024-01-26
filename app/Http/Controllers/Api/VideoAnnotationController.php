@@ -240,6 +240,7 @@ class VideoAnnotationController extends Controller
             $queue = config('videos.track_object_queue');
             Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
             Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
+            $annotation->trackedAnnotationRate = $currentJobs / (float) ($maxJobs-1);
         }
 
         $annotation->load('labels.label', 'labels.user');

@@ -92,6 +92,7 @@ export default {
             user: null,
             attachingLabel: false,
             swappingLabel: false,
+            disableJobTracking: false,
         };
     },
     computed: {
@@ -164,6 +165,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        reachedTrackedAnnotationLimit() {
+            return this.disableJobTracking;
         }
     },
     methods: {
@@ -281,7 +285,16 @@ export default {
             delete annotation.shape;
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
-                .then(this.addCreatedAnnotation, handleErrorResponse)
+                .then((res) => {
+                    this.addCreatedAnnotation(res);
+                    if (tmpAnnotation.track) {
+                        // trackedAnnotationRate is the tracked annotation job occupancy rate
+                        this.disableJobTracking = res.body.trackedAnnotationRate === 1;
+                    }
+                }, (res) => {
+                    handleErrorResponse(res);
+                    this.disableJobTracking = res.status === 429;
+                })
                 .finally(() => {
                     let index = this.annotations.indexOf(tmpAnnotation);
                     if (index !== -1) {
@@ -620,12 +633,14 @@ export default {
         handleSucceededTracking(event) {
             let annotation = this.annotations.find(a => a.id === event.annotation.id);
             if (annotation) {
+                this.disableJobTracking = false;
                 annotation.finishTracking(event.annotation);
             }
         },
         handleFailedTracking(event) {
             let annotation = this.annotations.find(a => a.id === event.annotation.id);
             if (annotation) {
+                this.disableJobTracking = false;
                 annotation.failTracking();
             }
         },
