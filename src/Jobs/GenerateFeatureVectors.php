@@ -15,21 +15,13 @@ use SplFileObject;
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
     /**
-     * The "radius" of the bounding box around a point annotation.
-     *
-     * This is half the patch size of 224 that is expected by DINO.
-     *
-     * @var int
-     */
-    const POINT_PADDING = 112;
-
-        /**
      * Get the bounding box of an annotation
      */
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
-        int $pointPadding = self::POINT_PADDING,
+        // This is half the patch size of 224 that is expected by DINO.
+        int $pointPadding = 112,
         int $boxPadding = 0
     ): array
     {
@@ -213,7 +205,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
                 if (($a instanceof VideoAnnotation) && !empty($points)) {
                     $points = $points[0];
                 }
-                $box = $this->getAnnotationBoundingBox($points, $a->getShape(), self::POINT_PADDING);
+                $box = $this->getAnnotationBoundingBox($points, $a->getShape());
                 $box = $this->makeBoxContained($box, $file->width, $file->height);
             }
 
