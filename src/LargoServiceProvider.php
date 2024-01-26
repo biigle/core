@@ -2,9 +2,11 @@
 
 namespace Biigle\Modules\Largo;
 
+use Biigle\Events\AnnotationLabelAttached;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\VideosDeleted;
 use Biigle\ImageAnnotation;
+use Biigle\Modules\Largo\Listeners\AttachLabelListener;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Modules\Largo\Listeners\VideosCleanupListener;
 use Biigle\Modules\Largo\Observers\ImageAnnotationObserver;
@@ -28,6 +30,7 @@ class LargoServiceProvider extends ServiceProvider
     public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'largo');
+        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
 
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/largo'),
@@ -48,6 +51,7 @@ class LargoServiceProvider extends ServiceProvider
         VideoAnnotation::observe(new VideoAnnotationObserver);
         Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
         Event::listen(VideosDeleted::class, VideosCleanupListener::class);
+        Event::listen(AnnotationLabelAttached::class, AttachLabelListener::class);
 
         $modules->register('largo', [
             'viewMixins' => [
@@ -95,6 +99,11 @@ class LargoServiceProvider extends ServiceProvider
             return new \Biigle\Modules\Largo\Console\Commands\MigratePatchStorage;
         });
         $this->commands('command.largo.migrate-patch-storage');
+
+        $this->app->singleton('command.largo.initialize-feature-vectors', function ($app) {
+            return new \Biigle\Modules\Largo\Console\Commands\InitializeFeatureVectors;
+        });
+        $this->commands('command.largo.initialize-feature-vectors');
     }
 
     /**
@@ -109,6 +118,7 @@ class LargoServiceProvider extends ServiceProvider
             'command.largo.config',
             'command.largo.generate-missing',
             'command.largo.migrate-patch-storage',
+            'command.largo.initialize-feature-vectors',
         ];
     }
 }

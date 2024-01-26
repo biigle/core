@@ -23,6 +23,9 @@ export default {
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);
         },
+        querySortByOutlier(labelId) {
+            return ProjectsApi.sortAnnotationsByOutlier({id: this.projectId, label_id: labelId});
+        },
     },
     created() {
         this.projectId = biigle.$require('largo.projectId');

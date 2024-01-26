@@ -31,4 +31,8 @@ export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/image-annotations/examples{/label_id}',
     },
+    sortAnnotationsByOutlier: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/annotations/sort/outliers{/label_id}',
+    },
 });

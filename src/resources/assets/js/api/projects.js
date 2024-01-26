@@ -23,4 +23,8 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/projects{/id}/video-annotations/filter/label{/label_id}',
     },
+    sortAnnotationsByOutlier: {
+        method: 'GET',
+        url: 'api/v1/projects{/id}/annotations/sort/outliers{/label_id}',
+    },
 });

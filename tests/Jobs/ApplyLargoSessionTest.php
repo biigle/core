@@ -4,9 +4,11 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\Modules\Largo\Events\LargoSessionFailed;
 use Biigle\Modules\Largo\Events\LargoSessionSaved;
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
+use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -625,6 +627,50 @@ class ApplyLargoSessionTest extends TestCase
             $this->assertEquals('job_id', $event->id);
             return true;
         });
+    }
+
+    public function testChangeImageAnnotationCopyFeatureVector()
+    {
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $vector1 = ImageAnnotationLabelFeatureVector::factory()->create([
+            'id' => $al1->id,
+            'annotation_id' => $al1->annotation_id,
+        ]);
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $al1->annotation_id)->get();
+        $this->assertCount(1, $vectors);
+        $this->assertNotEquals($al1->id, $vectors[0]->id);
+        $this->assertEquals($l1->id, $vectors[0]->label_id);
+        $this->assertEquals($vector1->vector, $vectors[0]->vector);
+    }
+
+    public function testChangeVideoAnnotationCopyFeatureVector()
+    {
+        $user = UserTest::create();
+        $al1 = VideoAnnotationLabelTest::create(['user_id' => $user->id]);
+        $vector1 = VideoAnnotationLabelFeatureVector::factory()->create([
+            'id' => $al1->id,
+            'annotation_id' => $al1->annotation_id,
+        ]);
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, $changed, false);
+        $job->handle();
+
+        $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $al1->annotation_id)->get();
+        $this->assertCount(1, $vectors);
+        $this->assertNotEquals($al1->id, $vectors[0]->id);
+        $this->assertEquals($l1->id, $vectors[0]->label_id);
+        $this->assertEquals($vector1->vector, $vectors[0]->vector);
     }
 }
 
