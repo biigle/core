@@ -1,6 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
+import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
 import {Echo} from '../import';
 import {Events} from '../import';
@@ -26,6 +27,7 @@ export default {
         powerToggle: PowerToggle,
         dismissImageGrid: DismissImageGrid,
         relabelImageGrid: RelabelImageGrid,
+        settingsTab: SettingsTab,
         sortingTab: SortingTab,
     },
     data() {
@@ -142,12 +144,6 @@ export default {
         },
         saveButtonClass() {
             return this.forceChange ? 'btn-danger' : 'btn-success';
-        },
-        annotationOutlines() {
-            return this.showAnnotationOutlines;
-        },
-        disableShowingOutlines() {
-            return this.loading || !this.selectedLabel;
         },
         sortingIsActive() {
             return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.DESCENDING);
@@ -383,7 +379,7 @@ export default {
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
                 .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
         },
-        showingOutlines(show) {
+        updateShowOutlines(show) {
             this.showAnnotationOutlines = show;
         },
         updateSortDirection(direction) {

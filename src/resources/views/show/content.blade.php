@@ -16,9 +16,6 @@
 <sidebar v-cloak open-tab="labels">
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
-            <div class="largo-tab__button">
-                <power-toggle :disabled="disableShowingOutlines" :active="showAnnotationOutlines" v-on:on="showingOutlines(true)" v-on:off="showingOutlines(false)">Show annotation outlines</power-toggle>
-            </div>
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the re-labelling step" v-on:click="goToRelabel">Continue</button>
             <div v-else class="btn-group btn-group-justified">
                 <div class="btn-group">
@@ -42,5 +39,10 @@
             v-on:change-direction="updateSortDirection"
             v-on:change-key="updateSortKey"
             ></sorting-tab>
+    </sidebar-tab>
+    <sidebar-tab name="settings" icon="cog" title="Settings">
+        <settings-tab
+            v-on:change-outlines="updateShowOutlines"
+            ></settings-tab>
     </sidebar-tab>
 </sidebar>
