@@ -171,7 +171,7 @@ class GenerateMissing extends Command
         $chunkSize = (int) $this->option('chunk-size', 10000);
 
         // lazyById() is crucial as we can't load all annotations at once!
-        $generator = $annotations->with('file')->lazyById($chunkSize, $idColumn);
+        $generator = $annotations->with('file')->lazyById($chunkSize, $idColumn, 'id');
         foreach ($generator as $annotation) {
             $progress->advance();
 
