@@ -339,4 +339,13 @@ class GenerateMissingTest extends TestCase
             return true;
         });
     }
+
+    public function testHandleChunkSize()
+    {
+        $a = ImageAnnotation::factory()->create();
+
+        Bus::fake();
+        $this->artisan('largo:generate-missing --chunk-size=10');
+        Bus::assertDispatched(ProcessAnnotatedImage::class);
+    }
 }
