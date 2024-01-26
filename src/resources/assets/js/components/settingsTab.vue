@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import Settings from '../stores/settings';
 import {PowerToggle} from '../import';
 
 export default {
@@ -21,11 +22,16 @@ export default {
     },
     data() {
         return {
+            restoreKeys: [
+                'showOutlines',
+            ],
             showOutlines: true,
         };
     },
     computed: {
-        //
+        settings() {
+            return Settings;
+        },
     },
     methods: {
         enableOutlines() {
@@ -38,8 +44,14 @@ export default {
     watch: {
         showOutlines(show) {
             this.$emit('change-outlines', show);
+            this.settings.set('showOutlines', show);
         },
-    }
+    },
+    created() {
+        this.restoreKeys.forEach((key) => {
+            this[key] = this.settings.get(key);
+        });
+    },
 };
 </script>
 
