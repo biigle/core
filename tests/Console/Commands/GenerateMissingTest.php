@@ -343,9 +343,10 @@ class GenerateMissingTest extends TestCase
     public function testHandleChunkSize()
     {
         $a = ImageAnnotation::factory()->create();
+        $a2 = ImageAnnotation::factory()->create();
 
         Bus::fake();
-        $this->artisan('largo:generate-missing --chunk-size=10');
+        $this->artisan('largo:generate-missing --chunk-size=1');
         Bus::assertDispatched(ProcessAnnotatedImage::class);
     }
 }
