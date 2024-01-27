@@ -69,6 +69,7 @@
       :seeking="seeking"
       :height-offset="timelineHeightOffset"
       :pending-annotation="pendingAnnotation"
+      :show-thumbnail-preview="settings.showThumbnailPreview"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"
