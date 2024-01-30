@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 from pyexcelerate import Workbook, Style, Font
 import csv
 
@@ -14,11 +13,11 @@ numSheets = 0
 
 for path in csvs:
     f = open(path, 'r')
-    rows = np.array(list(csv.reader(f)))
+    rows = list(csv.reader(f))
     f.close()
-    # volume name is the first row
-    # column titles are in the second row
-    if rows.shape[0] == 2:
+    # Volume name is the first row, column titles are in the second row.
+    # So if we only have two rows, the volume is empty.
+    if len(rows) == 2:
         continue
     numSheets += 1
     # rows have the content: image_filename, label_name, label_count
