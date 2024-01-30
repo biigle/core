@@ -14,6 +14,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         python3-sklearn \
         python3-matplotlib \
         python3-shapely \
+        python3-pandas \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*

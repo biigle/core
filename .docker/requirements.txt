@@ -10,3 +10,4 @@ Pillow==10.2.0
 Shapely==1.8.1
 torch==2.1.*
 torchvision==0.16.*
+pandas==1.5.3
