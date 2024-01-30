@@ -213,8 +213,8 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 
             if (!$zeroSize) {
                 // Convert width and height to "right" and "bottom" coordinates.
-                $box[2] = $box[0] + $box[2];
-                $box[3] = $box[1] + $box[3];
+                $box[2] += $box[0];
+                $box[3] += $box[1];
 
                 $boxes[$a->id] = $box;
             }
