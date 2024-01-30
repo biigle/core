@@ -27,7 +27,8 @@ RUN apt-get update \
         libvips \
     && pip3 install --no-cache-dir -r /tmp/requirements.txt \
     # Use --no-dependencies so torch is not installed again.
-    && pip3 install --no-dependencies --index-url https://download.pytorch.org/whl/cu118 xformers==0.0.23 \
+    # Uncomment this if you have an actual GPU.
+    # && pip3 install --no-dependencies --index-url https://download.pytorch.org/whl/cu118 xformers==0.0.23 \
     && apt-get purge -y \
         build-essential \
         git \
@@ -35,6 +36,10 @@ RUN apt-get update \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/* \
     && rm -r /tmp/*
+
+# Ensure compatibility with default paths of bigle/largo.
+RUN ln -s /opt/conda/bin/python3 /usr/bin/python3
+RUN ln -s /opt/conda/bin/python /usr/bin/python
 
 WORKDIR /var/www
 
