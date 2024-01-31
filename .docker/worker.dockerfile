@@ -48,6 +48,8 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
+RUN apk add --no-cache exiftool
+
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
 
