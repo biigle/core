@@ -69,7 +69,7 @@ return new class extends Migration
                 // For Largo queries.
                 $table->index(['label_id', 'volume_id']);
 
-                // For create/update queries.
+                // For create/update/delete(cascade) queries.
                 $table->index('annotation_id');
 
                 // Ensure consistency and speed up updateOrCreate queries.
@@ -107,7 +107,7 @@ return new class extends Migration
                 // For Largo queries.
                 $table->index(['label_id', 'volume_id']);
 
-                // For create/update queries.
+                // For create/update/delete(cascade) queries.
                 $table->index('annotation_id');
 
                 // Ensure consistency and speed up updateOrCreate queries.
