@@ -94,15 +94,28 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             return;
         }
 
-        $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
-        $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+        $annotationCount = $annotations->count();
+
+        // A test output CSV with 1000 entries was about 8 MB so fewer annotations should
+        // safely fit within the (faster) 64 MB of shared memory in a Docker container.
+        // We allow another option for more than 10k annotations (although they are
+        // chunked by 10k above) because this class may be used elsewhere with more
+        // annotations, too.
+        if ($annotationCount <= 1000) {
+            $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
+            $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
+        } else {
+            $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
+            $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+        }
+
         $tmpFiles = [$inputPath, $outputPath];
 
         try {
             $input = [];
             $options = [];
             // Optimize for extracting only a single patch.
-            if ($annotations->count() === 1) {
+            if ($annotationCount === 1) {
                 $options['access'] = 'sequential';
             }
             $image = $this->getVipsImage($filePath, $options);
