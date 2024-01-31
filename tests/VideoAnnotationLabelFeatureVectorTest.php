@@ -54,8 +54,11 @@ class VideoAnnotationLabelFeatureVectorTest extends TestCase
 
     public function testDeleteVolumeCascade()
     {
-        $v = VideoAnnotationLabelFeatureVector::factory()->create();
-        Volume::where('id', $v->volume_id)->delete();
+        $a = VideoAnnotation::factory()->create();
+        $v = VideoAnnotationLabelFeatureVector::factory()->create([
+            'annotation_id' => $a->id,
+        ]);
+        $a->video->volume->delete();
         $this->assertNull($v->fresh());
     }
 }
