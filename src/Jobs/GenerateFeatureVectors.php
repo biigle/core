@@ -234,6 +234,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         $script = config('largo.extract_features_script');
         $result = Process::forever()
             ->env(['TORCH_HOME' => config('largo.torch_hub_path')])
+            ->env(['OMP_NUM_THREADS' => config('largo.omp_num_threads')])
             ->run("{$python} -u {$script} {$inputPath} {$outputPath}")
             ->throw();
     }

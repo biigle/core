@@ -54,4 +54,13 @@ return [
     | Path to the Python executable.
     */
     'python' => env('LARGO_PYTHON', '/usr/bin/python3'),
+
+    /*
+    | This sets the OMP_NUM_THREADS environment variable of the Python process to generate
+    | feature vectors. It is ignored with CUDA but it dramatically increases the inference
+    | speed on a CPU.
+    |
+    | See also: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
+    */
+    'omp_num_threads' => env('LARGO_OMP_NUM_THREADS', 2),
 ];

@@ -1,9 +1,10 @@
 from PIL import Image
+from torch import device, no_grad
+from torch.cuda import is_available as cuda_is_available
+from torch.hub import load as hub_load
 import csv
 import json
-import numpy as np
 import sys
-import torch
 import torchvision.transforms as T
 
 # input_json = {
@@ -15,12 +16,13 @@ import torchvision.transforms as T
 with open(sys.argv[1], 'r') as f:
     input_json = json.load(f)
 
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-    dinov2_vits14 = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').cuda()
+dinov2_vits14 = hub_load('facebookresearch/dinov2', 'dinov2_vits14')
+
+if cuda_is_available():
+    device = device('cuda')
+    dinov2_vits14 = dinov2_vits14.cuda()
 else:
-    device = torch.device('cpu')
-    dinov2_vits14 = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14')
+    device = device('cpu')
 
 dinov2_vits14.to(device)
 
@@ -31,10 +33,12 @@ transform = T.Compose([
 ])
 
 def normalize_image_mode(image):
+
     if image.mode == 'RGBA' or image.mode == 'L' or image.mode == 'P':
         image = image.convert('RGB')
 
     if image.mode =='I':
+        import numpy as np
         # I images (32 bit signed integer) need to be rescaled manually before converting.
         image = Image.fromarray(((np.array(image)/(2**16))*2**8).astype(np.uint8)).convert('RGB')
 
@@ -42,7 +46,7 @@ def normalize_image_mode(image):
 
 with open(sys.argv[2], 'w') as f:
     writer = csv.writer(f)
-    with torch.no_grad():
+    with no_grad():
         for image_path, annotations in input_json.items():
             image = Image.open(image_path)
             image = normalize_image_mode(image)
