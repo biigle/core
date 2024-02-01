@@ -215,12 +215,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "9aef5db4364eb06c632076fa7083efab9e76f0b4"
+                "reference": "8f9456e5de06773aa948bdff38df7cbe4beb1878"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/9aef5db4364eb06c632076fa7083efab9e76f0b4",
-                "reference": "9aef5db4364eb06c632076fa7083efab9e76f0b4",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/8f9456e5de06773aa948bdff38df7cbe4beb1878",
+                "reference": "8f9456e5de06773aa948bdff38df7cbe4beb1878",
                 "shasum": ""
             },
             "default-branch": true,
@@ -250,7 +250,7 @@
                 "issues": "https://github.com/biigle/ananas/issues",
                 "source": "https://github.com/biigle/ananas"
             },
-            "time": "2023-10-27T14:21:26+00:00"
+            "time": "2024-01-09T15:51:34+00:00"
         },
         {
             "name": "biigle/auth-lslogin",
@@ -258,12 +258,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/auth-lslogin.git",
-                "reference": "cedd684257dc6dfc0ad79c8b467dbf65d85052ed"
+                "reference": "7eed8b8252d1628b6b6880e7bbf135e58b4ce2f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/auth-lslogin/zipball/cedd684257dc6dfc0ad79c8b467dbf65d85052ed",
-                "reference": "cedd684257dc6dfc0ad79c8b467dbf65d85052ed",
+                "url": "https://api.github.com/repos/biigle/auth-lslogin/zipball/7eed8b8252d1628b6b6880e7bbf135e58b4ce2f3",
+                "reference": "7eed8b8252d1628b6b6880e7bbf135e58b4ce2f3",
                 "shasum": ""
             },
             "require": {
@@ -303,7 +303,7 @@
                 "issues": "https://github.com/biigle/auth-lslogin/issues",
                 "source": "https://github.com/biigle/auth-lslogin"
             },
-            "time": "2023-10-13T09:46:46+00:00"
+            "time": "2023-12-13T13:14:00+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -311,12 +311,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "af941ebb2765490c5d6f024674b6b3f4d7d39266"
+                "reference": "27fedd714e793bdb05b9cbc9bc1770fc89ad64ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/af941ebb2765490c5d6f024674b6b3f4d7d39266",
-                "reference": "af941ebb2765490c5d6f024674b6b3f4d7d39266",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/27fedd714e793bdb05b9cbc9bc1770fc89ad64ff",
+                "reference": "27fedd714e793bdb05b9cbc9bc1770fc89ad64ff",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
                 "issues": "https://github.com/biigle/color-sort/issues",
                 "source": "https://github.com/biigle/color-sort"
             },
-            "time": "2023-10-27T14:07:14+00:00"
+            "time": "2024-01-23T08:11:24+00:00"
         },
         {
             "name": "biigle/demo",
@@ -357,12 +357,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/demo.git",
-                "reference": "ec2219dbd890238757ec78374e95c3dfd86079d3"
+                "reference": "7e29a932fe1d48be4adc993451deb54fbc4b1e10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/demo/zipball/ec2219dbd890238757ec78374e95c3dfd86079d3",
-                "reference": "ec2219dbd890238757ec78374e95c3dfd86079d3",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/7e29a932fe1d48be4adc993451deb54fbc4b1e10",
+                "reference": "7e29a932fe1d48be4adc993451deb54fbc4b1e10",
                 "shasum": ""
             },
             "default-branch": true,
@@ -392,7 +392,7 @@
                 "issues": "https://github.com/biigle/demo/issues",
                 "source": "https://github.com/biigle/demo"
             },
-            "time": "2023-10-13T09:49:56+00:00"
+            "time": "2023-12-13T13:16:56+00:00"
         },
         {
             "name": "biigle/denbi-service",
@@ -400,12 +400,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/denbi-service.git",
-                "reference": "c7a7239d86f2c7256ee19be57a69a42af9dbf84c"
+                "reference": "51188bce16693ffd3d715aff22770ff80b14f7bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/denbi-service/zipball/c7a7239d86f2c7256ee19be57a69a42af9dbf84c",
-                "reference": "c7a7239d86f2c7256ee19be57a69a42af9dbf84c",
+                "url": "https://api.github.com/repos/biigle/denbi-service/zipball/51188bce16693ffd3d715aff22770ff80b14f7bf",
+                "reference": "51188bce16693ffd3d715aff22770ff80b14f7bf",
                 "shasum": ""
             },
             "default-branch": true,
@@ -442,7 +442,7 @@
                 "issues": "https://github.com/biigle/denbi-service/issues",
                 "source": "https://github.com/biigle/denbi-service"
             },
-            "time": "2023-10-13T09:48:17+00:00"
+            "time": "2023-12-13T13:15:43+00:00"
         },
         {
             "name": "biigle/flysystem-aruna",
@@ -508,12 +508,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "518ea376b3cffd6dd6e09a5ea8855554f729d125"
+                "reference": "dfa190e02682f24449abe552fb02de640a83ca3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/518ea376b3cffd6dd6e09a5ea8855554f729d125",
-                "reference": "518ea376b3cffd6dd6e09a5ea8855554f729d125",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/dfa190e02682f24449abe552fb02de640a83ca3a",
+                "reference": "dfa190e02682f24449abe552fb02de640a83ca3a",
                 "shasum": ""
             },
             "default-branch": true,
@@ -543,7 +543,7 @@
                 "issues": "https://github.com/biigle/geo/issues",
                 "source": "https://github.com/biigle/geo"
             },
-            "time": "2023-10-27T14:21:16+00:00"
+            "time": "2024-01-09T15:51:56+00:00"
         },
         {
             "name": "biigle/laravel-aruna-driver",
@@ -714,18 +714,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "8b548e115131817ead0966fe349657fd5cc69265"
+                "reference": "c6f543126cf0f49ee5976d4eb87fdf4cf2028766"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/8b548e115131817ead0966fe349657fd5cc69265",
-                "reference": "8b548e115131817ead0966fe349657fd5cc69265",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/c6f543126cf0f49ee5976d4eb87fdf4cf2028766",
+                "reference": "c6f543126cf0f49ee5976d4eb87fdf4cf2028766",
                 "shasum": ""
             },
             "require": {
                 "biigle/laravel-file-cache": "^4.1",
                 "ext-vips": "*",
                 "jcupitt/vips": "^1.0",
+                "meyfa/php-svg": "^0.14.6",
                 "php-ffmpeg/php-ffmpeg": "^0.14 || ^0.19 || ^1.0"
             },
             "default-branch": true,
@@ -755,7 +756,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2023-10-27T14:07:25+00:00"
+            "time": "2024-02-01T12:18:06+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -763,12 +764,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "97d577a25de3e2d5e18fc0f5b52a4d79f9bf434a"
+                "reference": "d929f743810a0a720d94333c04687f3b870ae5f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/97d577a25de3e2d5e18fc0f5b52a4d79f9bf434a",
-                "reference": "97d577a25de3e2d5e18fc0f5b52a4d79f9bf434a",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/d929f743810a0a720d94333c04687f3b870ae5f2",
+                "reference": "d929f743810a0a720d94333c04687f3b870ae5f2",
                 "shasum": ""
             },
             "require": {
@@ -801,7 +802,7 @@
                 "issues": "https://github.com/biigle/laserpoints/issues",
                 "source": "https://github.com/biigle/laserpoints"
             },
-            "time": "2023-12-06T11:22:42+00:00"
+            "time": "2024-01-23T08:06:08+00:00"
         },
         {
             "name": "biigle/magic-sam",
@@ -858,12 +859,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "95132b417367113c6921e424b49813b420abab75"
+                "reference": "c77e573e5e6f24cce9e38579b0bd3e46de8c206c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/95132b417367113c6921e424b49813b420abab75",
-                "reference": "95132b417367113c6921e424b49813b420abab75",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/c77e573e5e6f24cce9e38579b0bd3e46de8c206c",
+                "reference": "c77e573e5e6f24cce9e38579b0bd3e46de8c206c",
                 "shasum": ""
             },
             "require": {
@@ -897,7 +898,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2023-11-07T12:11:32+00:00"
+            "time": "2024-01-31T10:02:13+00:00"
         },
         {
             "name": "biigle/module",
@@ -905,12 +906,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/module.git",
-                "reference": "97ff5f78f9318ccbe88389b91f25f69a430cd3bf"
+                "reference": "f5067de7ef7310fe88365b287614c7bfbee6902d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/module/zipball/97ff5f78f9318ccbe88389b91f25f69a430cd3bf",
-                "reference": "97ff5f78f9318ccbe88389b91f25f69a430cd3bf",
+                "url": "https://api.github.com/repos/biigle/module/zipball/f5067de7ef7310fe88365b287614c7bfbee6902d",
+                "reference": "f5067de7ef7310fe88365b287614c7bfbee6902d",
                 "shasum": ""
             },
             "default-branch": true,
@@ -940,7 +941,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2023-10-27T14:06:52+00:00"
+            "time": "2024-01-10T07:53:59+00:00"
         },
         {
             "name": "biigle/newsletter",
@@ -948,12 +949,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/newsletter.git",
-                "reference": "8b7de15e134910d225b25d6bd76ddb3c4d4f9595"
+                "reference": "2ceff42b002ef420d722162f63d11cbdfb1543df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/newsletter/zipball/8b7de15e134910d225b25d6bd76ddb3c4d4f9595",
-                "reference": "8b7de15e134910d225b25d6bd76ddb3c4d4f9595",
+                "url": "https://api.github.com/repos/biigle/newsletter/zipball/2ceff42b002ef420d722162f63d11cbdfb1543df",
+                "reference": "2ceff42b002ef420d722162f63d11cbdfb1543df",
                 "shasum": ""
             },
             "require": {
@@ -986,7 +987,7 @@
                 "issues": "https://github.com/biigle/newsletter/issues",
                 "source": "https://github.com/biigle/newsletter"
             },
-            "time": "2023-10-30T08:47:49+00:00"
+            "time": "2024-01-09T15:51:25+00:00"
         },
         {
             "name": "biigle/reports",
@@ -994,12 +995,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "84359cd7a88146fa63382a238d3aea9ce6439036"
+                "reference": "575879b7acf225d773e5c24a3c9f14b6fd4a6562"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/84359cd7a88146fa63382a238d3aea9ce6439036",
-                "reference": "84359cd7a88146fa63382a238d3aea9ce6439036",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/575879b7acf225d773e5c24a3c9f14b6fd4a6562",
+                "reference": "575879b7acf225d773e5c24a3c9f14b6fd4a6562",
                 "shasum": ""
             },
             "require": {
@@ -1034,7 +1035,7 @@
                 "issues": "https://github.com/biigle/reports/issues",
                 "source": "https://github.com/biigle/reports"
             },
-            "time": "2023-10-27T14:07:34+00:00"
+            "time": "2024-01-30T10:50:52+00:00"
         },
         {
             "name": "biigle/sync",
@@ -1042,12 +1043,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/sync.git",
-                "reference": "b6f3fcc628898fc060d8d4d36d3bfe68bd8bd26a"
+                "reference": "aad892aa099a45e80c0f421d523d17b3e8ce37c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/b6f3fcc628898fc060d8d4d36d3bfe68bd8bd26a",
-                "reference": "b6f3fcc628898fc060d8d4d36d3bfe68bd8bd26a",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/aad892aa099a45e80c0f421d523d17b3e8ce37c4",
+                "reference": "aad892aa099a45e80c0f421d523d17b3e8ce37c4",
                 "shasum": ""
             },
             "require": {
@@ -1080,7 +1081,7 @@
                 "issues": "https://github.com/biigle/sync/issues",
                 "source": "https://github.com/biigle/sync"
             },
-            "time": "2023-10-27T14:21:04+00:00"
+            "time": "2024-01-25T14:20:23+00:00"
         },
         {
             "name": "biigle/user-disks",
@@ -1088,12 +1089,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-disks.git",
-                "reference": "c28434b6705625cc101f8a88edb2d4100733f5cb"
+                "reference": "0fbf7f5c74bd53afcc2c7bae467e63d4b2f242bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-disks/zipball/c28434b6705625cc101f8a88edb2d4100733f5cb",
-                "reference": "c28434b6705625cc101f8a88edb2d4100733f5cb",
+                "url": "https://api.github.com/repos/biigle/user-disks/zipball/0fbf7f5c74bd53afcc2c7bae467e63d4b2f242bc",
+                "reference": "0fbf7f5c74bd53afcc2c7bae467e63d4b2f242bc",
                 "shasum": ""
             },
             "require": {
@@ -1135,7 +1136,7 @@
                 "issues": "https://github.com/biigle/user-disks/issues",
                 "source": "https://github.com/biigle/user-disks"
             },
-            "time": "2023-10-13T09:47:34+00:00"
+            "time": "2024-02-01T13:25:32+00:00"
         },
         {
             "name": "biigle/user-storage",
@@ -1143,12 +1144,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-storage.git",
-                "reference": "b9500b4d08138e26175d2cc9a5bd16f6b49a1baa"
+                "reference": "b1d3b7916f579d610813f6c0fea0e90785142587"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-storage/zipball/b9500b4d08138e26175d2cc9a5bd16f6b49a1baa",
-                "reference": "b9500b4d08138e26175d2cc9a5bd16f6b49a1baa",
+                "url": "https://api.github.com/repos/biigle/user-storage/zipball/b1d3b7916f579d610813f6c0fea0e90785142587",
+                "reference": "b1d3b7916f579d610813f6c0fea0e90785142587",
                 "shasum": ""
             },
             "default-branch": true,
@@ -1181,7 +1182,7 @@
                 "issues": "https://github.com/biigle/user-storage/issues",
                 "source": "https://github.com/biigle/user-storage"
             },
-            "time": "2023-10-24T14:18:19+00:00"
+            "time": "2024-01-11T08:08:03+00:00"
         },
         {
             "name": "brick/math",
@@ -4028,6 +4029,65 @@
                 "source": "https://github.com/thephpleague/oauth1-client/tree/v1.10.1"
             },
             "time": "2022-04-15T14:02:14+00:00"
+        },
+        {
+            "name": "meyfa/php-svg",
+            "version": "v0.14.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/meyfa/php-svg.git",
+                "reference": "f50d39e0c97042881e303f7d5d1d09aa88296def"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/meyfa/php-svg/zipball/f50d39e0c97042881e303f7d5d1d09aa88296def",
+                "reference": "f50d39e0c97042881e303f7d5d1d09aa88296def",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "meyfa/phpunit-assert-gd": "^v3.0.0",
+                "phpmd/phpmd": "^2.13.0",
+                "phpunit/phpunit": "^9.5.26"
+            },
+            "suggest": {
+                "ext-gd": "Needed to rasterize images",
+                "ext-simplexml": "Needed to read SVG strings and files"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SVG\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabian Meyer",
+                    "homepage": "https://meyfa.net"
+                }
+            ],
+            "description": "Read, edit, write, and render SVG files with PHP",
+            "homepage": "https://github.com/meyfa/php-svg",
+            "keywords": [
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/meyfa/php-svg/issues",
+                "source": "https://github.com/meyfa/php-svg/tree/v0.14.7"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/meyfa",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-09T23:20:59+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -13549,5 +13609,5 @@
     "platform-overrides": {
         "php": "8.1.13"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
