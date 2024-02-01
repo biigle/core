@@ -2,8 +2,10 @@
     <div 
         class="thumbnail-preview" 
         ref="thumbnailPreview" 
+        :style="thumbnailStyle"
         :width="thumbnailWidth" 
-        :height="thumbnailHeight">
+        :height="thumbnailHeight"
+        v-show="!spriteNotFound">
         
         <canvas 
             class="thumbnail-canvas" 
@@ -45,8 +47,10 @@ export default {
             sprite: new Image(),
             spriteIdx: 0,
             thumbProgressBarSpace: 150,
+            sideButtonsWidth: 52,
             spritesFolderPath: null,
-            spriteNotFound: false,
+            // start with true to hide flashing black thumbnail
+            spriteNotFound: true,
             // default values but will be overwritten in created()
             thumbnailWidth: 240,
             thumbnailHeight: 138,
@@ -54,6 +58,16 @@ export default {
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
         };
+    },
+    computed: {
+        thumbnailStyle() {
+            let left = Math.min(
+                this.clientMouseX - this.thumbnailWidth / 2,
+                window.innerWidth - this.thumbnailWidth - this.sideButtonsWidth
+            );
+            let top = this.scrollstripTop - this.thumbProgressBarSpace;
+            return `transform: translate(${left}px, ${top}px);`
+        }
     },
     methods: {
         updateSprite() {
@@ -77,12 +91,6 @@ export default {
             let context = this.thumbnailCanvas.getContext('2d');
             context.clearRect(0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
-
-            // position the thumbnail preview based on the mouse position
-            let sideButtonsWidth = 52;
-            let left = Math.min(this.clientMouseX - this.thumbnailCanvas.width / 2, window.innerWidth - this.thumbnailCanvas.width - sideButtonsWidth);
-            this.thumbnailPreview.style.left = left + 'px';
-            this.thumbnailPreview.style.top = (this.scrollstripTop - this.thumbProgressBarSpace) + 'px';
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
@@ -125,16 +133,11 @@ export default {
         this.thumbnailCanvas = this.$refs.thumbnailCanvas;
         this.updateSprite();
         this.sprite.onload = () => {
+            this.spriteNotFound = false;
             this.viewThumbnailPreview();
         }
-        // can't hide the error 404 message on the browser console
-        // trying to use a http request to ask if the file exists and wrap it with try/catch 
-        // does prevent the GET 404(Not Found) error 
-        // but we get a HEAD 404(Not Found) error instead (maybe server side?)
         this.sprite.onerror = () => {
-            if (this.thumbnailPreview.style.display !== 'none') {
-                this.thumbnailPreview.style.display = 'none';
-            }
+            this.spriteNotFound = true;
         }
     }
 };

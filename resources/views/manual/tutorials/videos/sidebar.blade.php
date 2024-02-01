@@ -71,5 +71,10 @@
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
         </p>
+
+        <p>
+            The thumbnail switch controls the display of a thumbnail preview that appears when you hover your cursor over the video progress bar. The thumbnail shows a preview of the video frame at the hovered time position.
+        </p>
+
     </div>
 @endsection

@@ -74,11 +74,7 @@ class VideoController extends Controller
 
         $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');
 
-        if ($volume->isImageVolume()) {
-            $thumbUriTemplate = thumbnail_url(':uuid');
-        } else {
-            $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
-        }
+        $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
 
         $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $spritesThumbnailInterval = config('videos.sprites_thumbnail_interval');
