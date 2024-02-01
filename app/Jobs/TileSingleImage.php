@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\FileCache\Contracts\File;
 use Biigle\Image;
 use Exception;
 use FileCache;
@@ -10,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Biigle\FileCache\Contracts\File;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use VipsImage;
