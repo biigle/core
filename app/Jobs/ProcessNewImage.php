@@ -342,6 +342,6 @@ class ProcessNewImage extends Job implements ShouldQueue
         $image->tiled = true;
         $image->tilingInProgress = true;
         $image->save();
-        TileSingleImage::dispatch($image);
+        TileSingleImage::dispatch($image, config('image.tiles.disk'));
     }
 }

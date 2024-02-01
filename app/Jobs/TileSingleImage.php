@@ -4,13 +4,13 @@ namespace Biigle\Jobs;
 
 use Biigle\Image;
 use Exception;
-use File;
 use FileCache;
 use FilesystemIterator;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Biigle\FileCache\Contracts\File;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use VipsImage;
@@ -22,7 +22,7 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * The image to generate tiles for.
      *
-     * @var Image
+     * @var File
      */
     public $file;
 
@@ -57,16 +57,16 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Image $file The image to generate tiles for.
+     * @param File $file The image to generate tiles for.
      *
      * @return void
      */
-    public function __construct(Image $file)
+    public function __construct(File $file, string $storage)
     {
         $this->file = $file;
         $this->tempPath = config('image.tiles.tmp_dir')."/{$file->uuid}";
         // for uploadToStorage method
-        $this->storage = 'image.tiles.disk';
+        $this->storage = $storage;
         $this->fragment = fragment_uuid_path($file->uuid);
     }
 
@@ -110,7 +110,7 @@ class TileSingleImage extends Job implements ShouldQueue
         // +1 for the connecting slash.
         $prefixLength = strlen($this->tempPath) + 1;
         $iterator = $this->getIterator($this->tempPath);
-        $disk = Storage::disk(config($this->storage));
+        $disk = Storage::disk($this->storage);
         try {
             foreach ($iterator as $pathname => $fileInfo) {
                 $disk->putFileAs($this->fragment, $fileInfo, substr($pathname, $prefixLength));
