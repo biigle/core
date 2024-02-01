@@ -16,7 +16,8 @@ class TileSingleImageTest extends TestCase
     {
         $image = ImageTest::create();
         Storage::fake('tiles');
-        $job = new TileSingleImageStub($image, config('image.tiles.disk'));
+        $targetPath = fragment_uuid_path($image->uuid);
+        $job = new TileSingleImageStub($image, config('image.tiles.disk'), $targetPath);
 
         $mock = Mockery::mock(Image::class);
         $mock->shouldReceive('dzsave')
@@ -36,16 +37,16 @@ class TileSingleImageTest extends TestCase
     {
         config(['image.tiles.disk' => 'tiles']);
         $image = ImageTest::create();
-        $fragment = fragment_uuid_path($image->uuid);
-        $job = new TileSingleImageStub($image, config('image.tiles.disk'));
+        $targetPath = fragment_uuid_path($image->uuid);
+        $job = new TileSingleImageStub($image, config('image.tiles.disk'), $targetPath);
         File::makeDirectory($job->tempPath);
         File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
             Storage::fake('tiles');
             $job->uploadToStorage();
-            Storage::disk('tiles')->assertExists($fragment);
-            Storage::disk('tiles')->assertExists("{$fragment}/test.txt");
+            Storage::disk('tiles')->assertExists($targetPath);
+            Storage::disk('tiles')->assertExists("{$targetPath}/test.txt");
         } finally {
             File::deleteDirectory($job->tempPath);
         }

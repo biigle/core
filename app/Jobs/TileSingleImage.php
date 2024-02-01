@@ -34,7 +34,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public $tempPath;
 
     /**
-     * The name of the permanent storage-disk where the tiles should be stored.
+     * The path of the permanent storage-disk where the tiles should be stored.
      *
      * @var string
      */
@@ -45,7 +45,7 @@ class TileSingleImage extends Job implements ShouldQueue
      *
      * @var string
      */
-    public $fragment;
+    public $targetPath;
 
     /**
      * Ignore this job if the image does not exist any more.
@@ -58,16 +58,18 @@ class TileSingleImage extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * @param File $file The image to generate tiles for.
+     * @param string $storage The path to storage-disk where the tiles should be stored
+     * @param string targetPath The path to the tiles within the permanent storage-disk
      *
      * @return void
      */
-    public function __construct(File $file, string $storage)
+    public function __construct(File $file, string $storage, string $targetPath)
     {
         $this->file = $file;
         $this->tempPath = config('image.tiles.tmp_dir')."/{$file->uuid}";
         // for uploadToStorage method
         $this->storage = $storage;
-        $this->fragment = fragment_uuid_path($file->uuid);
+        $this->targetPath = $targetPath;
     }
 
     /**
@@ -113,10 +115,10 @@ class TileSingleImage extends Job implements ShouldQueue
         $disk = Storage::disk($this->storage);
         try {
             foreach ($iterator as $pathname => $fileInfo) {
-                $disk->putFileAs($this->fragment, $fileInfo, substr($pathname, $prefixLength));
+                $disk->putFileAs($this->targetPath, $fileInfo, substr($pathname, $prefixLength));
             }
         } catch (Exception $e) {
-            $disk->deleteDirectory($this->fragment);
+            $disk->deleteDirectory($this->targetPath);
             throw $e;
         }
     }
