@@ -4,6 +4,7 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
+use Biigle\Modules\Largo\Exceptions\ProcessAnnotatedFileException;
 use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -415,13 +416,17 @@ class ProcessAnnotatedVideoTest extends TestCase
     {
         $disk = Storage::fake('test');
         FileCache::shouldReceive('get')->andThrow(new Exception('error'));
-        Log::shouldReceive('warning')->once();
 
         $annotation = VideoAnnotationTest::create();
         $job = new ProcessAnnotatedVideo($annotation->video);
-        $job->handle();
-        $prefix = fragment_uuid_path($annotation->video->uuid);
-        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+        $job->tries = 1;
+        try {
+            $job->handle();
+            $this->fail('An exception should be thrown.');
+        } catch (ProcessAnnotatedFileException $e) {
+            $prefix = fragment_uuid_path($annotation->video->uuid);
+            $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+        }
     }
 
     public function testFileLockedError()

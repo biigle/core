@@ -9,6 +9,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
 use FileCache;
+use Biigle\Modules\Largo\Exceptions\ProcessAnnotatedFileException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -132,7 +133,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 $this->release($this->attempts() * 600);
             } else {
                 $class = get_class($this->file);
-                Log::warning("Could not process annotated {$class} {$this->file->id}: {$e->getMessage()}", ['exception' => $e]);
+                throw new ProcessAnnotatedFileException("Could not process annotated {$class} {$this->file->id}.", previous: $e);
             }
         }
     }
@@ -155,12 +156,18 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function shouldRetryAfterException(Exception $e)
     {
         $message = $e->getMessage();
-        return $this->attempts() < $this->tries && (
+        $knownError = (
             // The remote source might be available again after a while.
             Str::contains($message, 'The source resource could not be established') ||
             // This error presumably occurs due to worker concurrency.
             Str::contains($message, 'Impossible to create the root directory')
         );
+
+        if ($knownError) {
+            return $this->attempts() < ($this->tries * 2);
+        }
+
+        return $this->attempts() < $this->tries;
     }
 
     /**
