@@ -18,11 +18,14 @@ class RemoveVideoAnnotationPatchesTest extends TestCase
         $annotation = VideoAnnotationTest::create();
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $path1 = "{$prefix}/v-{$annotation->id}.jpg";
+        $path2 = "{$prefix}/v-{$annotation->id}.svg";
         Storage::disk('test')->put($path1, 'test');
+        Storage::disk('test')->put($path2, 'test');
 
         $args = [$annotation->id => $annotation->video->uuid];
         (new RemoveVideoAnnotationPatches($args))->handle();
         $this->assertFalse(Storage::disk('test')->exists($path1));
+        $this->assertFalse(Storage::disk('test')->exists($path2));
     }
 
     public function testHandleChunk()

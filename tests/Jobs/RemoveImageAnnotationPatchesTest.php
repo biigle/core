@@ -18,11 +18,14 @@ class RemoveImageAnnotationPatchesTest extends TestCase
         $annotation = ImageAnnotationTest::create();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $path = "{$prefix}/{$annotation->id}.jpg";
+        $pathSvg = "{$prefix}/{$annotation->id}.svg";
         Storage::disk('test')->put($path, 'test');
+        Storage::disk('test')->put($pathSvg, 'test');
 
         $args = [$annotation->id => $annotation->image->uuid];
         (new RemoveImageAnnotationPatches($args))->handle();
         $this->assertFalse(Storage::disk('test')->exists($path));
+        $this->assertFalse(Storage::disk('test')->exists($pathSvg));
     }
 
     public function testHandleChunk()
