@@ -17,13 +17,6 @@ class MigrateTiledImage extends TileSingleImage
     public $disk;
 
     /**
-     * Path to the tiles within the permanent storage-disk.
-     *
-     * @var string
-     */
-    public $targetPath;
-
-    /**
      * Create a new job instance.
      *
      * @param Image $image The image to generate tiles for.
