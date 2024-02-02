@@ -54,8 +54,11 @@ class ImageAnnotationLabelFeatureVectorTest extends TestCase
 
     public function testDeleteVolumeCascade()
     {
-        $v = ImageAnnotationLabelFeatureVector::factory()->create();
-        Volume::where('id', $v->volume_id)->delete();
+        $a = ImageAnnotation::factory()->create();
+        $v = ImageAnnotationLabelFeatureVector::factory()->create([
+            'annotation_id' => $a->id,
+        ]);
+        $a->image->volume->delete();
         $this->assertNull($v->fresh());
     }
 }

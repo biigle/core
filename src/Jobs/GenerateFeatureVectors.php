@@ -213,8 +213,8 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 
             if (!$zeroSize) {
                 // Convert width and height to "right" and "bottom" coordinates.
-                $box[2] = $box[0] + $box[2];
-                $box[3] = $box[1] + $box[3];
+                $box[2] += $box[0];
+                $box[3] += $box[1];
 
                 $boxes[$a->id] = $box;
             }
@@ -233,7 +233,10 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         $python = config('largo.python');
         $script = config('largo.extract_features_script');
         $result = Process::forever()
-            ->env(['TORCH_HOME' => config('largo.torch_hub_path')])
+            ->env([
+                'TORCH_HOME' => config('largo.torch_hub_path'),
+                'OMP_NUM_THREADS' => config('largo.omp_num_threads'),
+            ])
             ->run("{$python} -u {$script} {$inputPath} {$outputPath}")
             ->throw();
     }

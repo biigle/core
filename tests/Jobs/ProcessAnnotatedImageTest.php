@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
+use Biigle\Image;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Shape;
@@ -12,7 +13,7 @@ use Bus;
 use Exception;
 use File;
 use FileCache;
-use Jcupitt\Vips\Image;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Mockery;
 use Storage;
@@ -662,6 +663,47 @@ class ProcessAnnotatedImageTest extends TestCase
 
         // Assert that no exception is thrown
         $job->handle();
+
+    }
+
+    public function testHandleFeatureVectorTiledImage()
+    {
+        $vipsImage = $this->getImageMock(0);
+        $vipsImage->shouldReceive('crop')
+            ->once()
+            ->with(19888, 19888, 224, 224)
+            ->andReturn($vipsImage);
+        $vipsImage->shouldReceive('pngsave')->once()->andReturn($vipsImage);
+
+        $disk = Storage::fake('test');
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 40000, 'height' => 40000],
+            'tiled' => true,
+        ]);
+        $annotation = ImageAnnotationTest::create([
+            'points' => [20000, 20000],
+            'shape_id' => Shape::pointId(),
+            'image_id' => $image->id,
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedImageStub($image,
+            skipPatches: true,
+            skipSvgs: true
+        );
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->mock = $vipsImage;
+
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+
+        $input = $job->input;
+        $this->assertCount(1, $input);
+        $filename = array_keys($input)[0];
+        $this->assertArrayHasKey($annotation->id, $input[$filename]);
+        $box = $input[$filename][$annotation->id];
+        // These are the coordinates of the cropped image.
+        $this->assertEquals([0, 0, 224, 224], $box);
     }
 
     protected function getImageMock($times = 1)
@@ -683,7 +725,7 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
     public $outputPath;
     public $output = [];
 
-    public function getVipsImage($path)
+    public function getVipsImage(string $path, array $options = [])
     {
         return $this->mock;
     }

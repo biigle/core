@@ -100,8 +100,8 @@ class GenerateMissing extends Command
         $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             // Order by image ID first because we want to submit the annotations in
             // batches for each image.
-            // Order by annotation ID is appended automatically by lazyById below.
             ->orderBy('image_annotations.image_id')
+            ->orderBy('image_annotations.id')
             ->select('image_annotations.id', 'image_annotations.image_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('images.volume_id', $this->option('volume'));
@@ -120,7 +120,7 @@ class GenerateMissing extends Command
             });
 
         $this->line("Image annotations");
-        $this->handleAnnotations($annotations, 'image_annotations.id');
+        $this->handleAnnotations($annotations);
     }
 
     /**
@@ -131,8 +131,8 @@ class GenerateMissing extends Command
         $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             // Order by video ID first because we want to submit the annotations in
             // batches for each video.
-            // Order by annotation ID is appended automatically by lazyById below.
             ->orderBy('video_annotations.video_id')
+            ->orderBy('video_annotations.id')
             ->select('video_annotations.id', 'video_annotations.video_id')
             ->when($this->option('volume'), function ($query) {
                 $query->where('videos.volume_id', $this->option('volume'));
@@ -151,10 +151,10 @@ class GenerateMissing extends Command
             });
 
         $this->line("Video annotations");
-        $this->handleAnnotations($annotations, 'video_annotations.id');
+        $this->handleAnnotations($annotations);
     }
 
-    protected function handleAnnotations(Builder $annotations, string $idColumn): void
+    protected function handleAnnotations(Builder $annotations): void
     {
         $pushToQueue = !$this->option('dry-run');
         $storage = Storage::disk(config('largo.patch_storage_disk'));
@@ -170,8 +170,10 @@ class GenerateMissing extends Command
 
         $chunkSize = (int) $this->option('chunk-size', 10000);
 
-        // lazyById() is crucial as we can't load all annotations at once!
-        $generator = $annotations->with('file')->lazyById($chunkSize, $idColumn, 'id');
+        // lazy() is crucial as we can't load all annotations at once!
+        // We can't use lazyById because we order by file ID first (to better batch
+        // annotations of the same file).
+        $generator = $annotations->with('file')->lazy($chunkSize);
         foreach ($generator as $annotation) {
             $progress->advance();
 
