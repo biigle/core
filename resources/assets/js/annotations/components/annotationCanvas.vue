@@ -515,44 +515,41 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (this.hasSelectedLabel) {
-                let geometry = e.feature.getGeometry();
-                if (geometry.getType() === 'Polygon') {
-                    if (PolygonValidator.isInvalidPolygon(e.feature)) {
-                        this.$emit('is-invalid-polygon');
-                        // This must be done in the change event handler.
-                        // Not exactly sure why.
-                        this.annotationSource.once('change', () => {
-                            if (this.annotationSource.hasFeature(e.feature)) {
-                                this.annotationSource.removeFeature(e.feature);
-                            }
-                        });
-                        return;
-                    }
-
-                    PolygonValidator.simplifyPolygon(e.feature);
-                }
-
-                e.feature.set('color', this.selectedLabel.color);
-
-                // This callback is called when saving the annotation succeeded or
-                // failed, to remove the temporary feature.
-                let removeCallback = () => {
-                    try {
+            if (!this.hasSelectedLabel || this.isInvalidShape(e.feature)) {
+                // This must be done in the change event handler.
+                // Not exactly sure why.
+                this.annotationSource.once('change', () => {
+                    if (this.annotationSource.hasFeature(e.feature)) {
                         this.annotationSource.removeFeature(e.feature);
-                    } catch (e) {
-                        // If this failed, the feature was already removed.
-                        // Do nothing in this case.
                     }
-                };
-
-                this.$emit('new', {
-                    shape: geometry.getType(),
-                    points: this.getPoints(geometry),
-                }, removeCallback);
-            } else {
-                this.annotationSource.removeFeature(e.feature);
+                });
+                this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
+                return;
             }
+
+            let geometry = e.feature.getGeometry();
+            if (geometry.getType() === 'Polygon') {
+                PolygonValidator.simplifyPolygon(e.feature);
+            }
+
+            e.feature.set('color', this.selectedLabel.color);
+
+            // This callback is called when saving the annotation succeeded or
+            // failed, to remove the temporary feature.
+            let removeCallback = () => {
+                try {
+                    this.annotationSource.removeFeature(e.feature);
+                } catch (e) {
+                    // If this failed, the feature was already removed.
+                    // Do nothing in this case.
+                }
+            };
+
+            this.$emit('new', {
+                shape: geometry.getType(),
+                points: this.getPoints(geometry),
+            }, removeCallback);
+
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -677,6 +674,26 @@ export default {
             } else {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
+            }
+        },
+        isInvalidShape(feature) {
+            let geometry = feature.getGeometry();
+            let points = [];
+            switch (geometry.getType()) {
+                case 'Circle':
+                    return parseInt(geometry.getRadius()) === 0;
+                case 'LineString':
+                    points = geometry.getCoordinates();
+                    return (new Set(points.map(xy => String([xy])))).size < 2;
+                case 'Rectangle':
+                case 'Ellipse':
+                    points = geometry.getCoordinates()[0];
+                    return (new Set(points.map(xy => String([xy])))).size !== 4;
+                case 'Polygon':
+                    points = geometry.getCoordinates()[0];
+                    return (new Set(points.map(xy => String([xy])))).size < 3;
+                default:
+                    return false;
             }
         },
     },
