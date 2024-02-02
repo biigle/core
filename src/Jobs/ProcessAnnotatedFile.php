@@ -410,7 +410,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function computeRotationAngle(array $v, array $u): float
     {
         // If (upper) left and (upper) right coordinate have equal y coordinate, then there is no rotation
-        if ($v[1] === 0) {
+        if ($v[1] == 0) {
             return 0;
         }
 
