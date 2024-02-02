@@ -17,6 +17,7 @@ class RemoveVideoAnnotationPatches extends RemoveAnnotationPatches
         foreach ($this->annotationIds as $id => $uuid) {
             $prefix = fragment_uuid_path($uuid);
             $disk->delete("{$prefix}/v-{$id}.{$format}");
+            $disk->delete("{$prefix}/v-{$id}.svg");
         }
     }
 }
