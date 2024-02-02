@@ -4,6 +4,7 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Image;
+use Biigle\Modules\Largo\Exceptions\ProcessAnnotatedFileException;
 use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Shape;
@@ -14,7 +15,6 @@ use Exception;
 use File;
 use FileCache;
 use Jcupitt\Vips\Image as VipsImage;
-use Log;
 use Mockery;
 use Storage;
 use TestCase;
@@ -372,14 +372,17 @@ class ProcessAnnotatedImageTest extends TestCase
     {
         $disk = Storage::fake('test');
         FileCache::shouldReceive('get')->andThrow(new Exception('error'));
-        Log::shouldReceive('warning')->once();
 
         $annotation = ImageAnnotationTest::create();
         $job = new ProcessAnnotatedImage($annotation->image);
-        $job->handle();
-
-        $prefix = fragment_uuid_path($annotation->image->uuid);
-        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+        $job->tries = 1;
+        try {
+            $job->handle();
+            $this->fail('An exception should be thrown.');
+        } catch (ProcessAnnotatedFileException $e) {
+            $prefix = fragment_uuid_path($annotation->image->uuid);
+            $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+        }
     }
 
     public function testFileLockedError()
