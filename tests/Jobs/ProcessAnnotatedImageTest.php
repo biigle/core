@@ -649,8 +649,10 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
-            'points' => [0, 0, 0, 0, 0, 0, 0, 0], // ellipse must not be a point
-            'shape_id' => Shape::ellipseId(),
+            // This is a real-world example where someone managed to create a zero-sized
+            // rectangle.
+            'points' => [844.69,1028.44,844.69,1028.44,844.69,1028.44,844.69,1028.44],
+            'shape_id' => Shape::rectangleId(),
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
