@@ -642,6 +642,28 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
     }
 
+    public function testHandleInvalidShape()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = ImageAnnotationTest::create([
+            'points' => [0, 0, 0, 0, 0, 0, 0, 0], // ellipse must not be a point
+            'shape_id' => Shape::ellipseId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+
+        // Assert that no exception is thrown
+        $job->handle();
+    }
+
     protected function getImageMock($times = 1)
     {
         $image = Mockery::mock();
