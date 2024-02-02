@@ -729,6 +729,32 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
     }
 
+    public function testHandleInvalidShape()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test2');
+        $video = $this->getFrameMock();
+        $annotation = VideoAnnotationTest::create([
+            // This is a real-world example where someone managed to create a zero-sized
+            // rectangle.
+            'points' => [[844.69,1028.44,844.69,1028.44,844.69,1028.44,844.69,1028.44]],
+            'frames' => [0],
+            'shape_id' => Shape::rectangleId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video, targetDisk: 'test2');
+        $job->mock = $video;
+
+        $video->shouldReceive('crop')
+            ->once()
+            ->andReturn($video);
+
+        $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+
+        // Assert that no exception is thrown
+        $job->handle();
+    }
+
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();

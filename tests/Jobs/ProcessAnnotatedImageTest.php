@@ -643,6 +643,31 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
     }
 
+    public function testHandleInvalidShape()
+    {
+        config(['thumbnails.height' => 100, 'thumbnails.width' => 100]);
+        $disk = Storage::fake('test');
+        $image = $this->getImageMock();
+        $annotation = ImageAnnotationTest::create([
+            // This is a real-world example where someone managed to create a zero-sized
+            // rectangle.
+            'points' => [844.69,1028.44,844.69,1028.44,844.69,1028.44,844.69,1028.44],
+            'shape_id' => Shape::rectangleId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image);
+        $job->mock = $image;
+
+        $image->shouldReceive('crop')
+            ->once()
+            ->andReturn($image);
+
+        $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
+
+        // Assert that no exception is thrown
+        $job->handle();
+
+    }
+
     public function testHandleFeatureVectorTiledImage()
     {
         $vipsImage = $this->getImageMock(0);
