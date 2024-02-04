@@ -49,6 +49,14 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->validatePoints();
     }
 
+    public function testValidatePointsWithGap()
+    {
+        $this->expectNotToPerformAssertions();
+        $this->model->points = [[10, 10], [], [20, 20]];
+        $this->model->frames = [0.0, null, 1.0];
+        $this->model->validatePoints();
+    }
+
     public function testValidatePointsPoint()
     {
         $this->model->shape_id = Shape::pointId();

@@ -18,8 +18,8 @@ class UserFactory extends Factory
         return [
             'firstname' => $this->faker->firstName(),
             'lastname' => $this->faker->lastName(),
-            // 'password'
-            'password' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
+            // 'password', hashed with 4 rounds as defined in phpunit.xml
+            'password' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
             'email' => $this->faker->unique()->email(),
             'remember_token' => Str::random(10),
             'uuid' => $this->faker->unique()->uuid(),

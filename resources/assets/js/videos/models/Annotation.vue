@@ -282,6 +282,16 @@ export default Vue.extend({
                 this.frames.splice(index, 1);
                 this.points.splice(index, 1);
 
+                // Remove "null" elements of adjacent gaps to
+                // avoid multiple consecutive "null"s.
+                if (index === 0 && this.frames[0] === null) {
+                    this.frames.splice(0, 1);
+                    this.points.splice(0, 1);
+                } else if (this.frames[index - 1] === null) {
+                    this.frames.splice(index - 1, 1);
+                    this.points.splice(index - 1, 1);
+                }
+
                 return VideoAnnotationApi.update({id: this.id}, {
                     frames: this.frames,
                     points: this.points

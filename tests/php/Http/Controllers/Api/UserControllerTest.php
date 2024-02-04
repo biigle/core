@@ -16,8 +16,8 @@ class UserControllerTest extends ApiTestCase
     private function callToken($verb, $route, $user)
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
             'owner_id' => $user->id,
         ]);
 
@@ -116,8 +116,8 @@ class UserControllerTest extends ApiTestCase
         $response = $this->put('/api/v1/users/'.$this->guest()->id);
         $response->assertStatus(403);
 
-        // 'adminpassword'
-        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
@@ -234,8 +234,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testUpdateEmailCaseInsensitive()
     {
-        // 'adminpassword'
-        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
@@ -274,8 +274,8 @@ class UserControllerTest extends ApiTestCase
     public function testUpdateRole()
     {
         $user = $this->guest();
-        // 'adminpassword'
-        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
         $this
@@ -308,8 +308,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testUpdateCanReview()
     {
-        // 'adminpassword'
-        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
@@ -344,8 +344,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testDowngradeRoleWithCanReview()
     {
-        // 'adminpassword'
-        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
         $user = $this->user();
@@ -378,8 +378,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testUpdateOwn()
     {
-        // 'guest-password'
-        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
+        // 'guest-password', hashed with 4 rounds as defined in phpunit.xml
+        $this->guest()->password = '$2y$04$j3f9h84KswH3h30Q1CnXZuthgMt569YJdOo2NCWpS4AdLlj3emupO';
         $this->guest()->save();
 
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
@@ -428,8 +428,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testUpdateOwnEmailCaseInsensitive()
     {
-        // 'guest-password'
-        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
+        // 'guest-password', hashed with 4 rounds as defined in phpunit.xml
+        $this->guest()->password = '$2y$04$j3f9h84KswH3h30Q1CnXZuthgMt569YJdOo2NCWpS4AdLlj3emupO';
         $this->guest()->save();
         $this->beGuest();
 
@@ -600,8 +600,8 @@ class UserControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
-        // 'globalAdmin-password'
-        $this->globalAdmin()->password = '$2y$10$44FMBIkBS2hNhI09ep6UMen7fDT4/RuQKNtDTOPRCvhQxg2H0TXIm';
+        // 'globalAdmin-password', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$RQljsDh/mpnnPcYMAR622ueuqmNEvucy9vMT/nQyJ.jPnFWpErzIS';
         $this->globalAdmin()->save();
 
         $id = $this->guest()->id;
@@ -664,11 +664,11 @@ class UserControllerTest extends ApiTestCase
 
     public function testDestroyOwn()
     {
-        // 'guest-password'
-        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
+        // 'guest-password', hashed with 4 rounds as defined in phpunit.xml
+        $this->guest()->password = '$2y$04$j3f9h84KswH3h30Q1CnXZuthgMt569YJdOo2NCWpS4AdLlj3emupO';
         $this->guest()->save();
-        // 'editor-password'
-        $this->editor()->password = '$2y$10$2BwVwEw1AOzWx01twMmHg.FHp5N/TrK1X0KtHxRH0MN5CRrpc6k46';
+        // 'editor-password', hashed with 4 rounds as defined in phpunit.xml
+        $this->editor()->password = '$2y$04$TwIgO65v19BE9x9osMl9zeV.FX4.ZnJ/Tm9.nd.vrozYIoKMmfWme';
         $this->guest()->save();
 
         $this->doTestApiRoute('DELETE', '/api/v1/users/my');
