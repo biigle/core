@@ -49,6 +49,9 @@ export default {
             thumbProgressBarSpace: 150,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
+            triedUrls: {},
+            // retry sprite loading x times
+            retryAttempts: 2,
             // start with true to hide flashing black thumbnail
             spriteNotFound: true,
             // default values but will be overwritten in created()
@@ -72,7 +75,16 @@ export default {
     methods: {
         updateSprite() {
             this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-            this.sprite.src = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
+            let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
+
+            if (!this.triedUrls[SpriteUrl]) {
+                this.triedUrls[SpriteUrl] = 0
+            }
+            if (this.triedUrls[SpriteUrl] < this.retryAttempts) {
+                this.sprite.src = SpriteUrl;
+            } else {
+                this.spriteNotFound = true;
+            }
         },
         viewThumbnailPreview() {
             // calculate the current row and column of the sprite
@@ -138,6 +150,9 @@ export default {
         }
         this.sprite.onerror = () => {
             this.spriteNotFound = true;
+            if (this.sprite.src in this.triedUrls) {
+                this.triedUrls[this.sprite.src]++;
+            }
         }
     }
 };
