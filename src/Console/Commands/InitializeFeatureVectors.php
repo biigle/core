@@ -21,7 +21,8 @@ class InitializeFeatureVectors extends Command
         {--dry-run : Do not submit jobs to generate feature vectors}
         {--volume= : Process only annotations of a single volume (ID)}
         {--queue=default : Queue name to push jobs to generate feature vectors to}
-        {--chunk-size=1000 : Number of annotations to process in a single job}';
+        {--chunk-size=1000 : Number of annotations to process in a single job}
+        {--older-than= : Only check annotations older than this date}';
 
     /**
      * The console command description.
@@ -39,6 +40,9 @@ class InitializeFeatureVectors extends Command
     {
         $query = Volume::select('id')
             ->where('media_type_id', MediaType::imageId())
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('created_at', '<', new Carbon($this->option('older-than')));
+            })
             ->when($this->option('volume'), fn ($q) => $q->where('id', $this->option('volume')));
 
         $count = $query->clone()->count();
@@ -53,6 +57,9 @@ class InitializeFeatureVectors extends Command
 
         $query = Volume::select('id')
             ->where('media_type_id', MediaType::videoId())
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('created_at', '<', new Carbon($this->option('older-than')));
+            })
             ->when($this->option('volume'), fn ($q) => $q->where('id', $this->option('volume')));
 
         $count = $query->clone()->count();
@@ -73,6 +80,9 @@ class InitializeFeatureVectors extends Command
 
         ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $volume->id)
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('image_annotations.created_at', '<', new Carbon($this->option('older-than')));
+            })
             ->select('image_annotations.id')
             ->chunkById($loopChunkSize, function ($chunk) use ($chunkSize) {
                 $chunk->chunk($chunkSize)->each(function ($c) {
@@ -91,6 +101,9 @@ class InitializeFeatureVectors extends Command
 
         VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->where('videos.volume_id', $volume->id)
+            ->when($this->option('older-than'), function ($query) {
+                $query->where('video_annotations.created_at', '<', new Carbon($this->option('older-than')));
+            })
             ->select('video_annotations.id')
             ->chunkById($loopChunkSize, function ($chunk) use ($chunkSize) {
                 $chunk->chunk($chunkSize)->each(function ($c) {
