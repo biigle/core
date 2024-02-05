@@ -92,7 +92,7 @@ class InitializeFeatureVectors extends Command
                         Queue::pushOn($this->option('queue'), $job);
                     }
                 });
-            });
+            }, 'image_annotations.id', 'id');
     }
 
     protected function processVideos(Volume $volume)
@@ -113,6 +113,6 @@ class InitializeFeatureVectors extends Command
                         Queue::pushOn($this->option('queue'), $job);
                     }
                 });
-            });
+            }, 'video_annotations.id', 'id');
     }
 }
