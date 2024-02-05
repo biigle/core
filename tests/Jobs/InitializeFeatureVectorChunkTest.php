@@ -14,6 +14,8 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\UnableToReadFile;
+use Mockery;
 use TestCase;
 
 class InitializeFeatureVectorChunkTest extends TestCase
@@ -95,6 +97,18 @@ class InitializeFeatureVectorChunkTest extends TestCase
     public function testHandleSkipMissingThumbnails()
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $al = ImageAnnotationLabel::factory()->create();
+        $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
+        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
+        $job->handle();
+        $this->assertNull(ImageAnnotationLabelFeatureVector::find($al->id));
+    }
+
+    public function testHandleSkipMissingThumbnailsException()
+    {
+        $mock = Mockery::mock();
+        $mock->shouldReceive('get')->andThrow(UnableToReadFile::class);
+        Storage::shouldReceive('disk')->andReturn($mock);
         $al = ImageAnnotationLabel::factory()->create();
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
         $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';

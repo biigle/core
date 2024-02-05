@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\UnableToReadFile;
 
 class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 {
@@ -113,7 +114,12 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
                 $srcPath = ProcessAnnotatedFile::getTargetPath($a);
                 $tmpPath = tempnam(sys_get_temp_dir(), '');
 
-                $thumbnail = $disk->get($srcPath);
+                try {
+                    $thumbnail = $disk->get($srcPath);
+                } catch (UnableToReadFile $e) {
+                    continue;
+                }
+
                 if (is_null($thumbnail)) {
                     continue;
                 }
