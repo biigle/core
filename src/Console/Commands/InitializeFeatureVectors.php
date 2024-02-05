@@ -7,6 +7,7 @@ use Biigle\MediaType;
 use Biigle\Modules\Largo\Jobs\InitializeFeatureVectorChunk;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Queue;
 
