@@ -171,6 +171,8 @@ export default {
                 this.pendingAnnotationSource.once('addfeature', () => {
                     this.resetPendingAnnotation();
                 });
+                // Reset mode to enable drawing again by closing button 
+                this.resetInteractionMode();
                 return;
             }
 
