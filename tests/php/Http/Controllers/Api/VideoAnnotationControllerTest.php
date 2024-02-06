@@ -254,6 +254,15 @@ class VideoAnnotationControllerTest extends ApiTestCase
         // policies are cached
         Cache::flush();
 
+        // shape is invalid
+        $this
+            ->json('POST', "/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::rectangleId(),
+                'label_id' => $label->id,
+                'frames' => [1],
+                'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
+            ])->assertStatus(422);
+
         $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
