@@ -252,6 +252,24 @@ class ImageAnnotationControllerTest extends ApiTestCase
         // policies are cached
         Cache::flush();
 
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::rectangleId(),
+            'label_id' => $label->id,
+            'confidence' => 1,
+            'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
+        ]);
+        // shape is invalid
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::lineId(),
+            'label_id' => $label->id,
+            'confidence' => 1,
+            'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
+        ]);
+        // shape is invalid
+        $response->assertStatus(422);
+
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
