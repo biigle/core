@@ -429,6 +429,19 @@ class ProcessAnnotatedVideoTest extends TestCase
         }
     }
 
+    public function testHandleGiveUpError()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception('cURL error 60:'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = VideoAnnotationTest::create();
+        $job = new ProcessAnnotatedVideo($annotation->video);
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');

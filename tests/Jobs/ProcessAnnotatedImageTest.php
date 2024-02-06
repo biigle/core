@@ -15,6 +15,7 @@ use Exception;
 use File;
 use FileCache;
 use Jcupitt\Vips\Image as VipsImage;
+use Log;
 use Mockery;
 use Storage;
 use TestCase;
@@ -383,6 +384,19 @@ class ProcessAnnotatedImageTest extends TestCase
             $prefix = fragment_uuid_path($annotation->image->uuid);
             $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
         }
+    }
+
+    public function testHandleGiveUpError()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception('cURL error 60:'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new ProcessAnnotatedImage($annotation->image);
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
     public function testFileLockedError()

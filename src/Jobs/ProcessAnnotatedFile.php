@@ -128,7 +128,10 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 ->onQueue($this->queue)
                 ->delay(60);
         } catch (Exception $e) {
-            if ($this->shouldRetryAfterException($e)) {
+            if ($this->shouldGiveUpAfterException($e)) {
+                $class = get_class($this->file);
+                Log::warning("Could not process annotated {$class} {$this->file->id}: {$e->getMessage()}", ['exception' => $e]);
+            } elseif ($this->shouldRetryAfterException($e)) {
                 // Exponential backoff for retry after 10 and then 20 minutes.
                 $this->release($this->attempts() * 600);
             } else {
@@ -147,13 +150,29 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     abstract public function handleFile(VolumeFile $file, $path);
 
     /**
+     * Determine if the job should give up trying because the error will likely not be
+     * fixed the next time.
+     *
+     * @param Exception $e
+     */
+    protected function shouldGiveUpAfterException(Exception $e): bool
+    {
+        $message = $e->getMessage();
+        $giveUpError = (
+            // SSL certificate problem of the remote server.
+            // See: https://curl.haxx.se/libcurl/c/libcurl-errors.html
+            Str::contains($message, 'cURL error 60:')
+        );
+
+        return $giveUpError;
+    }
+
+    /**
      * Determine if this job should retry instead of fail after an exception
      *
      * @param Exception $e
-     *
-     * @return bool
      */
-    protected function shouldRetryAfterException(Exception $e)
+    protected function shouldRetryAfterException(Exception $e): bool
     {
         $message = $e->getMessage();
         $knownError = (
