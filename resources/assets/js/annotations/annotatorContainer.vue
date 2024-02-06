@@ -24,7 +24,6 @@ import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
-import Polygon from '@biigle/ol/geom/Polygon';
 
 /**
  * View model for the annotator container
