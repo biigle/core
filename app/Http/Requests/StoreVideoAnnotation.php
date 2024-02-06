@@ -102,7 +102,7 @@ class StoreVideoAnnotation extends FormRequest
 
             if ($this->input('shape_id') !== Shape::wholeFrameId()) {
 
-                $containsNonArray = collect($this->input('points'))->filter(fn($p) => gettype($p) !== 'array')->isNotEmpty();
+                $containsNonArray = collect($this->input('points'))->filter(fn ($p) => gettype($p) !== 'array')->isNotEmpty();
                 if ($containsNonArray) {
                     $validator->errors()->add('points', 'Invalid shape. Either has no points or points in wrong format.');
                     return;
@@ -113,34 +113,35 @@ class StoreVideoAnnotation extends FormRequest
                 $exactValue = true;
 
                 switch ($this->input('shape_id')) {
-                    case(Shape::circleId()):
+                    case (Shape::circleId()):
                         $shapes = collect($this->input('points'));
-                        if ($shapes->filter(fn($xyr) => count($xyr) !== 3)->isNotEmpty() || $shapes->filter(fn($xyr) => $xyr[2] === 0)->isNotEmpty()) {
+                        if ($shapes->filter(fn ($xyr) => count($xyr) !== 3)->isNotEmpty() || $shapes->filter(fn ($xyr) => $xyr[2] === 0)->isNotEmpty()) {
                             $validator->errors()->add('points', 'Invalid shape.');
                         }
                         return;
-                    case(Shape::ellipseId()):
-                    case(Shape::rectangleId()):
+                    case (Shape::ellipseId()):
+                    case (Shape::rectangleId()):
                         $expectedElementCount = 8;
                         $exactValue = true;
                         break;
-                    case(Shape::lineId()):
+                    case (Shape::lineId()):
                         $expectedElementCount = 4;
                         $exactValue = false;
                         break;
-                    case(Shape::polygonId()):
+                    case (Shape::polygonId()):
                         $expectedElementCount = 6;
                         $exactValue = false;
                         break;
                     case (Shape::pointId()):
                         $expectedElementCount = 2;
                         $exactValue = true;
-                        
+                                    
                 }
                 if ($this->hasInvalidShapes($shapes, $expectedElementCount, $exactValue)) {
                     $validator->errors()->add('points', 'Invalid shape.');
                 }
             }
+
 
         });
     }
@@ -181,11 +182,11 @@ class StoreVideoAnnotation extends FormRequest
 
     /**
      * Checks if shapes have invalid number of (distinct) points
-     * 
+     *
      * @param array $pointArrays containing coordinates of (multiple) shapes
      * @param int $expectedCount number of expected x and y coordinates
      * @param bool $exact is used in check for exact or minimum count
-     * 
+     *
      * @return bool false is shape is valid, otherwise true
      * **/
     private function hasInvalidShapes($pointArrays, $expectedCount, $exact)
@@ -196,9 +197,9 @@ class StoreVideoAnnotation extends FormRequest
                 return true;
             }
 
-            $x = $pointCollection->filter(fn($x, $idx) => $idx % 2 === 0)->values();
-            $y = $pointCollection->filter(fn($x, $idx) => $idx % 2 === 1)->values();
-            $coords = collect($x->map(fn($x, $idx) => [$x, $y[$idx]]))->unique();
+            $x = $pointCollection->filter(fn ($x, $idx) => $idx % 2 === 0)->values();
+            $y = $pointCollection->filter(fn ($x, $idx) => $idx % 2 === 1)->values();
+            $coords = collect($x->map(fn ($x, $idx) => [$x, $y[$idx]]))->unique();
 
             if ($exact && (count($coords) !== $expectedCount / 2) || !$exact && ((count($coords) < $expectedCount / 2))) {
                 return true;
