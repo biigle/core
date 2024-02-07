@@ -288,8 +288,7 @@ export default {
                 .then((res) => {
                     this.addCreatedAnnotation(res);
                     if (tmpAnnotation.track) {
-                        // trackedAnnotationRate is the tracked annotation job occupancy rate
-                        this.disableJobTracking = res.body.trackedAnnotationRate === 1;
+                        this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
                 }, (res) => {
                     handleErrorResponse(res);
