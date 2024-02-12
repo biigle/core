@@ -672,6 +672,58 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertEquals($l1->id, $vectors[0]->label_id);
         $this->assertEquals($vector1->vector, $vectors[0]->vector);
     }
+
+    public function testDismissButChangeBackToSameLabelImage()
+    {
+        $user = UserTest::create();
+        $image = ImageTest::create();
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $user->id,
+        ]);
+
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $user->id,
+            'label_id' => $al1->label_id,
+        ]);
+
+        $dismissed = [$al1->label_id => [$a1->id, $a2->id]];
+        $changed = [$al1->label_id => [$a1->id, $a2->id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        $this->assertNotNull($a1->fresh());
+        $this->assertNotNull($a2->fresh());
+    }
+
+    public function testDismissButChangeBackToSameLabelVideo()
+    {
+        $user = UserTest::create();
+        $video = VideoTest::create();
+        $a1 = VideoAnnotationTest::create(['video_id' => $video->id]);
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $user->id,
+        ]);
+
+        $a2 = VideoAnnotationTest::create(['video_id' => $video->id]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $user->id,
+            'label_id' => $al1->label_id,
+        ]);
+
+        $dismissed = [$al1->label_id => [$a1->id, $a2->id]];
+        $changed = [$al1->label_id => [$a1->id, $a2->id]];
+        $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, $changed, false);
+        $job->handle();
+
+        $this->assertNotNull($a1->fresh());
+        $this->assertNotNull($a2->fresh());
+    }
 }
 
 class ApplyLargoSessionStub extends ApplyLargoSession

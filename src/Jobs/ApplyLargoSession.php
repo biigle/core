@@ -146,6 +146,11 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedImageAnnotations, $this->changedImageAnnotations);
 
+        // This is essential, otherwise annotations could be deleted without warning
+        // below (because changes are applied first, then labels are dismissed, then
+        // dangling annotations are deleted)!
+        [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
+
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
@@ -160,6 +165,11 @@ class ApplyLargoSession extends Job implements ShouldQueue
     protected function handleVideoAnnotations()
     {
         [$dismissed, $changed] = $this->ignoreDeletedLabels($this->dismissedVideoAnnotations, $this->changedVideoAnnotations);
+
+        // This is essential, otherwise annotations could be deleted without warning
+        // below (because changes are applied first, then labels are dismissed, then
+        // dangling annotations are deleted)!
+        [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
 
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
@@ -203,6 +213,35 @@ class ApplyLargoSession extends Job implements ShouldQueue
                 });
             }, $dismissed));
         }
+
+        return [$dismissed, $changed];
+    }
+
+    /**
+     * Removes changes to annotations where the same label was dismissed than should be
+     * attached again later.
+     */
+    protected function ignoreNullChanges(array $dismissed, array $changed): array
+    {
+        foreach ($dismissed as $labelId => $annotationIds) {
+            if (array_key_exists($labelId, $changed)) {
+                $toIgnore = [];
+                foreach ($annotationIds as $id) {
+                    if (array_search($id, $changed[$labelId]) !== false) {
+                        $toIgnore[] = $id;
+                    }
+                }
+
+                $dismissed[$labelId] = array_filter($annotationIds,
+                        fn ($x) => !in_array($x, $toIgnore));
+                $changed[$labelId] = array_filter($changed[$labelId],
+                        fn ($x) => !in_array($x, $toIgnore));
+            }
+        }
+
+        // Remove elements that may now be emepty.
+        $dismissed = array_filter($dismissed);
+        $changed = array_filter($changed);
 
         return [$dismissed, $changed];
     }
