@@ -17,7 +17,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -271,7 +270,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $usedAnnotationIds,
                 $databaseRecordLimit,
             ) {
-                $insertData = new Collection();
+                $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
                 $baseImageIndex = ($page - 1) * $chunkSize;
@@ -283,17 +282,17 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                         $original = $annotation->getRawOriginal();
                         $original['image_id'] = $newImageId;
                         unset($original['id']);
-                        $insertData->push($original);
+                        $insertData[] = $original;
 
                     }
                 }
-                $insertData->chunk($databaseRecordLimit)->each(fn ($chunk) => ImageAnnotation::insert($chunk->toArray()));
+                collect($insertData)->chunk($databaseRecordLimit)->each(fn ($chunk) => ImageAnnotation::insert($chunk->toArray()));
 
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
                     ->orderBy('id')
                     ->pluck('id');
-                $insertData = new Collection();
+                $insertData = [];
                 foreach ($chunk as $image) {
                     foreach ($image->annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
@@ -301,11 +300,11 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                             $original = $annotationLabel->getRawOriginal();
                             $original['annotation_id'] = $newAnnotationId;
                             unset($original['id']);
-                            $insertData->push($original);
+                            $insertData[] = $original;
                         }
                     }
                 }
-                $insertData->chunk($databaseRecordLimit)->each(fn ($chunk) => ImageAnnotationLabel::insert($chunk->toArray()));
+                collect($insertData)->chunk($databaseRecordLimit)->each(fn ($chunk) => ImageAnnotationLabel::insert($chunk->toArray()));
 
             });
     }
@@ -431,7 +430,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $usedAnnotationIds,
                 $databaseRecordLimit,
             ) {
-                $insertData = new Collection();
+                $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
                 $baseVideoIndex = ($page - 1) * $chunkSize;
@@ -443,18 +442,18 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                         $original = $annotation->getRawOriginal();
                         $original['video_id'] = $newVideoId;
                         unset($original['id']);
-                        $insertData->push($original);
+                        $insertData[] = $original;
 
                     }
                 }
-                $insertData->chunk($databaseRecordLimit)->each(fn ($chunk) => VideoAnnotation::insert($chunk->toArray()));
+                collect($insertData)->chunk($databaseRecordLimit)->each(fn ($chunk) => VideoAnnotation::insert($chunk->toArray()));
 
                 
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
                     ->orderBy('id')
                     ->pluck('id');
-                $insertData = new Collection();
+                $insertData = [];
                 foreach ($chunk as $video) {
                     foreach ($video->annotations as $annotation) {
                         $newAnnotationId = $newAnnotationIds->shift();
@@ -462,11 +461,11 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                             $original = $annotationLabel->getRawOriginal();
                             $original['annotation_id'] = $newAnnotationId;
                             unset($original['id']);
-                            $insertData->push($original);
+                            $insertData[] = $original;
                         }
                     }
                 }
-                $insertData->chunk($databaseRecordLimit)->each(fn ($chunk) => VideoAnnotationLabel::insert($chunk->toArray()));
+                collect($insertData)->chunk($databaseRecordLimit)->each(fn ($chunk) => VideoAnnotationLabel::insert($chunk->toArray()));
 
             });
     }
