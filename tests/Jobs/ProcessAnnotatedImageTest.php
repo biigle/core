@@ -394,6 +394,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $annotation = ImageAnnotationTest::create();
         $job = new ProcessAnnotatedImage($annotation->image);
+        $job->tries = 1;
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");

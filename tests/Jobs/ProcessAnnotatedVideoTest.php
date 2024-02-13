@@ -437,6 +437,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $annotation = VideoAnnotationTest::create();
         $job = new ProcessAnnotatedVideo($annotation->video);
+        $job->tries = 1;
         $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");

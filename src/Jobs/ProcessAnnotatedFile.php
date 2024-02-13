@@ -128,12 +128,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 ->onQueue($this->queue)
                 ->delay(60);
         } catch (Exception $e) {
-            if ($this->shouldGiveUpAfterException($e)) {
-                $class = get_class($this->file);
-                Log::warning("Could not process annotated {$class} {$this->file->id}: {$e->getMessage()}", ['exception' => $e]);
-            } elseif ($this->shouldRetryAfterException($e)) {
+            if ($this->shouldRetryAfterException($e)) {
                 // Exponential backoff for retry after 10 and then 20 minutes.
                 $this->release($this->attempts() * 600);
+            } elseif ($this->shouldGiveUpAfterException($e)) {
+                $class = get_class($this->file);
+                Log::warning("Could not process annotated {$class} {$this->file->id}: {$e->getMessage()}", ['exception' => $e]);
             } else {
                 $class = get_class($this->file);
                 throw new ProcessAnnotatedFileException("Could not process annotated {$class} {$this->file->id}.", previous: $e);
@@ -161,7 +161,9 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $giveUpError = (
             // SSL certificate problem of the remote server.
             // See: https://curl.haxx.se/libcurl/c/libcurl-errors.html
-            Str::contains($message, 'cURL error 60:')
+            Str::contains($message, 'cURL error 60:') ||
+            // File not found.
+            Str::contains($message, 'Unable to read file from location:')
         );
 
         return $giveUpError;
