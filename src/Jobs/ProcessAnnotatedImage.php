@@ -17,6 +17,15 @@ use Jcupitt\Vips\Image as VipsImage;
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
 {
     /**
+     * Python PIL accepts images with at most 178956970 pixels. We set this arbitrary
+     * maximum dimension so the limit is not reached and feature vector computation
+     * does not consume a ridiculous amount of memory.
+     *
+     * @var int
+     */
+    const CROP_MAX_EDGE_PX = 5000;
+
+    /**
      * {@inheritdoc}
      */
     public function handleFile(VolumeFile $file, $path)
@@ -125,9 +134,21 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
                 $box[2] -= $box[0];
                 $box[3] -= $box[1];
 
+                // The factor is <1 if the box is larger than the maximum size.
+                $factor = self::CROP_MAX_EDGE_PX / max($box[2], $box[3]);
+
                 $path = tempnam(sys_get_temp_dir(), 'largo_feature_vector_patch');
                 $tmpFiles[] = $path;
-                $image->crop(...$box)->pngsave($path);
+                $crop = $image->crop(...$box);
+
+                // Scale the crop and box to the maximum size.
+                if ($factor < 1) {
+                    $crop = $crop->resize($factor);
+                    $box[2] = intval($box[2] * $factor);
+                    $box[3] = intval($box[3] * $factor);
+                }
+
+                $crop->pngsave($path);
 
                 $input[$path] = [$id => [0, 0, $box[2], $box[3]]];
             }
