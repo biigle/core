@@ -116,17 +116,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             // written by another worker. This worker can process other jobs in the
             // meantime.
             // See: https://github.com/laravel/ideas/issues/735
-            static::dispatch(
-                    $this->file,
-                    $this->only,
-                    $this->skipPatches,
-                    $this->skipFeatureVectors,
-                    $this->skipSvgs,
-                    $this->targetDisk
-                )
-                ->onConnection($this->connection)
-                ->onQueue($this->queue)
-                ->delay(60);
+            $this->redispatch();
         } catch (Exception $e) {
             if ($this->shouldRetryAfterException($e)) {
                 // Exponential backoff for retry after 10 and then 20 minutes.
@@ -497,5 +487,23 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         }
 
         return $assigned;
+    }
+
+    /**
+     * Dispatch a copy of this job with a delay.
+     */
+    protected function redispatch(): void
+    {
+        static::dispatch(
+                $this->file,
+                $this->only,
+                $this->skipPatches,
+                $this->skipFeatureVectors,
+                $this->skipSvgs,
+                $this->targetDisk
+            )
+            ->onConnection($this->connection)
+            ->onQueue($this->queue)
+            ->delay(60);
     }
 }
