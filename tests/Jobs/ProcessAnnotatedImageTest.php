@@ -726,6 +726,50 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertEquals([0, 0, 224, 224], $box);
     }
 
+    public function testHandleFeatureVectorTiledImageLargePatch()
+    {
+        $vipsImage = $this->getImageMock(0);
+        $vipsImage->shouldReceive('crop')
+            ->once()
+            ->with(0, 0, 10000, 10000)
+            ->andReturn($vipsImage);
+        $vipsImage->shouldReceive('resize')
+            ->once()
+            ->with(0.5)
+            ->andReturn($vipsImage);
+        $vipsImage->shouldReceive('pngsave')->once()->andReturn($vipsImage);
+
+        $disk = Storage::fake('test');
+        $image = Image::factory()->create([
+            'attrs' => ['width' => 40000, 'height' => 40000],
+            'tiled' => true,
+        ]);
+        $annotation = ImageAnnotationTest::create([
+            'points' => [0, 0, 10000, 0, 10000, 10000, 0, 10000, 0, 0],
+            'shape_id' => Shape::polygonId(),
+            'image_id' => $image->id,
+        ]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        $job = new ProcessAnnotatedImageStub($image,
+            skipPatches: true,
+            skipSvgs: true
+        );
+        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->mock = $vipsImage;
+
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+
+        $input = $job->input;
+        $this->assertCount(1, $input);
+        $filename = array_keys($input)[0];
+        $this->assertArrayHasKey($annotation->id, $input[$filename]);
+        $box = $input[$filename][$annotation->id];
+        // These are the coordinates of the cropped image.
+        $this->assertEquals([0, 0, 5000, 5000], $box);
+    }
+
     protected function getImageMock($times = 1)
     {
         $image = Mockery::mock();
