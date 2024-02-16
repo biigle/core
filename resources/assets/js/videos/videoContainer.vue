@@ -286,10 +286,10 @@ export default {
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
                 .then((res) => {
-                    this.addCreatedAnnotation(res);
                     if (tmpAnnotation.track) {
                         this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
+                    return this.addCreatedAnnotation(res);
                 }, (res) => {
                     handleErrorResponse(res);
                     this.disableJobTracking = res.status === 429;
