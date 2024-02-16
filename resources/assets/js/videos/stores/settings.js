@@ -7,6 +7,7 @@ let defaults = {
     showLabelTooltip: false,
     showMousePosition: false,
     showProgressIndicator: true,
+    showThumbnailPreview: true,
 };
 
 export default new Settings({

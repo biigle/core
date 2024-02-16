@@ -15,6 +15,7 @@ export default {
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
+                'showThumbnailPreview'
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -23,6 +24,7 @@ export default {
             showMousePosition: false,
             playbackRate: 1.0,
             showProgressIndicator: true,
+            showThumbnailPreview: true,
         };
     },
     methods: {
@@ -49,6 +51,12 @@ export default {
         },
         handleHideProgressIndicator() {
             this.showProgressIndicator = false;
+        },
+        handleShowThumbnailPreview() {
+            this.showThumbnailPreview = true;
+        },
+        handleHideThumbnailPreview() {
+            this.showThumbnailPreview = false;
         },
     },
     watch: {
@@ -85,6 +93,10 @@ export default {
         showProgressIndicator(show) {
             this.$emit('update', 'showProgressIndicator', show);
             Settings.set('showProgressIndicator', show);
+        },
+        showThumbnailPreview(show) {
+            this.$emit('update', 'showThumbnailPreview', show);
+            Settings.set('showThumbnailPreview', show);
         },
     },
     created() {

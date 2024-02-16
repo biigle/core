@@ -36,20 +36,18 @@ class ProcessNewVideoTest extends TestCase
     public function testGenerateSprites()
     {
         Storage::fake('video-thumbs');
-        config(['videos.frames_per_sprite' => 9]);
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->duration = 180;
 
         $job->handle();
         $this->assertEquals(180, $video->fresh()->duration);
-        $expected_frames = 18;
-        // additional frames caused by generating regular thumbnails
-        $additional_frames = $job->frames - $expected_frames;
-        $this->assertEquals($expected_frames, $job->frames - $additional_frames);
-        $this->assertEquals([0.0, 10.0, 20.0, 30.0, 40.0, 50.0,
-            60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 130.0,
-            140.0, 150.0, 160.0, 170.0], array_slice($job->times, $additional_frames, $job->frames));
+        $expectedThumbnails = 72;
+        $expectedIntervals = range(0, 177.5, 2.5);
+        // additional thumbnails caused by generating regular thumbnails
+        $additionalThumbnails = $job->thumbnails - $expectedThumbnails;
+        $this->assertEquals($expectedThumbnails, $job->thumbnails - $additionalThumbnails);
+        $this->assertEquals($expectedIntervals, array_slice($job->times, $additionalThumbnails, $job->thumbnails));
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -65,11 +63,11 @@ class ProcessNewVideoTest extends TestCase
         $job->duration = 0;
 
         $job->handle();
-        $expected_frames = 0;
-        // additional frames caused by generating regular thumbnails
-        $additional_frames = $job->frames - $expected_frames;
-        $this->assertEquals($expected_frames, $job->frames - $additional_frames);
-        $this->assertEquals([], array_slice($job->times, $additional_frames, $job->frames));
+        $expectedThumbnails = 0;
+        // additional thumbnails caused by generating regular thumbnails
+        $additionalThumbnails = $job->thumbnails - $expectedThumbnails;
+        $this->assertEquals($expectedThumbnails, $job->thumbnails - $additionalThumbnails);
+        $this->assertEquals([], array_slice($job->times, $additionalThumbnails, $job->thumbnails));
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -85,11 +83,11 @@ class ProcessNewVideoTest extends TestCase
 
         $job->handle();
         $this->assertEquals(1, $video->fresh()->duration);
-        $expected_frames = 5;
-        // additional frames caused by generating regular thumbnails
-        $additional_frames = $job->frames - $expected_frames;
-        $this->assertEquals($expected_frames, $job->frames - $additional_frames);
-        $this->assertEquals([0.0, 0.2, 0.4, 0.6, 0.8], array_slice($job->times, $additional_frames, $job->frames));
+        $expectedThumbnails = 5;
+        // additional thumbnails caused by generating regular thumbnails
+        $additionalThumbnails = $job->thumbnails - $expectedThumbnails;
+        $this->assertEquals($expectedThumbnails, $job->thumbnails - $additionalThumbnails);
+        $this->assertEquals([0.0, 0.2, 0.4, 0.6, 0.8], array_slice($job->times, $additionalThumbnails, $job->thumbnails));
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -97,45 +95,43 @@ class ProcessNewVideoTest extends TestCase
 
     }
 
-    public function testGenerateSpritesExceedsMaxFrames()
+    public function testGenerateSpritesExceedsMaxThumbnails()
     {
         Storage::fake('video-thumbs');
-        config(['videos.sprites_max_frames' => 25]);
-        config(['videos.sprites_interval_seconds' => 5]);
+        config(['videos.sprites_max_thumbnails' => 50]);
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->duration = 130;
 
         $job->handle();
         $this->assertEquals(130, $video->fresh()->duration);
-        $expected_frames = 25;
+        $expectedThumbnails = 50;
+        $expectedIntervals = array_map(fn ($value) => round($value, 2), range(0, 127.4, 2.6));
         // additional frames caused by generating regular thumbnails
-        $additional_frames = $job->frames - $expected_frames;
-        $this->assertEquals($expected_frames, $job->frames - $additional_frames);
-        $this->assertEquals([0.0, 5.2, 10.4, 15.6, 20.8, 26.0, 31.2, 36.4,
-            41.6, 46.8, 52.0, 57.2, 62.4, 67.6, 72.8, 78.0, 83.2, 88.4,
-            93.6, 98.8, 104.0, 109.2, 114.4, 119.6, 124.8], array_slice($job->times, $additional_frames, $job->frames));
+        $additionalThumbnails = $job->thumbnails - $expectedThumbnails;
+        $this->assertEquals($expectedThumbnails, $job->thumbnails - $additionalThumbnails);
+        $this->assertEquals($expectedIntervals, array_slice($job->times, $additionalThumbnails, $job->thumbnails));
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_1.webp"));
     }
 
-    public function testGenerateSpritesFallsBelowMinFrames()
+    public function testGenerateSpritesFallsBelowMinThumbnails()
     {
         Storage::fake('video-thumbs');
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->duration = 20;
+        $job->duration = 5;
 
         $job->handle();
-        $this->assertEquals(20, $video->fresh()->duration);
-        $expected_frames = 5;
+        $this->assertEquals(5, $video->fresh()->duration);
+        $expectedThumbnails = 5;
         // additional frames caused by generating regular thumbnails
-        $additional_frames = $job->frames - $expected_frames;
-        $this->assertEquals($expected_frames, $job->frames - $additional_frames);
-        $this->assertEquals([0.0, 4.0, 8.0, 12.0, 16.0], array_slice($job->times, $additional_frames, $job->frames));
-
+        $additionalThumbnails = $job->thumbnails - $expectedThumbnails;
+        $this->assertEquals($expectedThumbnails, $job->thumbnails - $additionalThumbnails);
+        $this->assertEquals([0.0, 1.0, 2.0, 3.0, 4.0], array_slice($job->times, $additionalThumbnails, $job->thumbnails));
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -268,7 +264,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
     public $duration = 0;
     public $codec = '';
     public $times = [];
-    public $frames = 0;
+    public $thumbnails = 0;
 
     protected function getCodec($path)
     {
@@ -283,7 +279,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
     protected function generateVideoThumbnail($path, $time, $width, $height)
     {
         $this->times[] = $time;
-        $this->frames += 1;
+        $this->thumbnails += 1;
 
         return VipsImage::black(240, 138)
             ->embed(30, 40, 240, 138, ['extend' => Extend::WHITE]) // Extend left & top edges with white color

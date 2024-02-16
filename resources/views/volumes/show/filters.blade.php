@@ -36,7 +36,7 @@
         </form>
         <ul class="list-group">
             <li v-cloak v-for="(rule, index) in rules" class="list-group-item">
-                <span v-if="index > 0" v-text="operator"></span><span v-else v-text="typeText"></span> <component :is="getListComponent(rule)" :rule="rule" v-on:refresh="refreshRule"></component> <button type="button" class="close" title="Remove this rule" v-on:click="removeRule(index)"><span aria-hidden="true">&times;</span></button>
+                <span v-if="index > 0" v-text="operator"></span><span v-else v-text="typeText"></span> <component :is="getListComponent(rule)" :rule="rule" :type="type" v-on:refresh="refreshRule"></component> <button type="button" class="close" title="Remove this rule" v-on:click="removeRule(index)"><span aria-hidden="true">&times;</span></button>
             </li>
             <li v-if="!hasRules" class="list-group-item text-muted">No filter rules</li>
         </ul>

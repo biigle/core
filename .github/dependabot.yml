@@ -1,0 +1,26 @@
+version: 2
+updates:
+    - package-ecosystem: pip
+      directory: "/.docker"
+      schedule:
+          interval: "weekly"
+      # Disable version updates
+      open-pull-requests-limit: 0
+    - package-ecosystem: composer
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      # Disable version updates
+      open-pull-requests-limit: 0
+    - package-ecosystem: npm
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      # Disable version updates
+      open-pull-requests-limit: 0
+    - package-ecosystem: github-actions
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      # Disable version updates
+      open-pull-requests-limit: 0

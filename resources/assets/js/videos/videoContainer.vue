@@ -68,6 +68,7 @@ export default {
                 showMousePosition: false,
                 playbackRate: 1.0,
                 showProgressIndicator: true,
+                showThumbnailPreview: true,
             },
             openTab: '',
             urlParams: {
@@ -553,7 +554,11 @@ export default {
                 .then(this.handleVideoInformationResponse)
                 .then(this.fetchVideoContent)
                 .catch(this.handleVideoError)
-                .finally(this.finishLoading);
+                .finally(() => {
+                    this.finishLoading();
+                    // Avoid spinning wheel continuing to be displayed after moving fast through videos
+                    this.seeking = false;
+                });
 
             return promise;
         },

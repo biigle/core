@@ -17,8 +17,8 @@ class ApiTokenFactory extends Factory
         return [
             'owner_id' => User::factory(),
             'purpose' => $this->faker->sentence(),
-            // 'password'
-            'hash' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
+            // 'password', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
         ];
     }
 }

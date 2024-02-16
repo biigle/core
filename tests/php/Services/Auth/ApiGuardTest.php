@@ -24,8 +24,8 @@ class ApiGuardTest extends TestCase
     public function testWrongCredentials()
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
         $response = $this->json('GET', '/api/v1/users', [], [
             'PHP_AUTH_USER' => $token->owner->email,
@@ -53,8 +53,8 @@ class ApiGuardTest extends TestCase
     public function testSuccess()
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
         $response = $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
@@ -64,8 +64,8 @@ class ApiGuardTest extends TestCase
 
         $token2 = ApiTokenTest::create([
             'owner_id' => $token->owner->id,
-            // 'test_token2'
-            'hash' => '$2y$10$bqKeHzuH0hf9gIOUBnzd0ezQkVkUU12faCOu2twnBguONfx8.XhlO',
+            // 'test_token2', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$YO8JZPK35rlk48cFprp8luo9lN/SPZaKeYjnhM2IpLMWpP8anC08e',
         ]);
 
         $response = $this->json('GET', '/api/v1/users', [], [
@@ -78,8 +78,8 @@ class ApiGuardTest extends TestCase
     public function testEmailCaseInsensitive()
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
 
         $token->owner->email = 'test@test.com';
@@ -95,8 +95,8 @@ class ApiGuardTest extends TestCase
     public function testTouchToken()
     {
         $token = ApiTokenTest::create([
-            // 'test_token'
-            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
         ]);
         $token->updated_at = Carbon::now(-5);
         $token->save();
