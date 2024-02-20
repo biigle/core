@@ -47,16 +47,16 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     Storage::disk($this->targetDisk)->put($targetPath, $buffer);
                 }
 
-                if (!$this->skipFeatureVectors && !array_key_exists($frame, $frameFiles)) {
+                if (!$this->skipFeatureVectors && !array_key_exists("{$frame}", $frameFiles)) {
                     $framePath = tempnam(sys_get_temp_dir(), 'largo_video_frame').'.png';
                     $videoFrame->writeToFile($framePath);
-                    $frameFiles[$frame] = $framePath;
+                    $frameFiles["{$frame}"] = $framePath;
                 }
             }
 
             if (!$this->skipFeatureVectors) {
                 $annotationFrames = $annotations->mapWithKeys(
-                        fn ($a) => [$a->id => $frameFiles[$a->frames[0]]]
+                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"]]
                     )
                     ->toArray();
 
