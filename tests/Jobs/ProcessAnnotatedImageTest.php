@@ -400,6 +400,20 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
+    public function testHandleGiveUpError2()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception("MIME type 'text/html' not allowed"));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new ProcessAnnotatedImage($annotation->image);
+        $job->tries = 1;
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');

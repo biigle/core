@@ -47,16 +47,16 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     Storage::disk($this->targetDisk)->put($targetPath, $buffer);
                 }
 
-                if (!$this->skipFeatureVectors && !array_key_exists($frame, $frameFiles)) {
+                if (!$this->skipFeatureVectors && !array_key_exists("{$frame}", $frameFiles)) {
                     $framePath = tempnam(sys_get_temp_dir(), 'largo_video_frame').'.png';
                     $videoFrame->writeToFile($framePath);
-                    $frameFiles[$frame] = $framePath;
+                    $frameFiles["{$frame}"] = $framePath;
                 }
             }
 
             if (!$this->skipFeatureVectors) {
                 $annotationFrames = $annotations->mapWithKeys(
-                        fn ($a) => [$a->id => $frameFiles[$a->frames[0]]]
+                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"]]
                     )
                     ->toArray();
 
@@ -108,12 +108,22 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @param Video $video
      * @param float $time
+     * @param int $trySeek
      *
      * @return \Jcupitt\Vips\Video
      */
-    protected function getVideoFrame(Video $video, $time)
+    protected function getVideoFrame(Video $video, float $time, int $trySeek = 3)
     {
-        $buffer = $video->frame(TimeCode::fromSeconds($time))->save(null, false, true);
+        // Sometimes an annotation is near the end of the video (or exactly at the end).
+        // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
+        // we try to seek backwards one frame until the buffer is not empty or the number
+        // of tries is exceeded.
+        do {
+            $buffer = $video->frame(TimeCode::fromSeconds($time))
+                ->save(null, false, true);
+            $trySeek -= 1;
+            $time = max(0, $time - 0.0333); // Roughly estimated framerate of 30 fps.
+        } while (empty($buffer) && $trySeek > 0);
 
         return VipsImage::newFromBuffer($buffer);
     }

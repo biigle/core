@@ -149,9 +149,15 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     {
         $message = $e->getMessage();
         $giveUpError = (
-            // SSL certificate problem of the remote server.
             // See: https://curl.haxx.se/libcurl/c/libcurl-errors.html
+            // SSL certificate problem of the remote server.
             Str::contains($message, 'cURL error 60:') ||
+            // Connection reset by peer.
+            Str::contains($message, 'cURL error 56:') ||
+            // Operation timed out (connection too slow?).
+            Str::contains($message, 'cURL error 28:') ||
+            // Maybe the file does not exist any more and the server responds with a 404.
+            Str::of($message)->isMatch('/MIME type \'(.+)\' not allowed/') ||
             // File not found.
             Str::contains($message, 'Unable to read file from location:')
         );
