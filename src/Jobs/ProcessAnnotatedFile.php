@@ -155,7 +155,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             // Connection reset by peer.
             Str::contains($message, 'cURL error 56:') ||
             // Maybe the file does not exist any more and the server responds with a 404.
-            Str::contains($message, "MIME type 'text/html' not allowed") ||
+            Str::of($message)->isMatch('/MIME type \'(.+)\' not allowed/') ||
             // File not found.
             Str::contains($message, 'Unable to read file from location:')
         );

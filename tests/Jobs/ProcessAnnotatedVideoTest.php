@@ -443,6 +443,20 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
+    public function testHandleGiveUpError2()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception("MIME type 'text/html' not allowed"));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = VideoAnnotationTest::create();
+        $job = new ProcessAnnotatedVideo($annotation->video);
+        $job->tries = 1;
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');
