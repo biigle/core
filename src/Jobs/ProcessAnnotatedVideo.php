@@ -112,7 +112,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return \Jcupitt\Vips\Video
      */
-    protected function getVideoFrame(Video $video, float $time, int $trySeek = 3)
+    protected function getVideoFrame(Video $video, float $time, int $trySeek = 5)
     {
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
