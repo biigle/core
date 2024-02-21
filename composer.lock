@@ -62,16 +62,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v4.5.1",
+            "version": "v4.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "1ddbcbe136c092241fbacdbc00a79eb5dbb97ae7"
+                "reference": "9881936f67f81b40bc2974d0bbe07577547e57b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/1ddbcbe136c092241fbacdbc00a79eb5dbb97ae7",
-                "reference": "1ddbcbe136c092241fbacdbc00a79eb5dbb97ae7",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/9881936f67f81b40bc2974d0bbe07577547e57b2",
+                "reference": "9881936f67f81b40bc2974d0bbe07577547e57b2",
                 "shasum": ""
             },
             "require": {
@@ -115,9 +115,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v4.5.1"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v4.5.2"
             },
-            "time": "2024-02-19T15:24:53+00:00"
+            "time": "2024-02-21T14:50:23+00:00"
         },
         {
             "name": "brick/math",
