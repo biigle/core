@@ -46,6 +46,7 @@ import {defaults as defaultInteractions} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import { isInvalidShape } from '../utils';
 
 
 /**
@@ -520,7 +521,7 @@ export default {
                 return;
             }
             
-            if (this.isInvalidShape(e.feature)) {
+            if (isInvalidShape(e.feature)) {
                 // This must be done in the change event handler.
                 // Not exactly sure why.
                 this.annotationSource.once('change', () => {
@@ -679,26 +680,6 @@ export default {
             } else {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
-            }
-        },
-        isInvalidShape(feature) {
-            let geometry = feature.getGeometry();
-            let points = [];
-            switch (geometry.getType()) {
-                case 'Circle':
-                    return parseInt(geometry.getRadius()) === 0;
-                case 'LineString':
-                    points = geometry.getCoordinates();
-                    return (new Set(points.map(xy => String([xy])))).size < 2;
-                case 'Rectangle':
-                case 'Ellipse':
-                    points = geometry.getCoordinates()[0];
-                    return (new Set(points.map(xy => String([xy])))).size !== 4;
-                case 'Polygon':
-                    points = geometry.getCoordinates()[0];
-                    return (new Set(points.map(xy => String([xy])))).size < 3;
-                default:
-                    return false;
             }
         },
     },
