@@ -46,7 +46,7 @@ trait HasPointsAttribute
         }
 
         if (!$valid) {
-            throw new Exception('Invalid number of points for shape '.$this->shape->name.'!');
+            throw new Exception('Invalid (number of) points for shape '.$this->shape->name.'!');
         }
 
         if ($this->shape_id === Shape::polygonId()) {
