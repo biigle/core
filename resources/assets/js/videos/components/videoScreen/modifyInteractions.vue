@@ -6,7 +6,7 @@ import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
-import {isInvalidShape} from '../../utils';
+import {isInvalidShape} from '../../../annotations/utils';
 
 const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
 

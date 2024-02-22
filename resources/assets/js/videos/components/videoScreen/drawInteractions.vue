@@ -5,7 +5,7 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import {isInvalidShape} from '../../utils';
+import {isInvalidShape} from '../../../annotations/utils';
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
