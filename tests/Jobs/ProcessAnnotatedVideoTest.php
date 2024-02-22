@@ -787,6 +787,28 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->handle();
     }
 
+    public function testHandleRuntimeError()
+    {
+        config([
+            'thumbnails.height' => 100,
+            'thumbnails.width' => 100,
+        ]);
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        $job->throwGetFrame = true;
+
+        $video->shouldReceive('crop')->never();
+        $video->shouldReceive('writeToBuffer')->never();
+        $job->handle();
+        $this->assertNull($job->input);
+    }
 
     protected function getFrameMock($times = 1)
     {
@@ -808,6 +830,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     public $input;
     public $outputPath;
     public $output = [];
+    public $throwGetFrame = false;
 
     public function getVideo($path)
     {
@@ -816,6 +839,10 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 
     public function getVideoFrame(Video $video, float $time, int $trySeek = 3)
     {
+        if ($this->throwGetFrame) {
+            throw new \FFMpeg\Exception\RuntimeException;
+        }
+
         $this->times[] = $time;
 
         return $this->mock;

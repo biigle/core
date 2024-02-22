@@ -300,6 +300,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             if (is_array($filePath)) {
                 $input = [];
                 foreach ($boxes as $id => $box) {
+                    // This can happen for individual video frames that could not be
+                    // extracted.
+                    if (!array_key_exists($id, $filePath)) {
+                        continue;
+                    }
+
                     $path = $filePath[$id];
                     if (array_key_exists($path, $input)) {
                         $input[$path][$id] = $box;
@@ -309,6 +315,11 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 }
             } else {
                 $input = [$filePath => $boxes];
+            }
+
+            // The "continue" above could result in an empty array.
+            if (empty($input)) {
+                return;
             }
 
             File::put($inputPath, json_encode($input));

@@ -6,6 +6,7 @@ use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,7 +40,12 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             foreach ($annotations as $a) {
                 $points = $a->points[0] ?? null;
                 $frame = $a->frames[0];
-                $videoFrame = $this->getVideoFrame($video, $frame);
+                try {
+                    $videoFrame = $this->getVideoFrame($video, $frame);
+                } catch (RuntimeException $e) {
+                    // Can't extract frame.
+                    continue;
+                }
 
                 if (!$this->skipPatches) {
                     $buffer = $this->getAnnotationPatch($videoFrame, $points, $a->shape);
@@ -56,8 +62,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
             if (!$this->skipFeatureVectors) {
                 $annotationFrames = $annotations->mapWithKeys(
-                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"]]
+                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"] ?? null]
                     )
+                    ->filter()
                     ->toArray();
 
                 $this->generateFeatureVectors($annotations, $annotationFrames);
