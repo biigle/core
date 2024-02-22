@@ -515,7 +515,12 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel || this.isInvalidShape(e.feature)) {
+            if (!this.hasSelectedLabel) {
+                this.annotationSource.removeFeature(e.feature);
+                return;
+            }
+            
+            if (this.isInvalidShape(e.feature)) {
                 // This must be done in the change event handler.
                 // Not exactly sure why.
                 this.annotationSource.once('change', () => {
