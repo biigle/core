@@ -354,6 +354,25 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertEquals(25, $this->annotation->points[1]);
     }
 
+    public function testUpdateInvalidPoints()
+    {
+        $this->beAdmin();
+
+        $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
+        $this->annotation->shape_id = Shape::rectangleId();
+        $this->annotation->save();
+
+        $response = $this->json('PUT',"api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
+        $response->assertStatus(422);
+
+        $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
+        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->save();
+
+        $response = $this->json('PUT',"api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
+        $response->assertStatus(422);
+    }
+
     public function testUpdateValidatePoints()
     {
         $this->updateValidatePoints('api/v1/image-annotations');

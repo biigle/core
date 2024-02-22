@@ -706,6 +706,28 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testUpdateInvalidPoints(){
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::rectangleId(),
+            'video_id' => $this->video->id,
+            'frames' => [0],
+            'points' => [[0,1,2,3,4,5,6,7]],
+        ]);
+
+        $this->beAdmin();
+
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", ['points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]])
+        ->assertStatus(422);
+
+        $annotation->points = [[0,1,2,3,4,5,6,7]]; 
+        $annotation->shape_id = Shape::lineId();
+        $annotation->save();
+
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", ['points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]])
+        ->assertStatus(422);
+
+    }
+
     public function testUpdateWholeFrameAnnotation()
     {
         $annotation = VideoAnnotationTest::create([
