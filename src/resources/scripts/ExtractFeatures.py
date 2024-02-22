@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFile
 from torch import device, no_grad
 from torch.cuda import is_available as cuda_is_available
 from torch.hub import load as hub_load
@@ -6,6 +6,9 @@ import csv
 import json
 import sys
 import torchvision.transforms as T
+
+# See: https://stackoverflow.com/a/23575424/1796523
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # input_json = {
 #     cached_filename: {
