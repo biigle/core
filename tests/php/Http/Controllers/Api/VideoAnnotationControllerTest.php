@@ -263,6 +263,15 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
             ])->assertStatus(422);
 
+            // shape is invalid
+        $this
+            ->json('POST', "/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::lineId(),
+                'label_id' => $label->id,
+                'frames' => [1],
+                'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
+            ])->assertStatus(422);
+
         $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
