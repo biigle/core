@@ -649,7 +649,7 @@ export default {
                 default:
                     return;
             }
-            Messages.danger(`Invalid shape. ${shape} needs ${count} non-overlapping vertices.`);
+            Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
     },
     watch: {
