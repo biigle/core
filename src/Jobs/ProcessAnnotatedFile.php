@@ -162,6 +162,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             Str::contains($message, 'cURL error 60:') ||
             // Maybe the file does not exist any more and the server responds with a 404.
             Str::of($message)->isMatch('/MIME type \'(.+)\' not allowed/') ||
+            // This can happen if a user disk was deleted.
+            Str::of($message)->isMatch('/Disk \[disk-[0-9]+\] does not have a configured driver\./') ||
             // File not found.
             Str::contains($message, 'Unable to read file from location:')
         );

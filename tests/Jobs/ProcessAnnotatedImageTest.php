@@ -414,6 +414,20 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
+    public function testHandleGiveUpError3()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception('Disk [disk-10] does not have a configured driver.'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new ProcessAnnotatedImage($annotation->image);
+        $job->tries = 1;
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');
