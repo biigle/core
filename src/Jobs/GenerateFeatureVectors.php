@@ -16,13 +16,16 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
     /**
      * Get the bounding box of an annotation
+     *
+     * @param int $pointPadding The default is half the patch size of 224 that is expected by DINO.
+     * @param int $minSize Each side of the box should have at least this number of pixels. Must be divisible by 2.
      */
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
-        // This is half the patch size of 224 that is expected by DINO.
         int $pointPadding = 112,
-        int $boxPadding = 0
+        int $boxPadding = 0,
+        int $minSize = 32
     ): array
     {
         $box = match ($shape->id) {
@@ -42,12 +45,26 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
             ];
         }
 
-        return $this->makeBoxIntegers([
+        $box = $this->makeBoxIntegers([
             $box[0], // left
             $box[1], // top
             $box[2] - $box[0], // width
             $box[3] - $box[1], // height
         ]);
+
+        // Ensure minimum dimensions. This is important e.g. with a line string that is
+        // exactly parallel to the x or y axis.
+        if ($box[2] === 0) {
+            $box[0] -= intval($minSize / 2);
+            $box[2] = $minSize;
+        }
+
+        if ($box[3] === 0) {
+            $box[1] -= intval($minSize / 2);
+            $box[3] = $minSize;
+        }
+
+        return $box;
     }
 
     /**

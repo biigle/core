@@ -810,6 +810,27 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertNull($job->input);
     }
 
+    public function testHandleFlatLineStringVector()
+    {
+        $videoMock = $this->getFrameMock(0);
+        $videoMock->shouldReceive('crop')->andReturn($videoMock);
+        $videoMock->shouldReceive('writeToBuffer')->andReturn('abc123');
+
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[300, 300, 400, 300]],
+            'frames' => [1],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video, skipPatches: true, skipSvgs: true);
+        $job->mock = $videoMock;
+        $job->handleFile($annotation->video, 'abc');
+
+        $input = $job->input;
+        $filename = array_keys($input)[0];
+        $box = $input[$filename][$annotation->id];
+        $this->assertEquals([300, 284, 400, 316], $box);
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
