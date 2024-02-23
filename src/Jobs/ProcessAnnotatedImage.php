@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image as VipsImage;
 
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
@@ -148,7 +149,13 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
                     $box[3] = intval($box[3] * $factor);
                 }
 
-                $crop->pngsave($path);
+                try {
+                    $crop->pngsave($path);
+                } catch (VipsException $e) {
+                    // Sometimes Vips can't write the crop because the image is corrupt.
+                    // This annotation will be skipped.
+                    continue;
+                }
 
                 $input[$path] = [$id => [0, 0, $box[2], $box[3]]];
             }
