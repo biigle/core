@@ -119,7 +119,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return \Jcupitt\Vips\Video
      */
-    protected function getVideoFrame(Video $video, float $time, int $trySeek = 30)
+    protected function getVideoFrame(Video $video, float $time, int $trySeek = 60)
     {
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
@@ -129,8 +129,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             $buffer = $video->frame(TimeCode::fromSeconds($time))
                 ->save(null, false, true);
             $trySeek -= 1;
-            // Roughly estimated framerate of 30 fps. With 30 iterations, we seek back up
-            // to 1 s.
+            // Roughly estimated framerate of 30 fps. With 60 iterations, we seek back up
+            // to 2 s by default (this is based on what was required for edge cases in
+            //  1.5 M annotations on 16k videos).
             $time = max(0, $time - 0.033333333);
         } while (empty($buffer) && $trySeek > 0);
 
