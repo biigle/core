@@ -6,12 +6,14 @@ use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Exception as VipsException;
 use VipsImage;
 
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
@@ -39,7 +41,18 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             foreach ($annotations as $a) {
                 $points = $a->points[0] ?? null;
                 $frame = $a->frames[0];
-                $videoFrame = $this->getVideoFrame($video, $frame);
+                try {
+                    $videoFrame = $this->getVideoFrame($video, $frame);
+                } catch (RuntimeException $e) {
+                    // FFMpeg can't extract the frame.
+                    continue;
+                } catch (VipsException $e) {
+                    // The "buffer not in known format" error when FFMPeg returns an empty
+                    // buffer from the end of the video. We have the "trySeek" argument
+                    // that attempts to rewind for a bit to get a frame but this may not
+                    // always work.
+                    continue;
+                }
 
                 if (!$this->skipPatches) {
                     $buffer = $this->getAnnotationPatch($videoFrame, $points, $a->shape);
@@ -56,8 +69,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
             if (!$this->skipFeatureVectors) {
                 $annotationFrames = $annotations->mapWithKeys(
-                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"]]
+                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"] ?? null]
                     )
+                    ->filter()
                     ->toArray();
 
                 $this->generateFeatureVectors($annotations, $annotationFrames);
@@ -112,7 +126,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return \Jcupitt\Vips\Video
      */
-    protected function getVideoFrame(Video $video, float $time, int $trySeek = 30)
+    protected function getVideoFrame(Video $video, float $time, int $trySeek = 60)
     {
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
@@ -122,8 +136,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             $buffer = $video->frame(TimeCode::fromSeconds($time))
                 ->save(null, false, true);
             $trySeek -= 1;
-            // Roughly estimated framerate of 30 fps. With 30 iterations, we seek back up
-            // to 1 s.
+            // Roughly estimated framerate of 30 fps. With 60 iterations, we seek back up
+            // to 2 s by default (this is based on what was required for edge cases in
+            //  1.5 M annotations on 16k videos).
             $time = max(0, $time - 0.033333333);
         } while (empty($buffer) && $trySeek > 0);
 

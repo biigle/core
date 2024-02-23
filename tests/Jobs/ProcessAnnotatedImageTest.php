@@ -414,6 +414,20 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
     }
 
+    public function testHandleGiveUpError3()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception('Disk [disk-10] does not have a configured driver.'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = ImageAnnotationTest::create();
+        $job = new ProcessAnnotatedImage($annotation->image);
+        $job->tries = 1;
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->image->uuid);
+        $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');
@@ -782,6 +796,25 @@ class ProcessAnnotatedImageTest extends TestCase
         $box = $input[$filename][$annotation->id];
         // These are the coordinates of the cropped image.
         $this->assertEquals([0, 0, 5000, 5000], $box);
+    }
+
+    public function testHandleFlatLineStringVector()
+    {
+        $image = $this->getImageMock(0);
+        $annotation = ImageAnnotationTest::create([
+            'points' => [300, 300, 400, 300],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedImageStub($annotation->image, skipPatches: true, skipSvgs: true);
+        $job->mock = $image;
+
+        $job->handle();
+
+        $input = $job->input;
+        $filename = array_keys($input)[0];
+        $box = $input[$filename][$annotation->id];
+        // The height is padded to ensure a minimum size of 32 px.
+        $this->assertEquals([300, 284, 400, 316], $box);
     }
 
     protected function getImageMock($times = 1)

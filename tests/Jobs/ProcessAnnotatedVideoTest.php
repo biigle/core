@@ -457,6 +457,20 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
 
+    public function testHandleGiveUpError3()
+    {
+        $disk = Storage::fake('test');
+        FileCache::shouldReceive('get')->andThrow(new Exception('Disk [disk-10] does not have a configured driver.'));
+        Log::shouldReceive('warning')->once();
+
+        $annotation = VideoAnnotationTest::create();
+        $job = new ProcessAnnotatedVideo($annotation->video);
+        $job->tries = 1;
+        $job->handle();
+        $prefix = fragment_uuid_path($annotation->video->uuid);
+        $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+    }
+
     public function testFileLockedError()
     {
         $disk = Storage::fake('test');
@@ -787,6 +801,64 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->handle();
     }
 
+    public function testHandleRuntimeError()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        $job->throwGetFrame = \FFMpeg\Exception\RuntimeException::class;
+
+        $video->shouldReceive('crop')->never();
+        $video->shouldReceive('writeToBuffer')->never();
+        $job->handle();
+        $this->assertNull($job->input);
+    }
+
+    public function testHandleVipsException()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        $job->throwGetFrame = \Jcupitt\Vips\Exception::class;
+
+        $video->shouldReceive('crop')->never();
+        $video->shouldReceive('writeToBuffer')->never();
+        $job->handle();
+        $this->assertNull($job->input);
+    }
+
+    public function testHandleFlatLineStringVector()
+    {
+        $videoMock = $this->getFrameMock(0);
+        $videoMock->shouldReceive('crop')->andReturn($videoMock);
+        $videoMock->shouldReceive('writeToBuffer')->andReturn('abc123');
+
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[300, 300, 400, 300]],
+            'frames' => [1],
+            'shape_id' => Shape::lineId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video, skipPatches: true, skipSvgs: true);
+        $job->mock = $videoMock;
+        $job->handleFile($annotation->video, 'abc');
+
+        $input = $job->input;
+        $filename = array_keys($input)[0];
+        $box = $input[$filename][$annotation->id];
+        $this->assertEquals([300, 284, 400, 316], $box);
+    }
 
     protected function getFrameMock($times = 1)
     {
@@ -808,6 +880,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     public $input;
     public $outputPath;
     public $output = [];
+    public $throwGetFrame = false;
 
     public function getVideo($path)
     {
@@ -816,6 +889,10 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 
     public function getVideoFrame(Video $video, float $time, int $trySeek = 3)
     {
+        if ($this->throwGetFrame !== false) {
+            throw new $this->throwGetFrame;
+        }
+
         $this->times[] = $time;
 
         return $this->mock;

@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFile
 from torch import device, no_grad
 from torch.cuda import is_available as cuda_is_available
 from torch.hub import load as hub_load
@@ -6,6 +6,9 @@ import csv
 import json
 import sys
 import torchvision.transforms as T
+
+# See: https://stackoverflow.com/a/23575424/1796523
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # input_json = {
 #     cached_filename: {
@@ -36,11 +39,12 @@ def normalize_image_mode(image):
 
     if image.mode == 'RGBA' or image.mode == 'L' or image.mode == 'P':
         image = image.convert('RGB')
-
-    if image.mode =='I':
+    elif image.mode =='I' or image.mode == 'I;16':
         import numpy as np
-        # I images (32 bit signed integer) need to be rescaled manually before converting.
-        image = Image.fromarray(((np.array(image)/(2**16))*2**8).astype(np.uint8)).convert('RGB')
+        # I images (32 bit signed integer) and I;16 (16 bit unsigned imteger)
+        # need to be rescaled manually before converting.
+        # image/256 === image/(2**16)*(2**8)
+        image = Image.fromarray((np.array(image)/256).astype(np.uint8)).convert('RGB')
 
     return image
 

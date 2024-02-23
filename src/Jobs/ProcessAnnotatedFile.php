@@ -150,14 +150,20 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $message = $e->getMessage();
         $giveUpError = (
             // See: https://curl.haxx.se/libcurl/c/libcurl-errors.html
-            // SSL certificate problem of the remote server.
-            Str::contains($message, 'cURL error 60:') ||
-            // Connection reset by peer.
-            Str::contains($message, 'cURL error 56:') ||
+            // Could not resolve host.
+            Str::contains($message, 'cURL error 6:') ||
+            // Could not connect to server.
+            Str::contains($message, 'cURL error 7:') ||
             // Operation timed out (connection too slow?).
             Str::contains($message, 'cURL error 28:') ||
+            // Connection reset by peer.
+            Str::contains($message, 'cURL error 56:') ||
+            // SSL certificate problem of the remote server.
+            Str::contains($message, 'cURL error 60:') ||
             // Maybe the file does not exist any more and the server responds with a 404.
             Str::of($message)->isMatch('/MIME type \'(.+)\' not allowed/') ||
+            // This can happen if a user disk was deleted.
+            Str::of($message)->isMatch('/Disk \[disk-[0-9]+\] does not have a configured driver\./') ||
             // File not found.
             Str::contains($message, 'Unable to read file from location:')
         );
@@ -298,6 +304,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             if (is_array($filePath)) {
                 $input = [];
                 foreach ($boxes as $id => $box) {
+                    // This can happen for individual video frames that could not be
+                    // extracted.
+                    if (!array_key_exists($id, $filePath)) {
+                        continue;
+                    }
+
                     $path = $filePath[$id];
                     if (array_key_exists($path, $input)) {
                         $input[$path][$id] = $box;
@@ -307,6 +319,11 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 }
             } else {
                 $input = [$filePath => $boxes];
+            }
+
+            // The "continue" above could result in an empty array.
+            if (empty($input)) {
+                return;
             }
 
             File::put($inputPath, json_encode($input));
