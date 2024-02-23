@@ -789,10 +789,6 @@ class ProcessAnnotatedVideoTest extends TestCase
 
     public function testHandleRuntimeError()
     {
-        config([
-            'thumbnails.height' => 100,
-            'thumbnails.width' => 100,
-        ]);
         $disk = Storage::fake('test');
         $video = $this->getFrameMock(0);
         $annotation = VideoAnnotationTest::create([
@@ -802,7 +798,26 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->throwGetFrame = true;
+        $job->throwGetFrame = \FFMpeg\Exception\RuntimeException::class;
+
+        $video->shouldReceive('crop')->never();
+        $video->shouldReceive('writeToBuffer')->never();
+        $job->handle();
+        $this->assertNull($job->input);
+    }
+
+    public function testHandleVipsException()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100]],
+            'frames' => [1],
+            'shape_id' => Shape::pointId(),
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        $job->throwGetFrame = \Jcupitt\Vips\Exception::class;
 
         $video->shouldReceive('crop')->never();
         $video->shouldReceive('writeToBuffer')->never();
@@ -860,8 +875,8 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 
     public function getVideoFrame(Video $video, float $time, int $trySeek = 3)
     {
-        if ($this->throwGetFrame) {
-            throw new \FFMpeg\Exception\RuntimeException;
+        if ($this->throwGetFrame !== false) {
+            throw new $this->throwGetFrame;
         }
 
         $this->times[] = $time;

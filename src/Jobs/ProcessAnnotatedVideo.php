@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Exception as VipsException;
 use VipsImage;
 
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
@@ -43,7 +44,13 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 try {
                     $videoFrame = $this->getVideoFrame($video, $frame);
                 } catch (RuntimeException $e) {
-                    // Can't extract frame.
+                    // FFMpeg can't extract the frame.
+                    continue;
+                } catch (VipsException $e) {
+                    // The "buffer not in known format" error when FFMPeg returns an empty
+                    // buffer from the end of the video. We have the "trySeek" argument
+                    // that attempts to rewind for a bit to get a frame but this may not
+                    // always work.
                     continue;
                 }
 
