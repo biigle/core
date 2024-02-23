@@ -43,6 +43,7 @@
       :show-prev-next="hasSiblingVideos"
       :has-error="hasError"
       :seeking="seeking"
+      :reached-tracked-annotation-limit="reachedTrackedAnnotationLimit"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"

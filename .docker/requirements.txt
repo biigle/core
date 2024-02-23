@@ -9,6 +9,7 @@ Shapely==1.8.1
 # Torch is included in the gpu-worker Docker image.
 #torch==2.1.*
 #torchvision==0.16.*
+pandas==1.5.3
 
 # Special gpu-worker requirements.
 mmcv==2.1.*
