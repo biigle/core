@@ -150,14 +150,16 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $message = $e->getMessage();
         $giveUpError = (
             // See: https://curl.haxx.se/libcurl/c/libcurl-errors.html
-            // SSL certificate problem of the remote server.
-            Str::contains($message, 'cURL error 60:') ||
-            // Connection reset by peer.
-            Str::contains($message, 'cURL error 56:') ||
-            // Operation timed out (connection too slow?).
-            Str::contains($message, 'cURL error 28:') ||
             // Could not resolve host.
             Str::contains($message, 'cURL error 6:') ||
+            // Could not connect to server.
+            Str::contains($message, 'cURL error 7:') ||
+            // Operation timed out (connection too slow?).
+            Str::contains($message, 'cURL error 28:') ||
+            // Connection reset by peer.
+            Str::contains($message, 'cURL error 56:') ||
+            // SSL certificate problem of the remote server.
+            Str::contains($message, 'cURL error 60:') ||
             // Maybe the file does not exist any more and the server responds with a 404.
             Str::of($message)->isMatch('/MIME type \'(.+)\' not allowed/') ||
             // File not found.
