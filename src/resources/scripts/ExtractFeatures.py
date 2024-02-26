@@ -36,10 +36,9 @@ transform = T.Compose([
 ])
 
 def normalize_image_mode(image):
-
-    if image.mode == 'RGBA' or image.mode == 'L' or image.mode == 'P':
+    if image.mode in ['RGBA', 'L', 'P', 'CMYK']:
         image = image.convert('RGB')
-    elif image.mode =='I' or image.mode == 'I;16':
+    elif image.mode in ['I', 'I;16']:
         import numpy as np
         # I images (32 bit signed integer) and I;16 (16 bit unsigned imteger)
         # need to be rescaled manually before converting.
