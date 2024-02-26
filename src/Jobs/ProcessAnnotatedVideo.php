@@ -24,10 +24,12 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     public function handleFile(VolumeFile $file, $path)
     {
         $video = $this->getVideo($path);
-        $this->getAnnotationQuery($file)->chunkById(
-            1000,
-            fn ($a) => $this->processAnnotationChunk($a, $video)
-        );
+        // The chunk size is rather low because individual video annotations can contain
+        // lots of data (if they are multi-frame annotations from object tracking with
+        // many annotated frames). With a chunk size too large, this could run into out
+        // of memory issues.
+        $this->getAnnotationQuery($file)
+            ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $video));
     }
 
     /**
