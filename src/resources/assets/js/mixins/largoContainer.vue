@@ -314,7 +314,21 @@ export default {
                 Messages.danger('There was an unexpected error.');
             }
         },
-        performOnAllImagesBetween(image1, image2, callback) {
+        dismissAllImagesBetween(image1, image2) {
+            let index1 = this.sortedAnnotations.indexOf(image1);
+            let index2 = this.sortedAnnotations.indexOf(image2);
+            if (index2 < index1) {
+                let tmp = index2;
+                index2 = index1;
+                index1 = tmp;
+            }
+
+            for (let i = index1 + 1; i < index2; i++) {
+                this.sortedAnnotations[i].dismissed = true;
+            }
+        },
+        relabelAllImagesBetween(image1, image2) {
+            let label = this.selectedLabel;
             let index1 = this.allAnnotations.indexOf(image1);
             let index2 = this.allAnnotations.indexOf(image2);
             if (index2 < index1) {
@@ -324,22 +338,10 @@ export default {
             }
 
             for (let i = index1 + 1; i < index2; i++) {
-                callback(this.allAnnotations[i]);
-            }
-
-        },
-        dismissAllImagesBetween(image1, image2) {
-            this.performOnAllImagesBetween(image1, image2, function (image) {
-                image.dismissed = true;
-            });
-        },
-        relabelAllImagesBetween(image1, image2) {
-            let label = this.selectedLabel;
-            this.performOnAllImagesBetween(image1, image2, function (image) {
-                if (image.dismissed) {
-                    image.newLabel = label;
+                if (this.allAnnotations[i].dismissed) {
+                    this.allAnnotations[i].newLabel = label;
                 }
-            });
+            }
         },
         enableForceChange() {
             this.forceChange = true;
