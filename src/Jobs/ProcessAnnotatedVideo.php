@@ -63,7 +63,12 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 }
 
                 if (!$this->skipFeatureVectors && !array_key_exists("{$frame}", $frameFiles)) {
-                    $framePath = tempnam(sys_get_temp_dir(), 'largo_video_frame').'.png';
+                    $tmpFile = tempnam(sys_get_temp_dir(), 'largo_video_frame');
+                    $framePath = "{$tmpFile}.png";
+                    // The file requires a suffix so FFMpeg knows which format to use.
+                    // Since tempnam() does not create a suffix, we have to rename the
+                    // file.
+                    File::move($tmpFile, $framePath);
                     $videoFrame->writeToFile($framePath);
                     $frameFiles["{$frame}"] = $framePath;
                 }
