@@ -28,6 +28,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // lots of data (if they are multi-frame annotations from object tracking with
         // many annotated frames). With a chunk size too large, this could run into out
         // of memory issues.
+        // Also (if feature vectors are generated), a PNG is stored for each frame in a
+        // chunk. Large chunks could comsume too much space.
         $this->getAnnotationQuery($file)
             ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $video));
     }

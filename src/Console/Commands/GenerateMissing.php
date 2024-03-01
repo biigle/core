@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Storage;
 
 class GenerateMissing extends Command
@@ -166,7 +167,7 @@ class GenerateMissing extends Command
         $this->info("Checking {$total} annotations...");
 
         $currentFile = null;
-        $currentAnnotationBatch = [];
+        $currentAnnotationBatch = collect([]);
 
         $chunkSize = (int) $this->option('chunk-size', 10000);
 
@@ -206,20 +207,20 @@ class GenerateMissing extends Command
             $count++;
 
             if (!$currentFile || $currentFile->id !== $annotation->file->id) {
-                if (!empty($currentAnnotationBatch) && $pushToQueue) {
+                if ($currentAnnotationBatch->isNotEmpty() && $pushToQueue) {
                     $jobCount++;
                     $this->dispatcheProcessJob($currentFile, $currentAnnotationBatch);
                 }
 
                 $currentFile = $annotation->file;
-                $currentAnnotationBatch = [];
+                $currentAnnotationBatch = collect([]);
             }
 
             $currentAnnotationBatch[] = $annotation->id;
         }
 
         // Push final job.
-        if (!empty($currentAnnotationBatch) && $pushToQueue) {
+        if ($currentAnnotationBatch->isNotEmpty() && $pushToQueue) {
             $jobCount++;
             $this->dispatcheProcessJob($currentFile, $currentAnnotationBatch);
         }
@@ -238,24 +239,28 @@ class GenerateMissing extends Command
         }
     }
 
-    protected function dispatcheProcessJob(VolumeFile $file, array $ids)
+    protected function dispatcheProcessJob(VolumeFile $file, Collection $ids)
     {
         if ($file instanceof Image) {
-            ProcessAnnotatedImage::dispatch($file,
-                    only: $ids,
-                    skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors,
-                    skipSvgs: $this->skipSvgs
-                )
-                ->onQueue($this->queue);
+            $ids->chunk(1000)->each(fn ($chunk) =>
+                ProcessAnnotatedImage::dispatch($file,
+                        only: $chunk->toArray(),
+                        skipPatches: $this->skipPatches,
+                        skipFeatureVectors: $this->skipVectors,
+                        skipSvgs: $this->skipSvgs
+                    )
+                    ->onQueue($this->queue)
+            );
         } else {
-            ProcessAnnotatedVideo::dispatch($file,
-                    only: $ids,
-                    skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors,
-                    skipSvgs: $this->skipSvgs
-                )
-                ->onQueue($this->queue);
+            $ids->chunk(1000)->each(fn ($chunk) =>
+                ProcessAnnotatedVideo::dispatch($file,
+                        only: $chunk->toArray(),
+                        skipPatches: $this->skipPatches,
+                        skipFeatureVectors: $this->skipVectors,
+                        skipSvgs: $this->skipSvgs
+                    )
+                    ->onQueue($this->queue)
+            );
         }
     }
 }
