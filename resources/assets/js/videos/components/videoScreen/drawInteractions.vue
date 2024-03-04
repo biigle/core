@@ -5,16 +5,21 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import snapInteraction from '../../../annotations/snapInteraction.vue';
+
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
  * @type {Object}
  */
 export default {
+    mixins: [snapInteraction],
     data() {
         return {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
+            startingCoordinates: [0, 0],
+            startedDrawing: false,
         };
     },
     computed: {
@@ -124,8 +129,23 @@ export default {
                         type: shape,
                         style: Styles.editing,
                     });
-                    this.drawInteraction.on('drawend', this.extendPendingAnnotation);
+
                     this.map.addInteraction(this.drawInteraction);
+
+                    // Needed for snapInteraction
+                    this.drawInteraction.on('drawstart', (e) => {
+                        let geom = e.feature.getGeometry();
+                        if (!['Circle', 'Point'].includes(geom.getType())) {
+                            this.startingCoordinates = geom.getCoordinates().flat(2).slice(0, 2);
+                            this.startedDrawing = true;
+                        }
+                    });
+                    this.drawInteraction.on('drawend', (e) => {
+                        this.extendPendingAnnotation(e);
+                        this.startedDrawing = false;
+                    });
+
+                    
                 }
             }
         },
