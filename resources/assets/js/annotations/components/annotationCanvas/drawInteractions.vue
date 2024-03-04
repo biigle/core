@@ -3,6 +3,7 @@ import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
 import {shiftKeyOnly} from '@biigle/ol/events/condition';
+import snapInteraction from '../../snapInteraction.vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.
@@ -25,6 +26,13 @@ let penOrShift = function (mapBrowserEvent) {
 };
 
 export default {
+    mixins: [snapInteraction],
+    data() {
+        return {
+            startingCoordinates: [0, 0],
+            startedDrawing: false,
+        }
+    },
     computed: {
         isDrawing() {
             return this.interactionMode.startsWith('draw');
@@ -89,8 +97,20 @@ export default {
                     style: Styles.editing,
                     freehandCondition: penOrShift,
                 });
-                drawInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(drawInteraction);
+                
+                // Needed for snapInteraction
+                drawInteraction.on('drawstart', (e) => {
+                    let geom = e.feature.getGeometry();
+                    if (!['Circle', 'Point'].includes(geom.getType())) {
+                        this.startingCoordinates = geom.getCoordinates().flat(2).slice(0, 2);
+                        this.startedDrawing = true;
+                    }
+                });
+                drawInteraction.on('drawend', (e) => {
+                    this.handleNewFeature(e);
+                    this.startedDrawing = false;
+                });
             }
         },
     },
