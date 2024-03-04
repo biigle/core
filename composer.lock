@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e6f75404b1d9930c08678bfc4c48ccb",
+    "content-hash": "b30e81aa7e42f09b8459380176fff925",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -544,6 +544,56 @@
                 "source": "https://github.com/biigle/geo"
             },
             "time": "2024-01-09T15:51:56+00:00"
+        },
+        {
+            "name": "biigle/kpis",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/kpis.git",
+                "reference": "8eb9b4accc071c6a6a79ab6bccf637dcef1f4da1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/kpis/zipball/8eb9b4accc071c6a6a79ab6bccf637dcef1f4da1",
+                "reference": "8eb9b4accc071c6a6a79ab6bccf637dcef1f4da1",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\Kpis\\KpisServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Kpis\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to collect key performance indicators.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/kpis/issues",
+                "source": "https://github.com/biigle/kpis"
+            },
+            "time": "2024-03-04T14:17:30+00:00"
         },
         {
             "name": "biigle/laravel-aruna-driver",
@@ -13673,6 +13723,7 @@
         "biigle/demo": 20,
         "biigle/denbi-service": 20,
         "biigle/geo": 20,
+        "biigle/kpis": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/maia": 20,
