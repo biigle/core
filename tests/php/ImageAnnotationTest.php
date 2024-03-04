@@ -119,7 +119,7 @@ class ImageAnnotationTest extends ModelTestCase
     public function testValidatePointsPolygon()
     {
         $this->model->shape_id = Shape::polygonId();
-        $this->model->validatePoints([10, 10, 20, 20, 30, 30, 10 ,10]);
+        $this->model->validatePoints([10, 10, 20, 20, 30, 30, 10, 10]);
         $this->expectException(Exception::class);
         $this->model->validatePoints([10, 10]);
     }
