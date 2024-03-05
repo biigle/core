@@ -167,12 +167,9 @@ export default {
             if (isInvalidShape(e.feature)) {
                 // Disallow shapes with too few points.
                 this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
-                // Wait for this feature to be added to the source, then clear.
+                // Wait for this feature to be added to the source, then remove it.
                 this.pendingAnnotationSource.once('addfeature', () => {
-                    // Clear annotation source only, otherwise pending annotation is invalid
-                    // and shape buttons remain disabled
-                    this.pendingAnnotationSource.clear();
-
+                    this.pendingAnnotationSource.removeFeature(e.feature);
                 });
                 return;
             }
