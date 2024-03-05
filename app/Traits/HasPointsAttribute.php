@@ -83,7 +83,7 @@ trait HasPointsAttribute
         // Use values to reset index
         $x = $points->filter(fn ($x, $idx) => $idx % 2 === 0)->values();
         $y = $points->filter(fn ($x, $idx) => $idx % 2 === 1)->values();
-        $coords = collect($x->map(fn ($x, $idx) => [$x, $y[$idx]]))->unique();
+        $coords = $x->zip($y)->unique();
         return count($coords);
     }
 }
