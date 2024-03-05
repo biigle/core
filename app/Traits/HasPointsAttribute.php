@@ -36,7 +36,7 @@ trait HasPointsAttribute
                 $valid = $size === 8 && $this->countDistinctCoordinates($points) === 4;
                 break;
             case Shape::polygonId():
-                $valid = $size % 2 === 0 && count($points) >= 6 && $this->countDistinctCoordinates($points) >= 3;
+                $valid = $size % 2 === 0 && count($points) >= 8 && $this->countDistinctCoordinates($points) >= 3;
                 break;
             case Shape::lineId():
                 $valid = $size % 2 === 0 && count($points) >= 4 && $this->countDistinctCoordinates($points) >= 2;
