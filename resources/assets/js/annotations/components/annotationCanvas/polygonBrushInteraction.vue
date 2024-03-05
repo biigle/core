@@ -111,18 +111,24 @@ export default {
     },
     watch: {
         isUsingPolygonBrush() {
-            this.resetCurrentInteraction();
-            this.togglePolygonBrushInteraction();
+            if(this.isUsingPolygonBrush){
+                this.resetCurrentInteraction();
+                this.togglePolygonBrushInteraction();
+            }
         },
         isUsingPolygonEraser() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonEraserInteraction();
+            if(this.isUsingPolygonEraser){
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonEraserInteraction();
+            }
         },
         isUsingPolygonFill() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonFillInteraction();
+            if(this.isUsingPolygonFill){
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonFillInteraction();
+            }
         },
     },
     created() {
