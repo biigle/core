@@ -3,11 +3,13 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Events\AnnotationLabelAttached;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Cache;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Event;
 use Session;
 
 class ImageAnnotationLabelControllerTest extends ApiTestCase
@@ -115,6 +117,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
 
     public function store($url)
     {
+        Event::fake();
         $id = $this->annotation->id;
         $this->doTestApiRoute('POST', "{$url}/{$id}/labels");
 
@@ -150,12 +153,16 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         $response->assertStatus(201);
         $this->assertEquals(1, $this->annotation->labels()->count());
 
+        Event::assertDispatched(AnnotationLabelAttached::class);
+
         $this->beAdmin();
         $response = $this->json('POST', "{$url}/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
         $response->assertStatus(201);
+
+        Event::assertDispatched(AnnotationLabelAttached::class);
         $this->assertEquals(2, $this->annotation->labels()->count());
         $response->assertJsonFragment([
             'id' => $this->labelRoot()->id,

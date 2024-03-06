@@ -5,8 +5,8 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Modules\Largo\Jobs\GenerateImageAnnotationPatch;
-use Biigle\Modules\Largo\Jobs\GenerateVideoAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
+use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
@@ -32,6 +32,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
+            'attrs' => [
+                'creating_async' => true,
+            ],
         ])->fresh(); // Use fresh() to load even the null fields.
 
         $copy = $volume->replicate();
@@ -63,6 +66,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotEquals($volume->created_at, $copy->created_at);
         $this->assertNotEquals($volume->updated_at, $copy->updated_at);
         $this->assertEmpty($copy->images()->first()->labels()->get());
+        $this->assertFalse($copy->creating_async);
 
         $ignore = ['id', 'created_at', 'updated_at'];
         $this->assertEquals(
@@ -78,6 +82,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
             'created_at' => '2022-01-09 14:37:00',
             'updated_at' => '2022-01-09 14:37:00',
             'media_type_id' => MediaType::videoId(),
+            'attrs' => [
+                'creating_async' => true,
+            ],
         ])->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
@@ -104,6 +111,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $copy = $project->volumes()->first();
 
         $this->assertEmpty($copy->videos()->first()->labels()->get());
+        $this->assertFalse($copy->creating_async);
     }
 
     public function testCloneVolumeImages()
@@ -616,13 +624,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertNotPushed(GenerateImageAnnotationPatch::class);
+        Queue::assertNotPushed(ProcessAnnotatedImage::class);
     }
 
     public function testHandleImageAnnotationPatches()
     {
-        if (!class_exists(GenerateImageAnnotationPatch::class)) {
-            $this->markTestSkipped('Requires '.GenerateImageAnnotationPatch::class);
+        if (!class_exists(ProcessAnnotatedImage::class)) {
+            $this->markTestSkipped('Requires '.ProcessAnnotatedImage::class);
         }
 
         // The target project.
@@ -647,15 +655,15 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
-        // One job for the creation of the annotation and one job for GenerateImageAnnotationPatch
+        // One job for the creation of the annotation and one job for ProcessAnnotatedImage
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(GenerateImageAnnotationPatch::class);
+        Queue::assertPushed(ProcessAnnotatedImage::class);
     }
 
     public function testHandleVideoAnnotationPatches()
     {
-        if (!class_exists(GenerateVideoAnnotationPatch::class)) {
-            $this->markTestSkipped('Requires '.GenerateVideoAnnotationPatch::class);
+        if (!class_exists(ProcessAnnotatedVideo::class)) {
+            $this->markTestSkipped('Requires '.ProcessAnnotatedVideo::class);
         }
 
         // The target project.
@@ -680,8 +688,8 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
-        // One job for the creation of the annotation and one job for GenerateVideoAnnotationPatch
+        // One job for the creation of the annotation and one job for ProcessAnnotatedVideo
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(GenerateVideoAnnotationPatch::class);
+        Queue::assertPushed(ProcessAnnotatedVideo::class);
     }
 }

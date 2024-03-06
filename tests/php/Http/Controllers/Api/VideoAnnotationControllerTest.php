@@ -553,6 +553,36 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
     }
 
+    public function testTrackingJobLimit()
+    {
+        Queue::fake();
+        $this->beEditor();
+        $res = $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11]],
+                'frames' => [0.0],
+                'track' => true,
+            ])->assertSuccessful();
+
+        $this->assertEquals(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertFalse($res->json()['trackingJobLimitReached']);
+
+        Cache::set(TrackObject::getRateLimitCacheKey($this->editor()), 9);
+        $res = $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11]],
+                'frames' => [0.0],
+                'track' => true,
+            ])->assertSuccessful();
+        
+        $this->assertEquals(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertTrue($res->json()['trackingJobLimitReached']);
+    }
+
     public function testStoreWholeFrameAnnotation()
     {
         $this->beEditor();

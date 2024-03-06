@@ -128,11 +128,9 @@ export default {
         refreshSingleAnnotation(annotation) {
             let source = this.annotationSource;
 
-            let newFeature = this.createFeature(annotation);
-            let oldFeature = source.getFeatureById(annotation.id)
-            
-            source.removeFeature(oldFeature);
-            source.addFeature(newFeature);
+            let feature = source.getFeatureById(annotation.id);
+
+            feature.set('color', annotation.labels[0].label.color);
         },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
