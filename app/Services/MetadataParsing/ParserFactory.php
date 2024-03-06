@@ -7,12 +7,18 @@ use Symfony\Component\HttpFoundation\File\File;
 class ParserFactory
 {
     public static array $parsers = [
-        ImageCsvParser::class,
+        'image' => [
+            ImageCsvParser::class,
+        ],
+        'video' => [
+            VideoCsvParser::class,
+        ],
     ];
 
-    public static function getParserForFile(File $file): ?MetadataParser
+    public static function getParserForFile(File $file, string $type): ?MetadataParser
     {
-        foreach (self::$parsers as $parserClass) {
+        $parsers = self::$parsers[$type] ?? [];
+        foreach ($parsers as $parserClass) {
             $parser = new $parserClass($file);
             if ($parser->recognizesFile()) {
                 return $parser;
