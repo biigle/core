@@ -4,6 +4,9 @@ namespace Biigle\Http\Requests;
 
 use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\Rules\ImageMetadata;
+use Biigle\Rules\VideoMetadata;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,6 +31,7 @@ class StorePendingVolume extends FormRequest
     {
         return [
             'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
+            'metadata_file' => ['file'],
         ];
     }
 
@@ -39,16 +43,35 @@ class StorePendingVolume extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $exists = $this->project->pendingVolumes()
                 ->where('user_id', $this->user()->id)
                 ->exists();
             if ($exists) {
                 $validator->errors()->add('id', 'Only a single pending volume can be created at a time for each project and user.');
+                return;
+            }
+
+            if ($file = $this->file('metadata_file')) {
+                $type = $this->input('media_type');
+                $parser = ParserFactory::getParserForFile($file, $type);
+                if (is_null($parser)) {
+                    $validator->errors()->add('metadata_file', 'Unknown metadata file format.');
+                    return;
+                }
+
+                $rule = match ($type) {
+                    'video' => new VideoMetadata,
+                    default => new ImageMetadata,
+                };
+
+                if (!$rule->passes('metadata_file', $parser->getMetadata())) {
+                    $validator->errors()->add('metadata_file', $rule->message());
+                }
             }
         });
     }
