@@ -11,7 +11,7 @@ class VideoMetadataTest extends TestCase
 {
     public function testMetadataOk()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
 
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
@@ -27,20 +27,9 @@ class VideoMetadataTest extends TestCase
         $this->assertTrue($validator->passes(null, $metadata));
     }
 
-    public function testMetadataWrongFile()
-    {
-        $validator = new VideoMetadataRule(['abc.mp4']);
-        $metadata = new VolumeMetadata;
-        $metadata->addFile(new VideoMetadata(
-            name: 'cba.jpg',
-            takenAt: '2016-12-19 12:27:00'
-        ));
-        $this->assertFalse($validator->passes(null, $metadata));
-    }
-
     public function testMetadataNoLat()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
             name: 'abc.mp4',
@@ -51,7 +40,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataNoLatFrame()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(name: 'abc.mp4');
         $fileMeta->addFrame('2016-12-19 12:27:00', lng: 52.220);
@@ -61,7 +50,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataNoLng()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
             name: 'abc.mp4',
@@ -72,7 +61,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataNoLngFrame()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(name: 'abc.mp4');
         $fileMeta->addFrame('2016-12-19 12:27:00', lat: 28.123);
@@ -82,7 +71,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidLat()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
             name: 'abc.mp4',
@@ -94,7 +83,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidLatFrame()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(name: 'abc.mp4');
         $fileMeta->addFrame('2016-12-19 12:27:00', lng: 50, lat: 91);
@@ -104,7 +93,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidLng()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
             name: 'abc.mp4',
@@ -116,7 +105,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidLngFrame()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(name: 'abc.mp4');
         $fileMeta->addFrame('2016-12-19 12:27:00', lng: 181, lat: 50);
@@ -126,7 +115,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidYaw()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(
             name: 'abc.mp4',
@@ -137,7 +126,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMetadataInvalidYawFrame()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(name: 'abc.mp4');
         $fileMeta->addFrame('2016-12-19 12:27:00', yaw: 361);
@@ -147,7 +136,7 @@ class VideoMetadataTest extends TestCase
 
     public function testEmptyFilename()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new VideoMetadata(name: ''));
         $this->assertFalse($validator->passes(null, $metadata));
@@ -163,7 +152,7 @@ class VideoMetadataTest extends TestCase
 
     public function testMultipleFrames()
     {
-        $validator = new VideoMetadataRule(['abc.mp4']);
+        $validator = new VideoMetadataRule();
 
         $metadata = new VolumeMetadata;
         $fileMeta = new VideoMetadata(

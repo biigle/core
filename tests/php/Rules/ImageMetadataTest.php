@@ -11,7 +11,7 @@ class ImageMetadataTest extends TestCase
 {
     public function testMetadataOk()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
 
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
@@ -27,20 +27,9 @@ class ImageMetadataTest extends TestCase
         $this->assertTrue($validator->passes(null, $metadata));
     }
 
-    public function testMetadataWrongFile()
-    {
-        $validator = new ImageMetadataRule(['abc.jpg']);
-        $metadata = new VolumeMetadata;
-        $metadata->addFile(new ImageMetadata(
-            name: 'cba.jpg',
-            takenAt: '2016-12-19 12:27:00'
-        ));
-        $this->assertFalse($validator->passes(null, $metadata));
-    }
-
     public function testMetadataNoLat()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
             name: 'abc.jpg',
@@ -51,7 +40,7 @@ class ImageMetadataTest extends TestCase
 
     public function testMetadataNoLng()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
             name: 'abc.jpg',
@@ -62,7 +51,7 @@ class ImageMetadataTest extends TestCase
 
     public function testMetadataInvalidLat()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
             name: 'abc.jpg',
@@ -74,7 +63,7 @@ class ImageMetadataTest extends TestCase
 
     public function testMetadataInvalidLng()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
             name: 'abc.jpg',
@@ -86,7 +75,7 @@ class ImageMetadataTest extends TestCase
 
     public function testMetadataInvalidYaw()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(
             name: 'abc.jpg',
@@ -97,7 +86,7 @@ class ImageMetadataTest extends TestCase
 
     public function testEmptyFilename()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(name: ''));
         $this->assertFalse($validator->passes(null, $metadata));
@@ -105,7 +94,7 @@ class ImageMetadataTest extends TestCase
 
     public function testEmpty()
     {
-        $validator = new ImageMetadataRule(['abc.jpg']);
+        $validator = new ImageMetadataRule();
         $metadata = new VolumeMetadata;
         $metadata->addFile(new ImageMetadata(name: 'abc.jpg'));
         $this->assertFalse($validator->passes(null, $metadata));

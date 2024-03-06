@@ -31,10 +31,8 @@ class ImageMetadata implements Rule
 
     /**
      * Create a new instance.
-     *
-     * @param array $files
      */
-    public function __construct(public array $files)
+    public function __construct()
     {
         $this->message = "The :attribute is invalid.";
     }
@@ -78,12 +76,6 @@ class ImageMetadata implements Rule
 
     protected function fileMetadataPasses(FileMetadata $file)
     {
-        if (!in_array($file->name, $this->files)) {
-            $this->message = "There is no file with filename {$file->name}.";
-
-            return false;
-        }
-
         if (!is_null($file->lng)) {
             if (!is_numeric($file->lng) || abs($file->lng) > 180) {
                 $this->message = "'{$file->lng}' is no valid longitude for file {$file->name}.";
