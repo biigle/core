@@ -50,3 +50,8 @@
  * The request must provide an authentication token of a remote instance configured for
  * federated search.
  */
+
+/**
+ * @apiDefine projectAdminAndPendingVolumeOwner Project admin and pending volume owner
+ * The authenticated user must be admin of the project and creator of the pending volume.
+ */

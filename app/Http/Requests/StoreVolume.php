@@ -71,12 +71,13 @@ class StoreVolume extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
-        // Only validate sample volume files after all other fields have been validated.
         $validator->after(function ($validator) {
+           // Only validate sample volume files after all other fields have been
+           // validated.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $files = $this->input('files');
             $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
             if (!$rule->passes('files', $files)) {

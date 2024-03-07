@@ -26,6 +26,14 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
 
+            // This is used if annotations or file labels should be imported. The volume
+            // will be created first but the pending volume is still required to store
+            // additional information required for the import.
+            $table->foreignId('volume_id')
+                ->nullable()
+                ->constrained()
+                ->onDelete('cascade');
+
             // Path of the file in the pending_metadata_storage_disk.
             $table->string('metadata_file_path', 256)->nullable();
 

@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 
 class PendingVolume extends Model
@@ -20,6 +21,16 @@ class PendingVolume extends Model
         'user_id',
         'project_id',
         'metadata_file_path',
+        'volume_id',
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'metadata_file_path',
     ];
 
     public function hasMetadata(): bool
@@ -34,5 +45,10 @@ class PendingVolume extends Model
         $this->metadata_file_path = "{$this->id}.{$extension}";
         $file->storeAs('', $this->metadata_file_path, $disk);
         $this->save();
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 }

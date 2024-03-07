@@ -147,6 +147,11 @@ $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);
 
+$router->resource('pending-volumes', 'PendingVolumeController', [
+    'only' => ['update'],
+    'parameters' => ['pending-volumes' => 'id'],
+]);
+
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],
@@ -168,7 +173,7 @@ $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
 ]);
 
-$router->resource('projects.pending-volumes', 'ProjectPendingVolumeController', [
+$router->resource('projects.pending-volumes', 'PendingVolumeController', [
     'only' => ['store'],
     'parameters' => ['projects' => 'id'],
 ]);

@@ -42,6 +42,19 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'url',
+        'media_type_id',
+        'handle',
+        'creator_id',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
