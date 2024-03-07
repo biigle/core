@@ -454,83 +454,13 @@ class Volume extends Model
         return $this->media_type_id === MediaType::videoId();
     }
 
-    /**
-     * Save an iFDO metadata file and link it with this volume.
-     *
-     * @param UploadedFile $file iFDO YAML file.
-     *
-     */
-    public function saveIfdo(UploadedFile $file)
+    public function saveMetadata(UploadedFile $file): void
     {
-        $disk = config('volumes.ifdo_storage_disk');
-        $file->storeAs('', $this->getIfdoFilename(), $disk);
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Check if an iFDO metadata file is available for this volume.
-     *
-     * @param bool $ignoreErrors Set to `true` to ignore exceptions and return `false` if iFDO existence could not be determined.
-     * @return boolean
-     */
-    public function hasIfdo($ignoreErrors = false)
-    {
-        try {
-            return Cache::remember($this->getIfdoCacheKey(), 3600, fn () => Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename()));
-        } catch (Exception $e) {
-            if (!$ignoreErrors) {
-                throw $e;
-            }
-
-            return false;
-        }
-    }
-
-    /**
-     * Delete the iFDO metadata file linked with this volume.
-     */
-    public function deleteIfdo()
-    {
-        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Download the iFDO that is attached to this volume.
-     *
-     * @return Response
-     */
-    public function downloadIfdo()
-    {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-
-        if (!$disk->exists($this->getIfdoFilename())) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
-    }
-
-    /**
-     * Get the content of the iFDO file associated with this volume.
-     *
-     * @return array
-     */
-    public function getIfdo()
-    {
-        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
-
-        return yaml_parse($content);
-    }
-
-    /**
-     * Get the filename of the volume iFDO in storage.
-     *
-     * @return string
-     */
-    protected function getIfdoFilename()
-    {
-        return $this->id.'.yaml';
+        $disk = config('volumes.metadata_storage_disk');
+        $extension = $file->getExtension();
+        $this->metadata_file_path = "{$this->id}.{$extension}";
+        $file->storeAs('', $this->metadata_file_path, $disk);
+        $this->save();
     }
 
     /**
@@ -554,12 +484,12 @@ class Volume extends Model
     }
 
     /**
-     * Get the cache key for volume iFDO info.
+     * Get the cache key for volume metadata info.
      *
      * @return string
      */
-    protected function getIfdoCacheKey()
+    protected function getMetadataCacheKey()
     {
-        return "volume-{$this->id}-has-ifdo";
+        return "volume-{$this->id}-has-metadata";
     }
 }

@@ -48,4 +48,9 @@ class PendingVolumeTest extends ModelTestCase
         $this->assertTrue($this->model->hasMetadata());
         $this->assertEquals($this->model->id.'.csv', $this->model->metadata_file_path);
     }
+
+    public function testDeleteMetadataOnDelete()
+    {
+        $this->markTestIncomplete();
+    }
 }

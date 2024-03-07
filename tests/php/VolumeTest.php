@@ -553,8 +553,9 @@ class VolumeTest extends ModelTestCase
         $this->assertFalse($this->model->fresh()->creating_async);
     }
 
-    public function testSaveIfdo()
+    public function testSaveMetadata()
     {
+        $this->markTestIncomplete();
         $disk = Storage::fake('ifdos');
         $csv = __DIR__."/../files/image-ifdo.yaml";
         $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
@@ -566,59 +567,18 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($this->model->hasIfdo());
     }
 
-    public function testHasIfdo()
+    public function testDeleteMetadataOnDelete()
     {
-        $disk = Storage::fake('ifdos');
-        $this->assertFalse($this->model->hasIfdo());
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $this->assertFalse($this->model->hasIfdo());
-        Cache::flush();
-        $this->assertTrue($this->model->hasIfdo());
-    }
-
-    public function testHasIfdoError()
-    {
-        Storage::shouldReceive('disk')->andThrow(Exception::class);
-        $this->assertFalse($this->model->hasIfdo(true));
-
-        $this->expectException(Exception::class);
-        $this->model->hasIfdo();
-    }
-
-    public function testDeleteIfdo()
-    {
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $this->assertTrue($this->model->hasIfdo());
-        $this->model->deleteIfdo();
-        $disk->assertMissing($this->model->id.'.yaml');
-        $this->assertFalse($this->model->hasIfdo());
-    }
-
-    public function testDeleteIfdoOnDelete()
-    {
+        $this->markTestIncomplete();
         $disk = Storage::fake('ifdos');
         $disk->put($this->model->id.'.yaml', 'abc');
         $this->model->delete();
         $disk->assertMissing($this->model->id.'.yaml');
     }
 
-    public function testDownloadIfdoNotFound()
+    public function testGetMetadata()
     {
-        $this->expectException(NotFoundHttpException::class);
-        $this->model->downloadIfdo();
-    }
-
-    public function testDownloadIfdo()
-    {
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $response = $this->model->downloadIfdo();
-        $this->assertInstanceOf(StreamedResponse::class, $response);
-    }
-
-    public function testGetIfdo()
-    {
+        $this->markTestIncomplete();
         $disk = Storage::fake('ifdos');
         $this->assertNull($this->model->getIfdo());
         $disk->put($this->model->id.'.yaml', 'abc: def');

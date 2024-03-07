@@ -60,7 +60,7 @@ class StorePendingVolume extends FormRequest
                 $type = $this->input('media_type');
                 $parser = ParserFactory::getParserForFile($file, $type);
                 if (is_null($parser)) {
-                    $validator->errors()->add('metadata_file', 'Unknown metadata file format.');
+                    $validator->errors()->add('metadata_file', 'Unknown metadata file format for this media type.');
                     return;
                 }
 

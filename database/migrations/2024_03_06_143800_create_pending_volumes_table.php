@@ -41,6 +41,10 @@ return new class extends Migration {
             // project.
             $table->unique(['user_id', 'project_id']);
         });
+
+        Schema::table('volumes', function (Blueprint $table) {
+            $table->string('metadata_file_path', 256)->nullable();
+        });
     }
 
     /**
@@ -48,6 +52,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::table('volumes', function (Blueprint $table) {
+            $table->dropColumn('metadata_file_path');
+        });
+
         Schema::dropIfExists('pending_volumes');
     }
 };

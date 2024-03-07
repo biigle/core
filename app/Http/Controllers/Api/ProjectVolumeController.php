@@ -112,11 +112,13 @@ class ProjectVolumeController extends Controller
 
             $files = $request->input('files');
 
-            $metadata = $request->input('metadata', []);
+            if ($request->file('metadata_csv')) {
+                $volume->saveMetadata($request->file('metadata_csv'));
+            }
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30 s execution timeout.
-            $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
+            $job = new CreateNewImagesOrVideos($volume, $files);
             if (count($files) > PendingVolumeController::CREATE_SYNC_LIMIT) {
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
