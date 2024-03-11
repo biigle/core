@@ -44,6 +44,7 @@ class StoreVolumeMetadata extends FormRequest
                 'required_without_all:metadata_text,ifdo_file',
                 'file',
                 'mimetypes:text/plain,text/csv,application/csv',
+                'max:500000',
                 new Utf8,
             ],
             'metadata_text' => 'required_without_all:metadata_csv,ifdo_file',

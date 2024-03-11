@@ -70,8 +70,7 @@ class StoreVolume extends FormRequest
                 'array',
             ],
             'handle' => ['nullable', 'max:256', new Handle],
-            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
-            'ifdo_file' => 'file',
+            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv|max:500000',
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
             // number of files. This is checked in the VolumeFiles rule below.

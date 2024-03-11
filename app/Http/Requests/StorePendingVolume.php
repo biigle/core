@@ -31,7 +31,8 @@ class StorePendingVolume extends FormRequest
     {
         return [
             'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
-            'metadata_file' => ['file'],
+            // Allow a maximum of 500 MB.
+            'metadata_file' => 'file|max:500000',
         ];
     }
 
