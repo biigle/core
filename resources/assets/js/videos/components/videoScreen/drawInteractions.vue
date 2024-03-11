@@ -18,8 +18,9 @@ export default {
         return {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
-            startingCoordinates: [0, 0],
-            startedDrawing: false,
+            snappingCoords: [0, 0],
+            drawEnded: true,
+            shouldSnap: false,
         };
     },
     computed: {
@@ -128,26 +129,27 @@ export default {
                         source: this.pendingAnnotationSource,
                         type: shape,
                         style: Styles.editing,
+                        condition: this.updateSnapCoords
                     });
 
                     this.map.addInteraction(this.drawInteraction);
 
-                    // Needed for snapInteraction
                     this.drawInteraction.on('drawstart', (e) => {
-                        let geom = e.feature.getGeometry();
-                        if (!['Circle', 'Point'].includes(geom.getType())) {
-                            this.startingCoordinates = geom.getCoordinates().flat(2).slice(0, 2);
-                            this.startedDrawing = true;
-                        }
+                        this.drawEnded = false;
                     });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
-                        this.startedDrawing = false;
+                        this.drawEnded = true;
                     });
 
                     
                 }
             }
+        },
+        updateSnapCoords(mapBrowserEvent) {
+            this.snappingCoords = mapBrowserEvent.coordinate;
+            this.shouldSnap = mapBrowserEvent.originalEvent.ctrlKey;
+            return true;
         },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {

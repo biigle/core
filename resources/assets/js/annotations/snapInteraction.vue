@@ -9,13 +9,12 @@ export default {
         return {
             snapInteraction: null,
             snapLineFeatures: [],
-            shouldSnap: false,
         }
     },
     computed: {
         drawsOnImage() {
-            return this.startingCoordinates[0] >= 0 && this.startingCoordinates[1] >= 0
-                && this.startingCoordinates[0] <= this.width && this.startingCoordinates[1] <= this.height;
+            return this.snappingCoords[0] >= 0 && this.snappingCoords[1] >= 0
+                && this.snappingCoords[0] <= this.width && this.snappingCoords[1] <= this.height;
         },
         width() {
             return this.image ? this.image.width : this.video.videoWidth;
@@ -26,8 +25,8 @@ export default {
     },
     methods: {
         drawSnaplines() {
-            let x = this.startingCoordinates[0];
-            let y = this.startingCoordinates[1];
+            let x = this.snappingCoords[0];
+            let y = this.snappingCoords[1];
 
             // Line computation from https://github.com/iamgeoknight/OpenLayersSnapping/blob/main/script.js
             // Creating 8 line features perpendicular to x/y axis.
@@ -88,6 +87,7 @@ export default {
             this.snapInteraction = new Snap({ source: this.annotationSource });
             this.map.addInteraction(this.snapInteraction);
             this.drawSnaplines();
+            this.shouldSnap = false;
         },
         endSnap() {
             this.snapLineFeatures.map((f) => this.annotationSource.removeFeature(f));
@@ -97,27 +97,38 @@ export default {
         },
     },
     watch: {
-        startedDrawing() {
-            // Passes information that 'drawend' event was fired
-            if (!this.startedDrawing) {
-                this.shouldSnap = false;
+        drawEnded() {
+            if (this.drawEnded && this.snapInteraction) {
+                this.endSnap();
             }
         },
         shouldSnap() {
-            if (this.shouldSnap && this.startedDrawing && this.drawsOnImage) {
-                this.startSnap();
-            } else {
-                this.endSnap();
+            if (this.shouldSnap) {
+                if (this.snapInteraction) {
+                    this.endSnap();
+                }
+
+                if (this.drawsOnImage) {
+                    this.startSnap();
+                }
             }
         }
     },
     created() {
-        Keyboard.on('Control', () => {
-            // Prevents changing shouldSnap before drawing event started
-            if (this.startedDrawing) {
-                this.shouldSnap = !this.shouldSnap
+        // Enable deactivation of snapping tool during drawing process
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'Control' && this.snapInteraction) {
+                this.shouldSnap = false;
+                this.endSnap();
             }
-        }, 0, this.listenerSet);
+        });
+
+        // Enable snapping tool during drawing process
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Control' && !this.drawEnded && !this.shouldSnap) {
+                this.shouldSnap = true;
+            }
+        })
     }
 }
 </script>
