@@ -2,14 +2,14 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use SplFileInfo;
 use SplFileObject;
-use Symfony\Component\HttpFoundation\File\File;
 
 abstract class MetadataParser
 {
     public SplFileObject $fileObject;
 
-    public function __construct(public File $file)
+    public function __construct(public SplFileInfo $file)
     {
         //
     }

@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-use Symfony\Component\HttpFoundation\File\File;
+use SplFileInfo;
 
 class ParserFactory
 {
@@ -15,7 +15,7 @@ class ParserFactory
         ],
     ];
 
-    public static function getParserForFile(File $file, string $type): ?MetadataParser
+    public static function getParserForFile(SplFileInfo $file, string $type): ?MetadataParser
     {
         $parsers = self::$parsers[$type] ?? [];
         foreach ($parsers as $parserClass) {

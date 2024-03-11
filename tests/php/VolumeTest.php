@@ -555,34 +555,36 @@ class VolumeTest extends ModelTestCase
 
     public function testSaveMetadata()
     {
-        $this->markTestIncomplete();
-        $disk = Storage::fake('ifdos');
-        $csv = __DIR__."/../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        $disk = Storage::fake('metadata');
+        $csv = __DIR__."/../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
 
-        $this->assertFalse($this->model->hasIfdo());
-        $this->model->saveIfdo($file);
+        $this->assertFalse($this->model->hasMetadata());
+        $this->model->saveMetadata($file);
 
-        $disk->assertExists($this->model->id.'.yaml');
-        $this->assertTrue($this->model->hasIfdo());
+        $disk->assertExists($this->model->id.'.csv');
+        $this->assertTrue($this->model->hasMetadata());
+        $this->assertEquals($this->model->id.'.csv', $this->model->metadata_file_path);
     }
 
     public function testDeleteMetadataOnDelete()
     {
-        $this->markTestIncomplete();
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
+        $disk = Storage::fake('metadata');
+        $disk->put($this->model->id.'.csv', 'abc');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->save();
         $this->model->delete();
-        $disk->assertMissing($this->model->id.'.yaml');
+        $disk->assertMissing($this->model->id.'.csv');
     }
 
     public function testGetMetadata()
     {
-        $this->markTestIncomplete();
-        $disk = Storage::fake('ifdos');
-        $this->assertNull($this->model->getIfdo());
-        $disk->put($this->model->id.'.yaml', 'abc: def');
-        $ifdo = $this->model->getIfdo();
-        $this->assertEquals(['abc' => 'def'], $ifdo);
+        $this->assertNull($this->model->getMetadata());
+        $disk = Storage::fake('metadata');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $disk->put($this->model->metadata_file_path, "filename,area\n1.jpg,2.5");
+        $metadata = $this->model->getMetadata();
+        $fileMeta = $metadata->getFile('1.jpg');
+        $this->assertEquals(2.5, $fileMeta->area);
     }
 }

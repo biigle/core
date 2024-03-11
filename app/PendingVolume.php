@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
+use Storage;
 
 class PendingVolume extends Model
 {
@@ -32,6 +33,16 @@ class PendingVolume extends Model
     protected $hidden = [
         'metadata_file_path',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (PendingVolume $pv) {
+            if ($pv->hasMetadata()) {
+                $disk = config('volumes.pending_metadata_storage_disk');
+                Storage::disk($disk)->delete($pv->metadata_file_path);
+            }
+        });
+    }
 
     public function hasMetadata(): bool
     {

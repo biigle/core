@@ -35,7 +35,7 @@ class PendingVolumeTest extends ModelTestCase
         ]);
     }
 
-    public function testStoreMetadataFile()
+    public function testSaveMetadata()
     {
         $disk = Storage::fake('pending-metadata');
         $csv = __DIR__."/../files/image-metadata.csv";
@@ -51,6 +51,11 @@ class PendingVolumeTest extends ModelTestCase
 
     public function testDeleteMetadataOnDelete()
     {
-        $this->markTestIncomplete();
+        $disk = Storage::fake('pending-metadata');
+        $disk->put($this->model->id.'.csv', 'abc');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->save();
+        $this->model->delete();
+        $disk->assertMissing($this->model->id.'.csv');
     }
 }
