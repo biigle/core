@@ -64,7 +64,6 @@ class ProjectVolumeController extends Controller
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      * @apiParam (Optional attributes) {String} metadata_text CSV-like string with file metadata. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp.
      * @apiParam (Optional attributes) {File} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
-     * @apiParam (Optional attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
      *
      * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
@@ -125,10 +124,6 @@ class ProjectVolumeController extends Controller
                 $volume->save();
             } else {
                 Queue::connection('sync')->push($job);
-            }
-
-            if ($request->hasFile('ifdo_file')) {
-                $volume->saveIfdo($request->file('ifdo_file'));
             }
 
             // media type shouldn't be returned

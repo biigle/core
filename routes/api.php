@@ -315,10 +315,6 @@ $router->group([
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
 
-    $router->post('parse-ifdo', [
-        'uses' => 'ParseIfdoController@store',
-    ]);
-
     $router->get('{id}/files/filter/labels', [
         'uses' => 'Filters\AnyFileLabelController@index',
     ]);
