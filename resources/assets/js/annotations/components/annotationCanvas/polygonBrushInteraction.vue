@@ -26,8 +26,8 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
-        isDefault() {
-            return this.interactionMode === 'default';
+        isNotAPolygonTool() {
+            return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
         }
     },
     methods: {
@@ -133,8 +133,8 @@ export default {
                 this.togglePolygonFillInteraction();
             }
         },
-        isDefault() {
-            if (this.isDefault) {
+        isNotAPolygonTool() {
+            if (this.isNotAPolygonTool) {
                 this.resetCurrentInteraction();
             }
         }
