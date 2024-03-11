@@ -507,7 +507,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'test://images',
                 'media_type' => 'image',
                 'files' => '1.jpg',
-                'metadata_text' => "filename,area\nabc.jpg,2.5",
+                'metadata_text' => "filename,yaw\nabc.jpg,400",
             ])
             ->assertStatus(422);
     }
@@ -589,7 +589,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'test://videos',
                 'media_type' => 'video',
                 'files' => '1.mp4',
-                'metadata_text' => "filename,area\nabc.mp4,2.5",
+                'metadata_text' => "filename,yaw\nabc.mp4,400",
             ])
             ->assertStatus(422);
     }
