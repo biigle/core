@@ -577,6 +577,17 @@ class VolumeTest extends ModelTestCase
         $disk->assertMissing($this->model->id.'.csv');
     }
 
+    public function testDeleteMetadata()
+    {
+        $disk = Storage::fake('metadata');
+        $disk->put($this->model->id.'.csv', 'abc');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->save();
+        $this->model->deleteMetadata();
+        $disk->assertMissing($this->model->id.'.csv');
+        $this->assertNull($this->model->fresh()->metadata_file_path);
+    }
+
     public function testGetMetadata()
     {
         $this->assertNull($this->model->getMetadata());

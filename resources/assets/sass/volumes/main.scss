@@ -25,17 +25,6 @@ $volume-image-padding: 0.5em;
     background-color: $gray-lighter;
 }
 
-.ifdo-icon {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-    margin-top: -3px;
-
-    &.ifdo-icon--btn {
-        margin-top: -2px;
-    }
-}
-
 .volume-storage-disk-btn {
     overflow-x: hidden;
     text-overflow: ellipsis;

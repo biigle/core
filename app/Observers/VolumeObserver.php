@@ -48,7 +48,7 @@ class VolumeObserver
             event(new VideosDeleted($uuids));
         }
 
-        $volume->deleteMetadata();
+        $volume->deleteMetadata(true);
 
         return true;
     }

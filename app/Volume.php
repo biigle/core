@@ -56,6 +56,7 @@ class Volume extends Model
         'media_type_id',
         'handle',
         'creator_id',
+        'metadata_file_path',
     ];
 
     /**
@@ -497,10 +498,16 @@ class Volume extends Model
         }
     }
 
-    public function deleteMetadata(): void
+    /**
+     * @param boolean $noUpdate Do not set metadata_file_path to null.
+     */
+    public function deleteMetadata($noUpdate=false): void
     {
         if ($this->hasMetadata()) {
             Storage::disk(config('volumes.metadata_storage_disk'))->delete($this->metadata_file_path);
+            if (!$noUpdate) {
+                $this->update(['metadata_file_path' => null]);
+            }
         }
     }
 

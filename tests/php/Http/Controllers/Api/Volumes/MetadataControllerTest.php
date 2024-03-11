@@ -11,6 +11,34 @@ use Storage;
 
 class MetadataControllerTest extends ApiTestCase
 {
+    public function testGet()
+    {
+        $volume = $this->volume();
+        $id = $volume->id;
+
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/metadata");
+
+        $this->beUser();
+        $this->getJson("/api/v1/volumes/{$id}/metadata")
+            ->assertStatus(403);
+
+        $this->beGuest();
+        $this->getJson("/api/v1/volumes/{$id}/metadata")
+            ->assertStatus(404);
+
+        $disk = Storage::fake('metadata');
+        $disk->put($id.'.csv', 'abc');
+        $volume->metadata_file_path = $id.'.csv';
+        $volume->save();
+
+        $this->getJson("/api/v1/volumes/-1/metadata")
+            ->assertStatus(404);
+
+        $response = $this->getJson("/api/v1/volumes/{$id}/metadata");
+        $response->assertStatus(200);
+        $this->assertEquals("attachment; filename=biigle-volume-{$id}-metadata.csv", $response->headers->get('content-disposition'));
+    }
+
     public function testStoreDeprecated()
     {
         $id = $this->volume()->id;
@@ -446,5 +474,28 @@ TEXT;
 
         $this->postJson("/api/v1/volumes/{$id}/metadata", ['ifdo_file' => $file])
             ->assertStatus(422);
+    }
+
+    public function testDestroy()
+    {
+        $volume = $this->volume();
+        $id = $volume->id;
+
+        $this->doTestApiRoute('DELETE', "/api/v1/volumes/{$id}/metadata");
+
+        $disk = Storage::fake('metadata');
+        $disk->put($id.'.csv', 'abc');
+        $volume->metadata_file_path = $id.'.csv';
+        $volume->save();
+
+        $this->beExpert();
+        $this->deleteJson("/api/v1/volumes/{$id}/metadata")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/volumes/{$id}/metadata")
+            ->assertSuccessful();
+
+        $this->assertFalse($volume->fresh()->hasMetadata());
     }
 }

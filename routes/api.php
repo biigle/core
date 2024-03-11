@@ -360,12 +360,12 @@ $router->group([
         'uses' => 'MetadataController@store',
     ]);
 
-    $router->get('{id}/ifdo', [
-        'uses' => 'IfdoController@show',
+    $router->get('{id}/metadata', [
+        'uses' => 'MetadataController@show',
     ]);
 
-    $router->delete('{id}/ifdo', [
-        'uses' => 'IfdoController@destroy',
+    $router->delete('{id}/metadata', [
+        'uses' => 'MetadataController@destroy',
     ]);
 
     $router->get('{id}/users', [

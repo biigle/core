@@ -8,14 +8,44 @@ use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VideoMetadata;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
+use Biigle\Volume;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use Storage;
 
 class MetadataController extends Controller
 {
     use ChecksMetadataStrings;
+
+    /**
+     * Get a metadata file attached to a volume
+     *
+     * @api {get} volumes/:id/metadata Get a metadata file
+     * @apiGroup Volumes
+     * @apiName ShowVolumeMetadata
+     * @apiPermission projectMember
+     ~
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        if (!$volume->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $disk = Storage::disk(config('volumes.metadata_storage_disk'));
+        $suffix = pathinfo($volume->metadata_file_path, PATHINFO_EXTENSION);
+
+        return $disk->download($volume->metadata_file_path, "biigle-volume-{$volume->id}-metadata.{$suffix}");
+    }
 
     /**
      * @api {post} volumes/:id/images/metadata Add image metadata
@@ -73,6 +103,26 @@ class MetadataController extends Controller
 
             $request->volume->flushGeoInfoCache();
         }
+    }
+
+    /**
+     * Delete a metadata file attached to a volume
+     *
+     * @api {delete} volumes/:id/metadata Delete a metadata file
+     * @apiGroup Volumes
+     * @apiName DestroyVolumeMetadata
+     * @apiPermission projectAdmin
+     * @apiDescription This does not delete the metadata that was attached to the volume files.
+     ~
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('update', $volume);
+        $volume->deleteMetadata();
     }
 
     /**
