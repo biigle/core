@@ -31,4 +31,48 @@ class ImageMetadata extends FileMetadata
             && is_null($this->gpsAltitude)
             && is_null($this->yaw);
     }
+
+    /**
+     * Get the array of metadata that can be used for Model::insert();
+     */
+    public function getInsertData(): array
+    {
+        $data = ['filename' => $this->name];
+
+        if (!is_null($this->lat)) {
+            $data['lat'] = $this->lat;
+        }
+
+        if (!is_null($this->lng)) {
+            $data['lng'] = $this->lng;
+        }
+
+        if (!is_null($this->takenAt)) {
+            $data['taken_at'] = $this->takenAt;
+        }
+
+        $attrs = [];
+
+        if (!is_null($this->area)) {
+            $attrs['area'] = $this->area;
+        }
+
+        if (!is_null($this->distanceToGround)) {
+            $attrs['distance_to_ground'] = $this->distanceToGround;
+        }
+
+        if (!is_null($this->gpsAltitude)) {
+            $attrs['gps_altitude'] = $this->gpsAltitude;
+        }
+
+        if (!is_null($this->yaw)) {
+            $attrs['yaw'] = $this->yaw;
+        }
+
+        if (!empty($attrs)) {
+            $data['attrs'] = ['metadata' => $attrs];
+        }
+
+        return $data;
+    }
 }

@@ -13,4 +13,12 @@ class FileMetadata
     {
         return true;
     }
+
+    /**
+     * Get the array of metadata that can be used for Model::insert();
+     */
+    public function getInsertData(): array
+    {
+        return [];
+    }
 }
