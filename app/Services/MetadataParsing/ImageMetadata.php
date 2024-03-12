@@ -2,6 +2,8 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Carbon\Carbon;
+
 class ImageMetadata extends FileMetadata
 {
     public function __construct(
@@ -48,7 +50,7 @@ class ImageMetadata extends FileMetadata
         }
 
         if (!is_null($this->takenAt)) {
-            $data['taken_at'] = $this->takenAt;
+            $data['taken_at'] = Carbon::parse($this->takenAt)->toDateTimeString();
         }
 
         $attrs = [];

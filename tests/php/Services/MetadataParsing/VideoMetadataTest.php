@@ -75,7 +75,7 @@ class VideoMetadataTest extends TestCase
             '1.mp4',
             lat: 100,
             lng: 120,
-            takenAt: '2024-03-11 16:43:00',
+            takenAt: '03/11/2024 16:43:00',
             area: 2.5,
             distanceToGround: 5,
             gpsAltitude: -1500,

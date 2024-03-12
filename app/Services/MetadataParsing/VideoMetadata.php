@@ -108,10 +108,6 @@ class VideoMetadata extends FileMetadata
             $data['lng'] = [$this->lng];
         }
 
-        if (!is_null($this->takenAt)) {
-            $data['taken_at'] = [$this->takenAt];
-        }
-
         $attrs = [];
 
         if (!is_null($this->area)) {
@@ -156,14 +152,15 @@ class VideoMetadata extends FileMetadata
             'yaw' => [],
         ];
 
-        $sortedFrames = $this->frames->sort(fn ($a, $b) =>
-            Carbon::parse($a->takenAt)->gt($b->takenAt) ? 1 : -1
-        )->values();
+        $timestamps = $this->frames
+            ->map(fn ($f) => Carbon::parse($f->takenAt))
+            ->sort(fn ($a, $b) => $a->gt($b) ? 1 : -1);
 
-        foreach ($sortedFrames as $frame) {
+        foreach ($timestamps as $index => $timestamp) {
+            $frame = $this->frames->get($index);
             $data['lat'][] = $frame->lat;
             $data['lng'][] = $frame->lng;
-            $data['taken_at'][] = $frame->takenAt;
+            $data['taken_at'][] = $timestamp->toDateTimeString();
 
             $attrs['area'][] = $frame->area;
             $attrs['distance_to_ground'][] = $frame->distanceToGround;
