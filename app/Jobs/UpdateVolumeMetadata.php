@@ -62,5 +62,7 @@ class UpdateVolumeMetadata extends Job implements ShouldQueue
                 $file->save();
             }
         }
+
+        $this->volume->flushGeoInfoCache();
     }
 }

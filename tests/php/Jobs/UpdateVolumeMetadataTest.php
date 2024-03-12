@@ -15,7 +15,6 @@ class UpdateVolumeMetadataTest extends TestCase
 {
     public function testHandleImageAdd()
     {
-        $this->markTestIncomplete('clear geo info cache');
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
@@ -36,6 +35,8 @@ class UpdateVolumeMetadataTest extends TestCase
         a.jpg,2016-12-19 12:27:00,52.220,28.123,-1500,10,2.6,180
         CSV);
 
+        $this->assertFalse($volume->hasGeoInfo());
+
         with(new UpdateVolumeMetadata($volume))->handle();
         $image->refresh();
         $this->assertEquals(100, $image->size);
@@ -46,6 +47,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $this->assertEquals(10, $image->metadata['distance_to_ground']);
         $this->assertEquals(2.6, $image->metadata['area']);
         $this->assertEquals(180, $image->metadata['yaw']);
+        $this->assertTrue($volume->hasGeoInfo());
     }
 
     public function testHandleImageUpdate()
@@ -133,7 +135,6 @@ class UpdateVolumeMetadataTest extends TestCase
 
     public function testHandleVideoAdd()
     {
-        $this->markTestIncomplete('clear geo info cache');
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
