@@ -2,9 +2,9 @@
 
 namespace Biigle\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
-use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Services\MetadataParsing\FileMetadata;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Illuminate\Contracts\Validation\Rule;
 
 class ImageMetadata implements Rule
 {

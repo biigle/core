@@ -11,13 +11,10 @@ use Biigle\Volume;
 use Cache;
 use Carbon\Carbon;
 use Event;
-use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
 use Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VolumeTest extends ModelTestCase
 {

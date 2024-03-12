@@ -11,7 +11,6 @@ use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Volume;
-use Exception;
 use File;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -36,7 +35,8 @@ class StoreVolume extends FormRequest
     /**
      * Remove potential temporary files.
      */
-    function __destruct() {
+    public function __destruct()
+    {
         if (isset($this->metadataPath)) {
             unlink($this->metadataPath);
         }
@@ -86,8 +86,8 @@ class StoreVolume extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-           // Only validate sample volume files after all other fields have been
-           // validated.
+            // Only validate sample volume files after all other fields have been
+            // validated.
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }

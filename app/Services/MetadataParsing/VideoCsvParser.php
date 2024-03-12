@@ -36,7 +36,7 @@ class VideoCsvParser extends CsvParser
                 continue;
             }
 
-             // Use null instead of ''.
+            // Use null instead of ''.
             $takenAt = $getValue($row, 'taken_at') ?: null;
 
             // If the file already exists but takenAt is null, replace the file by newly

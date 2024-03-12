@@ -484,13 +484,12 @@ class ProjectVolumeControllerTest extends ApiTestCase
         Storage::disk('test')->put('images/abc.jpg', 'abc');
 
         $this->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://images',
-                'media_type' => 'image',
-                'files' => 'abc.jpg',
-                'metadata_csv' => $file,
-            ])
-            ->assertSuccessful();
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNotNull($volume->metadata_file_path);

@@ -3,11 +3,9 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
-use Biigle\Rules\ImageMetadata;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Video;
 use Biigle\Volume;
-use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -68,12 +66,12 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             $metadata = $this->volume->getMetadata();
 
             if ($this->volume->isImageVolume()) {
-                $chunks->each(fn ($chunk) =>
-                    Image::insert($this->createFiles($chunk->toArray(), $metadata))
+                $chunks->each(
+                    fn ($chunk) => Image::insert($this->createFiles($chunk->toArray(), $metadata))
                 );
             } else {
-                $chunks->each(fn ($chunk) =>
-                    Video::insert($this->createFiles($chunk->toArray(), $metadata))
+                $chunks->each(
+                    fn ($chunk) => Video::insert($this->createFiles($chunk->toArray(), $metadata))
                 );
             }
         });

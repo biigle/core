@@ -2,9 +2,8 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
-use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\MediaType;
-use Biigle\Volume;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Symfony\Component\HttpFoundation\File\File;
 use TestCase;
 

@@ -15,8 +15,7 @@ class ImageMetadata extends FileMetadata
         public ?float $distanceToGround = null,
         public ?float $gpsAltitude = null,
         public ?float $yaw = null
-    )
-    {
+    ) {
         parent::__construct($name);
     }
 

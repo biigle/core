@@ -4,8 +4,8 @@ namespace Biigle\Http\Requests;
 
 use Biigle\PendingVolume;
 use Biigle\Rules\Handle;
-use Biigle\Rules\VolumeUrl;
 use Biigle\Rules\VolumeFiles;
+use Biigle\Rules\VolumeUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePendingVolume extends FormRequest
@@ -47,8 +47,8 @@ class UpdatePendingVolume extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-           // Only validate sample volume files after all other fields have been
-           // validated.
+            // Only validate sample volume files after all other fields have been
+            // validated.
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }

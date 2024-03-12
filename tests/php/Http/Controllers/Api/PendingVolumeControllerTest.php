@@ -292,7 +292,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->id;
 
         $this->beAdmin();
-         // Invalid handle format.
+        // Invalid handle format.
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',

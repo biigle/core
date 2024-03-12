@@ -14,8 +14,7 @@ class VolumeMetadata
         public ?string $name = null,
         public ?string $url = null,
         public ?string $handle = null
-    )
-    {
+    ) {
         $this->files = collect([]);
     }
 

@@ -32,12 +32,14 @@ class PendingVolumePolicy extends CachedPolicy
     public function update(User $user, PendingVolume $pv): bool
     {
         return $user->id === $pv->user_id &&
-            $this->remember("pending-volume-can-update-{$user->id}-{$pv->id}", fn () =>
-                 DB::table('project_user')
-                    ->where('project_id', $pv->project_id)
-                    ->where('user_id', $user->id)
-                    ->where('project_role_id', Role::adminId())
-                    ->exists()
+            $this->remember(
+                "pending-volume-can-update-{$user->id}-{$pv->id}",
+                fn () =>
+                    DB::table('project_user')
+                        ->where('project_id', $pv->project_id)
+                        ->where('user_id', $user->id)
+                        ->where('project_role_id', Role::adminId())
+                        ->exists()
             );
     }
 }

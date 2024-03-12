@@ -5,8 +5,6 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Jobs\UpdateVolumeMetadata;
 use Biigle\MediaType;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VideoTest;
 use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;

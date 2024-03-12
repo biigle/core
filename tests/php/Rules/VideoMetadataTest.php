@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Rules;
 
 use Biigle\Rules\VideoMetadata as VideoMetadataRule;
-use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Services\MetadataParsing\VideoMetadata;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
 use TestCase;
 
 class VideoMetadataTest extends TestCase

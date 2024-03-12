@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Rules;
 
 use Biigle\Rules\ImageMetadata as ImageMetadataRule;
-use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Services\MetadataParsing\ImageMetadata;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
 use TestCase;
 
 class ImageMetadataTest extends TestCase

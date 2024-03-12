@@ -18,8 +18,7 @@ class VideoMetadata extends FileMetadata
         public ?float $distanceToGround = null,
         public ?float $gpsAltitude = null,
         public ?float $yaw = null
-    )
-    {
+    ) {
         parent::__construct($name);
 
         $this->frames = collect([]);
@@ -50,8 +49,7 @@ class VideoMetadata extends FileMetadata
         ?float $distanceToGround = null,
         ?float $gpsAltitude = null,
         ?float $yaw = null
-    ): void
-    {
+    ): void {
         $frame = new ImageMetadata(
             name: $this->name,
             takenAt: $takenAt,
@@ -169,14 +167,10 @@ class VideoMetadata extends FileMetadata
         }
 
         // Remove all items that are full of null.
-        $data = array_filter($data, function ($item) {
-            return !empty(array_filter($item, fn ($i) => !is_null($i)));
-        });
+        $data = array_filter($data, fn ($item) => !empty(array_filter($item, fn ($i) => !is_null($i))));
 
         // Remove all items that are full of null.
-        $attrs = array_filter($attrs, function ($item) {
-            return !empty(array_filter($item, fn ($i) => !is_null($i)));
-        });
+        $attrs = array_filter($attrs, fn ($item) => !empty(array_filter($item, fn ($i) => !is_null($i))));
 
         $data['filename'] = $this->name;
 

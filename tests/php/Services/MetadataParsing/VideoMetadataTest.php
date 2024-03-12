@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Services\MetadataParsing;
 
 use Biigle\Services\MetadataParsing\VideoMetadata;
-use Biigle\Services\MetadataParsing\ImageMetadata;
 use TestCase;
 
 class VideoMetadataTest extends TestCase

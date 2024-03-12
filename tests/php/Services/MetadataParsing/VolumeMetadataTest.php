@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Services\MetadataParsing;
 
 use Biigle\MediaType;
-use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Services\MetadataParsing\FileMetadata;
 use Biigle\Services\MetadataParsing\ImageMetadata;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
 use TestCase;
 
 class VolumeMetadataTest extends TestCase
