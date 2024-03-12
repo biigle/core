@@ -23,6 +23,10 @@ class ImageCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/test.mp4");
         $parser = new ImageCsvParser($file);
         $this->assertFalse($parser->recognizesFile());
+
+        $file = new File(__DIR__."/../../../files/image-metadata-strange-encoding.csv");
+        $parser = new ImageCsvParser($file);
+        $this->assertFalse($parser->recognizesFile());
     }
 
     public function testGetMetadata()

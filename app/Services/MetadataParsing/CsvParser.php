@@ -34,7 +34,11 @@ abstract class CsvParser extends MetadataParser
     {
         $file = $this->getCsvIterator();
         $line = $file->current();
-        if (!is_array($line)) {
+        if (!is_array($line) || empty($line)) {
+            return false;
+        }
+
+        if (mb_detect_encoding($line[0], 'UTF-8', true) === false) {
             return false;
         }
 

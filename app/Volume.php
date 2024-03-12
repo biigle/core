@@ -501,7 +501,7 @@ class Volume extends Model
     /**
      * @param boolean $noUpdate Do not set metadata_file_path to null.
      */
-    public function deleteMetadata($noUpdate=false): void
+    public function deleteMetadata($noUpdate = false): void
     {
         if ($this->hasMetadata()) {
             Storage::disk(config('volumes.metadata_storage_disk'))->delete($this->metadata_file_path);

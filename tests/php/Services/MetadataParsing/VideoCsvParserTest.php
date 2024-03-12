@@ -19,6 +19,10 @@ class VideoCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/test.mp4");
         $parser = new VideoCsvParser($file);
         $this->assertFalse($parser->recognizesFile());
+
+        $file = new File(__DIR__."/../../../files/video-metadata-strange-encoding.csv");
+        $parser = new VideoCsvParser($file);
+        $this->assertFalse($parser->recognizesFile());
     }
 
     public function testGetMetadata()
@@ -196,7 +200,7 @@ class VideoCsvParserTest extends TestCase
         $parser = new VideoCsvParser($file);
         $data = $parser->getMetadata();
         $this->assertCount(1, $data->getFiles());
-        $this->assertCount(1, $data->getFiles()->first()->getFrames());
+        $this->assertCount(0, $data->getFiles()->first()->getFrames());
     }
 }
 

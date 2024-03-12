@@ -26,6 +26,22 @@ class Image extends VolumeFile
     ];
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'filename',
+        'volume_id',
+        'uuid',
+        'taken_at',
+        'lng',
+        'lat',
+        'attrs',
+        'tiled',
+    ];
+
+    /**
      * The attributes hidden in the model's JSON form.
      *
      * @var array
