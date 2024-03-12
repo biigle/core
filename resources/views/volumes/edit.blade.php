@@ -6,7 +6,7 @@
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
-        biigle.$declare('volumes.hasIfdo', '{!! $volume->hasIfdo() !!}');
+        biigle.$declare('volumes.hasMetadata', '{!! $volume->hasMetadata() !!}');
     </script>
     @mixin('volumesEditScripts')
 @endpush

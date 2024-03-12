@@ -2,10 +2,6 @@
 import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
 import MetadataApi from './api/volumeMetadata';
-import ParseIfdoFileApi from './api/parseIfdoFile';
-import VolumeIfdoApi from './api/volumeIfdo';
-import Tab from 'uiv/dist/Tab';
-import Tabs from 'uiv/dist/Tabs';
 import MessageStore from '../core/messages/store';
 
 /**
@@ -14,8 +10,6 @@ import MessageStore from '../core/messages/store';
 export default {
     mixins: [LoaderMixin],
     components: {
-        tabs: Tabs,
-        tab: Tab,
         dropdown: Dropdown,
     },
     data() {
@@ -24,7 +18,7 @@ export default {
             error: false,
             success: false,
             message: undefined,
-            hasIfdo: false,
+            hasMetadata: false,
         };
     },
     computed: {
@@ -37,7 +31,7 @@ export default {
         },
         handleError(response) {
             this.success = false;
-            let knownError = response.body.errors && (response.body.errors.metadata || response.body.errors.ifdo_file || response.body.errors.file);
+            let knownError = response.body.errors && response.body.errors.file;
             if (knownError) {
                 if (Array.isArray(knownError)) {
                     this.error = knownError[0];
@@ -45,59 +39,36 @@ export default {
                     this.error = knownError;
                 }
             } else {
-                MessageStore.handleErrorResponse(response);
+                this.handleErrorResponse(response);
             }
         },
-        submitCsv() {
-            this.$refs.csvInput.click();
+        submitFile() {
+            this.$refs.fileInput.click();
         },
-        uploadCsv(event) {
-            this.startLoading();
-            let data = new FormData();
-            data.append('metadata_csv', event.target.files[0]);
-            this.upload(data)
-                .then(this.handleSuccess, this.handleError)
-                .finally(this.finishLoading);
-        },
-        submitIfdo() {
-            this.$refs.ifdoInput.click();
-        },
-        handleIfdo(event) {
+        handleFile(event) {
             this.startLoading();
             let data = new FormData();
             data.append('file', event.target.files[0]);
-            ParseIfdoFileApi.save(data)
-                .then(this.uploadIfdo)
-                .then(() => this.hasIfdo = true)
+            MetadataApi.save({id: this.volumeId}, data)
+                .then(() => this.hasMetadata = true)
                 .then(this.handleSuccess)
                 .catch(this.handleError)
                 .finally(this.finishLoading);
         },
-        uploadIfdo(response) {
-            let ifdo = response.body;
-            let data = new FormData();
-            data.append('ifdo_file', this.$refs.ifdoInput.files[0]);
-            data.append('metadata_text', ifdo.files.map(row => row.join(',')).join("\n"));
-
-            return this.upload(data);
-        },
-        upload(data) {
-            return MetadataApi.save({id: this.volumeId}, data);
-        },
-        deleteIfdo() {
+        deleteFile() {
             this.startLoading();
-            VolumeIfdoApi.delete({id: this.volumeId})
-                .then(this.handleIfdoDeleted, MessageStore.handleErrorResponse)
+            MetadataApi.delete({id: this.volumeId})
+                .then(this.handleFileDeleted, this.handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        handleIfdoDeleted() {
-            this.hasIfdo = false;
-            MessageStore.success('The iFDO file was deleted.');
+        handleFileDeleted() {
+            this.hasMetadata = false;
+            MessageStore.success('The metadata file was deleted.');
         },
     },
     created() {
         this.volumeId = biigle.$require('volumes.id');
-        this.hasIfdo = biigle.$require('volumes.hasIfdo');
+        this.hasMetadata = biigle.$require('volumes.hasMetadata');
     },
 };
 </script>

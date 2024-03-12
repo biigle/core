@@ -3,7 +3,7 @@ import BrowserApi from './api/browser';
 import Dropdown from 'uiv/dist/Dropdown';
 import FileBrowser from '../core/components/fileBrowser';
 import LoaderMixin from '../core/mixins/loader';
-import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
+// import ParseIfdoFileApi from '../volumes/api/parseIfdoFile';
 import {handleErrorResponse} from '../core/messages/store';
 
 const MEDIA_TYPE = {
