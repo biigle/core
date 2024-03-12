@@ -142,4 +142,40 @@ class VideoMetadataTest extends TestCase
 
         $this->assertEquals($expect, $data->getInsertData());
     }
+
+    public function testGetInsertDataFramesWithGaps()
+    {
+        $data = new VideoMetadata('1.mp4');
+
+        $data->addFrame(
+            '2024-03-11 16:44:00',
+            lat: 110,
+            lng: 130,
+            gpsAltitude: -1501
+        );
+
+        $data->addFrame(
+            '2024-03-11 16:43:00',
+            area: 2.5,
+            distanceToGround: 5,
+            gpsAltitude: -1500
+        );
+
+        $expect = [
+            'filename' => '1.mp4',
+            'lat' => [null, 110],
+            'lng' => [null, 130],
+            // Metadata should be sorted by taken_at.
+            'taken_at' => ['2024-03-11 16:43:00', '2024-03-11 16:44:00'],
+            'attrs' => [
+                'metadata' => [
+                    'area' => [2.5, null],
+                    'distance_to_ground' => [5, null],
+                    'gps_altitude' => [-1500, -1501],
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expect, $data->getInsertData());
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class VideoMetadata extends FileMetadata
@@ -77,5 +78,115 @@ class VideoMetadata extends FileMetadata
             && is_null($this->distanceToGround)
             && is_null($this->gpsAltitude)
             && is_null($this->yaw);
+    }
+
+    /**
+     * Get the array of metadata that can be used for Model::insert();
+     */
+    public function getInsertData(): array
+    {
+        if ($this->frames->isEmpty()) {
+            return $this->getInsertDataPlain();
+        }
+
+        return $this->getInsertDataFrames();
+
+    }
+
+    /**
+     * Get the metadata insert array if no frames are present.
+     */
+    protected function getInsertDataPlain(): array
+    {
+        $data = ['filename' => $this->name];
+
+        if (!is_null($this->lat)) {
+            $data['lat'] = [$this->lat];
+        }
+
+        if (!is_null($this->lng)) {
+            $data['lng'] = [$this->lng];
+        }
+
+        if (!is_null($this->takenAt)) {
+            $data['taken_at'] = [$this->takenAt];
+        }
+
+        $attrs = [];
+
+        if (!is_null($this->area)) {
+            $attrs['area'] = [$this->area];
+        }
+
+        if (!is_null($this->distanceToGround)) {
+            $attrs['distance_to_ground'] = [$this->distanceToGround];
+        }
+
+        if (!is_null($this->gpsAltitude)) {
+            $attrs['gps_altitude'] = [$this->gpsAltitude];
+        }
+
+        if (!is_null($this->yaw)) {
+            $attrs['yaw'] = [$this->yaw];
+        }
+
+        if (!empty($attrs)) {
+            $data['attrs'] = ['metadata' => $attrs];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get the metadata insert array from all frames, sorted by taken_at.
+     * If one frame has data that another frame doesn't have, it is added as null.
+     */
+    protected function getInsertDataFrames(): array
+    {
+        $data = [
+            'lat' => [],
+            'lng' => [],
+            'taken_at' => [],
+        ];
+
+        $attrs = [
+            'area' => [],
+            'distance_to_ground' => [],
+            'gps_altitude' => [],
+            'yaw' => [],
+        ];
+
+        $sortedFrames = $this->frames->sort(fn ($a, $b) =>
+            Carbon::parse($a->takenAt)->gt($b->takenAt) ? 1 : -1
+        )->values();
+
+        foreach ($sortedFrames as $frame) {
+            $data['lat'][] = $frame->lat;
+            $data['lng'][] = $frame->lng;
+            $data['taken_at'][] = $frame->takenAt;
+
+            $attrs['area'][] = $frame->area;
+            $attrs['distance_to_ground'][] = $frame->distanceToGround;
+            $attrs['gps_altitude'][] = $frame->gpsAltitude;
+            $attrs['yaw'][] = $frame->yaw;
+        }
+
+        // Remove all items that are full of null.
+        $data = array_filter($data, function ($item) {
+            return !empty(array_filter($item, fn ($i) => !is_null($i)));
+        });
+
+        // Remove all items that are full of null.
+        $attrs = array_filter($attrs, function ($item) {
+            return !empty(array_filter($item, fn ($i) => !is_null($i)));
+        });
+
+        $data['filename'] = $this->name;
+
+        if (!empty($attrs)) {
+            $data['attrs'] = ['metadata' => $attrs];
+        }
+
+        return $data;
     }
 }
