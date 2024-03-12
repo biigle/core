@@ -38,7 +38,7 @@ class StoreVolume extends FormRequest
      */
     function __destruct() {
         if (isset($this->metadataPath)) {
-            File::delete($this->metadataPath);
+            unlink($this->metadataPath);
         }
     }
 
