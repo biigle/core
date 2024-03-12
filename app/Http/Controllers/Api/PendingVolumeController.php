@@ -8,6 +8,7 @@ use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Volume;
 use DB;
 use Queue;
+use Storage;
 
 class PendingVolumeController extends Controller
 {
@@ -107,6 +108,16 @@ class PendingVolumeController extends Controller
             ]);
 
             $request->pendingVolume->project->volumes()->attach($volume);
+
+            if ($request->pendingVolume->hasMetadata()) {
+                $volume->update([
+                    'metadata_file_path' => $volume->id.'.'.pathinfo($request->pendingVolume->metadata_file_path, PATHINFO_EXTENSION)
+                ]);
+                $stream = Storage::disk(config('volumes.pending_metadata_storage_disk'))
+                    ->readStream($request->pendingVolume->metadata_file_path);
+                Storage::disk(config('volumes.metadata_storage_disk'))
+                    ->writeStream($volume->metadata_file_path, $stream);
+            }
 
             $files = $request->input('files');
 

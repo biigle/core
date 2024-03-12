@@ -182,7 +182,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test',
-            'media_type' => 'image',
             'files' => ['1.jpg', '2.jpg'],
         ])->assertStatus(422);
 
@@ -190,7 +189,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type' => 'image',
             'files' => ['1.jpg', '2.jpg'],
         ])->assertStatus(422);
 
@@ -198,7 +196,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             'files' => ['1.jpg', '2.jpg'],
         ])->assertStatus(422);
 
@@ -211,7 +208,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             'files' => [],
         ])->assertStatus(422);
 
@@ -219,7 +215,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             'files' => ['1.jpg', '1.jpg'],
         ])->assertStatus(422);
 
@@ -227,7 +222,6 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             'files' => ['1.bmp'],
         ])->assertStatus(422);
 
@@ -235,19 +229,16 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             'files' => ['aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg'],
         ])->assertStatus(422);
 
         $response = $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type' => 'image',
             // Elements should be sanitized and empty elements should be discarded
             'files' => ['" 1.jpg"', '', '\'2.jpg\' ', '', ''],
         ])->assertSuccessful();
         $content = $response->getContent();
-        $this->assertEquals(1, $this->project()->volumes()->count());
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
 
@@ -261,11 +252,43 @@ class PendingVolumeControllerTest extends ApiTestCase
         });
 
         $this->assertNull($pv->fresh());
+
+        $this->assertEquals(1, $this->project()->volumes()->count());
+        $volume = $this->project()->volumes()->first();
+        $this->assertEquals('my volume no. 1', $volume->name);
+        $this->assertEquals('test://images', $volume->url);
+        $this->assertEquals(MediaType::imageId(), $volume->media_type_id);
     }
 
     public function testUpdateImagesWithMetadata()
     {
-        $this->markTestIncomplete();
+        $pendingMetaDisk = Storage::fake('pending-metadata');
+        $metaDisk = Storage::fake('metadata');
+        $fileDisk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+        $pendingMetaDisk->put('mymeta.csv', 'abc');
+
+        $fileDisk->makeDirectory('images');
+        $fileDisk->put('images/1.jpg', 'abc');
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => ['1.jpg'],
+        ])->assertSuccessful();
+
+        $volume = $this->project()->volumes()->first();
+        $this->assertTrue($volume->hasMetadata());
+        $metaDisk->assertExists($volume->metadata_file_path);
+        $pendingMetaDisk->assertMissing($pv->metadata_file_path);
     }
 
     public function testUpdateImagesWithAnnotationImport()
@@ -481,7 +504,6 @@ class PendingVolumeControllerTest extends ApiTestCase
             // Elements should be sanitized and empty elements should be discarded
             'files' => ['" 1.mp4"', '', '\'2.mp4\' ', '', ''],
         ])->assertSuccessful();
-        $this->assertEquals(1, $this->project()->volumes()->count());
 
         $id = json_decode($response->getContent())->volume_id;
         Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {
@@ -493,11 +515,43 @@ class PendingVolumeControllerTest extends ApiTestCase
         });
 
         $this->assertNull($pv->fresh());
+
+        $this->assertEquals(1, $this->project()->volumes()->count());
+        $volume = $this->project()->volumes()->first();
+        $this->assertEquals('my volume no. 1', $volume->name);
+        $this->assertEquals('test://videos', $volume->url);
+        $this->assertEquals(MediaType::videoId(), $volume->media_type_id);
     }
 
     public function testUpdateVideosWithMetadata()
     {
-        $this->markTestIncomplete();
+        $pendingMetaDisk = Storage::fake('pending-metadata');
+        $metaDisk = Storage::fake('metadata');
+        $fileDisk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::videoId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+        $pendingMetaDisk->put('mymeta.csv', 'abc');
+
+        $fileDisk->makeDirectory('videos');
+        $fileDisk->put('videos/1.mp4', 'abc');
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'files' => ['1.mp4'],
+        ])->assertSuccessful();
+
+        $volume = $this->project()->volumes()->first();
+        $this->assertTrue($volume->hasMetadata());
+        $metaDisk->assertExists($volume->metadata_file_path);
+        $pendingMetaDisk->assertMissing($pv->metadata_file_path);
     }
 
     public function testUpdateVideosWithAnnotationImport()
