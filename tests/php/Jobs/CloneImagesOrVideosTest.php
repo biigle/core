@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Jobs;
 
+use ApiTestCase;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
-class CloneImagesOrVideosTest extends \ApiTestCase
+class CloneImagesOrVideosTest extends ApiTestCase
 {
     public function testCloneImageVolume()
     {
@@ -572,9 +573,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertEmpty($newVideo->annotations()->get());
     }
 
-    public function testCloneVolumeIfDoFiles()
+    public function testCloneVolumeMetadataFile()
     {
-        Event::fake();
+        Storage::fake('metadata');
         $volume = $this->volume([
             'media_type_id' => MediaType::imageId(),
             'created_at' => '2022-11-09 14:37:00',
@@ -582,13 +583,13 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         ])->fresh();
 
         $copy = $volume->replicate();
+        $copy->metadata_file_path = 'mymeta.csv';
         $copy->save();
         // Use fresh() to load even the null fields.
 
-        Storage::fake('ifdos');
-        $csv = __DIR__."/../../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        $volume->saveIfdo($file);
+        $csv = __DIR__."/../../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+        $volume->saveMetadata($file);
 
         // The target project.
         $project = ProjectTest::create();
@@ -597,12 +598,10 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Event::assertDispatched('volume.cloned');
         $copy = $project->volumes()->first();
 
-        $this->assertNotNull($copy->getIfdo());
-        $this->assertTrue($copy->hasIfdo());
-        $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
+        $this->assertTrue($copy->hasMetadata());
+        $this->assertNotNull($copy->getMetadata());
     }
 
     public function testHandleVolumeImages()
