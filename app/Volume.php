@@ -468,7 +468,7 @@ class Volume extends Model
     {
         $disk = config('volumes.metadata_storage_disk');
         $this->metadata_file_path = $this->id;
-        if ($extension = $file->getExtension()) {
+        if ($extension = $file->getClientOriginalExtension()) {
             $this->metadata_file_path .= '.'.$extension;
         }
         $file->storeAs('', $this->metadata_file_path, $disk);
