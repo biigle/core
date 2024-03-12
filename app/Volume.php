@@ -467,8 +467,10 @@ class Volume extends Model
     public function saveMetadata(UploadedFile $file): void
     {
         $disk = config('volumes.metadata_storage_disk');
-        $extension = $file->getExtension();
-        $this->metadata_file_path = "{$this->id}.{$extension}";
+        $this->metadata_file_path = $this->id;
+        if ($extension = $file->getExtension()) {
+            $this->metadata_file_path .= '.'.$extension;
+        }
         $file->storeAs('', $this->metadata_file_path, $disk);
         $this->save();
     }

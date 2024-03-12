@@ -446,11 +446,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
+        $volume = $this->project()->volumes()->first();
+        $this->assertNull($volume->metadata_file_path);
     }
 
     public function testStoreImageMetadataText()
     {
+        Storage::fake('metadata');
         $id = $this->project()->id;
         $this->beAdmin();
         Storage::disk('test')->makeDirectory('images');
@@ -472,7 +474,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testStoreImageMetadataCsv()
     {
-        Storage::disk('metadata');
+        Storage::fake('metadata');
 
         $id = $this->project()->id;
         $this->beAdmin();
@@ -529,11 +531,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
+        $volume = $this->project()->volumes()->first();
+        $this->assertNull($volume->metadata_file_path);
     }
 
     public function testStoreVideoMetadataText()
     {
+        Storage::fake('metadata');
         $id = $this->project()->id;
         $this->beAdmin();
         Storage::disk('test')->makeDirectory('videos');
@@ -555,6 +559,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testStoreVideoMetadataCsv()
     {
+        Storage::fake('metadata');
+
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/video-metadata.csv";
@@ -665,7 +671,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin()->id, Role::adminId());
 
         $this->doTestApiRoute('POST', "/api/v1/projects/{$pid}/volumes/{$tid}");
 

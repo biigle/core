@@ -49,6 +49,7 @@ class MetadataControllerTest extends ApiTestCase
 
     public function testStoreImageMetadata()
     {
+        Storage::fake('metadata');
         $id = $this->volume()->id;
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/metadata");
@@ -85,6 +86,7 @@ class MetadataControllerTest extends ApiTestCase
 
     public function testStoreVideoMetadataCsv()
     {
+        Storage::fake('metadata');
         $id = $this->volume()->id;
         $this->volume()->media_type_id = MediaType::videoId();
         $this->volume()->save();
