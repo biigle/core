@@ -52,7 +52,7 @@ class PendingVolume extends Model
     public function saveMetadata(UploadedFile $file): void
     {
         $disk = config('volumes.pending_metadata_storage_disk');
-        $extension = $file->getExtension();
+        $extension = $file->getClientOriginalExtension();
         $this->metadata_file_path = "{$this->id}.{$extension}";
         $file->storeAs('', $this->metadata_file_path, $disk);
         $this->save();
