@@ -20,7 +20,8 @@
         <div class="form-group {{ $errors->has('media_type') ? ' has-error' : '' }}">
             <div class="btn-group btn-group-justified">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-lg" v-on:click="selectImageMediaType" :class="imageTypeButtonClass"><i class="fa fa-image"></i> Image Volume</button>
+                    <button v-if="!initialized" type="button" class="btn btn-info  btn-lg active"><i class="fa fa-image"></i> Image Volume</button>
+                    <button v-cloak type="button" class="btn btn-default btn-lg" v-on:click="selectImageMediaType" :class="imageTypeButtonClass" ref="imageTypeButton"><i class="fa fa-image"></i> Image Volume</button>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-lg" v-on:click="selectVideoMediaType" :class="videoTypeButtonClass"><i class="fa fa-film"></i> Video Volume</button>
@@ -41,9 +42,9 @@
         </legend>
         <div class="form-group{{ $errors->has('metadata_file') ? ' has-error' : '' }}">
             <p class="text-center">
-                <button class="btn btn-default btn-lg" type="button" v-on:click="selectFile"><i class="fa fa-file-alt"></i> Select a file</button>
+                <button class="btn btn-default btn-lg" type="button" v-on:click="selectFile" :class="fileButtonClass"><i class="fa fa-file-alt"></i> Select a file</button>
             </p>
-            <input class="hidden" name="metadata_file" type="file" ref="metadataFileField">
+            <input class="hidden" name="metadata_file" type="file" ref="metadataFileField" v-on:change="handleSelectedFile">
             @if ($errors->has('metadata_file'))
                <p class="help-block">{{ $errors->first('metadata_file') }}</p>
             @endif

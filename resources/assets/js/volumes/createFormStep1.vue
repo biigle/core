@@ -11,6 +11,8 @@ export default {
     data() {
         return {
             mediaType: MEDIA_TYPE.IMAGE,
+            hasFile: false,
+            initialized: false,
         };
     },
     computed: {
@@ -22,16 +24,20 @@ export default {
         },
         imageTypeButtonClass() {
             return {
-                'btn-default': !this.isImageMediaType,
                 active: this.isImageMediaType,
                 'btn-info': this.isImageMediaType,
             };
         },
         videoTypeButtonClass() {
             return {
-                'btn-default': !this.isVideoMediaType,
                 active: this.isVideoMediaType,
                 'btn-info': this.isVideoMediaType,
+            };
+        },
+        fileButtonClass() {
+            return {
+                active: this.hasFile,
+                'btn-info': this.hasFile,
             };
         },
     },
@@ -45,9 +51,14 @@ export default {
         selectFile() {
             this.$refs.metadataFileField.click();
         },
+        handleSelectedFile() {
+            this.hasFile = this.$refs.metadataFileField.files.length > 0;
+        },
     },
     created() {
         this.mediaType = biigle.$require('volumes.mediaType');
+        // Used to hide a dummy button that masks a flashing selected state on load.
+        this.initialized = true;
     },
 };
 </script>
