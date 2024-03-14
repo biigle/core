@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\PendingVolume;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -60,6 +61,21 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->get('volumes/create?project='.$id);
         $response->assertStatus(200);
+    }
+
+    public function testCreateWithExisting()
+    {
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+
+        $this
+            ->get('volumes/create?project='.$id)
+            ->assertRedirectToRoute('pending-volume', $pv->id);
     }
 
     public function testEdit()

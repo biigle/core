@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
+use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\User;
 use Biigle\Volume;
@@ -23,6 +24,13 @@ class VolumeController extends Controller
     {
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
+
+        $pv = $project->pendingVolumes()->where('user_id', $request->user()->id)->first();
+        if (!is_null($pv)) {
+            return redirect()
+                ->route('pending-volume', $pv->id)
+                ->with('restored', true);
+        }
 
         $mediaType = old('media_type', 'image');
 

@@ -61,6 +61,8 @@ class PendingVolumeController extends Controller
             default => 'image',
         };
 
+        $restored = session()->has('restored');
+
         return view('volumes.create.step2', [
             'pv' => $pv,
             'project' => $pv->project,
@@ -70,6 +72,7 @@ class PendingVolumeController extends Controller
             'offlineMode' => $offlineMode,
             'userDisk' => $userDisk,
             'mediaType' => $mediaType,
+            'restored' => $restored,
         ]);
     }
 }
