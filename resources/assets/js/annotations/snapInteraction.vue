@@ -2,7 +2,7 @@
 import { Feature } from '@biigle/ol';
 import LineString from '@biigle/ol/geom/LineString';
 import { Snap } from '@biigle/ol/interaction';
-import Keyboard from '../core/keyboard';
+import {Style, Stroke} from '@biigle/ol/style';
 
 export default {
     data() {
@@ -36,6 +36,12 @@ export default {
                 let yy = y + (100000 * Math.sin(rad));
                 let v = this.cropLine([[x, y], [xx, yy]], angle);
                 let feature = new Feature({ geometry: new LineString(v) });
+                feature.setStyle(new Style({
+                    stroke: new Stroke({
+                        color: 'transparent',
+                        width: 5
+                    })
+                }));
                 this.snapLineFeatures.push(feature);
             });
             this.annotationSource.addFeatures(this.snapLineFeatures);
