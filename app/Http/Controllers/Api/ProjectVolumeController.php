@@ -53,6 +53,7 @@ class ProjectVolumeController extends Controller
      * @apiGroup Volumes
      * @apiName StoreProjectVolumes
      * @apiPermission projectAdmin
+     * @apiDeprecated use now (#Volumes:StoreProjectPendingVolumes) and (#Volumes:UpdatePendingVolume).
      *
      * @apiParam {Number} id The project ID.
      *
