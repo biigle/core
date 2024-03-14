@@ -33,6 +33,17 @@ class PendingVolumePolicyTest extends TestCase
         $project->addUserId($this->owner->id, Role::adminId());
     }
 
+    public function testAccess()
+    {
+        $this->assertFalse($this->user->can('access', $this->pv));
+        $this->assertFalse($this->guest->can('access', $this->pv));
+        $this->assertFalse($this->editor->can('access', $this->pv));
+        $this->assertFalse($this->expert->can('access', $this->pv));
+        $this->assertFalse($this->admin->can('access', $this->pv));
+        $this->assertTrue($this->owner->can('access', $this->pv));
+        $this->assertTrue($this->globalAdmin->can('access', $this->pv));
+    }
+
     public function testUpdate()
     {
         $this->assertFalse($this->user->can('update', $this->pv));
@@ -42,5 +53,16 @@ class PendingVolumePolicyTest extends TestCase
         $this->assertFalse($this->admin->can('update', $this->pv));
         $this->assertTrue($this->owner->can('update', $this->pv));
         $this->assertTrue($this->globalAdmin->can('update', $this->pv));
+    }
+
+    public function testDestroy()
+    {
+        $this->assertFalse($this->user->can('destroy', $this->pv));
+        $this->assertFalse($this->guest->can('destroy', $this->pv));
+        $this->assertFalse($this->editor->can('destroy', $this->pv));
+        $this->assertFalse($this->expert->can('destroy', $this->pv));
+        $this->assertFalse($this->admin->can('destroy', $this->pv));
+        $this->assertTrue($this->owner->can('destroy', $this->pv));
+        $this->assertTrue($this->globalAdmin->can('destroy', $this->pv));
     }
 }

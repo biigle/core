@@ -155,6 +155,20 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(422);
     }
 
+    public function testStoreFromUI()
+    {
+        $id = $this->project()->id;
+
+        $this->beAdmin();
+        $response = $this->post("/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'image',
+        ]);
+
+        $pv = PendingVolume::first();
+
+        $response->assertRedirectToRoute('pending-volume', $pv->id);
+    }
+
     public function testUpdateImages()
     {
         config(['volumes.editor_storage_disks' => ['test']]);
@@ -247,6 +261,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             $this->assertEquals($id, $job->volume->id);
             $this->assertContains('1.jpg', $job->filenames);
             $this->assertContains('2.jpg', $job->filenames);
+            $this->assertCount(2, $job->filenames);
 
             return true;
         });
@@ -299,6 +314,63 @@ class PendingVolumeControllerTest extends ApiTestCase
     public function testUpdateImagesWithImageLabelImport()
     {
         $this->markTestIncomplete();
+    }
+
+    public function testUpdateFromUIWithoutImport()
+    {
+        $disk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+        $id = $pv->id;
+
+        $disk->makeDirectory('images');
+        $disk->put('images/1.jpg', 'abc');
+
+        $this->beAdmin();
+        $response = $this->put("/api/v1/pending-volumes/{$pv->id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => ['1.jpg'],
+        ]);
+        $volume = Volume::first();
+
+        $response->assertRedirectToRoute('volume', $volume->id);
+    }
+
+    public function testUpdateFileString()
+    {
+        $disk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+        $id = $pv->id;
+
+        $disk->makeDirectory('images');
+        $disk->put('images/1.jpg', 'abc');
+        $disk->put('images/2.jpg', 'abc');
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$pv->id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => '"1.jpg" , 2.jpg , ,',
+        ])->assertSuccessful();
+
+        $volume = Volume::first();
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            $this->assertContains('1.jpg', $job->filenames);
+            $this->assertContains('2.jpg', $job->filenames);
+            $this->assertCount(2, $job->filenames);
+
+            return true;
+        });
     }
 
     public function testUpdateHandle()
@@ -627,5 +699,35 @@ class PendingVolumeControllerTest extends ApiTestCase
             'url' => 'admin-test://images',
             'files' => ['1.jpg'],
         ])->assertSuccessful();
+    }
+
+    public function testDestroy()
+    {
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beExpert();
+        $this->deleteJson("/api/v1/pending-volumes/{$pv->id}")->assertStatus(403);
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/pending-volumes/{$pv->id}")->assertStatus(200);
+        $this->assertNull($pv->fresh());
+    }
+
+    public function testDestroyFromUI()
+    {
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->delete("/api/v1/pending-volumes/{$pv->id}")
+            ->assertRedirectToRoute('create-volume', ['project' => $pv->project_id]);
     }
 }

@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Create new volume')
+@section('title', 'Start creating a new volume')
 
 @push('scripts')
    <script type="text/javascript">
@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div id="create-volume-form" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
+<div id="create-volume-form-step-1" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
     <h2>New volume for {{ $project->name }}</h2>
     <form role="form" method="POST" action="{{ url("api/v1/projects/{$project->id}/pending-volumes") }}" enctype="multipart/form-data" v-on:submit="startLoading">
     <fieldset>

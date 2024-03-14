@@ -5,8 +5,6 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
-use Biigle\Modules\UserDisks\UserDisk;
-use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
@@ -27,48 +25,11 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
 
-        // $disks = collect([]);
-        // $user = $request->user();
-
-        // if ($user->can('sudo')) {
-        //     $disks = $disks->concat(config('volumes.admin_storage_disks'));
-        // } elseif ($user->role_id === Role::editorId()) {
-        //     $disks = $disks->concat(config('volumes.editor_storage_disks'));
-        // }
-
-        // // Limit to disks that actually exist.
-        // $disks = $disks->intersect(array_keys(config('filesystems.disks')))->values();
-
-        // // Use the disk keys as names, too. UserDisks can have different names
-        // // (see below).
-        // $disks = $disks->combine($disks)->map(fn ($name) => ucfirst($name));
-
-        // if (class_exists(UserDisk::class)) {
-        //     $userDisks = UserDisk::where('user_id', $user->id)
-        //         ->pluck('name', 'id')
-        //         ->mapWithKeys(fn ($name, $id) => ["disk-{$id}" => $name]);
-
-        //     $disks = $disks->merge($userDisks);
-        // }
-
         $mediaType = old('media_type', 'image');
-        // $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
-        // $offlineMode = config('biigle.offline_mode');
 
-        // if (class_exists(UserStorageServiceProvider::class)) {
-        //     $userDisk = "user-{$user->id}";
-        // } else {
-        //     $userDisk = null;
-        // }
-
-        return view('volumes.create', [
+        return view('volumes.create.step1', [
             'project' => $project,
             'mediaType' => $mediaType,
-            // 'disks' => $disks,
-            // 'hasDisks' => !empty($disks),
-            // 'filenames' => $filenames,
-            // 'offlineMode' => $offlineMode,
-            // 'userDisk' => $userDisk,
         ]);
     }
 

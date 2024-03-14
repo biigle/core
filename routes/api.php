@@ -148,7 +148,7 @@ $router->resource('notifications', 'NotificationController', [
 ]);
 
 $router->resource('pending-volumes', 'PendingVolumeController', [
-    'only' => ['update'],
+    'only' => ['update', 'destroy'],
     'parameters' => ['pending-volumes' => 'id'],
 ]);
 

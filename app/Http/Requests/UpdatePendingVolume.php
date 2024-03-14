@@ -30,7 +30,7 @@ class UpdatePendingVolume extends FormRequest
         return [
             'name' => 'required|max:512',
             'url' => ['required', 'string', 'max:256', new VolumeUrl],
-            'files' => ['required', 'array'],
+            'files' => ['required', 'array', 'min:1'],
             'handle' => ['nullable', 'max:256', new Handle],
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
@@ -69,9 +69,11 @@ class UpdatePendingVolume extends FormRequest
     protected function prepareForValidation()
     {
         $files = $this->input('files');
-        if (is_array($files)) {
-            $files = array_map(fn ($f) => trim($f, " \n\r\t\v\x00'\""), $files);
-            $this->merge(['files' => array_filter($files)]);
+        if (!is_array($files)) {
+            $files = explode(',', $files);
         }
+
+        $files = array_map(fn ($f) => trim($f, " \n\r\t\v\x00'\""), $files);
+        $this->merge(['files' => array_filter($files)]);
     }
 }

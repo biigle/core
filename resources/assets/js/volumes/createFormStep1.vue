@@ -1,7 +1,7 @@
 <script>
 import LoaderMixin from '../core/mixins/loader';
 
-const MEDIA_TYPE = {
+export const MEDIA_TYPE = {
     IMAGE: 'image',
     VIDEO: 'video',
 };

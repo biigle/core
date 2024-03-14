@@ -5,8 +5,10 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
+use Biigle\PendingVolume;
 use Biigle\Volume;
 use DB;
+use Illuminate\Http\Request;
 use Queue;
 use Storage;
 
@@ -63,7 +65,11 @@ class PendingVolumeController extends Controller
             $pv->saveMetadata($request->file('metadata_file'));
         }
 
-        return $pv;
+        if ($this->isAutomatedRequest()) {
+            return $pv;
+        }
+
+        return redirect()->route('pending-volume', $pv->id);
     }
 
     /**
@@ -80,7 +86,7 @@ class PendingVolumeController extends Controller
      *
      * @apiParam (Required attributes) {String} name The name of the new volume.
      * @apiParam (Required attributes) {String} url The base URL of the image/video files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`.
-     * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used.
+     * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used. This can also be a plain string of comma-separated filenames.
      *
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      *
@@ -141,6 +147,35 @@ class PendingVolumeController extends Controller
 
         $request->pendingVolume->delete();
 
-        return $request->pendingVolume;
+        if ($this->isAutomatedRequest()) {
+            return $request->pendingVolume;
+        }
+
+        return redirect()
+            ->route('volume', $volume->id)
+            ->with('message', 'Volume created.')
+            ->with('messageType', 'success');
+    }
+
+    /**
+     * Delete a pending volume
+     *
+     * @api {delete} pending-volumes/:id Discard a pending volume
+     * @apiGroup Volumes
+     * @apiName DestroyPendingVolume
+     * @apiPermission projectAdminAndPendingVolumeOwner
+     *
+     * @param Request $request]
+     */
+    public function destroy(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('destroy', $pv);
+
+        $pv->delete();
+
+        if (!$this->isAutomatedRequest()) {
+            return redirect()->route('create-volume', ['project' => $pv->project_id]);
+        }
     }
 }

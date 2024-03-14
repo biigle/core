@@ -27,13 +27,13 @@ class PendingVolumePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the given volume can be updated by the user.
+     * Determine if the given pending volume can be accessed by the user.
      */
-    public function update(User $user, PendingVolume $pv): bool
+    public function access(User $user, PendingVolume $pv): bool
     {
         return $user->id === $pv->user_id &&
             $this->remember(
-                "pending-volume-can-update-{$user->id}-{$pv->id}",
+                "pending-volume-can-access-{$user->id}-{$pv->id}",
                 fn () =>
                     DB::table('project_user')
                         ->where('project_id', $pv->project_id)
@@ -41,5 +41,21 @@ class PendingVolumePolicy extends CachedPolicy
                         ->where('project_role_id', Role::adminId())
                         ->exists()
             );
+    }
+
+    /**
+     * Determine if the given pending volume can be updated by the user.
+     */
+    public function update(User $user, PendingVolume $pv): bool
+    {
+        return $this->access($user, $pv);
+    }
+
+    /**
+     * Determine if the given pending volume can be deleted by the user.
+     */
+    public function destroy(User $user, PendingVolume $pv): bool
+    {
+        return $this->access($user, $pv);
     }
 }

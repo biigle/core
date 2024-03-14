@@ -247,6 +247,13 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
+    $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
+        $router->get('{id}', [
+            'as'   => 'pending-volume',
+            'uses' => 'PendingVolumeController@show',
+        ]);
+    });
+
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {
         $router->get('create', [
             'as'   => 'create-volume',
