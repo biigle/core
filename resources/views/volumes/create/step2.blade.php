@@ -16,7 +16,7 @@
 @section('content')
 
 <div id="create-volume-form-step-2" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
-    <h2>New volume for {{ $project->name }}</h2>
+    <h2>New {{$mediaType}} volume for {{ $project->name }}</h2>
     @if ($restored)
         <div class="panel panel-info">
             <div class="panel-body text-info">
@@ -55,12 +55,12 @@
                     @endif
                     @unless ($offlineMode)
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="{active: isRemoteFileSource}" ><i class="fa fa-link"></i> Remote location</button>
+                            <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="remoteButtonClass" ><i class="fa fa-link"></i> Remote location</button>
                         </div>
                     @endunless
                     @if ($userDisk)
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default" title="Choose files from your uploads" v-on:click="selectStorageDisk('{{$userDisk}}')" v-bind:class="{active: isUserDiskFileSource}">
+                            <button type="button" class="btn btn-default" title="Choose files from your uploads" v-on:click="selectStorageDisk('{{$userDisk}}')" v-bind:class="userDiskButtonClass">
                                 <i class="fa fa-upload"></i> Uploaded files
                             </button>
                         </div>
@@ -68,7 +68,7 @@
                     @if ($disks->count() > 1)
                         <div class="btn-group">
                             <dropdown tag="span">
-                                <button class="btn btn-default dropdown-toggle" v-bind:class="{active: isDiskFileSource}" type="button" title="Select a storage disk">
+                                <button class="btn btn-default dropdown-toggle" v-bind:class="diskButtonClass" type="button" title="Select a storage disk" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                                     <i class="fa fa-database"></i> Storage disk <span class="caret"></span>
                                 </button>
                                 <template slot="dropdown">
@@ -82,7 +82,7 @@
                         </div>
                     @elseif ($disks->count() === 1)
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default volume-storage-disk-btn" title="Choose files from the '{{$disks->values()->first()}}' storage disk" v-on:click="selectStorageDisk('{{$disks->keys()->first()}}')" v-bind:class="{active: isDiskFileSource}">
+                            <button type="button" class="btn btn-default volume-storage-disk-btn" title="Choose files from the '{{$disks->values()->first()}}' storage disk" v-on:click="selectStorageDisk('{{$disks->keys()->first()}}')" v-bind:class="diskButtonClass">
                                 <i class="fa fa-database"></i> {{$disks->values()->first()}}
                             </button>
                         </div>
@@ -101,26 +101,27 @@
                     @endif
                  </div>
 
-                 <div v-if="isImageMediaType" class="panel panel-warning">
-                    <div class="panel-body text-warning">
-                        Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+                 @if ($isImageMediaType)
+                     <div class="panel panel-warning">
+                        <div class="panel-body text-warning">
+                            Remote locations for image volumes must support <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
+                        </div>
                     </div>
-                </div>
+                @endif
 
                  <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
                     <label for="files">Volume files</label>
-                    <div v-if="isImageMediaType" @unless ($mediaType === 'image') v-cloak @endif>
+                    @if ($isImageMediaType)
                         <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
                            The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG, WebP and TIFF.
                         </p>
-                    </div>
-                    <div v-else @unless ($mediaType === 'video') v-cloak @endif>
+                    @else
                         <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3"></textarea>
                         <p class="help-block">
                            The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
                         </p>
-                    </div>
+                    @endif
                     @if($errors->has('files'))
                        <span class="help-block">{{ $errors->first('files') }}</span>
                     @endif
@@ -143,8 +144,11 @@
                 <span v-else>
                     Select a directory or files below. All selected files will be used for the new volume.
                 </span>
-                <span v-if="isImageMediaType">Only files with a supported image file format are shown (JPEG, PNG, WebP and TIFF).</span>
-                <span v-if="isVideoMediaType">Only files with a supported video file format are shown (MP4 (H.264) and WebM (VP8, VP9, AV1)).</span>
+                @if ($isImageMediaType)
+                    Only files with a supported image file format are shown (JPEG, PNG, WebP and TIFF).
+                @else
+                    Only files with a supported video file format are shown (MP4 (H.264) and WebM (VP8, VP9, AV1)).
+                @endif
             </p>
 
             <file-browser

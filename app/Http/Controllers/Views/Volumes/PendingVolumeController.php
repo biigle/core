@@ -56,10 +56,8 @@ class PendingVolumeController extends Controller
             $userDisk = null;
         }
 
-        $mediaType = match ($pv->media_type_id) {
-            MediaType::videoId() => 'video',
-            default => 'image',
-        };
+        $isImageMediaType = $pv->media_type_id === MediaType::imageId();
+        $mediaType = $isImageMediaType ? 'image' : 'video';
 
         $restored = session()->has('restored');
 
@@ -72,6 +70,7 @@ class PendingVolumeController extends Controller
             'offlineMode' => $offlineMode,
             'userDisk' => $userDisk,
             'mediaType' => $mediaType,
+            'isImageMediaType' => $isImageMediaType,
             'restored' => $restored,
         ]);
     }

@@ -89,6 +89,24 @@ export default {
         fileCountText() {
             return numberFormatter.format(this.fileCount);
         },
+        remoteButtonClass() {
+            return {
+                active: this.isRemoteFileSource,
+                'btn-info': this.isRemoteFileSource,
+            };
+        },
+        userDiskButtonClass() {
+            return {
+                active: this.isUserDiskFileSource,
+                'btn-info': this.isUserDiskFileSource,
+            };
+        },
+        diskButtonClass() {
+            return {
+                active: this.isDiskFileSource,
+                'btn-info': this.isDiskFileSource,
+            };
+        },
     },
     methods: {
         fetchDirectories(disk, path) {
