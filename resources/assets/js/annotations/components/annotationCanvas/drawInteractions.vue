@@ -4,7 +4,6 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
 import { shiftKeyOnly } from '@biigle/ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
-import { registerLoading } from 'echarts/core';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.

@@ -134,7 +134,7 @@ export default {
 
                     this.map.addInteraction(this.drawInteraction);
 
-                    this.drawInteraction.on('drawstart', (e) => {
+                    this.drawInteraction.on('drawstart', () => {
                         this.drawEnded = false;
                     });
                     this.drawInteraction.on('drawend', (e) => {
