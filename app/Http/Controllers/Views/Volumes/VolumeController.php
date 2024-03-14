@@ -6,7 +6,6 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
