@@ -28,7 +28,7 @@
         <form method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">
             <fieldset>
                 <legend>
-                    2. Choose a volume name
+                    Choose a volume name
                 </legend>
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                     <input type="text" class="form-control" name="name" id="name" v-model="name" placeholder="My new volume" ref="nameInput" required autofocus>
@@ -40,7 +40,7 @@
 
             <fieldset>
                 <legend class="clearfix">
-                    3. Choose a file source
+                    Choose a file source
                     <span class="text-muted pull-right">
                         <span v-text="fileCountText">0</span> files
                     </span>
@@ -191,7 +191,7 @@
 
             <fieldset>
                  <legend>
-                     4. Set a handle or DOI <span class="text-muted">(optional)</span>
+                     Set a handle or DOI <span class="text-muted">(optional)</span>
                  </legend>
 
                  <div class="form-group{{ $errors->has('handle') ? ' has-error' : '' }}">

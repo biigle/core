@@ -16,12 +16,12 @@
         <form role="form" method="POST" action="{{ url("api/v1/projects/{$project->id}/pending-volumes") }}" enctype="multipart/form-data" v-on:submit="startLoading">
         <fieldset>
             <legend>
-                1. Choose a media type
+                Choose a media type
             </legend>
             <div class="form-group {{ $errors->has('media_type') ? ' has-error' : '' }}">
                 <div class="btn-group btn-group-justified">
                     <div class="btn-group">
-                        <button v-if="!initialized" type="button" class="btn btn-info  btn-lg active"><i class="fa fa-image"></i> Image Volume</button>
+                        <button v-if="!initialized" type="button" class="btn btn-info btn-lg active"><i class="fa fa-image"></i> Image Volume</button>
                         <button v-cloak type="button" class="btn btn-default btn-lg" v-on:click="selectImageMediaType" :class="imageTypeButtonClass" ref="imageTypeButton"><i class="fa fa-image"></i> Image Volume</button>
                     </div>
                     <div class="btn-group">
@@ -39,7 +39,7 @@
         </fieldset>
         <fieldset>
             <legend>
-                2. Select a metadata file <span class="text-muted">(optional)</span>
+                Select a metadata file <span class="text-muted">(optional)</span>
             </legend>
             <div class="form-group{{ $errors->has('metadata_file') ? ' has-error' : '' }}">
                 <p class="text-center">
