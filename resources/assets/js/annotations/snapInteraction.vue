@@ -3,6 +3,7 @@ import { Feature } from '@biigle/ol';
 import LineString from '@biigle/ol/geom/LineString';
 import { Snap } from '@biigle/ol/interaction';
 import {Style, Stroke} from '@biigle/ol/style';
+import Collection from '@biigle/ol/Collection';
 
 export default {
     data() {
@@ -90,9 +91,9 @@ export default {
             return res;
         },
         startSnap() {
-            this.snapInteraction = new Snap({ source: this.annotationSource });
-            this.map.addInteraction(this.snapInteraction);
             this.drawSnaplines();
+            this.snapInteraction = new Snap({ source: this.annotationSource, features: new Collection(this.snapLineFeatures) });
+            this.map.addInteraction(this.snapInteraction);
             this.shouldSnap = false;
         },
         endSnap() {
