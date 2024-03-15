@@ -3,6 +3,7 @@ import BrowserApi from './api/browser';
 import Dropdown from 'uiv/dist/Dropdown';
 import FileBrowser from '../core/components/fileBrowser';
 import LoaderMixin from '../core/mixins/loader';
+import {debounce} from '../core/utils';
 import {MEDIA_TYPE} from './createFormStep1';
 
 const FILE_SOURCE = {
@@ -23,6 +24,7 @@ export default {
         return {
             disks: [],
             filenames: '',
+            filesDontMatchMetadata: false,
             fileSource: FILE_SOURCE.REMOTE,
             handle: '',
             imageDiskCache: {},
@@ -30,6 +32,7 @@ export default {
             initializingBrowser: false,
             loadingBrowser: false,
             mediaType: MEDIA_TYPE.IMAGE,
+            metadataFilenames: [],
             name: '',
             remoteFilenames: '',
             remoteUrl: '',
@@ -261,7 +264,7 @@ export default {
         setUrlAndFilenames(path, files) {
             // Add only one slash, as path already has a leading slash.
             this.url = `${this.storageDisk}:/${path}`;
-            this.filenames = files.map(file => file.name).join(', ');
+            this.filenames = files.map(file => file.name).join(',');
         },
         unselectDirectory(directory) {
             this.unselectAllDirectories(directory);
@@ -365,6 +368,30 @@ export default {
                 this.unselectAllDirectories(oldRoot);
             }
         },
+        filenames() {
+            if (!this.metadataFilenames || !this.filenames || !this.filenames.includes('.')) {
+                this.filesDontMatchMetadata = false;
+                return;
+            }
+
+            // Use a watcher+debounce instead of a computed property because this may be
+            // called on each keystroke in the textarea.
+            debounce(() => {
+                if (!this.filenames || !this.filenames.includes('.')) {
+                    this.filesDontMatchMetadata = false;
+                    return;
+                }
+
+                for (var i = this.metadataFilenames.length - 1; i >= 0; i--) {
+                    if (this.filenames.includes(this.metadataFilenames[i])) {
+                        this.filesDontMatchMetadata = false;
+                        return;
+                    }
+                }
+
+                this.filesDontMatchMetadata = true;
+            }, 1000, 'compare-volume-filenames-with-metadata');
+        },
     },
     created() {
         this.disks = biigle.$require('volumes.disks');
@@ -373,6 +400,9 @@ export default {
         this.handle = biigle.$require('volumes.handle');
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
+        if (biigle.$require('volumes.filenamesFromMeta')) {
+            this.metadataFilenames = this.filenames.split(',');
+        }
 
         let [disk, path] = this.url.split('://');
         if (this.disks.includes(disk)) {

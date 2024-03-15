@@ -9,6 +9,7 @@
         biigle.$declare('volumes.handle', `{!! $oldHandle !!}`);
         biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
         biigle.$declare('volumes.filenames', '{{ $filenames }}');
+        biigle.$declare('volumes.filenamesFromMeta', {{ $filenamesFromMeta ? 'true' : 'false' }});
         biigle.$declare('volumes.disks', {!! $disks->keys() !!});
     </script>
 @endpush
@@ -187,6 +188,12 @@
             <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
                 <div class="panel-body text-warning">
                     Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+                </div>
+            </div>
+
+            <div v-if="filesDontMatchMetadata" v-cloak class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    The chosen files could not be found in the uploaded metadata file!
                 </div>
             </div>
 

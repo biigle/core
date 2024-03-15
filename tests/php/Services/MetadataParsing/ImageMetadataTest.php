@@ -7,6 +7,12 @@ use TestCase;
 
 class ImageMetadataTest extends TestCase
 {
+    public function testTrimName()
+    {
+        $data = new ImageMetadata(' filename');
+        $this->assertEquals('filename', $data->name);
+    }
+
     public function testIsEmpty()
     {
         $data = new ImageMetadata('filename');

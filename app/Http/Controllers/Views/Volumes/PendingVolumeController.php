@@ -75,10 +75,12 @@ class PendingVolumeController extends Controller
         $oldUrl = old('url', $oldUrl);
         $oldHandle = old('handle', $oldHandle);
 
+        $filenamesFromMeta = false;
         if ($filenames = old('files')) {
             $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
         } elseif ($metadata) {
             $filenames = $metadata->getFiles()->pluck('name')->join(',');
+            $filenamesFromMeta = !empty($filenames);
         }
 
         return view('volumes.create.step2', [
@@ -95,6 +97,7 @@ class PendingVolumeController extends Controller
             'oldName' => $oldName,
             'oldUrl' => $oldUrl,
             'oldHandle' => $oldHandle,
+            'filenamesFromMeta' => $filenamesFromMeta,
         ]);
     }
 }

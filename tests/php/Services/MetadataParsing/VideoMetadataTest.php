@@ -7,6 +7,12 @@ use TestCase;
 
 class VideoMetadataTest extends TestCase
 {
+    public function testTrimName()
+    {
+        $data = new VideoMetadata(' filename');
+        $this->assertEquals('filename', $data->name);
+    }
+
     public function testIsEmpty()
     {
         $data = new VideoMetadata('filename');

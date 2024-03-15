@@ -2,7 +2,6 @@
 
 namespace Biigle;
 
-
 use Biigle\Traits\HasJsonAttributes;
 use Biigle\Traits\HasMetadataFile;
 use Cache;
@@ -10,7 +9,6 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
