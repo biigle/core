@@ -110,7 +110,7 @@ export default {
             }
         },
         shouldSnap() {
-            if (this.shouldSnap) {
+            if (this.shouldSnap && !this.isDrawingCircle && !this.isDrawingPoint) {
                 if (this.snapInteraction) {
                     this.endSnap();
                 }
