@@ -44,7 +44,7 @@
             <p class="text-center">
                 <button class="btn btn-default btn-lg" type="button" v-on:click="selectFile" :class="fileButtonClass"><i class="fa fa-file-alt"></i> Select a file</button>
             </p>
-            <input class="hidden" name="metadata_file" type="file" ref="metadataFileField" v-on:change="handleSelectedFile">
+            <input class="hidden" name="metadata_file" type="file" ref="metadataFileField" v-on:change="handleSelectedFile" accept="{{implode(',', $mimeTypes)}}">
             @if ($errors->has('metadata_file'))
                <p class="help-block">{{ $errors->first('metadata_file') }}</p>
             @endif

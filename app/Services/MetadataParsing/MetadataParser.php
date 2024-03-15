@@ -9,6 +9,13 @@ abstract class MetadataParser
 {
     public SplFileObject $fileObject;
 
+    /**
+     * Get the MIME types that files known by this parser can have.
+     *
+     * Example: ['text/csv']
+     */
+    abstract public static function getKnownMimeTypes(): array;
+
     public function __construct(public SplFileInfo $file)
     {
         //

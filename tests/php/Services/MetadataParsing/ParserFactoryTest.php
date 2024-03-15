@@ -48,9 +48,24 @@ class ParserFactoryTest extends TestCase
         $this->expectException(\Exception::class);
         ParserFactory::extend(TestParser2::class, 'image');
     }
+
+    public function testGetKnownMimeTypes()
+    {
+        $types = ParserFactory::getKnownMimeTypes('image');
+        $this->assertContains('text/csv', $types);
+        $types = ParserFactory::getKnownMimeTypes('video');
+        $this->assertContains('text/csv', $types);
+        $types = ParserFactory::getKnownMimeTypes('unknown');
+        $this->assertEquals([], $types);
+    }
 }
 
 class TestParser extends MetadataParser {
+    public static function getKnownMimeTypes(): array
+    {
+        return [];
+    }
+
     public function recognizesFile(): bool
     {
         return false;
@@ -63,13 +78,5 @@ class TestParser extends MetadataParser {
 }
 
 class TestParser2 {
-    public function recognizesFile(): bool
-    {
-        return false;
-    }
-
-    public function getMetadata(): VolumeMetadata
-    {
-        return new VolumeMetadata;
-    }
+    //
 }

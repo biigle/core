@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Project;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -33,9 +34,12 @@ class VolumeController extends Controller
 
         $mediaType = old('media_type', 'image');
 
+        $mimeTypes = ParserFactory::getKnownMimeTypes($mediaType);
+
         return view('volumes.create.step1', [
             'project' => $project,
             'mediaType' => $mediaType,
+            'mimeTypes' => $mimeTypes,
         ]);
     }
 
@@ -99,6 +103,7 @@ class VolumeController extends Controller
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
         $type = $volume->mediaType->name;
+        $mimeTypes = ParserFactory::getKnownMimeTypes($type);
 
         return view('volumes.edit', [
             'projects' => $projects,
@@ -107,6 +112,7 @@ class VolumeController extends Controller
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
             'type' => $type,
+            'mimeTypes' => $mimeTypes,
         ]);
     }
 

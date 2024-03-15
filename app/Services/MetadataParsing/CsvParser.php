@@ -30,6 +30,17 @@ abstract class CsvParser extends MetadataParser
     /**
      * {@inheritdoc}
      */
+    public static function getKnownMimeTypes(): array
+    {
+        return [
+            'text/plain',
+            'text/csv',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function recognizesFile(): bool
     {
         $file = $this->getCsvIterator();

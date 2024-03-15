@@ -29,11 +29,22 @@ class StorePendingVolume extends FormRequest
      */
     public function rules(): array
     {
-        return [
+
+        $rules = [
             'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
             // Allow a maximum of 500 MB.
-            'metadata_file' => 'file|max:500000',
+            'metadata_file' => [
+                'file',
+                'max:500000',
+            ],
         ];
+
+        if ($this->has('media_type')) {
+            $mimeTypes = ParserFactory::getKnownMimeTypes($this->input('media_type'));
+            $rules['metadata_file'][] = 'mimetypes:'.implode(',', $mimeTypes);
+        }
+
+        return $rules;
     }
 
     /**

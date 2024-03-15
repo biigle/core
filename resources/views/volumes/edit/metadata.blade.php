@@ -26,7 +26,7 @@
         </p>
         <form class="form" v-on:submit.prevent="submitFile">
             <div class="form-group">
-                <input class="hidden" ref="fileInput" type="file" name="file" v-on:change="handleFile">
+                <input class="hidden" ref="fileInput" type="file" name="file" v-on:change="handleFile" accept="{{implode(',', $mimeTypes)}}">
                 <button class="btn btn-default" type="submit" :disabled="loading">Upload file</button>
             </div>
         </form>
