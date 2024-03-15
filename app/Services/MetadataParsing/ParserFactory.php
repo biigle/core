@@ -2,8 +2,8 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-use SplFileInfo;
 use Exception;
+use SplFileInfo;
 
 class ParserFactory
 {

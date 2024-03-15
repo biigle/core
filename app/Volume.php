@@ -2,18 +2,15 @@
 
 namespace Biigle;
 
-use Biigle\Services\MetadataParsing\ParserFactory;
-use Biigle\Services\MetadataParsing\VolumeMetadata;
+
 use Biigle\Traits\HasJsonAttributes;
+use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use SplFileInfo;
+
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -21,7 +18,7 @@ use SplFileInfo;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes, HasFactory;
+    use HasJsonAttributes, HasFactory, HasMetadataFile;
 
     /**
      * Regular expression that matches the supported image file extensions.
@@ -76,6 +73,11 @@ class Volume extends Model
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
+
+    protected static function booted(): void
+    {
+        static::$metadataFileDisk = config('volumes.metadata_storage_disk');
+    }
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -455,60 +457,6 @@ class Volume extends Model
     public function isVideoVolume()
     {
         return $this->media_type_id === MediaType::videoId();
-    }
-
-    public function hasMetadata(): bool
-    {
-        return !is_null($this->metadata_file_path);
-    }
-
-    public function saveMetadata(UploadedFile $file): void
-    {
-        $disk = config('volumes.metadata_storage_disk');
-        $this->metadata_file_path = $this->id;
-        if ($extension = $file->getClientOriginalExtension()) {
-            $this->metadata_file_path .= '.'.$extension;
-        }
-        $file->storeAs('', $this->metadata_file_path, $disk);
-        $this->save();
-    }
-
-    public function getMetadata(): ?VolumeMetadata
-    {
-        if (!$this->hasMetadata()) {
-            return null;
-        }
-
-        $tmpPath = tempnam(sys_get_temp_dir(), 'volume-metadata');
-        try {
-            $from = Storage::disk(config('volumes.metadata_storage_disk'))
-                ->readStream($this->metadata_file_path);
-            $to = fopen($tmpPath, 'w');
-            stream_copy_to_stream($from, $to);
-            $type = $this->isImageVolume() ? 'image' : 'video';
-            $parser = ParserFactory::getParserForFile(new SplFileInfo($tmpPath), $type);
-            if (is_null($parser)) {
-                return null;
-            }
-
-            return $parser->getMetadata();
-        } finally {
-            fclose($to);
-            File::delete($tmpPath);
-        }
-    }
-
-    /**
-     * @param boolean $noUpdate Do not set metadata_file_path to null.
-     */
-    public function deleteMetadata($noUpdate = false): void
-    {
-        if ($this->hasMetadata()) {
-            Storage::disk(config('volumes.metadata_storage_disk'))->delete($this->metadata_file_path);
-            if (!$noUpdate) {
-                $this->update(['metadata_file_path' => null]);
-            }
-        }
     }
 
     /**

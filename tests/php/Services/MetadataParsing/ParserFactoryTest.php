@@ -60,7 +60,8 @@ class ParserFactoryTest extends TestCase
     }
 }
 
-class TestParser extends MetadataParser {
+class TestParser extends MetadataParser
+{
     public static function getKnownMimeTypes(): array
     {
         return [];
@@ -77,6 +78,7 @@ class TestParser extends MetadataParser {
     }
 }
 
-class TestParser2 {
+class TestParser2
+{
     //
 }

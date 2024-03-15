@@ -58,4 +58,15 @@ class PendingVolumeTest extends ModelTestCase
         $this->model->delete();
         $disk->assertMissing($this->model->id.'.csv');
     }
+
+    public function testGetMetadata()
+    {
+        $this->assertNull($this->model->getMetadata());
+        $disk = Storage::fake('pending-metadata');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $disk->put($this->model->metadata_file_path, "filename,area\n1.jpg,2.5");
+        $metadata = $this->model->getMetadata();
+        $fileMeta = $metadata->getFile('1.jpg');
+        $this->assertEquals(2.5, $fileMeta->area);
+    }
 }
