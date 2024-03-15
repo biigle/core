@@ -4,9 +4,9 @@
 
 @push('scripts')
     <script type="text/javascript">
-        biigle.$declare('volumes.name', '{!! old('name') !!}');
-        biigle.$declare('volumes.url', '{!! old('url') !!}');
-        biigle.$declare('volumes.handle', `{!! old('handle') !!}`);
+        biigle.$declare('volumes.name', '{!! $oldName !!}');
+        biigle.$declare('volumes.url', '{!! $oldUrl !!}');
+        biigle.$declare('volumes.handle', `{!! $oldHandle !!}`);
         biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
         biigle.$declare('volumes.filenames', '{{ $filenames }}');
         biigle.$declare('volumes.disks', {!! $disks->keys() !!});
@@ -31,7 +31,7 @@
                     Choose a volume name
                 </legend>
                 <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                    <input type="text" class="form-control" name="name" id="name" v-model="name" placeholder="My new volume" ref="nameInput" required autofocus>
+                    <input type="text" class="form-control" name="name" id="name" v-model="name" placeholder="My new volume" ref="nameInput" required autofocus value="{{$oldName}}">
                     @if ($errors->has('name'))
                        <span class="help-block">{{ $errors->first('name') }}</span>
                     @endif
@@ -56,7 +56,8 @@
                         @endif
                         @unless ($offlineMode)
                             <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="remoteButtonClass" ><i class="fa fa-link"></i> Remote location</button>
+                                <button v-if="!initialized" type="button" class="btn btn-info active"><i class="fa fa-link"></i> Remote location</button>
+                                <button v-cloak type="button" class="btn btn-default" title="Remote location" v-on:click="selectRemoteFileSource" v-bind:class="remoteButtonClass" ><i class="fa fa-link"></i> Remote location</button>
                             </div>
                         @endunless
                         @if ($userDisk)
@@ -96,7 +97,7 @@
                 <div v-if="isRemoteFileSource">
                     <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
                         <label for="url">Remote location URL <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}" target="_blank" title="Learn more about remote volumes"><i class="fa fa-question-circle"></i></a></label>
-                        <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url" value="{{old('url')}}">
+                        <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url" value="{{$oldUrl}}">
                         @if ($errors->has('url'))
                            <span class="help-block">{{ $errors->first('url') }}</span>
                         @endif
@@ -113,12 +114,12 @@
                      <div class="form-group{{ $errors->has('files') ? ' has-error' : '' }}">
                         <label for="files">Volume files</label>
                         @if ($isImageMediaType)
-                            <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3"></textarea>
+                            <textarea class="form-control" name="files" id="files" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames" rows="3">{{$filenames}}</textarea>
                             <p class="help-block">
                                The filenames of the images in the volume directory formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG, WebP and TIFF.
                             </p>
                         @else
-                            <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3"></textarea>
+                            <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3">{{$filenames}}</textarea>
                             <p class="help-block">
                                The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
                             </p>
@@ -195,7 +196,7 @@
                  </legend>
 
                  <div class="form-group{{ $errors->has('handle') ? ' has-error' : '' }}">
-                    <input type="text" class="form-control" name="handle" id="handle" v-model="handle" placeholder="10.3389/fmars.2017.00083">
+                    <input type="text" class="form-control" name="handle" id="handle" v-model="handle" placeholder="10.3389/fmars.2017.00083" value="{{$oldHandle}}">
                     <span class="help-block">
                         A <a href="https://handle.net">handle</a> or <a href="https://www.doi.org/">DOI</a> to be associated with the volume.
                     </span>
@@ -208,7 +209,8 @@
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
                 <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard data and return to the previous step">Cancel</button>
-                <input type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
+                <button v-if="!initialized" type="button" class="btn btn-success pull-right" disabled>Create</button>
+                <input v-cloak type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
             </div>
         </form>
         <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

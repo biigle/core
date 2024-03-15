@@ -26,10 +26,13 @@ export default {
             fileSource: FILE_SOURCE.REMOTE,
             handle: '',
             imageDiskCache: {},
+            initialized: false,
             initializingBrowser: false,
             loadingBrowser: false,
             mediaType: MEDIA_TYPE.IMAGE,
             name: '',
+            remoteFilenames: '',
+            remoteUrl: '',
             selectedDiskRoot: null,
             storageDisk: null,
             url: '',
@@ -168,11 +171,18 @@ export default {
                 this.fileSource = FILE_SOURCE.REMOTE;
                 this.storageDisk = null;
                 this.selectedDiskRoot = null;
-                this.url = '';
-                this.filenames = '';
+                this.url = this.remoteUrl;
+                this.filenames = this.remoteFilenames;
             }
         },
         selectStorageDisk(disk) {
+            if (!this.storageDisk) {
+                // Make a backup so the remote filenames and URL can be restored if the
+                // user switches back from a storage disk to a remote source.
+                this.remoteFilenames = this.filenames;
+                this.remoteUrl = this.url;
+            }
+
             if (this.storageDisk !== disk) {
                 if (this.disks.includes(disk)) {
                     this.fileSource = FILE_SOURCE.DISK;
@@ -372,6 +382,8 @@ export default {
     mounted() {
         // Vue disables the autofocus attribute somehow, so set focus manually here.
         this.$refs.nameInput.focus();
+        // Used to mask some flashing elements on pageload.
+        this.initialized = true;
     },
 };
 </script>

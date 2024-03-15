@@ -47,7 +47,6 @@ class PendingVolumeController extends Controller
             $disks = $disks->merge($userDisks);
         }
 
-        $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
         $offlineMode = config('biigle.offline_mode');
 
         if (class_exists(UserStorageServiceProvider::class)) {
@@ -61,6 +60,27 @@ class PendingVolumeController extends Controller
 
         $restored = session()->has('restored');
 
+        $metadata = null;
+        $oldName = '';
+        $oldUrl = '';
+        $oldHandle = '';
+        if ($pv->hasMetadata()) {
+            $metadata = $pv->getMetadata();
+            $oldName = $metadata->name;
+            $oldUrl = $metadata->url;
+            $oldHandle = $metadata->handle;
+        }
+
+        $oldName = old('name', $oldName);
+        $oldUrl = old('url', $oldUrl);
+        $oldHandle = old('handle', $oldHandle);
+
+        if ($filenames = old('files')) {
+            $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
+        } elseif ($metadata) {
+            $filenames = $metadata->getFiles()->pluck('name')->join(',');
+        }
+
         return view('volumes.create.step2', [
             'pv' => $pv,
             'project' => $pv->project,
@@ -72,6 +92,9 @@ class PendingVolumeController extends Controller
             'mediaType' => $mediaType,
             'isImageMediaType' => $isImageMediaType,
             'restored' => $restored,
+            'oldName' => $oldName,
+            'oldUrl' => $oldUrl,
+            'oldHandle' => $oldHandle,
         ]);
     }
 }
