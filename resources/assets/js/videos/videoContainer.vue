@@ -68,6 +68,7 @@ export default {
                 showMousePosition: false,
                 playbackRate: 1.0,
                 showProgressIndicator: true,
+                showThumbnailPreview: true,
             },
             openTab: '',
             urlParams: {

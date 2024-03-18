@@ -2,6 +2,8 @@
     <div
         class="video-progress"
         @click="emitSeek"
+        @mousemove="emitMousemove" 
+        @mouseout="emitMouseout"
         >
             <tick
                 v-for="time in ticks"
@@ -31,6 +33,7 @@ export default {
     data() {
         return {
             tickSpacing: 100,
+            lastClientX: 0,
         };
     },
     computed: {
@@ -54,6 +57,15 @@ export default {
     methods: {
         emitSeek(e) {
             this.$emit('seek', (e.clientX - e.target.getBoundingClientRect().left) / e.target.clientWidth * this.duration);
+        },
+        emitMousemove(e) {
+            if (e.clientX !== this.lastClientX) {
+                this.lastClientX = e.clientX;
+                this.$emit('mousemove', e.clientX);
+            }
+        },
+        emitMouseout() {
+            this.$emit('mouseout');
         },
     },
 };

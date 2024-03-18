@@ -10,10 +10,19 @@
                 :style="scrollerStyle"
                 @mousemove="handleUpdateHoverTime"
                 >
+                    <thumbnail-preview
+                        :duration="duration"
+                        :hoverTime="hoverTime"
+                        :clientMouseX="clientMouseX"
+                        :scrollstripTop="scrollstripTop"
+                        v-if="showThumb && showThumbPreview"
+                        ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
                         :element-width="elementWidth"
                         @seek="emitSeek"
+                        @mousemove="handleVideoProgressMousemove"
+                        @mouseout="hideThumbnailPreview"
                         ></video-progress>
                     <div class="annotation-tracks-wrapper">
                         <annotation-tracks
@@ -52,11 +61,13 @@ import AnnotationTracks from './annotationTracks';
 import Events from '../../core/events';
 import Keyboard from '../../core/keyboard';
 import VideoProgress from './videoProgress';
+import ThumbnailPreview from './thumbnailPreview';
 
 export default {
     components: {
         videoProgress: VideoProgress,
         annotationTracks: AnnotationTracks,
+        thumbnailPreview: ThumbnailPreview,
     },
     props: {
         tracks: {
@@ -77,6 +88,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        showThumbnailPreview: {
+            type: Boolean,
+            default: true
+        }
     },
     data() {
         return {
@@ -91,6 +106,10 @@ export default {
             hoverTime: 0,
             hasOverflowTop: false,
             hasOverflowBottom: false,
+            // thumbnail preview
+            clientMouseX: 0,
+            scrollstripTop: 0,
+            showThumb: false,
         };
     },
     computed: {
@@ -137,6 +156,9 @@ export default {
         hasOverflowRight() {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
+        showThumbPreview() {
+            return this.showThumbnailPreview && this.showThumb;
+        }
     },
     methods: {
         updateInitialElementWidth() {
@@ -209,6 +231,14 @@ export default {
             this.hoverTime = 0;
             this.hasOverflowTop = false;
             this.hasOverflowBottom = false;
+        },
+        handleVideoProgressMousemove(clientX) {
+            this.showThumb = true;
+            this.clientMouseX = clientX;
+            this.scrollstripTop = this.$refs.scroller.getBoundingClientRect().top;
+        },
+        hideThumbnailPreview() {
+            this.showThumb = false;
         },
     },
     watch: {
