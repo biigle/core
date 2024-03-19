@@ -117,6 +117,8 @@ export default {
 
                 if (this.drawsOnImage) {
                     this.startSnap();
+                } else {
+                    this.shouldSnap = false;
                 }
             }
         }
