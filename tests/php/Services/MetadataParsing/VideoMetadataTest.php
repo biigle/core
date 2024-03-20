@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
-use Biigle\Services\MetadataParsing\AnnotationLabel;
 use Biigle\Services\MetadataParsing\Annotator;
 use Biigle\Services\MetadataParsing\Label;
+use Biigle\Services\MetadataParsing\LabelAndAnnotator;
 use Biigle\Services\MetadataParsing\VideoAnnotation;
 use Biigle\Services\MetadataParsing\VideoMetadata;
 use Biigle\Shape;
@@ -194,16 +194,28 @@ class VideoMetadataTest extends TestCase
         $data = new VideoMetadata('filename');
         $label = new Label(123, 'my label');
         $annotator = new Annotator(321, 'joe user');
-        $al = new AnnotationLabel($label, $annotator);
+        $la = new LabelAndAnnotator($label, $annotator);
         $annotation = new VideoAnnotation(
             shape: Shape::point(),
             points: [10, 10],
-            labels: [$al],
+            labels: [$la],
             frames: [0],
         );
 
         $this->assertFalse($data->hasAnnotations());
         $data->addAnnotation($annotation);
         $this->assertTrue($data->hasAnnotations());
+    }
+
+    public function testLabels()
+    {
+        $data = new VideoMetadata('filename');
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+
+        $this->assertFalse($data->hasFileLabels());
+        $data->addFileLabel($la);
+        $this->assertTrue($data->hasFileLabels());
     }
 }

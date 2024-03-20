@@ -46,4 +46,26 @@ class VolumeMetadata
 
         return true;
     }
+
+    public function hasAnnotations(): bool
+    {
+        foreach ($this->files as $file) {
+            if ($file->hasAnnotations()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasFileLabels(): bool
+    {
+        foreach ($this->files as $file) {
+            if ($file->hasFileLabels()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

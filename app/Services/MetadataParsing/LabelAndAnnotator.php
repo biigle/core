@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class AnnotationLabel
+class LabelAndAnnotator
 {
     public function __construct(
         public Label $label,

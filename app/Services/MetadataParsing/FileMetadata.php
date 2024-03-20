@@ -9,6 +9,13 @@ class FileMetadata
      */
     public array $annotations = [];
 
+    /**
+     * The labels directly attached to the file.
+     *
+     * @var array<LabelAndAnnotator>
+     */
+    public array $labels = [];
+
     public function __construct(public string $name)
     {
         $this->name = trim($this->name);
@@ -40,5 +47,20 @@ class FileMetadata
     public function hasAnnotations(): bool
     {
         return !empty($this->annotations);
+    }
+
+    public function addFileLabel(LabelAndAnnotator $la): void
+    {
+        $this->labels[] = $la;
+    }
+
+    public function getFileLabels(): array
+    {
+        return $this->labels;
+    }
+
+    public function hasFileLabels(): bool
+    {
+        return !empty($this->labels);
     }
 }
