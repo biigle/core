@@ -80,7 +80,7 @@ class PendingVolumeController extends Controller
      * @apiName UpdatePendingVolume
      * @apiPermission projectAdminAndPendingVolumeOwner
      *
-     * @apiDescription When this endpoint is called, the new volume is already created. Then there are two ways forward: 1) The user wants to import annotations and/or file labels. Then the pending volume is kept and used for the next steps. 2) Otherwise the pending volume will be deleted here. In both cases the endpoint returns the pending volume (even if it was deleted) which was updated with the new volume ID.
+     * @apiDescription When this endpoint is called, the new volume is already created. Then there are two ways forward: 1) The user wants to import annotations and/or file labels. Then the pending volume is kept and used for the next steps (see the `import_*` attributes). Continue with (#Volumes:UpdatePendingVolumeAnnotationLabels) in this case. 2) Otherwise the pending volume will be deleted here. In both cases the endpoint returns the pending volume (even if it was deleted) which was updated with the new volume ID.
      *
      * @apiParam {Number} id The pending volume ID.
      *
@@ -89,7 +89,8 @@ class PendingVolumeController extends Controller
      * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used. This can also be a plain string of comma-separated filenames.
      *
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
-     * @apiParam (Optional attributes) {Boolean} keep Set to `true` to keep the pending volume. This is required if you want to continue with the annotation/file label import. Otherwise the pending volume will be deleted after this request.
+     * @apiParam (Optional attributes) {Boolean} import_annotations Set to `true` to keep the pending volume for annotation import. Otherwise the pending volume will be deleted after this request.
+     * @apiParam (Optional attributes) {Boolean} import_file_labels Set to `true` to keep the pending volume for file label import. Otherwise the pending volume will be deleted after this request.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -99,7 +100,9 @@ class PendingVolumeController extends Controller
      *    "media_type_id": 1,
      *    "user_id": 2,
      *    "project_id": 3,
-     *    "volume_id": 4
+     *    "volume_id": 4,
+     *    "import_annotations": true,
+     *    "import_file_labels": false
      * }
      *
      */
@@ -142,14 +145,16 @@ class PendingVolumeController extends Controller
             return $volume;
         });
 
-        $request->pendingVolume->volume_id = $volume->id;
-
-        if ($request->input('keep', false)) {
-            $request->pendingVolume->save();
+        if ($request->input('import_annotations') || $request->input('import_file_labels')) {
+            $request->pendingVolume->update([
+                'volume_id' => $volume->id,
+                'import_annotations' => $request->input('import_annotations', false),
+                'import_file_labels' => $request->input('import_file_labels', false),
+            ]);
         } else {
+            $request->pendingVolume->volume_id = $volume->id;
             $request->pendingVolume->delete();
         }
-
 
         if ($this->isAutomatedRequest()) {
             return $request->pendingVolume;

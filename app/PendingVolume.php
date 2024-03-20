@@ -22,6 +22,8 @@ class PendingVolume extends Model
         'project_id',
         'metadata_file_path',
         'volume_id',
+        'import_annotations',
+        'import_file_labels',
     ];
 
     /**

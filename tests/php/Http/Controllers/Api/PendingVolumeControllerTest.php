@@ -306,7 +306,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $pendingMetaDisk->assertMissing($pv->metadata_file_path);
     }
 
-    public function testUpdateKeep()
+    public function testUpdateImportAnnotations()
     {
         $pendingMetaDisk = Storage::fake('pending-metadata');
         $fileDisk = Storage::fake('test');
@@ -329,18 +329,47 @@ class PendingVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'files' => ['1.jpg'],
-            'keep' => true,
+            'import_annotations' => true,
         ])->assertSuccessful();
 
         $pv = $pv->fresh();
         $this->assertNotNull($pv);
         $volume = $this->project()->volumes()->first();
         $this->assertEquals($volume->id, $pv->volume_id);
+        $this->assertTrue($pv->import_annotations);
     }
 
-    public function testUpdateImagesWithImageLabelImport()
+    public function testUpdateImportFileLabels()
     {
-        $this->markTestIncomplete();
+        $pendingMetaDisk = Storage::fake('pending-metadata');
+        $fileDisk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+        $pendingMetaDisk->put('mymeta.csv', 'abc');
+
+        $fileDisk->makeDirectory('images');
+        $fileDisk->put('images/1.jpg', 'abc');
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => ['1.jpg'],
+            'import_file_labels' => true,
+        ])->assertSuccessful();
+
+        $pv = $pv->fresh();
+        $this->assertNotNull($pv);
+        $volume = $this->project()->volumes()->first();
+        $this->assertEquals($volume->id, $pv->volume_id);
+        $this->assertTrue($pv->import_file_labels);
     }
 
     public function testUpdateFromUIWithoutImport()

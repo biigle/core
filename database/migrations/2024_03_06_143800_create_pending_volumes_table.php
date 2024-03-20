@@ -37,6 +37,9 @@ return new class extends Migration {
             // Path of the file in the pending_metadata_storage_disk.
             $table->string('metadata_file_path', 256)->nullable();
 
+            $table->boolean('import_annotations')->default(false);
+            $table->boolean('import_file_labels')->default(false);
+
             // A user is only allowed to create one pending volume at a time for a
             // project.
             $table->unique(['user_id', 'project_id']);
