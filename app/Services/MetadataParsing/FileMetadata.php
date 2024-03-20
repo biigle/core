@@ -4,6 +4,11 @@ namespace Biigle\Services\MetadataParsing;
 
 class FileMetadata
 {
+    /**
+     * @var array<ImageAnnotation>
+     */
+    public array $annotations = [];
+
     public function __construct(public string $name)
     {
         $this->name = trim($this->name);
@@ -20,5 +25,20 @@ class FileMetadata
     public function getInsertData(): array
     {
         return [];
+    }
+
+    public function addAnnotation(Annotation $annotation): void
+    {
+        $this->annotations[] = $annotation;
+    }
+
+    public function getAnnotations(): array
+    {
+        return $this->annotations;
+    }
+
+    public function hasAnnotations(): bool
+    {
+        return !empty($this->annotations);
     }
 }

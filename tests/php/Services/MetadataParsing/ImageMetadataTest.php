@@ -2,7 +2,12 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
+use Biigle\Services\MetadataParsing\AnnotationLabel;
+use Biigle\Services\MetadataParsing\Annotator;
+use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
+use Biigle\Services\MetadataParsing\Label;
+use Biigle\Shape;
 use TestCase;
 
 class ImageMetadataTest extends TestCase
@@ -51,5 +56,22 @@ class ImageMetadataTest extends TestCase
         ];
 
         $this->assertEquals($expect, $data->getInsertData());
+    }
+
+    public function testAnnotations()
+    {
+        $data = new ImageMetadata('filename');
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $al = new AnnotationLabel($label, $annotator);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$al],
+        );
+
+        $this->assertFalse($data->hasAnnotations());
+        $data->addAnnotation($annotation);
+        $this->assertTrue($data->hasAnnotations());
     }
 }
