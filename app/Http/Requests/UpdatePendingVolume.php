@@ -32,6 +32,7 @@ class UpdatePendingVolume extends FormRequest
             'url' => ['required', 'string', 'max:256', new VolumeUrl],
             'files' => ['required', 'array', 'min:1'],
             'handle' => ['nullable', 'max:256', new Handle],
+            'keep' => 'bool',
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
             // number of files. This is checked in the VolumeFiles rule below.

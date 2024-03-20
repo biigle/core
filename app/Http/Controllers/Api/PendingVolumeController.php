@@ -89,6 +89,7 @@ class PendingVolumeController extends Controller
      * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used. This can also be a plain string of comma-separated filenames.
      *
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional attributes) {Boolean} keep Set to `true` to keep the pending volume. This is required if you want to continue with the annotation/file label import. Otherwise the pending volume will be deleted after this request.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -141,11 +142,14 @@ class PendingVolumeController extends Controller
             return $volume;
         });
 
-        // TODO: Implement annotation/file label import where this must be saved in the
-        // DB.
         $request->pendingVolume->volume_id = $volume->id;
 
-        $request->pendingVolume->delete();
+        if ($request->input('keep', false)) {
+            $request->pendingVolume->save();
+        } else {
+            $request->pendingVolume->delete();
+        }
+
 
         if ($this->isAutomatedRequest()) {
             return $request->pendingVolume;
