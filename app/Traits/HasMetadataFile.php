@@ -5,6 +5,7 @@ namespace Biigle\Traits;
 use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Cache;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -38,23 +39,27 @@ trait HasMetadataFile
             return null;
         }
 
-        $tmpPath = tempnam(sys_get_temp_dir(), 'metadata');
-        try {
-            $from = Storage::disk(static::$metadataFileDisk)
-                ->readStream($this->metadata_file_path);
-            $to = fopen($tmpPath, 'w');
-            stream_copy_to_stream($from, $to);
-            $type = ($this->media_type_id === MediaType::imageId()) ? 'image' : 'video';
-            $parser = ParserFactory::getParserForFile(new SplFileInfo($tmpPath), $type);
-            if (is_null($parser)) {
-                return null;
-            }
+        $disk = static::$metadataFileDisk;
+        $key = "metadata-{$disk}-{$this->metadata_file_path}";
 
-            return $parser->getMetadata();
-        } finally {
-            fclose($to);
-            File::delete($tmpPath);
-        }
+        return Cache::store('array')->remember($key, 60, function () use ($disk) {
+            $tmpPath = tempnam(sys_get_temp_dir(), 'metadata');
+            try {
+                $from = Storage::disk($disk)->readStream($this->metadata_file_path);
+                $to = fopen($tmpPath, 'w');
+                stream_copy_to_stream($from, $to);
+                $type = ($this->media_type_id === MediaType::imageId()) ? 'image' : 'video';
+                $parser = ParserFactory::getParserForFile(new SplFileInfo($tmpPath), $type);
+                if (is_null($parser)) {
+                    return null;
+                }
+
+                return $parser->getMetadata();
+            } finally {
+                fclose($to);
+                File::delete($tmpPath);
+            }
+        });
     }
 
     /**
