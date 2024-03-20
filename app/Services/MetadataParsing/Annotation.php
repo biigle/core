@@ -15,8 +15,7 @@ class Annotation
         public Shape $shape,
         public array $points,
         public array $labels,
-    )
-    {
+    ) {
         //
     }
 }

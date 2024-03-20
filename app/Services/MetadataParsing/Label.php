@@ -17,8 +17,7 @@ class Label
         public ?string $color = null,
         public ?string $uuid = null,
         public ?string $labelTreeUuid = null,
-    )
-    {
+    ) {
         //
     }
 }

@@ -17,8 +17,7 @@ class VideoAnnotation extends Annotation
         public array $points,
         public array $labels,
         public array $frames,
-    )
-    {
+    ) {
         //
     }
 }
