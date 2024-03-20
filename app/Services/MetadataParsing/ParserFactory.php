@@ -16,11 +16,17 @@ class ParserFactory
         ],
     ];
 
+    public static MetadataParser $mockParser;
+
     /**
      * Get the first parser that recognizes the file.
      */
     public static function getParserForFile(SplFileInfo $file, string $type): ?MetadataParser
     {
+        if (isset(static::$mockParser)) {
+            return static::$mockParser;
+        }
+
         $parsers = self::$parsers[$type] ?? [];
         foreach ($parsers as $parserClass) {
             $parser = new $parserClass($file);
@@ -55,5 +61,14 @@ class ParserFactory
         }
 
         return $mimes;
+    }
+
+    /**
+     * Set a mock parser that will be returned every time getParserForFile() is called.
+     * Use this for testing.
+     */
+    public static function mock(MetadataParser $mockParser): void
+    {
+        static::$mockParser = $mockParser;
     }
 }

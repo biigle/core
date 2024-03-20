@@ -27,7 +27,7 @@ class VolumeMetadataTest extends TestCase
 
     public function testAddGetFiles()
     {
-        $metadata = new VolumeMetadata();
+        $metadata = new VolumeMetadata;
         $file = new FileMetadata('filename');
         $metadata->addFile($file);
         $this->assertEquals($file, $metadata->getFiles()[0]);
@@ -37,7 +37,7 @@ class VolumeMetadataTest extends TestCase
 
     public function testGetFile()
     {
-        $metadata = new VolumeMetadata();
+        $metadata = new VolumeMetadata;
         $this->assertNull($metadata->getFile('filename'));
         $file = new FileMetadata('filename');
         $metadata->addFile($file);
@@ -46,7 +46,7 @@ class VolumeMetadataTest extends TestCase
 
     public function testIsEmpty()
     {
-        $metadata = new VolumeMetadata();
+        $metadata = new VolumeMetadata;
         $this->assertTrue($metadata->isEmpty());
         $file = new ImageMetadata('filename');
         $metadata->addFile($file);
@@ -58,7 +58,7 @@ class VolumeMetadataTest extends TestCase
 
     public function testHasAnnotations()
     {
-        $metadata = new VolumeMetadata();
+        $metadata = new VolumeMetadata;
         $this->assertFalse($metadata->hasAnnotations());
         $file = new ImageMetadata('filename');
         $metadata->addFile($file);
@@ -78,7 +78,7 @@ class VolumeMetadataTest extends TestCase
 
     public function testHasFileLabels()
     {
-        $metadata = new VolumeMetadata();
+        $metadata = new VolumeMetadata;
         $this->assertFalse($metadata->hasFileLabels());
         $file = new ImageMetadata('filename');
         $metadata->addFile($file);

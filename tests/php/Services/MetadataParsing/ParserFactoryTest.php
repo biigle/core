@@ -58,6 +58,15 @@ class ParserFactoryTest extends TestCase
         $types = ParserFactory::getKnownMimeTypes('unknown');
         $this->assertEquals([], $types);
     }
+
+    public function testMock()
+    {
+        $parser = new TestParser;
+        ParserFactory::mock($parser);
+        $file = new File(__DIR__."/../../../files/image-metadata.csv");
+        $p = ParserFactory::getParserForFile($file, 'image');
+        $this->assertSame($p, $parser);
+    }
 }
 
 class TestParser extends MetadataParser
@@ -65,6 +74,11 @@ class TestParser extends MetadataParser
     public static function getKnownMimeTypes(): array
     {
         return [];
+    }
+
+    public function __construct()
+    {
+        parent::__construct(new \SplFileInfo('tmp'));
     }
 
     public function recognizesFile(): bool
