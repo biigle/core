@@ -26,6 +26,7 @@ class PendingVolume extends Model
         'import_file_labels',
         'only_annotation_labels',
         'only_file_labels',
+        'label_map',
     ];
 
     /**
@@ -45,6 +46,7 @@ class PendingVolume extends Model
     protected $casts = [
         'only_annotation_labels' => 'array',
         'only_file_labels' => 'array',
+        'label_map' => 'array',
     ];
 
     protected static function booted(): void

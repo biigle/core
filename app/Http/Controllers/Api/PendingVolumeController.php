@@ -6,6 +6,7 @@ use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
 use Biigle\Http\Requests\UpdatePendingVolumeFileLabels;
+use Biigle\Http\Requests\UpdatePendingVolumeLabelMap;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Volume;
@@ -238,6 +239,45 @@ class PendingVolumeController extends Controller
     {
         $request->pendingVolume->update([
             'only_file_labels' => $request->input('labels'),
+        ]);
+
+        return $request->pendingVolume;
+    }
+
+    /**
+     * Match metadata labels with database labels.
+     *
+     * @api {put} pending-volumes/:id/label-map Match metadata labels with database labels
+     * @apiGroup Volumes
+     * @apiName UpdatePendingVolumeLabels
+     * @apiPermission projectAdminAndPendingVolumeOwner
+     *
+     * @apiDescription If this endpoint is not used to set a map of metadata label IDs to database label IDs, the import will attempt to use the metadata label UUIDs to automatically find matches. Continue with (#Volumes:UpdatePendingVolumeUsers).
+     *
+     * @apiParam {Number} id The pending volume ID.
+     *
+     * @apiParam (Required attributes) {object} label_map Map of metadata label IDs as keys and database label IDs as values.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 2,
+     *    "created_at": "2015-02-19 16:10:17",
+     *    "updated_at": "2015-02-19 16:10:17",
+     *    "media_type_id": 1,
+     *    "user_id": 2,
+     *    "project_id": 3,
+     *    "volume_id": 4,
+     *    "import_annotations": true,
+     *    "import_file_labels": true,
+     *    "only_annotation_labels": [123],
+     *    "only_file_labels": [456],
+     *    "label_map": {"123": 987, "456": 654}
+     * }
+     */
+    public function updateLabelMap(UpdatePendingVolumeLabelMap $request)
+    {
+        $request->pendingVolume->update([
+            'label_map' => $request->input('label_map'),
         ]);
 
         return $request->pendingVolume;
