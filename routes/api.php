@@ -152,10 +152,10 @@ $router->resource('pending-volumes', 'PendingVolumeController', [
     'parameters' => ['pending-volumes' => 'id'],
 ]);
 
-$router->post('pending-volumes/{id}/annotation-labels', 'PendingVolumeImportController@storeAnnotationLabels');
-$router->post('pending-volumes/{id}/file-labels', 'PendingVolumeImportController@storeFileLabels');
-$router->post('pending-volumes/{id}/label-map', 'PendingVolumeImportController@storeLabelMap');
-$router->post('pending-volumes/{id}/user-map', 'PendingVolumeImportController@storeUserMap');
+$router->put('pending-volumes/{id}/annotation-labels', 'PendingVolumeImportController@updateAnnotationLabels');
+$router->put('pending-volumes/{id}/file-labels', 'PendingVolumeImportController@updateFileLabels');
+$router->put('pending-volumes/{id}/label-map', 'PendingVolumeImportController@updateLabelMap');
+$router->put('pending-volumes/{id}/user-map', 'PendingVolumeImportController@updateUserMap');
 
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],

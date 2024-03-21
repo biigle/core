@@ -13,7 +13,7 @@ class PendingVolumeImportController extends Controller
     /**
      * Choose annotation labels for import.
      *
-     * @api {post} pending-volumes/:id/annotation-labels Choose annotation labels for import
+     * @api {put} pending-volumes/:id/annotation-labels Choose annotation labels for import
      * @apiGroup Volumes
      * @apiName UpdatePendingVolumeAnnotationLabels
      * @apiPermission projectAdminAndPendingVolumeOwner
@@ -38,7 +38,7 @@ class PendingVolumeImportController extends Controller
      *    "only_annotation_labels": [123]
      * }
      */
-    public function storeAnnotationLabels(UpdatePendingVolumeAnnotationLabels $request)
+    public function updateAnnotationLabels(UpdatePendingVolumeAnnotationLabels $request)
     {
         $request->pendingVolume->update([
             'only_annotation_labels' => $request->input('labels'),
@@ -50,7 +50,7 @@ class PendingVolumeImportController extends Controller
     /**
      * Choose file labels for import.
      *
-     * @api {post} pending-volumes/:id/file-labels Choose file labels for import
+     * @api {put} pending-volumes/:id/file-labels Choose file labels for import
      * @apiGroup Volumes
      * @apiName UpdatePendingVolumeFileLabels
      * @apiPermission projectAdminAndPendingVolumeOwner
@@ -76,7 +76,7 @@ class PendingVolumeImportController extends Controller
      *    "only_file_labels": [456]
      * }
      */
-    public function storeFileLabels(UpdatePendingVolumeFileLabels $request)
+    public function updateFileLabels(UpdatePendingVolumeFileLabels $request)
     {
         $request->pendingVolume->update([
             'only_file_labels' => $request->input('labels'),
@@ -88,7 +88,7 @@ class PendingVolumeImportController extends Controller
     /**
      * Match metadata labels with database labels.
      *
-     * @api {post} pending-volumes/:id/label-map Match metadata labels with database labels
+     * @api {put} pending-volumes/:id/label-map Match metadata labels with database labels
      * @apiGroup Volumes
      * @apiName UpdatePendingVolumeLabels
      * @apiPermission projectAdminAndPendingVolumeOwner
@@ -115,7 +115,7 @@ class PendingVolumeImportController extends Controller
      *    "label_map": {"123": 987, "456": 654}
      * }
      */
-    public function storeLabelMap(UpdatePendingVolumeLabelMap $request)
+    public function updateLabelMap(UpdatePendingVolumeLabelMap $request)
     {
         $request->pendingVolume->update([
             'label_map' => $request->input('label_map'),
@@ -127,7 +127,7 @@ class PendingVolumeImportController extends Controller
     /**
      * Match metadata users with database users.
      *
-     * @api {post} pending-volumes/:id/user-map Match metadata users with database users
+     * @api {put} pending-volumes/:id/user-map Match metadata users with database users
      * @apiGroup Volumes
      * @apiName UpdatePendingVolumeUsers
      * @apiPermission projectAdminAndPendingVolumeOwner
@@ -155,7 +155,7 @@ class PendingVolumeImportController extends Controller
      *    "user_map": {"135": 246, "975": 864}
      * }
      */
-    public function storeUserMap(UpdatePendingVolumeUserMap $request)
+    public function updateUserMap(UpdatePendingVolumeUserMap $request)
     {
         $request->pendingVolume->update([
             'user_map' => $request->input('user_map'),

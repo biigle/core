@@ -47,33 +47,33 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beExpert();
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/annotation-labels")
+            ->putJson("/api/v1/pending-volumes/{$id}/annotation-labels")
             ->assertStatus(403);
 
         $this->beAdmin();
         // Label list required.
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/annotation-labels")
+            ->putJson("/api/v1/pending-volumes/{$id}/annotation-labels")
             ->assertStatus(422);
 
         // Label list must be filled.
-        $this->postJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
             'labels' => [],
         ])->assertStatus(422);
 
         // No volume attached yet.
-        $this->postJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
             'labels' => [123],
         ])->assertStatus(422);
 
         // Label not in metadata.
-        $this->postJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
             'labels' => [456],
         ])->assertStatus(422);
 
         $pv->update(['volume_id' => $this->volume()->id]);
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
             'labels' => [123],
         ])->assertSuccessful();
 
@@ -103,33 +103,33 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beExpert();
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/file-labels")
+            ->putJson("/api/v1/pending-volumes/{$id}/file-labels")
             ->assertStatus(403);
 
         $this->beAdmin();
         // Label list required.
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/file-labels")
+            ->putJson("/api/v1/pending-volumes/{$id}/file-labels")
             ->assertStatus(422);
 
         // Label list must be filled.
-        $this->postJson("/api/v1/pending-volumes/{$id}/file-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
             'labels' => [],
         ])->assertStatus(422);
 
         // No volume attached yet.
-        $this->postJson("/api/v1/pending-volumes/{$id}/file-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
             'labels' => [123],
         ])->assertStatus(422);
 
         $pv->update(['volume_id' => $this->volume()->id]);
 
         // Label not in metadata.
-        $this->postJson("/api/v1/pending-volumes/{$id}/file-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
             'labels' => [456],
         ])->assertStatus(422);
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/file-labels", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
             'labels' => [123],
         ])->assertSuccessful();
 
@@ -164,38 +164,38 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beExpert();
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/label-map")
+            ->putJson("/api/v1/pending-volumes/{$id}/label-map")
             ->assertStatus(403);
 
         $this->beAdmin();
         // Label map required.
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/label-map")
+            ->putJson("/api/v1/pending-volumes/{$id}/label-map")
             ->assertStatus(422);
 
         // Label map must be filled.
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [],
         ])->assertStatus(422);
 
         // No volume attached yet.
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertStatus(422);
 
         $pv->update(['volume_id' => $this->volume()->id]);
 
         // Label not in metadata.
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [456 => $this->labelRoot()->id],
         ])->assertStatus(422);
 
         // Label not in database.
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => -1],
         ])->assertStatus(422);
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertSuccessful();
 
@@ -226,7 +226,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beAdmin();
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertSuccessful();
 
@@ -262,7 +262,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $id = $pv->id;
 
         $this->beAdmin();
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertStatus(422);
     }
@@ -290,7 +290,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $id = $pv->id;
 
         $this->beAdmin();
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertStatus(422);
     }
@@ -325,7 +325,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/pending-volumes/{$id}/label-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $dbLabel->id],
         ])->assertStatus(422);
     }
@@ -357,38 +357,38 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beExpert();
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/user-map")
+            ->putJson("/api/v1/pending-volumes/{$id}/user-map")
             ->assertStatus(403);
 
         $this->beAdmin();
         // User map required.
         $this
-            ->postJson("/api/v1/pending-volumes/{$id}/user-map")
+            ->putJson("/api/v1/pending-volumes/{$id}/user-map")
             ->assertStatus(422);
 
         // User map must be filled.
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [],
         ])->assertStatus(422);
 
         // No volume attached yet.
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [321 => $this->user()->id],
         ])->assertStatus(422);
 
         $pv->update(['volume_id' => $this->volume()->id]);
 
         // User not in metadata.
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [456 => $this->user()->id],
         ])->assertStatus(422);
 
         // User not in database.
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [321 => -1],
         ])->assertStatus(422);
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [321 => $this->user()->id],
         ])->assertSuccessful();
 
@@ -419,7 +419,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beAdmin();
 
-        $this->postJson("/api/v1/pending-volumes/{$id}/user-map", [
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
             'user_map' => [321 => $this->user()->id],
         ])->assertSuccessful();
 
