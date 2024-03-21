@@ -63,4 +63,20 @@ class FileMetadata
     {
         return !empty($this->labels);
     }
+
+    /**
+     * The returned array is indexed by label IDs.
+     */
+    public function getAnnotationLabels(): array
+    {
+        $labels = [];
+
+        foreach ($this->getAnnotations() as $annotation) {
+            foreach ($annotation->labels as $annotationLabel) {
+                $labels[$annotationLabel->label->id] = $annotationLabel->label;
+            }
+        }
+
+        return $labels;
+    }
 }

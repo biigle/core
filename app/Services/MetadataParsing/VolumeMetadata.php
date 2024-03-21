@@ -68,4 +68,35 @@ class VolumeMetadata
 
         return false;
     }
+
+    /**
+     * The returned array is indexed by label IDs.
+     */
+    public function getAnnotationLabels(): array
+    {
+        $labels = [];
+
+        foreach ($this->files as $file) {
+            // Use union to automatically remove duplicates.
+            $labels += $file->getAnnotationLabels();
+        }
+
+        return $labels;
+    }
+
+    /**
+     * The returned array is indexed by label IDs.
+     */
+    public function getFileLabels(): array
+    {
+        $labels = [];
+
+        foreach ($this->files as $file) {
+            foreach ($file->getFileLabels() as $fileLabel) {
+                $labels[$fileLabel->label->id] = $fileLabel->label;
+            }
+        }
+
+        return $labels;
+    }
 }

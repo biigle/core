@@ -90,4 +90,37 @@ class VolumeMetadataTest extends TestCase
         $file->addFileLabel($la);
         $this->assertTrue($metadata->hasFileLabels());
     }
+
+    public function testGetAnnotationLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $this->assertEquals([], $metadata->getAnnotationLabels());
+
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$la],
+        );
+        $file->addAnnotation($annotation);
+        $this->assertEquals([123 => $label], $metadata->getAnnotationLabels());
+    }
+
+    public function testGetFileLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $this->assertEquals([], $metadata->getFileLabels());
+
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+        $file->addFileLabel($la);
+        $this->assertEquals([123 => $label], $metadata->getFileLabels());
+    }
 }

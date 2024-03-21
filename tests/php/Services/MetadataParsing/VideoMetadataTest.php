@@ -189,7 +189,7 @@ class VideoMetadataTest extends TestCase
         $this->assertEquals($expect, $data->getInsertData());
     }
 
-    public function testAnnotations()
+    public function testHasAnnotations()
     {
         $data = new VideoMetadata('filename');
         $label = new Label(123, 'my label');
@@ -207,7 +207,7 @@ class VideoMetadataTest extends TestCase
         $this->assertTrue($data->hasAnnotations());
     }
 
-    public function testLabels()
+    public function testHasFileLabels()
     {
         $data = new VideoMetadata('filename');
         $label = new Label(123, 'my label');
@@ -217,5 +217,23 @@ class VideoMetadataTest extends TestCase
         $this->assertFalse($data->hasFileLabels());
         $data->addFileLabel($la);
         $this->assertTrue($data->hasFileLabels());
+    }
+
+        public function testGetAnnotationLabels()
+    {
+        $data = new VideoMetadata('filename');
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+        $annotation = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$la],
+            frames: [0],
+        );
+
+        $this->assertEquals([], $data->getAnnotationLabels());
+        $data->addAnnotation($annotation);
+        $this->assertEquals([123 => $label], $data->getAnnotationLabels());
     }
 }
