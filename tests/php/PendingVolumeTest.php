@@ -17,6 +17,7 @@ class PendingVolumeTest extends ModelTestCase
 
     public function testAttributes()
     {
+        $this->model->refresh(); //Populate default values.
         $this->assertNotNull($this->model->media_type_id);
         $this->assertNotNull($this->model->user_id);
         $this->assertNotNull($this->model->project_id);
