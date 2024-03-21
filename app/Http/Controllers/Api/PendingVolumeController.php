@@ -7,6 +7,7 @@ use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
 use Biigle\Http\Requests\UpdatePendingVolumeFileLabels;
 use Biigle\Http\Requests\UpdatePendingVolumeLabelMap;
+use Biigle\Http\Requests\UpdatePendingVolumeUserMap;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Volume;
@@ -278,6 +279,46 @@ class PendingVolumeController extends Controller
     {
         $request->pendingVolume->update([
             'label_map' => $request->input('label_map'),
+        ]);
+
+        return $request->pendingVolume;
+    }
+
+    /**
+     * Match metadata users with database users.
+     *
+     * @api {put} pending-volumes/:id/user-map Match metadata users with database users
+     * @apiGroup Volumes
+     * @apiName UpdatePendingVolumeUsers
+     * @apiPermission projectAdminAndPendingVolumeOwner
+     *
+     * @apiDescription If this endpoint is not used to set a map of metadata user IDs to database user IDs, the import will attempt to use the metadata user UUIDs to automatically find matches. Continue with (#Volumes:UpdatePendingVolumeImport).
+     *
+     * @apiParam {Number} id The pending volume ID.
+     *
+     * @apiParam (Required attributes) {object} user_map Map of metadata user IDs as keys and database user IDs as values.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 2,
+     *    "created_at": "2015-02-19 16:10:17",
+     *    "updated_at": "2015-02-19 16:10:17",
+     *    "media_type_id": 1,
+     *    "user_id": 2,
+     *    "project_id": 3,
+     *    "volume_id": 4,
+     *    "import_annotations": true,
+     *    "import_file_labels": true,
+     *    "only_annotation_labels": [123],
+     *    "only_file_labels": [456],
+     *    "label_map": {"123": 987, "456": 654},
+     *    "user_map": {"135": 246, "975": 864}
+     * }
+     */
+    public function updateUserMap(UpdatePendingVolumeUserMap $request)
+    {
+        $request->pendingVolume->update([
+            'user_map' => $request->input('user_map'),
         ]);
 
         return $request->pendingVolume;

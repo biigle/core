@@ -27,6 +27,7 @@ class PendingVolume extends Model
         'only_annotation_labels',
         'only_file_labels',
         'label_map',
+        'user_map',
     ];
 
     /**
@@ -47,6 +48,7 @@ class PendingVolume extends Model
         'only_annotation_labels' => 'array',
         'only_file_labels' => 'array',
         'label_map' => 'array',
+        'user_map' => 'array',
     ];
 
     protected static function booted(): void

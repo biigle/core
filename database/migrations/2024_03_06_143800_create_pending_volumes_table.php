@@ -46,6 +46,8 @@ return new class extends Migration {
             $table->jsonb('only_file_labels')->nullable();
             // Used to map labels from the metadata to labels in the database.
             $table->jsonb('label_map')->nullable();
+            // Used to map users from the metadata to users in the database.
+            $table->jsonb('user_map')->nullable();
 
             // A user is only allowed to create one pending volume at a time for a
             // project.

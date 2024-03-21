@@ -8,11 +8,11 @@ use Biigle\Label as DbLabel;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
-use Biigle\Services\MetadataParsing\Annotator;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
-use Biigle\Services\MetadataParsing\LabelAndAnnotator;
+use Biigle\Services\MetadataParsing\LabelAndUser;
+use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Shape;
 use Biigle\Visibility;
@@ -794,12 +794,12 @@ class PendingVolumeControllerTest extends ApiTestCase
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
             shape: Shape::point(),
             points: [10, 10],
-            labels: [$la],
+            labels: [$lau],
         );
         $file->addAnnotation($annotation);
 
@@ -855,9 +855,9 @@ class PendingVolumeControllerTest extends ApiTestCase
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $file->addFileLabel($la);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
 
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
@@ -905,18 +905,18 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->assertEquals([123], $pv->only_file_labels);
     }
 
-    public function testUpdateAnnotationLabelMap()
+    public function testUpdateLabelMap()
     {
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
             shape: Shape::point(),
             points: [10, 10],
-            labels: [$la],
+            labels: [$lau],
         );
         $file->addAnnotation($annotation);
 
@@ -971,15 +971,15 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->assertEquals([123 => $this->labelRoot()->id], $pv->label_map);
     }
 
-    public function testUpdateAnnotationLabelMapFileLabel()
+    public function testUpdateLabelMapFileLabel()
     {
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $file->addFileLabel($la);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
 
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
@@ -994,11 +994,6 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
 
-        // Label not in metadata.
-        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
-            'label_map' => [456 => $this->labelRoot()->id],
-        ])->assertStatus(422);
-
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
         ])->assertSuccessful();
@@ -1007,18 +1002,18 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->assertEquals([123 => $this->labelRoot()->id], $pv->label_map);
     }
 
-    public function testUpdateAnnotationLabelMapTryIgnoredAnnotationLabel()
+    public function testUpdateLabelMapTryIgnoredAnnotationLabel()
     {
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
             shape: Shape::point(),
             points: [10, 10],
-            labels: [$la],
+            labels: [$lau],
         );
         $file->addAnnotation($annotation);
 
@@ -1040,15 +1035,15 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(422);
     }
 
-    public function testUpdateAnnotationLabelMapTryIgnoredFileLabel()
+    public function testUpdateLabelMapTryIgnoredFileLabel()
     {
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $file->addFileLabel($la);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
 
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
@@ -1068,15 +1063,15 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(422);
     }
 
-    public function testUpdateAnnotationLabelMapTryLabelNotAllowed()
+    public function testUpdateLabelMapTryLabelNotAllowed()
     {
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $file->addFileLabel($la);
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
 
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
@@ -1101,5 +1096,102 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $dbLabel->id],
         ])->assertStatus(422);
+    }
+
+    public function testUpdateUserMap()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+
+        $this->beExpert();
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/user-map")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        // User map required.
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/user-map")
+            ->assertStatus(422);
+
+        // User map must be filled.
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [],
+        ])->assertStatus(422);
+
+        // No volume attached yet.
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [321 => $this->user()->id],
+        ])->assertStatus(422);
+
+        $pv->update(['volume_id' => $this->volume()->id]);
+
+        // User not in metadata.
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [456 => $this->user()->id],
+        ])->assertStatus(422);
+
+        // User not in database.
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [321 => -1],
+        ])->assertStatus(422);
+
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [321 => $this->user()->id],
+        ])->assertSuccessful();
+
+        $pv->refresh();
+        $this->assertEquals([321 => $this->user()->id], $pv->user_map);
+    }
+
+    public function testUpdateUserMapFileLabel()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+
+        $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
+            'user_map' => [321 => $this->user()->id],
+        ])->assertSuccessful();
+
+        $pv->refresh();
+        $this->assertEquals([321 => $this->user()->id], $pv->user_map);
     }
 }

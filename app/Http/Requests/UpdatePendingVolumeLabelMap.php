@@ -50,12 +50,12 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                 return;
             }
 
-            $map = $this->input('label_map');
             $metadata = $this->pendingVolume->getMetadata();
             if (is_null($metadata)) {
                 $validator->errors()->add('label_map', 'No metadata file found.');
             }
 
+            $map = $this->input('label_map');
             $metaLabels = $metadata->getFileLabels() + $metadata->getAnnotationLabels();
             foreach ($map as $id => $dbId) {
                 if (!array_key_exists($id, $metaLabels)) {
