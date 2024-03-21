@@ -152,6 +152,8 @@ $router->resource('pending-volumes', 'PendingVolumeController', [
     'parameters' => ['pending-volumes' => 'id'],
 ]);
 
+$router->put('pending-volumes/{id}/annotation-labels', 'PendingVolumeController@updateAnnotationLabels');
+
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],

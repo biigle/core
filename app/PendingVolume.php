@@ -24,6 +24,7 @@ class PendingVolume extends Model
         'volume_id',
         'import_annotations',
         'import_file_labels',
+        'only_annotation_labels',
     ];
 
     /**
@@ -33,6 +34,15 @@ class PendingVolume extends Model
      */
     protected $hidden = [
         'metadata_file_path',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'only_annotation_labels' => 'array',
     ];
 
     protected static function booted(): void

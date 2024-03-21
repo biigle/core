@@ -24,6 +24,9 @@ class PendingVolumeTest extends ModelTestCase
         $this->assertNotNull($this->model->updated_at);
         $this->assertNull($this->model->metadata_file_path);
         $this->assertNull($this->model->volume_id);
+        $this->assertFalse($this->model->import_annotations);
+        $this->assertFalse($this->model->import_file_labels);
+        $this->assertNull($this->model->only_annotation_labels);
     }
 
     public function testCreateOnlyOneForProject()

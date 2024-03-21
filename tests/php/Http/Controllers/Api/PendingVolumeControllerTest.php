@@ -6,7 +6,15 @@ use ApiTestCase;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
+use Biigle\Services\MetadataParsing\Annotator;
+use Biigle\Services\MetadataParsing\ImageAnnotation;
+use Biigle\Services\MetadataParsing\ImageMetadata;
+use Biigle\Services\MetadataParsing\Label;
+use Biigle\Services\MetadataParsing\LabelAndAnnotator;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Biigle\Shape;
 use Biigle\Volume;
+use Cache;
 use Exception;
 use FileCache;
 use Illuminate\Http\UploadedFile;
@@ -775,5 +783,66 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this
             ->delete("/api/v1/pending-volumes/{$pv->id}")
             ->assertRedirectToRoute('create-volume', ['project' => $pv->project_id]);
+    }
+
+    public function testUpdateAnnotationLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$la],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+
+        $this->beExpert();
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/annotation-labels")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        // Label list required.
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/annotation-labels")
+            ->assertStatus(422);
+
+        // Label list must be filled.
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [],
+        ])->assertStatus(422);
+
+        // Label not in metadata.
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [456],
+        ])->assertStatus(422);
+
+        // No volume attached yet.
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [123],
+        ])->assertStatus(422);
+
+        $pv->update(['volume_id' => $this->volume()->id]);
+
+        $this->putJson("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [123],
+        ])->assertSuccessful();
+
+        $pv->refresh();
+        $this->assertEquals([123], $pv->only_annotation_labels);
     }
 }

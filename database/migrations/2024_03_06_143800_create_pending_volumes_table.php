@@ -40,6 +40,8 @@ return new class extends Migration {
             $table->boolean('import_annotations')->default(false);
             $table->boolean('import_file_labels')->default(false);
 
+            $table->jsonb('only_annotation_labels')->nullable();
+
             // A user is only allowed to create one pending volume at a time for a
             // project.
             $table->unique(['user_id', 'project_id']);
