@@ -9,7 +9,7 @@ class Annotation
     /**
      * @param Shape $shape
      * @param array<float> $points
-     * @param array<LabelAndAnnotator> $labels
+     * @param array<LabelAndUser> $labels
      */
     public function __construct(
         public Shape $shape,

@@ -9,7 +9,7 @@ class VideoAnnotation extends Annotation
     /**
      * @param Shape $shape
      * @param array<array<float>> $points
-     * @param array<LabelAndAnnotator> $labels
+     * @param array<LabelAndUser> $labels
      * @param array<float> $frames
      */
     public function __construct(

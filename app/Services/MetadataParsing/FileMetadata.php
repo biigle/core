@@ -12,7 +12,7 @@ class FileMetadata
     /**
      * The labels directly attached to the file.
      *
-     * @var array<LabelAndAnnotator>
+     * @var array<LabelAndUser>
      */
     public array $labels = [];
 
