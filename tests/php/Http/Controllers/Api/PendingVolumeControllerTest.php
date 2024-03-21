@@ -845,4 +845,60 @@ class PendingVolumeControllerTest extends ApiTestCase
         $pv->refresh();
         $this->assertEquals([123], $pv->only_annotation_labels);
     }
+
+    public function testUpdateFileLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $annotator = new Annotator(321, 'joe user');
+        $la = new LabelAndAnnotator($label, $annotator);
+        $file->addFileLabel($la);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+        $id = $pv->id;
+
+        $this->beExpert();
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/file-labels")
+            ->assertStatus(403);
+
+        $this->beAdmin();
+        // Label list required.
+        $this
+            ->putJson("/api/v1/pending-volumes/{$id}/file-labels")
+            ->assertStatus(422);
+
+        // Label list must be filled.
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
+            'labels' => [],
+        ])->assertStatus(422);
+
+        // Label not in metadata.
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
+            'labels' => [456],
+        ])->assertStatus(422);
+
+        // No volume attached yet.
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
+            'labels' => [123],
+        ])->assertStatus(422);
+
+        $pv->update(['volume_id' => $this->volume()->id]);
+
+        $this->putJson("/api/v1/pending-volumes/{$id}/file-labels", [
+            'labels' => [123],
+        ])->assertSuccessful();
+
+        $pv->refresh();
+        $this->assertEquals([123], $pv->only_file_labels);
+    }
 }

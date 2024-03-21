@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
+use Biigle\Http\Requests\UpdatePendingVolumeFileLabels;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Volume;
@@ -199,6 +200,44 @@ class PendingVolumeController extends Controller
     {
         $request->pendingVolume->update([
             'only_annotation_labels' => $request->input('labels'),
+        ]);
+
+        return $request->pendingVolume;
+    }
+
+    /**
+     * Choose file labels for import.
+     *
+     * @api {put} pending-volumes/:id/file-labels Choose file labels for import
+     * @apiGroup Volumes
+     * @apiName UpdatePendingVolumeFileLabels
+     * @apiPermission projectAdminAndPendingVolumeOwner
+     *
+     * @apiDescription If this endpoint is not used to set a list of label IDs, all file labels will be imported by default. Continue with (#Volumes:UpdatePendingVolumeLabels).
+     *
+     * @apiParam {Number} id The pending volume ID.
+     *
+     * @apiParam (Required attributes) {array} labels The label IDs (from the metadata file) that should be used to filter the file label import.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id": 2,
+     *    "created_at": "2015-02-19 16:10:17",
+     *    "updated_at": "2015-02-19 16:10:17",
+     *    "media_type_id": 1,
+     *    "user_id": 2,
+     *    "project_id": 3,
+     *    "volume_id": 4,
+     *    "import_annotations": true,
+     *    "import_file_labels": true,
+     *    "only_annotation_labels": [123],
+     *    "only_file_labels": [456]
+     * }
+     */
+    public function updateFileLabels(UpdatePendingVolumeFileLabels $request)
+    {
+        $request->pendingVolume->update([
+            'only_file_labels' => $request->input('labels'),
         ]);
 
         return $request->pendingVolume;

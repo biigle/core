@@ -219,7 +219,7 @@ class VideoMetadataTest extends TestCase
         $this->assertTrue($data->hasFileLabels());
     }
 
-        public function testGetAnnotationLabels()
+    public function testGetAnnotationLabels()
     {
         $data = new VideoMetadata('filename');
         $label = new Label(123, 'my label');
