@@ -2,11 +2,15 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\StorePendingVolumeImport;
 use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
 use Biigle\Http\Requests\UpdatePendingVolumeFileLabels;
 use Biigle\Http\Requests\UpdatePendingVolumeLabelMap;
 use Biigle\Http\Requests\UpdatePendingVolumeUserMap;
+use Biigle\Jobs\ImportVolumeMetadata;
 use Biigle\Volume;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
 class PendingVolumeImportController extends Controller
 {
@@ -162,5 +166,25 @@ class PendingVolumeImportController extends Controller
         ]);
 
         return $request->pendingVolume;
+    }
+
+    /**
+     * Perform the metadata annotation and/or file label import.
+     *
+     * @api {post} pending-volumes/:id/import Perform annotation/file label import
+     * @apiGroup Volumes
+     * @apiName UpdatePendingVolumeImport
+     * @apiPermission projectAdminAndPendingVolumeOwner
+     *
+     * @apiDescription This endpoint attempts to perform the annotation and/or file label import that can be started in (#Volumes:UpdatePendingVolume). If the import is successful, the pending volume will be deleted.
+     *
+     * @apiParam {Number} id The pending volume ID.
+     */
+    public function storeImport(StorePendingVolumeImport $request)
+    {
+        DB::transaction(function () use ($request) {
+            $request->pendingVolume->update(['importing' => true]);
+            Queue::push(new ImportVolumeMetadata($request->pendingVolume));
+        });
     }
 }

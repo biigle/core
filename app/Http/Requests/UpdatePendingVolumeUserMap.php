@@ -51,6 +51,7 @@ class UpdatePendingVolumeUserMap extends FormRequest
             $metadata = $this->pendingVolume->getMetadata();
             if (is_null($metadata)) {
                 $validator->errors()->add('user_map', 'No metadata file found.');
+                return;
             }
 
             $map = $this->input('user_map');

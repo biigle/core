@@ -37,8 +37,15 @@ return new class extends Migration {
             // Path of the file in the pending_metadata_storage_disk.
             $table->string('metadata_file_path', 256)->nullable();
 
+            // Specify if the pending volume should be used to import annotations.
             $table->boolean('import_annotations')->default(false);
+
+            // Specify if the pending volume should be used to import file labels.
             $table->boolean('import_file_labels')->default(false);
+
+            // Specifies if a job to import metadata is already dispatched for this
+            // pending volume.
+            $table->boolean('importing')->default(false);
 
             // Used to filter the imported annotations.
             $table->jsonb('only_annotation_labels')->nullable();

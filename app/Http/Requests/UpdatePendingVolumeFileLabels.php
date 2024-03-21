@@ -51,6 +51,7 @@ class UpdatePendingVolumeFileLabels extends FormRequest
             $metadata = $this->pendingVolume->getMetadata();
             if (is_null($metadata)) {
                 $validator->errors()->add('labels', 'No metadata file found.');
+                return;
             }
 
             $metaLabels = $metadata->getFileLabels();

@@ -156,6 +156,7 @@ $router->put('pending-volumes/{id}/annotation-labels', 'PendingVolumeImportContr
 $router->put('pending-volumes/{id}/file-labels', 'PendingVolumeImportController@updateFileLabels');
 $router->put('pending-volumes/{id}/label-map', 'PendingVolumeImportController@updateLabelMap');
 $router->put('pending-volumes/{id}/user-map', 'PendingVolumeImportController@updateUserMap');
+$router->post('pending-volumes/{id}/import', 'PendingVolumeImportController@storeImport');
 
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],

@@ -31,6 +31,7 @@ class PendingVolumeTest extends ModelTestCase
         $this->assertNull($this->model->only_file_labels);
         $this->assertNull($this->model->label_map);
         $this->assertNull($this->model->user_map);
+        $this->assertFalse($this->model->importing);
     }
 
     public function testCreateOnlyOneForProject()

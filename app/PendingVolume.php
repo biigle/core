@@ -28,6 +28,7 @@ class PendingVolume extends Model
         'only_file_labels',
         'label_map',
         'user_map',
+        'importing',
     ];
 
     /**
