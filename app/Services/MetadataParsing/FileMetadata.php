@@ -49,9 +49,9 @@ class FileMetadata
         return !empty($this->annotations);
     }
 
-    public function addFileLabel(LabelAndAnnotator $la): void
+    public function addFileLabel(LabelAndUser $lau): void
     {
-        $this->labels[] = $la;
+        $this->labels[] = $lau;
     }
 
     public function getFileLabels(): array
@@ -65,18 +65,38 @@ class FileMetadata
     }
 
     /**
-     * The returned array is indexed by label IDs.
+     * @return array Labels indexed by ID.
      */
     public function getAnnotationLabels(): array
     {
         $labels = [];
 
         foreach ($this->getAnnotations() as $annotation) {
-            foreach ($annotation->labels as $annotationLabel) {
-                $labels[$annotationLabel->label->id] = $annotationLabel->label;
+            foreach ($annotation->labels as $lau) {
+                $labels[$lau->label->id] = $lau->label;
             }
         }
 
         return $labels;
+    }
+
+    /**
+     * @return array Users indexed by ID.
+     */
+    public function getUsers(): array
+    {
+        $users = [];
+
+        foreach ($this->getAnnotations() as $annotation) {
+            foreach ($annotation->labels as $lau) {
+                $users[$lau->user->id] = $lau->user;
+            }
+        }
+
+        foreach ($this->getFileLabels() as $lau) {
+            $users[$lau->user->id] = $lau->user;
+        }
+
+        return $users;
     }
 }

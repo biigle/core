@@ -2,22 +2,11 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
-use Biigle\Services\MetadataParsing\Annotator;
-use Biigle\Services\MetadataParsing\Label;
-use Biigle\Services\MetadataParsing\LabelAndAnnotator;
-use Biigle\Services\MetadataParsing\VideoAnnotation;
 use Biigle\Services\MetadataParsing\VideoMetadata;
-use Biigle\Shape;
 use TestCase;
 
 class VideoMetadataTest extends TestCase
 {
-    public function testTrimName()
-    {
-        $data = new VideoMetadata(' filename');
-        $this->assertEquals('filename', $data->name);
-    }
-
     public function testIsEmpty()
     {
         $data = new VideoMetadata('filename');
@@ -187,53 +176,5 @@ class VideoMetadataTest extends TestCase
         ];
 
         $this->assertEquals($expect, $data->getInsertData());
-    }
-
-    public function testHasAnnotations()
-    {
-        $data = new VideoMetadata('filename');
-        $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $annotation = new VideoAnnotation(
-            shape: Shape::point(),
-            points: [10, 10],
-            labels: [$la],
-            frames: [0],
-        );
-
-        $this->assertFalse($data->hasAnnotations());
-        $data->addAnnotation($annotation);
-        $this->assertTrue($data->hasAnnotations());
-    }
-
-    public function testHasFileLabels()
-    {
-        $data = new VideoMetadata('filename');
-        $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-
-        $this->assertFalse($data->hasFileLabels());
-        $data->addFileLabel($la);
-        $this->assertTrue($data->hasFileLabels());
-    }
-
-    public function testGetAnnotationLabels()
-    {
-        $data = new VideoMetadata('filename');
-        $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
-        $annotation = new VideoAnnotation(
-            shape: Shape::point(),
-            points: [10, 10],
-            labels: [$la],
-            frames: [0],
-        );
-
-        $this->assertEquals([], $data->getAnnotationLabels());
-        $data->addAnnotation($annotation);
-        $this->assertEquals([123 => $label], $data->getAnnotationLabels());
     }
 }

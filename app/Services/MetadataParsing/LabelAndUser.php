@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class LabelAndAnnotator
+class LabelAndUser
 {
     public function __construct(
         public Label $label,
-        public Annotator $annotator,
+        public User $user,
     ) {
         //
     }

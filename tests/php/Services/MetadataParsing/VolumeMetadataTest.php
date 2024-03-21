@@ -3,12 +3,12 @@
 namespace Biigle\Tests\Services\MetadataParsing;
 
 use Biigle\MediaType;
-use Biigle\Services\MetadataParsing\Annotator;
 use Biigle\Services\MetadataParsing\FileMetadata;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
-use Biigle\Services\MetadataParsing\LabelAndAnnotator;
+use Biigle\Services\MetadataParsing\LabelAndUser;
+use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Shape;
 use TestCase;
@@ -65,8 +65,8 @@ class VolumeMetadataTest extends TestCase
         $this->assertFalse($metadata->hasAnnotations());
 
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
             shape: Shape::point(),
             points: [10, 10],
@@ -85,8 +85,8 @@ class VolumeMetadataTest extends TestCase
         $this->assertFalse($metadata->hasFileLabels());
 
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
         $file->addFileLabel($la);
         $this->assertTrue($metadata->hasFileLabels());
     }
@@ -99,8 +99,8 @@ class VolumeMetadataTest extends TestCase
         $this->assertEquals([], $metadata->getAnnotationLabels());
 
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
             shape: Shape::point(),
             points: [10, 10],
@@ -118,9 +118,33 @@ class VolumeMetadataTest extends TestCase
         $this->assertEquals([], $metadata->getFileLabels());
 
         $label = new Label(123, 'my label');
-        $annotator = new Annotator(321, 'joe user');
-        $la = new LabelAndAnnotator($label, $annotator);
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
         $file->addFileLabel($la);
         $this->assertEquals([123 => $label], $metadata->getFileLabels());
+    }
+
+    public function testGetUsers()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $this->assertEquals([], $metadata->getUsers());
+
+        $label = new Label(123, 'my label');
+        $user1 = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user1);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+        $this->assertEquals([321 => $user1], $metadata->getUsers());
+
+        $user2 = new User(432, 'joe user');
+        $lau = new LabelAndUser($label, $user2);
+        $file->addFileLabel($lau);
+        $this->assertEquals([321 => $user1, 432 => $user2], $metadata->getUsers());
     }
 }

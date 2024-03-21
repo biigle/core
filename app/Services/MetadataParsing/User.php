@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class Annotator
+class User
 {
     /**
      * @param string $id

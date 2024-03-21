@@ -99,4 +99,21 @@ class VolumeMetadata
 
         return $labels;
     }
+
+    /**
+     * Get all users associated with annotations and/or file labels.
+     *
+     * @return array Users indexed by ID.
+     */
+    public function getUsers(): array
+    {
+        $users = [];
+
+        foreach ($this->files as $file) {
+            // Use union to automatically remove duplicates.
+            $users += $file->getUsers();
+        }
+
+        return $users;
+    }
 }
