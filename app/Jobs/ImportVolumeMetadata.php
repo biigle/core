@@ -101,10 +101,8 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
             ->reverse()
             ->toArray();
 
-        $insertAnnotationLabels = array_combine($ids, $insertAnnotationLabels);
-
-        foreach ($insertAnnotationLabels as $id => &$insert) {
-            foreach ($insert as &$i) {
+        foreach ($ids as $index => $id) {
+            foreach ($insertAnnotationLabels[$index] as &$i) {
                 $i['annotation_id'] = $id;
             }
         }
