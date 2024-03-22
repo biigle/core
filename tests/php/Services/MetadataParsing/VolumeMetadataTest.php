@@ -277,6 +277,21 @@ class VolumeMetadataTest extends TestCase
         $this->assertEquals([321 => $dbUser->id], $matches);
     }
 
+    public function testGetMatchingUsersIgnoreNotInMetadata()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
+        $file->addFileLabel($la);
+
+        $dbUser = DbUser::factory()->create();
+        $matches = $metadata->getMatchingUsers([321 => $dbUser->id, 432 => $dbUser->id]);
+        $this->assertEquals([321 => $dbUser->id], $matches);
+    }
+
     public function testGetMatchingLabelsByMap()
     {
         $metadata = new VolumeMetadata;
@@ -338,6 +353,21 @@ class VolumeMetadataTest extends TestCase
 
         $dbLabel = DbLabel::factory()->create();
         $matches = $metadata->getMatchingLabels([123 => $dbLabel->id], [123]);
+        $this->assertEquals([123 => $dbLabel->id], $matches);
+    }
+
+    public function testGetMatchingLabelsIgnoreNotInMetadata()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
+        $file->addFileLabel($la);
+
+        $dbLabel = DbLabel::factory()->create();
+        $matches = $metadata->getMatchingLabels([123 => $dbLabel->id, 234 => $dbLabel->id]);
         $this->assertEquals([123 => $dbLabel->id], $matches);
     }
 }

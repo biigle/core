@@ -478,7 +478,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
 
         Queue::assertPushed(ImportVolumeMetadata::class, function ($job) use ($pv) {
-            $this->assertEquals($pv->id, $job->pendingVolume->id);
+            $this->assertEquals($pv->id, $job->pv->id);
 
             return true;
         });
@@ -860,5 +860,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
+    }
+
+    public function testStoreImportValidateAnnotationPoints()
+    {
+        // use validator of HasPointsAttribute, maybe convert it to a validation rule.
+        // and use this in regular annotation requests, too.
     }
 }

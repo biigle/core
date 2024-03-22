@@ -18,4 +18,17 @@ class Annotation
     ) {
         //
     }
+
+    /**
+     * Get the array of metadata that can be used for Model::insert();
+     *
+     * @param int $id ID of the image/video database model.
+     */
+    public function getInsertData(int $id): array
+    {
+        return [
+            'points' => json_encode($this->points),
+            'shape_id' => $this->shape->id,
+        ];
+    }
 }

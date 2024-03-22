@@ -133,6 +133,10 @@ class VolumeMetadata
     {
         $users = $this->getUsers($onlyLabels);
 
+        // Remove metadata user IDs that don't actually exist.
+        $idMap = array_flip(array_map(fn ($u) => $u->id, $users));
+        $map = array_filter($map, fn ($id) => array_key_exists($id, $idMap), ARRAY_FILTER_USE_KEY);
+
         // Remove database user IDs that don't actually exist.
         $idMap = DbUser::whereIn('id', array_unique($map))->pluck('id', 'id');
         $map = array_filter($map, fn ($id) => $idMap->has($id));
@@ -168,6 +172,10 @@ class VolumeMetadata
     public function getMatchingLabels(array $map = [], array $onlyLabels = []): array
     {
         $labels = $this->getAnnotationLabels($onlyLabels) + $this->getFileLabels($onlyLabels);
+
+        // Remove metadata label IDs that don't actually exist.
+        $idMap = array_flip(array_map(fn ($l) => $l->id, $labels));
+        $map = array_filter($map, fn ($id) => array_key_exists($id, $idMap), ARRAY_FILTER_USE_KEY);
 
         // Remove database label IDs that don't actually exist.
         $idMap = DbLabel::whereIn('id', array_unique($map))->pluck('id', 'id');

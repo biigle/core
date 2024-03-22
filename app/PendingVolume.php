@@ -65,4 +65,9 @@ class PendingVolume extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function volume(): BelongsTo
+    {
+        return $this->belongsTo(Volume::class);
+    }
 }

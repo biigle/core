@@ -20,4 +20,15 @@ class VideoAnnotation extends Annotation
     ) {
         //
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInsertData(int $id): array
+    {
+        return array_merge(parent::getInsertData($id), [
+            'video_id' => $id,
+            'frames' => json_encode($this->frames),
+        ]);
+    }
 }

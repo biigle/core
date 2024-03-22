@@ -2,9 +2,17 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Image;
+use Biigle\ImageAnnotationLabel;
+use Biigle\ImageLabel;
 use Biigle\PendingVolume;
+use Biigle\Services\MetadataParsing\FileMetadata;
+use Biigle\VideoAnnotationLabel;
+use Biigle\VideoLabel;
+use Biigle\VolumeFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ImportVolumeMetadata extends Job implements ShouldQueue
 {
@@ -21,17 +29,137 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
      * Create a new job instance.
      *
      */
-    public function __construct(public PendingVolume $pendingVolume)
+    public function __construct(public PendingVolume $pv)
     {
         //
     }
 
     public function handle(): void
     {
-        // ignore annotations with deleted labels, set null to
-        // annotations with deleted users (as they could be deleted in the meantime).
-        // do not import annotations/file labels if the pending volume property is false.
-        //
-        // delete pending volume on success
+        DB::transaction(function () {
+            $metadata = $this->pv->getMetadata();
+            $onlyLabels = ($this->pv->only_annotation_labels ?: []) + ($this->pv->only_file_labels ?: []);
+            $userMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $onlyLabels);
+            $labelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $onlyLabels);
+            foreach ($this->pv->volume->files()->lazyById() as $file) {
+                $metaFile = $metadata->getFile($file->filename);
+                if (!$metaFile) {
+                    continue;
+                }
+
+                if ($this->pv->import_annotations && $metaFile->hasAnnotations()) {
+                    $this->insertAnnotations($metaFile, $file, $userMap, $labelMap);
+                }
+
+                if ($this->pv->import_file_labels && $metaFile->hasFileLabels()) {
+                    $this->insertFileLabels($metaFile, $file, $userMap, $labelMap);
+                }
+            }
+        });
+
+        $this->pv->delete();
+    }
+
+    /**
+     * Insert metadata annotations of a file into the database.
+     */
+    protected function insertAnnotations(
+        FileMetadata $meta,
+        VolumeFile $file,
+        array $userMap,
+        array $labelMap
+    ): void {
+        $insertAnnotations = [];
+        $insertAnnotationLabels = [];
+
+        foreach ($meta->getAnnotations() as $annotation) {
+            // This will remove labels that should be ignored based on $onlyLabels and
+            // that have no match in the database.
+            $annotationLabels = array_filter(
+                $annotation->labels,
+                fn ($lau) => !is_null($labelMap[$lau->label->id] ?? null)
+            );
+
+            if (empty($annotationLabels)) {
+                continue;
+            }
+
+            $insertAnnotations[] = $annotation->getInsertData($file->id);
+
+            $insertAnnotationLabels[] = array_map(fn ($lau) => [
+                'label_id' => $labelMap[$lau->label->id],
+                'user_id' => $userMap[$lau->user->id],
+            ], $annotationLabels);
+        }
+
+        $file->annotations()->insert($insertAnnotations);
+
+        $ids = $file->annotations()
+            ->orderBy('id', 'desc')
+            ->take(count($insertAnnotations))
+            ->pluck('id')
+            ->reverse()
+            ->toArray();
+
+        $insertAnnotationLabels = array_combine($ids, $insertAnnotationLabels);
+
+        foreach ($insertAnnotationLabels as $id => &$insert) {
+            foreach ($insert as &$i) {
+                $i['annotation_id'] = $id;
+            }
+        }
+
+        // Flatten.
+        $insertAnnotationLabels = array_merge(...$insertAnnotationLabels);
+
+        if ($file instanceof Image) {
+            foreach ($insertAnnotationLabels as &$i) {
+                $i['confidence'] = 1.0;
+            }
+
+            ImageAnnotationLabel::insert($insertAnnotationLabels);
+        } else {
+            VideoAnnotationLabel::insert($insertAnnotationLabels);
+        }
+    }
+
+    /**
+     * Insert metadata file labels of a file into the database.
+     */
+    protected function insertFileLabels(
+        FileMetadata $meta,
+        VolumeFile $file,
+        array $userMap,
+        array $labelMap
+    ): void {
+        // This will remove labels that should be ignored based on $onlyLabels and
+        // that have no match in the database.
+        $fileLabels = array_filter(
+            $meta->getFileLabels(),
+            fn ($lau) => !is_null($labelMap[$lau->label->id] ?? null)
+        );
+
+        if (empty($fileLabels)) {
+            return;
+        }
+
+        $insertFileLabels = array_map(fn ($lau) => [
+            'label_id' => $labelMap[$lau->label->id],
+            'user_id' => $userMap[$lau->user->id],
+        ], $fileLabels);
+
+        if ($file instanceof Image) {
+            foreach ($insertFileLabels as &$i) {
+                $i['image_id'] = $file->id;
+            }
+
+            ImageLabel::insert($insertFileLabels);
+        } else {
+            foreach ($insertFileLabels as &$i) {
+                $i['video_id'] = $file->id;
+            }
+
+            VideoLabel::insert($insertFileLabels);
+        }
     }
 }
