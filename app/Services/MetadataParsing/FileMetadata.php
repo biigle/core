@@ -67,14 +67,26 @@ class FileMetadata
     /**
      * @return array Labels indexed by ID.
      */
-    public function getAnnotationLabels(): array
+    public function getFileLabelLabels(array $onlyLabels = []): array
     {
         $labels = [];
 
-        foreach ($this->getAnnotations() as $annotation) {
-            foreach ($annotation->labels as $lau) {
-                $labels[$lau->label->id] = $lau->label;
-            }
+        foreach ($this->getFileLabelLabelAndUsers($onlyLabels) as $lau) {
+            $labels[$lau->label->id] = $lau->label;
+        }
+
+        return $labels;
+    }
+
+    /**
+     * @return array Labels indexed by ID.
+     */
+    public function getAnnotationLabels(array $onlyLabels = []): array
+    {
+        $labels = [];
+
+        foreach ($this->getAnnotationLabelAndUsers($onlyLabels) as $lau) {
+            $labels[$lau->label->id] = $lau->label;
         }
 
         return $labels;
@@ -88,26 +100,47 @@ class FileMetadata
     public function getUsers(array $onlyLabels = []): array
     {
         $users = [];
-        $onlyLabels = array_flip($onlyLabels);
 
-        foreach ($this->getAnnotations() as $annotation) {
-            foreach ($annotation->labels as $lau) {
-                if ($onlyLabels && !array_key_exists($lau->label->id, $onlyLabels)) {
-                    continue;
-                }
-
-                $users[$lau->user->id] = $lau->user;
-            }
+        foreach ($this->getAnnotationLabelAndUsers($onlyLabels) as $lau) {
+            $users[$lau->user->id] = $lau->user;
         }
 
-        foreach ($this->getFileLabels() as $lau) {
-            if ($onlyLabels && !array_key_exists($lau->label->id, $onlyLabels)) {
-                continue;
-            }
-
+        foreach ($this->getFileLabelLabelAndUsers($onlyLabels) as $lau) {
             $users[$lau->user->id] = $lau->user;
         }
 
         return $users;
+    }
+
+    protected function getAnnotationLabelAndUsers(array $onlyLabels = []): array
+    {
+        $ret = [];
+        $onlyLabels = array_flip($onlyLabels);
+
+        foreach ($this->getAnnotations() as $annotation) {
+            if (!$onlyLabels) {
+                $add = $annotation->labels;
+            } else {
+                $add = array_filter($annotation->labels, fn ($lau) => array_key_exists($lau->label->id, $onlyLabels));
+            }
+
+            $ret = array_merge($ret, $add);
+        }
+
+        return $ret;
+    }
+
+    protected function getFileLabelLabelAndUsers(array $onlyLabels = []): array
+    {
+        if (!$onlyLabels) {
+            return $this->getFileLabels();
+        }
+
+        $onlyLabels = array_flip($onlyLabels);
+
+        return array_filter(
+            $this->getFileLabels(),
+            fn ($lau) => array_key_exists($lau->label->id, $onlyLabels)
+        );
     }
 }

@@ -65,47 +65,47 @@ class StorePendingVolumeImport extends FormRequest
             }
 
             if ($pv->import_annotations) {
-                $labels = $metadata->getAnnotationLabels();
+                $labels = $metadata->getAnnotationLabels($pv->only_annotation_labels ?: []);
 
                 if (empty($labels)) {
-                    $validator->errors()->add('id', 'There are no annotations to import.');
-                    return;
-                }
-
-                if ($pv->only_annotation_labels) {
-                    $remaining = array_intersect_key($labels, array_flip($pv->only_annotation_labels));
-
-                    if (empty($remaining)) {
+                    if ($pv->only_annotation_labels) {
                         $validator->errors()->add('id', 'There are no annotations to import with the chosen labels.');
-                        return;
+                    } else {
+                        $validator->errors()->add('id', 'There are no annotations to import.');
                     }
+
+                    return;
                 }
             }
 
             if ($pv->import_file_labels) {
-                $labels = $metadata->getFileLabels();
+                $labels = $metadata->getFileLabels($pv->only_file_labels ?: []);
 
                 if (empty($labels)) {
-                    $validator->errors()->add('id', 'There are no file labels to import.');
-                    return;
-                }
-
-                if ($pv->only_file_labels) {
-                    $remaining = array_intersect_key($labels, array_flip($pv->only_file_labels));
-
-                    if (empty($remaining)) {
+                    if ($pv->only_file_labels) {
                         $validator->errors()->add('id', 'There are no file labels to import with the chosen labels.');
-                        return;
+                    } else {
+                        $validator->errors()->add('id', 'There are no file labels to import.');
                     }
+
+                    return;
                 }
             }
 
-            $onlyLabels = $this->pendingVolume->only_annotation_labels ?: [];
-            $onlyLabels += $this->pendingVolume->only_file_labels ?: [];
-            $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?? [], $onlyLabels);
+            $onlyLabels = ($pv->only_annotation_labels ?: []) + ($pv->only_file_labels ?: []);
+
+            $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $onlyLabels);
             foreach ($matchingUsers as $id => $value) {
                 if (is_null($value)) {
                     $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
+                    return;
+                }
+            }
+
+            $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $onlyLabels);
+            foreach ($matchingLabels as $id => $value) {
+                if (is_null($value)) {
+                    $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
                     return;
                 }
             }

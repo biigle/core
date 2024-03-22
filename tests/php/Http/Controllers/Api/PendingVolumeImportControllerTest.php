@@ -441,6 +441,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
     public function testStoreImport()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -458,6 +459,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
         ]);
         $id = $pv->id;
 
@@ -487,6 +489,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
     public function testStoreImportNoImportAnnotationsSet()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -509,6 +512,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
             'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
         ]);
         $id = $pv->id;
 
@@ -521,6 +525,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
     public function testStoreImportNoImportFileLabelsSet()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -538,6 +543,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
             'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
         ]);
         $id = $pv->id;
 
@@ -690,13 +696,14 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
     }
 
-    public function testStoreImportMatchUserByUuid()
+    public function testStoreImportMatchByUuid()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
-        $label = new Label(123, 'my label');
+        $label = new Label(123, 'my label', uuid: $dbLabel->uuid);
         $user = new User(321, 'joe user', uuid: $dbUser->uuid);
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
@@ -717,13 +724,9 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
-    public function testStoreImportMatchLabelByUuid()
-    {
-        //
-    }
-
     public function testStoreImportUserNoMatch()
     {
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -741,6 +744,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
             'import_file_labels' => true,
+            'label_map' => [123 => $dbLabel->id],
         ]);
         $id = $pv->id;
 
@@ -750,12 +754,36 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportLabelNoMatch()
     {
-        // uuid not found
+        $dbUser = DbUser::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => true,
+            'user_map' => [321 => $dbUser->id],
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
     }
 
-    public function testStoreImportUserMatchOnlyWithAnnotationLabelFilter()
+    public function testStoreImportMatchOnlyWithAnnotationLabelFilter()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -789,6 +817,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'import_annotations' => true,
             'only_annotation_labels' => [123],
             'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
 
         ]);
         $id = $pv->id;
@@ -797,9 +826,10 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
-    public function testStoreImportUserMatchOnlyWithFileLabelFilter()
+    public function testStoreImportMatchOnlyWithFileLabelFilter()
     {
         $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -823,21 +853,12 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'import_file_labels' => true,
             'only_file_labels' => [123],
             'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
 
         ]);
         $id = $pv->id;
 
         $this->beAdmin();
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
-    }
-
-    public function testStoreImportLabelMatchOnlyWithAnnotationLabelFilter()
-    {
-        // the label without match is ignored by only_annotation_labels
-    }
-
-    public function testStoreImportLabelMatchOnlyWithFileLabelFilter()
-    {
-        // the label without match is ignored by only_file_labels
     }
 }
