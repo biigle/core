@@ -80,7 +80,6 @@ class StorePendingVolumeImport extends FormRequest
                         return;
                     }
                 }
-
             }
 
             if ($pv->import_file_labels) {
@@ -99,7 +98,16 @@ class StorePendingVolumeImport extends FormRequest
                         return;
                     }
                 }
+            }
 
+            $onlyLabels = $this->pendingVolume->only_annotation_labels ?: [];
+            $onlyLabels += $this->pendingVolume->only_file_labels ?: [];
+            $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?? [], $onlyLabels);
+            foreach ($matchingUsers as $id => $value) {
+                if (is_null($value)) {
+                    $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
+                    return;
+                }
             }
         });
     }

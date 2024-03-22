@@ -81,19 +81,30 @@ class FileMetadata
     }
 
     /**
+     * @param array $onlyLabels List of metadata label IDs to filter the list of users.
+     *
      * @return array Users indexed by ID.
      */
-    public function getUsers(): array
+    public function getUsers(array $onlyLabels = []): array
     {
         $users = [];
+        $onlyLabels = array_flip($onlyLabels);
 
         foreach ($this->getAnnotations() as $annotation) {
             foreach ($annotation->labels as $lau) {
+                if ($onlyLabels && !array_key_exists($lau->label->id, $onlyLabels)) {
+                    continue;
+                }
+
                 $users[$lau->user->id] = $lau->user;
             }
         }
 
         foreach ($this->getFileLabels() as $lau) {
+            if ($onlyLabels && !array_key_exists($lau->label->id, $onlyLabels)) {
+                continue;
+            }
+
             $users[$lau->user->id] = $lau->user;
         }
 

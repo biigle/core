@@ -94,4 +94,21 @@ class FileMetadataTest extends TestCase
         $data->addFileLabel($lau);
         $this->assertEquals([321 => $user1, 432 => $user2], $data->getUsers());
     }
+
+    public function testGetUsersOnlyLabels()
+    {
+        $data = new ImageMetadata('filename');
+
+        $label1 = new Label(123, 'my label');
+        $user1 = new User(432, 'joe user');
+        $lau = new LabelAndUser($label1, $user1);
+        $data->addFileLabel($lau);
+
+        $label2 = new Label(456, 'my label');
+        $user2 = new User(654, 'joe user');
+        $lau = new LabelAndUser($label2, $user2);
+        $data->addFileLabel($lau);
+
+        $this->assertEquals([432 => $user1], $data->getUsers([123]));
+    }
 }

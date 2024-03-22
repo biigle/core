@@ -15,6 +15,7 @@ use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Shape;
+use Biigle\User as DbUser;
 use Biigle\Visibility;
 use Biigle\Volume;
 use Illuminate\Support\Facades\Cache;
@@ -439,6 +440,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImport()
     {
+        $dbUser = DbUser::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -455,6 +457,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
+            'user_map' => [321 => $dbUser->id],
         ]);
         $id = $pv->id;
 
@@ -483,6 +486,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportNoImportAnnotationsSet()
     {
+        $dbUser = DbUser::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -504,6 +508,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
+            'user_map' => [321 => $dbUser->id],
         ]);
         $id = $pv->id;
 
@@ -515,6 +520,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportNoImportFileLabelsSet()
     {
+        $dbUser = DbUser::factory()->create();
         $metadata = new VolumeMetadata;
         $file = new ImageMetadata('1.jpg');
         $metadata->addFile($file);
@@ -531,6 +537,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
+            'user_map' => [321 => $dbUser->id],
         ]);
         $id = $pv->id;
 
@@ -685,7 +692,29 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportMatchUserByUuid()
     {
-        //
+        $dbUser = DbUser::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user', uuid: $dbUser->uuid);
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
     public function testStoreImportMatchLabelByUuid()
@@ -695,7 +724,28 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportUserNoMatch()
     {
-        // uuid not found
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
     }
 
     public function testStoreImportLabelNoMatch()
@@ -705,12 +755,80 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testStoreImportUserMatchOnlyWithAnnotationLabelFilter()
     {
-        // the user without match is ignored by only_annotation_labels
+        $dbUser = DbUser::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label1 = new Label(123, 'my label');
+        $user1 = new User(321, 'joe user');
+        $lau = new LabelAndUser($label1, $user1);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+        $label2 = new Label(456, 'my label');
+        $user2 = new User(654, 'joe user');
+        $lau = new LabelAndUser($label2, $user2);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_annotations' => true,
+            'only_annotation_labels' => [123],
+            'user_map' => [321 => $dbUser->id],
+
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
     public function testStoreImportUserMatchOnlyWithFileLabelFilter()
     {
-        // the user without match is ignored by only_file_labels
+        $dbUser = DbUser::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label1 = new Label(123, 'my label');
+        $user1 = new User(321, 'joe user');
+        $lau = new LabelAndUser($label1, $user1);
+        $file->addFileLabel($lau);
+        $label2 = new Label(456, 'my label');
+        $user2 = new User(654, 'joe user');
+        $lau = new LabelAndUser($label2, $user2);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => true,
+            'only_file_labels' => [123],
+            'user_map' => [321 => $dbUser->id],
+
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
     public function testStoreImportLabelMatchOnlyWithAnnotationLabelFilter()

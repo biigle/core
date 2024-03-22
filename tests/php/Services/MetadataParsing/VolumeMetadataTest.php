@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Services\MetadataParsing;
 
 use Biigle\MediaType;
+use Biigle\User as DbUser;
 use Biigle\Services\MetadataParsing\FileMetadata;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
@@ -146,5 +147,86 @@ class VolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user2);
         $file->addFileLabel($lau);
         $this->assertEquals([321 => $user1, 432 => $user2], $metadata->getUsers());
+    }
+
+    public function testGetUsersOnlyLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label1 = new Label(123, 'my label');
+        $user1 = new User(321, 'joe user');
+        $lau = new LabelAndUser($label1, $user1);
+        $file->addFileLabel($lau);
+        $label2 = new Label(456, 'my label');
+        $user2 = new User(654, 'joe user');
+        $lau = new LabelAndUser($label2, $user2);
+        $file->addFileLabel($lau);
+
+        $this->assertEquals([321 => $user1], $metadata->getUsers([123]));
+    }
+
+    public function testGetMatchingUsersByMap()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $la = new LabelAndUser($label, $user);
+        $file->addFileLabel($la);
+
+        $dbUser = DbUser::factory()->create();
+        $matches = $metadata->getMatchingUsers([321 => $dbUser->id]);
+        $this->assertEquals([321 => $dbUser->id], $matches);
+    }
+
+    public function testGetMatchingUsersByUuid()
+    {
+        $dbUser = DbUser::factory()->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user', uuid: $dbUser->uuid);
+        $la = new LabelAndUser($label, $user);
+        $file->addFileLabel($la);
+
+        $matches = $metadata->getMatchingUsers();
+        $this->assertEquals([321 => $dbUser->id], $matches);
+    }
+
+    public function testGetMatchingUsersNoMatch()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user', uuid: "398f42c6-0f24-38de-a1c6-3c467fcb4250");
+        $la = new LabelAndUser($label, $user);
+        $file->addFileLabel($la);
+
+        $matches = $metadata->getMatchingUsers([321 => -1]);
+        $this->assertEquals([321 => null], $matches);
+    }
+
+    public function testGetMatchingUsersOnlyLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('filename');
+        $metadata->addFile($file);
+        $label1 = new Label(123, 'my label');
+        $user1 = new User(321, 'joe user');
+        $la = new LabelAndUser($label1, $user1);
+        $file->addFileLabel($la);
+        $label2 = new Label(456, 'my label');
+        $user2 = new User(654, 'joe user');
+        $la = new LabelAndUser($label2, $user2);
+        $file->addFileLabel($la);
+
+        $dbUser = DbUser::factory()->create();
+        $matches = $metadata->getMatchingUsers([321 => $dbUser->id], [123]);
+        $this->assertEquals([321 => $dbUser->id], $matches);
     }
 }
