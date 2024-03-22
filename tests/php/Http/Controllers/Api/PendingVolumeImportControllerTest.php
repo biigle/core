@@ -866,5 +866,6 @@ class PendingVolumeImportControllerTest extends ApiTestCase
     {
         // use validator of HasPointsAttribute, maybe convert it to a validation rule.
         // and use this in regular annotation requests, too.
+        // also validate video anotation frames (i.e. if it is an array of floats)
     }
 }
