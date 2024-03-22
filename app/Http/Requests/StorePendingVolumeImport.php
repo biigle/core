@@ -92,7 +92,9 @@ class StorePendingVolumeImport extends FormRequest
                 }
             }
 
-            $onlyLabels = ($pv->only_annotation_labels ?: []) + ($pv->only_file_labels ?: []);
+            // Must not use union here because user/labels might be required for the
+            // annotation import but not the file label import (or vice versa).
+            $onlyLabels = array_intersect($pv->only_annotation_labels ?: [], $pv->only_file_labels ?: []);
 
             $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $onlyLabels);
             foreach ($matchingUsers as $id => $value) {
