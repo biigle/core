@@ -52,6 +52,18 @@ class PendingVolume extends Model
         'user_map' => 'array',
     ];
 
+    /**
+     * Default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'only_annotation_labels' => '[]',
+        'only_file_labels' => '[]',
+        'label_map' => '[]',
+        'user_map' => '[]',
+    ];
+
     protected static function booted(): void
     {
         static::$metadataFileDisk = config('volumes.pending_metadata_storage_disk');

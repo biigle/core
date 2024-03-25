@@ -27,10 +27,10 @@ class PendingVolumeTest extends ModelTestCase
         $this->assertNull($this->model->volume_id);
         $this->assertFalse($this->model->import_annotations);
         $this->assertFalse($this->model->import_file_labels);
-        $this->assertNull($this->model->only_annotation_labels);
-        $this->assertNull($this->model->only_file_labels);
-        $this->assertNull($this->model->label_map);
-        $this->assertNull($this->model->user_map);
+        $this->assertEquals([], $this->model->only_annotation_labels);
+        $this->assertEquals([], $this->model->only_file_labels);
+        $this->assertEquals([], $this->model->label_map);
+        $this->assertEquals([], $this->model->user_map);
         $this->assertFalse($this->model->importing);
     }
 

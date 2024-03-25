@@ -65,7 +65,7 @@ class StorePendingVolumeImport extends FormRequest
             }
 
             if ($pv->import_annotations) {
-                $labels = $metadata->getAnnotationLabels($pv->only_annotation_labels ?: []);
+                $labels = $metadata->getAnnotationLabels($pv->only_annotation_labels);
 
                 if (empty($labels)) {
                     if ($pv->only_annotation_labels) {
@@ -77,7 +77,7 @@ class StorePendingVolumeImport extends FormRequest
                     return;
                 }
 
-                $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $pv->only_annotation_labels ?: []);
+                $matchingUsers = $metadata->getMatchingUsers($pv->user_map, $pv->only_annotation_labels);
                 foreach ($matchingUsers as $id => $value) {
                     if (is_null($value)) {
                         $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
@@ -85,7 +85,7 @@ class StorePendingVolumeImport extends FormRequest
                     }
                 }
 
-                $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $pv->only_annotation_labels ?: []);
+                $matchingLabels = $metadata->getMatchingLabels($pv->label_map, $pv->only_annotation_labels);
                 foreach ($matchingLabels as $id => $value) {
                     if (is_null($value)) {
                         $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
@@ -95,7 +95,7 @@ class StorePendingVolumeImport extends FormRequest
             }
 
             if ($pv->import_file_labels) {
-                $labels = $metadata->getFileLabels($pv->only_file_labels ?: []);
+                $labels = $metadata->getFileLabels($pv->only_file_labels);
 
                 if (empty($labels)) {
                     if ($pv->only_file_labels) {
@@ -107,7 +107,7 @@ class StorePendingVolumeImport extends FormRequest
                     return;
                 }
 
-                $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $pv->only_file_labels ?: []);
+                $matchingUsers = $metadata->getMatchingUsers($pv->user_map, $pv->only_file_labels);
                 foreach ($matchingUsers as $id => $value) {
                     if (is_null($value)) {
                         $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
@@ -115,7 +115,7 @@ class StorePendingVolumeImport extends FormRequest
                     }
                 }
 
-                $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $pv->only_file_labels ?: []);
+                $matchingLabels = $metadata->getMatchingLabels($pv->label_map, $pv->only_file_labels);
                 foreach ($matchingLabels as $id => $value) {
                     if (is_null($value)) {
                         $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");

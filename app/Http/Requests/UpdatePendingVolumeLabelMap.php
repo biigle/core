@@ -65,8 +65,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                 }
             }
 
-            $onlyLabels = $this->pendingVolume->only_annotation_labels ?: [];
-            $onlyLabels += $this->pendingVolume->only_file_labels ?: [];
+            $onlyLabels = $this->pendingVolume->only_annotation_labels + $this->pendingVolume->only_file_labels;
             if (!empty($onlyLabels)) {
                 $diff = array_diff(array_keys($map), $onlyLabels);
                 if (!empty($diff)) {

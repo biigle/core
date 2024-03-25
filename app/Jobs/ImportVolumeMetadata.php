@@ -39,11 +39,11 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
         DB::transaction(function () {
             $metadata = $this->pv->getMetadata();
 
-            $annotationUserMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $this->pv->only_annotation_labels ?: []);
-            $annotationLabelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $this->pv->only_annotation_labels ?: []);
+            $annotationUserMap = $metadata->getMatchingUsers($this->pv->user_map, $this->pv->only_annotation_labels);
+            $annotationLabelMap = $metadata->getMatchingLabels($this->pv->label_map, $this->pv->only_annotation_labels);
 
-            $fileLabelUserMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $this->pv->only_file_labels ?: []);
-            $fileLabelLabelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $this->pv->only_file_labels ?: []);
+            $fileLabelUserMap = $metadata->getMatchingUsers($this->pv->user_map, $this->pv->only_file_labels);
+            $fileLabelLabelMap = $metadata->getMatchingLabels($this->pv->label_map, $this->pv->only_file_labels);
 
             foreach ($this->pv->volume->files()->lazyById() as $file) {
                 $metaFile = $metadata->getFile($file->filename);
