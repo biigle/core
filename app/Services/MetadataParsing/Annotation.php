@@ -3,9 +3,18 @@
 namespace Biigle\Services\MetadataParsing;
 
 use Biigle\Shape;
+use Biigle\Traits\HasPointsAttribute;
+use Exception;
 
 class Annotation
 {
+    use HasPointsAttribute;
+
+    /**
+     * Shape ID required for point validation.
+     */
+    public int $shape_id;
+
     /**
      * @param Shape $shape
      * @param array<float> $points
@@ -16,7 +25,7 @@ class Annotation
         public array $points,
         public array $labels,
     ) {
-        //
+        $this->shape_id = $shape->id;
     }
 
     /**
@@ -30,5 +39,19 @@ class Annotation
             'points' => json_encode($this->points),
             'shape_id' => $this->shape->id,
         ];
+    }
+
+    /**
+     * Validatethe points and labels.
+     *
+     * @throws Exception If something is invalid.
+     */
+    public function validate(): void
+    {
+        if (empty($this->labels)) {
+            throw new Exception('The annotation has no labels.');
+        }
+
+        $this->validatePoints($this->points);
     }
 }

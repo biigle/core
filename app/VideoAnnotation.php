@@ -106,7 +106,11 @@ class VideoAnnotation extends Annotation
         }
 
         // Gaps are represented as empty arrays
-        array_map(function ($point) { if (count($point)) { parent::validatePoints($point); } }, $this->points);
+        array_map(function ($point) {
+            if (count($point)) {
+                parent::validatePoints($point);
+            }
+        }, $this->points);
     }
 
     /**
