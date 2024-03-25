@@ -76,6 +76,22 @@ class StorePendingVolumeImport extends FormRequest
 
                     return;
                 }
+
+                $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $pv->only_annotation_labels ?: []);
+                foreach ($matchingUsers as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
+                        return;
+                    }
+                }
+
+                $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $pv->only_annotation_labels ?: []);
+                foreach ($matchingLabels as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
+                        return;
+                    }
+                }
             }
 
             if ($pv->import_file_labels) {
@@ -90,25 +106,21 @@ class StorePendingVolumeImport extends FormRequest
 
                     return;
                 }
-            }
 
-            // Must not use union here because user/labels might be required for the
-            // annotation import but not the file label import (or vice versa).
-            $onlyLabels = array_intersect($pv->only_annotation_labels ?: [], $pv->only_file_labels ?: []);
-
-            $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $onlyLabels);
-            foreach ($matchingUsers as $id => $value) {
-                if (is_null($value)) {
-                    $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
-                    return;
+                $matchingUsers = $metadata->getMatchingUsers($pv->user_map ?: [], $pv->only_file_labels ?: []);
+                foreach ($matchingUsers as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
+                        return;
+                    }
                 }
-            }
 
-            $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $onlyLabels);
-            foreach ($matchingLabels as $id => $value) {
-                if (is_null($value)) {
-                    $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
-                    return;
+                $matchingLabels = $metadata->getMatchingLabels($pv->label_map ?: [], $pv->only_file_labels ?: []);
+                foreach ($matchingLabels as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
+                        return;
+                    }
                 }
             }
         });

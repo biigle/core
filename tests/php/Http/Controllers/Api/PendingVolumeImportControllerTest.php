@@ -339,18 +339,6 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         ])->assertStatus(422);
     }
 
-    public function testUpdateLabelMapFilterAnnotationButNotFileLabel()
-    {
-        // choose a label that should be ignored by only_annotation_labels but not by
-        // only_file_labels.
-    }
-
-    public function testUpdateLabelMapFilterFileLabelButNotAnnotation()
-    {
-        // choose a label that should be ignored by only_file_labels but not by
-        // only_annotation_labels.
-    }
-
     public function testUpdateUserMap()
     {
         $metadata = new VolumeMetadata;

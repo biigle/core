@@ -38,9 +38,13 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
     {
         DB::transaction(function () {
             $metadata = $this->pv->getMetadata();
-            $onlyLabels = ($this->pv->only_annotation_labels ?: []) + ($this->pv->only_file_labels ?: []);
-            $userMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $onlyLabels);
-            $labelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $onlyLabels);
+
+            $annotationUserMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $this->pv->only_annotation_labels ?: []);
+            $annotationLabelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $this->pv->only_annotation_labels ?: []);
+
+            $fileLabelUserMap = $metadata->getMatchingUsers($this->pv->user_map ?: [], $this->pv->only_file_labels ?: []);
+            $fileLabelLabelMap = $metadata->getMatchingLabels($this->pv->label_map ?: [], $this->pv->only_file_labels ?: []);
+
             foreach ($this->pv->volume->files()->lazyById() as $file) {
                 $metaFile = $metadata->getFile($file->filename);
                 if (!$metaFile) {
@@ -48,11 +52,11 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
                 }
 
                 if ($this->pv->import_annotations && $metaFile->hasAnnotations()) {
-                    $this->insertAnnotations($metaFile, $file, $userMap, $labelMap);
+                    $this->insertAnnotations($metaFile, $file, $annotationUserMap, $annotationLabelMap);
                 }
 
                 if ($this->pv->import_file_labels && $metaFile->hasFileLabels()) {
-                    $this->insertFileLabels($metaFile, $file, $userMap, $labelMap);
+                    $this->insertFileLabels($metaFile, $file, $fileLabelUserMap, $fileLabelLabelMap);
                 }
             }
         });
