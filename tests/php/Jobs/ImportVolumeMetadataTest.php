@@ -54,7 +54,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => $dbLabel->id],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -107,7 +106,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => $dbLabel->id],
             'volume_id' => $video->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -158,7 +156,6 @@ class ImportVolumeMetadataTest extends TestCase
             'import_annotations' => true,
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -201,7 +198,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => $dbLabel->id],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -241,7 +237,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => -1],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -280,7 +275,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => $dbLabel->id],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -319,7 +313,6 @@ class ImportVolumeMetadataTest extends TestCase
             'label_map' => [123 => $dbLabel->id],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -370,7 +363,6 @@ class ImportVolumeMetadataTest extends TestCase
             'only_annotation_labels' => [123],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -428,7 +420,6 @@ class ImportVolumeMetadataTest extends TestCase
             'only_file_labels' => [123],
             'volume_id' => $image->volume_id,
         ]);
-        $id = $pv->id;
 
         (new ImportVolumeMetadata($pv))->handle();
 
@@ -441,16 +432,96 @@ class ImportVolumeMetadataTest extends TestCase
 
     public function testHandleIgnoreMissingFiles()
     {
-        // skip metadata files that don't exist in the volume
+        $image = Image::factory()->create();
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('unknown.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'import_file_labels' => true,
+            'import_annotations' => true,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
+            'volume_id' => $image->volume_id,
+        ]);
+
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $this->assertFalse($image->annotations()->exists());
+        $this->assertFalse($image->labels()->exists());
     }
 
     public function testHandleRetryWhileCreatingAsync()
     {
-        // if the volume has creating_async === true, resubmit the import job and wait for 10 minutes (max. 12 times before failing?)
+        $image = Image::factory()->create();
+        $volume = Volume::factory()->create();
+        $volume->creating_async = true;
+        $volume->save();
+
+        $pv = PendingVolume::factory()->create(['volume_id' => $volume->id]);
+
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $this->assertNotNull($pv->fresh());
     }
 
     public function testHandleChunkAnnotations()
     {
-        // configure the cunk size to 2 and test
+        ImportVolumeMetadata::$insertChunkSize = 1;
+
+        $image = Image::factory()->create();
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata($image->filename);
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [20, 20],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'import_annotations' => true,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
+            'volume_id' => $image->volume_id,
+        ]);
+
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $this->assertEquals(2, $image->annotations()->count());
     }
 }

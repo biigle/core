@@ -11,12 +11,20 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\VolumeFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
 class ImportVolumeMetadata extends Job implements ShouldQueue
 {
-    use SerializesModels;
+    use SerializesModels, InteractsWithQueue;
+
+    /**
+     * The number of annotation (label) rows to insert in one chunk.
+     *
+     * @var integer
+     */
+    public static $insertChunkSize = 5000;
 
     /**
      * Ignore this job if the pending volume does not exist any more.
@@ -24,6 +32,13 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
      * @var bool
      */
     protected $deleteWhenMissingModels = true;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 12;
 
     /**
      * Create a new job instance.
@@ -36,6 +51,14 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
 
     public function handle(): void
     {
+        if ($this->pv->volume->creating_async) {
+            // Wait 10 minutes so the volume has a chance to finish creating the files.
+            // Do this for a maximum of 120 min (12 tries).
+            $this->release(600);
+
+            return;
+        }
+
         DB::transaction(function () {
             $metadata = $this->pv->getMetadata();
 
@@ -76,7 +99,7 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
         $insertAnnotations = [];
         $insertAnnotationLabels = [];
 
-        foreach ($meta->getAnnotations() as $annotation) {
+        foreach ($meta->getAnnotations() as $index => $annotation) {
             // This will remove labels that should be ignored based on $onlyLabels and
             // that have no match in the database.
             $annotationLabels = array_filter(
@@ -94,34 +117,52 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
                 'label_id' => $labelMap[$lau->label->id],
                 'user_id' => $userMap[$lau->user->id],
             ], $annotationLabels);
+
+            // Insert in chunks because a single file can have tens of thousands of
+            // annotations (e.g. a video or mosaic).
+            if (($index % static::$insertChunkSize) === 0) {
+                $this->insertAnnotationChunk($file, $insertAnnotations, $insertAnnotationLabels);
+                $insertAnnotations = [];
+                $insertAnnotationLabels = [];
+            }
         }
 
-        $file->annotations()->insert($insertAnnotations);
+        if (!empty($insertAnnotations)) {
+            $this->insertAnnotationChunk($file, $insertAnnotations, $insertAnnotationLabels);
+        }
+    }
+
+    protected function insertAnnotationChunk(
+        VolumeFile $file,
+        array $annotations,
+        array $annotationLabels
+    ): void {
+        $file->annotations()->insert($annotations);
 
         $ids = $file->annotations()
             ->orderBy('id', 'desc')
-            ->take(count($insertAnnotations))
+            ->take(count($annotations))
             ->pluck('id')
             ->reverse()
             ->toArray();
 
         foreach ($ids as $index => $id) {
-            foreach ($insertAnnotationLabels[$index] as &$i) {
+            foreach ($annotationLabels[$index] as &$i) {
                 $i['annotation_id'] = $id;
             }
         }
 
         // Flatten.
-        $insertAnnotationLabels = array_merge(...$insertAnnotationLabels);
+        $annotationLabels = array_merge(...$annotationLabels);
 
         if ($file instanceof Image) {
-            foreach ($insertAnnotationLabels as &$i) {
+            foreach ($annotationLabels as &$i) {
                 $i['confidence'] = 1.0;
             }
 
-            ImageAnnotationLabel::insert($insertAnnotationLabels);
+            ImageAnnotationLabel::insert($annotationLabels);
         } else {
-            VideoAnnotationLabel::insert($insertAnnotationLabels);
+            VideoAnnotationLabel::insert($annotationLabels);
         }
     }
 
