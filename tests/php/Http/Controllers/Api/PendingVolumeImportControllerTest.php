@@ -13,6 +13,8 @@ use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
+use Biigle\Services\MetadataParsing\VideoAnnotation;
+use Biigle\Services\MetadataParsing\VideoMetadata;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Shape;
 use Biigle\User as DbUser;
@@ -862,10 +864,113 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertSuccessful();
     }
 
-    public function testStoreImportValidateAnnotationPoints()
+    public function testStoreImportValidateImageAnnotationPoints()
     {
-        // use validator of HasPointsAttribute, maybe convert it to a validation rule.
-        // and use this in regular annotation requests, too.
-        // also validate video anotation frames (i.e. if it is an array of floats)
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            // Incorrect points for the shape.
+            points: [10, 10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
+            'import_annotations' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
+    }
+
+    public function testStoreImportValidateVideoAnnotationPoints()
+    {
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new VideoMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new VideoAnnotation(
+            shape: Shape::point(),
+            // Must be an array of arrays.
+            points: [10, 10],
+            frames: [1],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::videoId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
+            'import_annotations' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
+    }
+
+    public function testStoreImportValidateVideoAnnotationFrames()
+    {
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+        $metadata = new VolumeMetadata;
+        $file = new VideoMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[10, 10]],
+            // Must have the same number of elements than points.
+            frames: [],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::videoId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id],
+            'import_annotations' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->postJson("/api/v1/pending-volumes/{$id}/import")->assertStatus(422);
     }
 }

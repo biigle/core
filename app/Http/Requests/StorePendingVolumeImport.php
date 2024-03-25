@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\PendingVolume;
+use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePendingVolumeImport extends FormRequest
@@ -64,6 +65,38 @@ class StorePendingVolumeImport extends FormRequest
                 return;
             }
 
+            // Check file labels first because the annotations have a more expensive
+            // validation.
+            if ($pv->import_file_labels) {
+                $labels = $metadata->getFileLabels($pv->only_file_labels);
+
+                if (empty($labels)) {
+                    if ($pv->only_file_labels) {
+                        $validator->errors()->add('id', 'There are no file labels to import with the chosen labels.');
+                    } else {
+                        $validator->errors()->add('id', 'There are no file labels to import.');
+                    }
+
+                    return;
+                }
+
+                $matchingUsers = $metadata->getMatchingUsers($pv->user_map, $pv->only_file_labels);
+                foreach ($matchingUsers as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
+                        return;
+                    }
+                }
+
+                $matchingLabels = $metadata->getMatchingLabels($pv->label_map, $pv->only_file_labels);
+                foreach ($matchingLabels as $id => $value) {
+                    if (is_null($value)) {
+                        $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
+                        return;
+                    }
+                }
+            }
+
             if ($pv->import_annotations) {
                 $labels = $metadata->getAnnotationLabels($pv->only_annotation_labels);
 
@@ -92,34 +125,15 @@ class StorePendingVolumeImport extends FormRequest
                         return;
                     }
                 }
-            }
 
-            if ($pv->import_file_labels) {
-                $labels = $metadata->getFileLabels($pv->only_file_labels);
-
-                if (empty($labels)) {
-                    if ($pv->only_file_labels) {
-                        $validator->errors()->add('id', 'There are no file labels to import with the chosen labels.');
-                    } else {
-                        $validator->errors()->add('id', 'There are no file labels to import.');
-                    }
-
-                    return;
-                }
-
-                $matchingUsers = $metadata->getMatchingUsers($pv->user_map, $pv->only_file_labels);
-                foreach ($matchingUsers as $id => $value) {
-                    if (is_null($value)) {
-                        $validator->errors()->add('id', "No matching database user could be found for metadata user ID {$id}.");
-                        return;
-                    }
-                }
-
-                $matchingLabels = $metadata->getMatchingLabels($pv->label_map, $pv->only_file_labels);
-                foreach ($matchingLabels as $id => $value) {
-                    if (is_null($value)) {
-                        $validator->errors()->add('id', "No matching database label could be found for metadata label ID {$id}.");
-                        return;
+                foreach ($metadata->getFiles() as $file) {
+                    foreach ($file->getAnnotations() as $annotation) {
+                        try {
+                            $annotation->validate();
+                        } catch (Exception $e) {
+                            $validator->errors()->add('id', "Invalid annotation for file {$file->name}: ".$e->getMessage());
+                            return;
+                        }
                     }
                 }
             }
