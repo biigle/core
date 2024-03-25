@@ -152,8 +152,9 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
             }
         }
 
-        // Flatten.
-        $annotationLabels = array_merge(...$annotationLabels);
+        // Flatten. Use array_values to prevent accidental array unpacking with string
+        // keys (which makes the linter complain).
+        $annotationLabels = array_merge(...array_values($annotationLabels));
 
         if ($file instanceof Image) {
             foreach ($annotationLabels as &$i) {
