@@ -387,7 +387,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $disk->put('images/1.jpg', 'abc');
 
         $this->beAdmin();
-        $response = $this->put("/api/v1/pending-volumes/{$pv->id}", [
+        $response = $this->put("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
             'files' => ['1.jpg'],
@@ -395,6 +395,37 @@ class PendingVolumeControllerTest extends ApiTestCase
         $volume = Volume::first();
 
         $response->assertRedirectToRoute('volume', $volume->id);
+    }
+
+    public function testUpdateFromUIWithAnnotationImport()
+    {
+        $disk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+        $id = $pv->id;
+
+        $disk->makeDirectory('images');
+        $disk->put('images/1.jpg', 'abc');
+
+        $this->beAdmin();
+        $response = $this->put("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'import_annotations' => true,
+            'files' => ['1.jpg'],
+        ]);
+        $volume = Volume::first();
+
+        $response->assertRedirectToRoute('pending-volume-annotation-labels', $id);
+    }
+
+    public function testUpdateFromUIWithFileLabelImport()
+    {
+        //
     }
 
     public function testUpdateFileString()

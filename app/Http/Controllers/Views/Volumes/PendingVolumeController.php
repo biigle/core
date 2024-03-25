@@ -9,6 +9,7 @@ use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\PendingVolume;
 use Biigle\Role;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class PendingVolumeController extends Controller
 {
@@ -103,6 +104,35 @@ class PendingVolumeController extends Controller
             'filenamesFromMeta' => $filenamesFromMeta,
             'hasAnnotations' => $hasAnnotations,
             'hasFileLabels' => $hasFileLabels,
+        ]);
+    }
+
+    /**
+     * Show the form to select labels of metadata annotations to import.
+     *
+     * @param Request $request
+     */
+    public function showAnnotationLabels(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('update', $pv);
+
+        if (is_null($pv->volume_id)) {
+            return redirect()->route('pending-volume', $pv->id);
+        }
+
+        if (!$pv->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $metadata = $pv->getMetadata();
+
+        if (!$metadata->hasAnnotations()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return view('volumes.create.annotationLabels', [
+            'pv' => $pv,
         ]);
     }
 }

@@ -252,6 +252,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'pending-volume',
             'uses' => 'PendingVolumeController@show',
         ]);
+
+        $router->get('{id}/annotation-labels', [
+            'as'   => 'pending-volume-annotation-labels',
+            'uses' => 'PendingVolumeController@showAnnotationLabels',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {

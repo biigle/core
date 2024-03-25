@@ -109,23 +109,25 @@ class PendingVolumeController extends Controller
      */
     public function update(UpdatePendingVolume $request)
     {
-        $volume = DB::transaction(function () use ($request) {
+        $pv = $request->pendingVolume;
+        $volume = DB::transaction(function () use ($request, $pv) {
+
             $volume = Volume::create([
                 'name' => $request->input('name'),
                 'url' => $request->input('url'),
-                'media_type_id' => $request->pendingVolume->media_type_id,
+                'media_type_id' => $pv->media_type_id,
                 'handle' => $request->input('handle'),
                 'creator_id' => $request->user()->id,
             ]);
 
-            $request->pendingVolume->project->volumes()->attach($volume);
+            $pv->project->volumes()->attach($volume);
 
-            if ($request->pendingVolume->hasMetadata()) {
+            if ($pv->hasMetadata()) {
                 $volume->update([
-                    'metadata_file_path' => $volume->id.'.'.pathinfo($request->pendingVolume->metadata_file_path, PATHINFO_EXTENSION)
+                    'metadata_file_path' => $volume->id.'.'.pathinfo($pv->metadata_file_path, PATHINFO_EXTENSION)
                 ]);
                 $stream = Storage::disk(config('volumes.pending_metadata_storage_disk'))
-                    ->readStream($request->pendingVolume->metadata_file_path);
+                    ->readStream($pv->metadata_file_path);
                 Storage::disk(config('volumes.metadata_storage_disk'))
                     ->writeStream($volume->metadata_file_path, $stream);
             }
@@ -147,18 +149,25 @@ class PendingVolumeController extends Controller
         });
 
         if ($request->input('import_annotations') || $request->input('import_file_labels')) {
-            $request->pendingVolume->update([
+            $pv->update([
                 'volume_id' => $volume->id,
                 'import_annotations' => $request->input('import_annotations', false),
                 'import_file_labels' => $request->input('import_file_labels', false),
             ]);
         } else {
-            $request->pendingVolume->volume_id = $volume->id;
-            $request->pendingVolume->delete();
+            $pv->volume_id = $volume->id;
+            $pv->delete();
         }
 
         if ($this->isAutomatedRequest()) {
-            return $request->pendingVolume;
+            return $pv;
+        }
+
+        if ($pv->import_annotations) {
+            return redirect()
+                ->route('pending-volume-annotation-labels', $pv->id)
+                ->with('message', 'Volume created.')
+                ->with('messageType', 'success');
         }
 
         return redirect()
@@ -185,7 +194,7 @@ class PendingVolumeController extends Controller
         $pv->delete();
 
         if (!$this->isAutomatedRequest()) {
-            return redirect()->route('create-volume', ['project' => $pv->project_id]);
+            return $this->fuzzyRedirect('create-volume', ['project' => $pv->project_id]);
         }
     }
 }
