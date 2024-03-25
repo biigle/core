@@ -22,7 +22,7 @@
         @if ($restored)
             <div class="panel panel-info">
                 <div class="panel-body text-info">
-                    This is pending volume that you did not finish before.
+                    This is a pending volume that you did not finish before.
                 </div>
             </div>
         @endif
@@ -212,12 +212,48 @@
                     @endif
                 </div>
             </fieldset>
+
+            @if ($hasAnnotations || $hasFileLabels)
+                <fieldset>
+                     <legend>
+                         Import more metadata <span class="text-muted">(optional)</span>
+                     </legend>
+
+                     <div class="row">
+                        @if ($hasAnnotations)
+                             <div class="col-xs-6 form-group{{ $errors->has('import_annotations') ? ' has-error' : '' }}">
+                                <button type="button" class="btn btn-default btn-block" v-bind:class="importAnnotationsButtonClass" title="Import annotations after the volume was created" v-on:click="toggleImportAnnotations"><i class="fa fa-map-marker-alt"></i> Import Annotations</button>
+                                <input v-if="importAnnotations" type="hidden" name="import_annotations" value="1">
+                                @if ($errors->has('import_annotations'))
+                                    <span class="help-block">{{ $errors->first('import_annotations') }}</span>
+                                @endif
+                            </div>
+                        @endif
+
+                        @if ($hasFileLabels)
+                            <div class="col-xs-6 form-group{{ $errors->has('import_file_labels') ? ' has-error' : '' }}">
+                                <button type="button" class="btn btn-default btn-block" v-bind:class="importFileLabelsButtonClass" title="Import file labels after the volume was created" v-on:click="toggleImportFileLabels"><i class="fa fa-tag"></i> Import File Labels</button>
+                                <input v-if="importAnnotations" type="hidden" name="import_file_labels" value="1">
+                                @if ($errors->has('import_file_labels'))
+                                    <span class="help-block">{{ $errors->first('import_file_labels') }}</span>
+                                @endif
+                            </div>
+                        @endif
+                     </div>
+
+                    <span class="help-block">
+                        If you import more metadata, there will be additional steps after the volume was created.
+                    </span>
+                </fieldset>
+            @endif
+
             <div class="form-group">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
                 <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard data and return to the previous step">Cancel</button>
                 <button v-if="!initialized" type="button" class="btn btn-success pull-right" disabled>Create</button>
-                <input v-cloak type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
+                <input v-cloak v-if="importAnnotations || importFileLabels" type="submit" class="btn btn-success pull-right" value="Create and continue" :disabled="cannotSubmit" title="Create the volume and continue to import more metadata">
+                <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
             </div>
         </form>
         <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

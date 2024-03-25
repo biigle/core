@@ -83,6 +83,9 @@ class PendingVolumeController extends Controller
             $filenamesFromMeta = !empty($filenames);
         }
 
+        $hasAnnotations = $metadata && $metadata->hasAnnotations();
+        $hasFileLabels = $metadata && $metadata->hasFileLabels();
+
         return view('volumes.create.step2', [
             'pv' => $pv,
             'project' => $pv->project,
@@ -98,6 +101,8 @@ class PendingVolumeController extends Controller
             'oldUrl' => $oldUrl,
             'oldHandle' => $oldHandle,
             'filenamesFromMeta' => $filenamesFromMeta,
+            'hasAnnotations' => $hasAnnotations,
+            'hasFileLabels' => $hasFileLabels,
         ]);
     }
 }

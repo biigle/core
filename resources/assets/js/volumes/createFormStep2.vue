@@ -28,6 +28,8 @@ export default {
             fileSource: FILE_SOURCE.REMOTE,
             handle: '',
             imageDiskCache: {},
+            importAnnotations: false,
+            importFileLabels: false,
             initialized: false,
             initializingBrowser: false,
             loadingBrowser: false,
@@ -111,6 +113,18 @@ export default {
             return {
                 active: this.isDiskFileSource,
                 'btn-info': this.isDiskFileSource,
+            };
+        },
+        importAnnotationsButtonClass() {
+            return {
+                active: this.importAnnotations,
+                'btn-info': this.importAnnotations,
+            };
+        },
+        importFileLabelsButtonClass() {
+            return {
+                active: this.importFileLabels,
+                'btn-info': this.importFileLabels,
             };
         },
     },
@@ -352,6 +366,12 @@ export default {
             } else {
                 this.selectFile(file, directory, path, event);
             }
+        },
+        toggleImportAnnotations() {
+            this.importAnnotations = !this.importAnnotations;
+        },
+        toggleImportFileLabels() {
+            this.importFileLabels = !this.importFileLabels;
         },
     },
     watch: {
