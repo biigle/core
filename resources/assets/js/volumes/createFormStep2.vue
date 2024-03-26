@@ -389,7 +389,7 @@ export default {
             }
         },
         filenames() {
-            if (!this.metadataFilenames || !this.filenames || !this.filenames.includes('.')) {
+            if (this.metadataFilenames.length === 0 || !this.filenames || !this.filenames.includes('.')) {
                 this.filesDontMatchMetadata = false;
                 return;
             }
