@@ -109,6 +109,10 @@ export default {
                     this.handleNewFeature(e);
                     this.drawEnded = true;
                 });
+
+                drawInteraction.on('drawabort', () => {
+                        this.drawEnded = true;
+                    });
             }
         },
         updateSnapCoords(mapBrowserEvent) {

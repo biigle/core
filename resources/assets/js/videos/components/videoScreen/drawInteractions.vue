@@ -141,8 +141,9 @@ export default {
                         this.extendPendingAnnotation(e);
                         this.drawEnded = true;
                     });
-
-                    
+                    this.drawInteraction.on('drawabort', () => {
+                        this.drawEnded = true;
+                    });
                 }
             }
         },
