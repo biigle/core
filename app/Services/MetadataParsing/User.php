@@ -19,7 +19,7 @@ class User implements JsonSerializable
         //
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $ret = [
             'id' => $this->id,
