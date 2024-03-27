@@ -11,13 +11,10 @@ use Biigle\Volume;
 use Cache;
 use Carbon\Carbon;
 use Event;
-use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
 use Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VolumeTest extends ModelTestCase
 {
@@ -553,76 +550,49 @@ class VolumeTest extends ModelTestCase
         $this->assertFalse($this->model->fresh()->creating_async);
     }
 
-    public function testSaveIfdo()
+    public function testSaveMetadata()
     {
-        $disk = Storage::fake('ifdos');
-        $csv = __DIR__."/../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
+        $disk = Storage::fake('metadata');
+        $csv = __DIR__."/../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
 
-        $this->assertFalse($this->model->hasIfdo());
-        $this->model->saveIfdo($file);
+        $this->assertFalse($this->model->hasMetadata());
+        $this->model->saveMetadata($file);
 
-        $disk->assertExists($this->model->id.'.yaml');
-        $this->assertTrue($this->model->hasIfdo());
+        $disk->assertExists($this->model->id.'.csv');
+        $this->assertTrue($this->model->hasMetadata());
+        $this->assertEquals($this->model->id.'.csv', $this->model->metadata_file_path);
     }
 
-    public function testHasIfdo()
+    public function testDeleteMetadataOnDelete()
     {
-        $disk = Storage::fake('ifdos');
-        $this->assertFalse($this->model->hasIfdo());
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $this->assertFalse($this->model->hasIfdo());
-        Cache::flush();
-        $this->assertTrue($this->model->hasIfdo());
-    }
-
-    public function testHasIfdoError()
-    {
-        Storage::shouldReceive('disk')->andThrow(Exception::class);
-        $this->assertFalse($this->model->hasIfdo(true));
-
-        $this->expectException(Exception::class);
-        $this->model->hasIfdo();
-    }
-
-    public function testDeleteIfdo()
-    {
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $this->assertTrue($this->model->hasIfdo());
-        $this->model->deleteIfdo();
-        $disk->assertMissing($this->model->id.'.yaml');
-        $this->assertFalse($this->model->hasIfdo());
-    }
-
-    public function testDeleteIfdoOnDelete()
-    {
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
+        $disk = Storage::fake('metadata');
+        $disk->put($this->model->id.'.csv', 'abc');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->save();
         $this->model->delete();
-        $disk->assertMissing($this->model->id.'.yaml');
+        $disk->assertMissing($this->model->id.'.csv');
     }
 
-    public function testDownloadIfdoNotFound()
+    public function testDeleteMetadata()
     {
-        $this->expectException(NotFoundHttpException::class);
-        $this->model->downloadIfdo();
+        $disk = Storage::fake('metadata');
+        $disk->put($this->model->id.'.csv', 'abc');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->save();
+        $this->model->deleteMetadata();
+        $disk->assertMissing($this->model->id.'.csv');
+        $this->assertNull($this->model->fresh()->metadata_file_path);
     }
 
-    public function testDownloadIfdo()
+    public function testGetMetadata()
     {
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->model->id.'.yaml', 'abc');
-        $response = $this->model->downloadIfdo();
-        $this->assertInstanceOf(StreamedResponse::class, $response);
-    }
-
-    public function testGetIfdo()
-    {
-        $disk = Storage::fake('ifdos');
-        $this->assertNull($this->model->getIfdo());
-        $disk->put($this->model->id.'.yaml', 'abc: def');
-        $ifdo = $this->model->getIfdo();
-        $this->assertEquals(['abc' => 'def'], $ifdo);
+        $this->assertNull($this->model->getMetadata());
+        $disk = Storage::fake('metadata');
+        $this->model->metadata_file_path = $this->model->id.'.csv';
+        $disk->put($this->model->metadata_file_path, "filename,area\n1.jpg,2.5");
+        $metadata = $this->model->getMetadata();
+        $fileMeta = $metadata->getFile('1.jpg');
+        $this->assertEquals(2.5, $fileMeta->area);
     }
 }

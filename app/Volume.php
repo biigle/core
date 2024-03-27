@@ -3,15 +3,12 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
+use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Response;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -19,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes, HasFactory;
+    use HasJsonAttributes, HasFactory, HasMetadataFile;
 
     /**
      * Regular expression that matches the supported image file extensions.
@@ -42,6 +39,20 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'url',
+        'media_type_id',
+        'handle',
+        'creator_id',
+        'metadata_file_path',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -60,6 +71,11 @@ class Volume extends Model
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
+
+    protected static function booted(): void
+    {
+        static::$metadataFileDisk = config('volumes.metadata_storage_disk');
+    }
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -442,85 +458,6 @@ class Volume extends Model
     }
 
     /**
-     * Save an iFDO metadata file and link it with this volume.
-     *
-     * @param UploadedFile $file iFDO YAML file.
-     *
-     */
-    public function saveIfdo(UploadedFile $file)
-    {
-        $disk = config('volumes.ifdo_storage_disk');
-        $file->storeAs('', $this->getIfdoFilename(), $disk);
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Check if an iFDO metadata file is available for this volume.
-     *
-     * @param bool $ignoreErrors Set to `true` to ignore exceptions and return `false` if iFDO existence could not be determined.
-     * @return boolean
-     */
-    public function hasIfdo($ignoreErrors = false)
-    {
-        try {
-            return Cache::remember($this->getIfdoCacheKey(), 3600, fn () => Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename()));
-        } catch (Exception $e) {
-            if (!$ignoreErrors) {
-                throw $e;
-            }
-
-            return false;
-        }
-    }
-
-    /**
-     * Delete the iFDO metadata file linked with this volume.
-     */
-    public function deleteIfdo()
-    {
-        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Download the iFDO that is attached to this volume.
-     *
-     * @return Response
-     */
-    public function downloadIfdo()
-    {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-
-        if (!$disk->exists($this->getIfdoFilename())) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
-    }
-
-    /**
-     * Get the content of the iFDO file associated with this volume.
-     *
-     * @return array
-     */
-    public function getIfdo()
-    {
-        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
-
-        return yaml_parse($content);
-    }
-
-    /**
-     * Get the filename of the volume iFDO in storage.
-     *
-     * @return string
-     */
-    protected function getIfdoFilename()
-    {
-        return $this->id.'.yaml';
-    }
-
-    /**
      * Get the cache key for volume thumbnails.
      *
      * @return string
@@ -538,15 +475,5 @@ class Volume extends Model
     protected function getGeoInfoCacheKey()
     {
         return "volume-{$this->id}-has-geo-info";
-    }
-
-    /**
-     * Get the cache key for volume iFDO info.
-     *
-     * @return string
-     */
-    protected function getIfdoCacheKey()
-    {
-        return "volume-{$this->id}-has-ifdo";
     }
 }

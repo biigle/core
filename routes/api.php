@@ -147,6 +147,17 @@ $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);
 
+$router->resource('pending-volumes', 'PendingVolumeController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['pending-volumes' => 'id'],
+]);
+
+$router->put('pending-volumes/{id}/annotation-labels', 'PendingVolumeImportController@updateAnnotationLabels');
+$router->put('pending-volumes/{id}/file-labels', 'PendingVolumeImportController@updateFileLabels');
+$router->put('pending-volumes/{id}/label-map', 'PendingVolumeImportController@updateLabelMap');
+$router->put('pending-volumes/{id}/user-map', 'PendingVolumeImportController@updateUserMap');
+$router->post('pending-volumes/{id}/import', 'PendingVolumeImportController@storeImport');
+
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],
@@ -166,6 +177,11 @@ $router->get(
 $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
+]);
+
+$router->resource('projects.pending-volumes', 'PendingVolumeController', [
+    'only' => ['store'],
+    'parameters' => ['projects' => 'id'],
 ]);
 
 $router->get(
@@ -305,10 +321,6 @@ $router->group([
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
 
-    $router->post('parse-ifdo', [
-        'uses' => 'ParseIfdoController@store',
-    ]);
-
     $router->get('{id}/files/filter/labels', [
         'uses' => 'Filters\AnyFileLabelController@index',
     ]);
@@ -350,12 +362,12 @@ $router->group([
         'uses' => 'MetadataController@store',
     ]);
 
-    $router->get('{id}/ifdo', [
-        'uses' => 'IfdoController@show',
+    $router->get('{id}/metadata', [
+        'uses' => 'MetadataController@show',
     ]);
 
-    $router->delete('{id}/ifdo', [
-        'uses' => 'IfdoController@destroy',
+    $router->delete('{id}/metadata', [
+        'uses' => 'MetadataController@destroy',
     ]);
 
     $router->get('{id}/users', [

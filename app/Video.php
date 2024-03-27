@@ -79,6 +79,9 @@ class Video extends VolumeFile
         'uuid',
         'attrs',
         'duration',
+        'lng',
+        'lat',
+        'taken_at',
     ];
 
     /**
@@ -200,11 +203,15 @@ class Video extends VolumeFile
      *
      * @param array $value
      */
-    public function setTakenAtAttribute(array $value)
+    public function setTakenAtAttribute(?array $value)
     {
-        $value = array_map([Carbon::class, 'parse'], $value);
+        if (is_array($value)) {
+            $value = array_map([Carbon::class, 'parse'], $value);
 
-        $this->attributes['taken_at'] = json_encode($value);
+            $this->attributes['taken_at'] = json_encode($value);
+        } else {
+            $this->attributes['taken_at'] = $value;
+        }
     }
 
     /**

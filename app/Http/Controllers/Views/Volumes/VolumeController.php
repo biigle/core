@@ -5,10 +5,8 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
-use Biigle\Modules\UserDisks\UserDisk;
-use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -27,48 +25,21 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
 
-        $disks = collect([]);
-        $user = $request->user();
-
-        if ($user->can('sudo')) {
-            $disks = $disks->concat(config('volumes.admin_storage_disks'));
-        } elseif ($user->role_id === Role::editorId()) {
-            $disks = $disks->concat(config('volumes.editor_storage_disks'));
-        }
-
-        // Limit to disks that actually exist.
-        $disks = $disks->intersect(array_keys(config('filesystems.disks')))->values();
-
-        // Use the disk keys as names, too. UserDisks can have different names
-        // (see below).
-        $disks = $disks->combine($disks)->map(fn ($name) => ucfirst($name));
-
-        if (class_exists(UserDisk::class)) {
-            $userDisks = UserDisk::where('user_id', $user->id)
-                ->pluck('name', 'id')
-                ->mapWithKeys(fn ($name, $id) => ["disk-{$id}" => $name]);
-
-            $disks = $disks->merge($userDisks);
+        $pv = $project->pendingVolumes()->where('user_id', $request->user()->id)->first();
+        if (!is_null($pv)) {
+            return redirect()
+                ->route('pending-volume', $pv->id)
+                ->with('restored', true);
         }
 
         $mediaType = old('media_type', 'image');
-        $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
-        $offlineMode = config('biigle.offline_mode');
 
-        if (class_exists(UserStorageServiceProvider::class)) {
-            $userDisk = "user-{$user->id}";
-        } else {
-            $userDisk = null;
-        }
+        $mimeTypes = ParserFactory::getKnownMimeTypes($mediaType);
 
-        return view('volumes.create', [
+        return view('volumes.create.step1', [
             'project' => $project,
-            'disks' => $disks,
-            'hasDisks' => !empty($disks),
             'mediaType' => $mediaType,
-            'filenames' => $filenames,
-            'offlineMode' => $offlineMode,
-            'userDisk' => $userDisk,
+            'mimeTypes' => $mimeTypes,
         ]);
     }
 
@@ -132,6 +103,7 @@ class VolumeController extends Controller
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
         $type = $volume->mediaType->name;
+        $mimeTypes = ParserFactory::getKnownMimeTypes($type);
 
         return view('volumes.edit', [
             'projects' => $projects,
@@ -140,6 +112,7 @@ class VolumeController extends Controller
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
             'type' => $type,
+            'mimeTypes' => $mimeTypes,
         ]);
     }
 

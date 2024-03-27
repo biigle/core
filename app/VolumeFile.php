@@ -52,7 +52,7 @@ abstract class VolumeFile extends Model implements FileContract
      *
      * @param array $value
      */
-    public function setMetadataAttribute(array $value)
+    public function setMetadataAttribute(?array $value)
     {
         return $this->setJsonAttr('metadata', $value);
     }

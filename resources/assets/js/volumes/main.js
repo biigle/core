@@ -1,6 +1,8 @@
 import './export';
 import AnnotationSessionPanel from './annotationSessionPanel';
-import CreateForm from './createForm';
+import CreateFormStep1 from './createFormStep1';
+import CreateFormStep2 from './createFormStep2';
+import CreateFormStep3 from './createFormStep3';
 import CloneForm from './cloneForm';
 import FileCount from './fileCount';
 import FilePanel from './filePanel';
@@ -10,7 +12,9 @@ import SearchResults from './searchResults';
 import VolumeContainer from './volumeContainer';
 
 biigle.$mount('annotation-session-panel', AnnotationSessionPanel);
-biigle.$mount('create-volume-form', CreateForm);
+biigle.$mount('create-volume-form-step-1', CreateFormStep1);
+biigle.$mount('create-volume-form-step-2', CreateFormStep2);
+biigle.$mount('create-volume-form-step-3', CreateFormStep3);
 biigle.$mount('clone-volume-form', CloneForm);
 biigle.$mount('file-panel', FilePanel);
 biigle.$mount('projects-breadcrumb', ProjectsBreadcrumb);

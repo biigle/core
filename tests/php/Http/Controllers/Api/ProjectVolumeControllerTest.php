@@ -446,11 +446,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
+        $volume = $this->project()->volumes()->first();
+        $this->assertNull($volume->metadata_file_path);
     }
 
     public function testStoreImageMetadataText()
     {
+        Storage::fake('metadata');
         $id = $this->project()->id;
         $this->beAdmin();
         Storage::disk('test')->makeDirectory('images');
@@ -466,11 +468,14 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === '1.jpg' && $job->metadata[1][1] === '2.5');
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertNotNull($volume->metadata_file_path);
     }
 
     public function testStoreImageMetadataCsv()
     {
+        Storage::fake('metadata');
+
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/image-metadata.csv";
@@ -478,17 +483,16 @@ class ProjectVolumeControllerTest extends ApiTestCase
         Storage::disk('test')->makeDirectory('images');
         Storage::disk('test')->put('images/abc.jpg', 'abc');
 
-        $this
-            ->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://images',
-                'media_type' => 'image',
-                'files' => 'abc.jpg',
-                'metadata_csv' => $file,
-            ])
-            ->assertSuccessful();
+        $this->postJson("/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type' => 'image',
+            'files' => 'abc.jpg',
+            'metadata_csv' => $file,
+        ])->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === 'abc.jpg' && $job->metadata[1][6] === '2.6');
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertNotNull($volume->metadata_file_path);
     }
 
     public function testStoreImageMetadataInvalid()
@@ -504,7 +508,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'test://images',
                 'media_type' => 'image',
                 'files' => '1.jpg',
-                'metadata_text' => "filename,area\nabc.jpg,2.5",
+                'metadata_text' => "filename,yaw\nabc.jpg,400",
             ])
             ->assertStatus(422);
     }
@@ -526,11 +530,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => empty($job->metadata));
+        $volume = $this->project()->volumes()->first();
+        $this->assertNull($volume->metadata_file_path);
     }
 
     public function testStoreVideoMetadataText()
     {
+        Storage::fake('metadata');
         $id = $this->project()->id;
         $this->beAdmin();
         Storage::disk('test')->makeDirectory('videos');
@@ -546,11 +552,14 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === '1.mp4' && $job->metadata[1][1] === '2.5');
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertNotNull($volume->metadata_file_path);
     }
 
     public function testStoreVideoMetadataCsv()
     {
+        Storage::fake('metadata');
+
         $id = $this->project()->id;
         $this->beAdmin();
         $csv = __DIR__."/../../../../files/video-metadata.csv";
@@ -568,7 +577,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->metadata[1][0] === 'abc.mp4' && $job->metadata[1][6] === '2.6' && $job->metadata[2][6] === '1.6');
+        $volume = Volume::orderBy('id', 'desc')->first();
+        $this->assertNotNull($volume->metadata_file_path);
     }
 
     public function testStoreVideoMetadataInvalid()
@@ -584,97 +594,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 'url' => 'test://videos',
                 'media_type' => 'video',
                 'files' => '1.mp4',
-                'metadata_text' => "filename,area\nabc.mp4,2.5",
-            ])
-            ->assertStatus(422);
-    }
-
-    public function testStoreImageIfdoFile()
-    {
-        $id = $this->project()->id;
-        $this->beAdmin();
-        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/abc.jpg', 'abc');
-
-        Storage::fake('ifdos');
-
-        $this
-            ->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://images',
-                'media_type' => 'image',
-                'files' => 'abc.jpg',
-                'ifdo_file' => $file,
-            ])
-            ->assertSuccessful();
-
-        $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertTrue($volume->hasIfdo());
-    }
-
-    public function testStoreVideoIfdoFile()
-    {
-        $id = $this->project()->id;
-        $this->beAdmin();
-        $csv = __DIR__."/../../../../files/video-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        Storage::disk('test')->makeDirectory('videos');
-        Storage::disk('test')->put('videos/abc.mp4', 'abc');
-
-        Storage::fake('ifdos');
-
-        $this
-            ->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://videos',
-                'media_type' => 'video',
-                'files' => 'abc.mp4',
-                'ifdo_file' => $file,
-            ])
-            ->assertSuccessful();
-
-        $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertTrue($volume->hasIfdo());
-    }
-
-    public function testStoreVideoVolumeWithImageIfdoFile()
-    {
-        $id = $this->project()->id;
-        $this->beAdmin();
-        $csv = __DIR__."/../../../../files/image-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        Storage::disk('test')->makeDirectory('videos');
-        Storage::disk('test')->put('videos/abc.mp4', 'abc');
-
-        $this
-            ->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://videos',
-                'media_type' => 'video',
-                'files' => 'abc.mp4',
-                'ifdo_file' => $file,
-            ])
-            ->assertStatus(422);
-    }
-
-    public function testStoreImageVolumeWithVideoIfdoFile()
-    {
-        $id = $this->project()->id;
-        $this->beAdmin();
-        $csv = __DIR__."/../../../../files/video-ifdo.yaml";
-        $file = new UploadedFile($csv, 'ifdo.yaml', 'application/yaml', null, true);
-        Storage::disk('test')->makeDirectory('images');
-        Storage::disk('test')->put('images/abc.jpg', 'abc');
-
-        $this
-            ->postJson("/api/v1/projects/{$id}/volumes", [
-                'name' => 'my volume no. 1',
-                'url' => 'test://images',
-                'media_type' => 'image',
-                'files' => 'abc.jpg',
-                'ifdo_file' => $file,
+                'metadata_text' => "filename,yaw\nabc.mp4,400",
             ])
             ->assertStatus(422);
     }
@@ -750,7 +670,6 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin()->id, Role::adminId());
 
         $this->doTestApiRoute('POST', "/api/v1/projects/{$pid}/volumes/{$tid}");
 

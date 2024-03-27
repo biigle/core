@@ -36,7 +36,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-file-count" v-text="text">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.handleIndicator') @include('volumes.partials.ifdoIndicator')
+    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-file-count" v-text="text">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.handleIndicator') @include('volumes.partials.metadataIndicator')
 </div>
 @endsection
 

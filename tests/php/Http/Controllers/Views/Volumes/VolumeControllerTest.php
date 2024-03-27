@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\PendingVolume;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -60,6 +61,41 @@ class VolumeControllerTest extends ApiTestCase
 
         $response = $this->get('volumes/create?project='.$id);
         $response->assertStatus(200);
+    }
+
+    public function testCreateWithExistingRedirectToStep2()
+    {
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+
+        $this
+            ->get('volumes/create?project='.$id)
+            ->assertRedirectToRoute('pending-volume', $pv->id);
+    }
+
+    public function testCreateWithExistingRedirectToSelectAnnotationLabels()
+    {
+        // volume_id is filled and import_annotations is true but only_annotation_labels, only_file_labels, label_map and user_map is empty.
+    }
+
+    public function testCreateWithExistingRedirectToSelectFileLabels()
+    {
+        // volume_id and only_annotation_labels are filled and import_file_labels is true but only_file_labels, label_map and user_map are empty.
+    }
+
+    public function testCreateWithExistingRedirectToLabelMap()
+    {
+        // volume_id and only_annotation_labels and/or only_file_labels are filled but label_map and user_map are empty.
+    }
+
+    public function testCreateWithExistingRedirectToUserMap()
+    {
+        // volume_id, only_annotation_labels and/or only_file_labels and label_map are filled but user_map is empty.
     }
 
     public function testEdit()

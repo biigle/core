@@ -13,13 +13,6 @@ use Queue;
 class ProjectVolumeController extends Controller
 {
     /**
-     * Limit for the number of files above which volume files are created asynchronously.
-     *
-     * @var int
-     */
-    const CREATE_SYNC_LIMIT = 10000;
-
-    /**
      * Shows a list of all volumes belonging to the specified project..
      *
      * @api {get} projects/:id/volumes Get all volumes
@@ -56,10 +49,11 @@ class ProjectVolumeController extends Controller
     /**
      * Creates a new volume associated to the specified project.
      *
-     * @api {post} projects/:id/volumes Create a new volume
+     * @api {post} projects/:id/volumes Create a new volume (v1)
      * @apiGroup Volumes
      * @apiName StoreProjectVolumes
      * @apiPermission projectAdmin
+     * @apiDeprecated use now (#Volumes:StoreProjectPendingVolumes) and (#Volumes:UpdatePendingVolume).
      *
      * @apiParam {Number} id The project ID.
      *
@@ -71,7 +65,6 @@ class ProjectVolumeController extends Controller
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      * @apiParam (Optional attributes) {String} metadata_text CSV-like string with file metadata. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp.
      * @apiParam (Optional attributes) {File} metadata_csv Alternative to `metadata_text`. This field allows the upload of an actual CSV file. See `metadata_text` for the further description.
-     * @apiParam (Optional attributes) {File} ifdo_file iFDO metadata file to upload and link with the volume. The metadata of this file is not used for the volume or volume files. Use `metadata_text` or `metadata_csv` for this.
      *
      * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
@@ -119,21 +112,19 @@ class ProjectVolumeController extends Controller
 
             $files = $request->input('files');
 
-            $metadata = $request->input('metadata', []);
+            if ($request->file('metadata_csv')) {
+                $volume->saveMetadata($request->file('metadata_csv'));
+            }
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30 s execution timeout.
-            $job = new CreateNewImagesOrVideos($volume, $files, $metadata);
-            if (count($files) > self::CREATE_SYNC_LIMIT) {
+            $job = new CreateNewImagesOrVideos($volume, $files);
+            if (count($files) > PendingVolumeController::CREATE_SYNC_LIMIT) {
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
                 $volume->save();
             } else {
                 Queue::connection('sync')->push($job);
-            }
-
-            if ($request->hasFile('ifdo_file')) {
-                $volume->saveIfdo($request->file('ifdo_file'));
             }
 
             // media type shouldn't be returned

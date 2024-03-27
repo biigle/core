@@ -9,22 +9,38 @@ use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VideoMetadata;
 use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
-use Biigle\Traits\ParsesMetadata;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Volume;
-use Exception;
+use File;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class StoreVolume extends FormRequest
 {
-    use ParsesMetadata;
-
     /**
      * The project to attach the new volume to.
      *
      * @var Project
      */
     public $project;
+
+    /**
+     * Filled if an uploaded metadata text was stored in a file.
+     *
+     * @var string
+     */
+    protected $metadataPath;
+
+    /**
+     * Remove potential temporary files.
+     */
+    public function __destruct()
+    {
+        if (isset($this->metadataPath)) {
+            unlink($this->metadataPath);
+        }
+    }
 
     /**
      * Determine if the user is authorized to make this request.
@@ -54,9 +70,7 @@ class StoreVolume extends FormRequest
                 'array',
             ],
             'handle' => ['nullable', 'max:256', new Handle],
-            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
-            'ifdo_file' => 'file',
-            'metadata' => 'filled',
+            'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv|max:500000',
             // Do not validate the maximum filename length with a 'files.*' rule because
             // this leads to a request timeout when the rule is expanded for a huge
             // number of files. This is checked in the VolumeFiles rule below.
@@ -71,40 +85,34 @@ class StoreVolume extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
-        // Only validate sample volume files after all other fields have been validated.
         $validator->after(function ($validator) {
+            // Only validate sample volume files after all other fields have been
+            // validated.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $files = $this->input('files');
             $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }
 
-            if ($this->has('metadata')) {
-                if ($this->input('media_type_id') === MediaType::imageId()) {
-                    $rule = new ImageMetadata($files);
-                } else {
-                    $rule = new VideoMetadata($files);
+            if ($file = $this->file('metadata_csv')) {
+                $type = $this->input('media_type');
+                $parser = ParserFactory::getParserForFile($file, $type);
+                if (is_null($parser)) {
+                    $validator->errors()->add('metadata', 'Unknown metadata file format for this media type.');
+                    return;
                 }
 
-                if (!$rule->passes('metadata', $this->input('metadata'))) {
+                $rule = match ($type) {
+                    'video' => new VideoMetadata,
+                    default => new ImageMetadata,
+                };
+
+                if (!$rule->passes('metadata', $parser->getMetadata())) {
                     $validator->errors()->add('metadata', $rule->message());
-                }
-            }
-
-            if ($this->hasFile('ifdo_file')) {
-                try {
-                    // This throws an error if the iFDO is invalid.
-                    $data = $this->parseIfdoFile($this->file('ifdo_file'));
-
-                    if ($data['media_type'] !== $this->input('media_type')) {
-                        $validator->errors()->add('ifdo_file', 'The iFDO image-acquisition type does not match the media type of the volume.');
-                    }
-                } catch (Exception $e) {
-                    $validator->errors()->add('ifdo_file', $e->getMessage());
                 }
             }
         });
@@ -135,10 +143,13 @@ class StoreVolume extends FormRequest
             $this->merge(['files' => Volume::parseFilesQueryString($files)]);
         }
 
-        if ($this->input('metadata_text')) {
-            $this->merge(['metadata' => $this->parseMetadata($this->input('metadata_text'))]);
-        } elseif ($this->hasFile('metadata_csv')) {
-            $this->merge(['metadata' => $this->parseMetadataFile($this->file('metadata_csv'))]);
+        if ($this->input('metadata_text') && !$this->file('metadata_csv')) {
+            $this->metadataPath = tempnam(sys_get_temp_dir(), 'volume_metadata');
+            File::put($this->metadataPath, $this->input('metadata_text'));
+            $file = new UploadedFile($this->metadataPath, 'metadata.csv', 'text/csv', test: true);
+            // Reset this so the new file will be picked up.
+            unset($this->convertedFiles);
+            $this->files->add(['metadata_csv' => $file]);
         }
 
         // Backwards compatibility.
