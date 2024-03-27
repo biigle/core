@@ -46,6 +46,7 @@ import {defaults as defaultInteractions} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import { isInvalidShape } from '../utils';
 
 
 /**
@@ -515,44 +516,46 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (this.hasSelectedLabel) {
-                let geometry = e.feature.getGeometry();
-                if (geometry.getType() === 'Polygon') {
-                    if (PolygonValidator.isInvalidPolygon(e.feature)) {
-                        this.$emit('is-invalid-polygon');
-                        // This must be done in the change event handler.
-                        // Not exactly sure why.
-                        this.annotationSource.once('change', () => {
-                            if (this.annotationSource.hasFeature(e.feature)) {
-                                this.annotationSource.removeFeature(e.feature);
-                            }
-                        });
-                        return;
-                    }
-
-                    PolygonValidator.simplifyPolygon(e.feature);
-                }
-
-                e.feature.set('color', this.selectedLabel.color);
-
-                // This callback is called when saving the annotation succeeded or
-                // failed, to remove the temporary feature.
-                let removeCallback = () => {
-                    try {
-                        this.annotationSource.removeFeature(e.feature);
-                    } catch (e) {
-                        // If this failed, the feature was already removed.
-                        // Do nothing in this case.
-                    }
-                };
-
-                this.$emit('new', {
-                    shape: geometry.getType(),
-                    points: this.getPoints(geometry),
-                }, removeCallback);
-            } else {
+            if (!this.hasSelectedLabel) {
                 this.annotationSource.removeFeature(e.feature);
+                return;
             }
+            
+            if (isInvalidShape(e.feature)) {
+                // This must be done in the change event handler.
+                // Not exactly sure why.
+                this.annotationSource.once('change', () => {
+                    if (this.annotationSource.hasFeature(e.feature)) {
+                        this.annotationSource.removeFeature(e.feature);
+                    }
+                });
+                this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
+                return;
+            }
+
+            let geometry = e.feature.getGeometry();
+            if (geometry.getType() === 'Polygon') {
+                PolygonValidator.simplifyPolygon(e.feature);
+            }
+
+            e.feature.set('color', this.selectedLabel.color);
+
+            // This callback is called when saving the annotation succeeded or
+            // failed, to remove the temporary feature.
+            let removeCallback = () => {
+                try {
+                    this.annotationSource.removeFeature(e.feature);
+                } catch (e) {
+                    // If this failed, the feature was already removed.
+                    // Do nothing in this case.
+                }
+            };
+
+            this.$emit('new', {
+                shape: geometry.getType(),
+                points: this.getPoints(geometry),
+            }, removeCallback);
+
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {

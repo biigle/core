@@ -26,6 +26,9 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
+        isNotAPolygonTool() {
+            return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
+        }
     },
     methods: {
         togglePolygonBrush() {
@@ -111,19 +114,30 @@ export default {
     },
     watch: {
         isUsingPolygonBrush() {
-            this.resetCurrentInteraction();
-            this.togglePolygonBrushInteraction();
+            if (this.isUsingPolygonBrush) {
+                this.resetCurrentInteraction();
+                this.togglePolygonBrushInteraction();
+            }
         },
         isUsingPolygonEraser() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonEraserInteraction();
+            if (this.isUsingPolygonEraser) {
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonEraserInteraction();
+            }
         },
         isUsingPolygonFill() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonFillInteraction();
+            if (this.isUsingPolygonFill) {
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonFillInteraction();
+            }
         },
+        isNotAPolygonTool() {
+            if (this.isNotAPolygonTool) {
+                this.resetCurrentInteraction();
+            }
+        }
     },
     created() {
         Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);

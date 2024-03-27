@@ -43,6 +43,7 @@
       :show-prev-next="hasSiblingVideos"
       :has-error="hasError"
       :seeking="seeking"
+      :reached-tracked-annotation-limit="reachedTrackedAnnotationLimit"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"
@@ -60,7 +61,7 @@
       v-on:attaching-active="handleAttachingLabelActive"
       v-on:swapping-active="handleSwappingLabelActive"
       v-on:seek="seek"
-      v-on:is-invalid-polygon="handleInvalidPolygon"
+      v-on:is-invalid-shape="handleInvalidShape"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

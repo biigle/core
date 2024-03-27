@@ -12,19 +12,6 @@ import Polygon from '@biigle/ol/geom/Polygon';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 
 /**
- * Checks if polygon consists of at least 3 unique points
- *
- * @param feature containing the polygon
- * @returns True if coordinates contains at least 3 unique points, otherwise false
- */
-export function isInvalidPolygon(feature) {
-    let polygon = feature.getGeometry();
-    let points = polygon.getCoordinates()[0];
-
-    return (new Set(points.map(xy => String([xy])))).size < 3;
-}
-
-/**
  * Makes non-simple polygon simple
  *
  * @param feature feature containing the (non-simple) polygon

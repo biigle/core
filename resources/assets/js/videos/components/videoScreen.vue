@@ -59,7 +59,8 @@
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation"
+                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -97,7 +98,8 @@
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation"
+                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -351,6 +353,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        reachedTrackedAnnotationLimit: {
+            type: Boolean,
+            default: false,
+        }
     },
     data() {
         return {
@@ -378,6 +384,9 @@ export default {
             }
 
             return '';
+        },
+        disableJobTracking() {
+            return this.reachedTrackedAnnotationLimit;
         },
     },
     methods: {
