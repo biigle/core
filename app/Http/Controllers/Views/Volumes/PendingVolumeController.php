@@ -131,8 +131,12 @@ class PendingVolumeController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        // Use values() for a more compact JSON representation.
+        $labels = collect($metadata->getAnnotationLabels())->values();
+
         return view('volumes.create.annotationLabels', [
             'pv' => $pv,
+            'labels' => $labels,
         ]);
     }
 }

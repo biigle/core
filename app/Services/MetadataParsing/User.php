@@ -2,7 +2,9 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class User
+use JsonSerializable;
+
+class User implements JsonSerializable
 {
     /**
      * @param string $id
@@ -15,5 +17,19 @@ class User
         public ?string $uuid = null,
     ) {
         //
+    }
+
+    public function jsonSerialize()
+    {
+        $ret = [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+
+        if (!is_null($this->uuid)) {
+            $ret['uuid'] = $this->uuid;
+        }
+
+        return $ret;
     }
 }

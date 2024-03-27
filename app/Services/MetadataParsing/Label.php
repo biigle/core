@@ -2,7 +2,9 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class Label
+use JsonSerializable;
+
+class Label implements JsonSerializable
 {
     /**
      * @param string $id
@@ -19,5 +21,27 @@ class Label
         public ?string $labelTreeUuid = null,
     ) {
         //
+    }
+
+    public function jsonSerialize()
+    {
+        $ret = [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+
+        if (!is_null($this->color)) {
+            $ret['color'] = $this->color;
+        }
+
+        if (!is_null($this->uuid)) {
+            $ret['uuid'] = $this->uuid;
+        }
+
+        if (!is_null($this->labelTreeUuid)) {
+            $ret['labelTreeUuid'] = $this->labelTreeUuid;
+        }
+
+        return $ret;
     }
 }
