@@ -164,14 +164,14 @@ class PendingVolumeController extends Controller
         }
 
         if ($pv->import_annotations) {
-            return redirect()
-                ->route('pending-volume-annotation-labels', $pv->id)
-                ->with('message', 'Volume created.')
-                ->with('messageType', 'success');
+            $redirect = redirect()->route('pending-volume-annotation-labels', $pv->id);;
+        } elseif ($pv->import_file_labels) {
+            $redirect = redirect()->route('pending-volume-file-labels', $pv->id);;
+        } else {
+            $redirect = redirect()->route('volume', $volume->id);
         }
 
-        return redirect()
-            ->route('volume', $volume->id)
+        return $redirect
             ->with('message', 'Volume created.')
             ->with('messageType', 'success');
     }

@@ -119,13 +119,39 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->put("/api/v1/pending-volumes/{$id}/annotation-labels", [
             'labels' => [123],
         ])->assertRedirectToRoute('pending-volume-file-labels', $id);
-
-        // for non-automated requests, if import_file_labels === true
     }
 
     public function testUpdateAnnotationLabelsRedirectToLabelMap()
     {
-        // for non-automated requests, if import_file_labels === false
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => false,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->put("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [123],
+        ])->assertRedirectToRoute('pending-volume-label-map', $id);
     }
 
     public function testUpdateFileLabels()
@@ -188,7 +214,29 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testUpdateFileLabelsRedirectToLabelMap()
     {
-        // for non-automated requests
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->put("/api/v1/pending-volumes/{$id}/file-labels", [
+            'labels' => [123],
+        ])->assertRedirectToRoute('pending-volume-label-map', $id);
     }
 
     public function testUpdateLabelMap()

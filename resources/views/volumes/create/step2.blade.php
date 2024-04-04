@@ -19,13 +19,6 @@
 <div class="container">
     <div id="create-volume-form-step-2" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
         <h2>New {{$mediaType}} volume for {{ $project->name }}</h2>
-        @if ($restored)
-            <div class="panel panel-info">
-                <div class="panel-body text-info">
-                    This is a pending volume that you did not finish before.
-                </div>
-            </div>
-        @endif
         <form method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">
             <fieldset>
                 <legend>

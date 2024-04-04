@@ -30,6 +30,22 @@ class PendingVolumeController extends Controller
             if ($pv->import_annotations && empty($pv->only_annotation_labels) && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
                 return redirect()->route('pending-volume-annotation-labels', $pv->id);
             }
+
+            if ($pv->import_file_labels && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
+                return redirect()->route('pending-volume-file-labels', $pv->id);
+            }
+
+            if (empty($pv->label_map) && empty($pv->user_map)) {
+                return redirect()->route('pending-volume-label-map', $pv->id);
+            }
+
+            if (!$redirect) {
+                // TODO redirect to user map
+            }
+
+            return $redirect
+                ->with('message', 'This is a pending volume that you did not finish before.')
+                ->with('messageType', 'info');
         }
 
         $disks = collect([]);
@@ -67,8 +83,6 @@ class PendingVolumeController extends Controller
         $isImageMediaType = $pv->media_type_id === MediaType::imageId();
         $mediaType = $isImageMediaType ? 'image' : 'video';
 
-        $restored = session()->has('restored');
-
         $metadata = null;
         $oldName = '';
         $oldUrl = '';
@@ -105,7 +119,6 @@ class PendingVolumeController extends Controller
             'userDisk' => $userDisk,
             'mediaType' => $mediaType,
             'isImageMediaType' => $isImageMediaType,
-            'restored' => $restored,
             'oldName' => $oldName,
             'oldUrl' => $oldUrl,
             'oldHandle' => $oldHandle,
@@ -176,6 +189,36 @@ class PendingVolumeController extends Controller
         $labels = collect($metadata->getFileLabels())->values();
 
         return view('volumes.create.fileLabels', [
+            'pv' => $pv,
+            'labels' => $labels,
+        ]);
+    }
+
+    /**
+     * Show the form to select the label map for the metadata import.
+     *
+     * @param Request $request
+     */
+    public function showLabelMap(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('update', $pv);
+
+        if (is_null($pv->volume_id)) {
+            return redirect()->route('pending-volume', $pv->id);
+        }
+
+        if (!$pv->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $labels = $pv->getMetadata()->getMatchingLabels();
+
+        if (empty($labels)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return view('volumes.create.labelMap', [
             'pv' => $pv,
             'labels' => $labels,
         ]);

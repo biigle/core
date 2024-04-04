@@ -29,7 +29,8 @@ class VolumeController extends Controller
         if (!is_null($pv)) {
             return redirect()
                 ->route('pending-volume', $pv->id)
-                ->with('restored', true);
+                ->with('message', 'This is a pending volume that you did not finish before.')
+                ->with('messageType', 'info');
         }
 
         $mediaType = old('media_type', 'image');

@@ -425,7 +425,28 @@ class PendingVolumeControllerTest extends ApiTestCase
 
     public function testUpdateFromUIWithFileLabelImport()
     {
-        //
+        $disk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+        $id = $pv->id;
+
+        $disk->makeDirectory('images');
+        $disk->put('images/1.jpg', 'abc');
+
+        $this->beAdmin();
+        $response = $this->put("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'import_file_labels' => true,
+            'files' => ['1.jpg'],
+        ]);
+        $volume = Volume::first();
+
+        $response->assertRedirectToRoute('pending-volume-file-labels', $id);
     }
 
     public function testUpdateFileString()

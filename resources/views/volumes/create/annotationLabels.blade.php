@@ -46,9 +46,8 @@
             <input type="hidden" name="_method" value="PUT">
             <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
-            <!-- TODO: continue to the label map view -->
-            <a v-if="allSelected" @if ($pv->import_file_labels) href="{{ route('pending-volume-file-labels', $pv->id) }}" @else href="" @endif class="btn btn-success pull-right">Continue</a>
-             <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue" title="">
+            <a v-if="allSelected" @if ($pv->import_file_labels) href="{{ route('pending-volume-file-labels', $pv->id) }}" @else href="{{ route('pending-volume-label-map', $pv->id) }}" @endif class="btn btn-success pull-right">Continue</a>
+            <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue">
          </div>
       </form>
       <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

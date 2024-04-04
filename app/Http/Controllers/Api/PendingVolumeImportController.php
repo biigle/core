@@ -55,6 +55,8 @@ class PendingVolumeImportController extends Controller
         if ($request->pendingVolume->import_file_labels) {
             return redirect()->route('pending-volume-file-labels', $request->pendingVolume->id);
         }
+
+        return redirect()->route('pending-volume-label-map', $request->pendingVolume->id);
     }
 
     /**
@@ -92,7 +94,11 @@ class PendingVolumeImportController extends Controller
             'only_file_labels' => $request->input('labels'),
         ]);
 
-        return $request->pendingVolume;
+        if ($this->isAutomatedRequest()) {
+            return $request->pendingVolume;
+        }
+
+        return redirect()->route('pending-volume-label-map', $request->pendingVolume->id);
     }
 
     /**
