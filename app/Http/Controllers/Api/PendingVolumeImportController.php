@@ -48,7 +48,13 @@ class PendingVolumeImportController extends Controller
             'only_annotation_labels' => $request->input('labels'),
         ]);
 
-        return $request->pendingVolume;
+        if ($this->isAutomatedRequest()) {
+            return $request->pendingVolume;
+        }
+
+        if ($request->pendingVolume->import_file_labels) {
+            return redirect()->route('pending-volume-file-labels', $request->pendingVolume->id);
+        }
     }
 
     /**

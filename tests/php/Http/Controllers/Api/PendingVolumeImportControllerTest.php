@@ -88,6 +88,46 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->assertEquals([123], $pv->only_annotation_labels);
     }
 
+    public function testUpdateAnnotationLabelsRedirectToSelectFileLabels()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+            'import_file_labels' => true,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+        $this->put("/api/v1/pending-volumes/{$id}/annotation-labels", [
+            'labels' => [123],
+        ])->assertRedirectToRoute('pending-volume-file-labels', $id);
+
+        // for non-automated requests, if import_file_labels === true
+    }
+
+    public function testUpdateAnnotationLabelsRedirectToLabelMap()
+    {
+        // for non-automated requests, if import_file_labels === false
+    }
+
     public function testUpdateFileLabels()
     {
         $metadata = new VolumeMetadata;
@@ -144,6 +184,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv->refresh();
         $this->assertEquals([123], $pv->only_file_labels);
+    }
+
+    public function testUpdateFileLabelsRedirectToLabelMap()
+    {
+        // for non-automated requests
     }
 
     public function testUpdateLabelMap()
@@ -339,6 +384,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $dbLabel->id],
         ])->assertStatus(422);
+    }
+
+    public function testUpdateLabelMapRedirectToUserMap()
+    {
+        // for non-automated requests
     }
 
     public function testUpdateUserMap()
