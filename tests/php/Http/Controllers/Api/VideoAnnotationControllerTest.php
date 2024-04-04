@@ -254,6 +254,24 @@ class VideoAnnotationControllerTest extends ApiTestCase
         // policies are cached
         Cache::flush();
 
+        // shape is invalid
+        $this
+            ->json('POST', "/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::rectangleId(),
+                'label_id' => $label->id,
+                'frames' => [1],
+                'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
+            ])->assertStatus(422);
+
+        // shape is invalid
+        $this
+            ->json('POST', "/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::lineId(),
+                'label_id' => $label->id,
+                'frames' => [1],
+                'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
+            ])->assertStatus(422);
+
         $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
@@ -725,6 +743,29 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'points' => [[10, 15, 20]],
             ])
             ->assertStatus(422);
+    }
+
+    public function testUpdateInvalidPoints()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::rectangleId(),
+            'video_id' => $this->video->id,
+            'frames' => [0],
+            'points' => [[0, 1, 2, 3, 4, 5, 6, 7]],
+        ]);
+
+        $this->beAdmin();
+
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", ['points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]])
+            ->assertStatus(422);
+
+        $annotation->points = [[0, 1, 2, 3, 4, 5, 6, 7]];
+        $annotation->shape_id = Shape::lineId();
+        $annotation->save();
+
+        $this->putJson("api/v1/video-annotations/{$annotation->id}", ['points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]])
+            ->assertStatus(422);
+
     }
 
     public function testUpdateWholeFrameAnnotation()

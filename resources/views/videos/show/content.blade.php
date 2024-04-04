@@ -61,7 +61,7 @@
       v-on:attaching-active="handleAttachingLabelActive"
       v-on:swapping-active="handleSwappingLabelActive"
       v-on:seek="seek"
-      v-on:is-invalid-polygon="handleInvalidPolygon"
+      v-on:is-invalid-shape="handleInvalidShape"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"
