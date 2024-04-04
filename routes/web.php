@@ -257,6 +257,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'pending-volume-annotation-labels',
             'uses' => 'PendingVolumeController@showAnnotationLabels',
         ]);
+
+        $router->get('{id}/file-labels', [
+            'as'   => 'pending-volume-file-labels',
+            'uses' => 'PendingVolumeController@showFileLabels',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {

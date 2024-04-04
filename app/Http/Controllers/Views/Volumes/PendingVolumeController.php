@@ -147,4 +147,37 @@ class PendingVolumeController extends Controller
             'labels' => $labels,
         ]);
     }
+
+    /**
+     * Show the form to select labels of metadata file labels to import.
+     *
+     * @param Request $request
+     */
+    public function showFileLabels(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('update', $pv);
+
+        if (is_null($pv->volume_id)) {
+            return redirect()->route('pending-volume', $pv->id);
+        }
+
+        if (!$pv->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $metadata = $pv->getMetadata();
+
+        if (!$metadata->hasFileLabels()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        // Use values() for a more compact JSON representation.
+        $labels = collect($metadata->getFileLabels())->values();
+
+        return view('volumes.create.fileLabels', [
+            'pv' => $pv,
+            'labels' => $labels,
+        ]);
+    }
 }

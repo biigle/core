@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Select metadata anntation labels to import')
+@section('title', 'Select metadata file labels to import')
 
 @push('scripts')
     <script type="text/javascript">
@@ -11,12 +11,12 @@
 @section('content')
 
 <div class="container">
-    <div id="create-volume-form-step-3" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
-        <h2>Choose labels to filter metadata annotations</h2>
+    <div id="create-volume-form-step-4" class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
+        <h2>Choose file labels to filter metadata</h2>
         <p class="text-muted">
-            If you wish to import only annotations with certain labels from the metadata file, you can choose these labels here. By default, all labels are selected. With <kbd>Alt</kbd>+click you can select and deselect all labels.
+            If you wish to import only certain file labels from the metadata file, you can choose these labels here. By default, all labels are selected. With <kbd>Alt</kbd>+click you can select and deselect all labels.
         </p>
-        <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/annotation-labels") }}" v-on:submit="startLoading">
+        <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/file-labels") }}" v-on:submit="startLoading">
 
         <div class="well well-sm">
             <label-trees :trees="labelTrees" :multiselect="true" :allow-select-siblings="true" :collapsible="false"></label-trees>
@@ -46,8 +46,8 @@
             <input type="hidden" name="_method" value="PUT">
             <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
-            <!-- TODO: continue to the label map view -->
-            <a v-if="allSelected" @if ($pv->import_file_labels) href="{{ route('pending-volume-file-labels', $pv->id) }}" @else href="" @endif class="btn btn-success pull-right">Continue</a>
+            <!-- TODO continue to the label map view -->
+            <a v-if="allSelected" href="" class="btn btn-success pull-right">Continue</a>
              <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue" title="">
          </div>
       </form>
