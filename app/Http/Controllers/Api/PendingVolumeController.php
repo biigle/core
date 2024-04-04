@@ -164,9 +164,9 @@ class PendingVolumeController extends Controller
         }
 
         if ($pv->import_annotations) {
-            $redirect = redirect()->route('pending-volume-annotation-labels', $pv->id);;
+            $redirect = redirect()->route('pending-volume-annotation-labels', $pv->id);
         } elseif ($pv->import_file_labels) {
-            $redirect = redirect()->route('pending-volume-file-labels', $pv->id);;
+            $redirect = redirect()->route('pending-volume-file-labels', $pv->id);
         } else {
             $redirect = redirect()->route('volume', $volume->id);
         }
