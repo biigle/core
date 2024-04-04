@@ -36,11 +36,11 @@ jobs:
 
     - name: Start test database
       run: |
-        docker-compose up -d --no-build database_testing
+        docker compose up -d --no-build database_testing
         sleep 5
 
     - name: Run tests
-      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
+      run: docker compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
 
   test-modules:
 
@@ -78,11 +78,11 @@ jobs:
 
     - name: Start test database
       run: |
-        docker-compose up -d --no-build database_testing
+        docker compose up -d --no-build database_testing
         sleep 5
 
     - name: Run tests
-      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
+      run: docker compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
 
   test-js-bundle:
 
