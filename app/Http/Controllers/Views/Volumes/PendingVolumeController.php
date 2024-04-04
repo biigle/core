@@ -24,6 +24,14 @@ class PendingVolumeController extends Controller
         $pv = PendingVolume::with('project')->findOrFail($request->route('id'));
         $this->authorize('access', $pv);
 
+        // If the volume was already created, we have to redirect to one of the subsequent
+        // steps.
+        if (!is_null($pv->volume_id)) {
+            if ($pv->import_annotations && empty($pv->only_annotation_labels) && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
+                return redirect()->route('pending-volume-annotation-labels', $pv->id);
+            }
+        }
+
         $disks = collect([]);
         $user = $request->user();
 

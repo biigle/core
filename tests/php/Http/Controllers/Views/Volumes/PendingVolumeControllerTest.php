@@ -35,7 +35,17 @@ class PendingVolumeControllerTest extends ApiTestCase
 
     public function testShowWithVolumeRedirectToSelectAnnotationLabels()
     {
-        // volume_id is filled and import_annotations is true but only_annotation_labels, only_file_labels, label_map and user_map is empty.
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'import_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}")
+            ->assertRedirectToRoute('pending-volume-annotation-labels', $pv->id);
     }
 
     public function testShowWithVolumeRedirectToSelectFileLabels()
