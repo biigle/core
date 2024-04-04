@@ -28,19 +28,13 @@ class PendingVolumeController extends Controller
         // steps.
         if (!is_null($pv->volume_id)) {
             if ($pv->import_annotations && empty($pv->only_annotation_labels) && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
-                return redirect()->route('pending-volume-annotation-labels', $pv->id);
-            }
-
-            if ($pv->import_file_labels && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
-                return redirect()->route('pending-volume-file-labels', $pv->id);
-            }
-
-            if (empty($pv->label_map) && empty($pv->user_map)) {
-                return redirect()->route('pending-volume-label-map', $pv->id);
-            }
-
-            if (!$redirect) {
-                // TODO redirect to user map
+                $redirect = redirect()->route('pending-volume-annotation-labels', $pv->id);
+            } elseif ($pv->import_file_labels && empty($pv->only_file_labels) && empty($pv->label_map) && empty($pv->user_map)) {
+                $redirect = redirect()->route('pending-volume-file-labels', $pv->id);
+            } elseif (empty($pv->label_map) && empty($pv->user_map)) {
+                $redirect = redirect()->route('pending-volume-label-map', $pv->id);
+            } else {
+                $redirect = redirect()->route('pending-volume-user-map', $pv->id);
             }
 
             return $redirect
@@ -221,6 +215,36 @@ class PendingVolumeController extends Controller
         return view('volumes.create.labelMap', [
             'pv' => $pv,
             'labels' => $labels,
+        ]);
+    }
+
+    /**
+     * Show the form to select the user map for the metadata import.
+     *
+     * @param Request $request
+     */
+    public function showUserMap(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('update', $pv);
+
+        if (is_null($pv->volume_id)) {
+            return redirect()->route('pending-volume', $pv->id);
+        }
+
+        if (!$pv->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $users = $pv->getMetadata()->getMatchingUsers();
+
+        if (empty($users)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return view('volumes.create.userMap', [
+            'pv' => $pv,
+            'users' => $users,
         ]);
     }
 }

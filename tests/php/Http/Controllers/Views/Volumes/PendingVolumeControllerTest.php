@@ -114,7 +114,53 @@ class PendingVolumeControllerTest extends ApiTestCase
 
     public function testShowWithVolumeRedirectToUserMap()
     {
-        // volume_id, only_annotation_labels and/or only_file_labels and label_map are filled but user_map is empty.
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'only_annotation_labels' => [123],
+            'only_file_labels' => [123],
+            'label_map' => ['123' => 456],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}")
+            ->assertRedirectToRoute('pending-volume-user-map', $pv->id);
+    }
+
+    public function testShowWithVolumeRedirectToUserMapOnlyAnnotations()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'only_annotation_labels' => [123],
+            'import_annotations' => true,
+            'label_map' => ['123' => 456],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}")
+            ->assertRedirectToRoute('pending-volume-user-map', $pv->id);
+    }
+
+    public function testShowWithVolumeRedirectToUserMapOnlyFileLabels()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'only_file_labels' => [123],
+            'import_file_labels' => true,
+            'label_map' => ['123' => 456],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}")
+            ->assertRedirectToRoute('pending-volume-user-map', $pv->id);
     }
 
     public function testShowSelectAnnotationLabels()
@@ -342,5 +388,79 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->get("pending-volumes/{$pv->id}/label-map")->assertStatus(404);
+    }
+
+    public function testShowSelectUserMap()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+
+        // not logged in
+        $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(302);
+
+        // doesn't belong to pending volume
+        $this->beExpert();
+        $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(403);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(200);
+    }
+
+    public function testShowSelectUserMapNoVolume()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}/user-map")
+            ->assertRedirectToRoute('pending-volume', $pv->id);
+    }
+
+    public function testShowSelectUserMapNoMetadata()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+        ]);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(404);
+    }
+
+    public function testShowSelectUserMapNoUsers()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(404);
     }
 }

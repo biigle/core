@@ -436,7 +436,30 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelMapRedirectToUserMap()
     {
-        // for non-automated requests
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+        ]);
+        $id = $pv->id;
+
+        $this->beAdmin();
+
+        $this->put("/api/v1/pending-volumes/{$id}/label-map", [
+            'label_map' => [123 => $this->labelRoot()->id],
+        ])->assertRedirectToRoute('pending-volume-user-map', $id);
     }
 
     public function testUpdateUserMap()

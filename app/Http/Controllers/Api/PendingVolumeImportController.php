@@ -137,7 +137,11 @@ class PendingVolumeImportController extends Controller
             'label_map' => $request->input('label_map'),
         ]);
 
-        return $request->pendingVolume;
+        if ($this->isAutomatedRequest()) {
+            return $request->pendingVolume;
+        }
+
+        return redirect()->route('pending-volume-user-map', $request->pendingVolume->id);
     }
 
     /**
