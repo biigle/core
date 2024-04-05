@@ -1,0 +1,13 @@
+.label-mapping {
+    width: 100%;
+
+    tr:hover {
+        color: white;
+        background-color: $gray-lighter;
+        border-radius: $border-radius-small;
+    }
+
+    .label-tree-label__name:hover {
+        cursor: inherit;
+    }
+}

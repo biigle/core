@@ -206,15 +206,57 @@ class PendingVolumeController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $labels = $pv->getMetadata()->getMatchingLabels();
 
-        if (empty($labels)) {
+
+        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+        $labelMap = collect($pv->getMetadata()->getMatchingLabels(onlyLabels: $onlyLabels));
+
+        if ($labelMap->isEmpty()) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        $labels = [];
+
+        if ($pv->import_file_labels) {
+            $labels += $metadata->getFileLabels($pv->only_file_labels);
+        }
+
+        if ($pv->import_annotations) {
+            $labels += $metadata->getAnnotationLabels($pv->only_annotation_labels);
+        }
+
+        $labels = collect($labels)->values();
+
+        $project = $pv->project;
+
+        // These label trees are required to display the pre-mapped labels.
+        $labelTrees =
+            LabelTree::whereIn('id', fn ($query) =>
+                $query->select('label_tree_id')
+                    ->from('labels')
+                    ->whereIn('id', $labelMap->values()->unique()->filter())
+            )
+            ->get()
+            ->keyBy('id');
+
+        // These trees can also be used for manual mapping.
+        $labelTrees = $labelTrees->union($project->labelTrees->keyBy('id'))->values();
+
+        $labelTrees->load('labels');
+
+        // Hide attributes for a more compact JSON representation.
+        $labelTrees->each(function ($tree) {
+            $tree->makeHidden(['visibility_id', 'created_at', 'updated_at']);
+            $tree->labels->each(function ($label) {
+                $label->makeHidden(['source_id', 'label_source_id', 'label_tree_id', 'parent_id']);
+            });
+        });
+
         return view('volumes.create.labelMap', [
             'pv' => $pv,
+            'labelMap' => $labelMap,
             'labels' => $labels,
+            'labelTrees' => $labelTrees,
         ]);
     }
 
