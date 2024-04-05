@@ -60,19 +60,6 @@ export default new Vue({
             // properties of this Vue instance.
             this.initialized = true;
 
-            // This canvas is used as workaround to the auto-rotation of images
-            // according to EXIF in Chrome, Firefox and other browsers. The canvas and
-            // image need CSS "image-orientation: none" to disable auto-rotation. For
-            // the style to be applied, the elements need to be placed in the DOM. This
-            // single canvas is used for all images so each image does not have to
-            // append a new canvas to the DOM.
-            // See: https://bugs.chromium.org/p/chromium/issues/detail?id=158753#c114
-            this.drawCanvas = document.createElement('canvas');
-            this.drawCanvas.style.imageOrientation = 'none';
-            this.drawCanvas.style.visibility = 'hidden';
-            this.drawCanvas.style.position = 'fixed';
-            document.body.appendChild(this.drawCanvas);
-
             try {
                 // If this.fxCanvas is not initialized WebGL is not supported at all.
                 this.fxCanvas = fx.canvas();
@@ -144,36 +131,59 @@ export default new Vue({
         createImage(id) {
             let img = document.createElement('img');
 
+            // The canvas is required 1) to draw the image with ignored EXIF rotation and
+            // pass it on to OpenLayers and 2) to apply color adjustment and pass it on to
+            // OpenLayers.
+            //
+            // We could also use only a single global canvas element for all images to
+            // greatly reduce the memory requirements. But I decided to give each image
+            // its own canvas element to make switching between images much faster, since
+            // the canvases can be prepared before display and don't have to be redrawn
+            // on each switch (unless color adjustment is active).
+            let canvas = document.createElement('canvas');
+
             let imageWrapper = {
                 id: id,
                 source: img,
                 width: 0,
                 height: 0,
-                canvas: document.createElement('canvas'),
+                canvas: canvas,
                 crossOrigin: false,
             };
 
-            // Disable auto-rotation. Otherwise the canvas element might use the
-            // wrong values for width/height.
+            // Disable auto-rotation based on image metadata. This only works when the
+            // element is in the DOM so we have to append it whenever we need it.
             img.style.imageOrientation = 'none';
+            // Make the element invisible when it is appended to the DOM.
             img.style.visibility = 'hidden';
             img.style.position = 'fixed';
-            document.body.appendChild(img);
+
+            // Flag to skip redrawing of the original image if no color adjustment is
+            // active.
+            canvas._dirty = true;
 
             let promise = new Vue.Promise(function (resolve, reject) {
                 img.onload = function () {
+                    // The element must be appended to the DOM so the dimensions are
+                    // correctly determined. Otherwise imageOrientation=none has no
+                    // effect.
+                    document.body.appendChild(img);
                     imageWrapper.width = img.width;
                     imageWrapper.height = img.height;
+                    imageWrapper.canvas.width = img.width;
+                    imageWrapper.canvas.height = img.height;
+                    // Draw the image to the canvas already so the switch to a cached
+                    // image is as fast as possible.
+                    imageWrapper.canvas.getContext('2d').drawImage(img, 0, 0);
+                    imageWrapper.canvas._dirty = false;
+                    document.body.removeChild(img);
+
                     resolve(imageWrapper);
                 };
 
                 img.onerror = function () {
                     reject(`Failed to load image ${id}!`);
                 };
-            });
-
-            promise.finally(function () {
-                document.body.removeChild(img);
             });
 
             // The image may be tiled, so we request the data from the endpoint and
@@ -226,30 +236,28 @@ export default new Vue({
                 });
         },
         drawSimpleImage(image) {
-            document.body.appendChild(image.source);
-            this.drawCanvas.width = image.width;
-            this.drawCanvas.height = image.height;
-            this.drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
-            document.body.removeChild(image.source);
-
-            image.canvas.width = image.width;
-            image.canvas.height = image.height;
-            image.canvas.getContext('2d').drawImage(this.drawCanvas, 0, 0);
+            if (image.canvas._dirty) {
+                // Append the image to the DOM so imageOrientation=none is respected.
+                document.body.appendChild(image.source);
+                // This has to be called somehow to force the browser to respect
+                // imageOrientation=none.
+                image.source.width;
+                image.canvas.getContext('2d').drawImage(image.source, 0, 0);
+                image.canvas._dirty = false;
+                document.body.removeChild(image.source);
+            }
 
             return image;
         },
         drawColorAdjustedImage(image) {
             if (this.loadedImageTexture !== image.source.src) {
-                document.body.appendChild(image.source);
-                this.drawCanvas.width = image.width;
-                this.drawCanvas.height = image.height;
-                this.drawCanvas.getContext('2d').drawImage(image.source, 0, 0);
-                document.body.removeChild(image.source);
+                // Maybe redraw the unmodified image to the canvas again.
+                this.drawSimpleImage(image);
 
                 if (this.fxTexture) {
-                    this.fxTexture.loadContentsOf(this.drawCanvas);
+                    this.fxTexture.loadContentsOf(image.canvas);
                 } else {
-                    this.fxTexture = this.fxCanvas.texture(this.drawCanvas);
+                    this.fxTexture = this.fxCanvas.texture(image.canvas);
                 }
                 this.loadedImageTexture = image.source.src;
             }
@@ -263,9 +271,8 @@ export default new Vue({
             }
 
             this.fxCanvas.update();
-            image.canvas.width = image.width;
-            image.canvas.height = image.height;
             image.canvas.getContext('2d').drawImage(this.fxCanvas, 0, 0);
+            image.canvas._dirty = true;
 
             return image;
         },
