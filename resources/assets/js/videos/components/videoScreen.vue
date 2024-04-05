@@ -14,9 +14,14 @@
             <div class="btn-group">
                  <control-button
                     v-if="showPrevNext"
-                    icon="fa-step-backward"
+                    icon="fa-backward"
                     title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitPrevious"
+                    ></control-button>
+                <control-button
+                    icon="fa-step-backward"
+                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="showPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -33,8 +38,13 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
                     icon="fa-step-forward"
+                    title="Next frame Right 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="showNextFrame"
+                    ></control-button>
+                <control-button
+                    v-if="showPrevNext"
+                    icon="fa-forward"
                     title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitNext"
                     ></control-button>
