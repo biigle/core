@@ -20,14 +20,23 @@
         </p>
         <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/label-map") }}" v-on:submit="startLoading">
 
-            <label-mapping :from-labels="labels" :to-labels="flatLabels"></label-mapping>
-
             <div class="form-group{{ $errors->has('label_map') ? ' has-error' : '' }}">
-                {{--<input v-for="label in selectedLabels" type="hidden" name="label_map[]" :value="label.id">--}}
+                <input
+                    v-for="label in mappedLabels"
+                    type="hidden"
+                    :name="'label_map[' + label.id + ']'"
+                    :value="label.mappedLabel"
+                    >
                 @if ($errors->has('label_map'))
                    <span class="help-block">{{ $errors->first('label_map') }}</span>
                 @endif
             </div>
+
+            <label-mapping
+                :from-labels="labels"
+                :to-labels="flatLabels"
+                :trees="flatTrees"
+                ></label-mapping>
 
             <div class="clearfix">
                 <p v-if="!hasDanglingLabels" class="text-muted pull-right">

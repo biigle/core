@@ -1,12 +1,13 @@
 <template>
-<table class="label-mapping">
+<div class="label-mapping">
     <item
         v-for="label in fromLabels"
         :label="label"
         :key="label.id"
         :labels="toLabels"
+        :trees="trees"
         ></item>
-</table>
+</div>
 </template>
 
 <script>
@@ -22,8 +23,12 @@ export default {
             type: Array,
         },
         toLabels: {
-            default: () => {},
-            type: Object,
+            default: () => [],
+            type: Array,
+        },
+        trees: {
+            default: () => [],
+            type: Array,
         },
     },
 };

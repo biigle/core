@@ -1,31 +1,52 @@
 <template>
-<tr class="label-tree-label">
-    <td class="label-tree-label__name">
-        <span class="label-tree-label__color" :style="colorStyle"></span>
-        <span v-text="label.name"></span>
-    </td>
-    <td>
-        <i class="fas fa-chevron-right"></i>
-    </td>
-    <td class="label-tree-label__name">
-        <div v-if="mappedLabel">
-            <span class="label-tree-label__color" :style="mappedLabelColorStyle"></span>
-            <span v-text="mappedLabel.name"></span>
+<div class="label-tree-label label-mapping-item">
+    <div class="label-mapping-item-column">
+        <div class="label-tree-label__name">
+            <span class="label-tree-label__color" :style="colorStyle"></span>
+            <span v-text="label.name"></span>
         </div>
-    </td>
-</tr>
+    </div>
+    <div class="label-mapping-item-chevron">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+    <div class="label-mapping-item-column">
+        <div v-if="mappedLabel" class="label-tree-label__name">
+            <span class="label-tree-label__color" :style="mappedLabelColorStyle"></span>
+            {{mappedLabel.name}}<br>
+            <span class="text-muted">{{mappedLabel.labelTreeName}}</span>
+        </div>
+        <div v-else>
+            <typeahead
+                :items="labels"
+                :clear-on-select="true"
+                @select="handleSelect"
+                more-info="labelTreeName"
+                placeholder="Label name"
+                ></typeahead>
+        </div>
+    </div>
+</div>
 </template>
 
 <script>
+import Typeahead from '../../label-trees/components/labelTypeahead';
+
 export default {
+    components: {
+        Typeahead,
+    },
     props: {
         label: {
             required: true,
             type: Object,
         },
         labels: {
-            default: () => {},
-            type: Object,
+            default: () => [],
+            type: Array,
+        },
+        trees: {
+            default: () => [],
+            type: Array,
         },
     },
     computed: {
@@ -44,8 +65,13 @@ export default {
             };
         },
         mappedLabel() {
-            return this.labels[this.label.mappedLabel] || null;
-        }
+            return this.labels.find(l => l.id === this.label.mappedLabel) || null;
+        },
+    },
+    methods: {
+        handleSelect(label) {
+            this.label.mappedLabel = label.id;
+        },
     },
 };
 </script>

@@ -25,15 +25,25 @@ export default {
             return this.labels.filter(l => l.mappedLabel === null);
         },
         flatLabels() {
-            let labels = {};
+            let labels = [];
+
             this.labelTrees.forEach(function (tree) {
                 tree.labels.forEach(function (label) {
-                    labels[label.id] = label;
+                    label.labelTreeName = tree.name;
                 });
+                Array.prototype.push.apply(labels, tree.labels);
             });
 
             return labels;
-        }
+        },
+        flatTrees() {
+            return this.labelTrees.map(t => {
+                return {id: t.id, name: t.name};
+            });
+        },
+        mappedLabels() {
+            return this.labels.filter(l => l.mappedLabel);
+        },
     },
     methods: {
         //
