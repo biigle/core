@@ -36,6 +36,9 @@
                 :from-labels="labels"
                 :to-labels="flatLabels"
                 :trees="flatTrees"
+                :loading="loading"
+                v-on:select="handleSelect"
+                v-on:create="handleCreate"
                 ></label-mapping>
 
             <div class="clearfix">

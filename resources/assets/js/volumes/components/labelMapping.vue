@@ -6,6 +6,9 @@
         :key="label.id"
         :labels="toLabels"
         :trees="trees"
+        :loading="loading"
+        @select="emitSelect"
+        @create="emitCreate"
         ></item>
 </div>
 </template>
@@ -29,6 +32,18 @@ export default {
         trees: {
             default: () => [],
             type: Array,
+        },
+        loading: {
+            default: false,
+            type: Boolean,
+        },
+    },
+    methods: {
+        emitSelect(label, id) {
+            this.$emit('select', label, id);
+        },
+        emitCreate(label, treeId, newLabel) {
+            this.$emit('create', label, treeId, newLabel);
         },
     },
 };

@@ -1,6 +1,7 @@
 <script>
-import LoaderMixin from '../core/mixins/loader';
+import LabelApi from '../core/api/labels';
 import LabelMapping from './components/labelMapping';
+import LoaderMixin from '../core/mixins/loader';
 
 export default {
     mixins: [LoaderMixin],
@@ -46,7 +47,23 @@ export default {
         },
     },
     methods: {
-        //
+        handleSelect(label, id) {
+            label.mappedLabel = id;
+        },
+        handleCreate(metaLabel, treeId, newLabel) {
+            this.startLoading();
+            LabelApi.save({label_tree_id: treeId}, newLabel)
+                .then(
+                    (response) => this.handleCreatedLabel(metaLabel, response.body[0]),
+                    this.handleErrorResponse
+                )
+                .finally(this.finishLoading);
+        },
+        handleCreatedLabel(metaLabel, newLabel) {
+            const tree = this.labelTrees.find(t => t.id === newLabel.label_tree_id);
+            tree.labels.push(newLabel);
+            this.handleSelect(metaLabel, newLabel.id);
+        },
     },
     created() {
         this.labelMap = biigle.$require('volumes.labelMap');
