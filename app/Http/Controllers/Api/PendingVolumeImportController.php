@@ -133,9 +133,8 @@ class PendingVolumeImportController extends Controller
      */
     public function updateLabelMap(UpdatePendingVolumeLabelMap $request)
     {
-        $request->pendingVolume->update([
-            'label_map' => $request->input('label_map'),
-        ]);
+        $map = array_map('intval', $request->input('label_map'));
+        $request->pendingVolume->update(['label_map' => $map]);
 
         if ($this->isAutomatedRequest()) {
             return $request->pendingVolume;

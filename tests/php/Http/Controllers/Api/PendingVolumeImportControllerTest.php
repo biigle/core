@@ -282,6 +282,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             'label_map' => [],
         ])->assertStatus(422);
 
+        // Map values must be ints.
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
+            'label_map' => ['abc', 'def'],
+        ])->assertStatus(422);
+
         // No volume attached yet.
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $this->labelRoot()->id],
@@ -300,11 +305,12 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         ])->assertStatus(422);
 
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
-            'label_map' => [123 => $this->labelRoot()->id],
+            'label_map' => [123 => "{$this->labelRoot()->id}"],
         ])->assertSuccessful();
 
         $pv->refresh();
-        $this->assertEquals([123 => $this->labelRoot()->id], $pv->label_map);
+        // Values should be cast to int.
+        $this->assertSame([123 => $this->labelRoot()->id], $pv->label_map);
     }
 
     public function testUpdateLabelMapFileLabel()

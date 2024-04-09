@@ -29,6 +29,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
     {
         return [
             'label_map' => 'required|array|min:1',
+            'label_map.*' => 'int',
         ];
     }
 
