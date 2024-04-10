@@ -27,6 +27,7 @@ class UpdatePendingVolumeUserMap extends FormRequest
     {
         return [
             'user_map' => 'required|array|min:1',
+            'user_map.*' => 'int',
         ];
     }
 

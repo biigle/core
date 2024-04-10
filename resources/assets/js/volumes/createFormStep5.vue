@@ -11,7 +11,6 @@ export default {
     data() {
         return {
             labels: [],
-            labelMap: {},
             labelTrees: [],
         };
     },
@@ -66,10 +65,10 @@ export default {
         },
     },
     created() {
-        this.labelMap = biigle.$require('volumes.labelMap');
+        const labelMap = biigle.$require('volumes.labelMap');
 
         this.labels = biigle.$require('volumes.labels').map((label) => {
-            label.mappedLabel = this.labelMap[label.id];
+            label.mappedLabel = labelMap[label.id];
 
             return label;
         });

@@ -176,9 +176,8 @@ class PendingVolumeImportController extends Controller
      */
     public function updateUserMap(UpdatePendingVolumeUserMap $request)
     {
-        $request->pendingVolume->update([
-            'user_map' => $request->input('user_map'),
-        ]);
+        $map = array_map('intval', $request->input('user_map'));
+        $request->pendingVolume->update(['user_map' => $map]);
 
         return $request->pendingVolume;
     }

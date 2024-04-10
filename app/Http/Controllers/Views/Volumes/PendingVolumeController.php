@@ -283,14 +283,26 @@ class PendingVolumeController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $users = $pv->getMetadata()->getMatchingUsers();
+        $metadata = $pv->getMetadata();
 
-        if (empty($users)) {
+        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+        $userMap = collect($metadata->getMatchingUsers(onlyLabels: $onlyLabels));
+
+        if ($userMap->isEmpty()) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        // Merge with previously selected map on error.
+        $oldMap = collect(old('user_map', []))->map(fn ($v) => intval($v));
+        $userMap = $oldMap->union($userMap);
+
+        $users = collect($metadata->getUsers($onlyLabels))
+            ->values()
+            ->pluck('name', 'id');
+
         return view('volumes.create.userMap', [
             'pv' => $pv,
+            'userMap' => $userMap,
             'users' => $users,
         ]);
     }

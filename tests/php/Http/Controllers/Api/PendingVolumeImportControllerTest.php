@@ -529,11 +529,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         ])->assertStatus(422);
 
         $this->putJson("/api/v1/pending-volumes/{$id}/user-map", [
-            'user_map' => [321 => $this->user()->id],
+            'user_map' => [321 => "{$this->user()->id}"],
         ])->assertSuccessful();
 
         $pv->refresh();
-        $this->assertEquals([321 => $this->user()->id], $pv->user_map);
+        $this->assertSame([321 => $this->user()->id], $pv->user_map);
     }
 
     public function testUpdateUserMapFileLabel()

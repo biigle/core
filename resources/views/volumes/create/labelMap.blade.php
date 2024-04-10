@@ -55,7 +55,10 @@
                 <input type="hidden" name="_method" value="PUT">
                 <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
-                <input type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue">
+                <span class="pull-right">
+                    <loader :active="loading"></loader>
+                    <input type="submit" class="btn btn-success" value="Continue" :disabled="cannotContinue">
+                </span>
             </div>
         </form>
         <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">
