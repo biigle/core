@@ -206,14 +206,19 @@ class PendingVolumeController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        $metadata = $pv->getMetadata();
 
 
         $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
-        $labelMap = collect($pv->getMetadata()->getMatchingLabels(onlyLabels: $onlyLabels));
+        $labelMap = collect($metadata->getMatchingLabels(onlyLabels: $onlyLabels));
 
         if ($labelMap->isEmpty()) {
             abort(Response::HTTP_NOT_FOUND);
         }
+
+        // Merge with previously selected map on error.
+        $oldMap = collect(old('label_map', []))->map(fn ($v) => intval($v));
+        $labelMap = $oldMap->union($labelMap);
 
         $labels = [];
 
@@ -231,13 +236,13 @@ class PendingVolumeController extends Controller
 
         // These label trees are required to display the pre-mapped labels.
         $labelTrees =
-            LabelTree::whereIn('id', fn ($query) =>
+            LabelTree::whereIn(
+                'id',
+                fn ($query) =>
                 $query->select('label_tree_id')
                     ->from('labels')
                     ->whereIn('id', $labelMap->values()->unique()->filter())
-            )
-            ->get()
-            ->keyBy('id');
+            )->get()->keyBy('id');
 
         // These trees can also be used for manual mapping.
         $labelTrees = $labelTrees->union($project->labelTrees->keyBy('id'))->values();

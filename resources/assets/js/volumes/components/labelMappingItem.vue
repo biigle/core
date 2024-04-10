@@ -17,7 +17,7 @@
                 type="button"
                 :disabled="loading"
                 @click="handleChange"
-                ><i class="fa fa-pen"></i></button>
+                ><i class="fa fa-pen fa-fw"></i></button>
 
             <span class="label-tree-label__color" :style="mappedLabelColorStyle"></span>
             {{mappedLabel.name}}<br>
@@ -27,13 +27,13 @@
             <div v-if="creating" class="create-form">
                 <div class="row">
                     <div class="col-xs-8">
-                        <select class="form-control" v-model="selectedTree">
-                            <option
-                                v-for="tree in trees"
-                                :value="tree.id"
-                                :key="tree.id"
-                                >{{tree.name}}</option>
-                        </select>
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="name"
+                            placeholder="New label name"
+                            v-model="selectedName"
+                            >
                     </div>
                     <div class="col-xs-4">
                         <input
@@ -46,13 +46,17 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-8">
-                        <input
+                        <select
                             class="form-control"
-                            type="text"
-                            name="name"
-                            placeholder="New label name"
-                            v-model="selectedName"
+                            v-model="selectedTree"
                             >
+                            <option value="" disabled selected>-- label tree --</option>
+                            <option
+                                v-for="tree in trees"
+                                :value="tree.id"
+                                :key="tree.id"
+                                >{{tree.name}}</option>
+                        </select>
                     </div>
                     <div class="col-xs-4 clearfix">
                         <span class="pull-right">
@@ -62,14 +66,14 @@
                                 title="Cancel creating a new label"
                                 :disabled="loading"
                                 @click="cancelCreating"
-                                ><i class="fa fa-times"></i></button>
+                                ><i class="fa fa-times fa-fw"></i></button>
                             <button
                                 class="btn btn-success"
                                 type="button"
                                 title="Create the new label"
                                 :disabled="cantCreate"
                                 @click="emitCreate"
-                                ><i class="fa fa-check"></i></button>
+                                ><i class="fa fa-check fa-fw"></i></button>
                         </span>
                     </div>
                 </div>
@@ -81,7 +85,7 @@
                     type="button"
                     :disabled="loading"
                     @click="handleCreate"
-                    ><i class="fa fa-plus"></i></button>
+                    ><i class="fa fa-plus fa-fw"></i></button>
 
                 <typeahead
                     :items="labels"
@@ -107,7 +111,7 @@ export default {
     data() {
         return {
             creating: false,
-            selectedTree: null,
+            selectedTree: '',
             selectedColor: '',
             selectedName: '',
         };
