@@ -11,12 +11,19 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group">
+            <div class="btn-group"
+                v-if="showPrevNext">
                  <control-button
-                    v-if="showPrevNext"
-                    icon="fa-step-backward"
-                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    icon="fa-chevron-left"
+                    title="Previous video"
                     @click="emitPrevious"
+                    ></control-button>
+            </div>     
+            <div class="btn-group">
+                <control-button
+                    icon="fa-step-backward"
+                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="showPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -33,9 +40,16 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
                     icon="fa-step-forward"
-                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    title="Next frame Right 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="showNextFrame"
+                    ></control-button>
+            </div>
+            <div class="btn-group"
+                v-if="showPrevNext">
+                 <control-button
+                    icon="fa-chevron-right"
+                    title="Next video"
                     @click="emitNext"
                     ></control-button>
             </div>
@@ -550,8 +564,8 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.showNextFrame, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);

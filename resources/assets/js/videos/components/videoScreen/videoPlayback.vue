@@ -153,6 +153,50 @@ export default {
         handleSeeked() {
             this.renderVideo(true);
         },
+        // 3 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
+        frameInfoCallback() {
+            let promise = new Vue.Promise((resolve, reject) => {
+                if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+                    this.video.requestVideoFrameCallback((now, metadata) => {
+                        resolve(metadata);
+                    })
+                }
+                else {
+                    reject("Your browser does not support requestVideoFrameCallback().");
+                }
+            })
+            return promise;
+        },
+        async showPreviousFrame() {
+            // force rerender
+            this.video.currentTime += 1;
+            this.video.currentTime -= 1;
+
+            // get current frame time
+            const firstMetadata = await this.frameInfoCallback();
+
+            for (;;) {
+                // now adjust video's current time until actual frame time changes
+                this.video.currentTime -= 0.01;
+                let metadata = await this.frameInfoCallback(); 
+                if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+            }
+        },
+        async showNextFrame() {
+            // force rerender
+            this.video.currentTime += 1;
+            this.video.currentTime -= 1;
+
+            // get current frame time
+            const firstMetadata = await this.frameInfoCallback();
+
+            for (;;) {
+                // now adjust video's current time until actual frame time changes
+                this.video.currentTime += 0.01;
+                let metadata = await this.frameInfoCallback(); 
+                if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+            }
+        },
     },
     watch: {
         seeking(seeking) {
