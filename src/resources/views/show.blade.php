@@ -21,7 +21,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-largo-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb') / <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}" class="navbar-link">{{$volume->name}}</a> / <span id="largo-title">Largo / <strong v-if="isInDismissStep">dismiss existing annotations</strong><strong v-cloak v-else>re-label dismissed annotations</strong> <small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span> @include('volumes.partials.annotationSessionIndicator')
+    @include('volumes.partials.projectsBreadcrumb') / <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}" class="navbar-link">{{$volume->name}}</a> / <span id="largo-title">Largo / <strong v-if="isInDismissStep">dismiss existing annotations</strong><strong v-cloak v-else>relabel dismissed annotations</strong> <small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span> @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection
 

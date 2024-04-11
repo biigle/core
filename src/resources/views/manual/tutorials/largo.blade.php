@@ -58,7 +58,7 @@
         </p>
 
         <p>
-            The second step in Largo is the re-label step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To re-label an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
+            The second step in Largo is the relabel step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To relabel an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
         </p>
 
         <p class="text-center">
@@ -68,7 +68,7 @@
 
         <div class="panel panel-info">
             <div class="panel-body text-info">
-                To quickly dismiss or re-label consecutive annotations, press the <kbd>Shift</kbd> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
+                To quickly dismiss or relabel consecutive annotations, press the <kbd>Shift</kbd> key when you click on an annotation. This will dismiss/relabel all annotations between the current one and the last one you have selected.
             </div>
         </div>
 
@@ -83,7 +83,7 @@
         </ul>
 
         <p>
-            Project experts and admins can choose to enable the "Force delete/re-label" switch. If a Largo session is saved with this switch enabled, the behavior described above changes as follows:
+            Project experts and admins can choose to enable the "Force delete/relabel" switch. If a Largo session is saved with this switch enabled, the behavior described above changes as follows:
         </p>
 
         <ul>
@@ -144,23 +144,23 @@
         <h4>Review annotation errors</h4>
 
         <p>
-            The annotations displayed in a grid make it very easy to spot errors like in the example above. Use Largo to review the annotations and dismiss all annotations that have the wrong label. In the re-label step, assign the correct labels or delete annotations that make no sense at all by not assigning them a new label.
+            The annotations displayed in a grid make it very easy to spot errors like in the example above. Use Largo to review the annotations and dismiss all annotations that have the wrong label. In the relabel step, assign the correct labels or delete annotations that make no sense at all by not assigning them a new label.
         </p>
 
         <h4>Confirm annotations of others</h4>
 
         <p>
-            BIIGLE allows users to attach multiple labels to a single annotation. This way users can confirm labels of other users or suggest a different label. In Largo you can display, "dismiss" and re-label all annotations where you want to confirm or suggest a different label. Don't worry if you forgot to re-label an annotation. If the label attached to the annotation was not created by you, it won't be deleted. Take care not to enable the "Force delete/re-label" switch in this case.
+            BIIGLE allows users to attach multiple labels to a single annotation. This way users can confirm labels of other users or suggest a different label. In Largo you can display, "dismiss" and relabel all annotations where you want to confirm or suggest a different label. Don't worry if you forgot to relabel an annotation. If the label attached to the annotation was not created by you, it won't be deleted. Take care not to enable the "Force delete/relabel" switch in this case.
         </p>
 
         <h4>Two step annotation process</h4>
 
         <p>
-            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. In the re-label step, you simply re-label all dismissed annotations as starfish and save. Then continue with the next label.
+            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. In the relabel step, you simply relabel all dismissed annotations as starfish and save. Then continue with the next label.
         </p>
 
         <p>
-            You can perform the two step annotation process with multiple users, too. One user is responsible of finding objects of interest in the images or videos. The other user (e.g. an expert) then assigns specific labels to the annotations using Largo. With the "Force delete/re-label" switch enabled, the expert can replace the generic "Interesting" labels with the specific ones.
+            You can perform the two step annotation process with multiple users, too. One user is responsible of finding objects of interest in the images or videos. The other user (e.g. an expert) then assigns specific labels to the annotations using Largo. With the "Force delete/relabel" switch enabled, the expert can replace the generic "Interesting" labels with the specific ones.
         </p>
 
         <h4>Annotation examples</h4>
