@@ -11,12 +11,19 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group">
+            <div class="btn-group"
+                v-if="showPrevNext">
                  <control-button
-                    v-if="showPrevNext"
-                    icon="fa-step-backward"
-                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    icon="fa-chevron-left"
+                    title="Previous video"
                     @click="emitPrevious"
+                    ></control-button>
+            </div>     
+            <div class="btn-group">
+                <control-button
+                    icon="fa-backward"
+                    title="Rewind video by jump step"
+                    @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -33,9 +40,16 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
-                    icon="fa-step-forward"
-                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    icon="fa-forward"
+                    title="Advance video by jump step"
+                    @click="jumpForward"
+                    ></control-button>
+            </div>
+            <div class="btn-group"
+                v-if="showPrevNext">
+                 <control-button
+                    icon="fa-chevron-right"
+                    title="Next video"
                     @click="emitNext"
                     ></control-button>
             </div>
@@ -285,6 +299,10 @@ export default {
         autoplayDraw: {
             type: Number,
             default: 0,
+        },
+        jumpStep: {
+            type: Number,
+            default: 5.0,
         },
         canAdd: {
             type: Boolean,

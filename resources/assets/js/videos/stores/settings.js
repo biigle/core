@@ -7,6 +7,7 @@ let defaults = {
     showLabelTooltip: false,
     showMousePosition: false,
     showProgressIndicator: true,
+    jumpStep: 5.0,
 };
 
 export default new Settings({
