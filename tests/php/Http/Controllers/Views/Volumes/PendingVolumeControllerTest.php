@@ -463,4 +463,78 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->get("pending-volumes/{$pv->id}/user-map")->assertStatus(404);
     }
+
+    public function testShowFinishImport()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+
+        // not logged in
+        $this->get("pending-volumes/{$pv->id}/finish")->assertStatus(302);
+
+        // doesn't belong to pending volume
+        $this->beExpert();
+        $this->get("pending-volumes/{$pv->id}/finish")->assertStatus(403);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/finish")->assertStatus(200);
+    }
+
+    public function testShowFinishImportNoVolume()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->get("pending-volumes/{$pv->id}/finish")
+            ->assertRedirectToRoute('pending-volume', $pv->id);
+    }
+
+    public function testShowFinishImportNoMetadata()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+        ]);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/finish")->assertStatus(404);
+    }
+
+    public function testShowFinishImportNoUsers()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'volume_id' => $this->volume()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}/finish")->assertStatus(404);
+    }
 }

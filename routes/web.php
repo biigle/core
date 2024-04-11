@@ -272,6 +272,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'pending-volume-user-map',
             'uses' => 'PendingVolumeController@showUserMap',
         ]);
+
+        $router->get('{id}/finish', [
+            'as'   => 'pending-volume-finish',
+            'uses' => 'PendingVolumeController@showFinish',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {

@@ -209,7 +209,6 @@ class PendingVolumeController extends Controller
 
         $metadata = $pv->getMetadata();
 
-
         $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
         $labelMap = collect($metadata->getMatchingLabels(onlyLabels: $onlyLabels));
 
@@ -305,6 +304,45 @@ class PendingVolumeController extends Controller
             'pv' => $pv,
             'userMap' => $userMap,
             'users' => $users,
+        ]);
+    }
+
+    /**
+     * Show the view to finish the metadata import.
+     *
+     * @param Request $request
+     */
+    public function showFinish(Request $request)
+    {
+        $pv = PendingVolume::findOrFail($request->route('id'));
+        $this->authorize('update', $pv);
+
+        if (is_null($pv->volume_id)) {
+            return redirect()->route('pending-volume', $pv->id);
+        }
+
+        if (!$pv->hasMetadata()) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $metadata = $pv->getMetadata();
+
+        if (empty($metadata->getUsers())) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+
+        $labelMap = $metadata->getMatchingLabels($pv->label_map, $onlyLabels);
+        $labelMapOk = array_search(null, $labelMap) === false;
+
+        $userMap = $metadata->getMatchingUsers($pv->user_map, $onlyLabels);
+        $userMapOk = array_search(null, $userMap) === false;
+
+        return view('volumes.create.finish', [
+            'pv' => $pv,
+            'labelMapOk' => $labelMapOk,
+            'userMapOk' => $userMapOk,
         ]);
     }
 }
