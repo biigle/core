@@ -11,17 +11,24 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
+            <div class="btn-group"
+                v-if="showPrevNext">
+                 <control-button
+                    icon="fa-chevron-left"
+                    title="Previous video"
+                    @click="emitPrevious"
+                    ></control-button>
+            </div>     
             <div class="btn-group">
                  <control-button
-                    v-if="showPrevNext"
                     icon="fa-backward"
-                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    @click="emitPrevious"
+                    title="Rewind video by jump step"
+                    @click="jumpBackward"
                     ></control-button>
                 <control-button
                     icon="fa-step-backward"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    v-on:click="showPreviousFrame"
+                    @click="showPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -39,13 +46,20 @@
                     ></control-button>
                 <control-button
                     icon="fa-step-forward"
-                    title="Next frame Right 𝗮𝗿𝗿𝗼𝘄"
-                    v-on:click="showNextFrame"
+                    title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    @click="showNextFrame"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
                     icon="fa-forward"
-                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    title="Advance video by jump step"
+                    @click="jumpForward"
+                    ></control-button>
+            </div>
+            <div class="btn-group"
+                v-if="showPrevNext">
+                 <control-button
+                    icon="fa-chevron-right"
+                    title="Next video"
                     @click="emitNext"
                     ></control-button>
             </div>
@@ -295,6 +309,10 @@ export default {
         autoplayDraw: {
             type: Number,
             default: 0,
+        },
+        jumpStep: {
+            type: Number,
+            default: 5.0,
         },
         canAdd: {
             type: Boolean,
@@ -560,8 +578,8 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.showNextFrame, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);

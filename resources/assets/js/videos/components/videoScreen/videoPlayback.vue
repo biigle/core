@@ -197,6 +197,19 @@ export default {
                 if (metadata.mediaTime !== firstMetadata.mediaTime) break;
             }
         },
+        // Methods to jump back and forward in video. Step is given by parameter jumpStep.
+        async jumpBackward() {
+            if (this.video.currentTime > 0 && this.jumpStep > 0) {
+                this.video.currentTime -= this.jumpStep;
+                await this.frameInfoCallback();
+            }
+        },
+        async jumpForward() {
+            if (!this.video.ended && this.jumpStep > 0) {
+                this.video.currentTime += this.jumpStep;
+                await this.frameInfoCallback();
+            }
+        },
     },
     watch: {
         seeking(seeking) {

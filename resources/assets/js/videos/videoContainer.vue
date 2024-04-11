@@ -67,6 +67,7 @@ export default {
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
+                jumpStep: 5.0,
                 showProgressIndicator: true,
             },
             openTab: '',
