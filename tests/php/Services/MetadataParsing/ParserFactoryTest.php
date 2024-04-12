@@ -67,6 +67,11 @@ class TestParser extends MetadataParser
         return [];
     }
 
+    public static function getName(): string
+    {
+        return 'Test';
+    }
+
     public function recognizesFile(): bool
     {
         return false;

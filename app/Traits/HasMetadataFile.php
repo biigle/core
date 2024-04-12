@@ -3,7 +3,6 @@
 namespace Biigle\Traits;
 
 use Biigle\MediaType;
-use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Cache;
 use Illuminate\Http\UploadedFile;
@@ -49,10 +48,8 @@ trait HasMetadataFile
                 $to = fopen($tmpPath, 'w');
                 stream_copy_to_stream($from, $to);
                 $type = ($this->media_type_id === MediaType::imageId()) ? 'image' : 'video';
-                $parser = ParserFactory::getParserForFile(new SplFileInfo($tmpPath), $type);
-                if (is_null($parser)) {
-                    return null;
-                }
+
+                $parser = new $this->metadata_parser(new SplFileInfo($tmpPath));
 
                 return $parser->getMetadata();
             } finally {

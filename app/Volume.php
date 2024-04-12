@@ -50,6 +50,7 @@ class Volume extends Model
         'handle',
         'creator_id',
         'metadata_file_path',
+        'metadata_parser',
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use Biigle\PendingVolume;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use ModelTestCase;
@@ -24,6 +25,7 @@ class PendingVolumeTest extends ModelTestCase
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNull($this->model->metadata_file_path);
+        $this->assertNull($this->model->metadata_parser);
         $this->assertNull($this->model->volume_id);
         $this->assertFalse($this->model->import_annotations);
         $this->assertFalse($this->model->import_file_labels);
@@ -73,6 +75,7 @@ class PendingVolumeTest extends ModelTestCase
         $disk = Storage::fake('pending-metadata');
         $this->model->metadata_file_path = $this->model->id.'.csv';
         $disk->put($this->model->metadata_file_path, "filename,area\n1.jpg,2.5");
+        $this->model->metadata_parser = ImageCsvParser::class;
         $metadata = $this->model->getMetadata();
         $fileMeta = $metadata->getFile('1.jpg');
         $this->assertEquals(2.5, $fileMeta->area);

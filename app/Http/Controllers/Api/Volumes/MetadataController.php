@@ -61,6 +61,7 @@ class MetadataController extends Controller
      * @apiParam {Number} id The volume ID.
      *
      * @apiParam (attributes) {File} file A file with volume and image/video metadata. By default, this can be a CSV. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp. Other file formats may be supported through modules.
+     * @apiParam (attributes) {String} parser The class namespace of the metadata parser to use. The default CSV parsers are: `Biigle\Services\MetadataParsing\ImageCsvParser` and `Biigle\Services\MetadataParsing\VideoCsvParser`.
      *
      * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
@@ -80,6 +81,7 @@ class MetadataController extends Controller
         // is not guaranteed that the file is overwritten.
         $request->volume->deleteMetadata();
         $request->volume->saveMetadata($request->file('file'));
+        $request->volume->update(['metadata_parser' => $request->input('metadata_parser')]);
         Queue::push(new UpdateVolumeMetadata($request->volume));
     }
 

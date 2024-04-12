@@ -106,6 +106,7 @@ class ProjectVolumeController extends Controller
             $volume->url = $request->input('url');
             $volume->media_type_id = $request->input('media_type_id');
             $volume->handle = $request->input('handle');
+            $volume->metadata_parser = $request->metadataParser;
             $volume->creator()->associate($request->user());
             $volume->save();
             $request->project->volumes()->attach($volume);

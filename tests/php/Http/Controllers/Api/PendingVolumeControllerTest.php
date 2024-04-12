@@ -6,6 +6,8 @@ use ApiTestCase;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Volume;
 use Exception;
 use FileCache;
@@ -73,10 +75,12 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'image',
+            'metadata_parser' => ImageCsvParser::class,
             'metadata_file' => $file,
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('project_id', $id)->first();
+        $this->assertEquals(ImageCsvParser::class, $pv->metadata_parser);
         $this->assertNotNull($pv->metadata_file_path);
         $disk->assertExists($pv->metadata_file_path);
     }
@@ -91,6 +95,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'image',
+            'metadata_parser' => ImageCsvParser::class,
             'metadata_file' => $file,
         ])->assertStatus(422);
     }
@@ -105,6 +110,22 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'image',
+            'metadata_parser' => ImageCsvParser::class,
+            'metadata_file' => $file,
+        ])->assertStatus(422);
+    }
+
+    public function testStoreImageWithParserUnknown()
+    {
+        $disk = Storage::fake('pending-metadata');
+        $csv = __DIR__."/../../../../files/image-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'image',
+            'metadata_parser' => 'my-parser',
             'metadata_file' => $file,
         ])->assertStatus(422);
     }
@@ -119,10 +140,12 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'video',
+            'metadata_parser' => VideoCsvParser::class,
             'metadata_file' => $file,
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('project_id', $id)->first();
+        $this->assertEquals(VideoCsvParser::class, $pv->metadata_parser);
         $this->assertNotNull($pv->metadata_file_path);
         $disk->assertExists($pv->metadata_file_path);
     }
@@ -137,6 +160,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'video',
+            'metadata_parser' => VideoCsvParser::class,
             'metadata_file' => $file,
         ])->assertStatus(422);
     }
@@ -151,6 +175,22 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'video',
+            'metadata_parser' => VideoCsvParser::class,
+            'metadata_file' => $file,
+        ])->assertStatus(422);
+    }
+
+    public function testStoreVideoWithParserUnknown()
+    {
+        $disk = Storage::fake('pending-metadata');
+        $csv = __DIR__."/../../../../files/video-metadata.csv";
+        $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+
+        $id = $this->project()->id;
+        $this->beAdmin();
+        $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'video',
+            'metadata_parser' => 'my-parser',
             'metadata_file' => $file,
         ])->assertStatus(422);
     }
@@ -286,6 +326,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::imageId(),
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $id = $pv->id;
         $pendingMetaDisk->put('mymeta.csv', 'abc');
@@ -301,6 +342,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertSuccessful();
 
         $volume = $this->project()->volumes()->first();
+        $this->assertEquals(ImageCsvParser::class, $volume->metadata_parser);
         $this->assertTrue($volume->hasMetadata());
         $metaDisk->assertExists($volume->metadata_file_path);
         $pendingMetaDisk->assertMissing($pv->metadata_file_path);
@@ -317,6 +359,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::imageId(),
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $id = $pv->id;
         $pendingMetaDisk->put('mymeta.csv', 'abc');
@@ -350,6 +393,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::imageId(),
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $id = $pv->id;
         $pendingMetaDisk->put('mymeta.csv', 'abc');
@@ -714,6 +758,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::videoId(),
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $id = $pv->id;
         $pendingMetaDisk->put('mymeta.csv', 'abc');

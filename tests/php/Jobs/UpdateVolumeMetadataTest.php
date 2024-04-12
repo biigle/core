@@ -5,6 +5,8 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Image;
 use Biigle\Jobs\UpdateVolumeMetadata;
 use Biigle\MediaType;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Video;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -18,6 +20,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
 
         $image = Image::factory()->create([
@@ -55,6 +58,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
 
         $image = Image::factory()->create([
@@ -98,6 +102,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
 
         $image = Image::factory()->create([
@@ -138,6 +143,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
 
         $video = Video::factory()->create([
@@ -172,6 +178,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
 
         $video = Video::factory()->create([
@@ -215,6 +222,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
 
         $video = Video::factory()->create([
@@ -255,6 +263,7 @@ class UpdateVolumeMetadataTest extends TestCase
         $volume = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
 
         $video = Video::factory()->create([

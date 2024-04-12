@@ -34,9 +34,6 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
 
-            // Path of the file in the pending_metadata_storage_disk.
-            $table->string('metadata_file_path', 256)->nullable();
-
             // Specify if the pending volume should be used to import annotations.
             $table->boolean('import_annotations')->default(false);
 
@@ -46,6 +43,11 @@ return new class extends Migration {
             // Specifies if a job to import metadata is already dispatched for this
             // pending volume.
             $table->boolean('importing')->default(false);
+
+            // Path of the file in the pending_metadata_storage_disk.
+            $table->string('metadata_file_path', 256)->nullable();
+            // Class name of the metadata parser for the metadata file.
+            $table->string('metadata_parser', 256)->nullable();
 
             // Used to filter the imported annotations.
             $table->jsonb('only_annotation_labels')->nullable();
@@ -63,6 +65,7 @@ return new class extends Migration {
 
         Schema::table('volumes', function (Blueprint $table) {
             $table->string('metadata_file_path', 256)->nullable();
+            $table->string('metadata_parser', 256)->nullable();
         });
     }
 
@@ -73,6 +76,7 @@ return new class extends Migration {
     {
         Schema::table('volumes', function (Blueprint $table) {
             $table->dropColumn('metadata_file_path');
+            $table->dropColumn('metadata_parser');
         });
 
         Schema::dropIfExists('pending_volumes');

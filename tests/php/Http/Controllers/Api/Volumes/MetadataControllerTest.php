@@ -5,6 +5,8 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Jobs\UpdateVolumeMetadata;
 use Biigle\MediaType;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;
@@ -55,15 +57,30 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
         $this->beEditor();
         // no permissions
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => ImageCsvParser::class,
+        ])
             ->assertStatus(403);
 
         $this->beAdmin();
         // file required
-        $this->postJson("/api/v1/volumes/{$id}/metadata")->assertStatus(422);
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'parser' => ImageCsvParser::class,
+        ])
+            ->assertStatus(422);
+
+        // parser required
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+        ])
+            ->assertStatus(422);
 
 
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => ImageCsvParser::class,
+        ])
             ->assertStatus(200);
 
         Queue::assertPushed(UpdateVolumeMetadata::class, function ($job) {
@@ -78,7 +95,22 @@ class MetadataControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata-invalid.csv", 'image-metadata-invalid.csv', 'text/csv', null, true);
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => ImageCsvParser::class,
+        ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreImageMetadataUnknown()
+    {
+        $id = $this->volume()->id;
+        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => 'unknown',
+        ])
             ->assertStatus(422);
     }
 
@@ -92,7 +124,10 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => VideoCsvParser::class,
+        ])
             ->assertSuccessful();
 
         Queue::assertPushed(UpdateVolumeMetadata::class, function ($job) {
@@ -109,7 +144,10 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata-strange-encoding.csv", 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$id}/metadata", ['file' => $csv])
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => ImageCsvParser::class,
+        ])
             ->assertStatus(422);
     }
 
@@ -133,6 +171,8 @@ class MetadataControllerTest extends ApiTestCase
         $this->deleteJson("/api/v1/volumes/{$id}/metadata")
             ->assertSuccessful();
 
-        $this->assertFalse($volume->fresh()->hasMetadata());
+        $volume->refresh();
+        $this->assertFalse($volume->hasMetadata());
+        $this->assertNull($volume->parser);
     }
 }

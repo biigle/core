@@ -7,6 +7,8 @@ use Biigle\Image;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\Role;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
@@ -448,6 +450,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = $this->project()->volumes()->first();
         $this->assertNull($volume->metadata_file_path);
+        $this->assertNull($volume->metadata_parser);
     }
 
     public function testStoreImageMetadataText()
@@ -470,6 +473,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNotNull($volume->metadata_file_path);
+        $this->assertEquals(ImageCsvParser::class, $volume->metadata_parser);
     }
 
     public function testStoreImageMetadataCsv()
@@ -493,6 +497,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNotNull($volume->metadata_file_path);
+        $this->assertEquals(ImageCsvParser::class, $volume->metadata_parser);
     }
 
     public function testStoreImageMetadataInvalid()
@@ -532,6 +537,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = $this->project()->volumes()->first();
         $this->assertNull($volume->metadata_file_path);
+        $this->assertNull($volume->metadata_parser);
     }
 
     public function testStoreVideoMetadataText()
@@ -554,6 +560,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNotNull($volume->metadata_file_path);
+        $this->assertEquals(VideoCsvParser::class, $volume->metadata_parser);
     }
 
     public function testStoreVideoMetadataCsv()
@@ -579,6 +586,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNotNull($volume->metadata_file_path);
+        $this->assertEquals(VideoCsvParser::class, $volume->metadata_parser);
     }
 
     public function testStoreVideoMetadataInvalid()

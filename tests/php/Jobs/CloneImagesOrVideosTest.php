@@ -8,6 +8,7 @@ use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
@@ -580,6 +581,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
             'media_type_id' => MediaType::imageId(),
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
+            'metadata_parser' => ImageCsvParser::class,
         ])->fresh();
 
         $copy = $volume->replicate();
@@ -602,6 +604,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
 
         $this->assertTrue($copy->hasMetadata());
         $this->assertNotNull($copy->getMetadata());
+        $this->assertEquals(ImageCsvParser::class, $copy->metadata_parser);
     }
 
     public function testHandleVolumeImages()

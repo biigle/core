@@ -3,7 +3,6 @@
 namespace Biigle\Services\MetadataParsing;
 
 use Exception;
-use SplFileInfo;
 
 class ParserFactory
 {
@@ -17,23 +16,11 @@ class ParserFactory
     ];
 
     /**
-     * Get the first parser that recognizes the file.
+     * Check if the metadata parser exists for the given type.
      */
-    public static function getParserForFile(SplFileInfo $file, string $type): ?MetadataParser
+    public static function has(string $type, string $class): bool
     {
-        if (isset(static::$mockParser)) {
-            return static::$mockParser;
-        }
-
-        $parsers = self::$parsers[$type] ?? [];
-        foreach ($parsers as $parserClass) {
-            $parser = new $parserClass($file);
-            if ($parser->recognizesFile()) {
-                return $parser;
-            }
-        }
-
-        return null;
+        return in_array($class, static::$parsers[$type] ?? []);
     }
 
     /**

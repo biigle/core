@@ -34,7 +34,8 @@ class PendingVolumeController extends Controller
      *
      * @apiParam (Required attributes) {String} media_type The media type of the new volume (`image` or `video`).
      *
-     * @apiParam (Optional attributes) {File} metadata_file A file with volume and image/video metadata. By default, this can be a CSV. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp. Other file formats may be supported through modules.
+     * @apiParam (Optional attributes) {File} metadata_file A file with volume and image/video metadata. By default, this can be a CSV. See "metadata columns" for the possible columns. Each column may occur only once. There must be at least one column other than `filename`. For video metadata, multiple rows can contain metadata from different times of the same video. In this case, the `filename` of the rows must match and each row needs a (different) `taken_at` timestamp. Other file formats may be supported through modules. This attribute is required if `metadata_parser` is specified.
+     * @apiParam (Optional attributes) {String} metadata_parser The class namespace of the metadata parser to use. The default CSV parsers are: `Biigle\Services\MetadataParsing\ImageCsvParser` and `Biigle\Services\MetadataParsing\VideoCsvParser`. This attribute is required if `metadata_file` is specified.
      *
      * @apiParam (metadata columns) {String} filename The filename of the file the metadata belongs to. This column is required.
      * @apiParam (metadata columns) {String} taken_at The date and time where the file was taken. Example: `2016-12-19 12:49:00`
@@ -60,6 +61,7 @@ class PendingVolumeController extends Controller
         $pv = $request->project->pendingVolumes()->create([
             'media_type_id' => $request->input('media_type_id'),
             'user_id' => $request->user()->id,
+            'metadata_parser' => $request->input('metadata_parser', null),
         ]);
 
         if ($request->has('metadata_file')) {
@@ -124,7 +126,8 @@ class PendingVolumeController extends Controller
 
             if ($pv->hasMetadata()) {
                 $volume->update([
-                    'metadata_file_path' => $volume->id.'.'.pathinfo($pv->metadata_file_path, PATHINFO_EXTENSION)
+                    'metadata_file_path' => $volume->id.'.'.pathinfo($pv->metadata_file_path, PATHINFO_EXTENSION),
+                    'metadata_parser' => $pv->metadata_parser,
                 ]);
                 $stream = Storage::disk(config('volumes.pending_metadata_storage_disk'))
                     ->readStream($pv->metadata_file_path);

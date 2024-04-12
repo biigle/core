@@ -9,7 +9,8 @@ use Biigle\Rules\ImageMetadata;
 use Biigle\Rules\VideoMetadata;
 use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
-use Biigle\Services\MetadataParsing\ParserFactory;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Volume;
 use File;
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,6 +25,13 @@ class StoreVolume extends FormRequest
      * @var Project
      */
     public $project;
+
+    /**
+     * Class name of the metadata parser that should be used.
+     *
+     * @var string|null
+     */
+    public $metadataParser = null;
 
     /**
      * Filled if an uploaded metadata text was stored in a file.
@@ -100,9 +108,16 @@ class StoreVolume extends FormRequest
 
             if ($file = $this->file('metadata_csv')) {
                 $type = $this->input('media_type');
-                $parser = ParserFactory::getParserForFile($file, $type);
-                if (is_null($parser)) {
-                    $validator->errors()->add('metadata', 'Unknown metadata file format for this media type.');
+
+                $parser = match ($type) {
+                    'video' => new VideoCsvParser($file),
+                    default => new ImageCsvParser($file),
+                };
+
+                $this->metadataParser = get_class($parser);
+
+                if (!$parser->recognizesFile()) {
+                    $validator->errors()->add('metadata_file', 'Unknown metadata file format.');
                     return;
                 }
 
