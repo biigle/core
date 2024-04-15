@@ -5,15 +5,14 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use TestCase;
-use Biigle\Services\MetadataParsing\ImageCsvParser;
-use Biigle\Services\MetadataParsing\VideoCsvParser;
-
 
 class CreateNewImagesOrVideosTest extends TestCase
 {

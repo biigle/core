@@ -41,6 +41,14 @@ abstract class CsvParser extends MetadataParser
     /**
      * {@inheritdoc}
      */
+    public static function getName(): string
+    {
+        return 'BIIGLE CSV';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function recognizesFile(): bool
     {
         $file = $this->getCsvIterator();

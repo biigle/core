@@ -19,10 +19,9 @@ export default {
             success: false,
             message: undefined,
             hasMetadata: false,
+            parsers: [],
+            selectedParser: null,
         };
-    },
-    computed: {
-        //
     },
     methods: {
         handleSuccess() {
@@ -42,13 +41,11 @@ export default {
                 this.handleErrorResponse(response);
             }
         },
-        submitFile() {
-            this.$refs.fileInput.click();
-        },
         handleFile(event) {
             this.startLoading();
             let data = new FormData();
             data.append('file', event.target.files[0]);
+            data.append('parser', this.selectedParser.parserClass);
             MetadataApi.save({id: this.volumeId}, data)
                 .then(() => this.hasMetadata = true)
                 .then(this.handleSuccess)
@@ -65,10 +62,17 @@ export default {
             this.hasMetadata = false;
             MessageStore.success('The metadata file was deleted.');
         },
+        selectFile(parser) {
+            this.selectedParser = parser;
+            // Use $nextTick so the input element will have the appropriate MIME type
+            // filter from the selected parser.
+            this.$nextTick(() => this.$refs.fileInput.click());
+        },
     },
     created() {
         this.volumeId = biigle.$require('volumes.id');
         this.hasMetadata = biigle.$require('volumes.hasMetadata');
+        this.parsers = biigle.$require('volumes.parsers');
     },
 };
 </script>

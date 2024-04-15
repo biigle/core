@@ -34,17 +34,4 @@ class ParserFactory
 
         self::$parsers[$type][] = $parserClass;
     }
-
-    /**
-     * Get the MIME types recognized by all metadata parsers of the media type.
-     */
-    public static function getKnownMimeTypes(string $type): array
-    {
-        $mimes = [];
-        foreach (static::$parsers[$type] ?? [] as $parser) {
-            $mimes = array_merge($mimes, $parser::getKnownMimeTypes());
-        }
-
-        return $mimes;
-    }
 }

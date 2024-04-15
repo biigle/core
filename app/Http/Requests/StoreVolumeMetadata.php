@@ -37,7 +37,11 @@ class StoreVolumeMetadata extends FormRequest
     public function rules()
     {
         $type = $this->volume->isImageVolume() ? 'image' : 'video';
-        $mimeTypes = ParserFactory::getKnownMimeTypes($type);
+        $parserClass = $this->input('parser', false);
+        $mimeTypes = [];
+        if ($parserClass && ParserFactory::has($type, $parserClass)) {
+            $mimeTypes = $parserClass::getKnownMimeTypes();
+        }
 
         return [
             'parser' => 'required',

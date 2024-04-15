@@ -7,7 +7,6 @@ use Biigle\Services\MetadataParsing\MetadataParser;
 use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Symfony\Component\HttpFoundation\File\File;
 use TestCase;
 
 class ParserFactoryTest extends TestCase
@@ -39,16 +38,6 @@ class ParserFactoryTest extends TestCase
 
         $this->expectException(\Exception::class);
         ParserFactory::extend(TestParser2::class, 'image');
-    }
-
-    public function testGetKnownMimeTypes()
-    {
-        $types = ParserFactory::getKnownMimeTypes('image');
-        $this->assertContains('text/csv', $types);
-        $types = ParserFactory::getKnownMimeTypes('video');
-        $this->assertContains('text/csv', $types);
-        $types = ParserFactory::getKnownMimeTypes('unknown');
-        $this->assertEquals([], $types);
     }
 }
 

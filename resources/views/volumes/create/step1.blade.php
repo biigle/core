@@ -5,6 +5,7 @@
 @push('scripts')
    <script type="text/javascript">
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
+      biigle.$declare('volumes.parsers', {!! $parsers !!});
    </script>
 @endpush
 
@@ -41,13 +42,26 @@
             <legend>
                 Select a metadata file <span class="text-muted">(optional)</span>
             </legend>
-            <div class="form-group{{ $errors->has('metadata_file') ? ' has-error' : '' }}">
+            <div class="form-group{{ $errors->hasAny(['metadata_file', 'metadata_parser']) ? ' has-error' : '' }}">
                 <p class="text-center">
-                    <button class="btn btn-default btn-lg" type="button" v-on:click="selectFile" :class="fileButtonClass"><i class="fa fa-file-alt"></i> Select a file</button>
+                    <dropdown tag="span">
+                        <button class="btn btn-default btn-lg dropdown-toggle" :class="fileButtonClass" type="button"><i class="fa fa-file-alt"></i> Select a file <span class="caret"></span></button>
+                        <template slot="dropdown">
+                            <li v-for="parser in availableParsers">
+                                <a href="#" v-on:click.prevent="selectFile(parser)" v-text="parser.name"></a>
+                            </li>
+                        </template>
+                    </dropdown>
                 </p>
-                <input class="hidden" name="metadata_file" type="file" ref="metadataFileField" v-on:change="handleSelectedFile" accept="{{implode(',', $mimeTypes)}}">
+                <input class="hidden" name="metadata_file" type="file" ref="metadataFileField" v-on:change="handleSelectedFile" :accept="selectedParser?.mimeTypes">
+                <input v-if="hasFile" type="hidden" name="metadata_parser" :value="selectedParser?.parserClass">
+
                 @if ($errors->has('metadata_file'))
                    <p class="help-block">{{ $errors->first('metadata_file') }}</p>
+                @endif
+
+                @if ($errors->has('metadata_parser'))
+                   <p class="help-block">{{ $errors->first('metadata_parser') }}</p>
                 @endif
                 <p class="help-block">
                     By default, BIIGLE supports a CSV metadata format. Other supported formats may be listed in <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}" target="_blank">the manual</a>. Image metadata may be overridden by EXIF information during the creation of the volume.

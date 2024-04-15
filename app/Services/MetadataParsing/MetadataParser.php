@@ -16,6 +16,13 @@ abstract class MetadataParser
      */
     abstract public static function getKnownMimeTypes(): array;
 
+    /**
+     * Get the name of the parser to show it to users selecting files.
+     *
+     * Example: 'BIIGLE CSV'
+     */
+    abstract public static function getName(): string;
+
     public function __construct(public SplFileInfo $file)
     {
         //

@@ -35,12 +35,21 @@ class VolumeController extends Controller
 
         $mediaType = old('media_type', 'image');
 
-        $mimeTypes = ParserFactory::getKnownMimeTypes($mediaType);
+        $parsers = collect(ParserFactory::$parsers);
+        foreach ($parsers as $type => $p) {
+            $parsers[$type] = array_map(function ($class) {
+                return [
+                    'parserClass' => $class,
+                    'name' => $class::getName(),
+                    'mimeTypes' => $class::getKnownMimeTypes(),
+                ];
+            }, $p);
+        }
 
         return view('volumes.create.step1', [
             'project' => $project,
             'mediaType' => $mediaType,
-            'mimeTypes' => $mimeTypes,
+            'parsers' => $parsers,
         ]);
     }
 
@@ -104,7 +113,15 @@ class VolumeController extends Controller
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
         $type = $volume->mediaType->name;
-        $mimeTypes = ParserFactory::getKnownMimeTypes($type);
+
+        $parsers = collect(ParserFactory::$parsers[$type] ?? [])
+            ->map(function ($class) {
+                return [
+                    'parserClass' => $class,
+                    'name' => $class::getName(),
+                    'mimeTypes' => $class::getKnownMimeTypes(),
+                ];
+            });
 
         return view('volumes.edit', [
             'projects' => $projects,
@@ -113,7 +130,7 @@ class VolumeController extends Controller
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
             'type' => $type,
-            'mimeTypes' => $mimeTypes,
+            'parsers' => $parsers,
         ]);
     }
 

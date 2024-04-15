@@ -1,4 +1,5 @@
 <script>
+import Dropdown from 'uiv/dist/Dropdown';
 import LoaderMixin from '../core/mixins/loader';
 
 export const MEDIA_TYPE = {
@@ -8,11 +9,16 @@ export const MEDIA_TYPE = {
 
 export default {
     mixins: [LoaderMixin],
+    components: {
+        Dropdown,
+    },
     data() {
         return {
             mediaType: MEDIA_TYPE.IMAGE,
             hasFile: false,
             initialized: false,
+            parsers: [],
+            selectedParser: null,
         };
     },
     computed: {
@@ -40,6 +46,9 @@ export default {
                 'btn-info': this.hasFile,
             };
         },
+        availableParsers() {
+            return this.parsers[this.mediaType] || [];
+        },
     },
     methods: {
         selectImageMediaType() {
@@ -48,8 +57,11 @@ export default {
         selectVideoMediaType() {
             this.mediaType = MEDIA_TYPE.VIDEO;
         },
-        selectFile() {
-            this.$refs.metadataFileField.click();
+        selectFile(parser) {
+            this.selectedParser = parser;
+            // Use $nextTick so the input element will have the appropriate MIME type
+            // filter from the selected parser.
+            this.$nextTick(() => this.$refs.metadataFileField.click());
         },
         handleSelectedFile() {
             this.hasFile = this.$refs.metadataFileField.files.length > 0;
@@ -57,6 +69,7 @@ export default {
     },
     created() {
         this.mediaType = biigle.$require('volumes.mediaType');
+        this.parsers = biigle.$require('volumes.parsers');
         // Used to hide a dummy button that masks a flashing selected state on load.
         this.initialized = true;
     },

@@ -24,12 +24,18 @@
         <p>
             Upload a metadata file to attach it to the volume and update the @if ($volume->isImageVolume()) image @else video @endif metadata.
         </p>
-        <form class="form" v-on:submit.prevent="submitFile">
-            <div class="form-group">
-                <input class="hidden" ref="fileInput" type="file" name="file" v-on:change="handleFile" accept="{{implode(',', $mimeTypes)}}">
-                <button class="btn btn-default" type="submit" :disabled="loading">Upload file</button>
-            </div>
-        </form>
+        <p class="text-center">
+            <dropdown tag="span">
+                <button class="btn btn-default dropdown-toggle" type="button" :disabled="loading"><i class="fa fa-file-alt"></i> Upload file <span class="caret"></span></button>
+                <template slot="dropdown">
+                    <li v-for="parser in parsers">
+                        <a href="#" v-on:click.prevent="selectFile(parser)" v-text="parser.name"></a>
+                    </li>
+                </template>
+            </dropdown>
+        </p>
+
+        <input class="hidden" ref="fileInput" type="file" name="file" v-on:change="handleFile" :accept="selectedParser?.mimeTypes">
 
         <div class="alert alert-danger" v-if="error" v-text="error" v-cloak></div>
         <div class="alert alert-success" v-if="success" v-cloak>
