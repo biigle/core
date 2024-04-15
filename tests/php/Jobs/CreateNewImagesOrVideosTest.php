@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use TestCase;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
+
 
 class CreateNewImagesOrVideosTest extends TestCase
 {
@@ -67,6 +70,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -91,6 +95,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -111,6 +116,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -128,6 +134,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -157,6 +164,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -177,6 +185,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -196,6 +205,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -216,6 +226,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -236,6 +247,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV
@@ -253,6 +265,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
             'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
         $disk = Storage::fake('metadata');
         $disk->put($volume->metadata_file_path, <<<CSV

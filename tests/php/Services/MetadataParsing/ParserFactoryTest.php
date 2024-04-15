@@ -12,32 +12,24 @@ use TestCase;
 
 class ParserFactoryTest extends TestCase
 {
-    public function testGetParserForFileImage()
+    public function testHasImage()
     {
-        $file = new File(__DIR__."/../../../files/image-metadata.csv");
-        $parser = ParserFactory::getParserForFile($file, 'image');
-        $this->assertInstanceOf(ImageCsvParser::class, $parser);
+        $this->assertTrue(ParserFactory::has('image', ImageCsvParser::class));
     }
 
-    public function testGetParserForFileVideo()
+    public function testHasVideo()
     {
-        $file = new File(__DIR__."/../../../files/video-metadata.csv");
-        $parser = ParserFactory::getParserForFile($file, 'video');
-        $this->assertInstanceOf(VideoCsvParser::class, $parser);
+        $this->assertTrue(ParserFactory::has('video', VideoCsvParser::class));
     }
 
-    public function testGetParserForFileUnknownFile()
+    public function testHasUnknownType()
     {
-        $file = new File(__DIR__."/../../../files/test.mp4");
-        $parser = ParserFactory::getParserForFile($file, 'video');
-        $this->assertNull($parser);
+        $this->assertFalse(ParserFactory::has('unknown', ImageCsvParser::class));
     }
 
-    public function testGetParserForFileUnknownType()
+    public function testHasUnknownParser()
     {
-        $file = new File(__DIR__."/../../../files/image-metadata.csv");
-        $parser = ParserFactory::getParserForFile($file, 'test');
-        $this->assertNull($parser);
+        $this->assertFalse(ParserFactory::has('image', 'unknown'));
     }
 
     public function testExtend()
