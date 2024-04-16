@@ -474,14 +474,14 @@ export default {
                 const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
                 if (!cachedIds.includes(nextId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(nextId));
-                    toCache.push(ImagesStore.fetchImage(nextId));
+                    toCache.push(ImagesStore.fetchImage(nextId, true));
                     cachedIds.push(nextId);
                 }
 
                 const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)];
                 if (!cachedIds.includes(previousId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(previousId));
-                    toCache.push(ImagesStore.fetchImage(previousId));
+                    toCache.push(ImagesStore.fetchImage(previousId, false));
                     cachedIds.push(previousId);
                 }
             }
