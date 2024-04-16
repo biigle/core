@@ -292,11 +292,27 @@ export default new Vue({
 
             return this.drawSimpleImage(image);
         },
-        fetchImage(id) {
+        fetchImage(id, next) {
             if (!this.cache.hasOwnProperty(id)) {
                 Events.$emit('images.fetching', id);
                 this.cache[id] = this.createImage(id);
-                this.cachedIds.push(id);
+                // Also do the "else" case if next is undefined.
+                if (next !== true) {
+                    this.cachedIds.unshift(id);
+                } else {
+                    this.cachedIds.push(id);
+                }
+
+                // Add +1 to cache size for the "current" image.
+                if (this.cachedIds.length > (this.maxCacheSize + 1)) {
+                    // Also do the "else" case if next is undefined.
+                    let deleteId = next !== true
+                        ? this.cachedIds.pop()
+                        : this.cachedIds.shift();
+                    if (id !== deleteId) {
+                        delete this.cache[deleteId]
+                    }
+                }
             }
 
             return this.cache[id];
@@ -335,16 +351,9 @@ export default new Vue({
         },
     },
     watch: {
-        cachedIds(cachedIds) {
-            // If there are too many cached images, remove the oldest one to free
-            // resources.
-            if (cachedIds.length > this.maxCacheSize) {
-                let id = cachedIds.shift();
-                delete this.cache[id];
-            }
-        },
         maxCacheSize(size) {
-            while (this.cachedIds.length > size) {
+            // Add +1 to cache size for the "current" image.
+            while (this.cachedIds.length > (size + 1)) {
                 let id = this.cachedIds.shift();
                 delete this.cache[id];
             }
