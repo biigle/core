@@ -58,7 +58,7 @@
         </p>
 
         <p>
-            The second step in Largo is the relabel step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To relabel an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
+            The second step in Largo is the relabel step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a relabeled annotation. To relabel an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
         </p>
 
         <p class="text-center">
@@ -73,13 +73,13 @@
         </div>
 
         <p>
-            You can go <button class="btn btn-default btn-xs">Back</button> to the first step at any time. Your re-labeled annotations will not be forgotten. When you are finished re-labeling the annotations, click <button class="btn btn-success btn-xs">Save</button> in the sidebar. When a Largo session is saved, one of three things can happen for each annotation:
+            You can go <button class="btn btn-default btn-xs">Back</button> to the first step at any time. Your relabeled annotations will not be forgotten. When you are finished relabeling the annotations, click <button class="btn btn-success btn-xs">Save</button> in the sidebar. When a Largo session is saved, one of three things can happen for each annotation:
         </p>
 
         <ul>
-            <li>If the annotation was dismissed but not re-labeled and if the label that should be detached was attached by you, the label is detached from the annotation. If this was the only label of the annotation, the annotation is deleted.</li>
-            <li>If the annotation was re-labeled and the previous label was attached by you, the previous label is replaced by the new label.</li>
-            <li>If the annotation was re-labeled and the previous label was not attached by you, the new label is attached to the annotation in addition to the previous label.</li>
+            <li>If the annotation was dismissed but not relabeled and if the label that should be detached was attached by you, the label is detached from the annotation. If this was the only label of the annotation, the annotation is deleted.</li>
+            <li>If the annotation was relabeled and the previous label was attached by you, the previous label is replaced by the new label.</li>
+            <li>If the annotation was relabeled and the previous label was not attached by you, the new label is attached to the annotation in addition to the previous label.</li>
         </ul>
 
         <p>
@@ -87,8 +87,8 @@
         </p>
 
         <ul>
-            <li>If the annotation was dismissed and not re-labeled, <em>all</em> instances of the dismissed label are detached from the annotation. If these were the only labels of the annotation, the annotation is deleted.</li>
-            <li>If the annotation was re-labeled, <em>all</em> instances of the dismissed label are replaced by (one instance of) the new label.</li>
+            <li>If the annotation was dismissed and not relabeled, <em>all</em> instances of the dismissed label are detached from the annotation. If these were the only labels of the annotation, the annotation is deleted.</li>
+            <li>If the annotation was relabeled, <em>all</em> instances of the dismissed label are replaced by (one instance of) the new label.</li>
         </ul>
 
         <p>
