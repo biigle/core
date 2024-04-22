@@ -71,6 +71,7 @@
                 :dirname="fullPath"
                 :removable="removable"
                 :selectable="filesSelectable"
+                :warning="hasWarning(file)"
                 @remove="handleRemoveFile"
                 @select="handleSelectFile"
                 @unselect="handleUnselectFile"
@@ -196,6 +197,9 @@ export default {
         },
     },
     methods: {
+        hasWarning(file){
+            return this.directory.warningFiles && this.directory.warningFiles.has(file.name);
+        },
         emitSelect(directory, path) {
             this.$emit('select', directory, path);
         },
