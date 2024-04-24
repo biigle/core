@@ -3,11 +3,9 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
-use Biigle\Rules\ImageMetadata;
-use Biigle\Traits\ChecksMetadataStrings;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Video;
 use Biigle\Volume;
-use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +14,7 @@ use Ramsey\Uuid\Uuid;
 
 class CreateNewImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, ChecksMetadataStrings;
+    use InteractsWithQueue, SerializesModels;
 
     /**
      * The volume to create the files for.
@@ -44,15 +42,13 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
      *
      * @param Volume $volume The volume to create the files for.
      * @param array $filenames The filenames of the files to create.
-     * @param array $metadata File metadata (one row per file plus column headers).
      *
      * @return void
      */
-    public function __construct(Volume $volume, array $filenames, $metadata = [])
+    public function __construct(Volume $volume, array $filenames)
     {
         $this->volume = $volume;
         $this->filenames = $filenames;
-        $this->metadata = $metadata;
     }
 
     /**
@@ -67,17 +63,16 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
 
         DB::transaction(function () {
             $chunks = collect($this->filenames)->chunk(1000);
+            $metadata = $this->volume->getMetadata();
 
             if ($this->volume->isImageVolume()) {
-                $metadataMap = $this->generateImageMetadataMap();
-                $chunks->each(function ($chunk) use ($metadataMap) {
-                    Image::insert($this->createFiles($chunk->toArray(), $metadataMap));
-                });
+                $chunks->each(
+                    fn ($chunk) => Image::insert($this->createFiles($chunk->toArray(), $metadata))
+                );
             } else {
-                $metadataMap = $this->generateVideoMetadataMap();
-                $chunks->each(function ($chunk) use ($metadataMap) {
-                    Video::insert($this->createFiles($chunk->toArray(), $metadataMap));
-                });
+                $chunks->each(
+                    fn ($chunk) => Video::insert($this->createFiles($chunk->toArray(), $metadata))
+                );
             }
         });
 
@@ -107,21 +102,26 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
 
     /**
      * Create an array to be inserted as new image or video models.
-     *
-     * @param array $filenames New image/video filenames.
-     * @param \Illuminate\Support\Collection $metadataMap
-     *
-     * @return array
      */
-    protected function createFiles($filenames, $metadataMap)
+    protected function createFiles(array $filenames, ?VolumeMetadata $metadata): array
     {
-        return array_map(function ($filename) use ($metadataMap) {
-            // This makes sure that the inserts have the same number of columns even if
-            // some images have additional metadata and others not.
-            $insert = array_fill_keys(
-                array_merge(['attrs'], ImageMetadata::ALLOWED_ATTRIBUTES),
-                null
-            );
+        $metaKeys = [];
+        $insertData = [];
+
+        foreach ($filenames as $filename) {
+            $insert = [];
+
+            if ($metadata && ($fileMeta = $metadata->getFile($filename))) {
+                $insert = array_map(function ($item) {
+                    if (is_array($item)) {
+                        return json_encode($item);
+                    }
+
+                    return $item;
+                }, $fileMeta->getInsertData());
+            }
+
+            $metaKeys += array_keys($insert);
 
             $insert = array_merge($insert, [
                 'filename' => $filename,
@@ -129,120 +129,15 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
                 'uuid' => (string) Uuid::uuid4(),
             ]);
 
-            $metadata = collect($metadataMap->get($filename));
-            if ($metadata) {
-                // Remove empty cells.
-                $metadata = $metadata->filter();
-                $insert = array_merge(
-                    $insert,
-                    $metadata->only(ImageMetadata::ALLOWED_ATTRIBUTES)->toArray()
-                );
-
-                $more = $metadata->only(ImageMetadata::ALLOWED_METADATA);
-                if ($more->isNotEmpty()) {
-                    $insert['attrs'] = collect(['metadata' => $more])->toJson();
-                }
-            }
-
-            return $insert;
-        }, $filenames);
-    }
-
-    /**
-     * Generate a map for image metadata that is indexed by filename.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function generateImageMetadataMap()
-    {
-        if (empty($this->metadata)) {
-            return collect([]);
+            $insertData[] = $insert;
         }
 
-        $columns = $this->metadata[0];
-
-        $map = collect(array_slice($this->metadata, 1))
-            ->map(fn ($row) => array_combine($columns, $row))
-            ->map(function ($row) {
-                if (array_key_exists('taken_at', $row)) {
-                    $row['taken_at'] = Carbon::parse($row['taken_at']);
-                }
-
-                return $row;
-            })
-            ->keyBy('filename');
-
-        $map->forget('filename');
-
-        return $map;
-    }
-
-    /**
-     * Generate a map for video metadata that is indexed by filename.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function generateVideoMetadataMap()
-    {
-        if (empty($this->metadata)) {
-            return collect([]);
+        // Ensure that each item has the same keys even if some are missing metadata.
+        if (!empty($metaKeys)) {
+            $fill = array_fill_keys($metaKeys, null);
+            $insertData = array_map(fn ($i) => array_merge($fill, $i), $insertData);
         }
 
-        $columns = $this->metadata[0];
-
-        $map = collect(array_slice($this->metadata, 1))
-            ->map(fn ($row) => array_combine($columns, $row))
-            ->map(function ($row) {
-                if (array_key_exists('taken_at', $row)) {
-                    $row['taken_at'] = Carbon::parse($row['taken_at']);
-                } else {
-                    $row['taken_at'] = null;
-                }
-
-                return $row;
-            })
-            ->sortBy('taken_at')
-            ->groupBy('filename')
-            ->map(fn ($entries) => $this->processVideoColumns($entries, $columns));
-
-        return $map;
-    }
-
-    /**
-     * Generate the metadata map entry for a single video file.
-     *
-     * @param \Illuminate\Support\Collection $entries
-     * @param \Illuminate\Support\Collection $columns
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function processVideoColumns($entries, $columns)
-    {
-        $return = collect([]);
-        foreach ($columns as $column) {
-            $values = $entries->pluck($column);
-            if ($values->filter([$this, 'isFilledString'])->isEmpty()) {
-                // Ignore completely empty columns.
-                continue;
-            }
-
-            $return[$column] = $values;
-
-            if (in_array($column, array_keys(ImageMetadata::NUMERIC_FIELDS))) {
-                $return[$column] = $return[$column]->map(function ($x) {
-                    // This check is required since floatval would return 0 for
-                    // an empty value. This could skew metadata.
-                    return $this->isFilledString($x) ? floatval($x) : null;
-                });
-            }
-
-            if (in_array($column, ImageMetadata::ALLOWED_ATTRIBUTES)) {
-                $return[$column] = $return[$column]->toJson();
-            }
-        }
-
-        $return->forget('filename');
-
-        return $return;
+        return $insertData;
     }
 }

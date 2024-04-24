@@ -93,6 +93,14 @@
                 File labels are labels that are attached to whole images or videos.
             </p>
 
+            <h4>
+                <a href="{{route('manual-tutorials', ['volumes', 'annotation-import'])}}">Annotation and file label import</a>
+            </h4>
+
+            <p>
+                Import annotations and file labels from metadata files.
+            </p>
+
             <h3>Files</h3>
 
             <h4>

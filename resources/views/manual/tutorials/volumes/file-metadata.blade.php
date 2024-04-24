@@ -11,7 +11,10 @@
             BIIGLE supports metadata like the date and time of creation or the geo coordinates of a file. Every time a new image volume is created, BIIGLE attempts to automatically read the metadata from the EXIF information of JPEG files. This doesn't work for videos or if the images have another format than JPEG.
         </p>
         <p>
-            In this case you can upload a metadata file. BIIGLE supports the <a href="https://marine-imaging.com/fair/ifdos/iFDO-overview">iFDO standard</a> for import of the metadata fields described below. Additionally, there is a custom CSV format for metadata import. The CSV file should use <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. Please note the additional explanation of <a href="#video-metadata">video metadata</a> below. The following columns are supported (multiple synonyms exist for some colums, including the standard proposed in <a href="#ref1">[1]</a>):
+            In this case you can upload a metadata file. By default, BIIGLE supports a simple CSV file format for file metadata. More file formats supported by this instance may be found <a href="#additional-formats">below</a>.
+        </p>
+        <p>
+            The CSV file should use <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. Please note the additional explanation of <a href="#video-metadata">video metadata</a> below. The following columns are supported (multiple synonyms exist for some colums, including the standard proposed in <a href="#ref1">[1]</a>):
         </p>
         <table class="table">
             <thead>
@@ -117,13 +120,13 @@ image_1.png,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25,2.6
 image_2.png,2016-12-19 17:09:31,52.215,28.501,-1502.5,28.25,2.1
 </pre>
         <p>
-            The metadata CSV file can be uploaded when a new volume is created. For existing volumes, metadata can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button> button of the volume overview.
+            The metadata CSV file can be uploaded when a new volume is created. For existing volumes, metadata can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button> button of the volume overview. This will replace any previously imported metadata.
         </p>
     </div>
     <div class="row">
         <h3><a name="video-metadata"></a>Video metadata</h3>
         <p>
-            Video metadata can be imported in the "basic" or the "timestamped" form. The basic form is equivalent to image metadata where a video file can have at most one entry in the metadata CSV file. The timestamped form requires the <code>taken_at</code> column and allows to import many metadata values for different times of the same video. To import timestamped video metadata, add multiple rows with the same filename but different <code>taken_at</code> timestamp to the metadata CSV. Metadata will be ordered by timestamp and the earliest timestamp will be assumed to mark the beginning of the video.
+            Video metadata can be imported either in the "basic" or the "timestamped" form. The basic form is equivalent to image metadata where a video file can have at most one entry in the metadata CSV file. The timestamped form requires the <code>taken_at</code> column and allows to import many metadata values for different times of the same video. To import timestamped video metadata, add multiple rows with the same filename but different <code>taken_at</code> timestamp to the metadata CSV. Metadata will be ordered by timestamp and the earliest timestamp will be assumed to mark the beginning of the video.
         </p>
         <p>
             Example:
@@ -133,26 +136,18 @@ filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area
 video_1.mp4,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25,2.6
 video_1.mp4,2016-12-19 17:10:00,52.122,28.011,-1505.5,25.0,5.5
 </pre>
-        <p>
-            Video metadata can be updated using the metadata upload of the volume edit page. Videos having "basic" metadata cannot be updated with "timestamped" metadata and vice versa. Timestamped metadata is merged with the information of the new CSV file if the <code>taken_at</code> timestamps of a video do not match exactly. For example, if a video already has the metadata of the example CSV shown above and now the following metadata file is uploaded:
-        </p>
-        <pre>
-filename,taken_at,lng,lat
-video_1.mp4,2016-12-19 17:09:00,52.115,28.003
-video_1.mp4,2016-12-19 17:09:30,52.118,28.005
-</pre>
-        <p>
-            The metadata of the video will be merged as follows:
-        </p>
-        <pre>
-filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area
-video_1.mp4,2016-12-19 17:09:00,52.115,28.003,-1500.5,30.25,2.6
-video_1.mp4,2016-12-19 17:09:30,52.118,28.005,null,null,null
-video_1.mp4,2016-12-19 17:10:00,52.122,28.011,-1505.5,25.0,5.5
-</pre>
-        <p>
-            Note that the existing metadata with the same timestamp is updated with new metadata in the <code>lng</code> and <code>lat</code> fields. If metadata is missing for a timestamp, <code>null</code> is inserted.
-        </p>
+    </div>
+    <div class="row">
+        <h3><a name="additional-formats"></a>Additional metadata file formats</h3>
+        @if (empty(app('modules')->getViewMixins('metadataParsers')))
+            <p class="text-muted">
+                No additional file formats are supported.
+            </p>
+        @else
+            <ul>
+                @mixin('metadataParsers')
+            </ul>
+        @endif
     </div>
     <div class="row">
         <h3>References</h3>

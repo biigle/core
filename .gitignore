@@ -8,6 +8,8 @@
 /public/vendor
 /storage/*.key
 /storage/largo_patches
+/storage/metadata
+/storage/pending-metadata
 /vendor
 .env
 .env.backup
