@@ -90,6 +90,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -161,10 +163,14 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                     [
                         'id' => $al2->label_id,
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -255,6 +261,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $il->label_id,
                         'name' => $il->label->name,
+                        'uuid' => $il->label->uuid,
+                        'color' => $il->label->color,
                     ],
                 ],
             ],
@@ -366,6 +374,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -455,6 +465,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -537,6 +549,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al1->label_id,
                         'name' => $al1->label->name,
+                        'uuid' => $al1->label->uuid,
+                        'color' => $al1->label->color,
                     ],
                 ],
             ],
@@ -610,6 +624,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al2->label_id,
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -708,6 +724,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -798,6 +816,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => 'urn:lsid:marinespecies.org:taxname:123999',
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -902,6 +922,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -1006,6 +1028,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -1121,6 +1145,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $label->id,
                         'name' => $label->name,
+                        'uuid' => $label->uuid,
+                        'color' => $label->color,
                     ],
                 ],
             ],

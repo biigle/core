@@ -122,16 +122,16 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
         }
 
         $labels = array_map(function ($label) {
+            $id = $label->id;
             if ($this->shouldConvertWormsId($label)) {
-                return [
-                    'id' => $this->getWormsUrn($label),
-                    'name' => $label->name,
-                ];
+                $id = $this->getWormsUrn($label);
             }
 
             return [
-                'id' => $label->id,
+                'id' => $id,
                 'name' => $label->name,
+                'uuid' => $label->uuid,
+                'color' => $label->color,
             ];
         }, $this->imageAnnotationLabels);
 

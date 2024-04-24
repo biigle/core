@@ -92,6 +92,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -165,10 +167,14 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                     [
                         'id' => $al2->label_id,
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -260,6 +266,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $vl->label_id,
                         'name' => $vl->label->name,
+                        'uuid' => $vl->label->uuid,
+                        'color' => $vl->label->color,
                     ],
                 ],
             ],
@@ -372,6 +380,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -467,6 +477,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -548,6 +560,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al2->label_id,
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -647,6 +661,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -739,6 +755,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => 'urn:lsid:marinespecies.org:taxname:123999',
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -845,6 +863,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $al->label_id,
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -971,6 +991,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $label->id,
                         'name' => $label->name,
+                        'uuid' => $label->uuid,
+                        'color' => $label->color,
                     ],
                 ],
             ],
