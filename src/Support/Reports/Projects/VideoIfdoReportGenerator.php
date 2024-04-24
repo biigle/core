@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
+use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VideoIfdoReportGenerator as ReportGenerator;
 use Exception;
 
@@ -35,9 +36,8 @@ class VideoIfdoReportGenerator extends ProjectVideoReportGenerator
      */
     public function getProjectSources()
     {
-        $volumes = parent::getProjectSources()->filter(function ($volume) {
-            return $volume->hasIfdo();
-        });
+        $volumes = parent::getProjectSources()
+            ->filter(fn ($v) => $v->metadata_parser === VideoIfdoParser::class);
 
         if ($volumes->isEmpty()) {
             throw new Exception('No volume with iFDO found for this project.');

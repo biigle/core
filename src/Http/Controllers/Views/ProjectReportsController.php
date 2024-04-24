@@ -3,6 +3,8 @@
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
 use Illuminate\Http\Request;
@@ -54,9 +56,13 @@ class ProjectReportsController extends Controller
         $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
         $hasIfdos = false;
+        $ifdoParsers = [
+            ImageIfdoParser::class,
+            VideoIfdoParser::class,
+        ];
 
         foreach ($project->volumes as $volume) {
-            if ($volume->hasIfdo()) {
+            if (in_array($volume->metadata_parser, $ifdoParsers)) {
                 $hasIfdos = true;
                 break;
             }

@@ -3,16 +3,17 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\LabelSource;
-use Biigle\Shape;
+use Biigle\MediaType;
+use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VideoIfdoReportGenerator;
-use Biigle\Modules\Reports\Volume;
+use Biigle\Shape;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
+use Biigle\Volume;
 use Exception;
 use Storage;
 use TestCase;
@@ -24,7 +25,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $generator = new VideoIfdoReportGenerator;
         $this->assertEquals('video iFDO report', $generator->getName());
         $this->assertEquals('video_ifdo_report', $generator->getFilename());
-        $this->assertStringEndsWith('.yaml', $generator->getFullFilename());
+        $this->assertStringEndsWith('.json', $generator->getFullFilename());
     }
 
     protected function setUpIfdo($merge = [])
@@ -38,10 +39,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ], $merge);
 
-        $volume = VolumeTest::create(['name' => 'My Cool Volume']);
+        $volume = Volume::factory()->create([
+            'media_type_id' => MediaType::videoId(),
+            'name' => 'My Cool Volume',
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => VideoIfdoParser::class,
+        ]);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($volume->id.'.yaml', yaml_emit($ifdo));
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', json_encode($ifdo));
 
         return [$volume, $ifdo];
     }
@@ -109,7 +115,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMultiLabel()
@@ -191,7 +197,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportEmpty()
@@ -216,7 +222,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportVideoLabels()
@@ -276,7 +282,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItems()
@@ -401,7 +407,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItemsMultiple()
@@ -490,7 +496,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictNewestLabel()
@@ -565,7 +571,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictToLabels()
@@ -676,12 +682,12 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGenerateReportNoIfdo()
     {
-        $volume = VolumeTest::create();
+        $volume = Volume::factory()->create();
         $generator = new VideoIfdoReportGeneratorStub();
         $generator->setSource($volume);
         $this->expectException(Exception::class);
@@ -756,7 +762,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testStripIfdo()
@@ -862,7 +868,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 
     public function testGeometryTypes()
@@ -1060,16 +1066,16 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertEquals($expect, $generator->ifdo);
     }
 }
 
 class VideoIfdoReportGeneratorStub extends VideoIfdoReportGenerator
 {
-    public $yaml;
+    public $ifdo;
 
-    protected function writeYaml(array $content, string $path)
+    protected function writeIfdo(array $content, string $path)
     {
-        $this->yaml = $content;
+        $this->ifdo = $content;
     }
 }

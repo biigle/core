@@ -4,11 +4,13 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\Reports\Traits\RestrictsToExportArea;
+use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 use Biigle\Shape;
 use Biigle\User;
 use Biigle\Video;
-use Biigle\Modules\Reports\Traits\RestrictsToExportArea;
-use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
+use Biigle\Volume;
 
 class ImageIfdoReportGenerator extends IfdoReportGenerator
 {
@@ -112,6 +114,14 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     }
 
     /**
+     * Determine if the volume has a iFDO metadata file.
+     */
+    protected function hasIfdo(Volume $source): bool
+    {
+        return $source->metadata_parser === ImageIfdoParser::class;
+    }
+
+    /**
      * Create the image-set-item entry for an image.
      *
      * @param Image|Video $image
@@ -152,7 +162,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
 
             return [
                 'shape' => $this->getGeometryName($annotation),
-                'coordinates' => $annotation->points,
+                'coordinates' => [$annotation->points],
                 'labels' => $labels->toArray(),
             ];
         });

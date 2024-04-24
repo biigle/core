@@ -2,6 +2,8 @@
 
 namespace Biigle\Modules\Reports\Http\Requests;
 
+use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Volume;
 use Illuminate\Validation\Rule;
@@ -105,12 +107,11 @@ class StoreVolumeReport extends StoreReport
                 }
             }
 
-            $ifdoTypes = [
-                ReportType::imageIfdoId(),
-                ReportType::videoIfdoId(),
-            ];
+            if ($this->isType(ReportType::imageIfdoId()) && $this->volume->metadata_parser !== ImageIfdoParser::class) {
+                $validator->errors()->add('id', 'The volume has no attached iFDO file.');
+            }
 
-            if ($this->isType($ifdoTypes) && !$this->volume->hasIfdo()) {
+            if ($this->isType(ReportType::videoIfdoId()) && $this->volume->metadata_parser !== VideoIfdoParser::class) {
                 $validator->errors()->add('id', 'The volume has no attached iFDO file.');
             }
         });
