@@ -5,7 +5,6 @@ MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
 ADD ".docker/app-php.ini" "$PHP_INI_DIR/conf.d/app.ini"
 
 RUN apk add --no-cache \
@@ -26,16 +25,6 @@ RUN apk add --no-cache \
         exif \
         soap \
     && apk del --purge .build-deps
-
-# Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
-RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
-RUN apk add --no-cache yaml \
-    && apk add --no-cache --virtual .build-deps g++ make autoconf yaml-dev \
-    && pecl install yaml \
-    && docker-php-ext-enable yaml \
-    && apk del --purge .build-deps
-# Unset proxy configuration again.
-RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
 ARG PHPREDIS_VERSION=5.3.7
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
