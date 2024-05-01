@@ -35,6 +35,13 @@ class RegisterControllerTest extends TestCase
         $this->post('register')->assertStatus(404);
     }
 
+    public function testRegisterRouteSsoOnly()
+    {
+        config(['biigle.sso_registration_only' => true]);
+        $this->get('register')->assertStatus(200);
+        $this->post('register')->assertStatus(404);
+    }
+
     public function testRegisterFieldsRequired()
     {
         $this->get('register');
