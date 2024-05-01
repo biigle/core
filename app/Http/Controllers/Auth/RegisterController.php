@@ -136,7 +136,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        if ($this->isRegistrationDisabled()) {
+        if ($this->isRegistrationDisabled() || config('biigle.sso_registration_only')) {
             abort(Response::HTTP_NOT_FOUND);
         }
 

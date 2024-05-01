@@ -28,6 +28,16 @@ return [
     'user_registration' => env('BIIGLE_USER_REGISTRATION', false),
 
     /*
+    | Only allow user registration via SSO.
+    */
+    'sso_registration_only' => env('BIIGLE_SSO_REGISTRATION_ONLY', false),
+
+    /*
+    | Show this message to explain why only SSO registration is available.
+    */
+    'sso_registration_only_message' => env('BIIGLE_SSO_REGISTRATION_ONLY_MESSAGE', 'Please register via single sign-on below.'),
+
+    /*
     | Enable user registration confirmation by admins. Whenever a new user is registered,
     | they are created with the global "guest" role and an email notification is sent to
     | the admin_email. If admins approve the registration, the global role of the new user
