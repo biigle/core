@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="sidebar-tab__section">
-                    <input type="number" min="0.1" max="60.0" step="0.1" v-model="jumpStep" class="form-control form-control--small" title="Time in seconds that the video will jump (back or forward) with command buttons"> Jump step
+                    <input type="number" min="0.1" max="60.0" step="0.1" v-model="jumpStep" class="form-control form-control--small" title="Time in seconds that the video will jump (back or forward) with command buttons"> Jump step (s)
                 </div>
 
                 <div class="sidebar-tab__section">
