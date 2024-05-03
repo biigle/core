@@ -153,31 +153,15 @@ export default {
         handleSeeked() {
             this.renderVideo(true);
         },
-        // 3 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
-        frameInfoCallback() {
-            let promise = new Vue.Promise((resolve, reject) => {
-                if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
-                    this.video.requestVideoFrameCallback((now, metadata) => {
-                        resolve(metadata);
-                    })
-                }
-                else {
-                    reject("Your browser does not support requestVideoFrameCallback().");
-                }
-            })
-            return promise;
-        },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
-        async jumpBackward() {
+        jumpBackward() {
             if (this.video.currentTime > 0 && this.jumpStep > 0) {
                 this.video.currentTime -= this.jumpStep;
-                await this.frameInfoCallback();
             }
         },
-        async jumpForward() {
+        jumpForward() {
             if (!this.video.ended && this.jumpStep > 0) {
                 this.video.currentTime += this.jumpStep;
-                await this.frameInfoCallback();
             }
         },
     },
