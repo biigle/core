@@ -11,15 +11,13 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group"
-                v-if="showPrevNext">
-                 <control-button
-                    icon="fa-chevron-left"
-                    title="Previous video"
+            <div class="btn-group">
+                <control-button
+                     v-if="showPrevNext"
+                    icon="fa-step-backward"
+                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitPrevious"
                     ></control-button>
-            </div>     
-            <div class="btn-group">
                 <control-button
                     icon="fa-backward"
                     title="Rewind video by jump step"
@@ -44,12 +42,10 @@
                     title="Advance video by jump step"
                     @click="jumpForward"
                     ></control-button>
-            </div>
-            <div class="btn-group"
-                v-if="showPrevNext">
-                 <control-button
-                    icon="fa-chevron-right"
-                    title="Next video"
+                <control-button
+                     v-if="showPrevNext"
+                    icon="fa-step-forward"
+                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitNext"
                     ></control-button>
             </div>
