@@ -20,7 +20,7 @@
                     ></control-button>
                 <control-button
                     icon="fa-backward"
-                    title="Rewind video by jump step"
+                    title="Rewind video by jump step 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
@@ -39,7 +39,7 @@
                     ></control-button>
                 <control-button
                     icon="fa-forward"
-                    title="Advance video by jump step"
+                    title="Advance video by jump step 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="jumpForward"
                     ></control-button>
                 <control-button
@@ -566,6 +566,8 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
