@@ -61,6 +61,10 @@
         </p>
 
         <p>
+            You can set a jump step value in seconds that allows you to jump backaward and forward in the video by that amount of time with the double arrows control buttons. Set the value to 0 to disable the feature and hide the controls.
+        </p>
+
+        <p>
             The minimap switch enables you to show or hide the minimap.
         </p>
 
