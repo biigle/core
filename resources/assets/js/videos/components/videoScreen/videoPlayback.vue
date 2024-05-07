@@ -156,12 +156,12 @@ export default {
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {
             if (this.video.currentTime > 0 && this.jumpStep > 0) {
-                this.video.currentTime -= this.jumpStep;
+                this.$emit('seek', this.video.currentTime - this.jumpStep);
             }
         },
         jumpForward() {
             if (!this.video.ended && this.jumpStep > 0) {
-                this.video.currentTime += this.jumpStep;
+                this.$emit('seek', this.video.currentTime + this.jumpStep);
             }
         },
     },

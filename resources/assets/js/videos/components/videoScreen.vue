@@ -13,12 +13,13 @@
         <div class="controls">
             <div class="btn-group">
                 <control-button
-                     v-if="showPrevNext"
+                    v-if="showPrevNext"
                     icon="fa-step-backward"
                     title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
+                    v-if="!seeking && jumpStep!=0"
                     icon="fa-backward"
                     title="Rewind video by jump step 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="jumpBackward"
@@ -38,6 +39,7 @@
                     @click="play"
                     ></control-button>
                 <control-button
+                    v-if="!seeking && jumpStep!=0"
                     icon="fa-forward"
                     title="Advance video by jump step 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="jumpForward"
