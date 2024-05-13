@@ -16,7 +16,7 @@
 <sidebar v-cloak open-tab="labels">
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
-            <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the re-labelling step" v-on:click="goToRelabel">Continue</button>
+            <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
             <div v-else class="btn-group btn-group-justified">
                 <div class="btn-group">
                     <button class="btn btn-default col-xs-6" title="Go back to dismissing annotations" :disabled="loading" v-on:click="goToDismiss">Back</button>
@@ -29,7 +29,7 @@
         </div>
         @can('force-edit-in', $target)
             <div v-if="isInRelabelStep" class="largo-tab__button">
-                <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" :disabled="loading" v-on:off="disableForceChange">Force delete/re-label</power-toggle>
+                <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" :disabled="loading" v-on:off="disableForceChange">Force delete/relabel</power-toggle>
             </div>
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
