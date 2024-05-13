@@ -12,8 +12,11 @@
         <i class="fa fa-file"></i> {{file.name}}
     </a>
 
-    <span v-if="warning" :title="file.name" class="text-warning">
+    <span v-if="warning===1" :title="file.name" class="text-warning">
         <i class="fa fa-exclamation-triangle"></i> {{file.name}}
+    </span>
+    <span v-else-if="warning===2" :title="file.name">
+        <i class="fa fa-info-circle"></i> {{file.name}}
     </span>
     <span v-else :title="file.name">
         <i class="fa fa-file"></i> {{file.name}}
@@ -50,8 +53,8 @@ export default {
             default: false,
         },
         warning: {
-            type: Boolean,
-            default: false,
+            type: Number,
+            default: 0,
         }
     },
     computed: {
