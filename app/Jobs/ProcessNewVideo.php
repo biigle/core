@@ -152,9 +152,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
         try {
             foreach ($times as $index => $time) {
-                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
+                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height)
+                    ->writeToBuffer(".{$format}", [
+                        'Q' => 85,
+                        'strip' => true,
+                    ]);
                 $disk->put("{$fragment}/{$index}.{$format}", $buffer);
             }
+            // generate sprites
+            $this->generateSprites($path, $this->video->duration, $disk, $fragment);
         } catch (Exception $e) {
             // The video seems to be fine if it passed the previous checks. There may be
             // errors in the actual video data but we can ignore that and skip generating
@@ -221,11 +227,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @param float $time Time for the thumbnail in seconds.
      * @param int $width Width of the thumbnail.
      * @param int $height Height of the thumbnail.
-     * @param string $format File format of the thumbnail (e.g. 'jpg').
      *
      * @return string Vips image buffer string.
      */
-    protected function generateVideoThumbnail($path, $time, $width, $height, $format)
+    protected function generateVideoThumbnail($path, $time, $width, $height)
     {
         // Cache the video instance.
         if (!isset($this->ffmpegVideo)) {
@@ -235,11 +240,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
             ->save(null, false, true);
 
-        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
-            ->writeToBuffer(".{$format}", [
-                'Q' => 85,
-                'strip' => true,
-            ]);
+        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height, 'size' => 'force'])
+        ;
     }
 
     /**
@@ -270,5 +272,57 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
 
         return $range;
+    }
+
+    /**
+     * Generate sprites from a video file and save them to a storage disk.
+     *
+     * This function takes a video file path, its duration, a storage disk instance,
+     * and a fragment identifier to generate sprites from the video at specified intervals.
+     * Sprites are created as thumbnails of frames and organized into sprite sheets.
+     *
+     * @param string $path path to the video file.
+     * @param float $duration duration of the video in seconds.
+     * @param mixed $disk storage disk instance (e.g., Laravel's Storage).
+     * @param string $fragment fragment identifier for organizing the sprites.
+     *
+     */
+    protected function generateSprites($path, $duration, $disk, $fragment)
+    {
+
+        $maxThumbnails = config('videos.sprites_max_thumbnails');
+        $minThumbnails = config('videos.sprites_min_thumbnails');
+        $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
+        $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
+        $thumbnailWidth = config('videos.sprites_thumbnail_width');
+        $thumbnailHeight = config('videos.sprites_thumbnail_height');
+        $spriteFormat = config('videos.sprites_format');
+        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
+        $durationRounded = floor($duration * 10) / 10;
+        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        // Adjust the frame time based on the number of estimated thumbnails
+        $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
+            : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
+
+        $thumbnails = [];
+        $spritesCounter = 0;
+        for ($time = 0.0; $time < $durationRounded && $durationRounded > 0; $time += $thumbnailInterval) {
+            $time = round($time, 1);
+            // Create a thumbnail from the video at the specified time and add it to the thumbnails array.
+            $thumbnails[] = $this->generateVideoThumbnail($path, $time, $thumbnailWidth, $thumbnailHeight);
+            if (count($thumbnails) === $thumbnailsPerSprite || $time >= abs($durationRounded - $thumbnailInterval)) {
+                // Join the thumbnails into a NxN sprite
+                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
+                // Write the sprite to buffer with quality 75 and stripped metadata
+                $spriteBuffer = $sprite->writeToBuffer(".{$spriteFormat}", [
+                    'Q' => 75,
+                    'strip' => true,
+                ]);
+                $spritePath = "{$fragment}/sprite_{$spritesCounter}.{$spriteFormat}";
+                $disk->put($spritePath, $spriteBuffer);
+                $thumbnails = [];
+                $spritesCounter += 1;
+            }
+        }
     }
 }

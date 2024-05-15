@@ -20,6 +20,7 @@
             :duration="duration"
             :current-time="currentTime"
             :seeking="seeking"
+            :showThumbnailPreview="showThumbnailPreview"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -64,6 +65,10 @@ export default {
             default() {
                 return null;
             },
+        },
+        showThumbnailPreview: {
+            type: Boolean,
+            default: true,
         },
     },
     data() {

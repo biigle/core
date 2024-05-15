@@ -35,6 +35,9 @@
                     <power-toggle :active="showMousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="handleShowMousePosition" v-on:off="handleHideMousePosition">Mouse Position</power-toggle>
                 </div>
 
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="showThumbnailPreview" title-off="Show Thumbnail" title-on="Hide Thumbnail" v-on:on="handleShowThumbnailPreview" v-on:off="handleHideThumbnailPreview">Thumbnail preview</power-toggle>
+                </div>
             </div>
     </settings-tab>
 </sidebar-tab>
