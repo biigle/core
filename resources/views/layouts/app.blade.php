@@ -9,7 +9,7 @@
     @hasSection('title')
         <title>@yield('title') - BIIGLE</title>
     @else
-        <title>BIIGLE</title>
+        <title>BIIGLE :)</title>
     @endif
     @hasSection('description')
         <meta name="description" content="@yield('description')">
