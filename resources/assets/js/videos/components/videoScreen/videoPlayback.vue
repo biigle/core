@@ -155,7 +155,7 @@ export default {
         },
         // 3 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         frameInfoCallback() {
-            let promise = new Vue.Promise((resolve, reject) => {
+            let promise = new Vue.Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
                     resolve(metadata);
                 })
