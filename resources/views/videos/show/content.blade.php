@@ -38,6 +38,7 @@
       :show-label-tooltip="settings.showLabelTooltip"
       :show-minimap="settings.showMinimap"
       :show-mouse-position="settings.showMousePosition"
+      :enable-jump-by-frame="settings.enableJumpByFrame"
       :video="video"
       :height-offset="screenHeightOffset"
       :show-prev-next="hasSiblingVideos"

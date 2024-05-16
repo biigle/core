@@ -1,6 +1,7 @@
 <sidebar-tab name="settings" icon="cog" title="Settings">
     <settings-tab inline-template
         v-on:update="handleUpdatedSettings"
+        :supports-jump-by-frame="supportsJumpByFrame"
         >
             <div class="annotator-tab settings-tab">
 
@@ -33,6 +34,10 @@
 
                 <div class="sidebar-tab__section">
                     <power-toggle :active="showMousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="handleShowMousePosition" v-on:off="handleHideMousePosition">Mouse Position</power-toggle>
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :disabled="jumpByFrameNotSupported" :active="enableJumpByFrame" title-off="Enable jump by frame" title-on="Disable jump by frame" v-on:on="handleEnableJumpByFrame" v-on:off="handleDisableJumpByFrame">(Experimental) Jump by frame</power-toggle>
                 </div>
 
             </div>

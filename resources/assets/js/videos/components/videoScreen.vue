@@ -21,6 +21,7 @@
             </div>     
             <div class="btn-group">
                 <control-button
+                    v-if="enableJumpByFrame"
                     icon="fa-step-backward"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="showPreviousFrame"
@@ -40,6 +41,7 @@
                     @click="play"
                     ></control-button>
                 <control-button
+                    v-if="enableJumpByFrame"
                     icon="fa-step-forward"
                     title="Next frame Right 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="showNextFrame"
@@ -370,7 +372,11 @@ export default {
         reachedTrackedAnnotationLimit: {
             type: Boolean,
             default: false,
-        }
+        },
+        enableJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {

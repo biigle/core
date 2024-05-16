@@ -68,6 +68,7 @@ export default {
                 showMousePosition: false,
                 playbackRate: 1.0,
                 showProgressIndicator: true,
+                enableJumpByFrame: false,
             },
             openTab: '',
             urlParams: {
@@ -93,7 +94,8 @@ export default {
             attachingLabel: false,
             swappingLabel: false,
             disableJobTracking: false,
-        };
+            supportsJumpByFrame: false,
+            };
     },
     computed: {
         selectedAnnotations() {
@@ -719,6 +721,10 @@ export default {
 
         if (this.canEdit) {
             this.initializeEcho();
+        }
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsJumpByFrame = true;
         }
     },
     mounted() {

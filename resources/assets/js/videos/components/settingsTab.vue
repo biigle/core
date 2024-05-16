@@ -6,6 +6,12 @@ export default {
     components: {
         powerToggle: PowerToggle,
     },
+    props: {
+        supportsJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
+    },
     data() {
         return {
             restoreKeys: [
@@ -15,6 +21,7 @@ export default {
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
+                'enableJumpByFrame',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -23,7 +30,13 @@ export default {
             showMousePosition: false,
             playbackRate: 1.0,
             showProgressIndicator: true,
+            enableJumpByFrame: false,
         };
+    },
+    computed: {
+        jumpByFrameNotSupported() {
+            return !this.supportsJumpByFrame;
+        },
     },
     methods: {
         handleShowMinimap() {
@@ -49,6 +62,12 @@ export default {
         },
         handleHideProgressIndicator() {
             this.showProgressIndicator = false;
+        },
+        handleEnableJumpByFrame() {
+            this.enableJumpByFrame = true;
+        },
+        handleDisableJumpByFrame() {
+            this.enableJumpByFrame = false;
         },
     },
     watch: {
@@ -86,6 +105,10 @@ export default {
             this.$emit('update', 'showProgressIndicator', show);
             Settings.set('showProgressIndicator', show);
         },
+        enableJumpByFrame(show) {
+            this.$emit('update', 'enableJumpByFrame', show);
+            Settings.set('enableJumpByFrame', show);
+        }
     },
     created() {
         this.restoreKeys.forEach((key) => {

@@ -7,6 +7,7 @@ let defaults = {
     showLabelTooltip: false,
     showMousePosition: false,
     showProgressIndicator: true,
+    enableJumpByFrame: false,
 };
 
 export default new Settings({
