@@ -2,7 +2,6 @@
 import { Feature } from '@biigle/ol';
 import LineString from '@biigle/ol/geom/LineString';
 import { Snap } from '@biigle/ol/interaction';
-import {Style, Stroke} from '@biigle/ol/style';
 import Collection from '@biigle/ol/Collection';
 
 export default {
