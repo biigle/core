@@ -12,14 +12,13 @@
         <i class="fa fa-file"></i> {{file.name}}
     </a>
 
-    <span v-if="file.warningCode===1" :title="file.name" class="text-warning">
+    <span v-if="file?._status?.failed" :title="file.name" class="text-warning">
         <i class="fa fa-exclamation-triangle"></i> {{file.name}}
     </span>
-    <span v-else-if="file.warningCode===2" :title="file.name">
-        <i class="fa fa-info-circle"></i> {{file.name}}
-    </span>
     <span v-else :title="file.name">
-        <i class="fa fa-file"></i> {{file.name}}
+        <i v-if="file?._status?.info" class="fa fa-info-circle"></i>
+        <i v-else class="fa fa-file"></i>
+        {{file.name}}
     </span>
 
     <button
