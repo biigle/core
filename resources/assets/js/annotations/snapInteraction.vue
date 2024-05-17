@@ -37,15 +37,8 @@ export default {
                 let yy = y + (100000 * Math.sin(rad));
                 let v = this.cropLine([[x, y], [xx, yy]], angle);
                 let feature = new Feature({ geometry: new LineString(v) });
-                feature.setStyle(new Style({
-                    stroke: new Stroke({
-                        color: 'transparent',
-                        width: 5
-                    })
-                }));
                 this.snapLineFeatures.push(feature);
             });
-            this.annotationSource.addFeatures(this.snapLineFeatures);
 
         },
         cropLine(u, angle) {
@@ -92,12 +85,11 @@ export default {
         },
         startSnap() {
             this.drawSnaplines();
-            this.snapInteraction = new Snap({ source: this.annotationSource, features: new Collection(this.snapLineFeatures) });
+            this.snapInteraction = new Snap({features: new Collection(this.snapLineFeatures) });
             this.map.addInteraction(this.snapInteraction);
             this.shouldSnap = false;
         },
         endSnap() {
-            this.snapLineFeatures.map((f) => this.annotationSource.removeFeature(f));
             this.map.removeInteraction(this.snapInteraction);
             this.snapInteraction = undefined;
             this.snapLineFeatures = [];
