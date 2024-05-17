@@ -85,7 +85,7 @@ export default {
         },
         startSnap() {
             this.drawSnaplines();
-            this.snapInteraction = new Snap({features: new Collection(this.snapLineFeatures) });
+            this.snapInteraction = new Snap({features: new Collection(this.snapLineFeatures), pixelTolerance: 15});
             this.map.addInteraction(this.snapInteraction);
             this.shouldSnap = false;
         },
