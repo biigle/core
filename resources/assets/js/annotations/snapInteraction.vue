@@ -9,7 +9,7 @@ export default {
     data() {
         return {
             snapInteraction: null,
-            snapLineFeatures: [],
+            snapLineFeatures: new Collection(),
         }
     },
     computed: {
@@ -85,14 +85,14 @@ export default {
         },
         startSnap() {
             this.drawSnaplines();
-            this.snapInteraction = new Snap({features: new Collection(this.snapLineFeatures), pixelTolerance: 15});
+            this.snapInteraction = new Snap({features: this.snapLineFeatures, pixelTolerance: 15});
             this.map.addInteraction(this.snapInteraction);
             this.shouldSnap = false;
         },
         endSnap() {
             this.map.removeInteraction(this.snapInteraction);
             this.snapInteraction = undefined;
-            this.snapLineFeatures = [];
+            this.snapLineFeatures.clear();
         },
     },
     watch: {
