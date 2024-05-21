@@ -71,5 +71,11 @@
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
         </p>
+
+        <p>
+            <a name="jump-by-frame"></a> The jump by frame switch allows you to navigate frame by frame (forward and backward) in the video. Note that this is an experimental feature as it is only available in Chrome and may not always give the right frame, so please use it with caution.
+            <br>When the feature is enabled, new buttons will appear in the navigation bar and keyboard shortcuts are modified: use 𝗮𝗿𝗿𝗼𝘄𝘀 to switch frames and 𝗦𝗵𝗶𝗳𝘁+𝗮𝗿𝗿𝗼𝘄𝘀 to switch videos. When the feature is disabled, use old shortcuts to switch videos.
+        </p>
+
     </div>
 @endsection

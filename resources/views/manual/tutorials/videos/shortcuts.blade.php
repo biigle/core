@@ -14,7 +14,12 @@
                     <th>Key</th>
                     <th>Function</th>
                 </tr>
-            </thead>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td style="text-align:center">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is disabled</td>
+                </tr>
+            </tbody>
             <tbody>
                 <tr>
                     <td><kbd>Arrow left</kbd></td>
@@ -24,6 +29,31 @@
                     <td><kbd>Arrow right</kbd></td>
                     <td>Next video</td>
                 </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td style="text-align:center">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is enabled</td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td><kbd>Arrow left</kbd></td>
+                    <td>Previous frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow right</kbd></td>
+                    <td>Next frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow left</kbd></td>
+                    <td>Previous video</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow right</kbd></td>
+                    <td>Next video</td>
+                </tr>
+            </tbody>
+            <tbody>
                 <tr>
                     <td><kbd>+</kbd></td>
                     <td>Zoom the video to the original resolution</td>
