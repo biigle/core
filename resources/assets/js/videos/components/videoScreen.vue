@@ -11,18 +11,16 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group"
-                v-if="showPrevNext">
-                 <control-button
-                    icon="fa-chevron-left"
-                    title="Previous video"
-                    @click="emitPrevious"
-                    ></control-button>
-            </div>     
             <div class="btn-group">
                 <control-button
-                    v-if="enableJumpByFrame"
+                    v-if="showPrevNext"
                     icon="fa-step-backward"
+                    :title="jumpByFrameEnabled ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    @click="emitPrevious"
+                    ></control-button>
+                <control-button
+                    v-if="enableJumpByFrame"
+                    icon="fa-caret-square-left"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="showPreviousFrame"
                     ></control-button>
@@ -42,16 +40,14 @@
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    icon="fa-step-forward"
-                    title="Next frame Right 𝗮𝗿𝗿𝗼𝘄"
+                    icon="fa-caret-square-right"
+                    title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="showNextFrame"
                     ></control-button>
-            </div>
-            <div class="btn-group"
-                v-if="showPrevNext">
-                 <control-button
-                    icon="fa-chevron-right"
-                    title="Next video"
+                <control-button
+                    v-if="showPrevNext"
+                    icon="fa-step-forward"
+                    :title="jumpByFrameEnabled ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     @click="emitNext"
                     ></control-button>
             </div>
@@ -408,6 +404,9 @@ export default {
         disableJobTracking() {
             return this.reachedTrackedAnnotationLimit;
         },
+        jumpByFrameEnabled() {
+            return this.enableJumpByFrame;
+        }
     },
     methods: {
         createMap() {
@@ -560,6 +559,24 @@ export default {
         heightOffset() {
             this.updateSize();
         },
+        jumpByFrameEnabled(enabled) {
+            if(enabled) {
+                Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.showNextFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.off('ArrowRight', this.showNextFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);                
+            }
+        },
     },
     created() {
         this.$once('map-ready', this.initLayersAndInteractions);
@@ -570,8 +587,8 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.showNextFrame, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
+        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
