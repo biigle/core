@@ -26,7 +26,7 @@
                 @else
                     @unless (empty(app('modules')->getViewMixins('registerButton')))
                         <p class="text-center">
-                            Use your institutional email address via single sign-on (recommended).
+                            Sign up via single sign-on (recommended):
                         </p>
                         @mixin('registerButton')
                         <hr>
