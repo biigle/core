@@ -119,6 +119,10 @@
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
                 </tr>
+                <tr>
+                    <td><kbd>Ctrl</kbd></td>
+                    <td>Activate guide lines to snap line<br></td>
+                </tr>
             </tbody>
         </table>
 
