@@ -12,11 +12,11 @@
         <i class="fa fa-file"></i> {{file.name}}
     </a>
 
-    <span v-if="file?._status?.failed" :title="file.name" class="text-warning">
+    <span v-if="hasError" :title="file.name" class="text-warning">
         <i class="fa fa-exclamation-triangle"></i> {{file.name}}
     </span>
     <span v-else :title="file.name">
-        <i v-if="file?._status?.info" class="fa fa-info-circle"></i>
+        <i v-if="hasInfo" class="fa fa-info-circle"></i>
         <i v-else class="fa fa-file"></i>
         {{file.name}}
     </span>
@@ -62,6 +62,12 @@ export default {
         viewTitle() {
             return `View file ${this.file.name}`;
         },
+        hasError() {
+            return this.file?._status?.failed;
+        },
+        hasInfo() {
+            return this.file?._status?.info;
+        }
     },
     methods: {
         emitRemove() {
