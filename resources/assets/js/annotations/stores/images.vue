@@ -154,9 +154,12 @@ export default new Vue({
             // Disable auto-rotation based on image metadata. This only works when the
             // element is in the DOM so we have to append it whenever we need it.
             img.style.imageOrientation = 'none';
+            canvas.style.imageOrientation = 'none';
             // Make the element invisible when it is appended to the DOM.
             img.style.visibility = 'hidden';
             img.style.position = 'fixed';
+            canvas.style.visibility = 'hidden';
+            canvas.style.position = 'fixed';
 
             // Flag to skip redrawing of the original image if no color adjustment is
             // active.
@@ -168,6 +171,7 @@ export default new Vue({
                     // correctly determined. Otherwise imageOrientation=none has no
                     // effect.
                     document.body.appendChild(img);
+                    document.body.appendChild(imageWrapper.canvas);
                     imageWrapper.width = img.width;
                     imageWrapper.height = img.height;
                     imageWrapper.canvas.width = img.width;
@@ -177,6 +181,7 @@ export default new Vue({
                     imageWrapper.canvas.getContext('2d').drawImage(img, 0, 0);
                     imageWrapper.canvas._dirty = false;
                     document.body.removeChild(img);
+                    document.body.removeChild(imageWrapper.canvas);
 
                     resolve(imageWrapper);
                 };
@@ -239,12 +244,14 @@ export default new Vue({
             if (image.canvas._dirty) {
                 // Append the image to the DOM so imageOrientation=none is respected.
                 document.body.appendChild(image.source);
+                document.body.appendChild(image.canvas);
                 // This has to be called somehow to force the browser to respect
                 // imageOrientation=none.
                 image.source.width;
                 image.canvas.getContext('2d').drawImage(image.source, 0, 0);
                 image.canvas._dirty = false;
                 document.body.removeChild(image.source);
+                document.body.appendChild(image.canvas);
             }
 
             return image;
