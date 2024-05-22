@@ -334,10 +334,10 @@ class PendingVolumeController extends Controller
         $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
 
         $labelMap = $metadata->getMatchingLabels($pv->label_map, $onlyLabels);
-        $labelMapOk = array_search(null, $labelMap) === false;
+        $labelMapOk = !empty($labelMap) && array_search(null, $labelMap) === false;
 
         $userMap = $metadata->getMatchingUsers($pv->user_map, $onlyLabels);
-        $userMapOk = array_search(null, $userMap) === false;
+        $userMapOk = !empty($userMap) && array_search(null, $userMap) === false;
 
         return view('volumes.create.finish', [
             'pv' => $pv,
