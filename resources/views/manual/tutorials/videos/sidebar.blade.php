@@ -61,7 +61,7 @@
         </p>
 
         <p>
-            You can set a jump step value in seconds that allows you to jump backaward and forward in the video by that amount of time with the double arrows control buttons. Set the value to 0 to disable the feature and hide the controls.
+            You can set a jump step value in seconds that allows you to jump backaward and forward in the video by that amount of time with the <button class="btn btn-default btn-xs"><i class="fa fa-backward"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-forward"></i></button> control buttons. Set the value to 0 to disable the feature and hide the controls.
         </p>
 
         <p>
