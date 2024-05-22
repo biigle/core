@@ -20,9 +20,10 @@
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
+                    :disabled="seeking"
                     icon="fa-caret-square-left"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    v-on:click="showPreviousFrame"
+                    v-on:click="emitPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -40,9 +41,10 @@
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
+                    :disabled="seeking"
                     icon="fa-caret-square-right"
                     title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    v-on:click="showNextFrame"
+                    v-on:click="emitNextFrame"
                     ></control-button>
                 <control-button
                     v-if="showPrevNext"
@@ -532,6 +534,16 @@ export default {
             this.setPaused(true);
             this.resetInteractionMode();
         },
+        emitPreviousFrame() {
+            this.$emit('seek', this.video.currentTime, true);
+            if(!this.seeking)
+                this.showPreviousFrame();
+         },
+        emitNextFrame() {
+            this.$emit('seek', this.video.currentTime, true);
+            if(!this.seeking)
+                this.showNextFrame();
+        },
     },
     watch: {
         selectedAnnotations(annotations) {
@@ -565,14 +577,14 @@ export default {
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.showNextFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
             }
             else {
                 Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.off('ArrowRight', this.showNextFrame, 0, this.listenerSet);
-                Keyboard.off('ArrowLeft', this.showPreviousFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);                
             }
