@@ -17,10 +17,10 @@ export default {
                 && this.snappingCoords[0] <= this.width && this.snappingCoords[1] <= this.height;
         },
         width() {
-            return this.image ? this.image.width : this.video.videoWidth;
+            return this.image.width;
         },
         height() {
-            return this.image ? this.image.height : this.video.videoHeight;
+            return this.image.height;
         }
     },
     methods: {

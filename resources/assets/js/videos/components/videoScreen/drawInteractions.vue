@@ -5,7 +5,7 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import snapInteraction from '../../../annotations/snapInteraction.vue';
+import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
 
 /**
