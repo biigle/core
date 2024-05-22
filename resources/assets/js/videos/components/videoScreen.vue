@@ -12,11 +12,18 @@
             ></label-tooltip>
         <div class="controls">
             <div class="btn-group">
-                 <control-button
+                <control-button
                     v-if="showPrevNext"
                     icon="fa-step-backward"
                     title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitPrevious"
+                    ></control-button>
+                <control-button
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-backward"
+                    :title="jumpBackwardMessage"
+                    @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -33,7 +40,14 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-forward"
+                    :title="jumpForwardMessage"
+                    @click="jumpForward"
+                    ></control-button>
+                <control-button
+                     v-if="showPrevNext"
                     icon="fa-step-forward"
                     title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     @click="emitNext"
@@ -286,6 +300,10 @@ export default {
             type: Number,
             default: 0,
         },
+        jumpStep: {
+            type: Number,
+            default: 5.0,
+        },
         canAdd: {
             type: Boolean,
             default: false,
@@ -387,6 +405,12 @@ export default {
         },
         disableJobTracking() {
             return this.reachedTrackedAnnotationLimit;
+        },
+        jumpBackwardMessage() {
+            return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
+        },
+        jumpForwardMessage() {
+            return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },
     },
     methods: {
@@ -552,6 +576,8 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
