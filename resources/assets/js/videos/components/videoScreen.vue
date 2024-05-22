@@ -407,10 +407,10 @@ export default {
             return this.reachedTrackedAnnotationLimit;
         },
         jumpBackwardMessage() {
-            return "Rewind video by " + this.jumpStep + "s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄";
+            return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },
         jumpForwardMessage() {
-            return "Advance video by " + this.jumpStep + "s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄";
+            return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },
     },
     methods: {
