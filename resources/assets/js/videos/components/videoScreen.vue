@@ -19,9 +19,10 @@
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
-                    v-if="!seeking && jumpStep!=0"
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
                     icon="fa-backward"
-                    title="Rewind video by jump step 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
@@ -39,9 +40,10 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="!seeking && jumpStep!=0"
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
                     icon="fa-forward"
-                    title="Advance video by jump step 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="jumpForwardMessage"
                     @click="jumpForward"
                     ></control-button>
                 <control-button
@@ -403,6 +405,12 @@ export default {
         },
         disableJobTracking() {
             return this.reachedTrackedAnnotationLimit;
+        },
+        jumpBackwardMessage() {
+            return "Rewind video by " + this.jumpStep + "s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄";
+        },
+        jumpForwardMessage() {
+            return "Advance video by " + this.jumpStep + "s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄";
         },
     },
     methods: {
