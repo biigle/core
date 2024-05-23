@@ -424,9 +424,6 @@ export default {
         disableJobTracking() {
             return this.reachedTrackedAnnotationLimit;
         },
-        jumpByFrameEnabled() {
-            return this.enableJumpByFrame;
-        },
         jumpBackwardMessage() {
             return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },
@@ -568,6 +565,24 @@ export default {
             if(!this.seeking)
                 this.showNextFrame();
         },
+        adaptKeyboardShortcuts() {
+            if(this.enableJumpByFrame) {
+                Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+            }
+        }
     },
     watch: {
         selectedAnnotations(annotations) {
@@ -595,23 +610,8 @@ export default {
         heightOffset() {
             this.updateSize();
         },
-        jumpByFrameEnabled(enabled) {
-            if(enabled) {
-                Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-            }
-            else {
-                Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
-                Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);                
-            }
+        enableJumpByFrame() {
+            this.adaptKeyboardShortcuts();
         },
     },
     created() {
@@ -622,9 +622,8 @@ export default {
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 
+        this.adaptKeyboardShortcuts();
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
