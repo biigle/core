@@ -78,7 +78,7 @@
 
         <p>
             <a name="jump-by-frame"></a> The jump by frame switch allows you to navigate frame by frame (forward and backward) in the video. Note that this is an experimental feature as it is only available in Chrome and may not always give the right frame, so please use it with caution.
-            <br>When the feature is enabled, new buttons will appear in the navigation bar and keyboard shortcuts are modified: use 𝗮𝗿𝗿𝗼𝘄𝘀 to switch frames and 𝗦𝗵𝗶𝗳𝘁+𝗮𝗿𝗿𝗼𝘄𝘀 to switch videos. When the feature is disabled, use old shortcuts to switch videos.
+            <br>When the feature is enabled, new buttons will appear in the navigation bar and keyboard shortcuts are modified: use <button class="btn btn-default btn-xs"><i class="fa fa-arrow-left"></i></i></button> / <button class="btn btn-default btn-xs"><i class="fa fa-arrow-right"></i></i></button> to switch frames and 𝗦𝗵𝗶𝗳𝘁 + <button class="btn btn-default btn-xs"><i class="fa fa-arrow-left"></i></i></button> / <button class="btn btn-default btn-xs"><i class="fa fa-arrow-right"></i></i></button> to switch videos. When the feature is disabled, use old shortcuts to switch videos.
         </p>
 
     </div>
