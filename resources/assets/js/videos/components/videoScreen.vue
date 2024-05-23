@@ -11,13 +11,19 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group">
+            <div v-if="showPrevNext" class="btn-group">
                 <control-button
-                    v-if="showPrevNext"
                     icon="fa-step-backward"
-                    :title="jumpByFrameEnabled ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     @click="emitPrevious"
                     ></control-button>
+                <control-button
+                    icon="fa-step-forward"
+                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    @click="emitNext"
+                    ></control-button>
+            </div>
+            <div class="btn-group">
                 <control-button
                     v-if="enableJumpByFrame"
                     :disabled="seeking"
@@ -59,12 +65,6 @@
                     icon="fa-forward"
                     :title="jumpForwardMessage"
                     @click="jumpForward"
-                    ></control-button>
-                <control-button
-                    v-if="showPrevNext"
-                    icon="fa-step-forward"
-                    :title="jumpByFrameEnabled ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
-                    @click="emitNext"
                     ></control-button>
             </div>
             <div v-if="canAdd" class="btn-group">
