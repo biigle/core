@@ -26,6 +26,13 @@
                     v-on:click="emitPreviousFrame"
                     ></control-button>
                 <control-button
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-backward"
+                    :title="jumpBackwardMessage"
+                    @click="jumpBackward"
+                    ></control-button>
+                <control-button
                     v-if="playing"
                     icon="fa-pause"
                     title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
@@ -45,6 +52,13 @@
                     icon="fa-caret-square-right"
                     title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitNextFrame"
+                    ></control-button>
+                <control-button
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-forward"
+                    :title="jumpForwardMessage"
+                    @click="jumpForward"
                     ></control-button>
                 <control-button
                     v-if="showPrevNext"
@@ -300,6 +314,10 @@ export default {
             type: Number,
             default: 0,
         },
+        jumpStep: {
+            type: Number,
+            default: 5.0,
+        },
         canAdd: {
             type: Boolean,
             default: false,
@@ -409,6 +427,12 @@ export default {
         jumpByFrameEnabled() {
             return this.enableJumpByFrame;
         }
+        jumpBackwardMessage() {
+            return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
+        },
+        jumpForwardMessage() {
+            return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
+        },
     },
     methods: {
         createMap() {
@@ -601,6 +625,8 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);

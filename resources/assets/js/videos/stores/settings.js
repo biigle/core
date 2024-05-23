@@ -8,6 +8,7 @@ let defaults = {
     showMousePosition: false,
     showProgressIndicator: true,
     enableJumpByFrame: false,
+    jumpStep: 5.0,
 };
 
 export default new Settings({

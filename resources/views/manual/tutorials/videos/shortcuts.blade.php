@@ -55,6 +55,14 @@
             </tbody>
             <tbody>
                 <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>Arrow left</kbd></td>
+                    <td>Jump backward in video by a time defined in jump step parameter</td>
+                </tr>
+                <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>Arrow right</kbd></td>
+                    <td>Jump forward in video by a time defined in jump step parameter</td>
+                </tr>
+                <tr>
                     <td><kbd>+</kbd></td>
                     <td>Zoom the video to the original resolution</td>
                 </tr>

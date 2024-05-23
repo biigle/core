@@ -22,6 +22,7 @@ export default {
                 'showMousePosition',
                 'showProgressIndicator',
                 'enableJumpByFrame',
+                'jumpStep',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -29,6 +30,7 @@ export default {
             showLabelTooltip: false,
             showMousePosition: false,
             playbackRate: 1.0,
+            jumpStep: 5.0,
             showProgressIndicator: true,
             enableJumpByFrame: false,
         };
@@ -100,6 +102,11 @@ export default {
             if (!isNaN(value)) {
                 this.$emit('update', 'playbackRate', value);
             }
+        },
+        jumpStep(value) {
+            value = parseFloat(value);
+            this.$emit('update', 'jumpStep', value);
+            Settings.set('jumpStep', value);
         },
         showProgressIndicator(show) {
             this.$emit('update', 'showProgressIndicator', show);

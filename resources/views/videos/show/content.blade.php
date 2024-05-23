@@ -28,6 +28,7 @@
       :annotations="filteredAnnotations"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
+      :jump-step="settings.jumpStep"
       :can-add="canEdit"
       :can-modify="canEdit"
       :can-delete="canEdit"
