@@ -173,7 +173,7 @@ export default {
             for (;;) {
                 // now adjust video's current time until actual frame time changes
                 this.video.currentTime -= 0.01;
-                let metadata = await this.frameInfoCallback(); 
+                let metadata = await this.frameInfoCallback();
                 if (metadata.mediaTime !== firstMetadata.mediaTime) break;
             }
         },
@@ -188,7 +188,7 @@ export default {
             for (;;) {
                 // now adjust video's current time until actual frame time changes
                 this.video.currentTime += 0.01;
-                let metadata = await this.frameInfoCallback(); 
+                let metadata = await this.frameInfoCallback();
                 if (metadata.mediaTime !== firstMetadata.mediaTime) break;
             }
         },

@@ -96,7 +96,7 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
-            };
+        };
     },
     computed: {
         selectedAnnotations() {
