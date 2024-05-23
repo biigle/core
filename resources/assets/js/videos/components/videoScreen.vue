@@ -426,7 +426,7 @@ export default {
         },
         jumpByFrameEnabled() {
             return this.enableJumpByFrame;
-        }
+        },
         jumpBackwardMessage() {
             return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },

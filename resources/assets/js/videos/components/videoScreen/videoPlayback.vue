@@ -190,6 +190,8 @@ export default {
                 this.video.currentTime += 0.01;
                 let metadata = await this.frameInfoCallback(); 
                 if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+            }
+        },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {
             if (this.video.currentTime > 0 && this.jumpStep > 0) {
