@@ -7,6 +7,7 @@ import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
+import SnapInteraction from "./snapInteraction.vue";
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -19,9 +20,7 @@ export default {
         return {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
-            snappingCoords: [0, 0],
             drawEnded: true,
-            shouldSnap: false,
         };
     },
     computed: {
@@ -147,11 +146,6 @@ export default {
                     });
                 }
             }
-        },
-        updateSnapCoords(mapBrowserEvent) {
-            this.snappingCoords = mapBrowserEvent.coordinate;
-            this.shouldSnap = mapBrowserEvent.originalEvent.ctrlKey;
-            return true;
         },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {

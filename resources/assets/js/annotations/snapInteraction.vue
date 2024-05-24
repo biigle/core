@@ -9,6 +9,8 @@ export default {
         return {
             snapInteraction: null,
             snapLineFeatures: new Collection(),
+            snappingCoords: [0, 0],
+            shouldSnap: false
         }
     },
     computed: {
@@ -24,6 +26,13 @@ export default {
         }
     },
     methods: {
+        updateSnapCoords(mapBrowserEvent) {
+            // Coordinates need to be set here, because only this event contains the last set coordinate
+            this.snappingCoords = mapBrowserEvent.coordinate;
+            this.shouldSnap = mapBrowserEvent.originalEvent.ctrlKey;
+            // Return always true to enable snapping when first point is set
+            return true;
+        },
         drawSnaplines() {
             let x = this.snappingCoords[0];
             let y = this.snappingCoords[1];

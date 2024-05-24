@@ -29,9 +29,7 @@ export default {
     mixins: [snapInteraction],
     data() {
         return {
-            snappingCoords: [0, 0],
             drawEnded: true,
-            shouldSnap: false,
         }
     },
     computed: {
@@ -115,12 +113,6 @@ export default {
                     });
             }
         },
-        updateSnapCoords(mapBrowserEvent) {
-            this.snappingCoords = mapBrowserEvent.coordinate;
-            this.shouldSnap = mapBrowserEvent.originalEvent.ctrlKey;
-            return true;
-        }
-
     },
     watch: {
         selectedLabel(label) {
