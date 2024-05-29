@@ -13,6 +13,10 @@
             </span>
             <span class="label-tree-label__buttons">
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
+                    <span v-if="showFavouriteShortcuts">
+                        <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
+                        <span v-text="addOnePosition()"></span>
+                    </span>
                     <span class="fa fa-star" aria-hidden="true" title=""></span>
                 </button>
                 <span if="editable">
@@ -65,6 +69,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        showFavouriteShortcuts: {
+            type: Boolean,
+            default: false,
+        },
+        position:{
+            type: Number,
+            default:-1,
+        }
     },
     computed: {
         showColor() {
@@ -190,6 +202,9 @@ export default {
         },
         dontHover() {
             this.hover = false;
+        },
+        addOnePosition(){
+            return this.position +1;
         },
     },
     created() {
