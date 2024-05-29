@@ -13,7 +13,7 @@
             </span>
             <span class="label-tree-label__buttons">
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
-                    <span v-if="showFavouriteShortcuts">
+                    <span v-if="showFavouriteShortcuts" @click.stop="!toggleFavourite" >
                         <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
                         <span v-text="addOnePosition()"></span>
                     </span>
