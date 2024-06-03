@@ -126,13 +126,15 @@ class ProcessNewImage extends Job implements ShouldQueue
     {
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
-        $buffer = VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
-            // Strip EXIF information to not auto rotate thumbnails because
-            // the orientation of AUV captured images is not reliable.
-            ->writeToBuffer(".{$format}", [
-                'Q' => 85,
-                'strip' => true,
-            ]);
+        $buffer = VipsImage::thumbnail($path, $this->width, [
+            'height' => $this->height,
+            // Don't auto rotate thumbnails because the orientation of AUV captured
+            // images is not reliable.
+            'no-rotate' => true,
+        ])->writeToBuffer(".{$format}", [
+            'Q' => 85,
+            'strip' => true,
+        ]);
 
         Storage::disk(config('thumbnails.storage_disk'))
             ->put("{$prefix}.{$format}", $buffer);

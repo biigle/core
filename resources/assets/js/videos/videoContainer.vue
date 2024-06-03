@@ -643,8 +643,27 @@ export default {
                 annotation.failTracking();
             }
         },
-        handleInvalidPolygon() {
-            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
+        handleInvalidShape(shape) {
+            let count;
+            switch (shape) {
+                case 'Circle':
+                    Messages.danger('Invalid shape. Circle needs non-zero radius');
+                    return;
+                case 'LineString':
+                    shape = 'Line'
+                    count = 2;
+                    break;
+                case 'Polygon':
+                    count = 'at least 3';
+                    break;
+                case 'Rectangle':
+                case 'Ellipse':
+                    count = 4;
+                    break;
+                default:
+                    return;
+            }
+            Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
     },
     watch: {

@@ -48,12 +48,12 @@ class StoreVolume extends FormRequest
         return [
             'name' => 'required|max:512',
             'media_type' => ['filled', Rule::in(array_keys(MediaType::INSTANCES))],
-            'url' => ['required', 'string', 'max:256', new VolumeUrl],
+            'url' => ['bail', 'required', 'string', 'max:256', new VolumeUrl],
             'files' => [
                 'required',
                 'array',
             ],
-            'handle' => ['nullable', 'max:256', new Handle],
+            'handle' => ['bail', 'nullable', 'string', 'max:256', new Handle],
             'metadata_csv' => 'file|mimetypes:text/plain,text/csv,application/csv',
             'ifdo_file' => 'file',
             'metadata' => 'filled',
