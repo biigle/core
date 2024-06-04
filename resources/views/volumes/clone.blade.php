@@ -150,7 +150,11 @@
                         <span class="pull-right">
                             <a class="btn btn-default" :disabled="loading" type="button"
                                href="{{URL::previous()}}">Cancel</a>
-                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
+                        <span v-if="showCloneButton">
+                            <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone"></span>
+                        <span v-cloak v-else>
+                            <button type="button" class="btn btn-success" v-on:click="loadFilesMatchingPattern">Test file query</button>
+                        </span>
                         </span>
                         <input v-if="filterAnnotations" v-for="id in selectedAnnotationLabelIds" type="hidden"
                                name="only_annotation_labels[]"
