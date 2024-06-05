@@ -73,6 +73,24 @@ export default {
             return Store.countUnread > 0;
         },
     },
+    methods:{
+        markAllAsRead(userId) {
+            this.isLoading = true;
+            return NotificationsApi.markReadAll({}, {user_id: userId})
+                .then(() => {
+                    this.notifications.map(item => {
+                        item.read_at = new Date();
+                        if (this.removeItem) {
+                            Store.remove(this.item.id);
+                        }
+                    })
+                })
+                .catch(Messages.handleErrorResponse)
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
+    },
     created() {
         Store.initialize();
         this.notifications = Store.all;
