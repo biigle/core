@@ -4,18 +4,19 @@
 
 @section('admin-content')
 <h4>Delete {{$affectedUser->firstname}} {{$affectedUser->lastname}}</h4>
-<p>
-    <strong>Full Name:</strong> {{$affectedUser->firstname}} {{$affectedUser->lastname}}<br>
-    <strong>Email:</strong> {{$affectedUser->email}}<br>
-    <strong>Affiliation:</strong> {{$affectedUser->affiliation}}
-</p>
-
 <p class="text-danger">
     Deleting a user account won't delete any of its projects, volumes or annotations etc. (they just won't be associated with it any more).
 </p>
 <p class="text-danger">
     <strong>Deleting a user account cannot be undone!</strong>
 </p>
+<p>
+    <strong>Full Name:</strong> {{$affectedUser->firstname}} {{$affectedUser->lastname}}<br>
+    <strong>Email:</strong> {{$affectedUser->email}}<br>
+    <strong>Affiliation:</strong> {{$affectedUser->affiliation}}
+</p>
+
+
 
 
 
