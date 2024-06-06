@@ -17,7 +17,7 @@
                         <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
                         <span v-text="addOnePosition()"></span>
                     </span>
-                    <span class="fa fa-star" aria-hidden="true" title=""></span>
+                    <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
                 <span if="editable">
                     <button v-show="showEditButton" :title="editTitle" @click.stop="editThis" class="btn btn-default btn-xs"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
