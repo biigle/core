@@ -48,7 +48,8 @@ class NotificationControllerTest extends ApiTestCase
         $this->assertEquals(0, $user->notifications()->count());
     }
 
-    public function testUpdateAll(){
+    public function testUpdateAll()
+    {
         $user = UserTest::create();
         $user->notify(new InAppNotification('test', 'test'));
         $user->notify(new InAppNotification('test', 'test'));
