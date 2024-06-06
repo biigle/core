@@ -47,4 +47,27 @@ class NotificationControllerTest extends ApiTestCase
             ->assertStatus(200);
         $this->assertEquals(0, $user->notifications()->count());
     }
+
+    public function testUpdateAll(){
+        $user = UserTest::create();
+        $user->notify(new InAppNotification('test', 'test'));
+        $user->notify(new InAppNotification('test', 'test'));
+        $user->notify(new InAppNotification('test', 'test'));
+
+        $this->doTestApiRoute('PUT', '/api/v1/notifications', ['user_id' => $user->id]);
+        $this->assertEquals(3, $user->unreadNotifications()->count());
+
+        $this->be(UserTest::create());
+        $this->put('/api/v1/notifications/', ['user_id' => $user->id])
+            ->assertForbidden();
+        
+        $this->be($user);
+        $this->put('/api/v1/notifications/', ['user_id' => $user->id])
+            ->assertStatus(200);
+        $this->assertEquals(0, $user->unreadNotifications()->count());
+
+        // invalid data
+        $this->put('/api/v1/notifications/', ['test'])->assertInvalid();
+        $this->put('/api/v1/notifications/', ['user_id' => 'test'])->assertInvalid();
+    }
 }
