@@ -25,18 +25,18 @@
             </div>
             <div class="btn-group">
                 <control-button
-                    v-if="enableJumpByFrame"
-                    :disabled="seeking"
-                    icon="fa-caret-square-left"
-                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    v-on:click="emitPreviousFrame"
-                    ></control-button>
-                <control-button
                     v-if="jumpStep!=0"
                     :disabled="seeking"
                     icon="fa-backward"
                     :title="jumpBackwardMessage"
                     @click="jumpBackward"
+                    ></control-button>
+                <control-button
+                    v-if="enableJumpByFrame"
+                    :disabled="seeking"
+                    icon="fa-caret-square-left"
+                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="emitPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
