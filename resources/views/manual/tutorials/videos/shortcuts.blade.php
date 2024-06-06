@@ -17,7 +17,7 @@
             </tbody>
             <tbody>
                 <tr>
-                    <td style="text-align:center">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is disabled</td>
+                    <td colspan="2">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is disabled</td>
                 </tr>
             </tbody>
             <tbody>
@@ -32,7 +32,7 @@
             </tbody>
             <tbody>
                 <tr>
-                    <td style="text-align:center">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is enabled</td>
+                    <td colspan="2">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is enabled</td>
                 </tr>
             </tbody>
             <tbody>
