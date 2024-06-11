@@ -16,10 +16,6 @@
     <strong>Affiliation:</strong> {{$affectedUser->affiliation}}
 </p>
 
-
-
-
-
 <form role="form" method="POST" action="{{ url('api/v1/users/'.$affectedUser->id) }}">
     <input type="hidden" name="_method" value="DELETE">
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
