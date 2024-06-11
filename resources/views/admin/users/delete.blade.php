@@ -11,7 +11,6 @@
     <strong>Deleting a user account cannot be undone!</strong>
 </p>
 <p>
-    <strong>Full Name:</strong> {{$affectedUser->firstname}} {{$affectedUser->lastname}}<br>
     <strong>Email:</strong> {{$affectedUser->email}}<br>
     <strong>Affiliation:</strong> {{$affectedUser->affiliation}}
 </p>

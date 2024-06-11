@@ -83,13 +83,11 @@ class UsersController extends Controller
     *
     * @return \Illuminate\Http\Response
     */
-    
     public function delete($id)
     {
-        $user = User::findOrFail($id);
-        return view('admin.users.delete')->with('affectedUser', $user);
+        return view('admin.users.delete')
+            ->with('affectedUser', User::findOrFail($id));
     }
-
 
     /**
      * Shows the user information page.
