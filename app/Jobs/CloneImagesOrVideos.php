@@ -257,8 +257,16 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->with([
-                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $imageAnnotationLabelIds)->orderBy('id'),
+                'annotations' => function ($q) use ($chunkSize, $usedAnnotationIds) {
+                    return $q->chunkById($chunkSize, function($chunk) use ($usedAnnotationIds) {
+                        return $chunk->whereIn('id', $usedAnnotationIds)->sortBy('id');
+                    });
+                },
+                'annotations.labels' => function ($q) use ($chunkSize, $imageAnnotationLabelIds) {
+                    return $q->chunkById($chunkSize, function($chunk) use ($imageAnnotationLabelIds) {
+                        return $chunk->whereIn('label_id', $imageAnnotationLabelIds)->sortBy('id');
+                    });
+                },
             ])
             ->when($volume->images->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
@@ -417,8 +425,16 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
             ->with([
-                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $videoAnnotationLabelIds)->orderBy('id'),
+                'annotations' => function ($q) use ($chunkSize, $usedAnnotationIds) {
+                    return $q->chunkById($chunkSize, function($chunk) use ($usedAnnotationIds) {
+                        return $chunk->whereIn('id', $usedAnnotationIds)->sortBy('id');
+                    });
+                },
+                'annotations.labels' => function ($q) use ($chunkSize, $videoAnnotationLabelIds) {
+                    return $q->chunkById($chunkSize, function($chunk) use ($videoAnnotationLabelIds) {
+                        return $chunk->whereIn('label_id', $videoAnnotationLabelIds)->sortBy('id');
+                    });
+                },
             ])
             ->when($volume->videos->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
