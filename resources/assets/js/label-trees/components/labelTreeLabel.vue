@@ -19,10 +19,6 @@
                     </span>
                 </span>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
-                    <span v-if="showFavouriteShortcuts" @click.stop="!toggleFavourite" >
-                        <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
-                        <span v-text="addOnePosition()"></span>
-                    </span>
                     <span class="fa fa-star" aria-hidden="true" title=""></span>
                 </button>
                 <span if="editable">
