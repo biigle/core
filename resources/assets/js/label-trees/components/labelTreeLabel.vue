@@ -12,11 +12,13 @@
                 <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
             </span>
             <span class="label-tree-label__buttons">
-                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
-                    <span v-if="showFavouriteShortcuts" @click.stop="!toggleFavourite" >
-                        <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
-                        <span v-text="addOnePosition()"></span>
+                <span class="label-tree-label_position">
+                    <span v-if="showFavouriteShortcuts" class="text-muted">
+                            <span class="fa fa-keyboard" aria-hidden="true" title="" ></span>
+                            <span :text="actualPosition">{{ actualPosition }}</span>
                     </span>
+                </span>
+                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
                     <span class="fa fa-star" aria-hidden="true" title=""></span>
                 </button>
                 <span if="editable">
@@ -76,7 +78,7 @@ export default {
         position:{
             type: Number,
             default:-1,
-        }
+        },
     },
     computed: {
         showColor() {
@@ -125,6 +127,9 @@ export default {
         showEditButton() {
             return this.editable && this.hover && !this.editing;
         },
+        actualPosition(){
+            return this.position +1
+        }
     },
     methods: {
         toggleSelect(e) {
@@ -202,9 +207,6 @@ export default {
         },
         dontHover() {
             this.hover = false;
-        },
-        addOnePosition(){
-            return this.position +1;
         },
     },
     created() {
