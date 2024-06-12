@@ -79,10 +79,10 @@ class UsersController extends Controller
     }
 
     /**
-    * Shows the admin delete user page.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Shows the admin delete user page.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete($id)
     {
         return view('admin.users.delete')
