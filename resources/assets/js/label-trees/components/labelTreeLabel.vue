@@ -128,7 +128,7 @@ export default {
             return this.editable && this.hover && !this.editing;
         },
         actualPosition(){
-            return this.position +1
+            return this.position + 1
         }
     },
     methods: {
