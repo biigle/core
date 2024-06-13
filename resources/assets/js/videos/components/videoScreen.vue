@@ -555,16 +555,6 @@ export default {
             this.setPaused(true);
             this.resetInteractionMode();
         },
-        emitPreviousFrame() {
-            this.$emit('seek', this.video.currentTime, true);
-            if(!this.seeking)
-                this.showPreviousFrame();
-         },
-        emitNextFrame() {
-            this.$emit('seek', this.video.currentTime, true);
-            if(!this.seeking)
-                this.showNextFrame();
-        },
         adaptKeyboardShortcuts() {
             if(this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);

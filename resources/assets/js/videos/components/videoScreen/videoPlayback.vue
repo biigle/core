@@ -24,6 +24,8 @@ export default {
             // Allow a maximum of 100x magnification. More cannot be represented in the
             // URL parameters.
             minResolution: 0.01,
+            // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
+            seekingFrame: this.seeking,
         };
     },
     methods: {
@@ -153,7 +155,23 @@ export default {
         handleSeeked() {
             this.renderVideo(true);
         },
-        // 3 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
+        // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
+        async emitPreviousFrame() {
+            if(this.video.currentTime == 0 || this.seekingFrame) return;
+            this.$emit('start-seeking');
+            this.seekingFrame = true;
+            await this.showPreviousFrame();
+            this.$emit('stop-seeking');
+            this.seekingFrame = false;
+        },
+        async emitNextFrame() {
+            if(this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
+            this.$emit('start-seeking');
+            this.seekingFrame = true;
+            await this.showNextFrame();
+            this.$emit('stop-seeking');
+            this.seekingFrame = false;
+        },
         frameInfoCallback() {
             let promise = new Vue.Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
@@ -163,34 +181,46 @@ export default {
             return promise;
         },
         async showPreviousFrame() {
-            // force rerender
-            this.video.currentTime += 1;
-            this.video.currentTime -= 1;
+            try {
+                // force rerender adapting step on begining or end of video
+                let step = 1;
+                if(this.video.currentTime < 1) {step = this.video.currentTime;}
+                if(this.video.duration - this.video.currentTime < 1) {step = this.video.duration - this.video.currentTime;}
+                await (this.video.currentTime += step);
+                await (this.video.currentTime -= step);
 
-            // get current frame time
-            const firstMetadata = await this.frameInfoCallback();
-
-            for (;;) {
-                // now adjust video's current time until actual frame time changes
-                this.video.currentTime -= 0.01;
-                let metadata = await this.frameInfoCallback();
-                if (metadata.mediaTime !== firstMetadata.mediaTime) break;
-            }
+                // get current frame time
+                const firstMetadata = await this.frameInfoCallback();
+                for (;;) {
+                    // now adjust video's current time until actual frame time changes
+                    this.video.currentTime -= 0.01;
+                    // check that we are not at first frame, otherwise we'll end up in infinte loop
+                    if (this.video.currentTime == 0) break;
+                    const metadata = await this.frameInfoCallback();
+                    if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+                }
+            } catch(handleErrorResponse) {}
         },
         async showNextFrame() {
-            // force rerender
-            this.video.currentTime += 1;
-            this.video.currentTime -= 1;
+            try {
+                // force rerender adapting step on begining or end of video
+                let step = 1;
+                if(this.video.currentTime < 1) {step = this.video.currentTime;}
+                if(this.video.duration - this.video.currentTime < 1) {step = this.video.duration - this.video.currentTime;}
+                await (this.video.currentTime += step);
+                await (this.video.currentTime -= step);
 
-            // get current frame time
-            const firstMetadata = await this.frameInfoCallback();
-
-            for (;;) {
-                // now adjust video's current time until actual frame time changes
-                this.video.currentTime += 0.01;
-                let metadata = await this.frameInfoCallback();
-                if (metadata.mediaTime !== firstMetadata.mediaTime) break;
-            }
+                // get current frame time
+                const firstMetadata = await this.frameInfoCallback();
+                for (;;) {
+                    // now adjust video's current time until actual frame time changes
+                    this.video.currentTime += 0.01;
+                    // check that we are not at last frame, otherwise we'll end up in infinte loop
+                    if (this.video.duration - this.video.currentTime == 0) break;
+                    const metadata = await this.frameInfoCallback();
+                    if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+                }
+            } catch(handleErrorResponse) {}
         },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {
