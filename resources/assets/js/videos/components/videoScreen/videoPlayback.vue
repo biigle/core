@@ -199,7 +199,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(handleErrorResponse) {}
+            } catch(e) {console.error(e)}
         },
         async showNextFrame() {
             try {
@@ -220,7 +220,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(handleErrorResponse) {}
+            } catch(e) {console.error(e)}
         },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {
