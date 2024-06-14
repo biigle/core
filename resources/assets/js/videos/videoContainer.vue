@@ -701,7 +701,7 @@ export default {
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
-        this.video.muted = Settings.get('muteVideo');
+        this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
