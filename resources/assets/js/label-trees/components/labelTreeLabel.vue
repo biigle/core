@@ -14,7 +14,7 @@
             <span class="label-tree-label__buttons">
                 <span class="label-tree-label_position">
                     <span v-if="showFavouriteShortcuts" class="text-muted">
-                            <span class="fa fa-keyboard" aria-hidden="true" title="" ></span>
+                            <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
                             <span :text="actualPosition">{{ actualPosition }}</span>
                     </span>
                 </span>
