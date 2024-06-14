@@ -77,8 +77,7 @@
         </p>
 
         <p>
-            <a name="jump-by-frame"></a> The jump by frame switch allows you to navigate frame by frame (forward and backward) in the video. Note that this is an experimental feature as it is only available in Chrome and may not always give the right frame, so please use it with caution.
-            <br>When the feature is enabled, new buttons will appear in the navigation bar and keyboard shortcuts are modified: use <kbd>Arrow left</kbd> / <kbd>Arrow right</kbd> to switch frames and <kbd>Shift</kbd> + <kbd>Arrow left</kbd> / <kbd>Arrow right</kbd> to switch videos. When the feature is disabled, use old shortcuts to switch videos.
+            <a name="jump-by-frame"></a>The jump by frame switch allows you to navigate frame by frame (forward and backward) in the video. Note that this is an experimental feature as it is only available in Chrome and may not always give the right frame, so please use it with caution. When the feature is enabled, the <button class="btn btn-default btn-xs"><i class="fa fa-caret-square-left"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-caret-square-right"></i></button> control buttons will appear in the tool bar at the bottom of the video. Use these to jump to the previous/next frame. Also, the <a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}#jump-by-frame">keyboard shortcuts</a> are updated.
         </p>
 
     </div>
