@@ -5,7 +5,7 @@
     @click="handleClick($event)"
     >
     <div v-if="hasError">
-        <span v-if="hasError" :title="file.name" class="text-warning">
+        <span :title="file.name" class="text-warning">
             <i class="fa fa-exclamation-triangle"></i> {{file.name}}
         </span>
     </div>
