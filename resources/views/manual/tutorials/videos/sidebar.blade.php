@@ -75,5 +75,9 @@
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
         </p>
+
+        <p>
+            The mute video switch enables or disables the audio track of the video.
+        </p>
     </div>
 @endsection

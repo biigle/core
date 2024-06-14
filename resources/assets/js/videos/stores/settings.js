@@ -8,6 +8,7 @@ let defaults = {
     showMousePosition: false,
     showProgressIndicator: true,
     jumpStep: 5.0,
+    muteVideo: true,
 };
 
 export default new Settings({
