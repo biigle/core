@@ -20,6 +20,10 @@
                 </div>
 
                 <div class="sidebar-tab__section">
+                    <input type="number" min="0" max="60.0" step="0.1" v-model="jumpStep" class="form-control form-control--small" title="Time in seconds that the video will jump (back or forward) with command buttons"> Jump step (s)
+                </div>
+
+                <div class="sidebar-tab__section">
                     <power-toggle :active="showProgressIndicator" title-off="Show progress indicator" title-on="Hide progress indicator" v-on:on="handleShowProgressIndicator" v-on:off="handleHideProgressIndicator">Progress Indicator</power-toggle>
                 </div>
 
@@ -33,6 +37,10 @@
 
                 <div class="sidebar-tab__section">
                     <power-toggle :active="showMousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="handleShowMousePosition" v-on:off="handleHideMousePosition">Mouse Position</power-toggle>
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="muteVideo" title-off="Mute video" title-on="Unmute video" v-on:on="handleMuteVideo" v-on:off="handleUnmuteVideo">Mute Video</power-toggle>
                 </div>
 
             </div>
