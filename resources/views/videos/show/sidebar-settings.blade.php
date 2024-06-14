@@ -35,6 +35,10 @@
                     <power-toggle :active="showMousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="handleShowMousePosition" v-on:off="handleHideMousePosition">Mouse Position</power-toggle>
                 </div>
 
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="muteVideo" title-off="Mute video" title-on="Unmute video" v-on:on="handleMuteVideo" v-on:off="handleUnmuteVideo">Mute Video</power-toggle>
+                </div>
+
             </div>
     </settings-tab>
 </sidebar-tab>

@@ -15,6 +15,7 @@ export default {
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
+                'muteVideo'
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -23,6 +24,7 @@ export default {
             showMousePosition: false,
             playbackRate: 1.0,
             showProgressIndicator: true,
+            muteVideo: true,
         };
     },
     methods: {
@@ -49,6 +51,12 @@ export default {
         },
         handleHideProgressIndicator() {
             this.showProgressIndicator = false;
+        },
+        handleMuteVideo() {
+            this.muteVideo = true;
+        },
+        handleUnmuteVideo() {
+            this.muteVideo = false;
         },
     },
     watch: {
@@ -85,6 +93,10 @@ export default {
         showProgressIndicator(show) {
             this.$emit('update', 'showProgressIndicator', show);
             Settings.set('showProgressIndicator', show);
+        },
+        muteVideo(show) {
+            this.$emit('update', 'muteVideo', show);
+            Settings.set('muteVideo', show);
         },
     },
     created() {
