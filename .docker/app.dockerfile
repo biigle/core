@@ -27,6 +27,8 @@ RUN apk add --no-cache \
         soap \
     && apk del --purge .build-deps
 
+RUN apk add --no-cache exiftool
+
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
 RUN apk add --no-cache yaml \
