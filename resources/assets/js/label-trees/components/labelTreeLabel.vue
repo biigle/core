@@ -15,7 +15,7 @@
                 <span class="label-tree-label_position">
                     <span v-if="showFavouriteShortcuts" class="text-muted">
                             <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
-                            <span :text="actualPosition">{{ actualPosition }}</span>
+                            <span v-text="actualPosition"></span>
                     </span>
                 </span>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
