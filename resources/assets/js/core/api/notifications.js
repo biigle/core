@@ -15,6 +15,8 @@
  */
 export default Vue.resource('api/v1/notifications{/id}', {}, {
     markRead: {method: 'PUT'},
-    markReadAll: {method: 'PUT'}
+    markReadAll: {
+        method: 'PUT',
+        url: 'api/v1/notifications/all'}
 });
 

@@ -143,11 +143,11 @@ $router->resource('media-types', 'MediaTypeController', [
     'parameters' => ['media-types' => 'id'],
 ]);
 
+$router->put('notifications/all', 'NotificationController@updateAll');
+
 $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);
-
-$router->put('notifications', 'NotificationController@updateAll');
 
 $router->resource('projects', 'ProjectController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
