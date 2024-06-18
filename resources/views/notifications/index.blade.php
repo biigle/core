@@ -20,11 +20,10 @@
         </div>
         <div id="notifications-list" class="col-sm-9 col-md-7 col-md-offset-1" v-cloak>
             @if (!$all)
-                <p v-cloak v-if="hasUnreadNotifications" class="row">
+                <p v-cloak v-if="hasUnreadNotifications" class="clearfix">
                     <button class="btn btn-default btn-s pull-right" v-on:click="markAllAsRead">Mark all as read</button>
                 </p>
             @endif
-            <div class="row">
             <notification v-for="item in notifications" v-bind:key="item.id" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}" inline-template>
                 <div class="panel" v-bind:class="classObject">
                     <div class="panel-heading">
@@ -42,7 +41,6 @@
                     </div>
                 </div>
             </notification>
-            </div>
             @if ($all)
                 <p class="text-muted" v-if="!hasNotifications" v-cloak>
                     You have no notifications.
