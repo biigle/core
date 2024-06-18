@@ -74,9 +74,9 @@ export default {
         },
     },
     methods:{
-        markAllAsRead(userId) {
+        markAllAsRead() {
             this.isLoading = true;
-            return NotificationsApi.markReadAll({}, {user_id: userId})
+            return NotificationsApi.markReadAll({}, {})
                 .then(() => {
                     this.notifications.map(item => {
                         item.read_at = new Date();

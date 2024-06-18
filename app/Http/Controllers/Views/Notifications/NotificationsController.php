@@ -28,7 +28,6 @@ class NotificationsController extends Controller
         return view('notifications.index', [
             'all' => $all,
             'notifications' => $notifications,
-            'user_id' => $user->id,
         ]);
     }
 }

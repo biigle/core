@@ -21,7 +21,7 @@
         <div id="notifications-list" class="col-sm-9 col-md-7 col-md-offset-1" v-cloak>
             @if (!$all)
                 <p v-cloak v-if="hasUnreadNotifications" class="row">
-                    <button class="btn btn-default btn-s pull-right" v-on:click="markAllAsRead({{$user_id}})">Mark all as read</button>
+                    <button class="btn btn-default btn-s pull-right" v-on:click="markAllAsRead">Mark all as read</button>
                 </p>
             @endif
             <div class="row">
