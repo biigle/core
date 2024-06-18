@@ -70,6 +70,7 @@ export default {
                 jumpStep: 5.0,
                 showProgressIndicator: true,
                 enableJumpByFrame: false,
+                muteVideo: true,
             },
             openTab: '',
             urlParams: {
@@ -676,6 +677,9 @@ export default {
         'settings.playbackRate'(rate) {
             this.video.playbackRate = rate;
         },
+        'settings.muteVideo'(mute) {
+            this.video.muted = mute;
+        },
         urlParams: {
             deep: true,
             handler(params) {
@@ -702,7 +706,7 @@ export default {
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
-        this.video.muted = true;
+        this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {

@@ -9,6 +9,7 @@ let defaults = {
     showProgressIndicator: true,
     enableJumpByFrame: false,
     jumpStep: 5.0,
+    muteVideo: true,
 };
 
 export default new Settings({

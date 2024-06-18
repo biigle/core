@@ -15,12 +15,6 @@
                     <th>Function</th>
                 </tr>
             </tbody>
-            <tbody>
-                <tr>
-                    <td colspan="2">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is disabled</td>
-                </tr>
-            </tbody>
-            <tbody>
                 <tr>
                     <td><kbd>Arrow left</kbd></td>
                     <td>Previous video</td>
@@ -29,31 +23,6 @@
                     <td><kbd>Arrow right</kbd></td>
                     <td>Next video</td>
                 </tr>
-            </tbody>
-            <tbody>
-                <tr>
-                    <td colspan="2">If <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">Jump by frame</a> is enabled</td>
-                </tr>
-            </tbody>
-            <tbody>
-                <tr>
-                    <td><kbd>Arrow left</kbd></td>
-                    <td>Previous frame</td>
-                </tr>
-                <tr>
-                    <td><kbd>Arrow right</kbd></td>
-                    <td>Next frame</td>
-                </tr>
-                <tr>
-                    <td><kbd>Shift</kbd>+<kbd>Arrow left</kbd></td>
-                    <td>Previous video</td>
-                </tr>
-                <tr>
-                    <td><kbd>Shift</kbd>+<kbd>Arrow right</kbd></td>
-                    <td>Next video</td>
-                </tr>
-            </tbody>
-            <tbody>
                 <tr>
                     <td><kbd>Ctrl</kbd>+<kbd>Arrow left</kbd></td>
                     <td>Jump backward in video by a time defined in jump step parameter</td>
@@ -145,6 +114,56 @@
                 <tr>
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump by frame</a> is enabled:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Arrow left</kbd></td>
+                    <td>Previous frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow right</kbd></td>
+                    <td>Next frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow left</kbd></td>
+                    <td>Previous video</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow right</kbd></td>
+                    <td>Next video</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            When any of the rectangle, line string or polygon annotation tools are activated:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Ctrl</kbd> (held)</td>
+                    <td>Snap drawn lines to 45° angles<br></td>
                 </tr>
             </tbody>
         </table>
