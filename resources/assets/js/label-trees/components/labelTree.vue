@@ -8,7 +8,7 @@
             {{name}}
         </h4>
         <ul v-if="!collapsed" class="label-tree__list">
-            <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" :showFavouriteShortcuts="showFavouriteShortcuts" v-for="(label, index) in rootLabels" :position="index" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
     </div>
@@ -82,6 +82,11 @@ export default {
         },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
+            type: Boolean,
+            default: false,
+        },
+        // Indicates whether shortcuts of favourites are shown.
+        showFavouriteShortcuts: {
             type: Boolean,
             default: false,
         },
