@@ -4,22 +4,23 @@
     :class="classObject"
     @click="handleClick($event)"
     >
-    <a
-        v-if="file.url"
-        :href="file.url"
-        :title="viewTitle"
-        >
-        <i class="fa fa-file"></i> {{file.name}}
-    </a>
-
-    <span v-if="hasError" :title="file.name" class="text-warning">
-        <i class="fa fa-exclamation-triangle"></i> {{file.name}}
-    </span>
-    <span v-else :title="file.name">
-        <i v-if="hasInfo" class="fa fa-info-circle"></i>
-        <i v-else class="fa fa-file"></i>
-        {{file.name}}
-    </span>
+    <div v-if="hasError">
+        <span :title="file.name" class="text-warning">
+            <i class="fa fa-exclamation-triangle"></i> {{file.name}}
+        </span>
+    </div>
+    <div v-else>
+        <span v-if="file.url">
+            <a :href="file.url" :title="viewTitle">
+                <i class="fa fa-file"></i> {{file.name}}
+            </a>
+        </span>
+        <span v-else :title="file.name">
+            <i v-if="hasInfo" class="fa fa-info-circle"></i>
+            <i v-else class="fa fa-file"></i>
+            {{ file.name }}
+        </span>
+    </div>
 
     <button
         v-if="removable"

@@ -150,6 +150,25 @@
         </table>
 
         <p>
+            When any of the rectangle, line string or polygon annotation tools are activated:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Ctrl</kbd> (held)</td>
+                    <td>Snap drawn lines to 45° angles<br></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
             When the video labels tab is open:
         </p>
 

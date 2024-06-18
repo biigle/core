@@ -23,6 +23,7 @@ export default {
                 'showProgressIndicator',
                 'enableJumpByFrame',
                 'jumpStep',
+                'muteVideo'
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -33,6 +34,7 @@ export default {
             jumpStep: 5.0,
             showProgressIndicator: true,
             enableJumpByFrame: false,
+            muteVideo: true,
         };
     },
     computed: {
@@ -70,6 +72,11 @@ export default {
         },
         handleDisableJumpByFrame() {
             this.enableJumpByFrame = false;
+        handleMuteVideo() {
+            this.muteVideo = true;
+        },
+        handleUnmuteVideo() {
+            this.muteVideo = false;
         },
     },
     watch: {
@@ -116,6 +123,10 @@ export default {
             this.$emit('update', 'enableJumpByFrame', show);
             Settings.set('enableJumpByFrame', show);
         }
+        muteVideo(show) {
+            this.$emit('update', 'muteVideo', show);
+            Settings.set('muteVideo', show);
+        },
     },
     created() {
         this.restoreKeys.forEach((key) => {

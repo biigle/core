@@ -399,7 +399,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
         $oldImage->volume_id = $volume->id;
         $oldImage->save();
-        // there are three labels in total
+        $l1 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
@@ -522,7 +522,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
         $oldVideo->volume_id = $volume->id;
         $oldVideo->save();
-        // there are three labels in total
+        $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 

@@ -45,6 +45,10 @@
                     <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">(experimental)</a>
                 </div>
 
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="muteVideo" title-off="Mute video" title-on="Unmute video" v-on:on="handleMuteVideo" v-on:off="handleUnmuteVideo">Mute Video</power-toggle>
+                </div>
+
             </div>
     </settings-tab>
 </sidebar-tab>
