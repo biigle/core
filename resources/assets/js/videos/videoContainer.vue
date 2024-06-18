@@ -69,6 +69,7 @@ export default {
                 playbackRate: 1.0,
                 jumpStep: 5.0,
                 showProgressIndicator: true,
+                enableJumpByFrame: false,
                 muteVideo: true,
             },
             openTab: '',
@@ -95,6 +96,7 @@ export default {
             attachingLabel: false,
             swappingLabel: false,
             disableJobTracking: false,
+            supportsJumpByFrame: false,
         };
     },
     computed: {
@@ -202,6 +204,9 @@ export default {
             this.video.currentTime = time;
 
             return promise;
+        },
+        startSeeking() {
+            this.seeking = true;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -724,6 +729,10 @@ export default {
 
         if (this.canEdit) {
             this.initializeEcho();
+        }
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsJumpByFrame = true;
         }
     },
     mounted() {

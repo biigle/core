@@ -6,6 +6,12 @@ export default {
     components: {
         powerToggle: PowerToggle,
     },
+    props: {
+        supportsJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
+    },
     data() {
         return {
             restoreKeys: [
@@ -15,6 +21,7 @@ export default {
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
+                'enableJumpByFrame',
                 'jumpStep',
                 'muteVideo'
             ],
@@ -26,8 +33,14 @@ export default {
             playbackRate: 1.0,
             jumpStep: 5.0,
             showProgressIndicator: true,
+            enableJumpByFrame: false,
             muteVideo: true,
         };
+    },
+    computed: {
+        jumpByFrameNotSupported() {
+            return !this.supportsJumpByFrame;
+        },
     },
     methods: {
         handleShowMinimap() {
@@ -53,6 +66,12 @@ export default {
         },
         handleHideProgressIndicator() {
             this.showProgressIndicator = false;
+        },
+        handleEnableJumpByFrame() {
+            this.enableJumpByFrame = true;
+        },
+        handleDisableJumpByFrame() {
+            this.enableJumpByFrame = false;
         },
         handleMuteVideo() {
             this.muteVideo = true;
@@ -100,6 +119,10 @@ export default {
         showProgressIndicator(show) {
             this.$emit('update', 'showProgressIndicator', show);
             Settings.set('showProgressIndicator', show);
+        },
+        enableJumpByFrame(show) {
+            this.$emit('update', 'enableJumpByFrame', show);
+            Settings.set('enableJumpByFrame', show);
         },
         muteVideo(show) {
             this.$emit('update', 'muteVideo', show);
