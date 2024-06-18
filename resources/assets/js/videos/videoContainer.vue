@@ -205,26 +205,7 @@ export default {
             return promise;
         },
         startSeeking() {
-            if (this.seeking) {
-                return Vue.Promise.resolve();
-            }
-            let promise = new Vue.Promise((resolve, reject) => {
-                this.video.addEventListener('seeking', resolve);
-                this.video.addEventListener('error', reject);
-            });
             this.seeking = true;
-            return promise;
-        },
-        stopSeeking() {
-            if (!this.seeking) {
-                return Vue.Promise.resolve();
-            }
-            let promise = new Vue.Promise((resolve, reject) => {
-                this.video.addEventListener('seeked', resolve);
-                this.video.addEventListener('error', reject);
-            });
-            this.seeking = false;
-            return promise;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {

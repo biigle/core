@@ -161,7 +161,6 @@ export default {
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showPreviousFrame();
-            this.$emit('stop-seeking');
             this.seekingFrame = false;
         },
         async emitNextFrame() {
@@ -169,7 +168,6 @@ export default {
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showNextFrame();
-            this.$emit('stop-seeking');
             this.seekingFrame = false;
         },
         frameInfoCallback() {
@@ -184,10 +182,14 @@ export default {
             try {
                 // force rerender adapting step on begining or end of video
                 let step = 1;
-                if(this.video.currentTime < 1) {step = this.video.currentTime;}
-                if(this.video.duration - this.video.currentTime < 1) {step = this.video.duration - this.video.currentTime;}
-                await (this.video.currentTime += step);
-                await (this.video.currentTime -= step);
+                if (this.video.currentTime < 1) {
+                   step = this.video.currentTime;
+                }
+                if (this.video.duration - this.video.currentTime < 1) {
+                   step = this.video.duration - this.video.currentTime;
+                }
+                this.video.currentTime += step;
+                this.video.currentTime -= step;
 
                 // get current frame time
                 const firstMetadata = await this.frameInfoCallback();
@@ -205,10 +207,14 @@ export default {
             try {
                 // force rerender adapting step on begining or end of video
                 let step = 1;
-                if(this.video.currentTime < 1) {step = this.video.currentTime;}
-                if(this.video.duration - this.video.currentTime < 1) {step = this.video.duration - this.video.currentTime;}
-                await (this.video.currentTime += step);
-                await (this.video.currentTime -= step);
+                if (this.video.currentTime < 1) {
+                   step = this.video.currentTime;
+                }
+                if (this.video.duration - this.video.currentTime < 1) {
+                   step = this.video.duration - this.video.currentTime;
+                }
+                this.video.currentTime += step;
+                this.video.currentTime -= step;
 
                 // get current frame time
                 const firstMetadata = await this.frameInfoCallback();
