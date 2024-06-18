@@ -2,9 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\UpdateAllNotifications;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
@@ -33,7 +31,7 @@ class NotificationController extends Controller
     /**
      * Mark all notification as read.
      *
-     * @api {put} notifications/ Mark all notifications as read
+     * @api {put} notifications/all Mark all notifications as read
      * @apiGroup Notifications
      * @apiName UpdateReadNotifications
      * @apiPermission user
@@ -42,15 +40,10 @@ class NotificationController extends Controller
      * id: "0972569c-2d3e-444d-8e7d-2054e7ab20e9"
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
-    public function updateAll(UpdateAllNotifications $request)
+    public function updateAll(Request $request)
     {
-        $userId = $request->input('user_id');
-        $notifications = DatabaseNotification::where('notifiable_id', '=', $userId)->whereNull('read_at')->get();
-        $notifications->map(function ($n) {
-            $n->markAsRead();
-        });
+        $request->user()->unreadNotifications()->eachById(fn ($n) => $n->markAsRead());
     }
 
     /**
