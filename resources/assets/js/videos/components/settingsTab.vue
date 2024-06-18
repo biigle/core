@@ -72,6 +72,7 @@ export default {
         },
         handleDisableJumpByFrame() {
             this.enableJumpByFrame = false;
+        },
         handleMuteVideo() {
             this.muteVideo = true;
         },
@@ -122,7 +123,7 @@ export default {
         enableJumpByFrame(show) {
             this.$emit('update', 'enableJumpByFrame', show);
             Settings.set('enableJumpByFrame', show);
-        }
+        },
         muteVideo(show) {
             this.$emit('update', 'muteVideo', show);
             Settings.set('muteVideo', show);
