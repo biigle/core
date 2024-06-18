@@ -13,11 +13,11 @@
             </span>
             <span class="label-tree-label__buttons">
                 <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
-                            <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
-                            <span v-text="actualPosition"></span>
+                    <span class="fa fa-keyboard" aria-hidden="true"></span>
+                    <span v-text="actualPosition"></span>
                 </span>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
-                    <span class="fa fa-star" aria-hidden="true" title=""></span>
+                    <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
                 <span if="editable">
                     <button v-show="showEditButton" :title="editTitle" @click.stop="editThis" class="btn btn-default btn-xs"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
