@@ -12,7 +12,7 @@
                 <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
             </span>
             <span class="label-tree-label__buttons">
-                <span v-if="showFavouriteShortcuts" class="text-muted" :class="label-tree-label_position">
+                <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
                             <span class="fa fa-keyboard" aria-hidden="true" title=""></span>
                             <span v-text="actualPosition"></span>
                 </span>
