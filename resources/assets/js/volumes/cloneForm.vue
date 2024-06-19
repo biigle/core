@@ -38,7 +38,9 @@ export default {
             fileLabelIds: [],
             annotationLabelIds: [],
             cloneUrlTemplate: "",
-            noFilesFoundByPattern: false
+            noFilesFoundByPattern: false,
+            showTestQueryBtn: false,
+            cloneBtnTitle: "",
         };
     },
     computed: {
@@ -65,7 +67,7 @@ export default {
             return this.selectedAnnotationLabelIds.length;
         },
         cannotSubmit() {
-            return this.name === '' || this.selectedProjectId < 0 || this.loading;
+            return this.name === '' || this.selectedProjectId < 0 || this.loading || this.showTestQueryBtn;
         },
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
@@ -107,6 +109,7 @@ export default {
                     if (this.selectedFiles.length === 0) {
                         this.noFilesFoundByPattern = true;
                     }
+                    this.showTestQueryBtn = false;
                 });
 
         },
@@ -170,12 +173,30 @@ export default {
             if (!newState) {
                 this.noFilesFoundByPattern = false;
             }
+            if (!this.fileFiles) {
+                this.showTestQueryBtn = false;
+            }
         },
         cloneFileLabels(newState) {
             if (!newState) {
                 this.filterFileLabels = false;
             }
         },
+        filePattern(newPattern, oldPattern) {
+            if (newPattern.length === 0) {
+                this.showTestQueryBtn = false;
+                return;
+            }
+
+            this.showTestQueryBtn = this.filterFiles && (oldPattern !== newPattern);
+        },
+        cannotSubmit() {
+            if (this.cannotSubmit) {
+                this.cloneBtnTitle = "The query has to be checked first before the volume can be cloned.";
+            } else {
+                this.cloneBtnTitle = "";
+            }
+        }
     },
     created() {
         this.volume = biigle.$require('volume');

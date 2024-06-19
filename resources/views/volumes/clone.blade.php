@@ -82,6 +82,9 @@
                                             v-text="file.filename"></span></li>
                                     <li v-if="noFilesFoundByPattern" class="list-group-item">No files found</li>
                                 </ul>
+                                <div v-cloak v-if="showTestQueryBtn">
+                                    <input type="button" v-on:click="loadFilesMatchingPattern" class="btn-sm btn btn-success pull-right" value="Test query">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -150,7 +153,7 @@
                         <span class="pull-right">
                             <a class="btn btn-default" :disabled="loading" type="button"
                                href="{{URL::previous()}}">Cancel</a>
-                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone">
+                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone" :title="cloneBtnTitle">
                         </span>
                         <input v-if="filterAnnotations" v-for="id in selectedAnnotationLabelIds" type="hidden"
                                name="only_annotation_labels[]"
