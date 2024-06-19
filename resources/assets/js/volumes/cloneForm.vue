@@ -38,8 +38,7 @@ export default {
             fileLabelIds: [],
             annotationLabelIds: [],
             cloneUrlTemplate: "",
-            noFilesFoundByPattern: false,
-            showCloneButton: true,
+            noFilesFoundByPattern: false
         };
     },
     computed: {
@@ -108,7 +107,6 @@ export default {
                     if (this.selectedFiles.length === 0) {
                         this.noFilesFoundByPattern = true;
                     }
-                    this.showCloneButton = true;
                 });
 
         },
@@ -176,12 +174,6 @@ export default {
         cloneFileLabels(newState) {
             if (!newState) {
                 this.filterFileLabels = false;
-            }
-        },
-        filePattern() {
-            // Show clone button only after filter process is finished.
-            if (this.showCloneButton) {
-                this.showCloneButton = false;
             }
         },
     },
