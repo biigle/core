@@ -81,10 +81,8 @@ export default {
                 .then(() => {
                     this.notifications.map(item => {
                         item.read_at = new Date();
-                        if (this.removeItem) {
-                            Store.remove(this.item.id);
-                        }
-                    })
+                        Store.remove(item.id);
+                    });
                 })
                 .catch(Messages.handleErrorResponse)
                 .finally(() => {
