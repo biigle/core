@@ -53,6 +53,10 @@ $router->group([
         'uses' => 'Volumes\SortAnnotationsByOutliersController@index',
     ]);
 
+    $router->get('volumes/{id}/annotations/sort/similarity', [
+        'uses' => 'Volumes\SortAnnotationsBySimilarityController@index',
+    ]);
+
     $router->get('volumes/{id}/image-annotations/examples/{id2}', [
         'uses' => 'Volumes\ImageAnnotationExamplesController@index',
     ]);
