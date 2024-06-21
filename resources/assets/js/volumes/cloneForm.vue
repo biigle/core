@@ -175,6 +175,8 @@ export default {
             }
             if (!this.fileFiles) {
                 this.showTestQueryBtn = false;
+                this.filePattern = "";
+                this.selectedFiles = [];
             }
         },
         cloneFileLabels(newState) {
