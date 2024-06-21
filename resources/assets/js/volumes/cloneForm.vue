@@ -41,6 +41,7 @@ export default {
             noFilesFoundByPattern: false,
             showTestQueryBtn: false,
             cloneBtnTitle: "",
+            disableCloneBtn: false,
         };
     },
     computed: {
@@ -67,7 +68,7 @@ export default {
             return this.selectedAnnotationLabelIds.length;
         },
         cannotSubmit() {
-            return this.name === '' || this.selectedProjectId < 0 || this.loading || this.showTestQueryBtn;
+            return this.name === '' || this.selectedProjectId < 0 || this.loading || this.showTestQueryBtn || this.disableCloneBtn;
         },
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
@@ -110,6 +111,7 @@ export default {
                         this.noFilesFoundByPattern = true;
                     }
                     this.showTestQueryBtn = false;
+                    this.disableCloneBtn = this.noFilesFoundByPattern;
                 });
 
         },
@@ -178,6 +180,7 @@ export default {
                 this.filePattern = "";
                 this.selectedFiles = [];
             }
+            this.disableCloneBtn = this.filterFiles;
         },
         cloneFileLabels(newState) {
             if (!newState) {
@@ -197,6 +200,11 @@ export default {
                 this.cloneBtnTitle = "The query has to be tested first before the volume can be cloned.";
             } else {
                 this.cloneBtnTitle = "";
+            }
+        },
+        noFilesFoundByPattern() {
+            if (this.cannotSubmit && this.noFilesFoundByPattern) {
+                this.cloneBtnTitle = "For cloning file list must not be empty or filter file option needs to be unchecked.";
             }
         }
     },
