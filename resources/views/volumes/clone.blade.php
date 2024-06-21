@@ -61,9 +61,7 @@
                             @endif
                         </div>
                         <div v-if="filterFiles" class="form-group" v-cloak>
-                            <div v-cloak v-if="showTestQueryBtn" class="clearfix"> 
-                                <input type="button" v-on:click="loadFilesMatchingPattern" class="btn-xs btn btn-success pull-right" value="Test query">
-                            </div>
+                            <button :disabled="!showTestQueryBtn" type="button" v-on:click="loadFilesMatchingPattern" class="btn-xs btn btn-success pull-right">Test query</button>
                             @if ($volume->isImageVolume())
                                 <label>Image(s):</label>
                                 <input type="text" class="form-control" id="files"

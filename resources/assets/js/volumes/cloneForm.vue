@@ -197,14 +197,14 @@ export default {
         },
         cannotSubmit() {
             if (this.cannotSubmit) {
-                this.cloneBtnTitle = "The query has to be tested first before the volume can be cloned.";
+                this.cloneBtnTitle = "The file filter query has to be tested first before the volume can be cloned.";
             } else {
                 this.cloneBtnTitle = "";
             }
         },
         noFilesFoundByPattern() {
             if (this.cannotSubmit && this.noFilesFoundByPattern) {
-                this.cloneBtnTitle = "For cloning file list must not be empty or filter file option needs to be unchecked.";
+                this.cloneBtnTitle = "The cloned volume would be empty based on the current file filter query.";
             }
         }
     },
