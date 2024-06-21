@@ -37,6 +37,10 @@ $router->group([
         'uses' => 'Projects\SortAnnotationsByOutliersController@index',
     ]);
 
+    $router->get('projects/{id}/annotations/sort/similarity', [
+        'uses' => 'Projects\SortAnnotationsBySimilarityController@index',
+    ]);
+
     $router->get('projects/{id}/image-annotations/filter/label/{id2}', [
         'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
     ]);
