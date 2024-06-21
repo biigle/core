@@ -192,7 +192,7 @@ export default {
         },
         cannotSubmit() {
             if (this.cannotSubmit) {
-                this.cloneBtnTitle = "The query has to be checked first before the volume can be cloned.";
+                this.cloneBtnTitle = "The query has to be tested first before the volume can be cloned.";
             } else {
                 this.cloneBtnTitle = "";
             }
