@@ -35,4 +35,8 @@ export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/sort/outliers{/label_id}',
     },
+    sortAnnotationsBySimilarity: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/annotations/sort/similarity',
+    },
 });

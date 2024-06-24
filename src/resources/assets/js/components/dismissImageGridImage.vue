@@ -44,6 +44,10 @@ export default {
             return this.image.dismissed;
         },
         title() {
+            if (this.pinnable) {
+                return 'Select this annotation as a reference';
+            }
+
             return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
         },
         svgSrcUrl() {

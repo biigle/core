@@ -45,8 +45,11 @@ export default {
             // The second level key is the sorting key. The cached value is an array
             // of annotation IDs sorted in ascending order.
             sortingSequenceCache: {},
+            sortingSequence: [],
             sortingDirection: SORT_DIRECTION.DESCENDING,
             sortingKey: SORT_KEY.ANNOTATION_ID,
+            needsSimilarityReference: false,
+            similarityReference: null,
         };
     },
     provide() {
@@ -77,12 +80,10 @@ export default {
         sortedAnnotations() {
             let annotations = this.annotations.slice();
 
-            // This will always be missing for the default sorting.
-            const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
-
-            if (sequence) {
+            // This will be empty for the default sorting.
+            if (this.sortingSequence) {
                 const map = {};
-                sequence.forEach((id, idx) => map[id] = idx);
+                this.sortingSequence.forEach((id, idx) => map[id] = idx);
 
                 // Image annotation IDs are prefixed with 'i', video annotations with
                 // 'v' to avoid duplicate IDs whe sorting both types of annotations.
@@ -220,6 +221,13 @@ export default {
             this.selectedLabel = null;
         },
         handleSelectedImageDismiss(image, event) {
+            if (this.needsSimilarityReference) {
+                this.similarityReference = image;
+                this.needsSimilarityReference = false;
+                this.updateSortKey(SORT_KEY.SIMILARITY);
+                return;
+            }
+
             if (image.dismissed) {
                 image.dismissed = false;
                 image.newLabel = null;
@@ -387,9 +395,19 @@ export default {
             this.sortingDirection = direction;
         },
         fetchSortingSequence(key, labelId) {
+            const sequence = this.sortingSequenceCache?.[labelId]?.[key];
+            if (sequence) {
+                return Vue.Promise.resolve(sequence);
+            }
+
             let promise;
             if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
+                    .then(response => response.body);
+            } else if (key === SORT_KEY.SIMILARITY) {
+                console.log(this.similarityReference);
+                // Skip cacheing for this sorting method.
+                return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
             } else {
                 promise = Vue.Promise.resolve([]);
@@ -403,19 +421,25 @@ export default {
             }
 
             this.sortingSequenceCache[labelId][key] = sequence;
+
+            return sequence;
         },
         updateSortKey(key) {
             const labelId = this.selectedLabel?.id;
-            const sequence = this.sortingSequenceCache?.[labelId]?.[key];
-            if (labelId && !sequence) {
-                this.startLoading();
-                this.fetchSortingSequence(key, labelId)
-                    .then(() => this.sortingKey = key)
-                    .catch(handleErrorResponse)
-                    .finally(this.finishLoading);
-            } else {
-                this.sortingKey = key;
-            }
+            this.startLoading();
+            this.fetchSortingSequence(key, labelId)
+                .then((sequence) => {
+                    this.sortingKey = key;
+                    this.sortingSequence = sequence;
+                })
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        handleInitSimilaritySort() {
+            this.needsSimilarityReference = true;
+        },
+        handleCancelSimilaritySort() {
+            this.needsSimilarityReference = false;
         },
     },
     watch: {
