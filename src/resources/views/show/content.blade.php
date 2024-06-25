@@ -9,6 +9,7 @@
         :height="{{config('thumbnails.height')}}"
         :selectable="true"
         :pinnable="needsSimilarityReference"
+        :pinned-image="similarityReference"
         v-on:select="handleSelectedImageDismiss"
         ></dismiss-image-grid>
     <relabel-image-grid

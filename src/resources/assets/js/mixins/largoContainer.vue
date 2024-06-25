@@ -78,23 +78,22 @@ export default {
             return [];
         },
         sortedAnnotations() {
-            let annotations = this.annotations.slice();
+            let annotations = this.annotations;
 
             // This will be empty for the default sorting.
-            if (this.sortingSequence) {
+            if (this.sortingSequence.length > 0) {
                 const map = {};
-                this.sortingSequence.forEach((id, idx) => map[id] = idx);
+                annotations.forEach((a) => {
+                    // Image annotation IDs are prefixed with 'i', video annotations with
+                    // 'v' to avoid duplicate IDs whe sorting both types of annotations.
+                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] = a;
+                });
 
-                // Image annotation IDs are prefixed with 'i', video annotations with
-                // 'v' to avoid duplicate IDs whe sorting both types of annotations.
-                annotations.sort((a, b) =>
-                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] -
-                    map[b.type === VIDEO_ANNOTATION ? ('v' + b.id) : ('i' + b.id)]
-                );
+                annotations = this.sortingSequence.map(id => map[id]);
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
-                return annotations.reverse();
+                return annotations.slice().reverse();
             }
 
             return annotations;
@@ -405,7 +404,6 @@ export default {
                 promise = this.querySortByOutlier(labelId)
                     .then(response => response.body);
             } else if (key === SORT_KEY.SIMILARITY) {
-                console.log(this.similarityReference);
                 // Skip cacheing for this sorting method.
                 return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
@@ -425,6 +423,10 @@ export default {
             return sequence;
         },
         updateSortKey(key) {
+            if (key !== SORT_KEY.SIMILARITY) {
+                this.similarityReference = null;
+            }
+
             const labelId = this.selectedLabel?.id;
             this.startLoading();
             this.fetchSortingSequence(key, labelId)
