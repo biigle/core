@@ -73,7 +73,8 @@ export default {
         },
         specialClassObject() {
             let obj = Object.assign({}, this.classObject);
-            obj['image-grid__image--small-icon'] ||= this.pinnable && this.hovered;
+            obj['image-grid__image--small-icon'] = obj['image-grid__image--small-icon'] || this.pinnable && this.hovered;
+            obj['image-grid__image--fade'] = obj['image-grid__image--fade'] && !(this.pinnable && this.hovered);
 
             return obj;
         },
