@@ -11,19 +11,32 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group">
+            <div v-if="showPrevNext" class="btn-group">
                 <control-button
-                    v-if="showPrevNext"
                     icon="fa-step-backward"
-                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     @click="emitPrevious"
                     ></control-button>
+                <control-button
+                    icon="fa-step-forward"
+                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    @click="emitNext"
+                    ></control-button>
+            </div>
+            <div class="btn-group">
                 <control-button
                     v-if="jumpStep!=0"
                     :disabled="seeking"
                     icon="fa-backward"
                     :title="jumpBackwardMessage"
                     @click="jumpBackward"
+                    ></control-button>
+                <control-button
+                    v-if="enableJumpByFrame"
+                    :disabled="seeking"
+                    icon="fa-caret-square-left"
+                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="emitPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -40,17 +53,18 @@
                     @click="play"
                     ></control-button>
                 <control-button
+                    v-if="enableJumpByFrame"
+                    :disabled="seeking"
+                    icon="fa-caret-square-right"
+                    title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="emitNextFrame"
+                    ></control-button>
+                <control-button
                     v-if="jumpStep!=0"
                     :disabled="seeking"
                     icon="fa-forward"
                     :title="jumpForwardMessage"
                     @click="jumpForward"
-                    ></control-button>
-                <control-button
-                     v-if="showPrevNext"
-                    icon="fa-step-forward"
-                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    @click="emitNext"
                     ></control-button>
             </div>
             <div v-if="canAdd" class="btn-group">
@@ -374,7 +388,11 @@ export default {
         reachedTrackedAnnotationLimit: {
             type: Boolean,
             default: false,
-        }
+        },
+        enableJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -537,6 +555,24 @@ export default {
             this.setPaused(true);
             this.resetInteractionMode();
         },
+        adaptKeyboardShortcuts() {
+            if(this.enableJumpByFrame) {
+                Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+            }
+        }
     },
     watch: {
         selectedAnnotations(annotations) {
@@ -564,6 +600,9 @@ export default {
         heightOffset() {
             this.updateSize();
         },
+        enableJumpByFrame() {
+            this.adaptKeyboardShortcuts();
+        },
     },
     created() {
         this.$once('map-ready', this.initLayersAndInteractions);
@@ -573,9 +612,8 @@ export default {
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 
+        this.adaptKeyboardShortcuts();
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },

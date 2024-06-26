@@ -14,8 +14,7 @@
                     <th>Key</th>
                     <th>Function</th>
                 </tr>
-            </thead>
-            <tbody>
+            </tbody>
                 <tr>
                     <td><kbd>Arrow left</kbd></td>
                     <td>Previous video</td>
@@ -115,6 +114,37 @@
                 <tr>
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump by frame</a> is enabled:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Arrow left</kbd></td>
+                    <td>Previous frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow right</kbd></td>
+                    <td>Next frame</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow left</kbd></td>
+                    <td>Previous video</td>
+                </tr>
+                <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Arrow right</kbd></td>
+                    <td>Next video</td>
                 </tr>
             </tbody>
         </table>

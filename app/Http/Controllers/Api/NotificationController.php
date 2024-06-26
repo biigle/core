@@ -29,6 +29,21 @@ class NotificationController extends Controller
     }
 
     /**
+     * Mark all notification as read.
+     *
+     * @api {put} notifications/all Mark all notifications as read
+     * @apiGroup Notifications
+     * @apiName UpdateReadNotifications
+     * @apiPermission user
+     *
+     * @param Request $request
+     */
+    public function updateAll(Request $request)
+    {
+        $request->user()->unreadNotifications()->eachById(fn ($n) => $n->markAsRead());
+    }
+
+    /**
      * Delete a read notification.
      *
      * @api {delete} notifications/:id Delete read notification
