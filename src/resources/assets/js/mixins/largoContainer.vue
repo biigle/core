@@ -227,10 +227,7 @@ export default {
         handleSelectedImageDismiss(image, event) {
             if (this.needsSimilarityReference) {
                 this.similarityReference = image;
-                this.updateSortKey(SORT_KEY.SIMILARITY)
-                    .then(() => this.needsSimilarityReference = false)
-                    .then(() => this.pinnedImage = image)
-                    .catch(() => this.similarityReference = null);
+                this.updateSortKey(SORT_KEY.SIMILARITY);
                 return;
             }
 
@@ -441,8 +438,15 @@ export default {
                 .then((sequence) => {
                     this.sortingKey = key;
                     this.sortingSequence = sequence;
+                    if (key === SORT_KEY.SIMILARITY) {
+                        this.needsSimilarityReference = false;
+                        this.pinnedImage = this.similarityReference;
+                    }
                 })
-                .catch(handleErrorResponse)
+                .catch((r) => {
+                    this.handleErrorResponse(r);
+                    this.similarityReference = null;
+                })
                 .finally(this.finishLoading);
         },
         handleInitSimilaritySort() {

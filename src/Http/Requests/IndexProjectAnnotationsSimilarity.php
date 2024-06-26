@@ -72,7 +72,7 @@ class IndexProjectAnnotationsSimilarity extends FormRequest
                     $validator->errors()->add('image_annotation_id', 'The annotation does not exist in the project.');
                 }
             } else {
-                $this->reference = VideoAnnotationLabelFeatureVector::where('volume_id', $ids)
+                $this->reference = VideoAnnotationLabelFeatureVector::whereIn('volume_id', $ids)
                     ->where('label_id', $this->input('label_id'))
                     ->where('annotation_id', $this->input('video_annotation_id'))
                     ->first();
