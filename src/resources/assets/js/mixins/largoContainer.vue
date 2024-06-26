@@ -50,6 +50,7 @@ export default {
             sortingKey: SORT_KEY.ANNOTATION_ID,
             needsSimilarityReference: false,
             similarityReference: null,
+            pinnedImage: null,
         };
     },
     provide() {
@@ -79,6 +80,10 @@ export default {
         },
         sortedAnnotations() {
             let annotations = this.annotations;
+
+            if (annotations.length === 0) {
+                return annotations;
+            }
 
             // This will be empty for the default sorting.
             if (this.sortingSequence.length > 0) {
@@ -163,13 +168,13 @@ export default {
                 promise1 = Vue.Promise.resolve();
             }
 
-            const sequence = this.sortingSequenceCache?.[label.id]?.[this.sortingKey];
-            if (this.sortingIsActive && !sequence) {
-                if (!this.loading) {
-                    this.startLoading();
-                }
-                promise2 = this.fetchSortingSequence(this.sortingKey, label.id)
-                    .catch(handleErrorResponse);
+            if (this.sortingKey === SORT_KEY.SIMILARITY) {
+                // Reset sorting.
+                promise2 = this.updateSortKey(SORT_KEY.ANNOTATION_ID)
+                    .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
+            } else if (this.sortingIsActive) {
+                // Reload sequence for new label.
+                promise2 = this.updateSortKey(this.sortingKey);
             } else {
                 promise2 = Vue.Promise.resolve();
             }
@@ -222,8 +227,10 @@ export default {
         handleSelectedImageDismiss(image, event) {
             if (this.needsSimilarityReference) {
                 this.similarityReference = image;
-                this.needsSimilarityReference = false;
-                this.updateSortKey(SORT_KEY.SIMILARITY);
+                this.updateSortKey(SORT_KEY.SIMILARITY)
+                    .then(() => this.needsSimilarityReference = false)
+                    .then(() => this.pinnedImage = image)
+                    .catch(() => this.similarityReference = null);
                 return;
             }
 
@@ -425,11 +432,12 @@ export default {
         updateSortKey(key) {
             if (key !== SORT_KEY.SIMILARITY) {
                 this.similarityReference = null;
+                this.pinnedImage = null;
             }
 
             const labelId = this.selectedLabel?.id;
             this.startLoading();
-            this.fetchSortingSequence(key, labelId)
+            return this.fetchSortingSequence(key, labelId)
                 .then((sequence) => {
                     this.sortingKey = key;
                     this.sortingSequence = sequence;

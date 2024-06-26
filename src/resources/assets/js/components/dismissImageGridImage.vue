@@ -1,7 +1,13 @@
 <template>
-    <figure class="image-grid__image image-grid__image--largo" :class="classObject" :title="title">
+    <figure
+        class="image-grid__image image-grid__image--largo"
+        :class="specialClassObject"
+        :title="title"
+        @mouseenter="handleEnter"
+        @mouseleave="handleLeave"
+        >
         <div v-if="selectable" class="image-icon">
-            <i class="fas" :class="iconClass"></i>
+            <i class="fas" :class="specialIconClass"></i>
         </div>
         <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
         <img v-if="this.showAnnotationOutlines" v-show="overlayIsLoaded" :src="svgSrcUrl" @error="handleOverlayError" @load="handleOverlayLoad" class="outlines">
@@ -33,6 +39,7 @@ export default {
             showAnnotationRoute: null,
             overlayIsLoaded: false,
             overlayHasError: false,
+            hovered: false,
         };
     },
     inject: ['outlines'],
@@ -57,6 +64,19 @@ export default {
         showAnnotationOutlines(){
            return !this.overlayHasError && this.outlines.showAnnotationOutlines;
         },
+        specialIconClass() {
+            if (this.pinnable && this.hovered) {
+                return 'fa-thumbtack';
+            }
+
+            return this.iconClass;
+        },
+        specialClassObject() {
+            let obj = Object.assign({}, this.classObject);
+            obj['image-grid__image--small-icon'] ||= this.pinnable && this.hovered;
+
+            return obj;
+        },
     },
     methods: {
         handleOverlayLoad() {
@@ -64,6 +84,17 @@ export default {
         },
         handleOverlayError() {
             this.overlayHasError = true;
+        },
+        handleEnter() {
+            this.hovered = true;
+        },
+        handleLeave() {
+            if (this.selected) {
+                this.hovered = false;
+            } else {
+                // Wait for the CSS transition to finish.
+                setTimeout(() => this.hovered = false, 250);
+            }
         },
     },
 };
