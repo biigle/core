@@ -19,6 +19,8 @@ use Illuminate\Support\Str;
 use Log;
 use Throwable;
 use VipsImage;
+use Illuminate\Support\Arr;
+use Symfony\Component\Process\Process;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
@@ -289,7 +291,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     protected function generateSprites($path, $duration, $disk, $fragment)
     {
-
         $maxThumbnails = config('videos.sprites_max_thumbnails');
         $minThumbnails = config('videos.sprites_min_thumbnails');
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
@@ -303,16 +304,45 @@ class ProcessNewVideo extends Job implements ShouldQueue
         // Adjust the frame time based on the number of estimated thumbnails
         $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
-
-        $thumbnails = [];
         $spritesCounter = 0;
-        for ($time = 0.0; $time < $durationRounded && $durationRounded > 0; $time += $thumbnailInterval) {
-            $time = round($time, 1);
-            // Create a thumbnail from the video at the specified time and add it to the thumbnails array.
-            $thumbnails[] = $this->generateVideoThumbnail($path, $time, $thumbnailWidth, $thumbnailHeight);
-            if (count($thumbnails) === $thumbnailsPerSprite || $time >= abs($durationRounded - $thumbnailInterval)) {
+        $frameRate = 1 / $thumbnailInterval;
+
+        $sprite_images_path = "sprite-images/{$fragment}";
+        if (!($disk->exists('sprite-images') && $disk->exists($sprite_images_path))) {
+            $disk->makeDirectory('sprite-images');
+            $disk->makeDirectory($sprite_images_path);
+        }
+
+        $maybeDeleteDir = function () use ($disk, $fragment, $sprite_images_path) {
+            if ($disk->exists($sprite_images_path)) {
+                $parentDir = dirname($fragment, 2);
+                $disk->deleteDirectory("sprite-images/{$parentDir}");
+            }
+        };
+
+        try {
+            // Create images from video by using ffmpeg, because it is faster than the generateVideoThumbnail method
+            $storageAbsolutePath = $disk->path($sprite_images_path);
+            $process = Process::fromShellCommandline("ffmpeg -i '{$path}' -s {$thumbnailWidth}x{$thumbnailHeight} -vf fps={$frameRate} {$storageAbsolutePath}/frame%03d.png");
+            $process->run();
+
+            $files = $disk->files($sprite_images_path);
+
+            $thumbnails = Arr::map($files, fn ($f) => VipsImage::newFromFile($disk->path('/').$f));
+
+            // Split array into sprite-chunks
+            $chunks = [];
+            $nbrChunks = ceil(count($thumbnails)/$thumbnailsPerSprite);
+            for ($i = 0; $i < $nbrChunks; $i++) {
+                // $thumbnails is cut here, so the beginning of the next chunk is always at index 0
+                $chunks[] = array_splice($thumbnails, 0, $thumbnailsPerSprite);
+            }
+
+            $spritesCounter = 0;
+            foreach ($chunks as $chunk) {
                 // Join the thumbnails into a NxN sprite
-                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
+                $sprite = VipsImage::arrayjoin($chunk, ['across' => $thumbnailsPerRow]);
+
                 // Write the sprite to buffer with quality 75 and stripped metadata
                 $spriteBuffer = $sprite->writeToBuffer(".{$spriteFormat}", [
                     'Q' => 75,
@@ -320,9 +350,14 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 ]);
                 $spritePath = "{$fragment}/sprite_{$spritesCounter}.{$spriteFormat}";
                 $disk->put($spritePath, $spriteBuffer);
-                $thumbnails = [];
                 $spritesCounter += 1;
-            }
+            };
+        } catch (Exception $e) {
+            $maybeDeleteDir();
+            throw $e;
+            
         }
+
+        $maybeDeleteDir();
     }
 }
