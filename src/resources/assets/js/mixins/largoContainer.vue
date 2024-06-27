@@ -153,6 +153,9 @@ export default {
         sortingIsActive() {
             return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.DESCENDING);
         },
+        imagesPinnable() {
+            return this.needsSimilarityReference || this.sortingKey === SORT_KEY.SIMILARITY;
+        },
     },
     methods: {
         getAnnotations(label) {
@@ -169,9 +172,7 @@ export default {
             }
 
             if (this.sortingKey === SORT_KEY.SIMILARITY) {
-                // Reset sorting.
-                promise2 = this.updateSortKey(SORT_KEY.ANNOTATION_ID)
-                    .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
+                promise2 = this.resetSorting();
             } else if (this.sortingIsActive) {
                 // Reload sequence for new label.
                 promise2 = this.updateSortKey(this.sortingKey);
@@ -225,12 +226,6 @@ export default {
             this.selectedLabel = null;
         },
         handleSelectedImageDismiss(image, event) {
-            if (this.needsSimilarityReference) {
-                this.similarityReference = image;
-                this.updateSortKey(SORT_KEY.SIMILARITY);
-                return;
-            }
-
             if (image.dismissed) {
                 image.dismissed = false;
                 image.newLabel = null;
@@ -450,10 +445,24 @@ export default {
                 .finally(this.finishLoading);
         },
         handleInitSimilaritySort() {
-            this.needsSimilarityReference = true;
+            if (this.sortingKey !== SORT_KEY.SIMILARITY) {
+                this.needsSimilarityReference = true;
+            }
         },
         handleCancelSimilaritySort() {
             this.needsSimilarityReference = false;
+        },
+        handlePinImage(image) {
+            if (this.pinnedImage?.id === image.id) {
+                this.resetSorting();
+            } else if (this.imagesPinnable) {
+                this.similarityReference = image;
+                this.updateSortKey(SORT_KEY.SIMILARITY);
+            }
+        },
+        resetSorting() {
+            return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
+                .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
     },
     watch: {

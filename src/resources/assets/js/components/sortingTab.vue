@@ -63,14 +63,14 @@
                 <button
                     v-if="needsSimilarityReference"
                     class="btn btn-default btn-xs pull-right"
-                    title="Cancel selecting a reference patch"
+                    title="Cancel selecting a reference annotation"
                     @click.stop="cancelSortBySimilarity"
                     >
                     <i class="fa fa-undo"></i>
                 </button>
                 Similarity
                 <p v-if="needsSimilarityReference">
-                    Select a reference annotation.
+                    Select a reference annotation with a click on the <i class="fa fa-thumbtack fa-fw"></i> button.
                 </p>
             </a>
         </div>

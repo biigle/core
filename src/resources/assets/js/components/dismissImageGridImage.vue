@@ -1,16 +1,26 @@
 <template>
     <figure
         class="image-grid__image image-grid__image--largo"
-        :class="specialClassObject"
+        :class="classObject"
         :title="title"
-        @mouseenter="handleEnter"
-        @mouseleave="handleLeave"
         >
         <div v-if="selectable" class="image-icon">
-            <i class="fas" :class="specialIconClass"></i>
+            <i class="fas" :class="iconClass"></i>
         </div>
         <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
         <img v-if="this.showAnnotationOutlines" v-show="overlayIsLoaded" :src="svgSrcUrl" @error="handleOverlayError" @load="handleOverlayLoad" class="outlines">
+        <div
+            v-if="pinnable || isPinned"
+            class="image-buttons-bottom"
+            >
+            <button
+                class="image-button image-button__pin"
+                @click="emitPin"
+                :title="pinTitle"
+                >
+                <span class="fa fa-thumbtack fa-fw"></span>
+            </button>
+        </div>
         <div v-if="showAnnotationLink" class="image-buttons">
             <a :href="showAnnotationLink" target="_blank" class="image-button"
                 title="Show the annotation in the annotation tool">
@@ -39,7 +49,6 @@ export default {
             showAnnotationRoute: null,
             overlayIsLoaded: false,
             overlayHasError: false,
-            hovered: false,
         };
     },
     inject: ['outlines'],
@@ -51,11 +60,14 @@ export default {
             return this.image.dismissed;
         },
         title() {
-            if (this.pinnable) {
-                return 'Select this annotation as a reference';
+            return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
+        },
+        pinTitle() {
+            if (this.isPinned) {
+                return 'Reset sorting';
             }
 
-            return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
+            return 'Select as reference (sort by similarity)';
         },
         svgSrcUrl() {
             // Replace file extension by svg file format
@@ -64,20 +76,6 @@ export default {
         showAnnotationOutlines(){
            return !this.overlayHasError && this.outlines.showAnnotationOutlines;
         },
-        specialIconClass() {
-            if (this.pinnable && this.hovered) {
-                return 'fa-thumbtack';
-            }
-
-            return this.iconClass;
-        },
-        specialClassObject() {
-            let obj = Object.assign({}, this.classObject);
-            obj['image-grid__image--small-icon'] = obj['image-grid__image--small-icon'] || this.pinnable && this.hovered;
-            obj['image-grid__image--fade'] = obj['image-grid__image--fade'] && !(this.pinnable && this.hovered);
-
-            return obj;
-        },
     },
     methods: {
         handleOverlayLoad() {
@@ -85,17 +83,6 @@ export default {
         },
         handleOverlayError() {
             this.overlayHasError = true;
-        },
-        handleEnter() {
-            this.hovered = true;
-        },
-        handleLeave() {
-            if (this.selected) {
-                this.hovered = false;
-            } else {
-                // Wait for the CSS transition to finish.
-                setTimeout(() => this.hovered = false, 250);
-            }
         },
     },
 };

@@ -124,10 +124,10 @@
             </li>
             <li>
                 <p>
-                    <strong>Similarity</strong>: Sort the annotation patches by similarity to a reference annotation. When this sorting method is selected, you have to select a reference annotation by clicking on its patch next. Once the reference annotation is selected, the patches are sorted. In descending order, the annotations looking most similar to the reference annotation are shown first.
+                    <strong>Similarity</strong>: Sort the annotation patches by similarity to a reference annotation. When this sorting method is selected, you have to select a reference annotation by clicking on the <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button of an annotation patch next. Once the reference annotation is selected, the patches are sorted. In descending order, the annotations looking most similar to the reference annotation are shown first.
                 </p>
                 <p>
-                    The selected reference annotation will be pinned to the top left of the grid of annotation patches. You can select a new reference annotation by clicking on the <button class="btn btn-default btn-xs">Similarity</button> button for sorting again. If you select a different label and similarity sorting is active, the sorting method will be reset, as the reference annotation is no longer available.
+                    The selected reference annotation will be pinned to the top left of the grid of annotation patches. You can select a new reference annotation by clicking on its <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button. If you select a different label while similarity sorting is active, the sorting method will be reset, as the reference annotation is no longer available.
                 </p>
             </li>
         </ul>

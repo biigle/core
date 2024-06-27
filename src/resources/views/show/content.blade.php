@@ -8,9 +8,10 @@
         :width="{{config('thumbnails.width')}}"
         :height="{{config('thumbnails.height')}}"
         :selectable="true"
-        :pinnable="needsSimilarityReference"
+        :pinnable="imagesPinnable"
         :pinned-image="pinnedImage"
         v-on:select="handleSelectedImageDismiss"
+        v-on:pin="handlePinImage"
         ></dismiss-image-grid>
     <relabel-image-grid
         v-cloak
