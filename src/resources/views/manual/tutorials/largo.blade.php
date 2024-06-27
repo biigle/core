@@ -164,7 +164,7 @@
         <h4>Two step annotation process</h4>
 
         <p>
-            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. In the relabel step, you simply relabel all dismissed annotations as starfish and save. Then continue with the next label.
+            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. Use the sort by similarity feature described above for extra speed! In the relabel step, you simply relabel all dismissed annotations as starfish and save. Then continue with the next label.
         </p>
 
         <p>
