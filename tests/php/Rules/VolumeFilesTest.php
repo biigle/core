@@ -81,6 +81,18 @@ class VolumeFilesTest extends TestCase
         Storage::disk('test')->put('videos/2.mp4', 'abc');
         $this->assertTrue($validator->passes(null, ['1.mp4', '2.mp4']));
     }
+
+    public function testDenySpecialCharacters()
+    {
+        $validator = new VolumeFilesStub('', MediaType::imageId());
+        $this->assertFalse($validator->passes(null, ["my-\r\nimage.jpg"]));
+    }
+
+    public function testAllowSpaces()
+    {
+        $validator = new VolumeFilesStub('', MediaType::imageId());
+        $this->assertTrue($validator->passes(null, ["my image.jpg"]));
+    }
 }
 
 class VolumeFilesStub extends VolumeFiles
