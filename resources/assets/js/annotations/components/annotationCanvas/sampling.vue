@@ -1,11 +1,11 @@
 <script>
-import Circle from '@biigle/ol/style/Circle';
-import Feature from '@biigle/ol/Feature';
-import Point from '@biigle/ol/geom/Point';
-import Stroke from '@biigle/ol/style/Stroke';
-import Style from '@biigle/ol/style/Style';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
+import Circle from 'ol/style/Circle';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 
 let crosshairLayer;
 let crosshairFeature;

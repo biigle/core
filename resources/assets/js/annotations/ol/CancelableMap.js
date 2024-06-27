@@ -1,4 +1,4 @@
-import Map from '@biigle/ol/Map';
+import Map from 'ol/Map';
 
 // OL Map that allows explicit canceling of the next animation frame for rendering.
 export class CancelableMap extends Map {

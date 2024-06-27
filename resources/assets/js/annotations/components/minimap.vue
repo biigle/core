@@ -3,14 +3,14 @@
 </template>
 
 <script>
-import Feature from '@biigle/ol/Feature';
+import Feature from 'ol/Feature';
 import {CancelableMap as Map} from '../ol/CancelableMap';
 import Styles from '../stores/styles';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
-import View from '@biigle/ol/View';
-import {fromExtent} from '@biigle/ol/geom/Polygon';
-import {getCenter} from '@biigle/ol/extent';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import View from 'ol/View';
+import {fromExtent} from 'ol/geom/Polygon';
+import {getCenter} from 'ol/extent';
 
 /**
  * The minimap of the canvas element

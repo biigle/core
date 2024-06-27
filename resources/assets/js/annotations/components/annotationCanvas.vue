@@ -2,52 +2,71 @@
 import * as PolygonValidator from '../ol/PolygonValidator';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
-import CanvasSource from '@biigle/ol/source/Canvas';
-import Circle from '@biigle/ol/geom/Circle';
-import Collection from '@biigle/ol/Collection';
+import CanvasSource from '../ol/CanvasSource';
+import Circle from 'ol/geom/Circle';
+import Collection from 'ol/Collection';
 import ControlButton from './controlButton';
 import DrawInteractions from './annotationCanvas/drawInteractions';
-import Ellipse from '@biigle/ol/geom/Ellipse';
+// import Ellipse from 'ol/geom/Ellipse';
 import Events from '../../core/events';
-import Feature from '@biigle/ol/Feature';
-import ImageLayer from '@biigle/ol/layer/Image';
+import Feature from 'ol/Feature';
+import ImageLayer from 'ol/layer/Image';
 import Keyboard from '../../core/keyboard';
 import LabelIndicator from './labelIndicator';
 import Lawnmower from './annotationCanvas/lawnmower';
-import LineString from '@biigle/ol/geom/LineString';
+import LineString from 'ol/geom/LineString';
 import MagicWandInteraction from './annotationCanvas/magicWandInteraction';
-import Map from '@biigle/ol/Map';
+import Map from 'ol/Map';
 import MeasureInteraction from './annotationCanvas/measureInteraction';
 import Minimap from './minimap';
-import ModifyInteraction from '@biigle/ol/interaction/Modify';
+import ModifyInteraction from 'ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
-import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
-import Point from '@biigle/ol/geom/Point';
-import Polygon from '@biigle/ol/geom/Polygon';
+import MouseWheelZoom from 'ol/interaction/MouseWheelZoom';
+import Point from 'ol/geom/Point';
+import Polygon from 'ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
-import Projection from '@biigle/ol/proj/Projection';
-import Rectangle from '@biigle/ol/geom/Rectangle';
+import Projection from 'ol/proj/Projection';
+// import Rectangle from 'ol/geom/Rectangle';
 import Sampling from './annotationCanvas/sampling';
 import ScaleLine from './annotationCanvas/scaleLine';
-import SelectInteraction from '@biigle/ol/interaction/Select';
+import SelectInteraction from 'ol/interaction/Select';
 import Styles from '../stores/styles';
-import TileLayer from '@biigle/ol/layer/Tile';
+import TileLayer from 'ol/layer/Tile';
 import TranslateInteraction from './annotationCanvas/translateInteraction';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
-import View from '@biigle/ol/View';
-import ZoomControl from '@biigle/ol/control/Zoom';
-import ZoomifySource from '@biigle/ol/source/Zoomify';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import View from 'ol/View';
+import ZoomControl from 'ol/control/Zoom';
+import ZoomifySource from 'ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel';
-import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
+import ZoomToExtentControl from 'ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl';
-import {click as clickCondition} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction'
-import {getCenter} from '@biigle/ol/extent';
-import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import {click as clickCondition} from 'ol/events/condition';
+import {defaults as defaultInteractions} from 'ol/interaction'
+import {getCenter} from 'ol/extent';
+import {shiftKeyOnly as shiftKeyOnlyCondition} from 'ol/events/condition';
+import {singleClick as singleClickCondition} from 'ol/events/condition';
 import { isInvalidShape } from '../utils';
 
+import Layer from 'ol/layer/Layer';
+import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer';
+
+const style = [
+    {
+        'stroke-width': 5,
+        'stroke-color': [255, 255, 255],
+    },
+    {
+        'stroke-width': 3,
+        'stroke-color': ['get', 'color'],
+    },
+];
+
+class WebGLLayer extends Layer {
+  createRenderer() {
+    return new WebGLVectorLayerRenderer(this, {style});
+  }
+}
 
 /**
  * The annotator canvas
@@ -64,7 +83,7 @@ export default {
         MagicWandInteraction,
         MeasureInteraction,
         MousePosition,
-        PolygonBrushInteraction,
+        // PolygonBrushInteraction,
         Sampling,
         ScaleLine,
         TranslateInteraction,
@@ -284,7 +303,7 @@ export default {
             this.annotationSource = new VectorSource({
                 features: this.annotationFeatures
             });
-            this.annotationLayer = new VectorLayer({
+            this.annotationLayer = new WebGLLayer({
                 source: this.annotationSource,
                 zIndex: 100,
                 updateWhileAnimating: true,
@@ -371,8 +390,8 @@ export default {
             switch (annotation.shape) {
                 case 'Point':
                     return new Point(points[0]);
-                case 'Rectangle':
-                    return new Rectangle([points]);
+                // case 'Rectangle':
+                //     return new Rectangle([points]);
                 case 'Polygon':
                     return new Polygon([points]);
                 case 'LineString':
@@ -380,8 +399,8 @@ export default {
                 case 'Circle':
                     // radius is the x value of the second point of the circle
                     return new Circle(points[0], points[1][0]);
-                case 'Ellipse':
-                    return new Ellipse([points]);
+                // case 'Ellipse':
+                //     return new Ellipse([points]);
                 default:
                     // unsupported shapes are ignored
                     console.error('Unknown annotation shape: ' + annotation.shape);
@@ -395,7 +414,7 @@ export default {
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
             if (annotation.labels && annotation.labels.length > 0) {
-                feature.set('color', annotation.labels[0].label.color);
+                feature.set('color', '#' + annotation.labels[0].label.color);
             }
 
             return feature;
@@ -502,8 +521,8 @@ export default {
                     points = [geometry.getCenter(), [geometry.getRadius()]];
                     break;
                 case 'Polygon':
-                case 'Rectangle':
-                case 'Ellipse':
+                // case 'Rectangle':
+                // case 'Ellipse':
                     points = geometry.getCoordinates()[0];
                     break;
                 case 'Point':
