@@ -1,8 +1,8 @@
-import Circle from '@biigle/ol/style/Circle';
-import Fill from '@biigle/ol/style/Fill';
-import RegularShape from '@biigle/ol/style/RegularShape';
-import Stroke from '@biigle/ol/style/Stroke';
-import Style from '@biigle/ol/style/Style';
+import Circle from 'ol/style/Circle';
+import Fill from 'ol/style/Fill';
+import RegularShape from 'ol/style/RegularShape';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
 
 /**
  * Store for the styles of OpenLayers features (annotations)

@@ -1,13 +1,13 @@
-import Feature from '@biigle/ol/Feature';
+import Feature from 'ol/Feature';
 import MagicWand from 'magic-wand-tool';
-import Point from '@biigle/ol/geom/Point';
-import PointerInteraction from '@biigle/ol/interaction/Pointer';
-import Polygon from '@biigle/ol/geom/Polygon';
-import RegularShape from '@biigle/ol/style/RegularShape';
-import Stroke from '@biigle/ol/style/Stroke';
-import Style from '@biigle/ol/style/Style';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
+import Point from 'ol/geom/Point';
+import PointerInteraction from 'ol/interaction/Pointer';
+import Polygon from 'ol/geom/Polygon';
+import RegularShape from 'ol/style/RegularShape';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.

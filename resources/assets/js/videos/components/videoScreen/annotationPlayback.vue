@@ -1,11 +1,11 @@
 <script>
-import Circle from '@biigle/ol/geom/Circle';
-import Ellipse from '@biigle/ol/geom/Ellipse';
-import Feature from '@biigle/ol/Feature';
-import LineString from '@biigle/ol/geom/LineString';
-import Point from '@biigle/ol/geom/Point';
-import Polygon from '@biigle/ol/geom/Polygon';
-import Rectangle from '@biigle/ol/geom/Rectangle';
+import Circle from 'ol/geom/Circle';
+// import Ellipse from 'ol/geom/Ellipse';
+import Feature from 'ol/Feature';
+import LineString from 'ol/geom/LineString';
+import Point from 'ol/geom/Point';
+import Polygon from 'ol/geom/Polygon';
+// import Rectangle from 'ol/geom/Rectangle';
 import {getRoundToPrecision} from '../../utils';
 
 /**

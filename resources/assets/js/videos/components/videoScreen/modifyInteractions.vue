@@ -1,10 +1,10 @@
 <script>
 import AttachLabelInteraction from '../../../annotations/ol/AttachLabelInteraction';
 import Keyboard from '../../../core/keyboard';
-import ModifyInteraction from '@biigle/ol/interaction/Modify';
+import ModifyInteraction from 'ol/interaction/Modify';
 import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
-import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import {shiftKeyOnly as shiftKeyOnlyCondition} from 'ol/events/condition';
+import {singleClick as singleClickCondition} from 'ol/events/condition';
 import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
 import {isInvalidShape} from '../../../annotations/utils';
 

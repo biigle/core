@@ -23,12 +23,17 @@
     "vue-template-compiler": "^2.6.11"
   },
   "dependencies": {
-    "@biigle/ol": "^5.3.0",
     "@fortawesome/fontawesome-free": "^5.2.0",
+    "@turf/boolean-contains": "^6.5.0",
+    "@turf/boolean-overlap": "^6.5.0",
+    "@turf/difference": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "bootstrap-sass": "^3.3.7",
     "echarts": "^5.3.2",
     "jsts": "^2.11.0",
     "magic-wand-tool": "^1.1.4",
+    "ol": "^5.3.3",
     "polymorph-js": "^0.2.4",
     "uiv": "^1.2.4",
     "vue": "^2.0.5",

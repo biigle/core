@@ -1,10 +1,10 @@
 <script>
-import CanvasSource from '@biigle/ol/source/Canvas';
-import ImageLayer from '@biigle/ol/layer/Image';
+import CanvasSource from '../../../annotations/ol/source/Canvas';
+import ImageLayer from 'ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
-import Projection from '@biigle/ol/proj/Projection';
-import View from '@biigle/ol/View';
-import {apply as applyTransform} from '@biigle/ol/transform';
+import Projection from 'ol/proj/Projection';
+import View from 'ol/View';
+import {apply as applyTransform} from 'ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.

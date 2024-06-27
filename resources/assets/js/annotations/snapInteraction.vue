@@ -1,8 +1,8 @@
 <script>
-import { Feature } from '@biigle/ol';
-import LineString from '@biigle/ol/geom/LineString';
-import { Snap } from '@biigle/ol/interaction';
-import Collection from '@biigle/ol/Collection';
+import { Feature } from 'ol';
+import LineString from 'ol/geom/LineString';
+import { Snap } from 'ol/interaction';
+import Collection from 'ol/Collection';
 
 export default {
     data() {
