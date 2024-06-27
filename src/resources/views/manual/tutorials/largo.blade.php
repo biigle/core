@@ -122,6 +122,14 @@
                     Sorting by unusual annotation patches can help you to quickly identify errors. If most of the patches show objects with a similar visual appearance, those patches that show different objects will be shown at the top and you can quickly select them.
                 </p>
             </li>
+            <li>
+                <p>
+                    <strong>Similarity</strong>: Sort the annotation patches by similarity to a reference annotation. When this sorting method is selected, you have to select a reference annotation by clicking on the <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button of an annotation patch next. Once the reference annotation is selected, the patches are sorted. In descending order, the annotations looking most similar to the reference annotation are shown first.
+                </p>
+                <p>
+                    The selected reference annotation will be pinned to the top left of the grid of annotation patches. You can select a new reference annotation by clicking on its <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button. If you select a different label while similarity sorting is active, the sorting method will be reset, as the reference annotation is no longer available.
+                </p>
+            </li>
         </ul>
 
         <h4>Settings</h4>

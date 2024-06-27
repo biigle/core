@@ -50,7 +50,31 @@
                 >
                 Outliers
             </button>
+            <a
+                class="list-group-item"
+                title="Sort by similarity (higher is more similar)"
+                href="#"
+                :class="{
+                    active: sortingBySimilarity,
+                    'list-group-item-warning': needsSimilarityReference
+                }"
+                @click.prevent="initializeSortBySimilarity"
+                >
+                <button
+                    v-if="needsSimilarityReference"
+                    class="btn btn-default btn-xs pull-right"
+                    title="Cancel selecting a reference annotation"
+                    @click.stop="cancelSortBySimilarity"
+                    >
+                    <i class="fa fa-undo"></i>
+                </button>
+                Similarity
+                <p v-if="needsSimilarityReference">
+                    Select a reference annotation with a click on the <i class="fa fa-thumbtack fa-fw"></i> button.
+                </p>
+            </a>
         </div>
+
     </div>
 </template>
 
@@ -64,14 +88,23 @@ export const SORT_DIRECTION = {
 export const SORT_KEY = {
     ANNOTATION_ID: 0,
     OUTLIER: 1,
+    SIMILARITY: 2,
 };
 
 export default {
-    data() {
-        return {
-            sortDirection: SORT_DIRECTION.DESCENDING,
-            sortKey: SORT_KEY.ANNOTATION_ID,
-        };
+    props: {
+        sortKey: {
+            type: Number,
+            required: true,
+        },
+        sortDirection: {
+            type: Number,
+            required: true,
+        },
+        needsSimilarityReference: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         sortedAscending() {
@@ -86,31 +119,40 @@ export default {
         sortingByOutlier() {
             return this.sortKey === SORT_KEY.OUTLIER;
         },
+        sortingBySimilarity() {
+            return this.sortKey === SORT_KEY.SIMILARITY;
+        },
     },
     methods: {
         sortAscending() {
-            this.sortDirection = SORT_DIRECTION.ASCENDING;
+            this.$emit('change-direction', SORT_DIRECTION.ASCENDING);
         },
         sortDescending() {
-            this.sortDirection = SORT_DIRECTION.DESCENDING;
+            this.$emit('change-direction', SORT_DIRECTION.DESCENDING);
         },
         reset() {
             this.sortDescending();
             this.sortByAnnotationId();
         },
         sortByAnnotationId() {
-            this.sortKey = SORT_KEY.ANNOTATION_ID;
+            this.$emit('change-key', SORT_KEY.ANNOTATION_ID);
+
+            if (this.needsSimilarityReference) {
+                this.cancelSortBySimilarity();
+            }
         },
         sortByOutlier() {
-            this.sortKey = SORT_KEY.OUTLIER;
+            this.$emit('change-key', SORT_KEY.OUTLIER);
+
+            if (this.needsSimilarityReference) {
+                this.cancelSortBySimilarity();
+            }
         },
-    },
-    watch: {
-        sortDirection(direction) {
-            this.$emit('change-direction', direction);
+        initializeSortBySimilarity() {
+            this.$emit('init-similarity');
         },
-        sortKey(key) {
-            this.$emit('change-key', key);
+        cancelSortBySimilarity() {
+            this.$emit('cancel-similarity');
         },
     },
 };

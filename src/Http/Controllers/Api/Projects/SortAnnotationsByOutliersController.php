@@ -4,8 +4,6 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use DB;
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
-use Biigle\Modules\Largo\VideoAnnotationLabelFeatureVector;
 use Biigle\Project;
 
 class SortAnnotationsByOutliersController extends Controller
@@ -30,7 +28,7 @@ class SortAnnotationsByOutliersController extends Controller
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);
 
-        // This was too complicated with the query builder. Since there is no rist of SQL
+        // This was too complicated with the query builder. Since there is no risk of SQL
         // injection here, we just use raw SQL.
         $sql = <<<SQL
         SELECT "id" FROM (
@@ -67,7 +65,7 @@ class SortAnnotationsByOutliersController extends Controller
 
         $ids = DB::select($sql, ['pid' => $pid, 'lid' => $lid]);
 
-        // Filtering unique IDs is not required here because the UNIQUE in the query
+        // Filtering unique IDs is not required here because the UNION in the query
         // takes care of that.
         return array_map(fn ($v) => $v->id, $ids);
     }

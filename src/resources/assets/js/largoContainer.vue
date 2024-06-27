@@ -33,18 +33,23 @@ export default {
         },
         querySortByOutlier(labelId) {
             return VolumesApi.sortAnnotationsByOutlier({id: this.volumeId, label_id: labelId})
-                .then((response) => {
-                    // The sorting expects annotation IDs prefixed with 'i' or 'v' so it
-                    // can work with mixed image and video annotations.
-                    if (this.mediaType === 'image') {
-                        response.body = response.body.map(id => 'i' + id);
-                    } else {
-                        response.body = response.body.map(id => 'v' + id);
-                    }
-
-                    return response;
-                });
+                .then(this.parseSortingQuery);
         },
+        querySortBySimilarity(labelId, reference) {
+            return VolumesApi.sortAnnotationsBySimilarity({id: this.volumeId, label_id: labelId, annotation_id: reference.id})
+                .then(this.parseSortingQuery);
+        },
+        parseSortingQuery(response) {
+            // The sorting expects annotation IDs prefixed with 'i' or 'v' so it
+            // can work with mixed image and video annotations.
+            if (this.mediaType === 'image') {
+                response.body = response.body.map(id => 'i' + id);
+            } else {
+                response.body = response.body.map(id => 'v' + id);
+            }
+
+            return response;
+        }
     },
     created() {
         this.volumeId = biigle.$require('largo.volumeId');
