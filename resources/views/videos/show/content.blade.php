@@ -70,6 +70,7 @@
       :height-offset="timelineHeightOffset"
       :pending-annotation="pendingAnnotation"
       :show-thumbnail-preview="settings.showThumbnailPreview"
+      :video-id="videoId"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"

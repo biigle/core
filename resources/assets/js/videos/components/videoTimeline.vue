@@ -21,6 +21,7 @@
             :current-time="currentTime"
             :seeking="seeking"
             :showThumbnailPreview="showThumbnailPreview"
+            :videoId="videoId"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -70,6 +71,10 @@ export default {
             type: Boolean,
             default: true,
         },
+        videoId: {
+            type: Number,
+            required: true,
+        }
     },
     data() {
         return {

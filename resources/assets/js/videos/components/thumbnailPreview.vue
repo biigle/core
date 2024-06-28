@@ -34,6 +34,10 @@ export default {
             type: Number,
             required: true,
         },
+        videoId: {
+            type: Number,
+            required: true,
+        }
     },
     data() {
         return {
@@ -122,8 +126,7 @@ export default {
         setSpritesFolderpath() {
             let fileUuids = biigle.$require('videos.fileUuids');
             let thumbUri = biigle.$require('videos.thumbUri');
-            let videoid = biigle.$require('videos.id');
-            let fileUuid = fileUuids[videoid];
+            let fileUuid = fileUuids[this.videoId];
             this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
         },
     },

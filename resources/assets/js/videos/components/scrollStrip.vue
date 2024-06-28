@@ -15,6 +15,7 @@
                         :hoverTime="hoverTime"
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
+                        :videoId="videoId"
                         v-if="showThumb && showThumbPreview"
                         ></thumbnail-preview>
                     <video-progress
@@ -91,6 +92,10 @@ export default {
         showThumbnailPreview: {
             type: Boolean,
             default: true
+        },
+        videoId: {
+            type: Number,
+            required: true
         }
     },
     data() {
