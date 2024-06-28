@@ -5,7 +5,6 @@ import Draw from 'ol/interaction/Draw';
 import Event from 'ol/events/Event.js';
 import EventType from 'ol/events/EventType';
 import Feature from 'ol/Feature';
-import GeometryType from 'ol/geom/GeometryType';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import VectorLayer from 'ol/layer/Vector';
 import {always} from 'ol/events/condition';
@@ -100,6 +99,8 @@ class PolygonBrush extends Draw {
 
     options.freehandCondition = options.freehandCondition ?
       options.freehandCondition : penOnly;
+
+    options.type = 'Polygon';
 
     super(options);
 
@@ -282,9 +283,9 @@ class PolygonBrush extends Draw {
 
 function getDefaultStyleFunction() {
   let styles = createEditingStyle();
-  styles[GeometryType.POLYGON] =
-      styles[GeometryType.POLYGON].concat(
-        styles[GeometryType.LINE_STRING]
+  styles['Polygon'] =
+      styles['Polygon'].concat(
+        styles['LineString']
       );
 
   return function(feature, resolution) {

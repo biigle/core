@@ -41,33 +41,17 @@ export default {
                 this.map.removeLayer(this.videoLayer);
             }
 
+            this.videoCanvas.width = this.extent[2];
+            this.videoCanvas.height = this.extent[3];
+
             this.videoLayer = new ImageLayer({
                 name: 'image', // required by the minimap component
                 source: new CanvasSource({
-                    canvas: this.dummyCanvas,
+                    canvas: this.videoCanvas,
                     projection: projection,
                     canvasExtent: this.extent,
                     canvasSize: [this.extent[2], this.extent[3]],
                 }),
-            });
-
-            // Based on this: https://stackoverflow.com/a/42902773/1796523
-            this.videoLayer.on('postcompose', (event) => {
-                let frameState = event.frameState;
-                let resolution = frameState.viewState.resolution;
-                // Custom implementation of "map.getPixelFromCoordinate" because this
-                // layer is rendered both on the map of the main view and on the map of
-                // the minimap component (i.e. the map changes).
-                let origin = applyTransform(
-                    frameState.coordinateToPixelTransform,
-                    [0, this.extent[3]]
-                );
-                let context = event.context;
-                context.save();
-                context.scale(frameState.pixelRatio, frameState.pixelRatio);
-                context.translate(origin[0], origin[1]);
-                context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
-                context.restore();
             });
 
             // The video layer should always be the first layer, otherwise it will be
@@ -81,6 +65,8 @@ export default {
                 // zoomFactor: 2,
                 minResolution: this.minResolution,
                 extent: this.extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
             }));
 
             this.map.getView().fit(this.extent);
@@ -89,6 +75,7 @@ export default {
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
+                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
                 this.videoLayer.changed();
 
                 let now = Date.now();
@@ -250,9 +237,8 @@ export default {
         },
     },
     created() {
-        this.dummyCanvas = document.createElement('canvas');
-        this.dummyCanvas.width = 1;
-        this.dummyCanvas.height = 1;
+        this.videoCanvas = document.createElement('canvas');
+        this.videoContext = this.videoCanvas.getContext('2d');
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
         this.video.addEventListener('seeked', this.handleSeeked);

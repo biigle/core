@@ -124,13 +124,52 @@ export default {
         },
         capture() {
             if (this.map) {
-                this.map.once('postcompose', (e) => {
-                    this.makeBlob(e.context.canvas)
-                        .then(this.download)
-                        .catch(this.handleError);
-                });
+                this.map.once('rendercomplete', this.handleRenderComplete);
                 this.map.renderSync();
             }
+        },
+        handleRenderComplete(e) {
+            // See: https://openlayers.org/en/v6.15.1/examples/export-map.html
+            const mapCanvas = document.createElement('canvas');
+            const size = e.target.getSize();
+            mapCanvas.width = size[0];
+            mapCanvas.height = size[1];
+            const mapContext = mapCanvas.getContext('2d');
+            Array.prototype.forEach.call(
+                e.target.getViewport().querySelectorAll('.ol-layer canvas, canvas.ol-layer'),
+                function (canvas) {
+                    if (canvas.width <= 0) {
+                        return;
+                    }
+
+                    let matrix;
+                    const transform = canvas.style.transform;
+                    if (transform) {
+                        // Get the transform parameters from the style's transform matrix
+                        matrix = transform
+                            .match(/^matrix\(([^\(]*)\)$/)[1]
+                            .split(',')
+                            .map(Number);
+                    } else {
+                        matrix = [
+                            parseFloat(canvas.style.width) / canvas.width,
+                            0,
+                            0,
+                            parseFloat(canvas.style.height) / canvas.height,
+                            0,
+                            0,
+                        ];
+                    }
+                    // Apply the transform to the export map context
+                    CanvasRenderingContext2D.prototype.setTransform.apply(
+                        mapContext,
+                        matrix
+                    );
+                    mapContext.drawImage(canvas, 0, 0);
+                }
+            );
+
+            this.makeBlob(mapCanvas).then(this.download).catch(this.handleError);
         },
         handleError(message) {
             Messages.danger(message);

@@ -42,10 +42,9 @@ class Canvas extends Image {
    * @inheritDoc
    */
   getImageInternal(extent, resolution, pixelRatio, projection) {
-    if (intersects(extent, this.canvas_.getExtent())) {
-      return this.canvas_;
-    }
-    return null;
+    // No need to check if extent intersects canvas. The canvas is always visible
+    // in our apllication.
+    return this.canvas_;
   };
 }
 

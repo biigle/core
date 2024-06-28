@@ -3,7 +3,6 @@ import booleanContains from '@turf/boolean-contains';
 import booleanOverlap from '@turf/boolean-overlap';
 import Feature from 'ol/Feature';
 import EventType from 'ol/events/EventType';
-import GeometryType from 'ol/geom/GeometryType';
 import Circle from 'ol/geom/Circle';
 import Polygon from 'ol/geom/Polygon';
 import {createEditingStyle} from 'ol/style/Style';
@@ -168,13 +167,13 @@ class ModifyPolygonBrush extends Modify {
 
   startSubtracting_(event) {
     this.isSubtracting_ = true;
-    this.willModifyFeatures_(event);
+    // this.willModifyFeatures_(event, []);
     this.subtractCurrentFeatures_(event);
   }
 
   startAdding_(event) {
     this.isAdding_ = true;
-    this.willModifyFeatures_(event);
+    // this.willModifyFeatures_(event, []);
     this.addCurrentFeatures_(event);
   }
 
@@ -256,7 +255,7 @@ function getDefaultStyleFunction() {
   const style = createEditingStyle();
 
   return function(feature, resolution) {
-    return style[GeometryType.CIRCLE];
+    return style['Circle'];
   }
 }
 

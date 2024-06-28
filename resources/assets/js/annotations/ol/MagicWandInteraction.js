@@ -302,7 +302,7 @@ class MagicWandInteraction extends PointerInteraction {
      */
     updateSnapshot() {
         if (!this.updatingSnapshot && this.layer) {
-            this.layer.once('postcompose', this.updateSnapshotCanvas.bind(this));
+            this.layer.once('postrender', this.updateSnapshotCanvas.bind(this));
             // Set flag to avoid infinite recursion since renderSync will trigger the
             // moveend event again!
             this.updatingSnapshot = true;

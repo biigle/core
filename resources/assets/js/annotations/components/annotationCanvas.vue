@@ -327,8 +327,6 @@ export default {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
-
-
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -519,7 +517,7 @@ export default {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
-            
+
             if (isInvalidShape(e.feature)) {
                 // This must be done in the change event handler.
                 // Not exactly sure why.
@@ -741,6 +739,8 @@ export default {
                 minResolution: 0.01,
                 // Restrict movement.
                 extent: extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
             }));
 
             if (this.resolution === undefined) {
