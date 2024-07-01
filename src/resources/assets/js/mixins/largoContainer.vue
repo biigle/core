@@ -174,6 +174,7 @@ export default {
             if (this.sortingKey === SORT_KEY.SIMILARITY) {
                 promise2 = this.resetSorting();
             } else if (this.sortingIsActive) {
+                this.sortingSequence = [];
                 // Reload sequence for new label.
                 promise2 = this.updateSortKey(this.sortingKey);
             } else {
@@ -399,7 +400,9 @@ export default {
             }
 
             let promise;
-            if (key === SORT_KEY.OUTLIER) {
+            if (!this.selectedLabel) {
+                promise = Vue.Promise.resolve([]);
+            } else if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
                     .then(response => response.body);
             } else if (key === SORT_KEY.SIMILARITY) {
