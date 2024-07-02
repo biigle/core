@@ -26,7 +26,7 @@ export default {
             return layer.get('name') === 'annotations';
         },
         updateHoveredAnnotations(e) {
-            let features = this.map.getFeaturesAtPixel(e.pixel, {layerFilter: this.annotationLayerFilter}) || [];
+            let features = this.map.getFeaturesAtPixel(e.pixel, {layerFilter: this.annotationLayerFilter});
             let hash = features.map((f) => f.getId()).join('-');
 
             if (this.hoveredFeaturesHash !== hash) {
