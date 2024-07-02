@@ -1,13 +1,13 @@
-import Feature from '@biigle/ol/Feature';
+import Feature from 'ol/Feature';
 import MagicWand from 'magic-wand-tool';
-import Point from '@biigle/ol/geom/Point';
-import PointerInteraction from '@biigle/ol/interaction/Pointer';
-import Polygon from '@biigle/ol/geom/Polygon';
-import RegularShape from '@biigle/ol/style/RegularShape';
-import Stroke from '@biigle/ol/style/Stroke';
-import Style from '@biigle/ol/style/Style';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
+import Point from 'ol/geom/Point';
+import PointerInteraction from 'ol/interaction/Pointer';
+import Polygon from 'ol/geom/Polygon';
+import RegularShape from 'ol/style/RegularShape';
+import Stroke from 'ol/style/Stroke';
+import Style from 'ol/style/Style';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -117,6 +117,8 @@ class MagicWandInteraction extends PointerInteraction {
             source: this.indicatorSource,
             zIndex: 200,
         }));
+
+        this.snapshotListener = this.updateSnapshot.bind(this);
 
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
@@ -283,10 +285,10 @@ class MagicWandInteraction extends PointerInteraction {
      */
     toggleActive() {
         if (this.getActive()) {
-            this.map.on(['moveend', 'change:size'], this.updateSnapshot.bind(this));
+            this.map.on(['moveend', 'change:size'], this.snapshotListener);
             this.updateSnapshot();
         } else {
-            this.map.un(['moveend', 'change:size'], this.updateSnapshot.bind(this));
+            this.map.un(['moveend', 'change:size'], this.snapshotListener);
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
@@ -302,7 +304,7 @@ class MagicWandInteraction extends PointerInteraction {
      */
     updateSnapshot() {
         if (!this.updatingSnapshot && this.layer) {
-            this.layer.once('postcompose', this.updateSnapshotCanvas.bind(this));
+            this.layer.once('postrender', this.updateSnapshotCanvas.bind(this));
             // Set flag to avoid infinite recursion since renderSync will trigger the
             // moveend event again!
             this.updatingSnapshot = true;

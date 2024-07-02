@@ -1,10 +1,10 @@
 <script>
-import CanvasSource from '@biigle/ol/source/Canvas';
-import ImageLayer from '@biigle/ol/layer/Image';
+import CanvasSource from '../../../annotations/ol/source/Canvas';
+import ImageLayer from 'ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
-import Projection from '@biigle/ol/proj/Projection';
-import View from '@biigle/ol/View';
-import {apply as applyTransform} from '@biigle/ol/transform';
+import Projection from 'ol/proj/Projection';
+import View from 'ol/View';
+import {apply as applyTransform} from 'ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -41,33 +41,19 @@ export default {
                 this.map.removeLayer(this.videoLayer);
             }
 
-            this.videoLayer = new ImageLayer({
-                name: 'image', // required by the minimap component
-                source: new CanvasSource({
-                    canvas: this.dummyCanvas,
-                    projection: projection,
-                    canvasExtent: this.extent,
-                    canvasSize: [this.extent[2], this.extent[3]],
-                }),
+            this.videoCanvas.width = this.extent[2];
+            this.videoCanvas.height = this.extent[3];
+
+            this.videoSource = new CanvasSource({
+                canvas: this.videoCanvas,
+                projection: projection,
+                canvasExtent: this.extent,
+                canvasSize: [this.extent[2], this.extent[3]],
             });
 
-            // Based on this: https://stackoverflow.com/a/42902773/1796523
-            this.videoLayer.on('postcompose', (event) => {
-                let frameState = event.frameState;
-                let resolution = frameState.viewState.resolution;
-                // Custom implementation of "map.getPixelFromCoordinate" because this
-                // layer is rendered both on the map of the main view and on the map of
-                // the minimap component (i.e. the map changes).
-                let origin = applyTransform(
-                    frameState.coordinateToPixelTransform,
-                    [0, this.extent[3]]
-                );
-                let context = event.context;
-                context.save();
-                context.scale(frameState.pixelRatio, frameState.pixelRatio);
-                context.translate(origin[0], origin[1]);
-                context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
-                context.restore();
+            this.videoLayer = new ImageLayer({
+                name: 'image', // required by the minimap component
+                source: this.videoSource,
             });
 
             // The video layer should always be the first layer, otherwise it will be
@@ -81,6 +67,8 @@ export default {
                 // zoomFactor: 2,
                 minResolution: this.minResolution,
                 extent: this.extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
             }));
 
             this.map.getView().fit(this.extent);
@@ -89,7 +77,8 @@ export default {
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
-                this.videoLayer.changed();
+                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                this.videoSource.changed();
 
                 let now = Date.now();
                 if (force || (now - this.refreshLastTime) >= this.refreshRate) {
@@ -250,9 +239,8 @@ export default {
         },
     },
     created() {
-        this.dummyCanvas = document.createElement('canvas');
-        this.dummyCanvas.width = 1;
-        this.dummyCanvas.height = 1;
+        this.videoCanvas = document.createElement('canvas');
+        this.videoContext = this.videoCanvas.getContext('2d');
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPaused);
         this.video.addEventListener('seeked', this.handleSeeked);

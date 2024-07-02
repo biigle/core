@@ -1,4 +1,4 @@
-import BaseTranslate from '@biigle/ol/interaction/Translate';
+import BaseTranslate from 'ol/interaction/Translate';
 import Keyboard from '../../core/keyboard';
 import {debounce} from '../../core/utils';
 

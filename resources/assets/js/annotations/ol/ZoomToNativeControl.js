@@ -1,4 +1,4 @@
-import Control from '@biigle/ol/control/Control';
+import Control from 'ol/control/Control';
 
 /**
  * Control for zooming the map image to the original resolution

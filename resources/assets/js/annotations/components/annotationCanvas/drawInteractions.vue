@@ -1,8 +1,8 @@
 <script>
-import DrawInteraction from '@biigle/ol/interaction/Draw';
+import DrawInteraction from 'ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
-import { shiftKeyOnly } from '@biigle/ol/events/condition';
+import { shiftKeyOnly } from 'ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
 
 /**

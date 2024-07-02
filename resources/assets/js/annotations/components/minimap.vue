@@ -3,14 +3,16 @@
 </template>
 
 <script>
-import Feature from '@biigle/ol/Feature';
-import {CancelableMap as Map} from '../ol/CancelableMap';
+import Feature from 'ol/Feature';
+import ImageLayer from 'ol/layer/Image';
 import Styles from '../stores/styles';
-import VectorLayer from '@biigle/ol/layer/Vector';
-import VectorSource from '@biigle/ol/source/Vector';
-import View from '@biigle/ol/View';
-import {fromExtent} from '@biigle/ol/geom/Polygon';
-import {getCenter} from '@biigle/ol/extent';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import View from 'ol/View';
+import {CancelableMap as Map} from '../ol/CancelableMap';
+import {fromExtent} from 'ol/geom/Polygon';
+import {getCenter} from 'ol/extent';
 
 /**
  * The minimap of the canvas element
@@ -31,14 +33,11 @@ export default {
             type: Number,
             default: 200,
         },
-        renderActive: {
-            type: Boolean,
-            default: true,
-        },
     },
     data() {
         return {
-            //
+            originalLayer: null,
+            currentLayer: null,
         };
     },
     computed: {
@@ -48,7 +47,7 @@ export default {
         updateViewport() {
             // The map size and center might be undefined if the minimap is created
             // initially. This function will be called again once the map is ready.
-            if (this.mapSize && this.mapView.getCenter()) {
+            if (this.mapSize && this.mapView.getCenter() && this.mapView.getResolution()) {
                 this.viewport.setGeometry(fromExtent(this.mapView.calculateExtent(this.mapSize)));
             }
         },
@@ -57,6 +56,7 @@ export default {
         },
         updateMapSize(e) {
             this.mapSize = e.target.getSize();
+            this.updateViewport();
         },
         updateMapView(e) {
             if (this.mapView) {
@@ -66,6 +66,7 @@ export default {
             this.mapView = e.target.getView();
             this.mapView.on('change:center', this.updateViewport);
             this.mapView.on('change:resolution', this.updateViewport);
+            this.updateViewport();
         },
         updateElementSize() {
             let imageWidth = this.extent[2];
@@ -95,12 +96,32 @@ export default {
             // to update the layer here, too.
             let name = e.element.get('name');
             if (name && name.startsWith('image')) {
+                if (this.originalLayer) {
+                    this.originalLayer.un('change:source', this.handleChangeSource);
+                }
+                this.originalLayer = e.element;
+                if (this.originalLayer instanceof TileLayer) {
+                    this.currentLayer = new TileLayer({
+                        source: this.originalLayer.getSource()
+                    });
+                } else {
+                    this.currentLayer = new ImageLayer({
+                        source: this.originalLayer.getSource()
+                    });
+                }
+                this.originalLayer.on('change:source', this.handleChangeSource);
+
                 let layers = this.minimap.getLayers();
                 if (layers.getLength() > 1) {
-                    layers.setAt(0, e.element);
+                    layers.setAt(0, this.currentLayer);
                 } else {
-                    layers.insertAt(0, e.element);
+                    layers.insertAt(0, this.currentLayer);
                 }
+            }
+        },
+        handleChangeSource(e) {
+            if (this.currentLayer) {
+                this.currentLayer.setSource(e.target.getSource());
             }
         },
         initImageLayer(layers) {
@@ -108,21 +129,11 @@ export default {
                 this.refreshImageLayer({element: layer});
             });
         },
-        render() {
-            this.minimap.render();
-        },
     },
     watch: {
         // Refresh the view if the extent (i.e. image size) changed.
         extent() {
             this.updateElementSize();
-        },
-        renderActive(render) {
-            if (render) {
-                this.minimap.render();
-            } else {
-                this.minimap.cancelRender();
-            }
         },
     },
     created() {
@@ -145,8 +156,6 @@ export default {
         this.updateMapView({target: map});
         map.on('change:size', this.updateMapSize);
         map.on('change:view', this.updateMapView);
-        // Initialize the viewport once.
-        map.once('postcompose', this.updateViewport);
 
         // Add the viewport layer now. Add the image layer later when it was
         // added to the map.
@@ -158,8 +167,6 @@ export default {
         this.minimap.on('pointerdrag', this.dragViewport);
         this.minimap.on('click', this.dragViewport);
         this.initImageLayer(map.getLayers());
-
-        this.$parent.$on('render', this.render);
     },
     mounted() {
         this.updateElementSize();
@@ -175,7 +182,6 @@ export default {
         map.un('change:size', this.updateMapSize);
         map.un('change:view', this.updateMapView);
         map.getLayers().un('add', this.refreshImageLayer);
-        this.$parent.$off('render', this.render);
     },
 };
 </script>
