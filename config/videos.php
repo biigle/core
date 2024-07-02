@@ -71,8 +71,8 @@ return [
     /*
     | Dimensions of the thumbnail images to create in sprites.
     */
-    'sprites_thumbnail_width' => 240,
-    'sprites_thumbnail_height' => 138,
+    'sprites_thumbnail_width' => 360,
+    'sprites_thumbnail_height' => 270,
 
     /*
     | Sprite file format.
