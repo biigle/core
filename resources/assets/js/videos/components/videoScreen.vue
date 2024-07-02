@@ -3,7 +3,6 @@
         <minimap
             v-if="showMinimap && !hasError"
             :extent="extent"
-            :render-active="!seeking"
             ></minimap>
         <label-tooltip
             watch="hoverFeatures"

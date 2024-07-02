@@ -44,14 +44,16 @@ export default {
             this.videoCanvas.width = this.extent[2];
             this.videoCanvas.height = this.extent[3];
 
+            this.videoSource = new CanvasSource({
+                canvas: this.videoCanvas,
+                projection: projection,
+                canvasExtent: this.extent,
+                canvasSize: [this.extent[2], this.extent[3]],
+            });
+
             this.videoLayer = new ImageLayer({
                 name: 'image', // required by the minimap component
-                source: new CanvasSource({
-                    canvas: this.videoCanvas,
-                    projection: projection,
-                    canvasExtent: this.extent,
-                    canvasSize: [this.extent[2], this.extent[3]],
-                }),
+                source: this.videoSource,
             });
 
             // The video layer should always be the first layer, otherwise it will be
@@ -76,7 +78,7 @@ export default {
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
                 this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-                this.videoLayer.changed();
+                this.videoSource.changed();
 
                 let now = Date.now();
                 if (force || (now - this.refreshLastTime) >= this.refreshRate) {

@@ -33,10 +33,6 @@ export default {
             type: Number,
             default: 200,
         },
-        renderActive: {
-            type: Boolean,
-            default: true,
-        },
     },
     data() {
         return {
@@ -133,21 +129,11 @@ export default {
                 this.refreshImageLayer({element: layer});
             });
         },
-        render() {
-            this.minimap.render();
-        },
     },
     watch: {
         // Refresh the view if the extent (i.e. image size) changed.
         extent() {
             this.updateElementSize();
-        },
-        renderActive(render) {
-            if (render) {
-                this.minimap.render();
-            } else {
-                this.minimap.cancelRender();
-            }
         },
     },
     created() {
@@ -181,8 +167,6 @@ export default {
         this.minimap.on('pointerdrag', this.dragViewport);
         this.minimap.on('click', this.dragViewport);
         this.initImageLayer(map.getLayers());
-
-        map.on('postrender', this.render);
     },
     mounted() {
         this.updateElementSize();
@@ -198,7 +182,6 @@ export default {
         map.un('change:size', this.updateMapSize);
         map.un('change:view', this.updateMapView);
         map.getLayers().un('add', this.refreshImageLayer);
-        map.un('postrender', this.render);
     },
 };
 </script>
