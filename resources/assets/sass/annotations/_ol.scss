@@ -17,3 +17,8 @@
         @extend %custom-icon;
     }
 }
+
+.ol-control button {
+    // Keep same size than of OL5.
+    font-size: 1.14em !important;
+}
