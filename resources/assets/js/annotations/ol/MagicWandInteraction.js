@@ -118,6 +118,8 @@ class MagicWandInteraction extends PointerInteraction {
             zIndex: 200,
         }));
 
+        this.snapshotListener = this.updateSnapshot.bind(this);
+
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
     }
@@ -283,10 +285,10 @@ class MagicWandInteraction extends PointerInteraction {
      */
     toggleActive() {
         if (this.getActive()) {
-            this.map.on(['moveend', 'change:size'], this.updateSnapshot.bind(this));
+            this.map.on(['moveend', 'change:size'], this.snapshotListener);
             this.updateSnapshot();
         } else {
-            this.map.un(['moveend', 'change:size'], this.updateSnapshot.bind(this));
+            this.map.un(['moveend', 'change:size'], this.snapshotListener);
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
