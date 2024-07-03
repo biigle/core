@@ -36,8 +36,7 @@ export default {
     },
     data() {
         return {
-            originalLayer: null,
-            currentLayer: null,
+            //
         };
     },
     computed: {
@@ -137,6 +136,10 @@ export default {
         },
     },
     created() {
+        // Must not be reactive.
+        this.originalLayer = null;
+        this.currentLayer = null;
+
         this.minimap = new Map({
             // remove controls
             controls: [],
