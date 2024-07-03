@@ -1,5 +1,3 @@
-import booleanContains from '@turf/boolean-contains';
-import booleanOverlap from '@turf/boolean-overlap';
 import Circle from 'ol/geom/Circle';
 import Draw from 'ol/interaction/Draw';
 import Event from 'ol/events/Event.js';
@@ -245,12 +243,8 @@ class PolygonBrush extends Draw {
       const sketchCirclePolygon = turfPolygon(sketchCircleGeometry.getCoordinates());
       const sketchFeatureGeometry = this.sketchFeature_.getGeometry();
       const sketchFeaturePolygon = turfPolygon(sketchFeatureGeometry.getCoordinates());
-      if (booleanOverlap(sketchCirclePolygon, sketchFeaturePolygon)
-           || booleanContains(sketchCirclePolygon, sketchFeaturePolygon)) {
-          sketchFeatureGeometry.setCoordinates(
-            union(sketchCirclePolygon, sketchFeaturePolygon)
-          );
-      }
+
+      sketchFeatureGeometry.setCoordinates(union(sketchCirclePolygon, sketchFeaturePolygon));
     }
   }
 

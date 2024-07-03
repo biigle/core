@@ -1,6 +1,5 @@
 import {polygon as turfPolygon} from '@turf/helpers';
 import booleanContains from '@turf/boolean-contains';
-import booleanOverlap from '@turf/boolean-overlap';
 import Feature from 'ol/Feature';
 import EventType from 'ol/events/EventType';
 import Circle from 'ol/geom/Circle';
@@ -199,16 +198,7 @@ class ModifyPolygonBrush extends Modify {
         // Skip features that can't be represented as polygon.
         return;
       }
-      if (booleanOverlap(sketchPointPolygon, featurePolygon)) {
-        var coords = difference(featurePolygon, sketchPointPolygon);
-        if (!this.allowRemove_ && sketchPointArea > (new Polygon(coords)).getArea()) {
-          // If allowRemove_ is false, the modified polygon may not become smaller than
-          // the sketchPointPolygon.
-          return;
-        }
-        featureGeom.setCoordinates(coords);
-      } else if (booleanContains(sketchPointPolygon, featurePolygon)) {
-        if (this.allowRemove_) {
+      if (this.allowRemove_ && booleanContains(sketchPointPolygon, featurePolygon)) {
           this.features_.remove(feature);
           if (this.source_) {
             this.source_.removeFeature(feature);
@@ -216,8 +206,15 @@ class ModifyPolygonBrush extends Modify {
           this.dispatchEvent(
             new ModifyEvent(ModifyPolygonBrushEventType.MODIFYREMOVE, new Collection([feature]), event)
           );
+      } else {
+        var coords = difference(featurePolygon, sketchPointPolygon);
+        if (!this.allowRemove_ && sketchPointArea > (new Polygon(coords)).getArea()) {
+          // If allowRemove_ is false, the modified polygon may not become smaller than
+          // the sketchPointPolygon.
+          return;
         }
-      }
+        featureGeom.setCoordinates(coords);
+    }
     }, this);
   }
 
@@ -232,11 +229,7 @@ class ModifyPolygonBrush extends Modify {
         // Skip features that can't be represented as polygon.
         return;
       }
-      if (booleanOverlap(sketchPointPolygon, featurePolygon)) {
-        featureGeom.setCoordinates(union(sketchPointPolygon, featurePolygon));
-      } else if (booleanContains(sketchPointPolygon, featurePolygon)) {
-        featureGeom.setCoordinates(sketchPointGeom.getCoordinates());
-      }
+      featureGeom.setCoordinates(union(sketchPointPolygon, featurePolygon));
     }, this);
   }
 

@@ -25,7 +25,6 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.2.0",
     "@turf/boolean-contains": "^6.5.0",
-    "@turf/boolean-overlap": "^6.5.0",
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/union": "^6.5.0",
