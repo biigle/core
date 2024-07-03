@@ -29,12 +29,6 @@ class Canvas extends Image {
      */
     this.canvas_ = new ImageCanvas(options.canvasExtent, resolution, 1, options.canvas);
 
-    /**
-     * @private
-     * @type {import("../size.js").Size}
-     */
-    this.canvasSize_ = options.canvasSize ? options.canvasSize : null;
-
     listen(this.canvas_, EventType.CHANGE, this.handleImageChange, this);
   }
 
