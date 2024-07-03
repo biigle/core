@@ -1,3 +1,5 @@
+$ol-control-color: rgb(0, 60, 136);
+
 %custom-icon {
     color: white;
     display: block;
@@ -18,7 +20,25 @@
     }
 }
 
-.ol-control button {
-    // Keep same size than of OL5.
-    font-size: 1.14em !important;
+.ol-control {
+    --ol-subtle-background-color: rgba(255, 255, 255, 0.4);
+    padding: 2px;
+
+    &:hover {
+        --ol-subtle-background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+        // Keep same size and style than of OL5.
+        font-size: 1.14em !important;
+        --ol-background-color: #{fade-out($ol-control-color, 0.5)};
+        --ol-subtle-foreground-color: white;
+        transition: background-color 0.25s ease;
+
+        &:hover, &:focus, &.active {
+            --ol-foreground-color: white;
+            --ol-background-color: #{fade-out($ol-control-color, 0.3)};
+            --ol-subtle-foreground-color: transparent;
+        }
+    }
 }
