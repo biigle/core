@@ -6,21 +6,20 @@ use App;
 use Biigle\Video;
 use Exception;
 use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
-use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Log;
+use Symfony\Component\Process\Process;
 use Throwable;
 use VipsImage;
-use Illuminate\Support\Arr;
-use Symfony\Component\Process\Process;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
@@ -145,24 +144,39 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
         $this->video->save();
 
-        $times = $this->getThumbnailTimes($this->video->duration);
+        $format = config('thumbnails.format');
         $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
         $fragment = fragment_uuid_path($this->video->uuid);
-        $format = config('thumbnails.format');
         $width = config('thumbnails.width');
         $height = config('thumbnails.height');
-
         try {
-            foreach ($times as $index => $time) {
-                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height)
-                    ->writeToBuffer(".{$format}", [
-                        'Q' => 85,
-                        'strip' => true,
-                    ]);
-                $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+            $tmp = config('videos.tmp_dir');
+            $tmpDir = "{$tmp}/{$fragment}";
+            if (!File::exists($tmpDir)) {
+                File::makeDirectory($tmpDir, 0755, true, true);
             }
+
+            if (!$disk->exists($tmpDir)) {
+                $disk->makeDirectory($fragment);
+            }
+            
+            // generate images from video
+            $this->generateImagesfromVideo($path, $this->video->duration, $tmpDir);
+
+            // generate thumbnails
+            $files = glob($tmpDir."/*.{$format}");
+            $this->generateVideoThumbnails($files, $disk->path($fragment.'/'), $format, $width, $height);
+
             // generate sprites
-            $this->generateSprites($path, $this->video->duration, $disk, $fragment);
+            $this->generateSprites($disk, $tmpDir, $fragment);
+
+            $parentDir = dirname($fragment, 2);
+            if ($disk->exists($tmpDir)) {
+                $disk->deleteDirectory($parentDir);
+            }
+            if (File::exists($tmpDir)) {
+                File::deleteDirectory($tmp."/{$parentDir}");
+            }
         } catch (Exception $e) {
             // The video seems to be fine if it passed the previous checks. There may be
             // errors in the actual video data but we can ignore that and skip generating
@@ -223,27 +237,36 @@ class ProcessNewVideo extends Job implements ShouldQueue
     }
 
     /**
-     * Generate a thumbnail from the video at the specified time.
+     * Generate thumbnails from the video.
      *
      * @param string $path Path to the video file.
      * @param float $time Time for the thumbnail in seconds.
-     * @param int $width Width of the thumbnail.
-     * @param int $height Height of the thumbnail.
      *
-     * @return string Vips image buffer string.
      */
-    protected function generateVideoThumbnail($path, $time, $width, $height)
+    protected function generateImagesfromVideo($path, $duration, $destinationPath)
     {
-        // Cache the video instance.
-        if (!isset($this->ffmpegVideo)) {
-            $this->ffmpegVideo = FFMpeg::create()->open($path);
+        $format = config('thumbnails.format');
+        $maxThumbnails = config('videos.sprites_max_thumbnails');
+        $minThumbnails = config('videos.sprites_min_thumbnails');
+        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
+        $durationRounded = floor($duration * 10) / 10;
+        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        // Adjust the frame time based on the number of estimated thumbnails
+        $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
+            : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
+        $frameRate = 1 / $thumbnailInterval;
+        $process = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/frame%04d.{$format}");
+        $process->run();
+        return $process->getExitCode();
+
+    }
+
+    protected function generateVideoThumbnails($files, $thumbnailsDir, $format, $width, $height)
+    {
+        foreach ($files as $f) {
+            $newFilename = pathinfo($f, PATHINFO_FILENAME);
+            Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$width}x{$height} {$thumbnailsDir}{$newFilename}.{$format}")->run();
         }
-
-        $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
-            ->save(null, false, true);
-
-        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height, 'size' => 'force'])
-        ;
     }
 
     /**
@@ -289,75 +312,55 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @param string $fragment fragment identifier for organizing the sprites.
      *
      */
-    protected function generateSprites($path, $duration, $disk, $fragment)
+    protected function generateSprites($disk, $tmpDir, $fragment)
     {
-        $maxThumbnails = config('videos.sprites_max_thumbnails');
-        $minThumbnails = config('videos.sprites_min_thumbnails');
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
         $thumbnailWidth = config('videos.sprites_thumbnail_width');
         $thumbnailHeight = config('videos.sprites_thumbnail_height');
         $spriteFormat = config('videos.sprites_format');
-        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
-        $durationRounded = floor($duration * 10) / 10;
-        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        $thumbFormat = config('thumbnails.format');
+        $tmp = config('videos.tmp_dir');
         // Adjust the frame time based on the number of estimated thumbnails
-        $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
-            : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
+
+
+        $sprite_images_path = "{$tmp}/sprite-images/{$fragment}";
+        if (!File::exists($sprite_images_path)) {
+            File::makeDirectory($sprite_images_path, 0755, true);
+        }
+        $files = File::glob($tmpDir . "/*.{$thumbFormat}");
+        foreach ($files as $f) {
+            $filename = pathinfo($f, PATHINFO_FILENAME);
+            Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$thumbnailWidth}x{$thumbnailHeight} {$sprite_images_path}/{$filename}.{$spriteFormat}")->run();
+        }
+
+        $files = File::glob($sprite_images_path . "/*.{$spriteFormat}");
+        $thumbnails = Arr::map($files, fn ($f) => VipsImage::newFromFile($f));
+
+        // Split array into sprite-chunks
+        $chunks = [];
+        $nbrChunks = ceil(count($thumbnails) / $thumbnailsPerSprite);
+        for ($i = 0; $i < $nbrChunks; $i++) {
+            // $thumbnails is cut here, so the beginning of the next chunk is always at index 0
+            $chunks[] = array_splice($thumbnails, 0, $thumbnailsPerSprite);
+        }
+
         $spritesCounter = 0;
-        $frameRate = 1 / $thumbnailInterval;
+        foreach ($chunks as $chunk) {
+            // Join the thumbnails into a NxN sprite
+            $sprite = VipsImage::arrayjoin($chunk, ['across' => $thumbnailsPerRow]);
 
-        $sprite_images_path = "sprite-images/{$fragment}";
-        if (!($disk->exists('sprite-images') && $disk->exists($sprite_images_path))) {
-            $disk->makeDirectory('sprite-images');
-            $disk->makeDirectory($sprite_images_path);
+            // Write the sprite to buffer with quality 75 and stripped metadata
+            $spritePath = "{$fragment}/sprite_{$spritesCounter}.{$spriteFormat}";
+            $sprite->writeToFile($disk->path("{$spritePath}"), [
+                'Q' => 75,
+                'strip' => true,
+            ]);
+            $spritesCounter += 1;
+        }
+        if (File::exists($sprite_images_path)) {
+            File::deleteDirectory("{$tmp}/sprite-images/");
         }
 
-        $maybeDeleteDir = function () use ($disk, $fragment, $sprite_images_path) {
-            if ($disk->exists($sprite_images_path)) {
-                $parentDir = dirname($fragment, 2);
-                $disk->deleteDirectory("sprite-images/{$parentDir}");
-            }
-        };
-
-        try {
-            // Create images from video by using ffmpeg, because it is faster than the generateVideoThumbnail method
-            $storageAbsolutePath = $disk->path($sprite_images_path);
-            $process = Process::fromShellCommandline("ffmpeg -i '{$path}' -s {$thumbnailWidth}x{$thumbnailHeight} -vf fps={$frameRate} {$storageAbsolutePath}/frame%03d.png");
-            $process->run();
-
-            $files = $disk->files($sprite_images_path);
-
-            $thumbnails = Arr::map($files, fn ($f) => VipsImage::newFromFile($disk->path('/').$f));
-
-            // Split array into sprite-chunks
-            $chunks = [];
-            $nbrChunks = ceil(count($thumbnails)/$thumbnailsPerSprite);
-            for ($i = 0; $i < $nbrChunks; $i++) {
-                // $thumbnails is cut here, so the beginning of the next chunk is always at index 0
-                $chunks[] = array_splice($thumbnails, 0, $thumbnailsPerSprite);
-            }
-
-            $spritesCounter = 0;
-            foreach ($chunks as $chunk) {
-                // Join the thumbnails into a NxN sprite
-                $sprite = VipsImage::arrayjoin($chunk, ['across' => $thumbnailsPerRow]);
-
-                // Write the sprite to buffer with quality 75 and stripped metadata
-                $spriteBuffer = $sprite->writeToBuffer(".{$spriteFormat}", [
-                    'Q' => 75,
-                    'strip' => true,
-                ]);
-                $spritePath = "{$fragment}/sprite_{$spritesCounter}.{$spriteFormat}";
-                $disk->put($spritePath, $spriteBuffer);
-                $spritesCounter += 1;
-            };
-        } catch (Exception $e) {
-            $maybeDeleteDir();
-            throw $e;
-            
-        }
-
-        $maybeDeleteDir();
     }
 }
