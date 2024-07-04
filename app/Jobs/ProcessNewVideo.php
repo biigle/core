@@ -153,7 +153,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             $tmp = config('videos.tmp_dir');
             $tmpDir = "{$tmp}/{$fragment}";
             if (!File::exists($tmpDir)) {
-                File::makeDirectory($tmpDir, 0755, true, true);
+                File::makeDirectory($tmpDir, 0755, true);
             }
 
             if (!$disk->exists($tmpDir)) {
@@ -257,9 +257,11 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
         $frameRate = 1 / $thumbnailInterval;
-        $process = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/frame%04d.{$format}");
-        $process->run();
-        return $process->getExitCode();
+        $p = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/frame%04d.{$format}");
+        $p->run();
+        if ($p->getExitCode() !== 0) {
+            throw new Exception("Process was terminated with code {$p->getExitCode()}");
+        }
 
     }
 
@@ -278,7 +280,11 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $format = config('thumbnails.format');
         foreach ($files as $f) {
             $newFilename = pathinfo($f, PATHINFO_FILENAME);
-            Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$width}x{$height} {$thumbnailsDir}{$newFilename}.{$format}")->run();
+            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$width}x{$height} {$thumbnailsDir}{$newFilename}.{$format}");
+            $p->run();
+            if ($p->getExitCode() !== 0) {
+                throw new Exception("Process was terminated with code {$p->getExitCode()}");
+            }
         }
     }
 
@@ -340,7 +346,11 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $files = File::glob($thumbnailDir . "/*.{$thumbFormat}");
         foreach ($files as $f) {
             $filename = pathinfo($f, PATHINFO_FILENAME);
-            Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$thumbnailWidth}x{$thumbnailHeight} {$sprite_images_path}/{$filename}.{$spriteFormat}")->run();
+            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$thumbnailWidth}x{$thumbnailHeight} {$sprite_images_path}/{$filename}.{$spriteFormat}");
+            $p->run();
+            if ($p->getExitCode() !== 0) {
+                throw new Exception("Process was terminated with code {$p->getExitCode()}");
+            }
         }
 
         $files = File::glob($sprite_images_path . "/*.{$spriteFormat}");
@@ -353,7 +363,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
             // $thumbnails is cut here, so the beginning of the next chunk is always at index 0
             $chunks[] = array_splice($thumbnails, 0, $thumbnailsPerSprite);
         }
-
         $spritesCounter = 0;
         foreach ($chunks as $chunk) {
             // Join the thumbnails into a NxN sprite
