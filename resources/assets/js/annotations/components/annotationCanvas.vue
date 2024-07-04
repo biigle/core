@@ -583,10 +583,10 @@ export default {
                 this.resetInteractionMode();
             }
         },
-        render() {
-            if (this.map) {
-                this.map.render();
-                this.$emit('render');
+        fireImageSourceChanged() {
+            const source = this.imageLayer?.getSource();
+            if (source) {
+                source.changed();
             }
         },
         handleRegularImage(image) {
