@@ -165,7 +165,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
             // generate thumbnails
             $files = glob($tmpDir."/*.{$format}");
-            $this->generateVideoThumbnails($files, $disk->path($fragment.'/'), $format, $width, $height);
+            $this->generateVideoThumbnails($files, $disk->path($fragment.'/'), $width, $height);
 
             // generate sprites
             $this->generateSprites($disk, $tmpDir, $fragment);
@@ -237,10 +237,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
     }
 
     /**
-     * Generate thumbnails from the video.
+     * Extract images from video.
      *
      * @param string $path Path to the video file.
-     * @param float $time Time for the thumbnail in seconds.
+     * @param float $duration Duration of video in seconds.
+     * @param $destinationPath Path to where images will be saved.
+     * @throws Exception if images cannot be extracted from video.
      *
      */
     protected function generateImagesfromVideo($path, $duration, $destinationPath)
@@ -261,8 +263,19 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
     }
 
-    protected function generateVideoThumbnails($files, $thumbnailsDir, $format, $width, $height)
+    /**
+     * Generate thumbnails from the video images.
+     * 
+     * @param $files Array of image paths.
+     * @param $thumbnailsDir Path to directory where thumbnails will be saved.
+     * @param $width Width of the thumbnail.
+     * @param $height Height of the thumbnail.
+     * @throws Exception if image cannot be resized.
+     * 
+     * **/
+    protected function generateVideoThumbnails($files, $thumbnailsDir, $width, $height)
     {
+        $format = config('thumbnails.format');
         foreach ($files as $f) {
             $newFilename = pathinfo($f, PATHINFO_FILENAME);
             Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$width}x{$height} {$thumbnailsDir}{$newFilename}.{$format}")->run();
@@ -302,17 +315,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
     /**
      * Generate sprites from a video file and save them to a storage disk.
      *
-     * This function takes a video file path, its duration, a storage disk instance,
-     * and a fragment identifier to generate sprites from the video at specified intervals.
      * Sprites are created as thumbnails of frames and organized into sprite sheets.
      *
-     * @param string $path path to the video file.
-     * @param float $duration duration of the video in seconds.
-     * @param mixed $disk storage disk instance (e.g., Laravel's Storage).
-     * @param string $fragment fragment identifier for organizing the sprites.
+     * @param $disk Storage disk where sprites will be saved.
+     * @param $thumbnailDir Directory where thumbnails are saved.
+     * @param $fragment Path where sprite frames will be saved.
+     * @throws Exception if images cannot be resized and transformed to webp format.
      *
      */
-    protected function generateSprites($disk, $tmpDir, $fragment)
+    protected function generateSprites($disk, $thumbnailDir, $fragment)
     {
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
@@ -321,14 +332,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $spriteFormat = config('videos.sprites_format');
         $thumbFormat = config('thumbnails.format');
         $tmp = config('videos.tmp_dir');
-        // Adjust the frame time based on the number of estimated thumbnails
-
 
         $sprite_images_path = "{$tmp}/sprite-images/{$fragment}";
         if (!File::exists($sprite_images_path)) {
             File::makeDirectory($sprite_images_path, 0755, true);
         }
-        $files = File::glob($tmpDir . "/*.{$thumbFormat}");
+        $files = File::glob($thumbnailDir . "/*.{$thumbFormat}");
         foreach ($files as $f) {
             $filename = pathinfo($f, PATHINFO_FILENAME);
             Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$thumbnailWidth}x{$thumbnailHeight} {$sprite_images_path}/{$filename}.{$spriteFormat}")->run();
