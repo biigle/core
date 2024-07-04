@@ -257,7 +257,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
         $frameRate = 1 / $thumbnailInterval;
-        $p = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/frame%04d.{$format}");
+
+        // Leading zeros are important to prevent file sorting afterwards
+        $p = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/%04d.{$format}");
         $p->run();
         if ($p->getExitCode() !== 0) {
             throw new Exception("Process was terminated with code {$p->getExitCode()}");
