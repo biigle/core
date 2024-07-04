@@ -64,11 +64,11 @@ export default {
                 // Center is required but will be updated immediately with fit().
                 center: [0, 0],
                 projection: projection,
-                // zoomFactor: 2,
                 minResolution: this.minResolution,
                 extent: this.extent,
                 showFullExtent: true,
                 constrainOnlyCenter: true,
+                padding: [10, 10, 10, 10],
             }));
 
             this.map.getView().fit(this.extent);

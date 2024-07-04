@@ -733,7 +733,6 @@ export default {
                 projection: this.projection,
                 center: center,
                 resolution: this.resolution,
-                zoomFactor: 2,
                 // Allow a maximum of 100x magnification for non-tiled images. More
                 // cannot be represented in the URL parameters.
                 minResolution: 0.01,
@@ -741,6 +740,7 @@ export default {
                 extent: extent,
                 showFullExtent: true,
                 constrainOnlyCenter: true,
+                padding: [10, 10, 10, 10],
             }));
 
             if (this.resolution === undefined) {
