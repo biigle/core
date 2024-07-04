@@ -273,7 +273,9 @@ export default {
             let thumbnailUrl;
             if (thumbCount > 1) {
                 thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
-                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
+                    let idx = (i+1).toString();
+                    let filename = "frame" + "0".repeat(4-idx.length) + idx;
+                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + filename);
                 });
             } else {
                 thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
