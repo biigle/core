@@ -55,8 +55,8 @@ export default {
             // start with true to hide flashing black thumbnail
             spriteNotFound: true,
             // default values but will be overwritten in created()
-            thumbnailWidth: 240,
-            thumbnailHeight: 138,
+            thumbnailWidth: 360,
+            thumbnailHeight: 270,
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
