@@ -50,6 +50,10 @@ let selectedCircleFill = new Fill({
     color: colors.orange,
 });
 
+let transparentFill =  new Fill({
+    color: 'transparent',
+});
+
 let defaultCircleStroke = new Stroke({
     color: colors.white,
     width: 2
@@ -92,9 +96,7 @@ export default {
                     // Add transparent fill for hit detection inside of circles and
                     // polygons.
                     // See https://github.com/openlayers/openlayers/pull/7750
-                    fill: new Fill({
-                        color: 'transparent',
-                    }),
+                    fill: transparentFill,
                 }),
                 new Style({
                     stroke: new Stroke({
@@ -115,6 +117,10 @@ export default {
                 fill: selectedCircleFill,
                 stroke: selectedCircleStroke,
             }),
+            // Add transparent fill for hit detection inside of circles and
+            // polygons.
+            // See https://github.com/openlayers/openlayers/pull/7750
+            fill: transparentFill,
             zIndex: 200,
         }),
         new Style({
