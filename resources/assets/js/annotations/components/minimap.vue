@@ -10,6 +10,7 @@ import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import View from 'ol/View';
+import ZoomifySource from 'ol/source/Zoomify';
 import {CancelableMap as Map} from '../ol/CancelableMap';
 import {fromExtent} from 'ol/geom/Polygon';
 import {getCenter} from 'ol/extent';
@@ -120,7 +121,21 @@ export default {
         },
         handleChangeSource(e) {
             if (this.currentLayer) {
-                this.currentLayer.setSource(e.target.getSource());
+                let source = e.target.getSource();
+
+                // Create a new tile source instead of sharing it because otherwise the
+                // minimap would flicker on zoom/pan sometimes.
+                if (this.currentLayer instanceof TileLayer) {
+                    let image = this.$parent.image
+                    source = new ZoomifySource({
+                        url: image.url,
+                        size: [image.width, image.height],
+                        extent: [0, 0, image.width, image.height],
+                        transition: 0,
+                    });
+                }
+
+                this.currentLayer.setSource(source);
             }
         },
         initImageLayer(layers) {
