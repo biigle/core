@@ -282,7 +282,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $format = config('thumbnails.format');
         foreach ($files as $f) {
             $newFilename = pathinfo($f, PATHINFO_FILENAME);
-            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$width}x{$height} {$thumbnailsDir}{$newFilename}.{$format}");
+            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf scale={$width}:{$height}:force_original_aspect_ratio=1 {$thumbnailsDir}{$newFilename}.{$format}");
             $p->run();
             if ($p->getExitCode() !== 0) {
                 throw new Exception("Process was terminated with code {$p->getExitCode()}");
@@ -340,6 +340,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $spriteFormat = config('videos.sprites_format');
         $thumbFormat = config('thumbnails.format');
         $tmp = config('videos.tmp_dir');
+        $aspectRatio = $this->video->width/$this->video->height;
+        $paddingX = $aspectRatio >= 1 ? 0 : "(ow-iw)/2";
+        $paddingY = $aspectRatio >= 1 ? "(oh-ih)/2" : 0;
 
         $sprite_images_path = "{$tmp}/sprite-images/{$fragment}";
         if (!File::exists($sprite_images_path)) {
@@ -348,7 +351,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $files = File::glob($thumbnailDir . "/*.{$thumbFormat}");
         foreach ($files as $f) {
             $filename = pathinfo($f, PATHINFO_FILENAME);
-            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -s {$thumbnailWidth}x{$thumbnailHeight} {$sprite_images_path}/{$filename}.{$spriteFormat}");
+            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf \"scale={$thumbnailWidth}:{$thumbnailHeight}:force_original_aspect_ratio=1,pad=w={$thumbnailWidth}:h={$thumbnailHeight}:{$paddingX}:{$paddingY}\" {$sprite_images_path}/{$filename}.{$spriteFormat}");
             $p->run();
             if ($p->getExitCode() !== 0) {
                 throw new Exception("Process was terminated with code {$p->getExitCode()}");
