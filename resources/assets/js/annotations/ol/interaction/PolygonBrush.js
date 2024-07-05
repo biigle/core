@@ -168,7 +168,7 @@ class PolygonBrush extends Draw {
     return false;
   }
 
-  handleUpEvent(event) {
+  handleUpEvent() {
     if (this.handlingDownUpSequence && this.isDrawing_) {
       this.finishDrawing();
 
@@ -282,7 +282,7 @@ function getDefaultStyleFunction() {
         styles['LineString']
       );
 
-  return function(feature, resolution) {
+  return function(feature) {
     return styles[feature.getGeometry().getType()];
   };
 }

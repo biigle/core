@@ -154,8 +154,8 @@ export default {
             switch (shape) {
                 case 'Point':
                     return new Point(points[0]);
-                case 'Rectangle':
-                    return new Rectangle([points]);
+                // case 'Rectangle':
+                //     return new Rectangle([points]);
                 case 'Polygon':
                     return new Polygon([points]);
                 case 'LineString':
@@ -163,8 +163,8 @@ export default {
                 case 'Circle':
                     // radius is the x value of the second point of the circle
                     return new Circle(points[0], points[1][0]);
-                case 'Ellipse':
-                    return new Ellipse([points]);
+                // case 'Ellipse':
+                //     return new Ellipse([points]);
                 default:
                     // unsupported shapes are ignored
                     console.error('Unknown annotation shape: ' + shape);

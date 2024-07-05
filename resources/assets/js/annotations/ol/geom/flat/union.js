@@ -1,5 +1,4 @@
 import turfUnion from '@turf/union';
-import {polygon as turfPolygon} from '@turf/helpers';
 import {reducePrecision} from './simplify.js';
 
 export function union(first, second) {

@@ -1,5 +1,4 @@
 import turfDifference from '@turf/difference';
-import {polygon as turfPolygon} from '@turf/helpers';
 import Polygon from 'ol/geom/Polygon.js';
 import {reducePrecision} from './simplify.js';
 

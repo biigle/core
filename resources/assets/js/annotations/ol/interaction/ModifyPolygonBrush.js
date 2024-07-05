@@ -204,7 +204,7 @@ class ModifyPolygonBrush extends Modify {
             this.source_.removeFeature(feature);
           }
           this.dispatchEvent(
-            new ModifyEvent(ModifyPolygonBrushEventType.MODIFYREMOVE, new Collection([feature]), event)
+            new ModifyEvent(ModifyEventType.MODIFYREMOVE, new Collection([feature]), event)
           );
       } else {
         var coords = difference(featurePolygon, sketchPointPolygon);
@@ -218,7 +218,7 @@ class ModifyPolygonBrush extends Modify {
     }, this);
   }
 
-  addCurrentFeatures_(event) {
+  addCurrentFeatures_() {
     const sketchPointGeom = fromCircle(this.sketchCircle_);
     let sketchPointPolygon = turfPolygon(sketchPointGeom.getCoordinates());
     this.features_.getArray().forEach(function (feature) {
@@ -247,7 +247,7 @@ class ModifyPolygonBrush extends Modify {
 function getDefaultStyleFunction() {
   const style = createEditingStyle();
 
-  return function(feature, resolution) {
+  return function() {
     return style['Circle'];
   }
 }

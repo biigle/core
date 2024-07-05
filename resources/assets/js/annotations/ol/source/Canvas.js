@@ -2,7 +2,7 @@ import Image from 'ol/source/Image';
 import ImageCanvas from 'ol/ImageCanvas';
 import {listen} from 'ol/events';
 import EventType from 'ol/events/EventType';
-import {intersects, getHeight} from 'ol/extent';
+import {getHeight} from 'ol/extent';
 
 /**
  * @classdesc
@@ -35,11 +35,11 @@ class Canvas extends Image {
   /**
    * @inheritDoc
    */
-  getImageInternal(extent, resolution, pixelRatio, projection) {
+  getImageInternal() {
     // No need to check if extent intersects canvas. The canvas is always visible
     // in our apllication.
     return this.canvas_;
-  };
+  }
 }
 
 export default Canvas;

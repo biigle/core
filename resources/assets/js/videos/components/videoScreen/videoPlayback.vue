@@ -4,7 +4,6 @@ import ImageLayer from 'ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
 import Projection from 'ol/proj/Projection';
 import View from 'ol/View';
-import {apply as applyTransform} from 'ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
