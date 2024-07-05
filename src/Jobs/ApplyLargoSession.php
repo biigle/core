@@ -208,9 +208,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
             // Remove all annotations from the dismissed array that should be ignored.
             // Use outermost array_filter to remove now empty elements.
             $dismissed = array_filter(array_map(function ($ids) use ($ignoreAnnotations) {
-                return array_filter($ids, function ($id) use ($ignoreAnnotations) {
-                    return !in_array($id, $ignoreAnnotations);
-                });
+                return array_diff($ids, $ignoreAnnotations);
             }, $dismissed));
         }
 
@@ -285,6 +283,8 @@ class ApplyLargoSession extends Job implements ShouldQueue
 
         // Get all labels that are already there exactly like they should be created
         // in the next step.
+        // This is built as a map of annotation ID and label ID pair keys to make the
+        // existence check later much faster.
         $alreadyThere = $labelModel::select('annotation_id', 'label_id')
             ->where('user_id', $user->id)
             ->where(function ($query) use ($changed) {
@@ -295,7 +295,10 @@ class ApplyLargoSession extends Job implements ShouldQueue
                     });
                 }
             })
-            ->get();
+            ->get()
+            ->map(fn ($label) => "{$label->annotation_id}-{$label->label_id}")
+            ->flip()
+            ->toArray();
 
         $annotationIds = array_unique(array_merge(...$changed));
         $existingAnnotations = $annotationModel::whereIn('id', $annotationIds)
@@ -306,15 +309,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $now = Carbon::now();
 
         foreach ($changed as $labelId => $annotationIds) {
+            // Handle only annotations that still exist.
+            $annotationIds = array_intersect($annotationIds, $existingAnnotations);
             foreach ($annotationIds as $annotationId) {
-                // Skip all new annotation labels if their annotation no longer exists
-                // or if they already exist exactly like they should be created.
-                $skip = !in_array($annotationId, $existingAnnotations) ||
-                    $alreadyThere->where('annotation_id', $annotationId)
-                        ->where('label_id', $labelId)
-                        ->isNotEmpty();
-
-                if (!$skip) {
+                // Skip new annotation labels if they already exist exactly like they
+                // should be created.
+                if (!array_key_exists("{$annotationId}-{$labelId}", $alreadyThere)) {
                     $newAnnotationLabels[] = [
                         'annotation_id' => $annotationId,
                         'label_id' => $labelId,
@@ -323,35 +323,39 @@ class ApplyLargoSession extends Job implements ShouldQueue
                         'updated_at' => $now,
                     ];
 
-                    // Add the new annotation label to the list so any subsequent equal
+                    // Add the new annotation label to the map so any subsequent equal
                     // annotation label is skipped.
-                    $alreadyThere->push([
-                        'annotation_id' => $annotationId,
-                        'label_id' => $labelId,
-                    ]);
+                    $alreadyThere["{$annotationId}-{$labelId}"] = true;
                 }
             }
         }
+
+        // Free memory.
+        unset($alreadyThere);
 
         // Store the ID so we can efficiently loop over the models later. This is only
         // possible because all this happens inside a DB transaction (see above).
         $startId = $labelModel::orderBy('id', 'desc')->select('id')->first()->id;
 
         collect($newAnnotationLabels)
-            ->when($labelModel === ImageAnnotationLabel::class, function ($labels) {
-                return $labels->map(function ($item) {
-                    $item['confidence'] = 1;
-
-                    return $item;
-                });
-            })
-            // Chuk for huge requests which may run into the 65535 parameters limit of a
+            // Chunk for huge requests which may run into the 65535 parameters limit of a
             // single database call.
             // See: https://github.com/biigle/largo/issues/76
             ->chunk(5000)
             ->each(function ($chunk) use ($labelModel) {
+                if ($labelModel === ImageAnnotationLabel::class) {
+                    $chunk = $chunk->map(function ($item) {
+                        $item['confidence'] = 1;
+
+                        return $item;
+                    });
+                }
+
                 $labelModel::insert($chunk->toArray());
             });
+
+        // Free memory.
+        unset($newAnnotationLabels);
 
         $labelModel::where('id', '>', $startId)
             ->eachById(function ($annotationLabel) use ($labelModel) {
