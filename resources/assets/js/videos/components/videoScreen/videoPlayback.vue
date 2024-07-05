@@ -15,10 +15,7 @@ export default {
         return {
             playing: false,
             animationFrameId: null,
-            // Refresh the annotations only every x ms.
-            refreshRate: 30,
             renderCurrentTime: -1,
-            refreshLastTime: Date.now(),
             extent: [0, 0, 0, 0],
             // Allow a maximum of 100x magnification. More cannot be represented in the
             // URL parameters.
@@ -78,12 +75,6 @@ export default {
                 this.renderCurrentTime = this.video.currentTime;
                 this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
                 this.videoSource.changed();
-
-                let now = Date.now();
-                if (force || (now - this.refreshLastTime) >= this.refreshRate) {
-                    this.$emit('refresh', this.video.currentTime);
-                    this.refreshLastTime = now;
-                }
             }
         },
         startRenderLoop() {
