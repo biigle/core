@@ -63,7 +63,7 @@ export default {
             annotationFilters: [],
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
-            annotationOpacity: 1,
+            annotationOpacity:1,
             cachedImagesCount: 1,
             // Initial map viewport.
             mapCenter: undefined,
@@ -162,7 +162,12 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
-        }
+        },
+
+        isAnnotationOpacityZero() {
+        return this.annotationOpacity === 0;
+    },
+   
     },
     methods: {
         getImageAndAnnotationsPromises(id) {
