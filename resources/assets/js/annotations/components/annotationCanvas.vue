@@ -707,12 +707,34 @@ export default {
             this.resetHoveredAnnotations();
         },
         selectedAnnotations(annotations) {
-            let source = this.annotationSource;
+            // This allows selection of annotations outside OpenLayers and forwards
+            // the state to the SelectInteraction.
             let features = this.selectedFeatures;
-            features.clear();
-            annotations.forEach(function (annotation) {
-                features.push(source.getFeatureById(annotation.id));
+            let featureIdMap = {};
+            let annotationIdMap = {};
+            annotations.forEach(a => annotationIdMap[a.id] = true);
+            let toRemove = [];
+
+            features.forEach(f => {
+                const id = f.getId();
+                if (annotationIdMap[id]) {
+                    featureIdMap[id] = true;
+                } else {
+                    toRemove.push(f);
+                }
             });
+
+            if (toRemove.length === features.getLength()) {
+                features.clear();
+            } else {
+                toRemove.forEach(f => features.remove(f));
+            }
+
+            annotations
+                .filter(a => !featureIdMap[a.id])
+                .forEach(
+                    a => features.push(this.annotationSource.getFeatureById(a.id))
+                );
         },
         extent(extent, oldExtent) {
             // The extent only truly changes if the width and height changed.
