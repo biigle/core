@@ -1,6 +1,7 @@
 <script>
 import Events from '../../core/events';
 import Messages from '../../core/messages/store';
+import Keyboard from '../../core/keyboard';
 
 /**
  * A button that produces a screenshot of the map
@@ -158,6 +159,7 @@ export default {
         this.currentId = biigle.$require('annotations.imageId');
         Events.$on('images.change', this.updateCurrentId);
         Events.$on('annotations.map.init', this.setMap);
+        Keyboard.on('p', this.capture);
     },
 };
 </script>
