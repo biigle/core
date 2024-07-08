@@ -120,7 +120,7 @@ export default {
                 this.startRenderLoop();
             }
         },
-        setPaused(dontSeek = false) {
+        setPaused(dontSeek) {
             this.playing = false;
             this.stopRenderLoop();
             // Force render the video frame that belongs to currentTime. This is a
@@ -128,7 +128,7 @@ export default {
             // currentTime (in most cases). With the workaround we can create annotations
             // at currentTime and be sure that the same frame can be reproduced later for
             // the annotations. See: https://github.com/biigle/core/issues/433
-            if (!dontSeek) {
+            if (dontSeek !== true) {
                 this.$emit('seek', this.video.currentTime, true);
             }
         },
@@ -254,7 +254,7 @@ export default {
         this.dummyCanvas.width = 1;
         this.dummyCanvas.height = 1;
         this.video.addEventListener('play', this.setPlaying);
-        this.video.addEventListener('pause', this.setPaused);
+        this.video.addEventListener('pause', (e) => this.setPaused());
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
