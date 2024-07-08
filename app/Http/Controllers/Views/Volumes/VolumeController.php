@@ -2,17 +2,19 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
-use Biigle\Http\Controllers\Views\Controller;
-use Biigle\LabelTree;
-use Biigle\MediaType;
-use Biigle\Modules\UserDisks\UserDisk;
-use Biigle\Modules\UserStorage\UserStorageServiceProvider;
-use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
+use Biigle\Project;
+use Biigle\LabelTree;
+use Biigle\MediaType;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Biigle\Modules\UserDisks\UserDisk;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 
 class VolumeController extends Controller
 {
@@ -101,8 +103,25 @@ class VolumeController extends Controller
 
         if ($volume->isImageVolume()) {
             $thumbUriTemplate = thumbnail_url(':uuid');
+            $nbrThumbnails = [];
         } else {
             $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
+
+            // Compute number of generated thumbnails for each file
+            $maxThumbnails = config('videos.sprites_max_thumbnails');
+            $minThumbnails = config('videos.sprites_min_thumbnails');
+            $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
+            $nbrThumbnails = $volume->files->mapWithKeys(function ($f) use ($defaultThumbnailInterval, $minThumbnails, $maxThumbnails) {
+                $duration = floor($f->duration);
+                $estimatedThumbs = $duration / $defaultThumbnailInterval;
+                if ($estimatedThumbs < $minThumbnails) {
+                    return [$f->id => $minThumbnails];
+                }
+                if ($estimatedThumbs > $maxThumbnails) {
+                    return [$f->id => $maxThumbnails];
+                }
+                return [$f->id => $estimatedThumbs];
+            })->toArray();
         }
 
         $type = $volume->mediaType->name;
@@ -113,7 +132,8 @@ class VolumeController extends Controller
             'projects',
             'fileIds',
             'thumbUriTemplate',
-            'type'
+            'type',
+            'nbrThumbnails',
         ));
     }
 
