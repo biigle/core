@@ -552,7 +552,7 @@ export default {
             this.$emit('next');
         },
         reset() {
-            this.setPaused(true);
+            this.setPaused();
             this.resetInteractionMode();
         },
         adaptKeyboardShortcuts() {
