@@ -269,11 +269,11 @@ class ProcessNewVideoStub extends ProcessNewVideo
         return $this->codec ?: parent::getCodec($path);
     }
 
-    protected function generateImagesfromVideo($path, $duration, $destinationPath)
+    protected function extractImagesfromVideo($path, $duration, $destinationPath)
     {
         // Use parent method to test max and min number of thumbnail generation
         if($this->useFfmpeg){
-            parent::generateImagesfromVideo($path, $duration, $destinationPath);
+            parent::extractImagesfromVideo($path, $duration, $destinationPath);
             return;
         }
 

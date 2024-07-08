@@ -159,15 +159,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
             if (!$disk->exists($tmpDir)) {
                 $disk->makeDirectory($fragment);
             }
-            
-            // generate images from video
-            $this->generateImagesfromVideo($path, $this->video->duration, $tmpDir);
 
-            // generate thumbnails
-            $files = glob($tmpDir."/*.{$format}");
+            // Extract images from video
+            $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
+
+            // Generate thumbnails
+            $files = File::glob($tmpDir."/*.{$format}");
             $this->generateVideoThumbnails($files, $disk->path($fragment.'/'), $width, $height);
 
-            // generate sprites
+            // Generate sprites
             $this->generateSprites($disk, $tmpDir, $fragment);
 
             $parentDir = dirname($fragment, 2);
@@ -245,7 +245,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @throws Exception if images cannot be extracted from video.
      *
      */
-    protected function generateImagesfromVideo($path, $duration, $destinationPath)
+    protected function extractImagesfromVideo($path, $duration, $destinationPath)
     {
         $format = config('thumbnails.format');
         $maxThumbnails = config('videos.sprites_max_thumbnails');
