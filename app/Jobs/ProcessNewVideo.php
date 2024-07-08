@@ -281,8 +281,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
     {
         $format = config('thumbnails.format');
         foreach ($files as $f) {
-            $newFilename = pathinfo($f, PATHINFO_FILENAME);
-            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf scale={$width}:{$height}:force_original_aspect_ratio=1 {$thumbnailsDir}{$newFilename}.{$format}");
+            $filename = pathinfo($f, PATHINFO_FILENAME);
+            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf scale={$width}:{$height}:force_original_aspect_ratio=1 {$thumbnailsDir}{$filename}.{$format}");
             $p->run();
             if ($p->getExitCode() !== 0) {
                 throw new Exception("Process was terminated with code {$p->getExitCode()}");
