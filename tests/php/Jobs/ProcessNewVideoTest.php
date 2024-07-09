@@ -7,11 +7,11 @@ use Biigle\Tests\VideoTest;
 use Biigle\Video;
 use Exception;
 use FileCache;
+use Illuminate\Support\Facades\File;
 use Jcupitt\Vips\Extend;
 use Storage;
 use TestCase;
 use VipsImage;
-use Illuminate\Support\Facades\File;
 
 class ProcessNewVideoTest extends TestCase
 {
@@ -29,13 +29,13 @@ class ProcessNewVideoTest extends TestCase
         $fragment = fragment_uuid_path($video->uuid);
         $parentDir = dirname($fragment, 2);
         $this->assertCount(5, $disk->files($fragment));
-        $this->assertTrue($disk->exists("{$fragment}/0.jpg"));      
-        $this->assertTrue($disk->exists("{$fragment}/1.jpg"));      
-        $this->assertTrue($disk->exists("{$fragment}/2.jpg"));      
-        $this->assertTrue($disk->exists("{$fragment}/3.jpg"));      
+        $this->assertTrue($disk->exists("{$fragment}/0.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/1.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/2.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/3.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
         $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
-        $this->assertFalse(File::exists("{$tmp}/sprite-images"));    
+        $this->assertFalse(File::exists("{$tmp}/sprite-images"));
     }
 
     public function testGenerateSprites()
@@ -272,7 +272,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
     protected function extractImagesfromVideo($path, $duration, $destinationPath)
     {
         // Use parent method to test max and min number of thumbnail generation
-        if($this->useFfmpeg){
+        if ($this->useFfmpeg) {
             parent::extractImagesfromVideo($path, $duration, $destinationPath);
             return;
         }
@@ -281,11 +281,11 @@ class ProcessNewVideoStub extends ProcessNewVideo
         $durationRounded = floor($this->duration * 10) / 10;
         $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
 
-        for($i=0;$i<$estimatedThumbnails; $i++){
+        for ($i=0;$i<$estimatedThumbnails; $i++) {
             $img = VipsImage::black(240, 138)
-            ->embed(30, 40, 240, 138, ['extend' => Extend::WHITE]) // Extend left & top edges with white color
-            ->add("#FFFFFF")
-            ->cast("uchar");
+                ->embed(30, 40, 240, 138, ['extend' => Extend::WHITE]) // Extend left & top edges with white color
+                ->add("#FFFFFF")
+                ->cast("uchar");
             $img->writeToFile($destinationPath."/{$i}.jpg");
 
         }

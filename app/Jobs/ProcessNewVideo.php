@@ -266,13 +266,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
     /**
      * Generate thumbnails from the video images.
-     * 
+     *
      * @param $files Array of image paths.
      * @param $thumbnailsDir Path to directory where thumbnails will be saved.
      * @param $width Width of the thumbnail.
      * @param $height Height of the thumbnail.
      * @throws Exception if image cannot be resized.
-     * 
+     *
      * **/
     protected function generateVideoThumbnails($files, $thumbnailsDir, $width, $height)
     {

@@ -2,19 +2,17 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\LabelTree;
+use Biigle\MediaType;
+use Biigle\Modules\UserDisks\UserDisk;
+use Biigle\Modules\UserStorage\UserStorageServiceProvider;
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
-use Biigle\Project;
-use Biigle\LabelTree;
-use Biigle\MediaType;
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Biigle\Modules\UserDisks\UserDisk;
-use Biigle\Http\Controllers\Views\Controller;
-use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 
 class VolumeController extends Controller
 {
