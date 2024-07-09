@@ -156,7 +156,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 File::makeDirectory($tmpDir, 0755, true);
             }
 
-            if (!$disk->exists($tmpDir)) {
+            if (!$disk->exists($fragment)) {
                 $disk->makeDirectory($fragment);
             }
 
@@ -171,9 +171,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
             $this->generateSprites($disk, $tmpDir, $fragment);
 
             $parentDir = dirname($fragment, 2);
-            if ($disk->exists($tmpDir)) {
-                $disk->deleteDirectory($parentDir);
-            }
             if (File::exists($tmpDir)) {
                 File::deleteDirectory($tmp."/{$parentDir}");
             }
