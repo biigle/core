@@ -359,12 +359,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $thumbnails = Arr::map($files, fn ($f) => VipsImage::newFromFile($f));
 
         // Split array into sprite-chunks
-        $chunks = [];
-        $nbrChunks = ceil(count($thumbnails) / $thumbnailsPerSprite);
-        for ($i = 0; $i < $nbrChunks; $i++) {
-            // $thumbnails is cut here, so the beginning of the next chunk is always at index 0
-            $chunks[] = array_splice($thumbnails, 0, $thumbnailsPerSprite);
-        }
+        $chunks = array_chunk($thumbnails, $thumbnailsPerSprite);
         $spritesCounter = 0;
         foreach ($chunks as $chunk) {
             // Join the thumbnails into a NxN sprite
