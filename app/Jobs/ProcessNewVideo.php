@@ -149,9 +149,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $fragment = fragment_uuid_path($this->video->uuid);
         $width = config('thumbnails.width');
         $height = config('thumbnails.height');
+        $spriteFormat = config('videos.sprites_format');
         try {
             $tmp = config('videos.tmp_dir');
             $tmpDir = "{$tmp}/{$fragment}";
+
+            // Directory for extracted images
             if (!File::exists($tmpDir)) {
                 File::makeDirectory($tmpDir, 0755, true);
             }
@@ -171,10 +174,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
             }
 
             // Generate sprites
-            $this->generateSprites($disk, $tmpDir, $fragment);
+            $sprites = $this->generateSprites($tmpDir);
+            foreach($sprites as $i => $sprite){
+                $disk->put("{$fragment}/sprite_{$i}.{$spriteFormat}", $sprite);
+            }
 
-            $parentDir = dirname($fragment, 2);
             if (File::exists($tmpDir)) {
+                $parentDir = dirname($fragment, 2);
                 File::deleteDirectory($tmp."/{$parentDir}");
             }
         } catch (Exception $e) {
@@ -330,59 +336,35 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * Sprites are created as thumbnails of frames and organized into sprite sheets.
      *
      * @param $disk Storage disk where sprites will be saved.
-     * @param $thumbnailDir Directory where thumbnails are saved.
+     * @param $tmpDir Directory where thumbnails are saved.
      * @param $fragment Path where sprite frames will be saved.
      * @throws Exception if images cannot be resized and transformed to webp format.
      *
      */
-    protected function generateSprites($disk, $thumbnailDir, $fragment)
+    protected function generateSprites($tmpDir)
     {
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
         $thumbnailWidth = config('videos.sprites_thumbnail_width');
         $thumbnailHeight = config('videos.sprites_thumbnail_height');
-        $spriteFormat = config('videos.sprites_format');
         $thumbFormat = config('thumbnails.format');
-        $tmp = config('videos.tmp_dir');
-        $aspectRatio = $this->video->width/$this->video->height;
-        $paddingX = $aspectRatio >= 1 ? 0 : "(ow-iw)/2";
-        $paddingY = $aspectRatio >= 1 ? "(oh-ih)/2" : 0;
 
-        $sprite_images_path = "{$tmp}/sprite-images/{$fragment}";
-        if (!File::exists($sprite_images_path)) {
-            File::makeDirectory($sprite_images_path, 0755, true);
-        }
-        $files = File::glob($thumbnailDir . "/*.{$thumbFormat}");
-        foreach ($files as $f) {
-            $filename = pathinfo($f, PATHINFO_FILENAME);
-            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf \"scale={$thumbnailWidth}:{$thumbnailHeight}:force_original_aspect_ratio=1,pad=w={$thumbnailWidth}:h={$thumbnailHeight}:{$paddingX}:{$paddingY}\" {$sprite_images_path}/{$filename}.{$spriteFormat}");
-            $p->run();
-            if ($p->getExitCode() !== 0) {
-                throw new Exception("Process was terminated with code {$p->getExitCode()}");
+        $files = File::glob($tmpDir . "/*.{$thumbFormat}");
+        $thumbnails = [];
+        $sprites = [];
+        foreach ($files as $i => $file) {
+            if(count($thumbnails) < $thumbnailsPerSprite && $i !== (count($files)-1)){
+                $thumbnails[] = VipsImage::thumbnail($file, $thumbnailWidth, ['height' => $thumbnailHeight]);
+            } else {
+                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
+                $sprites[] = $sprite->writeToBuffer(".{$thumbFormat}", [
+                    'Q' => 75,
+                    'strip' => true,
+                ]);
+                $thumbnails = [];
             }
+            
         }
-
-        $files = File::glob($sprite_images_path . "/*.{$spriteFormat}");
-        $thumbnails = Arr::map($files, fn ($f) => VipsImage::newFromFile($f));
-
-        // Split array into sprite-chunks
-        $chunks = array_chunk($thumbnails, $thumbnailsPerSprite);
-        $spritesCounter = 0;
-        foreach ($chunks as $chunk) {
-            // Join the thumbnails into a NxN sprite
-            $sprite = VipsImage::arrayjoin($chunk, ['across' => $thumbnailsPerRow]);
-
-            // Write the sprite to buffer with quality 75 and stripped metadata
-            $spritePath = "{$fragment}/sprite_{$spritesCounter}.{$spriteFormat}";
-            $sprite->writeToFile($disk->path("{$spritePath}"), [
-                'Q' => 75,
-                'strip' => true,
-            ]);
-            $spritesCounter += 1;
-        }
-        if (File::exists($sprite_images_path)) {
-            File::deleteDirectory("{$tmp}/sprite-images/");
-        }
-
+        return $sprites;
     }
 }
