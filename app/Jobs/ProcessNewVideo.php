@@ -165,7 +165,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
             // Generate thumbnails
             $files = File::glob($tmpDir."/*.{$format}");
-            $this->generateVideoThumbnails($files, $disk->path($fragment.'/'), $width, $height);
+            $bufferedThumbnails = $this->generateVideoThumbnails($files, $width, $height);
+            foreach($bufferedThumbnails as $index => $bft){
+                $disk->put("{$fragment}/{$index}.{$format}", $bft);
+            }
 
             // Generate sprites
             $this->generateSprites($disk, $tmpDir, $fragment);
@@ -268,23 +271,27 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * Generate thumbnails from the video images.
      *
      * @param $files Array of image paths.
-     * @param $thumbnailsDir Path to directory where thumbnails will be saved.
      * @param $width Width of the thumbnail.
      * @param $height Height of the thumbnail.
-     * @throws Exception if image cannot be resized.
      *
      * **/
-    protected function generateVideoThumbnails($files, $thumbnailsDir, $width, $height)
+    protected function generateVideoThumbnails($files, $width, $height)
     {
         $format = config('thumbnails.format');
-        foreach ($files as $f) {
-            $filename = pathinfo($f, PATHINFO_FILENAME);
-            $p = Process::fromShellCommandline("ffmpeg -i '{$f}' -vf scale={$width}:{$height}:force_original_aspect_ratio=1 {$thumbnailsDir}{$filename}.{$format}");
-            $p->run();
-            if ($p->getExitCode() !== 0) {
-                throw new Exception("Process was terminated with code {$p->getExitCode()}");
-            }
+        $thumbCount = config('videos.thumbnail_count');
+        $buffers = [];
+        $nbrFiles = count($files);
+        $steps = $nbrFiles >= $thumbCount? floor($nbrFiles/$thumbCount) : 1;
+        $end = min($thumbCount, $nbrFiles);
+        for($i = 0; $i < $end; $i += 1){
+            $file = $files[$i*$steps];
+            $thumbnail = VipsImage::thumbnail($file, $width, ['height' => $height]);
+            $buffers[$i] = $thumbnail->writeToBuffer(".{$format}", [
+                'Q' => 85,
+                'strip' => true,
+            ]);
         }
+        return $buffers;
     }
 
     /**
