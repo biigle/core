@@ -144,12 +144,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
         $this->video->save();
 
-        $format = config('thumbnails.format');
         $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
         $fragment = fragment_uuid_path($this->video->uuid);
-        $width = config('thumbnails.width');
-        $height = config('thumbnails.height');
-        $spriteFormat = config('videos.sprites_format');
         try {
             $tmp = config('videos.tmp_dir');
             $tmpDir = "{$tmp}/{$fragment}";
@@ -167,17 +163,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
 
             // Generate thumbnails
-            $files = File::glob($tmpDir."/*.{$format}");
-            $bufferedThumbnails = $this->generateVideoThumbnails($files, $width, $height);
-            foreach($bufferedThumbnails as $index => $bft){
-                $disk->put("{$fragment}/{$index}.{$format}", $bft);
-            }
-
-            // Generate sprites
-            $sprites = $this->generateSprites($tmpDir);
-            foreach($sprites as $i => $sprite){
-                $disk->put("{$fragment}/sprite_{$i}.{$spriteFormat}", $sprite);
-            }
+            $this->generateVideoThumbnails($disk, $fragment, $tmpDir);
 
             if (File::exists($tmpDir)) {
                 $parentDir = dirname($fragment, 2);
@@ -272,99 +258,55 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
 
     }
-
-    /**
-     * Generate thumbnails from the video images.
-     *
-     * @param $files Array of image paths.
-     * @param $width Width of the thumbnail.
-     * @param $height Height of the thumbnail.
-     *
-     * **/
-    protected function generateVideoThumbnails($files, $width, $height)
+    public function generateVideoThumbnails($disk, $fragment, $tmpDir)
     {
+
+        // Config for normal thumbs
         $format = config('thumbnails.format');
         $thumbCount = config('videos.thumbnail_count');
-        $buffers = [];
-        $nbrFiles = count($files);
-        $steps = $nbrFiles >= $thumbCount? floor($nbrFiles/$thumbCount) : 1;
-        $end = min($thumbCount, $nbrFiles);
-        for($i = 0; $i < $end; $i += 1){
-            $file = $files[$i*$steps];
-            $thumbnail = VipsImage::thumbnail($file, $width, ['height' => $height]);
-            $buffers[$i] = $thumbnail->writeToBuffer(".{$format}", [
-                'Q' => 85,
-                'strip' => true,
-            ]);
-        }
-        return $buffers;
-    }
+        $width = config('thumbnails.width');
+        $height = config('thumbnails.height');
 
-    /**
-     * Get the times at which thumbnails should be sampled.
-     *
-     * @param float $duration Video duration.
-     *
-     * @return array
-     */
-    protected function getThumbnailTimes($duration)
-    {
-        $count = config('videos.thumbnail_count');
-
-        if ($count <= 1) {
-            return [$duration / 2];
-        }
-
-        // Start from 0.5 and stop at $duration - 0.5 because FFMpeg sometimes does not
-        // extract frames from a time code that is equal to 0 or $duration.
-        $step = ($duration - 1) / floatval($count - 1);
-        $start = 0.5;
-        $end = $duration - 0.5;
-        $range = range($start, $end, $step);
-
-        // Sometimes there is one entry too few due to rounding errors.
-        if (count($range) < $count) {
-            $range[] = $end;
-        }
-
-        return $range;
-    }
-
-    /**
-     * Generate sprites from a video file and save them to a storage disk.
-     *
-     * Sprites are created as thumbnails of frames and organized into sprite sheets.
-     *
-     * @param $disk Storage disk where sprites will be saved.
-     * @param $tmpDir Directory where thumbnails are saved.
-     * @param $fragment Path where sprite frames will be saved.
-     * @throws Exception if images cannot be resized and transformed to webp format.
-     *
-     */
-    protected function generateSprites($tmpDir)
-    {
+        // Config for sprite thumbs
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
         $thumbnailWidth = config('videos.sprites_thumbnail_width');
         $thumbnailHeight = config('videos.sprites_thumbnail_height');
-        $thumbFormat = config('thumbnails.format');
+        $spriteFormat = config('videos.sprites_format');
 
-        $files = File::glob($tmpDir . "/*.{$thumbFormat}");
+        $files = File::glob($tmpDir . "/*.{$format}");
+        $nbrFiles = count($files);
+        $steps = $nbrFiles >= $thumbCount ? floor($nbrFiles / $thumbCount) : 1;
+        $range = range(0, $nbrFiles, $steps);
+
         $thumbnails = [];
-        $sprites = [];
+        $thumbCounter = 0;
+        $spriteCounter = 0;
         foreach ($files as $i => $file) {
-            if(count($thumbnails) < $thumbnailsPerSprite && $i !== (count($files)-1)){
+            if (in_array($i, $range) && $thumbCounter < $thumbCount) {
+                $thumbnail = VipsImage::thumbnail($file, $width, ['height' => $height]);
+                $bufferedThumb = $thumbnail->writeToBuffer(".{$format}", [
+                    'Q' => 85,
+                    'strip' => true,
+                ]);
+                $disk->put("{$fragment}/{$thumbCounter}.{$format}", $bufferedThumb);
+                $thumbCounter += 1;
+            }
+
+            if (count($thumbnails) < $thumbnailsPerSprite) {
                 $thumbnails[] = VipsImage::thumbnail($file, $thumbnailWidth, ['height' => $thumbnailHeight]);
-            } else {
+            }
+
+            if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {
                 $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
-                $sprites[] = $sprite->writeToBuffer(".{$thumbFormat}", [
+                $bufferedSprite = $sprite->writeToBuffer(".{$format}", [
                     'Q' => 75,
                     'strip' => true,
                 ]);
+                $disk->put("{$fragment}/sprite_{$spriteCounter}.{$spriteFormat}", $bufferedSprite);
                 $thumbnails = [];
+                $spriteCounter += 1;
             }
-            
         }
-        return $sprites;
     }
 }
