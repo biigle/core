@@ -120,6 +120,10 @@ class MagicWandInteraction extends PointerInteraction {
 
         this.snapshotListener = this.updateSnapshot.bind(this);
 
+        this.mapExtent_ = null;
+        this.snapshotHeight_ = 0;
+        this.scaleFactor_ = 0;
+
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
     }
@@ -143,16 +147,10 @@ class MagicWandInteraction extends PointerInteraction {
      * @return {Array}
      */
     toSnapshotCoordinates(points) {
-        let extent = this.map.getView().calculateExtent(this.map.getSize());
-        let height = this.snapshot.height;
-        let factor = this.getHighDpiScaling() / this.map.getView().getResolution();
-
-        return points.map(function (point) {
-            return [
-                Math.round((point[0] - extent[0]) * factor),
-                height - Math.round((point[1] - extent[1]) * factor),
-            ];
-        });
+        return points.map(point => [
+            Math.round((point[0] - this.mapExtent_[0]) * this.scaleFactor_),
+            this.snapshotHeight_ - Math.round((point[1] - this.mapExtent_[1]) * this.scaleFactor_),
+        ]);
     }
 
     /**
@@ -163,16 +161,10 @@ class MagicWandInteraction extends PointerInteraction {
      * @return {Array}
      */
     fromSnapshotCoordinates(points) {
-        let extent = this.map.getView().calculateExtent(this.map.getSize());
-        let height = this.snapshot.height;
-        let factor = this.map.getView().getResolution() / this.getHighDpiScaling();
-
-        return points.map(function (point) {
-            return [
-                Math.round((point[0] * factor) + extent[0]),
-                Math.round(((height - point[1]) * factor) + extent[1]),
-            ];
-        });
+        return points.map(point => [
+            Math.round((point[0] / this.scaleFactor_) + this.mapExtent_[0]),
+            Math.round(((this.snapshotHeight_ - point[1]) / this.scaleFactor_) + this.mapExtent_[1]),
+        ]);
     }
 
     /**
@@ -183,9 +175,7 @@ class MagicWandInteraction extends PointerInteraction {
      * @return {Array}
      */
     fromMagicWandCoordinates(points) {
-        return points.map(function (point) {
-            return [point.x, point.y];
-        });
+        return points.map(point => [point.x, point.y]);
     }
 
     /**
@@ -310,6 +300,10 @@ class MagicWandInteraction extends PointerInteraction {
             this.updatingSnapshot = true;
             this.map.renderSync();
             this.updatingSnapshot = false;
+
+            this.mapExtent_ = this.map.getView().calculateExtent(this.map.getSize());
+            this.snapshotHeight_ = this.snapshot.height;
+            this.scaleFactor_ = this.getHighDpiScaling() / this.map.getView().getResolution();
         }
     }
 
@@ -354,9 +348,7 @@ class MagicWandInteraction extends PointerInteraction {
 
         // Take only the outer contour.
         let contour = MagicWand.traceContours(sketch)
-            .filter(function (c) {
-                return !c.innner;
-            })
+            .filter(c => !c.innner)
             .shift();
 
         if (contour) {
