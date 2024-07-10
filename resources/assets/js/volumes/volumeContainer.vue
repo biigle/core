@@ -265,7 +265,6 @@ export default {
         let fileUuids = biigle.$require('volumes.fileUuids');
         let thumbUri = biigle.$require('volumes.thumbUri');
         let thumbCount = biigle.$require('volumes.thumbCount');
-        let nbrSavedThumbs = biigle.$require('volumes.nbrThumbnails');
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
         // Do this here instead of a computed property so the file objects get
@@ -273,15 +272,8 @@ export default {
         this.files = this.fileIds.map(function (id) {
             let thumbnailUrl;
             if (thumbCount > 1) {
-                let nbrThumbs = nbrSavedThumbs[id];
-                let length = thumbCount < nbrThumbs ? thumbCount : nbrThumbs;
-                // Sample thumbnails uniformly
-                let step = thumbCount < nbrThumbs ? Math.floor(nbrThumbs / thumbCount) : 1;
-                thumbnailUrl = Array.from(Array(length).keys()).map(function (i) {
-                    let fileIdx = (i === 0 ? 1 : i * step + 1).toString();
-                    // Files start with leading zeros e.g 0001.jpg or 0010.jpg
-                    let filename = "0".repeat(4 - fileIdx.length) + fileIdx;
-                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + filename);
+                thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
+                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
                 });
             } else {
                 thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
