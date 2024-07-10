@@ -1,13 +1,13 @@
-import Feature from 'ol/Feature';
+import Feature from '@biigle/ol/Feature';
 import MagicWand from 'magic-wand-tool';
-import Point from 'ol/geom/Point';
-import PointerInteraction from 'ol/interaction/Pointer';
-import Polygon from 'ol/geom/Polygon';
-import RegularShape from 'ol/style/RegularShape';
-import Stroke from 'ol/style/Stroke';
-import Style from 'ol/style/Style';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
+import Point from '@biigle/ol/geom/Point';
+import PointerInteraction from '@biigle/ol/interaction/Pointer';
+import Polygon from '@biigle/ol/geom/Polygon';
+import RegularShape from '@biigle/ol/style/RegularShape';
+import Stroke from '@biigle/ol/style/Stroke';
+import Style from '@biigle/ol/style/Style';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -93,7 +93,7 @@ class MagicWandInteraction extends PointerInteraction {
                             width: 3,
                         }),
                         points: 4,
-                        radius1: 6,
+                        radius: 6,
                         radius2: 0,
                         angle: Math.PI / 4
                     })
@@ -105,7 +105,7 @@ class MagicWandInteraction extends PointerInteraction {
                             width: 1.5,
                         }),
                         points: 4,
-                        radius1: 6,
+                        radius: 6,
                         radius2: 0,
                         angle: Math.PI / 4
                     })

@@ -3,17 +3,17 @@
 </template>
 
 <script>
-import Feature from 'ol/Feature';
-import ImageLayer from 'ol/layer/Image';
+import Feature from '@biigle/ol/Feature';
+import ImageLayer from '@biigle/ol/layer/Image';
+import Map from '@biigle/ol/Map';
 import Styles from '../stores/styles';
-import TileLayer from 'ol/layer/Tile';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import View from 'ol/View';
-import ZoomifySource from 'ol/source/Zoomify';
-import {CancelableMap as Map} from '../ol/CancelableMap';
-import {fromExtent} from 'ol/geom/Polygon';
-import {getCenter} from 'ol/extent';
+import TileLayer from '@biigle/ol/layer/Tile';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
+import View from '@biigle/ol/View';
+import ZoomifySource from '@biigle/ol/source/Zoomify';
+import {fromExtent} from '@biigle/ol/geom/Polygon';
+import {getCenter} from '@biigle/ol/extent';
 
 /**
  * The minimap of the canvas element

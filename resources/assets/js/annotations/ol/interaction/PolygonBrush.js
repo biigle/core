@@ -1,15 +1,15 @@
-import Circle from 'ol/geom/Circle';
-import Draw from 'ol/interaction/Draw';
-import Event from 'ol/events/Event.js';
-import EventType from 'ol/events/EventType';
-import Feature from 'ol/Feature';
-import MapBrowserEventType from 'ol/MapBrowserEventType';
-import VectorLayer from 'ol/layer/Vector';
-import {always} from 'ol/events/condition';
-import {createEditingStyle} from 'ol/style/Style';
-import {fromCircle} from 'ol/geom/Polygon';
+import Circle from '@biigle/ol/geom/Circle';
+import Draw from '@biigle/ol/interaction/Draw';
+import Event from '@biigle/ol/events/Event.js';
+import EventType from '@biigle/ol/events/EventType';
+import Feature from '@biigle/ol/Feature';
+import MapBrowserEventType from '@biigle/ol/MapBrowserEventType';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import {always} from '@biigle/ol/events/condition';
+import {createEditingStyle} from '@biigle/ol/style/Style';
+import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {polygon as turfPolygon} from '@turf/helpers';
-import {shiftKeyOnly} from 'ol/events/condition';
+import {shiftKeyOnly} from '@biigle/ol/events/condition';
 import {union} from '../geom/flat/union';
 
 const MIN_BRUSH_SIZE = 5;

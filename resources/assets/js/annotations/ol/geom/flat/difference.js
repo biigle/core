@@ -1,5 +1,5 @@
 import turfDifference from '@turf/difference';
-import Polygon from 'ol/geom/Polygon.js';
+import Polygon from '@biigle/ol/geom/Polygon.js';
 import {reducePrecision} from './simplify.js';
 
 export function difference(first, second) {

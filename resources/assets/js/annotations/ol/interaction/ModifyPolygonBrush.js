@@ -1,18 +1,18 @@
 import {polygon as turfPolygon} from '@turf/helpers';
 import booleanContains from '@turf/boolean-contains';
-import Feature from 'ol/Feature';
-import EventType from 'ol/events/EventType';
-import Circle from 'ol/geom/Circle';
-import Polygon from 'ol/geom/Polygon';
-import {createEditingStyle} from 'ol/style/Style';
-import Modify from 'ol/interaction/Modify';
-import {ModifyEvent} from 'ol/interaction/Modify';
-import {shiftKeyOnly} from 'ol/events/condition';
-import {fromCircle} from 'ol/geom/Polygon';
+import Feature from '@biigle/ol/Feature';
+import EventType from '@biigle/ol/events/EventType';
+import Circle from '@biigle/ol/geom/Circle';
+import Polygon from '@biigle/ol/geom/Polygon';
+import {createEditingStyle} from '@biigle/ol/style/Style';
+import Modify from '@biigle/ol/interaction/Modify';
+import {ModifyEvent} from '@biigle/ol/interaction/Modify';
+import {shiftKeyOnly} from '@biigle/ol/events/condition';
+import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {union} from '../geom/flat/union';
 import {difference} from '../geom/flat/difference';
-import {always} from 'ol/events/condition';
-import Collection from 'ol/Collection';
+import {always} from '@biigle/ol/events/condition';
+import Collection from '@biigle/ol/Collection';
 import {getNewSketchPointRadius, getNewSketchPointRadiusByPressure} from './PolygonBrush';
 
 export const ModifyEventType = {

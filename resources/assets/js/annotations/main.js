@@ -1,5 +1,5 @@
 import './export';
-import 'ol/ol.css';
+import '@biigle/ol/ol.css';
 import Container from './annotatorContainer';
 import Navbar from './annotationsNavbar';
 

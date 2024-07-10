@@ -1,4 +1,4 @@
-import PointerInteraction from 'ol/interaction/Pointer';
+import PointerInteraction from '@biigle/ol/interaction/Pointer';
 
 /**
  * Control for attaching labels to existing annotations

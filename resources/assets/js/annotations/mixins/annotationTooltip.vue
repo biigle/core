@@ -1,5 +1,5 @@
 <script>
-import Overlay from 'ol/Overlay';
+import Overlay from '@biigle/ol/Overlay';
 
 /**
  * Tooltip showing information on the hovered annotations.

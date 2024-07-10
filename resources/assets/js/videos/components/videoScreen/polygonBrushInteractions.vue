@@ -2,13 +2,13 @@
 import Keyboard from '../../../core/keyboard';
 import ModifyPolygonBrushInteraction from '../../../annotations/ol/interaction/ModifyPolygonBrush';
 import PolygonBrushInteraction from '../../../annotations/ol/interaction/PolygonBrush';
-import SelectInteraction from 'ol/interaction/Select';
+import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../../annotations/stores/styles';
-import {altKeyOnly as altKeyOnlyCondition} from 'ol/events/condition';
-import {click as clickCondition} from 'ol/events/condition';
-import {never as neverCondition} from 'ol/events/condition';
-import {noModifierKeys as noModifierKeysCondition} from 'ol/events/condition';
-import {shiftKeyOnly as shiftKeyOnlyCondition} from 'ol/events/condition';
+import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';
+import {click as clickCondition} from '@biigle/ol/events/condition';
+import {never as neverCondition} from '@biigle/ol/events/condition';
+import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
+import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush

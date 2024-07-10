@@ -1,8 +1,8 @@
-import Image from 'ol/source/Image';
-import ImageCanvas from 'ol/ImageCanvas';
-import {listen} from 'ol/events';
-import EventType from 'ol/events/EventType';
-import {getHeight} from 'ol/extent';
+import Image from '@biigle/ol/source/Image';
+import ImageCanvas from '@biigle/ol/ImageCanvas';
+import {listen} from '@biigle/ol/events';
+import EventType from '@biigle/ol/events/EventType';
+import {getHeight} from '@biigle/ol/extent';
 
 /**
  * @classdesc

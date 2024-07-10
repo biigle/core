@@ -9,9 +9,9 @@
 <script>
 import AnnotationTooltip from '../mixins/annotationTooltip';
 import MeasureComponent from '../mixins/measureComponent';
-import Polygon from 'ol/geom/Polygon';
-import Circle from 'ol/geom/Circle';
-import LineString from 'ol/geom/LineString';
+import Polygon from '@biigle/ol/geom/Polygon';
+import Circle from '@biigle/ol/geom/Circle';
+import LineString from '@biigle/ol/geom/LineString';
 
 /**
  * Tooltip showing length/area of the hovered annotations.

@@ -1,14 +1,14 @@
 import 'jsts/org/locationtech/jts/monkey'; // This monkey patches jsts prototypes.
-import GeometryCollection from 'ol/geom/GeometryCollection';
+import GeometryCollection from '@biigle/ol/geom/GeometryCollection';
 import JstsLinearRing from 'jsts/org/locationtech/jts/geom/LinearRing';
-import LinearRing from 'ol/geom/LinearRing';
-import LineString from 'ol/geom/LineString';
-import MultiLineString from 'ol/geom/MultiLineString';
-import MultiPoint from 'ol/geom/MultiPoint';
-import MultiPolygon from 'ol/geom/MultiPolygon';
+import LinearRing from '@biigle/ol/geom/LinearRing';
+import LineString from '@biigle/ol/geom/LineString';
+import MultiLineString from '@biigle/ol/geom/MultiLineString';
+import MultiPoint from '@biigle/ol/geom/MultiPoint';
+import MultiPolygon from '@biigle/ol/geom/MultiPolygon';
 import OL3Parser from 'jsts/org/locationtech/jts/io/OL3Parser';
-import Point from 'ol/geom/Point';
-import Polygon from 'ol/geom/Polygon';
+import Point from '@biigle/ol/geom/Point';
+import Polygon from '@biigle/ol/geom/Polygon';
 import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 
 /**

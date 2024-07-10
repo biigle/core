@@ -1,9 +1,9 @@
 <script>
-import DrawInteraction from 'ol/interaction/Draw';
+import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the measure interaction.
