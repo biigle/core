@@ -267,7 +267,7 @@ import ControlButton from '../../annotations/components/controlButton';
 import DrawInteractions from './videoScreen/drawInteractions';
 import Indicators from './videoScreen/indicators';
 import Keyboard from '../../core/keyboard';
-import {CancelableMap as Map} from '../../annotations/ol/CancelableMap';
+import Map from '@biigle/ol/Map';
 import Minimap from '../../annotations/components/minimap';
 import ModifyInteractions from './videoScreen/modifyInteractions';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';

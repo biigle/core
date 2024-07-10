@@ -86,10 +86,6 @@ export default {
             this.map.render();
         },
         stopRenderLoop() {
-            // Explicitly cancel rendering of the map because there could be one
-            // animation frame left that would be executed while the video already began
-            // seeking and thus render an empty video.
-            this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         },
