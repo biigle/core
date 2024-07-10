@@ -141,9 +141,8 @@ class Video extends VolumeFile
      */
     public function getThumbnailsAttribute()
     {
-        $zeros = fn ($i) => str_repeat("0", 4-strlen(strval($i)));
         return collect(range(0, config('videos.thumbnail_count') - 1))
-            ->map(fn ($i) => "{$this->uuid}/".$zeros($i)."{$i}");
+            ->map(fn ($i) => "{$this->uuid}/{$i}");
     }
 
     /**
