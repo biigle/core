@@ -5,7 +5,6 @@
 @push('scripts')
     <script type="text/javascript">
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
-        biigle.$declare('volumes.nbrThumbnails', {!! collect($nbrThumbnails) !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
         {{-- Add file IDs as array, too, because the ordering is important! --}}
         biigle.$declare('volumes.fileIds', {!! $fileIds->keys() !!});
