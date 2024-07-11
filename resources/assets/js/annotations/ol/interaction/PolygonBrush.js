@@ -9,7 +9,7 @@ import {always} from '@biigle/ol/events/condition';
 import {createEditingStyle} from '@biigle/ol/style/Style';
 import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {polygon as turfPolygon} from '@turf/helpers';
-import {shiftKeyOnly} from '@biigle/ol/events/condition';
+import {shiftKeyOnly, penOnly} from '@biigle/ol/events/condition';
 import {union} from '../geom/flat/union';
 
 const MIN_BRUSH_SIZE = 5;
@@ -27,22 +27,6 @@ class DrawEvent extends Event {
     this.feature = feature;
   }
 }
-
-/**
- * Return `true` if the event originates from a digital pen.
- *
- * In contrast to the condition from ../events/condition.js this function does not assert
- * that the event is a pointer event.
- *
- * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
- * @return {boolean} True if the event originates from a digital pen.
- * @api
- */
-const penOnly = function(mapBrowserEvent) {
-  const pointerEvt = mapBrowserEvent.pointerEvent;
-  // see http://www.w3.org/TR/pointerevents/#widl-PointerEvent-pointerType
-  return pointerEvt && pointerEvt.pointerType === 'pen';
-};
 
 export function getNewSketchPointRadius(event, radius) {
   let delta = event.originalEvent.deltaY;
@@ -129,9 +113,7 @@ class PolygonBrush extends Draw {
         this.watchViewForChangedResolution(view);
       }
 
-      map.on('change:view', (function (e) {
-        this.watchViewForChangedResolution(e.target.getView());
-      }).bind(this));
+      map.on('change:view', e => this.watchViewForChangedResolution(e.target.getView()));
     }
   }
 

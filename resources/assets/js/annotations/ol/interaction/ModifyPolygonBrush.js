@@ -62,9 +62,7 @@ class ModifyPolygonBrush extends Modify {
         this.watchViewForChangedResolution(view);
       }
 
-      map.on('change:view', (function (e) {
-        this.watchViewForChangedResolution(e.target.getView());
-      }).bind(this));
+      map.on('change:view', e => this.watchViewForChangedResolution(e.target.getView()));
     }
   }
 
@@ -190,7 +188,7 @@ class ModifyPolygonBrush extends Modify {
     const sketchPointGeom = fromCircle(this.sketchCircle_);
     let sketchPointPolygon = turfPolygon(sketchPointGeom.getCoordinates());
     let sketchPointArea = sketchPointGeom.getArea();
-    this.features_.getArray().forEach(function (feature) {
+    this.features_.getArray().forEach((feature) => {
       let featureGeom = feature.getGeometry();
       try {
         var featurePolygon = turfPolygon(featureGeom.getCoordinates());
@@ -207,7 +205,7 @@ class ModifyPolygonBrush extends Modify {
             new ModifyEvent(ModifyEventType.MODIFYREMOVE, new Collection([feature]), event)
           );
       } else {
-        var coords = difference(featurePolygon, sketchPointPolygon);
+        const coords = difference(featurePolygon, sketchPointPolygon);
         if (!this.allowRemove_ && sketchPointArea > (new Polygon(coords)).getArea()) {
           // If allowRemove_ is false, the modified polygon may not become smaller than
           // the sketchPointPolygon.
@@ -215,13 +213,13 @@ class ModifyPolygonBrush extends Modify {
         }
         featureGeom.setCoordinates(coords);
     }
-    }, this);
+    });
   }
 
   addCurrentFeatures_() {
     const sketchPointGeom = fromCircle(this.sketchCircle_);
     let sketchPointPolygon = turfPolygon(sketchPointGeom.getCoordinates());
-    this.features_.getArray().forEach(function (feature) {
+    this.features_.getArray().forEach((feature) => {
       let featureGeom = feature.getGeometry();
       try {
         var featurePolygon = turfPolygon(featureGeom.getCoordinates());
@@ -233,7 +231,7 @@ class ModifyPolygonBrush extends Modify {
       // The order of the union() arguments matters! The feature polygon will be kept if
       // there is no intersection with the sketch.
       featureGeom.setCoordinates(union(featurePolygon, sketchPointPolygon));
-    }, this);
+    });
   }
 
   finishModifying_(event) {
