@@ -244,7 +244,9 @@ class PolygonBrush extends Draw {
       const sketchFeatureGeometry = this.sketchFeature_.getGeometry();
       const sketchFeaturePolygon = turfPolygon(sketchFeatureGeometry.getCoordinates());
 
-      sketchFeatureGeometry.setCoordinates(union(sketchCirclePolygon, sketchFeaturePolygon));
+      // The order of the union() arguments matters! The feature polygon will be kept if
+      // there is no intersection with the circle.
+      sketchFeatureGeometry.setCoordinates(union(sketchFeaturePolygon, sketchCirclePolygon));
     }
   }
 

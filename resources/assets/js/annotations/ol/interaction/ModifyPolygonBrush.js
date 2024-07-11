@@ -1,19 +1,19 @@
-import {polygon as turfPolygon} from '@turf/helpers';
 import booleanContains from '@turf/boolean-contains';
-import Feature from '@biigle/ol/Feature';
-import EventType from '@biigle/ol/events/EventType';
 import Circle from '@biigle/ol/geom/Circle';
-import Polygon from '@biigle/ol/geom/Polygon';
-import {createEditingStyle} from '@biigle/ol/style/Style';
-import Modify from '@biigle/ol/interaction/Modify';
-import {ModifyEvent} from '@biigle/ol/interaction/Modify';
-import {shiftKeyOnly} from '@biigle/ol/events/condition';
-import {fromCircle} from '@biigle/ol/geom/Polygon';
-import {union} from '../geom/flat/union';
-import {difference} from '../geom/flat/difference';
-import {always} from '@biigle/ol/events/condition';
 import Collection from '@biigle/ol/Collection';
+import EventType from '@biigle/ol/events/EventType';
+import Feature from '@biigle/ol/Feature';
+import Modify from '@biigle/ol/interaction/Modify';
+import Polygon from '@biigle/ol/geom/Polygon';
+import {always} from '@biigle/ol/events/condition';
+import {createEditingStyle} from '@biigle/ol/style/Style';
+import {difference} from '../geom/flat/difference';
+import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {getNewSketchPointRadius, getNewSketchPointRadiusByPressure} from './PolygonBrush';
+import {ModifyEvent} from '@biigle/ol/interaction/Modify';
+import {polygon as turfPolygon} from '@turf/helpers';
+import {shiftKeyOnly} from '@biigle/ol/events/condition';
+import {union} from '../geom/flat/union';
 
 export const ModifyEventType = {
   MODIFYSTART: 'modifystart',
@@ -229,7 +229,10 @@ class ModifyPolygonBrush extends Modify {
         // Skip features that can't be represented as polygon.
         return;
       }
-      featureGeom.setCoordinates(union(sketchPointPolygon, featurePolygon));
+
+      // The order of the union() arguments matters! The feature polygon will be kept if
+      // there is no intersection with the sketch.
+      featureGeom.setCoordinates(union(featurePolygon, sketchPointPolygon));
     }, this);
   }
 
