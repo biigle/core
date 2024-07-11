@@ -19,7 +19,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 with open(sys.argv[1], 'r') as f:
     input_json = json.load(f)
 
-dinov2_vits14 = hub_load('facebookresearch/dinov2', 'dinov2_vits14')
+dinov2_vits14 = hub_load('facebookresearch/dinov2:main', 'dinov2_vits14')
 
 if cuda_is_available():
     device = device('cuda')
