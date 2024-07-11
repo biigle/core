@@ -294,7 +294,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             }
 
             if (count($thumbnails) < $thumbnailsPerSprite) {
-                $thumbnails[] = VipsImage::thumbnail($file, $thumbnailWidth, ['height' => $thumbnailHeight]);
+                $thumbnails[] = VipsImage::thumbnail($file, $thumbnailWidth, ['height' => $thumbnailHeight, 'size' => 'force']);
             }
 
             if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {

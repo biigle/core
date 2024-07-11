@@ -3,15 +3,15 @@
         class="thumbnail-preview" 
         ref="thumbnailPreview" 
         :style="thumbnailStyle"
-        :width="thumbnailWidth" 
-        :height="thumbnailHeight"
+        :width="canvasWidth" 
+        :height="canvasHeight"
         v-show="!spriteNotFound">
         
         <canvas 
             class="thumbnail-canvas" 
             ref="thumbnailCanvas" 
-            :width="thumbnailWidth" 
-            :height="thumbnailHeight"
+            :width="canvasWidth" 
+            :height="canvasHeight"
             ></canvas>
     </div>
 </template>
@@ -57,6 +57,8 @@ export default {
             // default values but will be overwritten in created()
             thumbnailWidth: 360,
             thumbnailHeight: 270,
+            canvasWidth: 180,
+            canvasHeight: 135,
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
@@ -65,8 +67,8 @@ export default {
     computed: {
         thumbnailStyle() {
             let left = Math.min(
-                this.clientMouseX - this.thumbnailWidth / 2,
-                window.innerWidth - this.thumbnailWidth - this.sideButtonsWidth
+                this.clientMouseX - this.canvasWidth / 2,
+                window.innerWidth - this.canvasWidth - this.sideButtonsWidth
             );
             let top = this.scrollstripTop - this.thumbProgressBarSpace;
             return `transform: translate(${left}px, ${top}px);`
@@ -101,8 +103,8 @@ export default {
 
             // draw the current thumbnail to the canvas
             let context = this.thumbnailCanvas.getContext('2d');
-            context.clearRect(0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
-            context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
+            context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.canvasWidth, this.canvasHeight);
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
