@@ -79,7 +79,7 @@ class VideoController extends Controller
         $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $spritesThumbnailInterval = config('videos.sprites_thumbnail_interval');
         $spritesMaxThumbnails = config('videos.sprites_max_thumbnails');
-        $spritesMinThumbnails = config('videos.sprites_min_thumbnails');
+        $spritesMinThumbnails = config('videos.thumbnail_count');
         $spritesThumbnailWidth = config('videos.sprites_thumbnail_width');
         $spritesThumbnailHeight = config('videos.sprites_thumbnail_height');
         return view(

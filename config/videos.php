@@ -58,11 +58,6 @@ return [
     'sprites_max_thumbnails' => 1500,
 
     /*
-    | Number of min thumbnails to generate for sprites.
-    */
-    'sprites_min_thumbnails' => 5,
-
-    /*
     | Number of thumbnails per sprite. Default 5x5 = 25.
     | The square root of the number must be an integer.
     */

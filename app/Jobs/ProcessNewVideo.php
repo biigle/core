@@ -12,7 +12,6 @@ use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -241,7 +240,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
     {
         $format = config('thumbnails.format');
         $maxThumbnails = config('videos.sprites_max_thumbnails');
-        $minThumbnails = config('videos.sprites_min_thumbnails');
+        $minThumbnails = config('videos.thumbnail_count');
         $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
         $durationRounded = floor($duration * 10) / 10;
         $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
@@ -258,6 +257,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
 
     }
+
     public function generateVideoThumbnails($disk, $fragment, $tmpDir)
     {
 

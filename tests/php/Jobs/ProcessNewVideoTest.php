@@ -119,7 +119,6 @@ class ProcessNewVideoTest extends TestCase
     public function testGenerateSpritesFallsBelowMinThumbnails()
     {
         Storage::fake('video-thumbs');
-        config(['videos.sprites_min_thumbnails' => 10]);
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
