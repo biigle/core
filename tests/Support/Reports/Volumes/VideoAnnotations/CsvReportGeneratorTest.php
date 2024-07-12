@@ -37,6 +37,7 @@ class CsvReportGeneratorTest extends TestCase
         'frames',
         'annotation_id',
         'created_at',
+        'attributes',
     ];
 
     public function testProperties()
@@ -66,6 +67,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $al = VideoAnnotationLabelTest::create(['label_id' => $child->id]);
         $al->annotation->video_id = $video->id;
+        $al->annotation->video->attrs = $video->attrs;
         $al->annotation->save();
 
         $mock = Mockery::mock();
@@ -96,6 +98,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($al->annotation->frames),
                 $al->annotation->id,
                 $al->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('close')
@@ -174,6 +177,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al1->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('put')
@@ -194,6 +198,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al2->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('close')
@@ -282,6 +287,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al1->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('put')
@@ -302,6 +308,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al2->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('close')
@@ -484,6 +491,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al1->created_at,
+                json_encode($video->attrs),
             ]);
 
             $mock->shouldReceive('put')
@@ -504,6 +512,7 @@ class CsvReportGeneratorTest extends TestCase
                 json_encode($annotation->frames),
                 $annotation->id,
                 $al2->created_at,
+                json_encode($video->attrs),
             ]);
 
         $mock->shouldReceive('close')->once();
