@@ -277,13 +277,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $files = File::glob($tmpDir . "/*.{$format}");
         $nbrFiles = count($files);
         $steps = $nbrFiles >= $thumbCount ? floor($nbrFiles / $thumbCount) : 1;
-        $range = range(0, $nbrFiles, $steps);
 
         $thumbnails = [];
         $thumbCounter = 0;
         $spriteCounter = 0;
         foreach ($files as $i => $file) {
-            if (in_array($i, $range) && $thumbCounter < $thumbCount) {
+            if ($i === intval($steps*$thumbCounter) && $thumbCounter < $thumbCount) {
                 $thumbnail = VipsImage::thumbnail($file, $width, ['height' => $height]);
                 $bufferedThumb = $thumbnail->writeToBuffer(".{$format}", [
                     'Q' => 85,
