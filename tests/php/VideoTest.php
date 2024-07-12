@@ -35,29 +35,29 @@ class VideoTest extends ModelTestCase
     public function testGetThumbnailAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertStringContainsString("{$this->model->uuid}/0001", $this->model->thumbnail);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnail);
     }
 
     public function testGetThumbnailUrlAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertStringContainsString("{$this->model->uuid}/0001", $this->model->thumbnailUrl);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnailUrl);
     }
 
     public function testGetThumbnailsAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertContains("{$this->model->uuid}/0000", $this->model->thumbnails);
-        $this->assertContains("{$this->model->uuid}/0001", $this->model->thumbnails);
-        $this->assertContains("{$this->model->uuid}/0002", $this->model->thumbnails);
+        $this->assertContains("{$this->model->uuid}/0", $this->model->thumbnails);
+        $this->assertContains("{$this->model->uuid}/1", $this->model->thumbnails);
+        $this->assertContains("{$this->model->uuid}/2", $this->model->thumbnails);
     }
 
     public function testGetThumbnailsUrlAttribute()
     {
         config(['videos.thumbnail_count' => 3]);
-        $this->assertStringContainsString("{$this->model->uuid}/0000", $this->model->thumbnailsUrl[0]);
-        $this->assertStringContainsString("{$this->model->uuid}/0001", $this->model->thumbnailsUrl[1]);
-        $this->assertStringContainsString("{$this->model->uuid}/0002", $this->model->thumbnailsUrl[2]);
+        $this->assertStringContainsString("{$this->model->uuid}/0", $this->model->thumbnailsUrl[0]);
+        $this->assertStringContainsString("{$this->model->uuid}/1", $this->model->thumbnailsUrl[1]);
+        $this->assertStringContainsString("{$this->model->uuid}/2", $this->model->thumbnailsUrl[2]);
     }
 
     public function testGetErrorAttribute()
