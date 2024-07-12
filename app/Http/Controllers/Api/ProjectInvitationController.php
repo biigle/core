@@ -9,7 +9,7 @@ use Biigle\ProjectInvitation;
 use Biigle\Role;
 use DB;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
 use Ramsey\Uuid\Uuid;
@@ -137,7 +137,7 @@ class ProjectInvitationController extends Controller
 
         $qrCode = QrCode::create(route('project-invitation', $invitation->uuid))
             ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
             ->setSize(300)
             ->setMargin(10);
 

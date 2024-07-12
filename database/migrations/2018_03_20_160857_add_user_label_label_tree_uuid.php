@@ -1,6 +1,5 @@
 <?php
 
-use Doctrine\DBAL\Types\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,10 +15,6 @@ class AddUserLabelLabelTreeUuid extends Migration
      */
     public function up()
     {
-        // Make doctrine/dbal work with uuid type.
-        if (!Type::hasType('uuid')) {
-            Type::addType('uuid', UuidType::class);
-        }
         $this->addUuidToTable('users');
         $this->addUuidToTable('label_trees');
         $this->addUuidToTable('labels');

@@ -1,6 +1,6 @@
-# PHP 8.1.13
-#FROM php:8.1-fpm-alpine
-FROM php@sha256:88407bcb4821e7a9da273d9dad746e1f795e9a6480d9cba5ba502d7836e23718
+# PHP 8.2.21
+#FROM php:8.2-fpm-alpine
+FROM php@sha256:95c34aeeef07aa9774e0b70d5b70065ab0647ece183ebe007c5f2e6b5db16725
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -37,7 +37,7 @@ RUN apk add --no-cache yaml \
 # Unset proxy configuration again.
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
-ARG PHPREDIS_VERSION=5.3.7
+ARG PHPREDIS_VERSION=6.0.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \

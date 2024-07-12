@@ -1,6 +1,6 @@
-# PHP 8.1.27
-# FROM php:8.1
-FROM php@sha256:9b5dfb7deef3e48d67b2599e4d3967bb3ece19fd5ba09cb8e7ee10f5facf36e0
+# PHP 8.2.21
+# FROM php:8.2
+FROM php@sha256:a61daae986bdf9bbeff9a514e3598a4f72bb2e3d01a0b3d0eff960bbfe85acdf
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 LABEL org.opencontainers.image.source https://github.com/biigle/core
 
@@ -64,7 +64,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
-ARG PHPREDIS_VERSION=5.3.7
+ARG PHPREDIS_VERSION=6.0.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
