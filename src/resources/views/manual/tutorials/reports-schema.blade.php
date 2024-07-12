@@ -357,6 +357,12 @@ Animalia
             </li>
             <li><strong>Video annotation ID</strong></li>
             <li><strong>Creation date (of the video annotation label)</strong></li>
+            <li>
+                <strong>Additional attributes of the video</strong>
+                <p>
+                    The additional attributes of the video are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the available metadata for the video. (e.g. MIME type, size, width and height).
+                </p>
+            </li>
         </ol>
 
         <h3><a name="video-label-reports"></a>Video label reports</h3>
