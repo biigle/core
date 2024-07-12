@@ -200,6 +200,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'users.lastname',
                 'videos.id as video_id',
                 'videos.filename as video_filename',
+                'videos.attrs',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',
                 'video_annotations.points',
@@ -240,6 +241,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             'frames',
             'annotation_id',
             'created_at',
+            'attributes',
         ]);
 
         foreach ($rows as $row) {
@@ -259,6 +261,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->frames,
                 $row->annotation_id,
                 $row->created_at,
+                $row->attrs,
             ]);
         }
 
