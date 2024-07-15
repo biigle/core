@@ -3,15 +3,10 @@
         class="thumbnail-preview" 
         ref="thumbnailPreview" 
         :style="thumbnailStyle"
-        :width="canvasWidth" 
-        :height="canvasHeight"
         v-show="!spriteNotFound">
-        
         <canvas 
             class="thumbnail-canvas" 
             ref="thumbnailCanvas" 
-            :width="canvasWidth" 
-            :height="canvasHeight"
             ></canvas>
     </div>
 </template>
@@ -46,7 +41,7 @@ export default {
             thumbnailCanvas: null,
             sprite: new Image(),
             spriteIdx: 0,
-            thumbProgressBarSpace: 150,
+            thumbProgressBarSpace: 5,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
             triedUrls: {},
@@ -57,8 +52,8 @@ export default {
             // default values but will be overwritten in created()
             thumbnailWidth: 360,
             thumbnailHeight: 270,
-            canvasWidth: 180,
-            canvasHeight: 135,
+            canvasWidth: 0,
+            canvasHeight: 0,
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
@@ -71,7 +66,10 @@ export default {
                 window.innerWidth - this.canvasWidth - this.sideButtonsWidth
             );
             let top = this.scrollstripTop - this.thumbProgressBarSpace;
-            return `transform: translate(${left}px, ${top}px);`
+            return {
+                transform: `translate(${left}px, -100%)`,
+                top: `${top}px`,
+            };
         }
     },
     methods: {
@@ -103,8 +101,7 @@ export default {
 
             // draw the current thumbnail to the canvas
             let context = this.thumbnailCanvas.getContext('2d');
-            context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-            context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.canvasWidth, this.canvasHeight);
+            context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
@@ -145,6 +142,10 @@ export default {
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.thumbnailCanvas = this.$refs.thumbnailCanvas;
+        this.canvasWidth = Math.ceil(this.thumbnailWidth / 2);
+        this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
+        this.thumbnailCanvas.width = this.canvasWidth;
+        this.thumbnailCanvas.height = this.canvasHeight;
         this.updateSprite();
         this.sprite.onload = () => {
             this.spriteNotFound = false;

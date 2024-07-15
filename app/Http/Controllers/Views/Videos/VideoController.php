@@ -85,9 +85,9 @@ class VideoController extends Controller
 
         // Compute thumbnail's size
         if (!$video->error && $video->height !== 0 && $video->width !== 0) {
-            $ratio = $video->width/$video->height;
-            $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : $configHeight*$ratio;
-            $spritesThumbnailHeight = $ratio >= 1 ? $spritesThumbnailWidth/$ratio : $configHeight;
+            $ratio = $video->width / $video->height;
+            $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : ceil($configHeight * $ratio);
+            $spritesThumbnailHeight = $ratio >= 1 ? ceil($configWidth / $ratio) : $configHeight;
         } else {
             $spritesThumbnailWidth = $configWidth;
             $spritesThumbnailHeight = $configHeight;
