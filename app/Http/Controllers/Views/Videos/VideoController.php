@@ -80,8 +80,14 @@ class VideoController extends Controller
         $spritesThumbnailInterval = config('videos.sprites_thumbnail_interval');
         $spritesMaxThumbnails = config('videos.sprites_max_thumbnails');
         $spritesMinThumbnails = config('videos.thumbnail_count');
-        $spritesThumbnailWidth = config('thumbnails.width');
-        $spritesThumbnailHeight = config('thumbnails.height');
+        $configWidth = config('thumbnails.width');
+        $configHeight = config('thumbnails.height');
+
+        // Compute thumbail's size
+        $ratio = $video->width/$video->height;
+        $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : $configHeight*$ratio;
+        $spritesThumbnailHeight = $ratio >= 1 ? $spritesThumbnailWidth/$ratio : $configHeight;
+
         return view(
             'videos.show',
             compact(
