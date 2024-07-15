@@ -154,26 +154,21 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 File::makeDirectory($tmpDir, 0755, true);
             }
 
-            if (!$disk->exists($fragment)) {
-                $disk->makeDirectory($fragment);
-            }
-
             // Extract images from video
             $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
 
             // Generate thumbnails
             $this->generateVideoThumbnails($disk, $fragment, $tmpDir);
-
-            if (File::exists($tmpDir)) {
-                $parentDir = dirname($fragment, 2);
-                File::deleteDirectory($tmp."/{$parentDir}");
-            }
         } catch (Exception $e) {
             // The video seems to be fine if it passed the previous checks. There may be
             // errors in the actual video data but we can ignore that and skip generating
             // thumbnails. The browser can deal with the video and see if it can be
             // displayed.
             Log::warning("Could not generate thumbnails for new video {$this->video->id}: {$e->getMessage()}");
+        } finally {
+            if (File::exists($tmpDir)) {
+                File::deleteDirectory($tmpDir);
+            }
         }
     }
 
