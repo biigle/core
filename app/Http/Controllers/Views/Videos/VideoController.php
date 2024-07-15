@@ -83,10 +83,15 @@ class VideoController extends Controller
         $configWidth = config('thumbnails.width');
         $configHeight = config('thumbnails.height');
 
-        // Compute thumbail's size
-        $ratio = $video->width/$video->height;
-        $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : $configHeight*$ratio;
-        $spritesThumbnailHeight = $ratio >= 1 ? $spritesThumbnailWidth/$ratio : $configHeight;
+        // Compute thumbnail's size
+        if (!$video->error && $video->height !== 0 && $video->width !== 0) {
+            $ratio = $video->width/$video->height;
+            $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : $configHeight*$ratio;
+            $spritesThumbnailHeight = $ratio >= 1 ? $spritesThumbnailWidth/$ratio : $configHeight;
+        } else {
+            $spritesThumbnailWidth = $configWidth;
+            $spritesThumbnailHeight = $configHeight;
+        }
 
         return view(
             'videos.show',
