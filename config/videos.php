@@ -64,12 +64,6 @@ return [
     'sprites_thumbnails_per_sprite' => 25,
 
     /*
-    | Dimensions of the thumbnail images to create in sprites.
-    */
-    'sprites_thumbnail_width' => 360,
-    'sprites_thumbnail_height' => 270,
-
-    /*
     | Sprite file format.
     */
     'sprites_format' => 'webp',

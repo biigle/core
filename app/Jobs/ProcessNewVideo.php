@@ -270,8 +270,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
         // Config for sprite thumbs
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
         $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
-        $thumbnailWidth = config('videos.sprites_thumbnail_width');
-        $thumbnailHeight = config('videos.sprites_thumbnail_height');
         $spriteFormat = config('videos.sprites_format');
 
         $files = File::glob($tmpDir . "/*.{$format}");
@@ -293,7 +291,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             }
 
             if (count($thumbnails) < $thumbnailsPerSprite) {
-                $thumbnails[] = VipsImage::thumbnail($file, $thumbnailWidth, ['height' => $thumbnailHeight, 'size' => 'force']);
+                $thumbnails[] = VipsImage::thumbnail($file, $width, ['height' => $height, 'size' => 'force']);
             }
 
             if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {
