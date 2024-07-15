@@ -61,6 +61,25 @@ class ProcessNewImageTest extends TestCase
         $this->assertEquals(null, $image->taken_at);
     }
 
+    public function testHandleCollectMetadataAreaYaw()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'exif-test.jpg',
+            'volume_id' => $volume->id,
+            'attrs' => [
+                'metadata' => ['area' => 2.6],
+            ],
+        ]);
+
+        with(new ProcessNewImageMock($image))->handle();
+
+        $image = $image->fresh();
+
+        $this->assertEquals(47.75,$image->metadata['yaw']);
+        $this->assertEquals(2.6 ,$image->metadata['area']);
+    }
+
     public function testHandleMakeThumbnail()
     {
         if (!function_exists('vips_call')) {
