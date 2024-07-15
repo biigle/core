@@ -206,6 +206,18 @@ class ProcessNewImage extends Job implements ShouldQueue
                     'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
                 ]);
             }
+
+            if($this->hasGpsImgDirInfo($exif)){
+                $image->metadata = array_merge($image->metadata, [
+                    'yaw' => $ref * $this->fracToFloat($exif['GPSImgDirection']),
+                ]);
+            }
+
+            if($this->hasSubjectAreaInfo($exif)){
+                $image->metadata = array_merge($image->metadata, [
+                    'area' => $ref * $this->fracToFloat($exif['SubjectArea']),
+                ]);
+            }
         }
 
         $image->save();
@@ -246,6 +258,28 @@ class ProcessNewImage extends Job implements ShouldQueue
     {
         return array_key_exists('GPSAltitude', $exif) &&
             array_key_exists('GPSAltitudeRef', $exif);
+    }
+
+    /**
+     * Check if an exif array contains GPSImgDirection information.
+     *
+     * @param  array   $exif
+     * @return bool
+     */
+    protected function hasGpsImgDirInfo(array $exif)
+    {
+        return array_key_exists('GPSImgDirection', $exif);
+    }
+
+    /**
+     * Check if an exif array contains SubjectArea information.
+     *
+     * @param  array   $exif
+     * @return bool
+     */
+    protected function hasSubjectAreaInfo(array $exif)
+    {
+        return array_key_exists('SubjectArea', $exif);
     }
 
     /**
