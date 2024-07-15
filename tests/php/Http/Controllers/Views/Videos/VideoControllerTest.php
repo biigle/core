@@ -11,7 +11,7 @@ class VideoControllerTest extends ApiTestCase
     public function testShow()
     {
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
-        $video = VideoTest::create(['volume_id' => $id]);
+        $video = VideoTest::create(['volume_id' => $id, 'height' => 3, 'width' => 4]);
 
         $this->beUser();
         $this->get('videos/999/annotations')->assertStatus(404);
