@@ -27,14 +27,13 @@ class ProcessNewVideoTest extends TestCase
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
-        $parentDir = dirname($fragment, 2);
         $this->assertCount(4, $disk->files($fragment));
         $this->assertTrue($disk->exists("{$fragment}/0.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/1.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/2.jpg"));
         $this->assertFalse($disk->exists("{$fragment}/3.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSprites()
@@ -48,12 +47,11 @@ class ProcessNewVideoTest extends TestCase
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
-        $parentDir = dirname($fragment, 2);
         $this->assertCount(13, $disk->files($fragment));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
         $this->assertTrue($disk->exists("{$fragment}/sprite_1.webp"));
         $this->assertTrue($disk->exists("{$fragment}/sprite_2.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSpritesZeroDuration()
@@ -67,10 +65,9 @@ class ProcessNewVideoTest extends TestCase
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
-        $parentDir = dirname($fragment, 2);
         $this->assertCount(0, $disk->files($fragment));
         $this->assertFalse($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSpritesOneSecondDuration()
@@ -86,10 +83,9 @@ class ProcessNewVideoTest extends TestCase
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
         $this->assertCount(2, $disk->files($fragment));
-        $parentDir = dirname($fragment, 2);
         $this->assertTrue($disk->exists("{$fragment}/0.jpg"));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
 
     }
 
@@ -105,10 +101,9 @@ class ProcessNewVideoTest extends TestCase
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
-        $parentDir = dirname($fragment, 2);
         $this->assertCount(6, $disk->files($fragment));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSpritesFallsBelowMinThumbnails()
@@ -123,10 +118,9 @@ class ProcessNewVideoTest extends TestCase
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
-        $parentDir = dirname($fragment, 2);
         $this->assertCount(11, $disk->files($fragment));
         $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$parentDir}"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testHandleNotFound()
