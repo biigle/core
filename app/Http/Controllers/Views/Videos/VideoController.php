@@ -83,15 +83,18 @@ class VideoController extends Controller
         $configWidth = config('thumbnails.width');
         $configHeight = config('thumbnails.height');
 
-        // Compute thumbnail's size
-        if (!$video->error && $video->height !== 0 && $video->width !== 0) {
-            $ratio = $video->width / $video->height;
-            $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : ceil($configHeight * $ratio);
-            $spritesThumbnailHeight = $ratio >= 1 ? ceil($configWidth / $ratio) : $configHeight;
-        } else {
-            $spritesThumbnailWidth = $configWidth;
-            $spritesThumbnailHeight = $configHeight;
-        }
+        $videoThumbSizes = $volume->videos->mapWithKeys(function ($video) use ($configWidth, $configHeight) {
+            // Compute thumbnail's size
+            if (!$video->error && $video->height !== 0 && $video->width !== 0) {
+                $ratio = $video->width / $video->height;
+                $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : ceil($configHeight * $ratio);
+                $spritesThumbnailHeight = $ratio >= 1 ? ceil($configWidth / $ratio) : $configHeight;
+            } else {
+                $spritesThumbnailWidth = $configWidth;
+                $spritesThumbnailHeight = $configHeight;
+            }
+            return [$video->id => ['w' => $spritesThumbnailWidth, 'h' => $spritesThumbnailHeight]];
+        });
 
         return view(
             'videos.show',
@@ -110,8 +113,7 @@ class VideoController extends Controller
                 'spritesThumbnailInterval',
                 'spritesMaxThumbnails',
                 'spritesMinThumbnails',
-                'spritesThumbnailWidth',
-                'spritesThumbnailHeight'
+                'videoThumbSizes',
             )
         );
     }

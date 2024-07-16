@@ -75,7 +75,6 @@
     biigle.$declare('videos.spritesThumbnailInterval', {!! $spritesThumbnailInterval !!});
     biigle.$declare('videos.spritesMaxThumbnails', {!! $spritesMaxThumbnails !!});
     biigle.$declare('videos.spritesMinThumbnails', {!! $spritesMinThumbnails !!});
-    biigle.$declare('videos.spritesThumbnailWidth', {!! $spritesThumbnailWidth !!});
-    biigle.$declare('videos.spritesThumbnailHeight', {!! $spritesThumbnailHeight !!});
+    biigle.$declare('videos.thumbnailSizes', {!! collect($videoThumbSizes) !!});
 </script>
 @endpush

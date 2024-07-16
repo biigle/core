@@ -61,6 +61,7 @@ export default {
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
+            thumbnailSizes: [],
         };
     },
     computed: {
@@ -138,8 +139,10 @@ export default {
     created() {
         this.setSpritesFolderpath();
         this.updateThumbnailInterval();
-        this.thumbnailWidth = biigle.$require('videos.spritesThumbnailWidth');
-        this.thumbnailHeight = biigle.$require('videos.spritesThumbnailHeight');
+        this.thumbnailSizes = biigle.$require('videos.thumbnailSizes');
+        let thumbSize = this.thumbnailSizes[this.videoId];
+        this.thumbnailWidth = thumbSize['w'];
+        this.thumbnailHeight = thumbSize['h'];
         this.thumbnailsPerSprite = biigle.$require('videos.spritesThumbnailsPerSprite');
     },
     mounted() {
