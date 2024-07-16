@@ -85,7 +85,7 @@ class VideoController extends Controller
 
         $videoThumbSizes = $volume->videos->mapWithKeys(function ($video) use ($configWidth, $configHeight) {
             // Compute thumbnail's size
-            if (!$video->error && $video->height !== 0 && $video->width !== 0) {
+            if (!$video->error && $video->height && $video->width) {
                 $ratio = $video->width / $video->height;
                 $spritesThumbnailWidth = $ratio >= 1 ? $configWidth : ceil($configHeight * $ratio);
                 $spritesThumbnailHeight = $ratio >= 1 ? ceil($configWidth / $ratio) : $configHeight;
