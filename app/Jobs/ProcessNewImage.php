@@ -207,13 +207,13 @@ class ProcessNewImage extends Job implements ShouldQueue
                 ]);
             }
 
-            if($this->hasGpsImgDirInfo($exif)){
+            if ($this->hasGpsImgDirInfo($exif)) {
                 $image->metadata = array_merge($image->metadata, [
                     'yaw' => $ref * $this->fracToFloat($exif['GPSImgDirection']),
                 ]);
             }
 
-            if($this->hasSubjectAreaInfo($exif)){
+            if ($this->hasSubjectAreaInfo($exif)) {
                 $image->metadata = array_merge($image->metadata, [
                     'area' => $ref * $this->fracToFloat($exif['SubjectArea']),
                 ]);

@@ -76,8 +76,8 @@ class ProcessNewImageTest extends TestCase
 
         $image = $image->fresh();
 
-        $this->assertEquals(47.75,$image->metadata['yaw']);
-        $this->assertEquals(2.6 ,$image->metadata['area']);
+        $this->assertEquals(47.75, $image->metadata['yaw']);
+        $this->assertEquals(2.6, $image->metadata['area']);
     }
 
     public function testHandleMakeThumbnail()
