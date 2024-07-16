@@ -13,10 +13,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Log;
-use Symfony\Component\Process\Process;
 use Throwable;
 use VipsImage;
 
@@ -245,12 +245,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $frameRate = 1 / $thumbnailInterval;
 
         // Leading zeros are important to prevent file sorting afterwards
-        $p = Process::fromShellCommandline("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/%04d.{$format}");
-        $p->run();
-        if ($p->getExitCode() !== 0) {
-            throw new Exception("Process was terminated with code {$p->getExitCode()}");
-        }
-
+        Process::forever()
+            ->run("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/%04d.{$format}")
+            ->throw();
     }
 
     public function generateVideoThumbnails($disk, $fragment, $tmpDir)
