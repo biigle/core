@@ -3,7 +3,6 @@
         <minimap
             v-if="showMinimap && !hasError"
             :extent="extent"
-            :render-active="!seeking"
             ></minimap>
         <label-tooltip
             watch="hoverFeatures"
@@ -268,7 +267,7 @@ import ControlButton from '../../annotations/components/controlButton';
 import DrawInteractions from './videoScreen/drawInteractions';
 import Indicators from './videoScreen/indicators';
 import Keyboard from '../../core/keyboard';
-import {CancelableMap as Map} from '../../annotations/ol/CancelableMap';
+import Map from '@biigle/ol/Map';
 import Minimap from '../../annotations/components/minimap';
 import ModifyInteractions from './videoScreen/modifyInteractions';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
@@ -576,18 +575,40 @@ export default {
     },
     watch: {
         selectedAnnotations(annotations) {
+            // This allows selection of annotations outside OpenLayers and forwards
+            // the state to the SelectInteraction.
             let source = this.annotationSource;
             let features = this.selectedFeatures;
-            if (source && features) {
-                let feature;
-                features.clear();
-                annotations.forEach(function (annotation) {
-                    feature = source.getFeatureById(annotation.id);
-                    if (feature) {
-                        features.push(feature);
-                    }
-                });
+            if (!source || !features) {
+                return;
             }
+
+            let featureIdMap = {};
+            let annotationIdMap = {};
+            annotations.forEach(a => annotationIdMap[a.id] = true);
+            let toRemove = [];
+
+            features.forEach(f => {
+                const id = f.getId();
+                if (annotationIdMap[id]) {
+                    featureIdMap[id] = true;
+                } else {
+                    toRemove.push(f);
+                }
+            });
+
+            if (toRemove.length === features.getLength()) {
+                features.clear();
+            } else {
+                toRemove.forEach(f => features.remove(f));
+            }
+
+            annotations
+                .filter(a => !featureIdMap[a.id])
+                .map(a => source.getFeatureById(a.id))
+                // Ignore a==null because the selected annotation may not exist in the
+                // current video frame.
+                .forEach(a => a && features.push(a));
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
