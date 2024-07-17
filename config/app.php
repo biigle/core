@@ -186,7 +186,6 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'Honeypot' => Msurguy\Honeypot\HoneypotFacade::class,
         'Modules' => Biigle\Facades\Modules::class,
-        'VipsImage' => Biigle\Facades\VipsImage::class,
         // Insert aliases here.
     ])->toArray(),
 
