@@ -48,7 +48,8 @@ export default {
         },
     },
     methods: {
-        refreshAllAnnotations(time) {
+        refreshAllAnnotations() {
+            let time = this.video.currentTime;
             let source = this.annotationSource;
             let selected = this.selectedFeatures;
             let annotations = this.annotationsPreparedToRender;
@@ -122,7 +123,10 @@ export default {
             }
 
             Object.values(newRendered).forEach((feature) => {
-                this.updateGeometry(feature, time);
+                let annotation = feature.get('annotation');
+                let points = annotation.interpolatePoints(time);
+                let geometry = feature.getGeometry();
+                this.updateGeometry(geometry, points);
             });
         },
         refreshSingleAnnotation(annotation) {
@@ -142,11 +146,6 @@ export default {
             }
 
             return feature;
-        },
-        updateGeometry(feature, time) {
-            let annotation = feature.get('annotation');
-            let points = annotation.interpolatePoints(time);
-            feature.setGeometry(this.getGeometryFromPoints(annotation.shape, points));
         },
         getGeometryFromPoints(shape, points) {
             points = this.convertPointsFromDbToOl(points);
@@ -169,6 +168,20 @@ export default {
                     // unsupported shapes are ignored
                     console.error('Unknown annotation shape: ' + shape);
                     return;
+            }
+        },
+        updateGeometry(geometry, points) {
+            points = this.convertPointsFromDbToOl(points);
+
+            if (geometry instanceof Point) {
+                geometry.setCoordinates(points[0]);
+            } else if (geometry instanceof LineString) {
+                geometry.setCoordinates(points);
+            } else if (geometry instanceof Circle) {
+                geometry.setCenter(points[0]);
+                geometry.setRadius(points[1][0]);
+            } else {
+                geometry.setCoordinates([points]);
             }
         },
         getPointsFromGeometry(geometry) {
@@ -233,11 +246,9 @@ export default {
         },
     },
     created() {
-        this.$on('refresh', this.refreshAllAnnotations);
         this.$once('map-ready', () => {
-            this.$watch('annotationsRevision', () => {
-                this.refreshAllAnnotations(this.video.currentTime);
-            });
+            this.$watch('annotationsRevision', this.refreshAllAnnotations);
+            this.videoSource.on('change', this.refreshAllAnnotations);
         });
     },
 };

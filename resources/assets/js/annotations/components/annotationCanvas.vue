@@ -2,7 +2,7 @@
 import * as PolygonValidator from '../ol/PolygonValidator';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
-import CanvasSource from '@biigle/ol/source/Canvas';
+import CanvasSource from '../ol/source/Canvas';
 import Circle from '@biigle/ol/geom/Circle';
 import Collection from '@biigle/ol/Collection';
 import ControlButton from './controlButton';
@@ -47,7 +47,6 @@ import {getCenter} from '@biigle/ol/extent';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import { isInvalidShape } from '../utils';
-
 
 /**
  * The annotator canvas
@@ -328,8 +327,6 @@ export default {
                 center: view.getCenter(),
                 resolution: view.getResolution(),
             });
-
-
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -520,7 +517,7 @@ export default {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
-            
+
             if (isInvalidShape(e.feature)) {
                 // This must be done in the change event handler.
                 // Not exactly sure why.
@@ -586,10 +583,10 @@ export default {
                 this.resetInteractionMode();
             }
         },
-        render() {
-            if (this.map) {
-                this.map.render();
-                this.$emit('render');
+        fireImageSourceChanged() {
+            const source = this.imageLayer?.getSource();
+            if (source) {
+                source.changed();
             }
         },
         handleRegularImage(image) {
@@ -710,12 +707,34 @@ export default {
             this.resetHoveredAnnotations();
         },
         selectedAnnotations(annotations) {
-            let source = this.annotationSource;
+            // This allows selection of annotations outside OpenLayers and forwards
+            // the state to the SelectInteraction.
             let features = this.selectedFeatures;
-            features.clear();
-            annotations.forEach(function (annotation) {
-                features.push(source.getFeatureById(annotation.id));
+            let featureIdMap = {};
+            let annotationIdMap = {};
+            annotations.forEach(a => annotationIdMap[a.id] = true);
+            let toRemove = [];
+
+            features.forEach(f => {
+                const id = f.getId();
+                if (annotationIdMap[id]) {
+                    featureIdMap[id] = true;
+                } else {
+                    toRemove.push(f);
+                }
             });
+
+            if (toRemove.length === features.getLength()) {
+                features.clear();
+            } else {
+                toRemove.forEach(f => features.remove(f));
+            }
+
+            annotations
+                .filter(a => !featureIdMap[a.id])
+                .forEach(
+                    a => features.push(this.annotationSource.getFeatureById(a.id))
+                );
         },
         extent(extent, oldExtent) {
             // The extent only truly changes if the width and height changed.
@@ -736,12 +755,14 @@ export default {
                 projection: this.projection,
                 center: center,
                 resolution: this.resolution,
-                zoomFactor: 2,
                 // Allow a maximum of 100x magnification for non-tiled images. More
                 // cannot be represented in the URL parameters.
                 minResolution: 0.01,
                 // Restrict movement.
                 extent: extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
+                padding: [10, 10, 10, 10],
             }));
 
             if (this.resolution === undefined) {
