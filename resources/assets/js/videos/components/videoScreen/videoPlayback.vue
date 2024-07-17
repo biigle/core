@@ -1,10 +1,9 @@
 <script>
-import CanvasSource from '@biigle/ol/source/Canvas';
+import CanvasSource from '../../../annotations/ol/source/Canvas';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
-import {apply as applyTransform} from '@biigle/ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -16,10 +15,7 @@ export default {
         return {
             playing: false,
             animationFrameId: null,
-            // Refresh the annotations only every x ms.
-            refreshRate: 30,
             renderCurrentTime: -1,
-            refreshLastTime: Date.now(),
             extent: [0, 0, 0, 0],
             // Allow a maximum of 100x magnification. More cannot be represented in the
             // URL parameters.
@@ -41,33 +37,19 @@ export default {
                 this.map.removeLayer(this.videoLayer);
             }
 
-            this.videoLayer = new ImageLayer({
-                name: 'image', // required by the minimap component
-                source: new CanvasSource({
-                    canvas: this.dummyCanvas,
-                    projection: projection,
-                    canvasExtent: this.extent,
-                    canvasSize: [this.extent[2], this.extent[3]],
-                }),
+            this.videoCanvas.width = this.extent[2];
+            this.videoCanvas.height = this.extent[3];
+
+            this.videoSource = new CanvasSource({
+                canvas: this.videoCanvas,
+                projection: projection,
+                canvasExtent: this.extent,
+                canvasSize: [this.extent[2], this.extent[3]],
             });
 
-            // Based on this: https://stackoverflow.com/a/42902773/1796523
-            this.videoLayer.on('postcompose', (event) => {
-                let frameState = event.frameState;
-                let resolution = frameState.viewState.resolution;
-                // Custom implementation of "map.getPixelFromCoordinate" because this
-                // layer is rendered both on the map of the main view and on the map of
-                // the minimap component (i.e. the map changes).
-                let origin = applyTransform(
-                    frameState.coordinateToPixelTransform,
-                    [0, this.extent[3]]
-                );
-                let context = event.context;
-                context.save();
-                context.scale(frameState.pixelRatio, frameState.pixelRatio);
-                context.translate(origin[0], origin[1]);
-                context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
-                context.restore();
+            this.videoLayer = new ImageLayer({
+                name: 'image', // required by the minimap component
+                source: this.videoSource,
             });
 
             // The video layer should always be the first layer, otherwise it will be
@@ -78,9 +60,11 @@ export default {
                 // Center is required but will be updated immediately with fit().
                 center: [0, 0],
                 projection: projection,
-                // zoomFactor: 2,
                 minResolution: this.minResolution,
                 extent: this.extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
+                padding: [10, 10, 10, 10],
             }));
 
             this.map.getView().fit(this.extent);
@@ -89,13 +73,8 @@ export default {
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
-                this.videoLayer.changed();
-
-                let now = Date.now();
-                if (force || (now - this.refreshLastTime) >= this.refreshRate) {
-                    this.$emit('refresh', this.video.currentTime);
-                    this.refreshLastTime = now;
-                }
+                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                this.videoSource.changed();
             }
         },
         startRenderLoop() {
@@ -107,10 +86,6 @@ export default {
             this.map.render();
         },
         stopRenderLoop() {
-            // Explicitly cancel rendering of the map because there could be one
-            // animation frame left that would be executed while the video already began
-            // seeking and thus render an empty video.
-            this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         },
@@ -251,9 +226,8 @@ export default {
         },
     },
     created() {
-        this.dummyCanvas = document.createElement('canvas');
-        this.dummyCanvas.width = 1;
-        this.dummyCanvas.height = 1;
+        this.videoCanvas = document.createElement('canvas');
+        this.videoContext = this.videoCanvas.getContext('2d');
         this.video.addEventListener('play', this.setPlaying);
         this.video.addEventListener('pause', this.setPausedAndSeek);
         this.video.addEventListener('seeked', this.handleSeeked);

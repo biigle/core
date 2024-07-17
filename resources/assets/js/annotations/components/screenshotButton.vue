@@ -125,13 +125,19 @@ export default {
         },
         capture() {
             if (this.map) {
-                this.map.once('postcompose', (e) => {
-                    this.makeBlob(e.context.canvas)
-                        .then(this.download)
-                        .catch(this.handleError);
-                });
+                this.map.once('rendercomplete', this.handleRenderComplete);
                 this.map.renderSync();
             }
+        },
+        handleRenderComplete(e) {
+            // See: https://openlayers.org/en/v6.15.1/examples/export-map.html
+            // This version is modified/simplified because we want the screenshot
+            // in the actual device pixel ratio and not at the original size.
+            const canvas = e.target
+                .getViewport()
+                .querySelector('.ol-layer canvas, canvas.ol-layer');
+
+            this.makeBlob(canvas).then(this.download).catch(this.handleError);
         },
         handleError(message) {
             Messages.danger(message);
