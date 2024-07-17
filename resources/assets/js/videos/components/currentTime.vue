@@ -8,11 +8,6 @@
                 <span
                     v-text="currentTimeText"
                     ></span>
-                <span
-                    class="hover-time"
-                    v-show="showHoverTime"
-                    v-text="hoverTimeText"
-                    ></span>
             </span>
     </div>
 </template>
@@ -26,10 +21,6 @@ export default {
             type: Number,
             required: true,
         },
-        hoverTime: {
-            type: Number,
-            default: 0,
-        },
         seeking: {
             type: Boolean,
             default: false,
@@ -42,17 +33,10 @@ export default {
         currentTimeText() {
             return Vue.filter('videoTime')(this.currentTime);
         },
-        hoverTimeText() {
-            return Vue.filter('videoTime')(this.hoverTime);
-        },
         classObject() {
             return {
                 'current-time--seeking': this.seeking,
-                'current-time--hover': this.showHoverTime,
             };
-        },
-        showHoverTime() {
-            return this.hoverTime !== 0;
         },
     },
 };

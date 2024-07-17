@@ -6,8 +6,14 @@
         v-show="!spriteNotFound">
         <canvas 
             class="thumbnail-canvas" 
-            ref="thumbnailCanvas" 
-            ></canvas>
+            ref="thumbnailCanvas"
+            v-show="!spriteNotFound">
+        </canvas>
+        <canvas 
+            class="thumbnail-canvas" 
+            ref="hovertimeCanvas"
+            v-if="spriteNotFound">
+        </canvas>
     </div>
 </template>
 
@@ -61,13 +67,18 @@ export default {
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
+            fontSize: 14.5,
+            hovertimeCanvas: null,
+            hoverTimeBarHeight: 20,
+            hoverTimeBarWidth: 120,
         };
     },
     computed: {
         thumbnailStyle() {
+            let width = this.spriteNotFound ? this.hoverTimeBarWidth : this.canvasWidth;
             let left = Math.min(
-                this.clientMouseX - this.canvasWidth / 2,
-                window.innerWidth - this.canvasWidth - this.sideButtonsWidth
+                this.clientMouseX - width / 2,
+                window.innerWidth - width - this.sideButtonsWidth
             );
             let top = this.scrollstripTop - this.thumbProgressBarSpace;
             return {
@@ -81,6 +92,22 @@ export default {
             let nbrCols = Math.sqrt(this.thumbnailsPerSprite);
             let nbrRows = Math.ceil(nbrThumbnailsOnSprite / nbrCols);
             return [nbrCols, nbrRows];
+        },
+        hoverTimeText() {
+            return Vue.filter('videoTime')(this.hoverTime);
+        },
+        hoverTimeStyle() {
+            return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc', 'bgColor': '#222' };
+        },
+        xtext() {
+            return this.canvasWidth / 2;
+        },
+        ytext() {
+            // compute font size in pixel
+            return this.canvasHeight + this.fontSizeInPx + (this.hoverTimeBarHeight - this.fontSizeInPx) / 2;
+        },
+        fontSizeInPx() {
+            return this.fontSize * (72 / 96);
         }
     },
     methods: {
@@ -113,6 +140,15 @@ export default {
             // draw the current thumbnail to the canvas
             let context = this.thumbnailCanvas.getContext('2d');
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
+        
+            // draw the hover time bar
+            context.clearRect(0, this.canvasHeight, this.canvasWidth, this.hoverTimeBarHeight);
+            context.fillStyle = this.hoverTimeStyle['bgColor'];
+            context.fillRect(0, this.canvasHeight, this.canvasWidth, this.hoverTimeBarHeight);
+            context.font = this.hoverTimeStyle['font'];
+            context.fillStyle = this.hoverTimeStyle['color']
+            context.textAlign = 'center';
+            context.fillText(this.hoverTimeText, this.xtext, this.ytext);
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
@@ -136,6 +172,18 @@ export default {
             let fileUuid = fileUuids[this.videoId];
             this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
         },
+        viewHoverTimeBar() {
+            // draw the hover time bar
+            let ctx = this.hovertimeCanvas.getContext('2d');
+            ctx.clearRect(0, 0, this.hoverTimeBarWidth, this.hoverTimeBarHeight);
+            ctx.fillStyle = this.hoverTimeStyle['bgColor'];
+            ctx.fillRect(0, 0, this.hoverTimeBarWidth, this.hoverTimeBarHeight);
+            ctx.font = this.hoverTimeStyle['font'];
+            ctx.fillStyle = this.hoverTimeStyle['color']
+            ctx.textAlign = 'center';
+            let ytext = this.hoverTimeBarHeight - (this.hoverTimeBarHeight - this.fontSizeInPx)/2
+            ctx.fillText(this.hoverTimeText, this.hoverTimeBarWidth/2, ytext);
+        },
         initDimensions() {
             let nbrCols = this.spriteGridInfo[0];
             let nbrRows = this.spriteGridInfo[1];
@@ -143,13 +191,24 @@ export default {
             this.thumbnailHeight = this.sprite.height / nbrRows;
             this.canvasWidth = Math.ceil(this.thumbnailWidth / 2);
             this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
+
+            // If thumbnail is too narrow, enlarge it to 120px so that the hover time fits
+            if (this.canvasWidth < this.hoverTimeBarWidth) {
+                let ratio = this.canvasHeight / this.canvasWidth;
+                this.canvasWidth = this.hoverTimeBarWidth
+                this.canvasHeight = this.canvasWidth * ratio;
+            }
+
             this.thumbnailCanvas.width = this.canvasWidth;
-            this.thumbnailCanvas.height = this.canvasHeight;
+            this.thumbnailCanvas.height = this.canvasHeight + this.hoverTimeBarHeight;
         }
     },
     watch: {
         hoverTime() {
             this.updateSprite();
+            if (this.spriteNotFound) {
+                this.viewHoverTimeBar();
+            }
         },
     },
     created() {
@@ -161,6 +220,11 @@ export default {
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.thumbnailCanvas = this.$refs.thumbnailCanvas;
+
+        this.hovertimeCanvas = this.$refs.hovertimeCanvas;
+        this.hovertimeCanvas.width = this.hoverTimeBarWidth;
+        this.hovertimeCanvas.height = this.hoverTimeBarHeight;
+
         this.updateSprite();
         this.sprite.onload = () => {
             this.spriteNotFound = false;
