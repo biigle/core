@@ -3,7 +3,6 @@
 use Biigle\Image;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Ramsey\Uuid\Doctrine\UuidType;
 use Ramsey\Uuid\Uuid;
 
 class AddImagesUuidColumn extends Migration
