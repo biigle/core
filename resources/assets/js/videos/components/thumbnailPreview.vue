@@ -61,7 +61,6 @@ export default {
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
-            thumbnailSizes: [],
         };
     },
     computed: {
@@ -75,6 +74,13 @@ export default {
                 transform: `translate(${left}px, -100%)`,
                 top: `${top}px`,
             };
+        },
+        spriteGridInfo() {
+            let nbrThumbnailsOnSprite = this.estimatedThumbnails - this.spriteIdx * this.thumbnailsPerSprite;
+            nbrThumbnailsOnSprite = nbrThumbnailsOnSprite > this.thumbnailsPerSprite ? this.thumbnailsPerSprite : nbrThumbnailsOnSprite;
+            let nbrCols = Math.sqrt(this.thumbnailsPerSprite);
+            let nbrRows = Math.ceil(nbrThumbnailsOnSprite / nbrCols);
+            return [nbrCols, nbrRows];
         }
     },
     methods: {
@@ -130,6 +136,16 @@ export default {
             let fileUuid = fileUuids[this.videoId];
             this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
         },
+        initDimensions() {
+            let nbrCols = this.spriteGridInfo[0];
+            let nbrRows = this.spriteGridInfo[1];
+            this.thumbnailWidth = this.sprite.width / nbrCols;
+            this.thumbnailHeight = this.sprite.height / nbrRows;
+            this.canvasWidth = Math.ceil(this.thumbnailWidth / 2);
+            this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
+            this.thumbnailCanvas.width = this.canvasWidth;
+            this.thumbnailCanvas.height = this.canvasHeight;
+        }
     },
     watch: {
         hoverTime() {
@@ -140,21 +156,15 @@ export default {
         this.setSpritesFolderpath();
         this.updateThumbnailInterval();
         this.thumbnailSizes = biigle.$require('videos.thumbnailSizes');
-        let thumbSize = this.thumbnailSizes[this.videoId];
-        this.thumbnailWidth = thumbSize['w'];
-        this.thumbnailHeight = thumbSize['h'];
         this.thumbnailsPerSprite = biigle.$require('videos.spritesThumbnailsPerSprite');
     },
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.thumbnailCanvas = this.$refs.thumbnailCanvas;
-        this.canvasWidth = Math.ceil(this.thumbnailWidth / 2);
-        this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
-        this.thumbnailCanvas.width = this.canvasWidth;
-        this.thumbnailCanvas.height = this.canvasHeight;
         this.updateSprite();
         this.sprite.onload = () => {
             this.spriteNotFound = false;
+            this.initDimensions();
             this.viewThumbnailPreview();
         }
         this.sprite.onerror = () => {
