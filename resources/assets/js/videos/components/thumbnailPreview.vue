@@ -6,11 +6,13 @@
         v-show="!hasError"
         >
         <canvas 
+            v-cloak
             class="thumbnail-canvas" 
             ref="thumbnailCanvas"
             v-show="!spriteNotFound">
         </canvas>
         <canvas 
+            v-cloak
             class="thumbnail-canvas" 
             ref="hovertimeCanvas"
             v-if="spriteNotFound">
