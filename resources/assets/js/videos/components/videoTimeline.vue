@@ -22,6 +22,7 @@
             :seeking="seeking"
             :showThumbnailPreview="showThumbnailPreview"
             :videoId="videoId"
+            :has-error="hasError"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -74,7 +75,11 @@ export default {
         videoId: {
             type: Number,
             required: true,
-        }
+        },
+        hasError: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {

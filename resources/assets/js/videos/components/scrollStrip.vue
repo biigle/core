@@ -16,6 +16,7 @@
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
                         :videoId="videoId"
+                        :has-error="hasError"
                         v-if="showThumb && showThumbPreview"
                         ></thumbnail-preview>
                     <video-progress
@@ -96,7 +97,11 @@ export default {
         videoId: {
             type: Number,
             required: true
-        }
+        },
+        hasError: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {

@@ -3,7 +3,8 @@
         class="thumbnail-preview" 
         ref="thumbnailPreview" 
         :style="thumbnailStyle"
-        v-show="!spriteNotFound">
+        v-show="!hasError"
+        >
         <canvas 
             class="thumbnail-canvas" 
             ref="thumbnailCanvas"
@@ -43,7 +44,11 @@ export default {
         videoId: {
             type: Number,
             required: true,
-        }
+        },
+        hasError: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
@@ -112,6 +117,10 @@ export default {
     },
     methods: {
         updateSprite() {
+            if (this.hasError) {
+                return;
+            }
+
             this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
 

@@ -71,6 +71,7 @@
       :pending-annotation="pendingAnnotation"
       :show-thumbnail-preview="settings.showThumbnailPreview"
       :video-id="videoId"
+      :has-error="hasError"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"
