@@ -1,8 +1,8 @@
 # PHP 8.2.21
 # FROM php:8.2
 FROM php@sha256:a61daae986bdf9bbeff9a514e3598a4f72bb2e3d01a0b3d0eff960bbfe85acdf
-MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
-LABEL org.opencontainers.image.source https://github.com/biigle/core
+LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
+LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \

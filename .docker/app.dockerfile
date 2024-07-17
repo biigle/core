@@ -1,8 +1,8 @@
 # PHP 8.2.21
 #FROM php:8.2-fpm-alpine
 FROM php@sha256:95c34aeeef07aa9774e0b70d5b70065ab0647ece183ebe007c5f2e6b5db16725
-MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
-LABEL org.opencontainers.image.source https://github.com/biigle/core
+LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
+LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
