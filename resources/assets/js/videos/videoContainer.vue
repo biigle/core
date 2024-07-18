@@ -67,7 +67,10 @@ export default {
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
+                jumpStep: 5.0,
                 showProgressIndicator: true,
+                enableJumpByFrame: false,
+                muteVideo: true,
             },
             openTab: '',
             urlParams: {
@@ -92,6 +95,8 @@ export default {
             user: null,
             attachingLabel: false,
             swappingLabel: false,
+            disableJobTracking: false,
+            supportsJumpByFrame: false,
         };
     },
     computed: {
@@ -164,6 +169,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        reachedTrackedAnnotationLimit() {
+            return this.disableJobTracking;
         }
     },
     methods: {
@@ -196,6 +204,9 @@ export default {
             this.video.currentTime = time;
 
             return promise;
+        },
+        startSeeking() {
+            this.seeking = true;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -281,7 +292,15 @@ export default {
             delete annotation.shape;
 
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
-                .then(this.addCreatedAnnotation, handleErrorResponse)
+                .then((res) => {
+                    if (tmpAnnotation.track) {
+                        this.disableJobTracking = res.body.trackingJobLimitReached;
+                    }
+                    return this.addCreatedAnnotation(res);
+                }, (res) => {
+                    handleErrorResponse(res);
+                    this.disableJobTracking = res.status === 429;
+                })
                 .finally(() => {
                     let index = this.annotations.indexOf(tmpAnnotation);
                     if (index !== -1) {
@@ -620,22 +639,46 @@ export default {
         handleSucceededTracking(event) {
             let annotation = this.annotations.find(a => a.id === event.annotation.id);
             if (annotation) {
+                this.disableJobTracking = false;
                 annotation.finishTracking(event.annotation);
             }
         },
         handleFailedTracking(event) {
             let annotation = this.annotations.find(a => a.id === event.annotation.id);
             if (annotation) {
+                this.disableJobTracking = false;
                 annotation.failTracking();
             }
         },
-        handleInvalidPolygon() {
-            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
+        handleInvalidShape(shape) {
+            let count;
+            switch (shape) {
+                case 'Circle':
+                    Messages.danger('Invalid shape. Circle needs non-zero radius');
+                    return;
+                case 'LineString':
+                    shape = 'Line'
+                    count = 2;
+                    break;
+                case 'Polygon':
+                    count = 'at least 3';
+                    break;
+                case 'Rectangle':
+                case 'Ellipse':
+                    count = 4;
+                    break;
+                default:
+                    return;
+            }
+            Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
     },
     watch: {
         'settings.playbackRate'(rate) {
             this.video.playbackRate = rate;
+        },
+        'settings.muteVideo'(mute) {
+            this.video.muted = mute;
         },
         urlParams: {
             deep: true,
@@ -663,7 +706,7 @@ export default {
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
-        this.video.muted = true;
+        this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
@@ -686,6 +729,10 @@ export default {
 
         if (this.canEdit) {
             this.initializeEcho();
+        }
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsJumpByFrame = true;
         }
     },
     mounted() {

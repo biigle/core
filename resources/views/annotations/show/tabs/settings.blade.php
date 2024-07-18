@@ -4,7 +4,7 @@
             <div class="sidebar-tab__section">
                 <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 <screenshot-button v-else inline-template>
-                    <button class="btn btn-default" title="Get a screenshot of the visible area" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 </screenshot-button>
             </div>
 

@@ -37,8 +37,8 @@ class UpdateVolume extends FormRequest
     {
         return [
             'name' => 'filled|max:512',
-            'url' => ['filled', 'max:256', new VolumeUrl],
-            'handle' => ['nullable', 'max:256', new Handle],
+            'url' => ['bail', 'filled', 'string', 'max:256', new VolumeUrl],
+            'handle' => ['bail', 'nullable', 'string', 'max:256', new Handle],
         ];
     }
 

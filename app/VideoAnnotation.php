@@ -105,7 +105,8 @@ class VideoAnnotation extends Annotation
             throw new Exception('The number of key frames does not match the number of annotation coordinates.');
         }
 
-        array_map([$this, 'parent::validatePoints'], $this->points);
+        // Gaps are represented as empty arrays
+        array_map(function ($point) { if (count($point)) { parent::validatePoints($point); } }, $this->points);
     }
 
     /**

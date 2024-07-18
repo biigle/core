@@ -68,7 +68,7 @@ class RegisterController extends Controller
         $rules = (new StoreUser)->rules();
         $additionalRules = [
             'website' => 'honeypot',
-            'homepage' => 'honeytime:5|required',
+            'homepage' => 'honeytime:10|required',
             'affiliation' => 'required|max:255',
         ];
 
@@ -136,7 +136,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        if ($this->isRegistrationDisabled()) {
+        if ($this->isRegistrationDisabled() || config('biigle.sso_registration_only')) {
             abort(Response::HTTP_NOT_FOUND);
         }
 

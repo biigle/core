@@ -49,6 +49,14 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->validatePoints();
     }
 
+    public function testValidatePointsWithGap()
+    {
+        $this->expectNotToPerformAssertions();
+        $this->model->points = [[10, 10], [], [20, 20]];
+        $this->model->frames = [0.0, null, 1.0];
+        $this->model->validatePoints();
+    }
+
     public function testValidatePointsPoint()
     {
         $this->model->shape_id = Shape::pointId();
@@ -96,7 +104,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsLine()
     {
         $this->model->shape_id = Shape::lineId();
-        $this->model->points = [[10, 10]];
+        $this->model->points = [[10, 10, 20, 20]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);
@@ -107,7 +115,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsPolygon()
     {
         $this->model->shape_id = Shape::polygonId();
-        $this->model->points = [[10, 10]];
+        $this->model->points = [[10, 10, 20, 20, 30, 30, 10, 10]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);
@@ -118,7 +126,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsPolygonFirstLastEqual()
     {
         $this->model->shape_id = Shape::polygonId();
-        $this->model->points = [[10, 10, 20, 20, 10, 10]];
+        $this->model->points = [[10, 10, 20, 20, 30, 30, 10, 10]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);

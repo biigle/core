@@ -1,20 +1,25 @@
 <script>
-import * as PolygonValidator from "../../../annotations/ol/PolygonValidator";
+import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../../annotations/stores/styles';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import snapInteraction from "./snapInteraction.vue";
+import { isInvalidShape } from '../../../annotations/utils';
+
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
  * @type {Object}
  */
 export default {
+    mixins: [snapInteraction],
     data() {
         return {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
+            drawEnded: true,
         };
     },
     computed: {
@@ -123,9 +128,21 @@ export default {
                         source: this.pendingAnnotationSource,
                         type: shape,
                         style: Styles.editing,
+                        condition: this.updateSnapCoords
                     });
-                    this.drawInteraction.on('drawend', this.extendPendingAnnotation);
+
                     this.map.addInteraction(this.drawInteraction);
+
+                    this.drawInteraction.on('drawstart', () => {
+                        this.drawEnded = false;
+                    });
+                    this.drawInteraction.on('drawend', (e) => {
+                        this.extendPendingAnnotation(e);
+                        this.drawEnded = true;
+                    });
+                    this.drawInteraction.on('drawabort', () => {
+                        this.drawEnded = true;
+                    });
                 }
             }
         },
@@ -163,20 +180,20 @@ export default {
             this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
+            if (isInvalidShape(e.feature)) {
+                // Disallow shapes with too few points.
+                this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
+                // Wait for this feature to be added to the source, then remove it.
+                this.pendingAnnotationSource.once('addfeature', () => {
+                    this.pendingAnnotationSource.removeFeature(e.feature);
+                });
+                return;
+            }
+
             // Check polygons
             if (e.feature.getGeometry().getType() === 'Polygon') {
-                if (PolygonValidator.isInvalidPolygon(e.feature)) {
-                    // Disallow polygons with less than three non-overlapping points
-                    this.$emit('is-invalid-polygon')
-                    // Wait for this feature to be added to the source, then clear.
-                    this.pendingAnnotationSource.once('addfeature', () => {
-                        this.resetPendingAnnotation();
-                    });
-                    return;
-                }
-
                 // If polygon is self-intersecting, create simple polygon
-                PolygonValidator.simplifyPolygon(e.feature);
+                simplifyPolygon(e.feature);
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];

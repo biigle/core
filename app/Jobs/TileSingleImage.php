@@ -51,6 +51,7 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $this->image = $image;
         $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
+        $this->queue = config('image.tiles.queue');
     }
 
     /**

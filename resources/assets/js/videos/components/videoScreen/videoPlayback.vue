@@ -1,10 +1,9 @@
 <script>
-import CanvasSource from '@biigle/ol/source/Canvas';
+import CanvasSource from '../../../annotations/ol/source/Canvas';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '../../../core/keyboard';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
-import {apply as applyTransform} from '@biigle/ol/transform';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -16,14 +15,13 @@ export default {
         return {
             playing: false,
             animationFrameId: null,
-            // Refresh the annotations only every x ms.
-            refreshRate: 30,
             renderCurrentTime: -1,
-            refreshLastTime: Date.now(),
             extent: [0, 0, 0, 0],
             // Allow a maximum of 100x magnification. More cannot be represented in the
             // URL parameters.
             minResolution: 0.01,
+            // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
+            seekingFrame: this.seeking,
         };
     },
     methods: {
@@ -39,33 +37,19 @@ export default {
                 this.map.removeLayer(this.videoLayer);
             }
 
-            this.videoLayer = new ImageLayer({
-                name: 'image', // required by the minimap component
-                source: new CanvasSource({
-                    canvas: this.dummyCanvas,
-                    projection: projection,
-                    canvasExtent: this.extent,
-                    canvasSize: [this.extent[2], this.extent[3]],
-                }),
+            this.videoCanvas.width = this.extent[2];
+            this.videoCanvas.height = this.extent[3];
+
+            this.videoSource = new CanvasSource({
+                canvas: this.videoCanvas,
+                projection: projection,
+                canvasExtent: this.extent,
+                canvasSize: [this.extent[2], this.extent[3]],
             });
 
-            // Based on this: https://stackoverflow.com/a/42902773/1796523
-            this.videoLayer.on('postcompose', (event) => {
-                let frameState = event.frameState;
-                let resolution = frameState.viewState.resolution;
-                // Custom implementation of "map.getPixelFromCoordinate" because this
-                // layer is rendered both on the map of the main view and on the map of
-                // the minimap component (i.e. the map changes).
-                let origin = applyTransform(
-                    frameState.coordinateToPixelTransform,
-                    [0, this.extent[3]]
-                );
-                let context = event.context;
-                context.save();
-                context.scale(frameState.pixelRatio, frameState.pixelRatio);
-                context.translate(origin[0], origin[1]);
-                context.drawImage(this.video, 0, 0, this.extent[2] / resolution, this.extent[3] / resolution);
-                context.restore();
+            this.videoLayer = new ImageLayer({
+                name: 'image', // required by the minimap component
+                source: this.videoSource,
             });
 
             // The video layer should always be the first layer, otherwise it will be
@@ -76,9 +60,11 @@ export default {
                 // Center is required but will be updated immediately with fit().
                 center: [0, 0],
                 projection: projection,
-                // zoomFactor: 2,
                 minResolution: this.minResolution,
                 extent: this.extent,
+                showFullExtent: true,
+                constrainOnlyCenter: true,
+                padding: [10, 10, 10, 10],
             }));
 
             this.map.getView().fit(this.extent);
@@ -87,13 +73,8 @@ export default {
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
-                this.videoLayer.changed();
-
-                let now = Date.now();
-                if (force || (now - this.refreshLastTime) >= this.refreshRate) {
-                    this.$emit('refresh', this.video.currentTime);
-                    this.refreshLastTime = now;
-                }
+                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                this.videoSource.changed();
             }
         },
         startRenderLoop() {
@@ -105,10 +86,6 @@ export default {
             this.map.render();
         },
         stopRenderLoop() {
-            // Explicitly cancel rendering of the map because there could be one
-            // animation frame left that would be executed while the video already began
-            // seeking and thus render an empty video.
-            this.map.cancelRender();
             window.cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         },
@@ -121,6 +98,9 @@ export default {
         setPaused() {
             this.playing = false;
             this.stopRenderLoop();
+        },
+        setPausedAndSeek() {
+            this.setPaused();
             // Force render the video frame that belongs to currentTime. This is a
             // workaround because the displayed frame not the one that belongs to
             // currentTime (in most cases). With the workaround we can create annotations
@@ -151,6 +131,90 @@ export default {
         handleSeeked() {
             this.renderVideo(true);
         },
+        // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
+        async emitPreviousFrame() {
+            if(this.video.currentTime == 0 || this.seekingFrame) return;
+            this.$emit('start-seeking');
+            this.seekingFrame = true;
+            await this.showPreviousFrame();
+            this.seekingFrame = false;
+        },
+        async emitNextFrame() {
+            if(this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
+            this.$emit('start-seeking');
+            this.seekingFrame = true;
+            await this.showNextFrame();
+            this.seekingFrame = false;
+        },
+        frameInfoCallback() {
+            let promise = new Vue.Promise((resolve) => {
+                this.video.requestVideoFrameCallback((now, metadata) => {
+                    resolve(metadata);
+                })
+            })
+            return promise;
+        },
+        async showPreviousFrame() {
+            try {
+                // force rerender adapting step on begining or end of video
+                let step = 1;
+                if (this.video.currentTime < 1) {
+                   step = this.video.currentTime;
+                }
+                if (this.video.duration - this.video.currentTime < 1) {
+                   step = this.video.duration - this.video.currentTime;
+                }
+                this.video.currentTime += step;
+                this.video.currentTime -= step;
+
+                // get current frame time
+                const firstMetadata = await this.frameInfoCallback();
+                for (;;) {
+                    // now adjust video's current time until actual frame time changes
+                    this.video.currentTime -= 0.01;
+                    // check that we are not at first frame, otherwise we'll end up in infinte loop
+                    if (this.video.currentTime == 0) break;
+                    const metadata = await this.frameInfoCallback();
+                    if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+                }
+            } catch(e) {console.error(e)}
+        },
+        async showNextFrame() {
+            try {
+                // force rerender adapting step on begining or end of video
+                let step = 1;
+                if (this.video.currentTime < 1) {
+                   step = this.video.currentTime;
+                }
+                if (this.video.duration - this.video.currentTime < 1) {
+                   step = this.video.duration - this.video.currentTime;
+                }
+                this.video.currentTime += step;
+                this.video.currentTime -= step;
+
+                // get current frame time
+                const firstMetadata = await this.frameInfoCallback();
+                for (;;) {
+                    // now adjust video's current time until actual frame time changes
+                    this.video.currentTime += 0.01;
+                    // check that we are not at last frame, otherwise we'll end up in infinte loop
+                    if (this.video.duration - this.video.currentTime == 0) break;
+                    const metadata = await this.frameInfoCallback();
+                    if (metadata.mediaTime !== firstMetadata.mediaTime) break;
+                }
+            } catch(e) {console.error(e)}
+        },
+        // Methods to jump back and forward in video. Step is given by parameter jumpStep.
+        jumpBackward() {
+            if (this.video.currentTime > 0 && this.jumpStep > 0) {
+                this.$emit('seek', this.video.currentTime - this.jumpStep);
+            }
+        },
+        jumpForward() {
+            if (!this.video.ended && this.jumpStep > 0) {
+                this.$emit('seek', this.video.currentTime + this.jumpStep);
+            }
+        },
     },
     watch: {
         seeking(seeking) {
@@ -162,11 +226,10 @@ export default {
         },
     },
     created() {
-        this.dummyCanvas = document.createElement('canvas');
-        this.dummyCanvas.width = 1;
-        this.dummyCanvas.height = 1;
+        this.videoCanvas = document.createElement('canvas');
+        this.videoContext = this.videoCanvas.getContext('2d');
         this.video.addEventListener('play', this.setPlaying);
-        this.video.addEventListener('pause', this.setPaused);
+        this.video.addEventListener('pause', this.setPausedAndSeek);
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
