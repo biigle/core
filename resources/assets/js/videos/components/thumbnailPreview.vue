@@ -170,8 +170,6 @@ export default {
             // draw the hover time bar
             let ctx = this.hovertimeCanvas.getContext('2d');
             ctx.clearRect(0, 0, this.hoverTimeBarWidth, this.hoverTimeBarHeight);
-            ctx.fillStyle = this.hoverTimeStyle['bgColor'];
-            ctx.fillRect(0, 0, this.hoverTimeBarWidth, this.hoverTimeBarHeight);
             ctx.font = this.hoverTimeStyle['font'];
             ctx.fillStyle = this.hoverTimeStyle['color']
             ctx.textAlign = 'center';
