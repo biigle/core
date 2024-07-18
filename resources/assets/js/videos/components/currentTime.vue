@@ -1,8 +1,6 @@
 <template>
     <div
-        class="current-time"
-        :class="classObject"
-        >
+        class="current-time">
             <loader v-if="seeking" :active="true"></loader>
             <span v-else>
                 <span
@@ -32,11 +30,6 @@ export default {
     computed: {
         currentTimeText() {
             return Vue.filter('videoTime')(this.currentTime);
-        },
-        classObject() {
-            return {
-                'current-time--seeking': this.seeking,
-            };
         },
     },
 };
