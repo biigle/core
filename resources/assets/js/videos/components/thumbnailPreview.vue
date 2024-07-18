@@ -3,7 +3,6 @@
         class="thumbnail-preview" 
         ref="thumbnailPreview" 
         :style="thumbnailStyle"
-        v-show="!hasError"
         >
         <canvas 
             v-cloak
@@ -46,10 +45,6 @@ export default {
         videoId: {
             type: Number,
             required: true,
-        },
-        hasError: {
-            type: Boolean,
-            default: false
         },
     },
     data() {
@@ -119,10 +114,6 @@ export default {
     },
     methods: {
         updateSprite() {
-            if (this.hasError) {
-                return;
-            }
-
             this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
 

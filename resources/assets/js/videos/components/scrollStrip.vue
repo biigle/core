@@ -16,8 +16,7 @@
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
                         :videoId="videoId"
-                        :has-error="hasError"
-                        v-if="showThumb && showThumbPreview"
+                        v-if="showThumb && showThumbPreview && !hasError"
                         ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
