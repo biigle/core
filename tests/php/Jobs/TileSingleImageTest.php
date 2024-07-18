@@ -43,6 +43,7 @@ class TileSingleImageTest extends TestCase
         File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
+            Storage::fake('tiles');
             $job->uploadToStorage();
             Storage::disk('tiles')->assertExists($targetPath);
             Storage::disk('tiles')->assertExists("{$targetPath}/test.txt");
@@ -59,6 +60,7 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImage($image, config('image.tiles.disk'), $targetPath);
 
         $this->assertEquals($job->file->tilingInProgress, true);
+        Storage::fake('tiles');
         // execute the job with handle() method
         $job->handle();
         $this->assertEquals($job->file->tilingInProgress, false);
