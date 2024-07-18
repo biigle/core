@@ -13,8 +13,7 @@
         <canvas 
             v-cloak
             class="thumbnail-canvas" 
-            ref="hovertimeCanvas"
-            v-if="spriteNotFound">
+            ref="hovertimeCanvas">
         </canvas>
     </div>
 </template>
@@ -143,14 +142,7 @@ export default {
             let context = this.thumbnailCanvas.getContext('2d');
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
         
-            // draw the hover time bar
-            context.clearRect(0, this.canvasHeight, this.canvasWidth, this.hoverTimeBarHeight);
-            context.fillStyle = this.hoverTimeStyle['bgColor'];
-            context.fillRect(0, this.canvasHeight, this.canvasWidth, this.hoverTimeBarHeight);
-            context.font = this.hoverTimeStyle['font'];
-            context.fillStyle = this.hoverTimeStyle['color']
-            context.textAlign = 'center';
-            context.fillText(this.hoverTimeText, this.xtext, this.ytext);
+            this.viewHoverTimeBar();
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
@@ -202,7 +194,12 @@ export default {
             }
 
             this.thumbnailCanvas.width = this.canvasWidth;
-            this.thumbnailCanvas.height = this.canvasHeight + this.hoverTimeBarHeight;
+            this.thumbnailCanvas.height = this.canvasHeight;
+
+            // Update hover time canvas width if thumbnail canvas width is larger
+            this.hoverTimeBarWidth = this.canvasWidth > this.hoverTimeBarWidth ? this.canvasWidth : this.hoverTimeBarWidth;
+            this.hovertimeCanvas.width = this.hoverTimeBarWidth;
+            this.hovertimeCanvas.height = this.hoverTimeBarHeight;
         }
     },
     watch: {
@@ -222,7 +219,6 @@ export default {
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.thumbnailCanvas = this.$refs.thumbnailCanvas;
-
         this.hovertimeCanvas = this.$refs.hovertimeCanvas;
         this.hovertimeCanvas.width = this.hoverTimeBarWidth;
         this.hovertimeCanvas.height = this.hoverTimeBarHeight;

@@ -4,10 +4,13 @@
     left: 0;
     z-index: 1;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
 }
 
 .thumbnail-canvas {
     @extend %info-box;
     padding: 0;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+    display: block;
 }
