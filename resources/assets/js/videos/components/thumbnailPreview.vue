@@ -69,6 +69,7 @@ export default {
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
             fontSize: 14.5,
+            fontSizeInPx: 11,
             hovertimeCanvas: null,
             hoverTimeBarHeight: 20,
             hoverTimeBarWidth: 120,
@@ -107,9 +108,6 @@ export default {
             // compute font size in pixel
             return this.canvasHeight + this.fontSizeInPx + (this.hoverTimeBarHeight - this.fontSizeInPx) / 2;
         },
-        fontSizeInPx() {
-            return this.fontSize * (72 / 96);
-        }
     },
     methods: {
         updateSprite() {
