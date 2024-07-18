@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use File as FileFacade;
 use Biigle\FileCache\Contracts\File;
 use Biigle\Image;
 use Exception;
@@ -85,7 +86,7 @@ class TileSingleImage extends Job implements ShouldQueue
             $this->file->tilingInProgress = false;
             $this->file->save();
         } finally {
-            File::deleteDirectory($this->tempPath);
+            FileFacade::deleteDirectory($this->tempPath);
         }
     }
 
