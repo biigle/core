@@ -6,6 +6,7 @@ LABEL org.opencontainers.image.source https://github.com/biigle/core
 
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
+        exiftool \
         ffmpeg \
         python3 \
         python3-numpy \
@@ -47,8 +48,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
-
-RUN apk add --no-cache exiftool
 
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
