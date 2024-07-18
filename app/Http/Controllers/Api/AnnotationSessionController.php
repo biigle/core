@@ -46,7 +46,7 @@ class AnnotationSessionController extends Controller
      */
     public function update(UpdateAnnotationSession $request)
     {
-        $session = $request->session;
+        $session = $request->annotationSession;
 
         if ($request->filled('starts_at')) {
             $newStartsAt = Carbon::parse($request->input('starts_at'))
@@ -161,10 +161,10 @@ class AnnotationSessionController extends Controller
      */
     public function destroy(DestroyAnnotationSession $request, $id)
     {
-        if (!$request->input('force') && $request->session->annotations()->exists()) {
+        if (!$request->input('force') && $request->annotationSession->annotations()->exists()) {
             abort(400, 'There are annotations belonging to this annotation session. Use the force attribute to delete it anyway (the annotations will not be deleted).');
         }
 
-        $request->session->delete();
+        $request->annotationSession->delete();
     }
 }

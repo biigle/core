@@ -1,8 +1,8 @@
-# PHP 8.1.27
-# FROM php:8.1
-FROM php@sha256:9b5dfb7deef3e48d67b2599e4d3967bb3ece19fd5ba09cb8e7ee10f5facf36e0
-MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
-LABEL org.opencontainers.image.source https://github.com/biigle/core
+# PHP 8.2.21
+# FROM php:8.2
+FROM php@sha256:a61daae986bdf9bbeff9a514e3598a4f72bb2e3d01a0b3d0eff960bbfe85acdf
+LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
+LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -21,16 +21,21 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
+# Enable FFI for jcupitt/vips.
+# See: https://github.com/libvips/php-vips?tab=readme-ov-file#install
+RUN echo "ffi.enable = true" > "$PHP_INI_DIR/conf.d/vips.ini"
 
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         libxml2-dev \
         libzip-dev \
         libpq-dev \
+        libffi-dev \
     && apt-get install -y --no-install-recommends \
         libxml2 \
         libzip4 \
         postgresql-client \
+        libffi8 \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/bin/pgsql \
     && docker-php-ext-install -j$(nproc) \
         exif \
@@ -40,10 +45,12 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         pgsql \
         soap \
         zip \
+        ffi \
     && apt-get purge -y \
         libxml2-dev \
         libzip-dev \
         libpq-dev \
+        libffi-dev \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
@@ -64,7 +71,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
-ARG PHPREDIS_VERSION=5.3.7
+ARG PHPREDIS_VERSION=6.0.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
@@ -72,18 +79,8 @@ RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${
     && mv phpredis-${PHPREDIS_VERSION} /usr/src/php/ext/redis \
     && docker-php-ext-install -j$(nproc) redis
 
-# ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-
 RUN LC_ALL=C.UTF-8 apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libvips-dev \
-    && apt-get install -y --no-install-recommends \
-        libvips42 \
-    && pecl install vips \
-    && docker-php-ext-enable vips \
-    && apt-get purge -y \
-        libvips-dev \
-    && apt-get -y autoremove \
+    && apt-get install -y --no-install-recommends libvips42 \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
 
