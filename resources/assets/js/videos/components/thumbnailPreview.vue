@@ -101,12 +101,6 @@ export default {
         hoverTimeStyle() {
             return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
         },
-        xtext() {
-            return this.canvasWidth / 2;
-        },
-        ytext() {
-            return this.canvasHeight + this.fontSizeInPx + (this.hoverTimeBarHeight - this.fontSizeInPx) / 2;
-        },
     },
     methods: {
         updateSprite() {
