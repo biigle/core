@@ -99,13 +99,12 @@ export default {
             return Vue.filter('videoTime')(this.hoverTime);
         },
         hoverTimeStyle() {
-            return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc', 'bgColor': '#222' };
+            return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
         },
         xtext() {
             return this.canvasWidth / 2;
         },
         ytext() {
-            // compute font size in pixel
             return this.canvasHeight + this.fontSizeInPx + (this.hoverTimeBarHeight - this.fontSizeInPx) / 2;
         },
     },
@@ -140,6 +139,7 @@ export default {
             let context = this.thumbnailCanvas.getContext('2d');
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
         
+            // Call viewHoverTimeBar here to prevent flickering hover time bar
             this.viewHoverTimeBar();
         },
         updateThumbnailInterval() {
@@ -171,8 +171,8 @@ export default {
             ctx.font = this.hoverTimeStyle['font'];
             ctx.fillStyle = this.hoverTimeStyle['color']
             ctx.textAlign = 'center';
-            let ytext = this.hoverTimeBarHeight - (this.hoverTimeBarHeight - this.fontSizeInPx)/2
-            ctx.fillText(this.hoverTimeText, this.hoverTimeBarWidth/2, ytext);
+            let ytext = this.hoverTimeBarHeight - (this.hoverTimeBarHeight - this.fontSizeInPx) / 2
+            ctx.fillText(this.hoverTimeText, this.hoverTimeBarWidth / 2, ytext);
         },
         initDimensions() {
             let nbrCols = this.spriteGridInfo[0];
