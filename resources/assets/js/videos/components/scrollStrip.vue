@@ -16,7 +16,7 @@
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
                         :videoId="videoId"
-                        v-if="showThumb && showThumbPreview && !hasError"
+                        v-if="showThumbPreview"
                         ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
@@ -166,8 +166,8 @@ export default {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
         showThumbPreview() {
-            return this.showThumbnailPreview && this.showThumb;
-        }
+            return this.showThumbnailPreview && this.showThumb && !this.hasError;
+        },
     },
     methods: {
         updateInitialElementWidth() {

@@ -6,7 +6,7 @@
         >
         <canvas 
             v-cloak
-            class="thumbnail-canvas" 
+            class="thumbnail-canvas"
             ref="thumbnailCanvas"
             v-show="!spriteNotFound">
         </canvas>
@@ -52,7 +52,7 @@ export default {
             thumbnailCanvas: null,
             sprite: new Image(),
             spriteIdx: 0,
-            thumbProgressBarSpace: 5,
+            thumbProgressBarSpace: 10,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
             triedUrls: {},
