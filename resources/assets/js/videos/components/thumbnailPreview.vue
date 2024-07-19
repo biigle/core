@@ -73,6 +73,8 @@ export default {
             hovertimeCanvas: null,
             hoverTimeBarHeight: 20,
             hoverTimeBarWidth: 120,
+            preloadedSprites: [],
+            lastSpriteIdx: 0,
         };
     },
     computed: {
@@ -109,6 +111,26 @@ export default {
         },
     },
     methods: {
+        preloadPreviousSprite() {
+            let prevIdx = this.spriteIdx - 1;
+            if (this.spriteIdx === 0 || prevIdx in this.preloadedSprites) {
+                return;
+            }
+            let prevSpriteUrl = this.spritesFolderPath + "sprite_" + prevIdx + ".webp";
+            let prevImg = new Image();
+            prevImg.src = prevSpriteUrl;
+            this.preloadedSprites[prevIdx] = prevImg;
+        },
+        preloadNextSprite() {
+            let nextIdx = this.spriteIdx + 1;
+            if (this.spriteIdx === this.lastSpriteIdx || nextIdx in this.preloadedSprites) {
+                return;
+            }
+            let nextSpriteUrl = this.spritesFolderPath + "sprite_" + nextIdx + ".webp";
+            let nextImg = new Image();
+            nextImg.src = nextSpriteUrl;
+            this.preloadedSprites[nextIdx] = nextImg;
+        },
         updateSprite() {
             let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
 
@@ -116,10 +138,21 @@ export default {
                 this.triedUrls[SpriteUrl] = 0
             }
             if (this.triedUrls[SpriteUrl] < this.retryAttempts) {
-                this.sprite.src = SpriteUrl;
+                if (this.spriteIdx in this.preloadedSprites) {
+                    let onloadFunc = this.sprite.onload;
+                    this.sprite = this.preloadedSprites[this.spriteIdx];
+                    onloadFunc.call(this.sprite, new Event('load'));
+                    this.sprite.onload = onloadFunc;
+                } else {
+                    this.sprite.src = SpriteUrl;
+                    this.preloadedSprites[this.spriteIdx] = this.sprite;
+                }
             } else {
                 this.spriteNotFound = true;
             }
+
+            this.preloadPreviousSprite();
+            this.preloadNextSprite();
         },
         viewThumbnailPreview() {
             // calculate the current row and column of the sprite
@@ -147,6 +180,7 @@ export default {
             let defaultThumbnailInterval = biigle.$require('videos.spritesThumbnailInterval');
             this.durationRounded = Math.floor(this.duration * 10) / 10;
             this.estimatedThumbnails = Math.floor(this.durationRounded / defaultThumbnailInterval);
+            this.lastSpriteIdx = Math.floor(this.estimatedThumbnails / this.thumbnailsPerSprite);
             if (this.estimatedThumbnails > maxThumbnails) {
                 this.estimatedThumbnails = maxThumbnails;
                 this.thumbnailInterval = this.durationRounded / maxThumbnails;
