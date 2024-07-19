@@ -110,7 +110,6 @@ export default {
     },
     methods: {
         updateSprite() {
-            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
 
             if (!this.triedUrls[SpriteUrl]) {
@@ -196,13 +195,20 @@ export default {
             this.hoverTimeBarWidth = this.canvasWidth > this.hoverTimeBarWidth ? this.canvasWidth : this.hoverTimeBarWidth;
             this.hovertimeCanvas.width = this.hoverTimeBarWidth;
             this.hovertimeCanvas.height = this.hoverTimeBarHeight;
-        }
+        },
     },
     watch: {
         hoverTime() {
-            this.updateSprite();
+            let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
+            if (this.spriteIdx !== spriteIdx){
+                this.spriteIdx = spriteIdx;
+                this.updateSprite();
+            }
+
             if (this.spriteNotFound) {
                 this.viewHoverTimeBar();
+            } else {
+                this.viewThumbnailPreview();
             }
         },
     },
@@ -215,6 +221,7 @@ export default {
         this.sprite.onload = () => {
             this.spriteNotFound = false;
             this.initDimensions();
+            // Call viewThumbnailPreview here again to prevent glitching thumbnails
             this.viewThumbnailPreview();
         }
         this.sprite.onerror = () => {
