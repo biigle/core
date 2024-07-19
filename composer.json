@@ -127,7 +127,7 @@
             "@php vendor/bin/psalm"
         ],
         "pull-modules": [
-            "PPWD=$PWD; for f in $(find vendor/biigle -mindepth 1 -maxdepth 1 -type d); do cd $f; git pull; cd $PPWD; done"
+            "PPWD=$PWD; for f in $(find vendor/biigle -mindepth 1 -maxdepth 1 -type d); do cd $f; git checkout $(basename $(git symbolic-ref refs/remotes/origin/HEAD)); git pull; cd $PPWD; done"
         ]
     },
     "config": {
