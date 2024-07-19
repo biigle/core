@@ -211,15 +211,7 @@ export default {
         this.updateThumbnailInterval();
         this.thumbnailSizes = biigle.$require('videos.thumbnailSizes');
         this.thumbnailsPerSprite = biigle.$require('videos.spritesThumbnailsPerSprite');
-    },
-    mounted() {
-        this.thumbnailPreview = this.$refs.thumbnailPreview;
-        this.thumbnailCanvas = this.$refs.thumbnailCanvas;
-        this.hovertimeCanvas = this.$refs.hovertimeCanvas;
-        this.hovertimeCanvas.width = this.hoverTimeBarWidth;
-        this.hovertimeCanvas.height = this.hoverTimeBarHeight;
 
-        this.updateSprite();
         this.sprite.onload = () => {
             this.spriteNotFound = false;
             this.initDimensions();
@@ -230,7 +222,17 @@ export default {
             if (this.sprite.src in this.triedUrls) {
                 this.triedUrls[this.sprite.src]++;
             }
+            this.viewHoverTimeBar();
         }
+    },
+    mounted() {
+        this.thumbnailPreview = this.$refs.thumbnailPreview;
+        this.thumbnailCanvas = this.$refs.thumbnailCanvas;
+        this.hovertimeCanvas = this.$refs.hovertimeCanvas;
+        this.hovertimeCanvas.width = this.hoverTimeBarWidth;
+        this.hovertimeCanvas.height = this.hoverTimeBarHeight;
+
+        this.updateSprite();
     }
 };
 </script>
