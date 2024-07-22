@@ -112,7 +112,7 @@ export default {
             if (this.spriteIdx === 0 || prevIdx in this.preloadedSprites) {
                 return;
             }
-            let prevSpriteUrl = this.spritesFolderPath + "sprite_" + prevIdx + ".webp";
+            let prevSpriteUrl = this.getSpriteUrl(prevIdx);
             let prevImg = new Image();
             prevImg.src = prevSpriteUrl;
             this.preloadedSprites[prevIdx] = prevImg;
@@ -122,13 +122,13 @@ export default {
             if (this.spriteIdx === this.lastSpriteIdx || nextIdx in this.preloadedSprites) {
                 return;
             }
-            let nextSpriteUrl = this.spritesFolderPath + "sprite_" + nextIdx + ".webp";
+            let nextSpriteUrl = this.getSpriteUrl(nextIdx);
             let nextImg = new Image();
             nextImg.src = nextSpriteUrl;
             this.preloadedSprites[nextIdx] = nextImg;
         },
         updateSprite() {
-            let SpriteUrl = this.spritesFolderPath + "sprite_" + this.spriteIdx + ".webp";
+            let SpriteUrl = this.getSpriteUrl(this.spriteIdx);
 
             if (!this.triedUrls[SpriteUrl]) {
                 this.triedUrls[SpriteUrl] = 0
@@ -146,9 +146,11 @@ export default {
             } else {
                 this.spriteNotFound = true;
             }
-
             this.preloadPreviousSprite();
             this.preloadNextSprite();
+        },
+        getSpriteUrl(idx) {
+            return this.spritesFolderPath + "sprite_" + idx + ".webp";
         },
         viewThumbnailPreview() {
             // calculate the current row and column of the sprite
