@@ -72,7 +72,7 @@ export default {
             hovertimeCanvas: null,
             hoverTimeBarHeight: 20,
             hoverTimeBarWidth: 120,
-            preloadedSprites: [],
+            preloadedSprites: {},
             lastSpriteIdx: 0,
         };
     },
@@ -127,6 +127,10 @@ export default {
             nextImg.src = nextSpriteUrl;
             this.preloadedSprites[nextIdx] = nextImg;
         },
+        removeOldSprites() {
+            delete this.preloadedSprites[this.spriteIdx - 2];
+            delete this.preloadedSprites[this.spriteIdx + 2];
+        },
         updateSprite() {
             this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let SpriteUrl = this.getSpriteUrl(this.spriteIdx);
@@ -149,6 +153,7 @@ export default {
             }
             this.preloadPreviousSprite();
             this.preloadNextSprite();
+            this.removeOldSprites();
         },
         getSpriteUrl(idx) {
             return this.spritesFolderPath + "sprite_" + idx + ".webp";
