@@ -6,7 +6,7 @@
         >
         <canvas 
             v-cloak
-            class="thumbnail-canvas" 
+            class="thumbnail-canvas"
             ref="thumbnailCanvas"
             v-show="!spriteNotFound">
         </canvas>
@@ -52,7 +52,7 @@ export default {
             thumbnailCanvas: null,
             sprite: new Image(),
             spriteIdx: 0,
-            thumbProgressBarSpace: 5,
+            thumbProgressBarSpace: 10,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
             triedUrls: {},
@@ -69,7 +69,6 @@ export default {
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
             fontSize: 14.5,
-            fontSizeInPx: 11,
             hovertimeCanvas: null,
             hoverTimeBarHeight: 20,
             hoverTimeBarWidth: 120,
@@ -103,12 +102,9 @@ export default {
         hoverTimeStyle() {
             return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
         },
-        xtext() {
-            return this.canvasWidth / 2;
-        },
-        ytext() {
-            return this.canvasHeight + this.fontSizeInPx + (this.hoverTimeBarHeight - this.fontSizeInPx) / 2;
-        },
+        fontSizeInPx() {
+            return this.fontSize * (72 / 96);
+        }
     },
     methods: {
         preloadPreviousSprite() {
