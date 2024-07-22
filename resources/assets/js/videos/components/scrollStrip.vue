@@ -166,7 +166,7 @@ export default {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
         showThumbPreview() {
-            return this.showThumbnailPreview && this.showThumb && !this.hasError;
+            return this.showThumbnailPreview && this.showThumb && !this.hasError && this.hoverTime !== 0;
         },
     },
     methods: {

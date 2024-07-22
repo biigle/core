@@ -128,6 +128,7 @@ export default {
             this.preloadedSprites[nextIdx] = nextImg;
         },
         updateSprite() {
+            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let SpriteUrl = this.getSpriteUrl(this.spriteIdx);
 
             if (!this.triedUrls[SpriteUrl]) {
