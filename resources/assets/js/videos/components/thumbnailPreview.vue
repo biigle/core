@@ -101,7 +101,7 @@ export default {
             return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
         },
         fontSizeInPx() {
-            return this.fontSize * (72 / 96);
+            return this.fontSize * 0.75;
         }
     },
     methods: {
