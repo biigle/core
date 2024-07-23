@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <h2 class="col-lg-12 clearfix">
-            {{ $image->filename }}
+            {{ mb_strimwidth($image->filename, 0, 63, '...')}}
             <span class="pull-right">
                 <a href="{{route('volume', $volume->id)}}" title="Back to {{ $volume->name }}" class="btn btn-default">back</a>
                 @mixin('imagesIndexButtons')
@@ -31,6 +31,6 @@
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
     @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects])/ <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a>
-    / <strong title="{{$image->filename}}">{{$image->filename}}</strong> @include('volumes.partials.annotationSessionIndicator')
+    / <strong title="{{mb_strimwidth($image->filename, 0, 63, '...')}}">{{mb_strimwidth($image->filename, 0, 63, '...')}}</strong> @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection
