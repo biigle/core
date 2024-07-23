@@ -1,5 +1,5 @@
 <template>
-     <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option"></v-chart>
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import { SankeyChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
+import { usernameToColor } from "./usernameToColor";
 
 export default {
     components: {
@@ -34,7 +35,7 @@ export default {
         data() {
             // returns an array of User-names and volume-names
             let volNames = this.volumeAnnotations.map(entry => {
-                return this.names.find(x => x.id ===  entry.volume_id).name;
+                return this.names.find(x => x.id === entry.volume_id).name;
             });
             volNames = [...new Set(volNames)];
 
@@ -48,20 +49,19 @@ export default {
 
             let combined = userNames.concat(...volNames);
             combined = combined.map(entry => {
-                return {name: entry}
+                return { name: entry, itemStyle: { color: usernameToColor(entry) } };
             })
-
             return combined;
         },
 
         links() {
             let result_array = [];
 
-            for(let obj of this.volumeAnnotations) {
+            for (let obj of this.volumeAnnotations) {
                 // create a single link-entry
                 let entry = {
                     source: obj.fullname === " " ? "Deleted Account" : obj.fullname,
-                    target: this.names.find(x => x.id ===  obj.volume_id).name,
+                    target: this.names.find(x => x.id === obj.volume_id).name,
                     value: obj.count
                 };
                 // append to result array

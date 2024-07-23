@@ -1,20 +1,22 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions" @updateAxisPointer="handleUpdate"></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions"
+        @updateAxisPointer="handleUpdate"></v-chart>
 </template>
 
 <script>
 import * as echarts from 'echarts/core';
 import {
-  DatasetComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
+    DatasetComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    TitleComponent,
 } from 'echarts/components';
 import { LineChart, PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart, { THEME_KEY } from "vue-echarts";
+import { usernameToColor } from "./usernameToColor";
 
 export default {
     props: {
@@ -54,9 +56,14 @@ export default {
                 },
                 encode: {
                     itemName: 'year',
-                    tooltip:  0,
+                    tooltip: 0,
                     value: 0
                 },
+                itemStyle: {
+                    color: function (params) {
+                        return usernameToColor(params.name);
+                    }
+                }
             },
         };
     },
@@ -82,9 +89,9 @@ export default {
             // filter duplicated years
             xAxis = [...new Set(xAxis)];
 
-             // sort the years (increasing)
+            // sort the years (increasing)
             return xAxis.sort();
-        }
+        },
     },
     computed: {
         sourcedata() {
@@ -106,7 +113,7 @@ export default {
             // create object with "year-slots" for each user (e.g. {id: {"2020":0, "2021":0, "2022":0]}))
             for (let id in users) {
                 let yearDict = {};
-                for(let y of xAxis) {
+                for (let y of xAxis) {
                     yearDict[y] = 0;
                 }
                 idDict[id] = yearDict;
@@ -142,12 +149,11 @@ export default {
                 let name = users[entry[0]];
                 // case of deleted account
                 if (name === " ") {
-                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]) ]);
+                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1])]);
                 } else { // case of existing user
-                    chartdata.push([sum, name, ...Object.values(entry[1]) ]);
+                    chartdata.push([sum, name, ...Object.values(entry[1])]);
                 }
             });
-
             return chartdata;
         },
         createTimelineSeries() {
@@ -158,7 +164,7 @@ export default {
             // create a series of data which is specific to each user
             // skip first entry (idx=1), as it is an array of x-axis names and not user-data
             // sourcedata-structure: [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4]]
-            for (let idx=1; idx < this.sourcedata.length; idx++) {
+            for (let idx = 1; idx < this.sourcedata.length; idx++) {
                 let snippet = {
                     name: this.sourcedata[idx][1],
                     type: 'line',
@@ -166,18 +172,17 @@ export default {
                     seriesLayoutBy: 'row',
                     emphasis: { focus: 'series' },
                     // skip first two entries as they are irrelevant for the timeline-data
-                    data: this.sourcedata[idx].slice(2, end)
+                    data: this.sourcedata[idx].slice(2, end),
+                    itemStyle: { "color": usernameToColor(this.sourcedata[idx][1]) },
                 };
                 series.push(snippet)
             }
-
             return series;
         },
         option() {
             let seriesObj = this.createTimelineSeries;
             // append the pie-chart specific snippet
             seriesObj.push(this.pieObj);
-
             return {
                 legend: {
                     left: '2%',
