@@ -31,7 +31,7 @@ class ApiGuard extends TokenGuard
         // a server/database error with weird strings.
         if (!empty($token) && !empty($email) && mb_detect_encoding($email) !== false) {
             $user = $this->provider->retrieveByCredentials(
-                ['email' => strtolower($this->request->getUser())]
+                ['email' => strtolower($email)]
             );
         }
 
