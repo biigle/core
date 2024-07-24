@@ -168,9 +168,11 @@ export default {
             if (this.triedUrls[SpriteUrl] < this.retryAttempts) {
                 if (this.spriteIdx in this.preloadedSprites) {
                     let onloadFunc = this.sprite.onload;
+                    let onErrFunc = this.sprite.onerror;
                     this.sprite = this.preloadedSprites[this.spriteIdx];
                     onloadFunc.call(this.sprite, new Event('load'));
                     this.sprite.onload = onloadFunc;
+                    this.sprite.onerror = onErrFunc;
                 } else {
                     this.sprite.src = SpriteUrl;
                 }
