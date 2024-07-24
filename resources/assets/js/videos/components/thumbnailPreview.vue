@@ -109,23 +109,50 @@ export default {
     methods: {
         preloadPreviousSprite() {
             let prevIdx = this.spriteIdx - 1;
-            if (this.spriteIdx === 0 || prevIdx in this.preloadedSprites) {
+            let prevSpriteUrl = this.getSpriteUrl(prevIdx);
+
+            if (this.spriteIdx === 0
+                || prevIdx in this.preloadedSprites
+                || this.triedUrls[prevSpriteUrl] >= this.retryAttempts) {
                 return;
             }
-            let prevSpriteUrl = this.getSpriteUrl(prevIdx);
+
+            if (!this.triedUrls[prevSpriteUrl]) {
+                this.triedUrls[prevSpriteUrl] = 0
+            }
             let prevImg = new Image();
+            prevImg.onload = () => {
+                this.preloadedSprites[prevIdx] = prevImg;
+            }
+            prevImg.onerror = () => {
+                if (prevSpriteUrl in this.triedUrls) {
+                    this.triedUrls[prevSpriteUrl]++;
+                }
+            }
             prevImg.src = prevSpriteUrl;
-            this.preloadedSprites[prevIdx] = prevImg;
         },
         preloadNextSprite() {
             let nextIdx = this.spriteIdx + 1;
-            if (this.spriteIdx === this.lastSpriteIdx || nextIdx in this.preloadedSprites) {
+            let nextSpriteUrl = this.getSpriteUrl(nextIdx);
+
+            if (this.spriteIdx === this.lastSpriteIdx
+                || nextIdx in this.preloadedSprites
+                || this.triedUrls[nextSpriteUrl] >= this.retryAttempts) {
                 return;
             }
-            let nextSpriteUrl = this.getSpriteUrl(nextIdx);
+            if (!this.triedUrls[nextSpriteUrl]) {
+                this.triedUrls[nextSpriteUrl] = 0
+            }
             let nextImg = new Image();
+            nextImg.onload = () => {
+                this.preloadedSprites[nextIdx] = nextImg;
+            }
+            nextImg.onerror = () => {
+                if (nextSpriteUrl in this.triedUrls) {
+                    this.triedUrls[nextSpriteUrl]++;
+                }
+            }
             nextImg.src = nextSpriteUrl;
-            this.preloadedSprites[nextIdx] = nextImg;
         },
         removeOldSprites() {
             delete this.preloadedSprites[this.spriteIdx - 2];
@@ -146,7 +173,6 @@ export default {
                     this.sprite.onload = onloadFunc;
                 } else {
                     this.sprite.src = SpriteUrl;
-                    this.preloadedSprites[this.spriteIdx] = this.sprite;
                 }
             } else {
                 this.spriteNotFound = true;
@@ -258,6 +284,7 @@ export default {
 
         this.sprite.onload = () => {
             this.spriteNotFound = false;
+            this.preloadedSprites[this.spriteIdx] = this.sprite;
             this.initDimensions();
             // Call viewThumbnailPreview here again to prevent glitching thumbnails
             this.viewThumbnailPreview();
