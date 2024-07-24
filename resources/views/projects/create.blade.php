@@ -24,8 +24,20 @@
 			</div>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			<a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
-			<input type="submit" class="btn btn-success pull-right" value="Create">
+			<input id="submit-button" type="submit" class="btn btn-success pull-right" value="Create">
 		</form>
 	</div>
 </div>
 @endsection
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const submitButton = document.getElementById('submit-button');
+
+		submitButton.addEventListener('click', function(event) {
+			this.disabled = true;
+			this.value = 'Creating project...';
+			this.form.submit();
+		});
+	});
+</script>
