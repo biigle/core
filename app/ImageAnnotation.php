@@ -22,7 +22,7 @@ class ImageAnnotation extends Annotation
     /**
      * The image, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, ImageAnnotation>
      */
     public function image()
     {
@@ -30,9 +30,7 @@ class ImageAnnotation extends Annotation
     }
 
     /**
-     * The file, this annotation belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * {@inheritdoc}
      */
     public function file()
     {
@@ -50,9 +48,7 @@ class ImageAnnotation extends Annotation
     }
 
     /**
-     * The labels, this annotation got assigned by the users.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * {@inheritdoc}
      */
     public function labels()
     {

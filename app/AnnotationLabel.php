@@ -12,7 +12,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'label_id',
@@ -23,7 +23,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $casts = [
         'user_id' => 'int',
@@ -33,14 +33,14 @@ abstract class AnnotationLabel extends Model
     /**
      * The annotation, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Annotation, AnnotationLabel>
      */
     abstract public function annotation();
 
     /**
      * The label, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, AnnotationLabel>
      */
     public function label()
     {
@@ -50,7 +50,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The user who created this annotation label.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, AnnotationLabel>
      */
     public function user()
     {

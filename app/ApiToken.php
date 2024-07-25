@@ -12,7 +12,7 @@ class ApiToken extends Model
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'hash',

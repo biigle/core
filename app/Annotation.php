@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
+ *
+ * @property array $points
+ * @property string $created_at
  */
 abstract class Annotation extends Model implements AnnotationContract
 {
@@ -19,7 +22,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'pivot',
@@ -28,7 +31,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'points' => 'array',
@@ -40,7 +43,7 @@ abstract class Annotation extends Model implements AnnotationContract
      * @param \Illuminate\Database\Query\Builder $query
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Query\Builder
      */
     public function scopeVisibleFor($query, User $user)
     {
@@ -73,7 +76,7 @@ abstract class Annotation extends Model implements AnnotationContract
      * @param \Illuminate\Database\Query\Builder $query
      * @param Label $label
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Query\Builder
      */
     public function scopeWithLabel($query, Label $label)
     {
@@ -93,7 +96,7 @@ abstract class Annotation extends Model implements AnnotationContract
      * @param \Illuminate\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Query\Builder
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
@@ -153,14 +156,14 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The file, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<VolumeFile, Annotation>
      */
     abstract public function file();
 
     /**
      * The labels, this annotation got assigned by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationLabel, Annotation>
      */
     abstract public function labels();
 
