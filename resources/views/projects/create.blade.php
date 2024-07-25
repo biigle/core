@@ -24,7 +24,7 @@
 			</div>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			<a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
-			<input id="submit-button" type="submit" class="btn btn-success pull-right" value="Create" onclick="this.disabled = true;this.value = 'Creating project...';this.form.submit();">
+			<input type="submit" class="btn btn-success pull-right" value="Create" onclick="this.disabled = true;this.value = 'Creating project...';this.form.submit();">
 		</form>
 	</div>
 </div>
