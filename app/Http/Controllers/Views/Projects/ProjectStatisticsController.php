@@ -112,7 +112,7 @@ class ProjectStatisticsController extends Controller
 
         $annotationTimeSeries = $baseQuery->clone()
             ->leftJoin('users', 'users.id', '=', "{$type}_annotation_labels.user_id")
-            ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), concat(EXTRACT(YEAR from {$type}_annotations.created_at)::integer,'-',EXTRACT(MONTH from {$type}_annotations.created_at)::integer) as yearmonth")
+            ->selectRaw("{$type}_annotation_labels.user_id, concat(users.firstname, ' ', users.lastname) as fullname, count({$type}_annotation_labels.id), to_char({$type}_annotations.created_at, 'YYYY-MM') as yearmonth")
             ->groupBy("{$type}_annotation_labels.user_id", 'fullname', 'yearmonth')
             ->orderBy("{$type}_annotation_labels.user_id")
             ->get();
