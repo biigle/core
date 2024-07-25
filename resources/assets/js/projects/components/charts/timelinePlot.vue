@@ -16,7 +16,7 @@ import { LineChart, PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart, { THEME_KEY } from "vue-echarts";
-import { usernameToColor } from "./usernameToColor";
+import { IDToColor } from "./IDToColor";
 
 export default {
     props: {
@@ -61,7 +61,7 @@ export default {
                 },
                 itemStyle: {
                     color: function (params) {
-                        return usernameToColor(params.name);
+                        return IDToColor(params.data[params.data.length - 1]);
                     }
                 }
             },
@@ -139,6 +139,7 @@ export default {
             // include an entry of the sum over all years
             xAxis.unshift('all');
             chartdata.push(xAxis);
+
             // reduce user-timeseries to values only
             Object.entries(idDict).forEach(entry => {
                 // calculate the sum over all years and include in the array on position 0
@@ -147,11 +148,12 @@ export default {
                     sum += val;
                 })
                 let name = users[entry[0]];
+                let userid = entry[0];
                 // case of deleted account
                 if (name === " ") {
-                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1])]);
+                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]),userid]);
                 } else { // case of existing user
-                    chartdata.push([sum, name, ...Object.values(entry[1])]);
+                    chartdata.push([sum, name, ...Object.values(entry[1]),userid]);
                 }
             });
             return chartdata;
@@ -173,7 +175,7 @@ export default {
                     emphasis: { focus: 'series' },
                     // skip first two entries as they are irrelevant for the timeline-data
                     data: this.sourcedata[idx].slice(2, end),
-                    itemStyle: { "color": usernameToColor(this.sourcedata[idx][1]) },
+                    itemStyle: { "color": IDToColor(this.sourcedata[idx][end]) },
                 };
                 series.push(snippet)
             }

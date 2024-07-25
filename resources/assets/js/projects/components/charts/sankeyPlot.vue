@@ -8,7 +8,7 @@ import { SankeyChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
-import { usernameToColor } from "./usernameToColor";
+import { IDToColor } from "./IDToColor";
 
 export default {
     components: {
@@ -47,10 +47,23 @@ export default {
             })
             userNames = [...new Set(userNames)];
 
-            let combined = userNames.concat(...volNames);
-            combined = combined.map(entry => {
-                return { name: entry, itemStyle: { color: usernameToColor(entry) } };
+            let userIds = this.volumeAnnotations.map(entry => {
+                return entry.user_id;
             })
+            userIds = [...new Set(userIds)];
+
+            let volIds = this.volumeAnnotations.map(entry => {
+                return entry.volume_id;
+            });
+            volIds = [...new Set(volIds)];
+
+
+            let combined = userNames.concat(...volNames);
+            let combinedIds = userIds.concat(...volIds);
+
+            combined = combined.map((entry, index) => {
+                return { name: entry, itemStyle: { color: IDToColor(combinedIds[index]) } };
+            });
             return combined;
         },
 
